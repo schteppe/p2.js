@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>spring2d.js</title>
+    <script src="requestAnimFrame.js"></script>
+    <script src="spring2d.js"></script>
+</head>
+<body>
+
+    <canvas id="theCanvas" width="500" height="300"></canvas>
+
+    <script>
+      // shim layer with setTimeout fallback
+      window.requestAnimFrame = (function(){
+      return  window.requestAnimationFrame       || 
+              window.webkitRequestAnimationFrame || 
+              window.mozRequestAnimationFrame    || 
+              window.oRequestAnimationFrame      || 
+              window.msRequestAnimationFrame     || 
+              function( callback ){
+                window.setTimeout(callback, 1000 / 60);
+              };
+    })();
+
+        var timeStep = 1/60,
+            k=500,
+            d=10,
+            l=1,
+            m=1,
+            playing = true,
+            world,
+            w,h,ctx;
+
+        // Init spring2d world and canvas
+        function init(){
+            world = new Spring2D.World();
+            var particles = [];
+            var l = 20, N=10, M=10;
+
+            // --- Create particles ---
+            for(var i=0; i<N; i++){
+                particles.push([]);
+                for(var j=0; j<M; j++){
+                    var p = new Spring2D.Particle();
+                    if(i==0) p.mass = 0;
+                    p.position.set(i*l*1.05,j*l*1.05);
+                    particles[i].push(p);
+                    world.addParticle(p);
+                }
+            }
+
+            // --- Create springs ---
+
+            // Vertical
+            for(var i=0; i<N; i++){
+                for(var j=0; j<M-1; j++){
+                    var a = particles[i][j];
+                    var b = particles[i][j+1];
+                    var spring = new Spring2D.Spring(a,b);
+                    spring.stiffness = k;
+                    world.addSpring(spring);
+                    spring.restLength = l;
+                }
+            }
+            // Horizontal
+            for(var i=0; i<N-1; i++){
+                for(var j=0; j<M; j++){
+                    var a = particles[i][j];
+                    var b = particles[i+1][j];
+                    var spring = new Spring2D.Spring(a,b);
+                    spring.stiffness = k;
+                    world.addSpring(spring);
+                    spring.restLength = l;
+                }
+            }
+            // Diagonal right/down
+            for(var i=0; i<N-1; i++){
+                for(var j=0; j<M-1; j++){
+                    var a = particles[i][j];
+                    var b = particles[i+1][j+1];
+                    var spring = new Spring2D.Spring(a,b);
+                    spring.stiffness = k;
+                    world.addSpring(spring);
+                    spring.restLength = Math.sqrt(l*l + l*l);
+                }
+            }
+            // Diagonal left/down
+            for(var i=0; i<N-1; i++){
+                for(var j=0; j<M-1; j++){
+                    var a = particles[i+1][j];
+                    var b = particles[i][j+1];
+                    var spring = new Spring2D.Spring(a,b);
+                    spring.stiffness = k;
+                    world.addSpring(spring);
+                    spring.restLength = Math.sqrt(l*l + l*l);
+                }
+            }
+
+            // Init canvas
+            var canvas = document.getElementById("theCanvas");
+            ctx = canvas.getContext("2d");
+            w = canvas.width;
+            h = canvas.height;
+
+            // Animate loop
+            (function animloop(){
+                requestAnimFrame(animloop);
+                render();
+                world.step(1/60);
+            })();
+        }
+
+        // Draws a circle.
+        function drawCircle(context,cx,cy,radius){
+            context.beginPath();
+            context.arc(cx, cy, radius, 0, 2 * Math.PI, false);
+            context.stroke();
+            context.fill();
+        }
+
+        // Draws a spring.
+        function drawSpring(context,x1,y1,x2,y2,restLength){
+            context.beginPath();
+            var l = Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
+            var nx = (x2-x1) / l;
+            var ny = (y2-y1) / l;
+            var tx = -ny * restLength*0.04;
+            var ty = nx * restLength*0.04;
+            var M = 20;
+            var dx = l*nx/M;
+            var dy = l*ny/M;
+            context.moveTo(x1, y1);
+            for(var i=0; i<M; i++){
+                var x = x1 + dx*i;
+                var y = y1 + dy*i;
+                if(i<=1 || i>=M-1 ){
+                    // Do nothing
+                } else if(i % 2 == 0){
+                    x -= tx;
+                    y -= ty;
+                } else {
+                    x += tx;
+                    y += ty;
+                }
+                context.lineTo(x,y);
+            }
+            context.lineTo(x2, y2);
+            context.stroke();
+        }
+
+        // Renders the Spring2D world.
+        function render(){
+            ctx.clearRect(0,0,w,h);
+            for(var i=0,Nsprings=world.springs.length; i!==Nsprings; i++){
+                var s = world.springs[i];
+                var x1 = s.particleA.position.x;
+                var y1 = s.particleA.position.y;
+                var x2 = s.particleB.position.x;
+                var y2 = s.particleB.position.y;
+                drawCircle(ctx,x1,y1,s.restLength*0.1);
+                drawCircle(ctx,x2,y2,s.restLength*0.1);
+                drawSpring(ctx,x1,y1,x2,y2,s.restLength);
+            }
+        }
+
+        init();
+        
+    </script>
+</body>
+</html>
