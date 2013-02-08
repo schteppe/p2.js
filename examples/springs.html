@@ -23,8 +23,7 @@
             for(var i=0; i<N; i++){
                 particles.push([]);
                 for(var j=0; j<M; j++){
-                    var p = new Spring2D.Body(shape);
-                    if(i==0) p.mass = 0;
+                    var p = new Spring2D.Body(i==0 ? 0 : m, shape);
                     p.position.set(i*l*1.05,j*l*1.05);
                     particles[i].push(p);
                     world.addBody(p);

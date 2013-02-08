@@ -11,7 +11,7 @@ var Spring2D = {};
     S.World = function(){
         this.springs = [];
         this.bodies = [];
-        this.solver = new S.Solver();
+        this.solver = new S.GSSolver();
         this.contacts = [];
         this.collidingBodies = [];
         this.gravity = new S.Vec2();
@@ -57,8 +57,10 @@ var Spring2D = {};
 
         // Broadphase
         function checkCircleCircle(c1,c2,result){
-            result.push(c1);
-            result.push(c2);
+            if(c1.position.vsub(c2.position).norm() < c1.shape.radius+c2.shape.radius){
+                result.push(c1);
+                result.push(c2);
+            }
         }
         function checkCircleParticle(c,p,result){
             result.push(c);
@@ -69,7 +71,7 @@ var Spring2D = {};
             var bi = collidingBodies[i];
             var si = bi.shape;
 
-            for(var j=i; j!==Ncolliding; j++){
+            for(var j=0; j!==i; j++){
                 var bj = collidingBodies[j];
                 var sj = bj.shape;
 
@@ -88,13 +90,13 @@ var Spring2D = {};
             c2.position.vsub(c1.position,c.ni);
             c.ni.normalize();
             c.ni.smult(c1.shape.radius, c.ri);
-            c.ni.smult(c2.shape.radius, c.rj);
+            c.ni.smult(-c2.shape.radius, c.rj);
             result.push(c);
         }
         function nearphaseCircleParticle(c,p,result){
             // todo
         }
-        var contacts = this.contacts = []; // todo
+        var contacts = this.contacts = [];
         for(var i=0, Nresults=result.length; i!==Nresults; i+=2){
             var bi = result[i];
             var bj = result[i+1];
@@ -107,7 +109,11 @@ var Spring2D = {};
         }
 
         // Solver
-        solver.solve();
+        for(var i=0, Ncontacts=contacts.length; i!==Ncontacts; i++){
+            solver.addEquation(contacts[i]);
+        }
+        solver.solve(dt,this);
+        solver.removeAllEquations();
 
         // Step
         for(var i=0; i!==Nbodies; i++){
@@ -152,16 +158,19 @@ var Spring2D = {};
         this.bodyB = bodyB;
     };
 
-    S.Body = function(shape){
+    S.Body = function(mass,shape){
         this.shape = shape;
 
-        this.mass = 1;
-        this.invMass = 1;
-        this.inertia = new S.Mat2().setIdentity();
-        this.invInertia = new S.Mat2().setIdentity();
+        this.mass = mass;
+        this.invMass = mass > 0 ? 1/mass : 0;
+        this.inertia = mass; // todo
+        this.invInertia = this.invMass; // todo
 
         this.position = new S.Vec2();
         this.velocity = new S.Vec2();
+
+        this.vlambda = new S.Vec2();
+        this.wlambda = 0;
 
         this.angle = 0;
         this.angularVelocity = 0;
@@ -189,17 +198,24 @@ var Spring2D = {};
         this.x=x;
         this.y=y;
     };
+    S.Vec2.prototype.dot = function(v){
+        return this.x*v.x + this.y*v.y;
+    };
     S.Vec2.prototype.vadd = function(v,target){
         target = target || new S.Vec2();
-        target.x += v.x;
-        target.y += v.y;
+        target.x = this.x + v.x;
+        target.y = this.y + v.y;
         return target;
     };
     S.Vec2.prototype.vsub = function(v,target){
         target = target || new S.Vec2();
-        target.x -= v.x;
-        target.y -= v.y;
+        target.x = this.x - v.x;
+        target.y = this.y - v.y;
         return target;
+    };
+    // Vector cross product - returns magnitude of the resulting vector along the 3rd dimension
+    S.Vec2.prototype.vcross = function(v){
+        return this.x*v.y - this.y*v.x;
     };
     S.Vec2.prototype.normalize = function(){
         var l = this.norm();
@@ -211,8 +227,8 @@ var Spring2D = {};
     };
     S.Vec2.prototype.smult = function(scalar,target){
         target = target || new S.Vec2();
-        target.x *= scalar;
-        target.y *= scalar;
+        target.x = this.x * scalar;
+        target.y = this.y * scalar;
         return target;
     };
 
@@ -287,18 +303,20 @@ var Spring2D = {};
         var bj = this.bj;
         var ri = this.ri;
         var rj = this.rj;
+        var xi = bi.position;
+        var xj = bj.position;
         var rixn = this.rixn;
         var rjxn = this.rjxn;
 
         var vi = bi.velocity;
-        var wi = bi.angularVelocity ? bi.angularVelocity : new S.Vec2();
+        var wi = bi.angularVelocity;
         var fi = bi.force;
-        var taui = bi.tau ? bi.tau : new S.Vec2();
+        var taui = bi.angularForce;
 
         var vj = bj.velocity;
-        var wj = bj.angularVelocity ? bj.angularVelocity : new S.Vec2();
+        var wj = bj.angularVelocity;
         var fj = bj.force;
-        var tauj = bj.tau ? bj.tau : new S.Vec2();
+        var tauj = bj.angularForce;
 
         var relVel = this.relVel;
         var relForce = this.relForce;
@@ -306,33 +324,23 @@ var Spring2D = {};
         var invMassi = bi.invMass;
         var invMassj = bj.invMass;
 
-        var invIi = this.invIi;
-        var invIj = this.invIj;
-
-        if(bi.invInertia) invIi.setTrace(bi.invInertia);
-        else              invIi.identity(); // ok?
-        if(bj.invInertia) invIj.setTrace(bj.invInertia);
-        else              invIj.identity(); // ok?
+        var invIi = bi.invInertia;
+        var invIj = bj.invInertia;
 
         var n = this.ni;
 
         // Caluclate cross products
-        ri.cross(n,rixn);
-        rj.cross(n,rjxn);
+        var rixn = this.rixn = ri.vcross(n);
+        var rjxn = this.rjxn = rj.vcross(n);
 
         // Calculate q = xj+rj -(xi+ri) i.e. the penetration vector
-        var penetrationVec = this.penetrationVec;
-        penetrationVec.set(0,0,0);
-        penetrationVec.vadd(bj.position,penetrationVec);
-        penetrationVec.vadd(rj,penetrationVec);
-        penetrationVec.vsub(bi.position,penetrationVec);
-        penetrationVec.vsub(ri,penetrationVec);
+        var penetrationVec = xj.vadd(rj).vsub(xi.vadd(ri));
 
-        var Gq = n.dot(penetrationVec);//-Math.abs(this.penetration);
+        var Gq = n.dot(penetrationVec);
 
         // Compute iteration
-        var GW = vj.dot(n) - vi.dot(n) + wj.dot(rjxn) - wi.dot(rixn);
-        var GiMf = fj.dot(n)*invMassj - fi.dot(n)*invMassi + rjxn.dot(invIj.vmult(tauj)) - rixn.dot(invIi.vmult(taui)) ;
+        var GW = vj.dot(n) - vi.dot(n) + wj * rjxn - wi * rixn;
+        var GiMf = fj.dot(n)*invMassj - fi.dot(n)*invMassi + invIj*tauj*rjxn - invIi*taui*rixn;
 
         var B = - Gq * a - GW * b - h*GiMf;
 
@@ -349,17 +357,12 @@ var Spring2D = {};
 
         var C = invMassi + invMassj + eps;
 
-        var invIi = this.invIi;
-        var invIj = this.invIj;
-
-        if(bi.invInertia) invIi.setTrace(bi.invInertia);
-        else              invIi.identity(); // ok?
-        if(bj.invInertia) invIj.setTrace(bj.invInertia);
-        else              invIj.identity(); // ok?
+        var invIi = bi.invInertia;
+        var invIj = bj.invInertia;
 
         // Compute rxn * I * rxn for each body
-        C += invIi.vmult(rixn).dot(rixn);
-        C += invIj.vmult(rjxn).dot(rjxn);
+        C += invIi * rixn * rixn;
+        C += invIj * rjxn * rjxn;
 
         return C;
     };
@@ -374,8 +377,8 @@ var Spring2D = {};
         GWlambda += ulambda.dot(this.ni);
 
         // Angular
-        if(bi.wlambda) GWlambda -= bi.wlambda.dot(this.rixn);
-        if(bj.wlambda) GWlambda += bj.wlambda.dot(this.rjxn);
+        GWlambda -= bi.wlambda * this.rixn;
+        GWlambda += bj.wlambda * this.rjxn;
 
         return GWlambda;
     };
@@ -389,18 +392,12 @@ var Spring2D = {};
         var n = this.ni;
 
         // Add to linear velocity
-        bi.vlambda.vsub(n.mult(invMassi * deltalambda),bi.vlambda);
-        bj.vlambda.vadd(n.mult(invMassj * deltalambda),bj.vlambda);
+        bi.vlambda.vsub(n.smult(invMassi * deltalambda),bi.vlambda);
+        bj.vlambda.vadd(n.smult(invMassj * deltalambda),bj.vlambda);
 
         // Add to angular velocity
-        if(bi.wlambda){
-            var I = this.invIi;
-            bi.wlambda.vsub(I.vmult(rixn).mult(deltalambda),bi.wlambda);
-        }
-        if(bj.wlambda){
-            var I = this.invIj;
-            bj.wlambda.vadd(I.vmult(rjxn).mult(deltalambda),bj.wlambda);
-        }
+        bi.wlambda -= bi.invInertia * rixn * deltalambda;
+        bj.wlambda += bj.invInertia * rjxn * deltalambda;
     };
 
     S.GSSolver = function(){
@@ -408,7 +405,7 @@ var Spring2D = {};
         this.iterations = 10;
         this.h = 1.0/60.0;
         this.k = 1e7;
-        this.d = 5;
+        this.d = 6;
         this.a = 0.0;
         this.b = 0.0;
         this.eps = 0.0;
@@ -462,7 +459,7 @@ var Spring2D = {};
             for(i=0; i!==Nbodies; i++){
                 var b=bodies[i], vlambda=b.vlambda;
                 vlambda.set(0,0);
-                if(b.wlambda) b.wlambda = 0;
+                b.wlambda = 0;
             }
 
             // Iterate over equations
@@ -496,14 +493,14 @@ var Spring2D = {};
                 }
 
                 // If the total error is small enough - stop iterate
-                if(deltalambdaTot*deltalambdaTot < tolSquared) break;
+                if(deltalambdaTot*deltalambdaTot <= tolSquared) break;
             }
 
             // Add result to velocity
             for(i=0; i!==Nbodies; i++){
-                var b=bodies[i], v=b.velocity, w=b.angularVelocity;
+                var b=bodies[i], v=b.velocity;
                 v.vadd(b.vlambda, v);
-                w += b.wlambda;
+                b.angularVelocity += b.wlambda;
             }
         }
         errorTot = deltalambdaTot;

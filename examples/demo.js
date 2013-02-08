@@ -10,6 +10,8 @@ demo.createScene = function(createSceneFunc){
     var vBoxX = 0;
     var vBoxY = 0;
 
+    var paused = false;
+
     function toScreenX(x){
         return vBoxX + x*vBoxScale;
     }
@@ -108,6 +110,25 @@ demo.createScene = function(createSceneFunc){
     (function animloop(){
         requestAnimFrame(animloop);
         render();
-        world.step(1/60);
+        if(!paused){
+            world.step(1/60);
+        }
     })();
+
+    document.addEventListener('keypress',function(e){
+        if(e.keyCode){
+            switch(e.keyCode){
+                case 112: // p
+                paused = !paused;
+                break;
+
+                case 115: // s
+                if(paused){
+                    world.step(demo.timeStep);
+                    render();
+                }
+                break;
+            }
+        }
+    });
 };
