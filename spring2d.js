@@ -62,6 +62,13 @@ var Spring2D = {};
                 result.push(c2);
             }
         }
+        function checkCirclePlane(c,p,result){
+            var worldNormal = new S.Mat2().setFromRotation(p.angle).vmult(new S.Vec2(0,1)); // todo: cache matrix and vecs
+            if(c.position.vsub(p.position).dot(worldNormal) <= c.shape.radius){
+                result.push(c);
+                result.push(p);
+            }
+        }
         function checkCircleParticle(c,p,result){
             result.push(c);
             result.push(p);
@@ -76,10 +83,13 @@ var Spring2D = {};
                 var sj = bj.shape;
 
                 if(si instanceof S.Circle){
-                         if(sj instanceof S.Circle)   checkCircleCircle(bi,bj,result);
+                         if(sj instanceof S.Circle)   checkCircleCircle  (bi,bj,result);
                     else if(sj instanceof S.Particle) checkCircleParticle(bi,bj,result);
+                    else if(sj instanceof S.Plane)    checkCirclePlane   (bi,bj,result);
                 } else if(si instanceof S.Particle){
                          if(sj instanceof S.Circle)   checkCircleParticle(bj,bi,result);
+                } else if(si instanceof S.Plane){
+                         if(sj instanceof S.Circle)   checkCirclePlane   (bj,bi,result);
                 }
             }
         }
@@ -96,15 +106,28 @@ var Spring2D = {};
         function nearphaseCircleParticle(c,p,result){
             // todo
         }
+        function nearphaseCirclePlane(c,p,result){
+            var contact = new S.ContactEquation(p,c);
+            contact.ni = new S.Mat2().setFromRotation(p.angle).vmult(new S.Vec2(0,1));
+            contact.ni.smult(-c.shape.radius, contact.rj);
+            var planeToCircle = c.position.vsub(p.position);
+            contact.ri = planeToCircle.vsub ( contact.ni.smult( contact.ni.dot( planeToCircle ) ) );
+            result.push(contact);
+        }
         var contacts = this.contacts = [];
         for(var i=0, Nresults=result.length; i!==Nresults; i+=2){
             var bi = result[i];
             var bj = result[i+1];
+            var si = bi.shape;
+            var sj = bj.shape;
             if(si instanceof S.Circle){
-                     if(sj instanceof S.Circle)   nearphaseCircleCircle(bi,bj,contacts);
+                     if(sj instanceof S.Circle)   nearphaseCircleCircle  (bi,bj,contacts);
                 else if(sj instanceof S.Particle) nearphaseCircleParticle(bi,bj,contacts);
+                else if(sj instanceof S.Plane)    nearphaseCirclePlane   (bi,bj,contacts);
             } else if(si instanceof S.Particle){
                      if(sj instanceof S.Circle)   nearphaseCircleParticle(bj,bi,contacts);
+            } else if(si instanceof S.Plane){
+                     if(sj instanceof S.Circle)   nearphaseCirclePlane   (bj,bi,contacts);
             }
         }
 
@@ -190,6 +213,10 @@ var Spring2D = {};
         this.radius = radius || 1;
     };
 
+    S.Plane = function(){
+        S.Shape.apply(this);
+    };
+
     S.Vec2 = function(x,y){
         this.x = x||0.0;
         this.y = y||0.0;
@@ -249,6 +276,13 @@ var Spring2D = {};
         this.e12 = 0.0;
         this.e21 = 0.0;
         this.e22 = 1.0;
+        return this;
+    };
+    S.Mat2.prototype.setFromRotation = function(angle){
+        this.e11 =  Math.cos(angle);
+        this.e12 = -Math.sin(angle);
+        this.e21 =  Math.sin(angle);
+        this.e22 =  Math.cos(angle);
         return this;
     };
 

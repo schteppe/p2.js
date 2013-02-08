@@ -10,24 +10,30 @@
     <script>
         demo.createScene(function(world){
             var particles = [];
-            var l = 20, N=1, M=10;
+            var l = 20, N=10, M=10;
             var timeStep = 1/60,
                 k=500,
                 d=10,
-                l=1,
+                l=0.5,
                 m=1;
             world.gravity.set(0,-10);
             world.solver.setSpookParams(1e10,3);
 
             // Create circle bodies
-            var shape = new Spring2D.Circle(l*0.3);
+            var shape = new Spring2D.Circle(l*0.5);
             for(var i=0; i<N; i++){
                 for(var j=0; j<M; j++){
-                    var p = new Spring2D.Body(j==0 ? 0 : m,shape);
-                    p.position.set(i*l*1.05,j*l*2);
+                    var p = new Spring2D.Body(m,shape);
+                    p.position.set(i*l*1.05,j*l*2+2);
                     world.addBody(p);
                 }
             }
+
+            // Create ground
+            var planeShape = new Spring2D.Plane();
+            var plane = new Spring2D.Body(0,planeShape);
+            world.addBody(plane);
+            
         });        
     </script>
 </body>
