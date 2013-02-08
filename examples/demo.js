@@ -71,7 +71,7 @@ function Demo(){
 
     this.addVisual = function(body){
         var buf, s=body.shape;
-        if(s instanceof Spring2D.Circle){
+        if(s instanceof p2.Circle){
             var w = toScreenScale(s.radius*2);
             var h = w;
             var buf = renderToCanvas(w,h,function(ctx){
@@ -99,7 +99,7 @@ function Demo(){
         document.body.appendChild(canvas);
         var ctx = canvas.getContext("2d");
 
-        var world = new Spring2D.World();
+        var world = new p2.World();
         createSceneFunc(world);
 
         // Renders the world
@@ -121,9 +121,9 @@ function Demo(){
                 var b = bodies[i];
                 var x = toScreenX(b.position.x);
                 var y = toScreenY(b.position.y);
-                if(b.shape instanceof(Spring2D.Circle)){
+                if(b.shape instanceof(p2.Circle)){
                     drawCircle(ctx,x,y,toScreenScale(b.shape.radius));
-                } else if(b.shape instanceof(Spring2D.Particle)){
+                } else if(b.shape instanceof(p2.Particle)){
                     drawCircle(ctx,x,y,3);
                 }
             }

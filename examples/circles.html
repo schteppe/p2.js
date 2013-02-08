@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>spring2d.js</title>
+    <title>p2.js</title>
     <script src="demo.js"></script>
     <link href="demo.css" rel="stylesheet"/>
-    <script src="../spring2d.js"></script>
+    <script src="../p2.js"></script>
 </head>
 <body>
     <script>
@@ -19,10 +19,10 @@
             world.solver.iterations = 5;
 
             // Create circle bodies
-            var shape = new Spring2D.Circle(r);
+            var shape = new p2.Circle(r);
             for(var i=0; i<N; i++){
                 for(var j=0; j<M; j++){
-                    var p = new Spring2D.Body(m,shape);
+                    var p = new p2.Body(m,shape);
                     p.position.set(i*r*2.05+Math.random()*r, j*r*2.1+2);
                     world.addBody(p);
                     demo.addVisual(p);
@@ -30,15 +30,15 @@
             }
 
             // Create ground
-            var planeShape = new Spring2D.Plane();
-            var plane = new Spring2D.Body(0,planeShape);
+            var planeShape = new p2.Plane();
+            var plane = new p2.Body(0,planeShape);
             world.addBody(plane);
 
-            var planeLeft = new Spring2D.Body(0,planeShape);
+            var planeLeft = new p2.Body(0,planeShape);
             planeLeft.angle = -Math.PI/2;
             world.addBody(planeLeft);
 
-            var planeRight = new Spring2D.Body(0,planeShape);
+            var planeRight = new p2.Body(0,planeShape);
             planeRight.angle = Math.PI/2;
             planeRight.position.x = M*r*1.5;
             world.addBody(planeRight);
