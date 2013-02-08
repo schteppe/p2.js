@@ -24,7 +24,7 @@
             for(var i=0; i<N; i++){
                 for(var j=0; j<M; j++){
                     var p = new Spring2D.Body(m,shape);
-                    p.position.set(i*l*1.05,j*l*2+2);
+                    p.position.set(i*l*1.05+Math.random()*l,j*l*1.2+2);
                     world.addBody(p);
                 }
             }
@@ -33,6 +33,15 @@
             var planeShape = new Spring2D.Plane();
             var plane = new Spring2D.Body(0,planeShape);
             world.addBody(plane);
+
+            var planeLeft = new Spring2D.Body(0,planeShape);
+            planeLeft.angle = -Math.PI/2;
+            world.addBody(planeLeft);
+
+            var planeRight = new Spring2D.Body(0,planeShape);
+            planeRight.angle = Math.PI/2;
+            planeRight.position.x = M*l*1.5;
+            world.addBody(planeRight);
             
         });        
     </script>
