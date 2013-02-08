@@ -37,14 +37,15 @@
             var l = 20, N=10, M=10;
 
             // --- Create particles ---
+            var shape = new Spring2D.Particle();
             for(var i=0; i<N; i++){
                 particles.push([]);
                 for(var j=0; j<M; j++){
-                    var p = new Spring2D.Particle();
+                    var p = new Spring2D.Body(shape);
                     if(i==0) p.mass = 0;
                     p.position.set(i*l*1.05,j*l*1.05);
                     particles[i].push(p);
-                    world.addParticle(p);
+                    world.addBody(p);
                 }
             }
 
@@ -152,10 +153,10 @@
             ctx.clearRect(0,0,w,h);
             for(var i=0,Nsprings=world.springs.length; i!==Nsprings; i++){
                 var s = world.springs[i];
-                var x1 = s.particleA.position.x;
-                var y1 = s.particleA.position.y;
-                var x2 = s.particleB.position.x;
-                var y2 = s.particleB.position.y;
+                var x1 = s.bodyA.position.x;
+                var y1 = s.bodyA.position.y;
+                var x2 = s.bodyB.position.x;
+                var y2 = s.bodyB.position.y;
                 drawCircle(ctx,x1,y1,s.restLength*0.1);
                 drawCircle(ctx,x2,y2,s.restLength*0.1);
                 drawSpring(ctx,x1,y1,x2,y2,s.restLength);
