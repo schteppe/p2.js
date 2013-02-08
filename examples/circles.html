@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>spring2d.js</title>
+    <script src="demo.js"></script>
+    <link href="demo.css" rel="stylesheet"/>
+    <script src="../spring2d.js"></script>
+</head>
+<body>
+    <script>
+        demo.createScene(function(world){
+            var particles = [];
+            var l = 20, N=10, M=10;
+            var timeStep = 1/60,
+                k=500,
+                d=10,
+                l=1,
+                m=1;
+            world.gravity.set(0,-10);
+
+            // Create circle bodies
+            var shape = new Spring2D.Circle(l*0.5);
+            for(var i=0; i<N; i++){
+                for(var j=0; j<M; j++){
+                    var p = new Spring2D.Body(shape);
+                    p.position.set(i*l*1.05,j*l*1.05);
+                    if(j==0) p.mass = 0;
+                    world.addBody(p);
+                }
+            }
+        });        
+    </script>
+</body>
+</html>

@@ -87,8 +87,8 @@ var Spring2D = {};
             var c = new S.ContactEquation(c1,c2);
             c2.position.vsub(c1.position,c.ni);
             c.ni.normalize();
-            c.ni.mult(c1.shape.radius, c.ri);
-            c.ni.mult(c2.shape.radius, c.rj);
+            c.ni.smult(c1.shape.radius, c.ri);
+            c.ni.smult(c2.shape.radius, c.rj);
             result.push(c);
         }
         function nearphaseCircleParticle(c,p,result){
@@ -176,9 +176,9 @@ var Spring2D = {};
         S.Shape.apply(this);
     };
 
-    S.Circle = function(){
+    S.Circle = function(radius){
         S.Shape.apply(this);
-        this.radius = 1;
+        this.radius = radius || 1;
     };
 
     S.Vec2 = function(x,y){
@@ -193,6 +193,27 @@ var Spring2D = {};
         target = target || new S.Vec2();
         target.x += v.x;
         target.y += v.y;
+        return target;
+    };
+    S.Vec2.prototype.vsub = function(v,target){
+        target = target || new S.Vec2();
+        target.x -= v.x;
+        target.y -= v.y;
+        return target;
+    };
+    S.Vec2.prototype.normalize = function(){
+        var l = this.norm();
+        this.x /= l;
+        this.y /= l;
+    };
+    S.Vec2.prototype.norm = function(){
+        return Math.sqrt(this.x * this.x + this.y * this.y);
+    };
+    S.Vec2.prototype.smult = function(scalar,target){
+        target = target || new S.Vec2();
+        target.x *= scalar;
+        target.y *= scalar;
+        return target;
     };
 
     S.Mat2 = function(e11,e12,e21, e22){
@@ -253,8 +274,8 @@ var Spring2D = {};
         this.rixw = new S.Vec2();
         this.rjxw = new S.Vec2();
 
-        this.invIi = new S.Mat3();
-        this.invIj = new S.Mat3();
+        this.invIi = new S.Mat2();
+        this.invIj = new S.Mat2();
 
         this.relVel = new S.Vec2();
         this.relForce = new S.Vec2();
@@ -355,7 +376,7 @@ var Spring2D = {};
         // Angular
         if(bi.wlambda) GWlambda -= bi.wlambda.dot(this.rixn);
         if(bj.wlambda) GWlambda += bj.wlambda.dot(this.rjxn);
-        
+
         return GWlambda;
     };
     S.ContactEquation.prototype.addToWlambda = function(deltalambda){
