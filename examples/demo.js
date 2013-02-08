@@ -1,8 +1,4 @@
-var demo = {};
-
-demo.timeStep = 1/60;
-
-demo.createScene = function(createSceneFunc){
+function Demo(){
 
     // View box stuff
     // Todo: auto scale to scene size
@@ -11,6 +7,8 @@ demo.createScene = function(createSceneFunc){
     var vBoxY = 0;
 
     var paused = false;
+    var bodies = [];
+    var buffers = []; // canvas buffers for each body
 
     function toScreenX(x){
         return vBoxX + x*vBoxScale;
@@ -21,25 +19,6 @@ demo.createScene = function(createSceneFunc){
     function toScreenScale(num){
         return num * vBoxScale;
     }
-
-    // shim layer with setTimeout fallback
-    var requestAnimFrame = window.requestAnimationFrame       || 
-                           window.webkitRequestAnimationFrame || 
-                           window.mozRequestAnimationFrame    || 
-                           window.oRequestAnimationFrame      || 
-                           window.msRequestAnimationFrame     || 
-                           function( callback ){
-                                window.setTimeout(callback, 1000 / 60);
-                           };
-
-    var canvas = document.createElement("canvas");
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    document.body.appendChild(canvas);
-    var ctx = canvas.getContext("2d");
-
-    var world = new Spring2D.World();
-    createSceneFunc(world);
 
     // Draws a circle.
     function drawCircle(context,cx,cy,radius){
@@ -79,56 +58,103 @@ demo.createScene = function(createSceneFunc){
         context.stroke();
     }
 
-    // Renders the world
-    function render(){
-        ctx.clearRect(0,0,canvas.width,canvas.height);
+    this.timeStep = 1/60;
+    var buffers = [];
 
-        // Render springs
-        for(var i=0,Nsprings=world.springs.length; i!==Nsprings; i++){
-            var s = world.springs[i];
-            var x1 = toScreenX(s.bodyA.position.x);
-            var y1 = toScreenY(s.bodyA.position.y);
-            var x2 = toScreenX(s.bodyB.position.x);
-            var y2 = toScreenY(s.bodyB.position.y);
-            drawSpring(ctx,x1,y1,x2,y2,toScreenScale(s.restLength));
+    function renderToCanvas(width, height, renderFunction) {
+        var buffer = document.createElement('canvas');
+        buffer.width = parseInt(width);
+        buffer.height = parseInt(height);
+        renderFunction(buffer.getContext('2d'));
+        return buffer;
+    };
+
+    this.addVisual = function(body){
+        var buf, s=body.shape;
+        if(s instanceof Spring2D.Circle){
+            var w = toScreenScale(s.radius*2);
+            var h = w;
+            var buf = renderToCanvas(w,h,function(ctx){
+                drawCircle(ctx,w*0.5,h*0.5,w*0.5);
+            });
         }
+        buffers.push(buf);
+        bodies.push(body);
+    };
 
-        // Render bodies
-        for(var i=0,Nbodies=world.bodies.length; i!==Nbodies; i++){
-            var b = world.bodies[i];
-            var x = toScreenX(b.position.x);
-            var y = toScreenY(b.position.y);
-            if(b.shape instanceof(Spring2D.Circle)){
-                drawCircle(ctx,x,y,toScreenScale(b.shape.radius));
-            } else if(b.shape instanceof(Spring2D.Circle)){
-                drawCircle(ctx,x,y,3);
+    this.createScene = function(createSceneFunc){
+        // shim layer with setTimeout fallback
+        var requestAnimFrame = window.requestAnimationFrame       || 
+                               window.webkitRequestAnimationFrame || 
+                               window.mozRequestAnimationFrame    || 
+                               window.oRequestAnimationFrame      || 
+                               window.msRequestAnimationFrame     || 
+                               function( callback ){
+                                    window.setTimeout(callback, 1000 / 60);
+                               };
+
+        var canvas = document.createElement("canvas");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        document.body.appendChild(canvas);
+        var ctx = canvas.getContext("2d");
+
+        var world = new Spring2D.World();
+        createSceneFunc(world);
+
+        // Renders the world
+        function render(){
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+
+            // Render springs
+            for(var i=0,Nsprings=world.springs.length; i!==Nsprings; i++){
+                var s = world.springs[i];
+                var x1 = toScreenX(s.bodyA.position.x);
+                var y1 = toScreenY(s.bodyA.position.y);
+                var x2 = toScreenX(s.bodyB.position.x);
+                var y2 = toScreenY(s.bodyB.position.y);
+                drawSpring(ctx,x1,y1,x2,y2,toScreenScale(s.restLength));
             }
-        }
-    }
 
-    // Start rendering
-    (function animloop(){
-        requestAnimFrame(animloop);
-        render();
-        if(!paused){
-            world.step(1/60);
-        }
-    })();
-
-    document.addEventListener('keypress',function(e){
-        if(e.keyCode){
-            switch(e.keyCode){
-                case 112: // p
-                paused = !paused;
-                break;
-
-                case 115: // s
-                if(paused){
-                    world.step(demo.timeStep);
-                    render();
+            // Render bodies
+            for(var i=0,Nbodies=bodies.length; i!==Nbodies; i++){
+                var b = bodies[i];
+                var x = toScreenX(b.position.x);
+                var y = toScreenY(b.position.y);
+                if(b.shape instanceof(Spring2D.Circle)){
+                    drawCircle(ctx,x,y,toScreenScale(b.shape.radius));
+                } else if(b.shape instanceof(Spring2D.Particle)){
+                    drawCircle(ctx,x,y,3);
                 }
-                break;
             }
         }
-    });
-};
+
+        // Start rendering
+        (function animloop(){
+            requestAnimFrame(animloop);
+            render();
+            if(!paused){
+                world.step(1/60);
+            }
+        })();
+
+        document.addEventListener('keypress',function(e){
+            if(e.keyCode){
+                switch(e.keyCode){
+                    case 112: // p
+                    paused = !paused;
+                    break;
+
+                    case 115: // s
+                    if(paused){
+                        world.step(demo.timeStep);
+                        render();
+                    }
+                    break;
+                }
+            }
+        });
+    };
+}
+var demo = new Demo();
+

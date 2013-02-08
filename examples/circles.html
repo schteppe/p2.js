@@ -10,22 +10,22 @@
     <script>
         demo.createScene(function(world){
             var particles = [];
-            var l = 20, N=10, M=10;
+            var l = 20, N=10, M=15;
             var timeStep = 1/60,
-                k=500,
-                d=10,
-                l=0.5,
+                r=0.5,
                 m=1;
             world.gravity.set(0,-10);
             world.solver.setSpookParams(1e10,3);
+            world.solver.iterations = 5;
 
             // Create circle bodies
-            var shape = new Spring2D.Circle(l*0.5);
+            var shape = new Spring2D.Circle(r);
             for(var i=0; i<N; i++){
                 for(var j=0; j<M; j++){
                     var p = new Spring2D.Body(m,shape);
-                    p.position.set(i*l*1.05+Math.random()*l,j*l*1.2+2);
+                    p.position.set(i*r*2.05+Math.random()*r, j*r*2.1+2);
                     world.addBody(p);
+                    demo.addVisual(p);
                 }
             }
 
@@ -40,7 +40,7 @@
 
             var planeRight = new Spring2D.Body(0,planeShape);
             planeRight.angle = Math.PI/2;
-            planeRight.position.x = M*l*1.5;
+            planeRight.position.x = M*r*1.5;
             world.addBody(planeRight);
             
         });        
