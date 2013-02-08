@@ -154,6 +154,42 @@ function Demo(){
                 }
             }
         });
+
+        var mouseIsDown = false;
+        var mouseLastX = 0;
+        var mouseLastY = 0;
+        document.addEventListener('mousedown',function(e){
+            mouseIsDown = true;
+            mouseLastX = e.clientX;
+            mouseLastY = e.clientY;
+        });
+        document.addEventListener('mousemove',function(e){
+            if(mouseIsDown){
+                var dx = (e.clientX-mouseLastX);
+                var dy = (e.clientY-mouseLastY);
+                switch(e.which){
+                    case 1:
+                        vBoxX += dx;
+                        vBoxY += dy;
+                        break;
+                    case 2:
+                        var diff = dy * 0.01 * vBoxScale;
+                        var scaleBefore = vBoxScale;
+                        var scaleAfter = vBoxScale-diff;
+                        vBoxScale = scaleAfter;
+                        var diffX = window.innerWidth  * (0.5) * diff;
+                        var diffY = window.innerHeight * (0.5) * diff;
+                        vBoxX += diffX*0.02;
+                        vBoxY -= diffY*0.02;
+                        break;
+                }
+                mouseLastX = e.clientX;
+                mouseLastY = e.clientY;
+            }
+        });
+        document.addEventListener('mouseup',function(e){
+            mouseIsDown = false;
+        });
     };
 }
 var demo = new Demo();
