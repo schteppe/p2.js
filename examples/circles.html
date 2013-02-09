@@ -15,8 +15,8 @@
                 r=0.5,
                 m=1;
             world.gravity.set(0,-10);
-            world.solver.setSpookParams(1e10,3);
-            world.solver.iterations = 5;
+            world.solver.setSpookParams(1e20,3);
+            world.solver.iterations = 10;
 
             // Create circle bodies
             var shape = new p2.Circle(r);
