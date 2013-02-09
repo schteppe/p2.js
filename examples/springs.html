@@ -2,29 +2,32 @@
 <html>
 <head>
     <title>p2.js</title>
+    <script src="../p2.js"></script>
     <script src="demo.js"></script>
     <link href="demo.css" rel="stylesheet"/>
-    <script src="../p2.js"></script>
 </head>
 <body>
     <script>
+        var V = p2.V;
+
+        var demo = new CanvasDemo();
         demo.createScene(function(world){
             var particles = [];
-            var l = 20, N=10, M=10;
+            var l = 10, N=20, M=20;
             var timeStep = 1/60,
                 k=500,
                 d=10,
-                l=1,
+                l=0.2,
                 m=1;
-            world.gravity.set(0,1);
+            V.set(world.gravity,0,-2);
 
             // Create particles
             var shape = new p2.Particle();
             for(var i=0; i<N; i++){
                 particles.push([]);
                 for(var j=0; j<M; j++){
-                    var p = new p2.Body(i==0 ? 0 : m, shape);
-                    p.position.set(i*l*1.05,j*l*1.05);
+                    var p = new p2.Body(j==M-1 ? 0 : m, shape);
+                    V.set(p.position,i*l*1.05+1,j*l*1.05+1);
                     particles[i].push(p);
                     world.addBody(p);
                 }
@@ -38,6 +41,7 @@
                     var spring = new p2.Spring(a,b);
                     spring.stiffness = k;
                     world.addSpring(spring);
+                    demo.addVisual(spring);
                     spring.restLength = l;
                 }
             }
@@ -49,6 +53,7 @@
                     var spring = new p2.Spring(a,b);
                     spring.stiffness = k;
                     world.addSpring(spring);
+                    demo.addVisual(spring);
                     spring.restLength = l;
                 }
             }

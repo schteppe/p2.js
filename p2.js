@@ -6,30 +6,251 @@
 var p2 = {};
 (function(p2){
 
+    var vecCount = 0;
+    var matCount = 0;
+    var ARRAY_TYPE = Float32Array;
+
+    var cos = Math.cos;
+    var sin = Math.sin;
     var sqrt = Math.sqrt;
+
+    // Typed arrays!
+    p2.tVec2 = {};
+    p2.oVec2 = {};
+    p2.tVec2.create = function(x,y){
+        vecCount++;
+        var a = new ARRAY_TYPE(2);
+        a[0] = x||0;
+        a[1] = y||0;
+        return a;
+    }
+    p2.oVec2.create = function(x,y){
+        return {x:x||0, y:y||0};
+    }
+    p2.tVec2.set = function(v, x, y) {
+        v[0] = x;
+        v[1] = y;
+    }
+    p2.oVec2.set = function(v, x, y) {
+        v.x = x;
+        v.y = y;
+    }
+    p2.tVec2.copy = function(a, out) {
+        out[0] = a[0];
+        out[1] = a[1];
+    }
+    p2.oVec2.copy = function(a, out) {
+        out.x = a.x;
+        out.y = a.y;
+    }
+    p2.tVec2.add = function(a, b, out) {
+        out[0] = a[0] + b[0];
+        out[1] = a[1] + b[1];
+    }
+    p2.oVec2.add = function(a, b, out) {
+        out.x = a.x + b.x;
+        out.y = a.y + b.y;
+    }
+    p2.tVec2.subtract = function(a, b, out) {
+        out[0] = a[0] - b[0];
+        out[1] = a[1] - b[1];
+    }
+    p2.oVec2.subtract = function(a, b, out) {
+        out.x = a.x - b.x;
+        out.y = a.y - b.y;
+    }
+    p2.tVec2.scale = function(a, s, out) {
+        out[0] = a[0] * s;
+        out[1] = a[1] * s;
+    }
+    p2.oVec2.scale = function(a, s, out) {
+        out.x = a.x * s;
+        out.y = a.y * s;
+    }
+    p2.tVec2.normalize = function(a, out) {
+        var iLen = 1 / p2.tVec2.norm(a);
+        out[0] = a[0] * iLen;
+        out[1] = a[1] * iLen;
+    }
+    p2.oVec2.normalize = function(a, out) {
+        var iLen = 1 / p2.oVec2.norm(a);
+        out.x = a.x * iLen;
+        out.y = a.y * iLen;
+    }
+    p2.tVec2.norm = function(a) {
+        return sqrt((a[0] * a[0]) + (a[1] * a[1]));
+    }
+    p2.oVec2.norm = function(a) {
+        return sqrt((a.x * a.x) + (a.y * a.y));
+    }
+    p2.tVec2.dot = function(a,b){
+        return a[0]*b[0] + a[1]*b[1];
+    };
+    p2.oVec2.dot = function(a,b){
+        return a.x*b.x + a.y*b.y;
+    };
+    p2.tVec2.cross = function(a,b){
+        return a[0]*b[1] - a[1]*b[0];
+    };
+    p2.oVec2.cross = function(a,b){
+        return a.x*b.y - a.y*b.x;
+    };
+    p2.tVec2.getX = function(v){ return v[0]; };
+    p2.tVec2.getY = function(v){ return v[1]; };
+    p2.oVec2.getX = function(v){ return v.x; };
+    p2.oVec2.getY = function(v){ return v.y; };
+
+    // Matrices
+    p2.tMat2 = {};
+    p2.oMat2 = {};
+    p2.tMat2.create = function(e11,e12,e21,e22){
+        matCount++;
+        var m = new ARRAY_TYPE(4);
+        m[0] = e11||0.0;
+        m[1] = e12||0.0;
+        m[2] = e21||0.0;
+        m[3] = e22||0.0;
+        return m;
+    };
+    p2.oMat2.create = function(e11,e12,e21,e22){
+        return {e11:e11||0,
+                e12:e12||0,
+                e21:e21||0,
+                e22:e22||0};
+    };
+    p2.tMat2.vectorMultiply = function(m,v,out){
+        out[0] = m[0]*v[0] + m[1]*v[1];
+        out[1] = m[2]*v[0] + m[3]*v[1];
+    };
+    p2.oMat2.vectorMultiply = function(m,v,out){
+        out.x = m.e11*v.x + m.e12*v.y;
+        out.y = m.e21*v.x + m.e22*v.y;
+    };
+    p2.tMat2.setIdentity = function(m){
+        m[0] = 1.0;
+        m[1] = 0.0;
+        m[2] = 0.0;
+        m[3] = 1.0;
+    };
+    p2.oMat2.setIdentity = function(m){
+        m.e11 = 1.0;
+        m.e12 = 0.0;
+        m.e21 = 0.0;
+        m.e22 = 1.0;
+    };
+    p2.tMat2.setFromRotation = function(m,angle){
+        m[0] =  cos(angle);
+        m[1] = -sin(angle);
+        m[2] =  sin(angle);
+        m[3] =  cos(angle);
+    };
+    p2.oMat2.setFromRotation = function(m,angle){
+        m.e11 =  cos(angle);
+        m.e12 = -sin(angle);
+        m.e21 =  sin(angle);
+        m.e22 =  cos(angle);
+    };
+
+    var V = p2.V = p2.tVec2;
+    var M = p2.M = p2.tMat2;
 
     p2.World = function(){
         this.springs = [];
         this.bodies = [];
         this.solver = new p2.GSSolver();
         this.contacts = [];
+        this.oldContacts = [];
         this.collidingBodies = [];
-        this.gravity = new p2.Vec2();
+        this.gravity = V.create();
+        this.lastStepTime = 0.0;
     };
+
+    var dist = V.create();
+    var rot = M.create();
+    var worldNormal = V.create();
+    var yAxis = V.create(0,1);
+    function checkCircleCircle(c1,c2,result){
+        V.subtract(c1.position,c2.position,dist);
+        if(V.norm(dist) < c1.shape.radius+c2.shape.radius){
+            result.push(c1);
+            result.push(c2);
+        }
+    }
+    function checkCirclePlane(c,p,result){
+        V.subtract(c.position,p.position,dist);
+        M.setFromRotation(rot,p.angle);
+        M.vectorMultiply(rot,yAxis,worldNormal);
+        if(V.dot(dist,worldNormal) <= c.shape.radius){
+            result.push(c);
+            result.push(p);
+        }
+    }
+    function checkCircleParticle(c,p,result){
+        result.push(c);
+        result.push(p);
+    }
+
+    // Generate contacts / do nearphase
+    function nearphaseCircleCircle(c1,c2,result,oldContacts){
+        //var c = new p2.ContactEquation(c1,c2);
+        var c = oldContacts.length ? oldContacts.pop() : new p2.ContactEquation(c1,c2);
+        c.bi = c1;
+        c.bj = c2;
+        V.subtract(c2.position,c1.position,c.ni);
+        V.normalize(c.ni,c.ni);
+        V.scale(c.ni, c1.shape.radius, c.ri);
+        V.scale(c.ni,-c2.shape.radius, c.rj);
+        result.push(c);
+    }
+    function nearphaseCircleParticle(c,p,result,oldContacts){
+        // todo
+    }
+    var nearphaseCirclePlane_rot = M.create();
+    var nearphaseCirclePlane_planeToCircle = V.create();
+    var nearphaseCirclePlane_temp = V.create();
+    function nearphaseCirclePlane(c,p,result,oldContacts){
+        var rot = nearphaseCirclePlane_rot;
+        var contact = oldContacts.length ? oldContacts.pop() : new p2.ContactEquation(p,c);
+        contact.bi = p;
+        contact.bj = c;
+        var planeToCircle = nearphaseCirclePlane_planeToCircle;
+        var temp = nearphaseCirclePlane_temp;
+
+        M.setFromRotation(rot,p.angle);
+        M.vectorMultiply(rot,yAxis,contact.ni);
+
+        V.scale(contact.ni, -c.shape.radius, contact.rj);
+
+        V.subtract(c.position,p.position,planeToCircle);
+        var d = V.dot(contact.ni , planeToCircle );
+        V.scale(contact.ni,d,temp);
+        V.subtract(planeToCircle , temp , contact.ri );
+
+        result.push(contact);
+    }
+
+
+    var step_r = V.create();
+    var step_runit = V.create();
+    var step_u = V.create();
+    var step_f = V.create();
+    var step_fhMinv = V.create();
+    var step_velodt = V.create();
     p2.World.prototype.step = function(dt){
+        var t0 = performance.webkitNow();
+        vecCount = 0; // Start counting vector creations
+        matCount = 0;
         var Nsprings = this.springs.length,
             springs = this.springs,
             bodies = this.bodies,
             collidingBodies=this.collidingBodies,
             g = this.gravity,
-            gx = g.x,
-            gy = g.y,
             solver = this.solver,
             Nbodies = this.bodies.length;
 
         // Reset forces, add gravity
         for(var i=0; i!==Nbodies; i++){
-            bodies[i].force.set(gx,gy);
+            V.copy(g,bodies[i].force);
         }
 
         // Calculate all new spring forces
@@ -40,39 +261,21 @@ var p2 = {};
             var l = s.restLength;
             var bodyA = s.bodyA;
             var bodyB = s.bodyB;
+            var r = step_r;
+            var r_unit = step_runit;
+            var u = step_u;
+            var f = step_f;
 
-            var rx = bodyA.position.x - bodyB.position.x;
-            var ry = bodyA.position.y - bodyB.position.y;
-            var ux = bodyA.velocity.x - bodyB.velocity.x;
-            var uy = bodyA.velocity.y - bodyB.velocity.y;
-            var rlen = sqrt(rx*rx + ry*ry);
-            var fx = -( k*(rlen-l) + d*ux*rx/rlen ) * rx/rlen;
-            var fy = -( k*(rlen-l) + d*uy*ry/rlen ) * ry/rlen;
-
-            bodyA.force.x += fx;
-            bodyA.force.y += fy;
-            bodyB.force.x -= fx;
-            bodyB.force.y -= fy;
+            V.subtract(bodyA.position,bodyB.position,r);
+            V.subtract(bodyA.velocity,bodyB.velocity,u);
+            var rlen = V.norm(r);
+            V.normalize(r,r_unit);
+            V.scale(r_unit, k*(rlen-l) + d*V.dot(u,r_unit), f);
+            V.subtract(bodyA.force, f, bodyA.force);
+            V.add(bodyB.force, f, bodyB.force);
         }
 
         // Broadphase
-        function checkCircleCircle(c1,c2,result){
-            if(c1.position.vsub(c2.position).norm() < c1.shape.radius+c2.shape.radius){
-                result.push(c1);
-                result.push(c2);
-            }
-        }
-        function checkCirclePlane(c,p,result){
-            var worldNormal = new p2.Mat2().setFromRotation(p.angle).vmult(new p2.Vec2(0,1)); // todo: cache matrix and vecs
-            if(c.position.vsub(p.position).dot(worldNormal) <= c.shape.radius){
-                result.push(c);
-                result.push(p);
-            }
-        }
-        function checkCircleParticle(c,p,result){
-            result.push(c);
-            result.push(p);
-        }
         var result = [];
         for(var i=0, Ncolliding=collidingBodies.length; i!==Ncolliding; i++){
             var bi = collidingBodies[i];
@@ -94,26 +297,7 @@ var p2 = {};
             }
         }
 
-        // Generate contacts / do nearphase
-        function nearphaseCircleCircle(c1,c2,result){
-            var c = new p2.ContactEquation(c1,c2);
-            c2.position.vsub(c1.position,c.ni);
-            c.ni.normalize();
-            c.ni.smult(c1.shape.radius, c.ri);
-            c.ni.smult(-c2.shape.radius, c.rj);
-            result.push(c);
-        }
-        function nearphaseCircleParticle(c,p,result){
-            // todo
-        }
-        function nearphaseCirclePlane(c,p,result){
-            var contact = new p2.ContactEquation(p,c);
-            contact.ni = new p2.Mat2().setFromRotation(p.angle).vmult(new p2.Vec2(0,1));
-            contact.ni.smult(-c.shape.radius, contact.rj);
-            var planeToCircle = c.position.vsub(p.position);
-            contact.ri = planeToCircle.vsub ( contact.ni.smult( contact.ni.dot( planeToCircle ) ) );
-            result.push(contact);
-        }
+        var oldContacts = this.contacts.concat(this.oldContacts);
         var contacts = this.contacts = [];
         for(var i=0, Nresults=result.length; i!==Nresults; i+=2){
             var bi = result[i];
@@ -121,15 +305,16 @@ var p2 = {};
             var si = bi.shape;
             var sj = bj.shape;
             if(si instanceof p2.Circle){
-                     if(sj instanceof p2.Circle)   nearphaseCircleCircle  (bi,bj,contacts);
-                else if(sj instanceof p2.Particle) nearphaseCircleParticle(bi,bj,contacts);
-                else if(sj instanceof p2.Plane)    nearphaseCirclePlane   (bi,bj,contacts);
+                     if(sj instanceof p2.Circle)   nearphaseCircleCircle  (bi,bj,contacts,oldContacts);
+                else if(sj instanceof p2.Particle) nearphaseCircleParticle(bi,bj,contacts,oldContacts);
+                else if(sj instanceof p2.Plane)    nearphaseCirclePlane   (bi,bj,contacts,oldContacts);
             } else if(si instanceof p2.Particle){
-                     if(sj instanceof p2.Circle)   nearphaseCircleParticle(bj,bi,contacts);
+                     if(sj instanceof p2.Circle)   nearphaseCircleParticle(bj,bi,contacts,oldContacts);
             } else if(si instanceof p2.Plane){
-                     if(sj instanceof p2.Circle)   nearphaseCirclePlane   (bj,bi,contacts);
+                     if(sj instanceof p2.Circle)   nearphaseCirclePlane   (bj,bi,contacts,oldContacts);
             }
         }
+        this.oldContacts = oldContacts;
 
         // Solver
         for(var i=0, Ncontacts=contacts.length; i!==Ncontacts; i++){
@@ -139,6 +324,8 @@ var p2 = {};
         solver.removeAllEquations();
 
         // Step
+        var fhMinv = step_fhMinv;
+        var velodt = step_velodt;
         for(var i=0; i!==Nbodies; i++){
             var body = bodies[i];
             if(body.mass>0){
@@ -148,12 +335,17 @@ var p2 = {};
                     velo = body.velocity;
 
                 body.angularVelocity += body.angularForce * body.invInertia * dt;
-                velo.x += f.x * dt * minv;
-                velo.y += f.y * dt * minv;
-                pos.x += velo.x * dt; // Note: using new velocity to step
-                pos.y += velo.y * dt;
+                V.scale(f,dt*minv,fhMinv);
+                V.add(fhMinv,velo,velo);
+                V.scale(velo,dt,velodt);
+                V.add(pos,velodt,pos);
             }
         }
+
+        var t1 = performance.webkitNow();
+        this.lastStepTime = t1-t0;
+        this.vecCreations = vecCount;
+        this.matCreations = matCount;
     };
     p2.World.prototype.addSpring = function(s){
         this.springs.push(s);
@@ -189,16 +381,16 @@ var p2 = {};
         this.inertia = mass; // todo
         this.invInertia = this.invMass; // todo
 
-        this.position = new p2.Vec2();
-        this.velocity = new p2.Vec2();
+        this.position = V.create();
+        this.velocity = V.create();
 
-        this.vlambda = new p2.Vec2();
+        this.vlambda = V.create();
         this.wlambda = 0;
 
         this.angle = 0;
         this.angularVelocity = 0;
 
-        this.force = new p2.Vec2();
+        this.force = V.create();
         this.angularForce = 0;
     };
 
@@ -215,75 +407,6 @@ var p2 = {};
 
     p2.Plane = function(){
         p2.Shape.apply(this);
-    };
-
-    p2.Vec2 = function(x,y){
-        this.x = x||0.0;
-        this.y = y||0.0;
-    };
-    p2.Vec2.prototype.set = function(x,y){
-        this.x=x;
-        this.y=y;
-    };
-    p2.Vec2.prototype.dot = function(v){
-        return this.x*v.x + this.y*v.y;
-    };
-    p2.Vec2.prototype.vadd = function(v,target){
-        target = target || new p2.Vec2();
-        target.x = this.x + v.x;
-        target.y = this.y + v.y;
-        return target;
-    };
-    p2.Vec2.prototype.vsub = function(v,target){
-        target = target || new p2.Vec2();
-        target.x = this.x - v.x;
-        target.y = this.y - v.y;
-        return target;
-    };
-    // Vector cross product - returns magnitude of the resulting vector along the 3rd dimension
-    p2.Vec2.prototype.vcross = function(v){
-        return this.x*v.y - this.y*v.x;
-    };
-    p2.Vec2.prototype.normalize = function(){
-        var l = this.norm();
-        this.x /= l;
-        this.y /= l;
-    };
-    p2.Vec2.prototype.norm = function(){
-        return Math.sqrt(this.x * this.x + this.y * this.y);
-    };
-    p2.Vec2.prototype.smult = function(scalar,target){
-        target = target || new p2.Vec2();
-        target.x = this.x * scalar;
-        target.y = this.y * scalar;
-        return target;
-    };
-
-    p2.Mat2 = function(e11,e12,e21, e22){
-        this.e11 = e11||0.0;
-        this.e12 = e12||0.0;
-        this.e21 = e21||0.0;
-        this.e22 = e22||0.0;
-    };
-    p2.Mat2.prototype.vmult = function(v,target){
-        target = target || new p2.Vec2();
-        target.x = this.e11*v.x + this.e12*v.y;
-        target.y = this.e21*v.x + this.e22*v.y;
-        return target;
-    };
-    p2.Mat2.prototype.setIdentity = function(){
-        this.e11 = 1.0;
-        this.e12 = 0.0;
-        this.e21 = 0.0;
-        this.e22 = 1.0;
-        return this;
-    };
-    p2.Mat2.prototype.setFromRotation = function(angle){
-        this.e11 =  Math.cos(angle);
-        this.e12 = -Math.sin(angle);
-        this.e21 =  Math.sin(angle);
-        this.e22 =  Math.cos(angle);
-        return this;
     };
 
     p2.Solver = function(){
@@ -311,24 +434,19 @@ var p2 = {};
     };
     p2.Equation.prototype.constructor = p2.Equation;
 
-
     p2.ContactEquation = function(bi,bj){
         p2.Equation.call(this,bi,bj,0,1e6);
         this.penetration = 0.0;
-        this.ri = new p2.Vec2();
-        this.penetrationVec = new p2.Vec2();
-        this.rj = new p2.Vec2();
-        this.ni = new p2.Vec2();
-        this.rixn = new p2.Vec2();
-        this.rjxn = new p2.Vec2();
-        this.rixw = new p2.Vec2();
-        this.rjxw = new p2.Vec2();
-
-        this.invIi = new p2.Mat2();
-        this.invIj = new p2.Mat2();
-
-        this.relVel = new p2.Vec2();
-        this.relForce = new p2.Vec2();
+        this.ri = V.create();
+        this.penetrationVec = V.create();
+        this.rj = V.create();
+        this.ni = V.create();
+        this.rixn = V.create();
+        this.rjxn = V.create();
+        this.rixw = V.create();
+        this.rjxw = V.create();
+        this.relVel = V.create();
+        this.relForce = V.create();
     };
     p2.ContactEquation.prototype = new p2.Equation();
     p2.ContactEquation.prototype.constructor = p2.ContactEquation;
@@ -364,17 +482,21 @@ var p2 = {};
         var n = this.ni;
 
         // Caluclate cross products
-        var rixn = this.rixn = ri.vcross(n);
-        var rjxn = this.rjxn = rj.vcross(n);
+        var rixn = this.rixn = V.cross(ri,n);
+        var rjxn = this.rjxn = V.cross(rj,n);
+        
 
         // Calculate q = xj+rj -(xi+ri) i.e. the penetration vector
-        var penetrationVec = xj.vadd(rj).vsub(xi.vadd(ri));
+        V.set(penetrationVec,0,0);
+        V.add(xj,rj,penetrationVec);
+        V.subtract(penetrationVec,xi,penetrationVec);
+        V.subtract(penetrationVec,ri,penetrationVec);
 
-        var Gq = n.dot(penetrationVec);
+        var Gq = V.dot(n,penetrationVec);
 
         // Compute iteration
-        var GW = vj.dot(n) - vi.dot(n) + wj * rjxn - wi * rixn;
-        var GiMf = fj.dot(n)*invMassj - fi.dot(n)*invMassi + invIj*tauj*rjxn - invIi*taui*rixn;
+        var GW = V.dot(vj,n) - V.dot(vi,n) + wj * rjxn - wi * rixn;
+        var GiMf = V.dot(fj,n)*invMassj - V.dot(fi,n)*invMassi + invIj*tauj*rjxn - invIi*taui*rixn;
 
         var B = - Gq * a - GW * b - h*GiMf;
 
@@ -400,15 +522,15 @@ var p2 = {};
 
         return C;
     };
-    var computeGWlambda_ulambda = new p2.Vec2();
+    var computeGWlambda_ulambda = V.create();
     p2.ContactEquation.prototype.computeGWlambda = function(){
         var bi = this.bi;
         var bj = this.bj;
         var ulambda = computeGWlambda_ulambda;
 
         var GWlambda = 0.0;
-        bj.vlambda.vsub(bi.vlambda, ulambda);
-        GWlambda += ulambda.dot(this.ni);
+        V.subtract(bj.vlambda, bi.vlambda, ulambda);
+        GWlambda += V.dot(ulambda,this.ni);
 
         // Angular
         GWlambda -= bi.wlambda * this.rixn;
@@ -416,6 +538,8 @@ var p2 = {};
 
         return GWlambda;
     };
+
+    var addToWlambda_temp = V.create();
     p2.ContactEquation.prototype.addToWlambda = function(deltalambda){
         var bi = this.bi;
         var bj = this.bj;
@@ -424,10 +548,14 @@ var p2 = {};
         var invMassi = bi.invMass;
         var invMassj = bj.invMass;
         var n = this.ni;
+        var temp = addToWlambda_temp;
 
         // Add to linear velocity
-        bi.vlambda.vsub(n.smult(invMassi * deltalambda),bi.vlambda);
-        bj.vlambda.vadd(n.smult(invMassj * deltalambda),bj.vlambda);
+        V.scale(n,invMassi*deltalambda,temp);
+        V.subtract(bi.vlambda, temp , bi.vlambda);
+
+        V.scale(n,invMassj*deltalambda,temp);
+        V.add(bj.vlambda, temp, bj.vlambda);
 
         // Add to angular velocity
         bi.wlambda -= bi.invInertia * rixn * deltalambda;
@@ -446,6 +574,10 @@ var p2 = {};
         this.tolerance = 0;
         this.setSpookParams(this.k,this.d);
         this.debug = false;
+        this.arrayStep = 30;
+        this.lambda = new ARRAY_TYPE(this.arrayStep);
+        this.Bs =     new ARRAY_TYPE(this.arrayStep);
+        this.invCs =  new ARRAY_TYPE(this.arrayStep);
     };
     p2.GSSolver.prototype = new p2.Solver();
     p2.GSSolver.prototype.setSpookParams = function(k,d){
@@ -472,16 +604,21 @@ var p2 = {};
             h = dt;
 
         // Things that does not change during iteration can be computed once
-        var invCs = [];
-        var Bs = [];
+        if(this.lambda.length < Neq){
+            this.lambda = new ARRAY_TYPE(Neq + this.arrayStep);
+            this.Bs =     new ARRAY_TYPE(Neq + this.arrayStep);
+            this.invCs =  new ARRAY_TYPE(Neq + this.arrayStep);
+        }
+        var invCs = this.invCs;
+        var Bs = this.Bs;
+        var lambda = this.lambda;
 
         // Create array for lambdas
-        var lambda = [];
         for(var i=0; i!==Neq; i++){
             var c = equations[i];
-            lambda.push(0.0);
-            Bs.push(c.computeB(a,b,h));
-            invCs.push(1.0 / c.computeC(eps));
+            lambda[i] = 0.0;
+            Bs[i] = c.computeB(a,b,h);
+            invCs[i] = 1.0 / c.computeC(eps);
         }
 
         var q, B, c, invC, deltalambda, deltalambdaTot, GWlambda, lambdaj;
@@ -492,7 +629,7 @@ var p2 = {};
             // Reset vlambda
             for(i=0; i!==Nbodies; i++){
                 var b=bodies[i], vlambda=b.vlambda;
-                vlambda.set(0,0);
+                V.set(vlambda,0,0);
                 b.wlambda = 0;
             }
 
@@ -533,7 +670,7 @@ var p2 = {};
             // Add result to velocity
             for(i=0; i!==Nbodies; i++){
                 var b=bodies[i], v=b.velocity;
-                v.vadd(b.vlambda, v);
+                V.add(v, b.vlambda, v);
                 b.angularVelocity += b.wlambda;
             }
         }

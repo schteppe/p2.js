@@ -2,28 +2,35 @@
 <html>
 <head>
     <title>p2.js</title>
-    <script src="demo.js"></script>
-    <link href="demo.css" rel="stylesheet"/>
     <script src="../p2.js"></script>
+    <script src="demo.js"></script>
+    <script src="three.js"></script>
+    <link href="demo.css" rel="stylesheet"/>
 </head>
 <body>
     <script>
+
+        var demo = new WebGLDemo();
+
+        var disturb = true;
+        var solverIterations = 20;
+
         demo.createScene(function(world){
-            var particles = [];
-            var l = 20, N=10, M=15;
+
+            var l = 20, N=10, M=50;
             var timeStep = 1/60,
-                r=0.5,
+                r=0.2,
                 m=1;
-            world.gravity.set(0,-10);
-            world.solver.setSpookParams(1e20,3);
-            world.solver.iterations = 10;
+            p2.V.set(world.gravity,0,-10);
+            world.solver.setSpookParams(1e20,20);
+            world.solver.iterations = solverIterations;
 
             // Create circle bodies
             var shape = new p2.Circle(r);
             for(var i=0; i<N; i++){
                 for(var j=0; j<M; j++){
                     var p = new p2.Body(m,shape);
-                    p.position.set(i*r*2.05+Math.random()*r, j*r*2.1+2);
+                    p2.V.set(p.position,i*r*2.05+10*r+(disturb ? Math.random()*r : 0), j*r*2.1+2);
                     world.addBody(p);
                     demo.addVisual(p);
                 }
@@ -40,7 +47,7 @@
 
             var planeRight = new p2.Body(0,planeShape);
             planeRight.angle = Math.PI/2;
-            planeRight.position.x = M*r*1.5;
+            p2.V.set(planeRight.position,r*60,0);
             world.addBody(planeRight);
             
         });        
