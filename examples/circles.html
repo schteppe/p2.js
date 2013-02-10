@@ -13,17 +13,17 @@
         var demo = new WebGLDemo();
 
         var disturb = true;
-        var solverIterations = 20;
+        var solverIterations = 5;
 
         demo.createScene(function(world){
-
-            var l = 20, N=10, M=50;
+            var l = 20, N=30, M=30;
             var timeStep = 1/60,
                 r=0.2,
                 m=1;
             p2.V.set(world.gravity,0,-10);
-            world.solver.setSpookParams(1e20,20);
+            world.solver.setSpookParams(1e50,4);
             world.solver.iterations = solverIterations;
+            world.solver.tolerance = 0.001;
 
             // Create circle bodies
             var shape = new p2.Circle(r);

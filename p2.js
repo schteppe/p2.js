@@ -153,6 +153,9 @@ var p2 = {};
 
     var V = p2.V = p2.tVec2;
     var M = p2.M = p2.tMat2;
+    var Vadd = V.add;
+    var Vscale = V.scale;
+    var Vsub = V.subtract;
 
     p2.World = function(){
         this.springs = [];
@@ -170,14 +173,14 @@ var p2 = {};
     var worldNormal = V.create();
     var yAxis = V.create(0,1);
     function checkCircleCircle(c1,c2,result){
-        V.subtract(c1.position,c2.position,dist);
+        Vsub(c1.position,c2.position,dist);
         if(V.norm(dist) < c1.shape.radius+c2.shape.radius){
             result.push(c1);
             result.push(c2);
         }
     }
     function checkCirclePlane(c,p,result){
-        V.subtract(c.position,p.position,dist);
+        Vsub(c.position,p.position,dist);
         M.setFromRotation(rot,p.angle);
         M.vectorMultiply(rot,yAxis,worldNormal);
         if(V.dot(dist,worldNormal) <= c.shape.radius){
@@ -266,13 +269,13 @@ var p2 = {};
             var u = step_u;
             var f = step_f;
 
-            V.subtract(bodyA.position,bodyB.position,r);
-            V.subtract(bodyA.velocity,bodyB.velocity,u);
+            Vsub(bodyA.position,bodyB.position,r);
+            Vsub(bodyA.velocity,bodyB.velocity,u);
             var rlen = V.norm(r);
             V.normalize(r,r_unit);
-            V.scale(r_unit, k*(rlen-l) + d*V.dot(u,r_unit), f);
-            V.subtract(bodyA.force, f, bodyA.force);
-            V.add(bodyB.force, f, bodyB.force);
+            Vscale(r_unit, k*(rlen-l) + d*V.dot(u,r_unit), f);
+            Vsub(bodyA.force, f, bodyA.force);
+            Vadd(bodyB.force, f, bodyB.force);
         }
 
         // Broadphase
@@ -333,12 +336,11 @@ var p2 = {};
                     f = body.force,
                     pos = body.position,
                     velo = body.velocity;
-
                 body.angularVelocity += body.angularForce * body.invInertia * dt;
-                V.scale(f,dt*minv,fhMinv);
-                V.add(fhMinv,velo,velo);
-                V.scale(velo,dt,velodt);
-                V.add(pos,velodt,pos);
+                Vscale(f,dt*minv,fhMinv);
+                Vadd(fhMinv,velo,velo);
+                Vscale(velo,dt,velodt);
+                Vadd(pos,velodt,pos);
             }
         }
 

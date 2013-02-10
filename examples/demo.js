@@ -9,7 +9,8 @@ var requestAnimFrame = window.requestAnimationFrame       ||
                             window.setTimeout(callback, 1000 / 60);
                        };
 
-function Demo(world){
+function Demo(){
+    var world = this.world = new p2.World();
     var that = this;
     this.bodies=[];
     this.springs=[];
@@ -17,11 +18,10 @@ function Demo(world){
     this.timeStep = 1/60;
     this.addVisual = function(body){
         var buf, s=body.shape;
-        if(s instanceof p2.Circle){
-            that.bodies.push(body);
-        } else if(body instanceof p2.Spring){
+        if(body instanceof p2.Spring){
             that.springs.push(body);
-        }
+        } else 
+            that.bodies.push(body);
     };
     this.createStats = function(){
         var stepDiv = document.createElement("div");
@@ -55,13 +55,30 @@ function Demo(world){
         document.getElementById("mats").innerHTML = "Mat create: "+world.matCreations;
         document.getElementById("contacts").innerHTML = "Contacts: "+world.contacts.length;
     }
+
+    document.addEventListener('keypress',function(e){
+        if(e.keyCode){
+            switch(e.keyCode){
+                case 112: // p
+                that.paused = !that.paused;
+                break;
+
+                case 115: // s
+                if(that.paused){
+                    world.step(that.timeStep);
+                }
+                break;
+            }
+        }
+    });
 }
 
 function WebGLDemo(){
-    var world = new p2.World();
-    Demo.call(this,world);
+    Demo.apply(this);
+
     var that = this;
 
+    var world = that.world;
     var sin=Math.sin, cos=Math.cos, world;
     var camera, scene, renderer, geometry, material, meshes=[], radius;
 
@@ -71,16 +88,19 @@ function WebGLDemo(){
         animate();
     };
 
-    function createCircleGeo(radius,Nsegments){
+    function createCircleGeo(radius,Nsegments,NfillSegments){
         // Circle geo
         var circleGeometry = new THREE.Geometry(200,200,200);
-        var N = Nsegments||10;
+        var N = Nsegments||20;
         var sectorAngle = 2*Math.PI/N;
         var vCenter = new THREE.Vector3(0,0,0);
         var vTop = new THREE.Vector3(0,radius,0);
         circleGeometry.vertices.push(vCenter);
         circleGeometry.vertices.push(vTop);
-        for(var i=0; i<=N; i++){
+
+        NfillSegments = NfillSegments||N;
+
+        for(var i=0; i<=NfillSegments; i++){
 
             var v1 = new THREE.Vector3( radius*Math.cos(i*sectorAngle),
                                         radius*Math.sin(i*sectorAngle),
@@ -103,13 +123,21 @@ function WebGLDemo(){
         scene.add(camera);
 
         // Create a material and combine with geometry to create our mesh
-        var redMat = new THREE.MeshBasicMaterial({color: 0xff0000});            
+        var redMat = new THREE.MeshBasicMaterial({color: 0xff3333});
+        var blackMat = new THREE.MeshBasicMaterial({color: 0x000000});
 
         // Create meshes for all
-        var circleGeometry = createCircleGeo(that.bodies[0].shape.radius);
+        var Nseg = 30;
         for(var i=0; i<that.bodies.length; i++){
-            meshes.push(new THREE.Mesh(circleGeometry, redMat));
-            scene.add(meshes[i]);
+            var circleGeometryInner = createCircleGeo(that.bodies[i].shape.radius*0.9, Nseg, Nseg-1);
+            var circleGeometryOuter = createCircleGeo(that.bodies[i].shape.radius,     Nseg);
+            var obj = new THREE.Object3D();
+            var meshOuter = new THREE.Mesh(circleGeometryOuter, blackMat);
+            var meshInner = new THREE.Mesh(circleGeometryInner, redMat);
+            obj.add(meshOuter);
+            obj.add(meshInner);
+            meshes.push(obj);
+            scene.add(obj);
         }
 
         renderer = new THREE.WebGLRenderer();
@@ -172,11 +200,13 @@ function WebGLDemo(){
     function animate() {
         requestAnimFrame(animate);
 
-        world.step(that.timeStep);
+        if(!that.paused) world.step(that.timeStep);
         for(var i=0, Nc=meshes.length; i!==Nc; i++){
             var p = meshes[i].position;
+            var r = meshes[i].rotation;
             p.x = V.getX(that.bodies[i].position);
             p.y = V.getY(that.bodies[i].position);
+            r.z = that.bodies[i].angle;
         }
         t++;
 
@@ -329,22 +359,6 @@ function CanvasDemo(){
             requestAnimFrame(animloop);
             if(!that.paused) tick();
         })();
-
-        document.addEventListener('keypress',function(e){
-            if(e.keyCode){
-                switch(e.keyCode){
-                    case 112: // p
-                    that.paused = !that.paused;
-                    break;
-
-                    case 115: // s
-                    if(that.paused){
-                        tick();
-                    }
-                    break;
-                }
-            }
-        });
 
         var lastX=canvas.width/2, lastY=canvas.height/2;
         var dragStart,dragged;
