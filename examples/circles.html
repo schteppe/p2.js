@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>p2.js</title>
+    <script src="../p2.js"></script>
+    <script src="demo.js"></script>
+    <script src="three.js"></script>
+    <link href="demo.css" rel="stylesheet"/>
+</head>
+<body>
+    <script>
+
+        var demo = new WebGLDemo();
+
+
+        var disturb = true;
+        var solverIterations = 5;
+
+        demo.createScene(function(world){
+            var l = 20, N=20, M=10;
+            var timeStep = 1/60,
+                r=0.2,
+                m=1;
+            p2.V.set(world.gravity,0,-10);
+            world.solver.setSpookParams(1e50,4);
+            world.solver.iterations = solverIterations;
+            world.solver.tolerance = 0.001;
+
+            // Create circle bodies
+            var shape = new p2.Circle(r);
+            for(var i=0; i<N; i++){
+                for(var j=0; j<M; j++){
+                    var p = new p2.Body(m,shape);
+                    p2.V.set(p.position,i*r*2.05+10*r+(disturb ? Math.random()*r : 0), j*r*2.1+2);
+                    world.addBody(p);
+                    demo.addVisual(p);
+                }
+            }
+
+            // Create ground
+            var planeShape = new p2.Plane();
+            var plane = new p2.Body(0,planeShape);
+            world.addBody(plane);
+
+            var planeLeft = new p2.Body(0,planeShape);
+            planeLeft.angle = -Math.PI/2;
+            world.addBody(planeLeft);
+
+            var planeRight = new p2.Body(0,planeShape);
+            planeRight.angle = Math.PI/2;
+            p2.V.set(planeRight.position,r*60,0);
+            world.addBody(planeRight);
+            
+        });        
+    </script>
+</body>
+</html>
