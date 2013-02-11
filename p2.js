@@ -239,8 +239,13 @@ var p2 = {};
     var step_f = V.create();
     var step_fhMinv = V.create();
     var step_velodt = V.create();
+    function now(){
+        if(performance.now) return performance.now();
+        else if(performance.webkitNow) return performance.webkitNow();
+        else new Date().getTime();
+    }
     p2.World.prototype.step = function(dt){
-        var t0 = performance.webkitNow();
+        var t0 = now();
         vecCount = 0; // Start counting vector creations
         matCount = 0;
         var Nsprings = this.springs.length,
@@ -344,7 +349,7 @@ var p2 = {};
             }
         }
 
-        var t1 = performance.webkitNow();
+        var t1 = now();
         this.lastStepTime = t1-t0;
         this.vecCreations = vecCount;
         this.matCreations = matCount;
