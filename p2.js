@@ -83,6 +83,12 @@ var p2 = {};
     p2.oVec2.norm = function(a) {
         return sqrt((a.x * a.x) + (a.y * a.y));
     }
+    p2.tVec2.norm2 = function(a) {
+        return (a[0] * a[0]) + (a[1] * a[1]);
+    }
+    p2.oVec2.norm2 = function(a) {
+        return (a.x * a.x) + (a.y * a.y);
+    }
     p2.tVec2.dot = function(a,b){
         return a[0]*b[0] + a[1]*b[1];
     };
@@ -156,6 +162,8 @@ var p2 = {};
     var Vadd = V.add;
     var Vscale = V.scale;
     var Vsub = V.subtract;
+    var Vdot = V.dot;
+    var Vnorm2 = V.norm2;
 
     p2.World = function(){
         this.springs = [];
@@ -174,7 +182,9 @@ var p2 = {};
     var yAxis = V.create(0,1);
     function checkCircleCircle(c1,c2,result){
         Vsub(c1.position,c2.position,dist);
-        if(V.norm(dist) < c1.shape.radius+c2.shape.radius){
+        var R1 = c1.shape.radius;
+        var R2 = c2.shape.radius;
+        if(Vnorm2(dist) < (R1+R2)*(R1+R2)){
             result.push(c1);
             result.push(c2);
         }
@@ -553,11 +563,11 @@ var p2 = {};
         var temp = addToWlambda_temp;
 
         // Add to linear velocity
-        V.scale(n,invMassi*deltalambda,temp);
-        V.subtract(bi.vlambda, temp , bi.vlambda);
+        Vscale(n,invMassi*deltalambda,temp);
+        Vsub(bi.vlambda, temp , bi.vlambda);
 
-        V.scale(n,invMassj*deltalambda,temp);
-        V.add(bj.vlambda, temp, bj.vlambda);
+        Vscale(n,invMassj*deltalambda,temp);
+        Vadd(bj.vlambda, temp, bj.vlambda);
 
         // Add to angular velocity
         bi.wlambda -= bi.invInertia * rixn * deltalambda;
