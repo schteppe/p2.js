@@ -30,11 +30,16 @@
             for(var i=0; i<N; i++){
                 for(var j=0; j<M; j++){
                     var p = new p2.Body(m,shape);
-                    p2.V.set(p.position,i*r*2.05+10*r+(disturb ? Math.random()*r : 0), j*r*2.1+2);
+                    var x = i*r*2.05+10*r+(disturb ? Math.random()*r : 0);
+                    var y = j*r*2.1+2;
+                    p2.V.set(p.position, x, y);
                     world.addBody(p);
                     demo.addVisual(p);
                 }
             }
+
+            var xmin=0, xmax=r*60;
+            var ymin=0, ymax=M*r*2.1+2+r;
 
             // Create ground
             var planeShape = new p2.Plane();
@@ -47,8 +52,10 @@
 
             var planeRight = new p2.Body(0,planeShape);
             planeRight.angle = Math.PI/2;
-            p2.V.set(planeRight.position,r*60,0);
+            p2.V.set(planeRight.position,xmax,0);
             world.addBody(planeRight);
+
+            world.broadphase = new p2.GridBroadphase(xmin-2*r,xmax+r*2,ymin-r*2,ymax+r*2);
             
         });        
     </script>

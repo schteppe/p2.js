@@ -13,6 +13,7 @@ var p2 = {};
     var cos = Math.cos;
     var sin = Math.sin;
     var sqrt = Math.sqrt;
+    var floor = Math.floor;
 
     // Typed arrays!
     p2.tVec2 = {};
@@ -165,17 +166,8 @@ var p2 = {};
     var Vdot = V.dot;
     var Vnorm2 = V.norm2;
 
-    p2.World = function(){
-        this.springs = [];
-        this.bodies = [];
-        this.solver = new p2.GSSolver();
-        this.contacts = [];
-        this.oldContacts = [];
-        this.collidingBodies = [];
-        this.gravity = V.create();
-        this.lastStepTime = 0.0;
-    };
 
+    // Broadphase
     var dist = V.create();
     var rot = M.create();
     var worldNormal = V.create();
@@ -209,10 +201,10 @@ var p2 = {};
         var c = oldContacts.length ? oldContacts.pop() : new p2.ContactEquation(c1,c2);
         c.bi = c1;
         c.bj = c2;
-        V.subtract(c2.position,c1.position,c.ni);
+        Vsub(c2.position,c1.position,c.ni);
         V.normalize(c.ni,c.ni);
-        V.scale(c.ni, c1.shape.radius, c.ri);
-        V.scale(c.ni,-c2.shape.radius, c.rj);
+        Vscale(c.ni, c1.shape.radius, c.ri);
+        Vscale(c.ni,-c2.shape.radius, c.rj);
         result.push(c);
     }
     function nearphaseCircleParticle(c,p,result,oldContacts){
@@ -242,7 +234,6 @@ var p2 = {};
         result.push(contact);
     }
 
-
     var step_r = V.create();
     var step_runit = V.create();
     var step_u = V.create();
@@ -254,6 +245,128 @@ var p2 = {};
         else if(performance.webkitNow) return performance.webkitNow();
         else new Date().getTime();
     }
+
+    p2.Broadphase = function(){
+
+    };
+    p2.NaiveBroadphase = function(){
+        p2.Broadphase.apply(this);
+        this.getCollisionPairs = function(world){
+            var collidingBodies = world.collidingBodies;
+            var result = [];
+            for(var i=0, Ncolliding=collidingBodies.length; i!==Ncolliding; i++){
+                var bi = collidingBodies[i];
+                var si = bi.shape;
+                for(var j=0; j!==i; j++){
+                    var bj = collidingBodies[j];
+                    var sj = bj.shape;
+                    if(si instanceof p2.Circle){
+                             if(sj instanceof p2.Circle)   checkCircleCircle  (bi,bj,result);
+                        else if(sj instanceof p2.Particle) checkCircleParticle(bi,bj,result);
+                        else if(sj instanceof p2.Plane)    checkCirclePlane   (bi,bj,result);
+                    } else if(si instanceof p2.Particle){
+                             if(sj instanceof p2.Circle)   checkCircleParticle(bj,bi,result);
+                    } else if(si instanceof p2.Plane){
+                             if(sj instanceof p2.Circle)   checkCirclePlane   (bj,bi,result);
+                    }
+                }
+            }
+            return result;
+        };
+    };
+    p2.NaiveBroadphase.prototype = new p2.Broadphase();
+    p2.GridBroadphase = function(xmin,xmax,ymin,ymax,nx,ny){
+        p2.Broadphase.apply(this);
+
+        nx = nx || 10;
+        ny = ny || 10;
+        var binsizeX = (xmax-xmin) * nx;
+        var binsizeY = (ymax-ymin) * ny;
+
+        function getBinIndex(x,y){
+            var xi = Math.floor(nx * (x - xmin) / (xmax-xmin));
+            var yi = Math.floor(ny * (y - ymin) / (ymax-ymin));
+            return xi*ny + yi;
+        }
+
+        this.getCollisionPairs = function(world){
+            var result = [];
+            var collidingBodies = world.collidingBodies;
+            var Ncolliding = Ncolliding=collidingBodies.length;
+
+            var bins=[], Nbins=nx*ny;
+            for(var i=0; i<Nbins; i++)
+                bins.push([]);
+
+            // Put all bodies into bins
+            for(var i=0; i!==Ncolliding; i++){
+                var bi = collidingBodies[i];
+                var si = bi.shape;
+
+                if(si instanceof p2.Circle){
+                    // Put in bin
+                    // check if overlap with other bins
+                    var x = V.getX(bi.position);
+                    var y = V.getY(bi.position);
+                    var r = si.radius;
+
+                    var xi1 = floor(nx * (x-r - xmin) / (xmax-xmin));
+                    var yi1 = floor(ny * (y-r - ymin) / (ymax-ymin));
+                    var xi2 = floor(nx * (x+r - xmin) / (xmax-xmin));
+                    var yi2 = floor(ny * (y+r - ymin) / (ymax-ymin));
+
+                    for(var j=xi1; j<=xi2; j++){
+                        for(var k=yi1; k<=yi2; k++){
+                            var xi = j;
+                            var yi = k;
+                            bins[ xi*ny + yi ].push(bi);
+                        }
+                    }
+                } else if(si instanceof p2.Plane){
+                    // Put in all bins for now
+                    for(var j=0; j!==Nbins; j++) bins[j].push(bi);
+                }
+            }
+
+            // Check each bin
+            for(var i=0; i!==Nbins; i++){
+                var bin = bins[i];
+                for(var j=0, NbodiesInBin=bin.length; j!==NbodiesInBin; j++){
+                    var bi = bin[j];
+                    var si = bi.shape;
+
+                    for(var k=0; k!==j; k++){
+                        var bj = bin[k];
+                        var sj = bj.shape;
+
+                        if(si instanceof p2.Circle){
+                                 if(sj instanceof p2.Circle)   checkCircleCircle  (bi,bj,result);
+                            else if(sj instanceof p2.Particle) checkCircleParticle(bi,bj,result);
+                            else if(sj instanceof p2.Plane)    checkCirclePlane   (bi,bj,result);
+                        } else if(si instanceof p2.Particle){
+                                 if(sj instanceof p2.Circle)   checkCircleParticle(bj,bi,result);
+                        } else if(si instanceof p2.Plane){
+                                 if(sj instanceof p2.Circle)   checkCirclePlane   (bj,bi,result);
+                        }
+                    }
+                }
+            }
+            return result;
+        };
+    };
+    p2.GridBroadphase.prototype = new p2.Broadphase();
+
+    p2.World = function(broadphase){
+        this.springs = [];
+        this.bodies = [];
+        this.solver = new p2.GSSolver();
+        this.contacts = [];
+        this.oldContacts = [];
+        this.collidingBodies = [];
+        this.gravity = V.create();
+        this.lastStepTime = 0.0;
+        this.broadphase = broadphase || new p2.NaiveBroadphase();
+    };
     p2.World.prototype.step = function(dt){
         var t0 = now();
         vecCount = 0; // Start counting vector creations
@@ -264,12 +377,12 @@ var p2 = {};
             collidingBodies=this.collidingBodies,
             g = this.gravity,
             solver = this.solver,
-            Nbodies = this.bodies.length;
+            Nbodies = this.bodies.length,
+            broadphase = this.broadphase;
 
         // Reset forces, add gravity
-        for(var i=0; i!==Nbodies; i++){
+        for(var i=0; i!==Nbodies; i++)
             V.copy(g,bodies[i].force);
-        }
 
         // Calculate all new spring forces
         for(var i=0; i!==Nsprings; i++){
@@ -294,26 +407,7 @@ var p2 = {};
         }
 
         // Broadphase
-        var result = [];
-        for(var i=0, Ncolliding=collidingBodies.length; i!==Ncolliding; i++){
-            var bi = collidingBodies[i];
-            var si = bi.shape;
-
-            for(var j=0; j!==i; j++){
-                var bj = collidingBodies[j];
-                var sj = bj.shape;
-
-                if(si instanceof p2.Circle){
-                         if(sj instanceof p2.Circle)   checkCircleCircle  (bi,bj,result);
-                    else if(sj instanceof p2.Particle) checkCircleParticle(bi,bj,result);
-                    else if(sj instanceof p2.Plane)    checkCirclePlane   (bi,bj,result);
-                } else if(si instanceof p2.Particle){
-                         if(sj instanceof p2.Circle)   checkCircleParticle(bj,bi,result);
-                } else if(si instanceof p2.Plane){
-                         if(sj instanceof p2.Circle)   checkCirclePlane   (bj,bi,result);
-                }
-            }
-        }
+        var result = broadphase.getCollisionPairs(this);
 
         var oldContacts = this.contacts.concat(this.oldContacts);
         var contacts = this.contacts = [];
