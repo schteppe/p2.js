@@ -298,6 +298,9 @@ var p2 = {};
             for(var i=0; i<Nbins; i++)
                 bins.push([]);
 
+            var xmult = nx / (xmax-xmin);
+            var ymult = ny / (ymax-ymin)
+
             // Put all bodies into bins
             for(var i=0; i!==Ncolliding; i++){
                 var bi = collidingBodies[i];
@@ -310,10 +313,10 @@ var p2 = {};
                     var y = V.getY(bi.position);
                     var r = si.radius;
 
-                    var xi1 = floor(nx * (x-r - xmin) / (xmax-xmin));
-                    var yi1 = floor(ny * (y-r - ymin) / (ymax-ymin));
-                    var xi2 = floor(nx * (x+r - xmin) / (xmax-xmin));
-                    var yi2 = floor(ny * (y+r - ymin) / (ymax-ymin));
+                    var xi1 = floor(xmult * (x-r - xmin));
+                    var yi1 = floor(ymult * (y-r - ymin));
+                    var xi2 = floor(xmult * (x+r - xmin));
+                    var yi2 = floor(ymult * (y+r - ymin));
 
                     for(var j=xi1; j<=xi2; j++){
                         for(var k=yi1; k<=yi2; k++){
@@ -325,6 +328,8 @@ var p2 = {};
                 } else if(si instanceof p2.Plane){
                     // Put in all bins for now
                     for(var j=0; j!==Nbins; j++) bins[j].push(bi);
+                } else {
+                    throw new Error("Shape not supported in GridBroadphase!");
                 }
             }
 

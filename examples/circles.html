@@ -13,14 +13,14 @@
         var demo = new WebGLDemo();
 
         var disturb = true;
-        var solverIterations = 5;
+        var solverIterations = 6;
 
         demo.createScene(function(world){
             var l = 20, N=20, M=20;
             var timeStep = 1/60,
                 r=0.2,
                 m=1;
-            p2.V.set(world.gravity,0,-10);
+            p2.V.set(world.gravity,0,-15);
             world.solver.setSpookParams(1e50,4);
             world.solver.iterations = solverIterations;
             world.solver.tolerance = 0.001;
@@ -55,7 +55,7 @@
             p2.V.set(planeRight.position,xmax,0);
             world.addBody(planeRight);
 
-            world.broadphase = new p2.GridBroadphase(xmin-2*r,xmax+r*2,ymin-r*2,ymax+r*2);
+            world.broadphase = new p2.GridBroadphase(xmin-2*r,xmax+r*2,ymin-2*r,ymax+2*r);
             
         });        
     </script>
