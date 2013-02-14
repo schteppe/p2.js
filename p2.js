@@ -446,21 +446,25 @@ var p2 = {};
         // Broadphase
         var result = broadphase.getCollisionPairs(this);
 
+        // Nearphase
         var oldContacts = this.contacts.concat(this.oldContacts);
         var contacts = this.contacts = [];
+        var Circle = p2.Circle,
+            Plane = p2.Plane,
+            Particle = p2.Particle;
         for(var i=0, Nresults=result.length; i!==Nresults; i+=2){
             var bi = result[i];
             var bj = result[i+1];
             var si = bi.shape;
             var sj = bj.shape;
             if(si instanceof p2.Circle){
-                     if(sj instanceof p2.Circle)   nearphaseCircleCircle  (bi,bj,contacts,oldContacts);
-                else if(sj instanceof p2.Particle) nearphaseCircleParticle(bi,bj,contacts,oldContacts);
-                else if(sj instanceof p2.Plane)    nearphaseCirclePlane   (bi,bj,contacts,oldContacts);
-            } else if(si instanceof p2.Particle){
-                     if(sj instanceof p2.Circle)   nearphaseCircleParticle(bj,bi,contacts,oldContacts);
-            } else if(si instanceof p2.Plane){
-                     if(sj instanceof p2.Circle)   nearphaseCirclePlane   (bj,bi,contacts,oldContacts);
+                     if(sj instanceof Circle)   nearphaseCircleCircle  (bi,bj,contacts,oldContacts);
+                else if(sj instanceof Particle) nearphaseCircleParticle(bi,bj,contacts,oldContacts);
+                else if(sj instanceof Plane)    nearphaseCirclePlane   (bi,bj,contacts,oldContacts);
+            } else if(si instanceof Particle){
+                     if(sj instanceof Circle)   nearphaseCircleParticle(bj,bi,contacts,oldContacts);
+            } else if(si instanceof Plane){
+                     if(sj instanceof Circle)   nearphaseCirclePlane   (bj,bi,contacts,oldContacts);
             }
         }
         this.oldContacts = oldContacts;
