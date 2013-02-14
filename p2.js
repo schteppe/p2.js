@@ -322,11 +322,13 @@ var p2 = {};
                         for(var k=yi1; k<=yi2; k++){
                             var xi = j;
                             var yi = k;
-                            bins[ xi*ny + yi ].push(bi);
+                            if(xi*ny + yi >= 0 && xi*ny + yi < Nbins)
+                                bins[ xi*ny + yi ].push(bi);
                         }
                     }
                 } else if(si instanceof p2.Plane){
                     // Put in all bins for now
+                    // Todo: check if the distance to the plane is less than some value
                     for(var j=0; j!==Nbins; j++) bins[j].push(bi);
                 } else {
                     throw new Error("Shape not supported in GridBroadphase!");
