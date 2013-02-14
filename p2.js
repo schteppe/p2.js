@@ -281,8 +281,11 @@ var p2 = {};
 
         nx = nx || 10;
         ny = ny || 10;
-        var binsizeX = (xmax-xmin) * nx;
-        var binsizeY = (ymax-ymin) * ny;
+        var binsizeX = (xmax-xmin) / nx;
+        var binsizeY = (ymax-ymin) / ny;
+        var Plane = p2.Plane,
+            Circle = p2.Circle,
+            Particle = p2.Particle;
 
         function getBinIndex(x,y){
             var xi = Math.floor(nx * (x - xmin) / (xmax-xmin));
@@ -300,14 +303,14 @@ var p2 = {};
                 bins.push([]);
 
             var xmult = nx / (xmax-xmin);
-            var ymult = ny / (ymax-ymin)
+            var ymult = ny / (ymax-ymin);
 
             // Put all bodies into bins
             for(var i=0; i!==Ncolliding; i++){
                 var bi = collidingBodies[i];
                 var si = bi.shape;
 
-                if(si instanceof p2.Circle){
+                if(si instanceof Circle){
                     // Put in bin
                     // check if overlap with other bins
                     var x = V.getX(bi.position);
@@ -323,14 +326,34 @@ var p2 = {};
                         for(var k=yi1; k<=yi2; k++){
                             var xi = j;
                             var yi = k;
-                            if(xi*ny + yi >= 0 && xi*ny + yi < Nbins)
-                                bins[ xi*ny + yi ].push(bi);
+                            if(xi*(ny-1) + yi >= 0 && xi*(ny-1) + yi < Nbins)
+                                bins[ xi*(ny-1) + yi ].push(bi);
                         }
                     }
-                } else if(si instanceof p2.Plane){
+                } else if(si instanceof Plane){
                     // Put in all bins for now
-                    // Todo: check if the distance to the plane is less than some value
-                    for(var j=0; j!==Nbins; j++) bins[j].push(bi);
+                    if(bi.angle == 0){
+                        var y = V.getY(bi.position);
+                        for(var j=0; j!==Nbins && ymin+binsizeY*(j-1)<y; j++){
+                            for(var k=0; k<nx; k++){
+                                var xi = k;
+                                var yi = floor(ymult * (binsizeY*j - ymin));
+                                bins[ xi*(ny-1) + yi ].push(bi);
+                            }
+                        }
+                    } else if(bi.angle == Math.PI*0.5){
+                        var x = V.getX(bi.position);
+                        for(var j=0; j!==Nbins && xmin+binsizeX*(j-1)<x; j++){
+                            for(var k=0; k<ny; k++){
+                                var yi = k;
+                                var xi = floor(xmult * (binsizeX*j - xmin));
+                                bins[ xi*(ny-1) + yi ].push(bi);
+                            }
+                        }
+                    } else {
+                        for(var j=0; j!==Nbins; j++)
+                            bins[j].push(bi);
+                    }
                 } else {
                     throw new Error("Shape not supported in GridBroadphase!");
                 }
@@ -348,13 +371,13 @@ var p2 = {};
                         var sj = bj.shape;
 
                         if(si instanceof p2.Circle){
-                                 if(sj instanceof p2.Circle)   checkCircleCircle  (bi,bj,result);
-                            else if(sj instanceof p2.Particle) checkCircleParticle(bi,bj,result);
-                            else if(sj instanceof p2.Plane)    checkCirclePlane   (bi,bj,result);
-                        } else if(si instanceof p2.Particle){
-                                 if(sj instanceof p2.Circle)   checkCircleParticle(bj,bi,result);
-                        } else if(si instanceof p2.Plane){
-                                 if(sj instanceof p2.Circle)   checkCirclePlane   (bj,bi,result);
+                                 if(sj instanceof Circle)   checkCircleCircle  (bi,bj,result);
+                            else if(sj instanceof Particle) checkCircleParticle(bi,bj,result);
+                            else if(sj instanceof Plane)    checkCirclePlane   (bi,bj,result);
+                        } else if(si instanceof Particle){
+                                 if(sj instanceof Circle)   checkCircleParticle(bj,bi,result);
+                        } else if(si instanceof Plane){
+                                 if(sj instanceof Circle)   checkCirclePlane   (bj,bi,result);
                         }
                     }
                 }
