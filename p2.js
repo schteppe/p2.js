@@ -11,6 +11,7 @@ var p2 = {};
     var ARRAY_TYPE = Float32Array;
 
     var cos = Math.cos;
+    var abs = Math.abs;
     var sin = Math.sin;
     var sqrt = Math.sqrt;
     var floor = Math.floor;
@@ -164,8 +165,8 @@ var p2 = {};
     var Vscale = V.scale;
     var Vsub = V.subtract;
     var Vdot = V.dot;
+    var Vcross = V.cross;
     var Vnorm2 = V.norm2;
-
 
     // Broadphase
     var dist = V.create();
@@ -371,21 +372,26 @@ var p2 = {};
         this.oldContacts = [];
         this.collidingBodies = [];
         this.gravity = V.create();
+        this.doProfiling = true;
         this.lastStepTime = 0.0;
         this.broadphase = broadphase || new p2.NaiveBroadphase();
     };
     p2.World.prototype.step = function(dt){
-        var t0 = now();
-        vecCount = 0; // Start counting vector creations
-        matCount = 0;
-        var Nsprings = this.springs.length,
+        var doProfiling = this.doProfiling,
+            Nsprings = this.springs.length,
             springs = this.springs,
             bodies = this.bodies,
             collidingBodies=this.collidingBodies,
             g = this.gravity,
             solver = this.solver,
             Nbodies = this.bodies.length,
-            broadphase = this.broadphase;
+            broadphase = this.broadphase,
+            t0, t1;
+        if(doProfiling){
+            t0 = now();
+            vecCount = 0; // Start counting vector creations
+            matCount = 0;
+        }
 
         // Reset forces, add gravity
         for(var i=0; i!==Nbodies; i++)
@@ -460,10 +466,12 @@ var p2 = {};
             }
         }
 
-        var t1 = now();
-        this.lastStepTime = t1-t0;
-        this.vecCreations = vecCount;
-        this.matCreations = matCount;
+        if(doProfiling){
+            t1 = now();
+            this.lastStepTime = t1-t0;
+            this.vecCreations = vecCount;
+            this.matCreations = matCount;
+        }
     };
     p2.World.prototype.addSpring = function(s){
         this.springs.push(s);
@@ -569,52 +577,47 @@ var p2 = {};
     p2.ContactEquation.prototype = new p2.Equation();
     p2.ContactEquation.prototype.constructor = p2.ContactEquation;
     p2.ContactEquation.prototype.computeB = function(a,b,h){
-        var bi = this.bi;
-        var bj = this.bj;
-        var ri = this.ri;
-        var rj = this.rj;
-        var xi = bi.position;
-        var xj = bj.position;
-        var rixn = this.rixn;
-        var rjxn = this.rjxn;
+        var bi = this.bi,
+            bj = this.bj,
+            ri = this.ri,
+            rj = this.rj,
+            xi = bi.position,
+            xj = bj.position;
 
-        var vi = bi.velocity;
-        var wi = bi.angularVelocity;
-        var fi = bi.force;
-        var taui = bi.angularForce;
+        var vi = bi.velocity,
+            wi = bi.angularVelocity,
+            fi = bi.force,
+            taui = bi.angularForce;
 
-        var vj = bj.velocity;
-        var wj = bj.angularVelocity;
-        var fj = bj.force;
-        var tauj = bj.angularForce;
+        var vj = bj.velocity,
+            wj = bj.angularVelocity,
+            fj = bj.force,
+            tauj = bj.angularForce;
 
-        var relVel = this.relVel;
-        var relForce = this.relForce;
-        var penetrationVec = this.penetrationVec;
-        var invMassi = bi.invMass;
-        var invMassj = bj.invMass;
-
-        var invIi = bi.invInertia;
-        var invIj = bj.invInertia;
-
-        var n = this.ni;
+        var relVel = this.relVel,
+            relForce = this.relForce,
+            penetrationVec = this.penetrationVec,
+            invMassi = bi.invMass,
+            invMassj = bj.invMass,
+            invIi = bi.invInertia,
+            invIj = bj.invInertia,
+            n = this.ni;
 
         // Caluclate cross products
-        var rixn = this.rixn = V.cross(ri,n);
-        var rjxn = this.rjxn = V.cross(rj,n);
+        var rixn = this.rixn = Vcross(ri,n);
+        var rjxn = this.rjxn = Vcross(rj,n);
         
-
         // Calculate q = xj+rj -(xi+ri) i.e. the penetration vector
         V.set(penetrationVec,0,0);
-        V.add(xj,rj,penetrationVec);
-        V.subtract(penetrationVec,xi,penetrationVec);
-        V.subtract(penetrationVec,ri,penetrationVec);
+        Vadd(xj,rj,penetrationVec);
+        Vsub(penetrationVec,xi,penetrationVec);
+        Vsub(penetrationVec,ri,penetrationVec);
 
-        var Gq = V.dot(n,penetrationVec);
+        var Gq = Vdot(n,penetrationVec);
 
         // Compute iteration
-        var GW = V.dot(vj,n) - V.dot(vi,n) + wj * rjxn - wi * rixn;
-        var GiMf = V.dot(fj,n)*invMassj - V.dot(fi,n)*invMassi + invIj*tauj*rjxn - invIi*taui*rixn;
+        var GW = Vdot(vj,n) - Vdot(vi,n) + wj * rjxn - wi * rixn;
+        var GiMf = Vdot(fj,n)*invMassj - Vdot(fi,n)*invMassi + invIj*tauj*rjxn - invIi*taui*rixn;
 
         var B = - Gq * a - GW * b - h*GiMf;
 
@@ -742,7 +745,7 @@ var p2 = {};
         var q, B, c, invC, deltalambda, deltalambdaTot, GWlambda, lambdaj;
 
         if(Neq !== 0){
-            var i,j,abs=Math.abs;
+            var i,j, minForce, maxForce, lambdaj_plus_deltalambda;
 
             // Reset vlambda
             for(i=0; i!==Nbodies; i++){
@@ -762,6 +765,8 @@ var p2 = {};
                     c = equations[j];
 
                     // Compute iteration
+                    maxForce = c.maxForce;
+                    minForce = c.minForce;
                     B = Bs[j];
                     invC = invCs[j];
                     lambdaj = lambda[j];
@@ -769,10 +774,11 @@ var p2 = {};
                     deltalambda = invC * ( B - GWlambda - eps * lambdaj );
 
                     // Clamp if we are not within the min/max interval
-                    if(lambdaj + deltalambda < c.minForce){
-                        deltalambda = c.minForce - lambdaj;
-                    } else if(lambdaj + deltalambda > c.maxForce){
-                        deltalambda = c.maxForce - lambdaj;
+                    lambdaj_plus_deltalambda = lambdaj + deltalambda;
+                    if(lambdaj_plus_deltalambda < minForce){
+                        deltalambda = minForce - lambdaj;
+                    } else if(lambdaj_plus_deltalambda > maxForce){
+                        deltalambda = maxForce - lambdaj;
                     }
                     lambda[j] += deltalambda;
 
@@ -788,7 +794,7 @@ var p2 = {};
             // Add result to velocity
             for(i=0; i!==Nbodies; i++){
                 var b=bodies[i], v=b.velocity;
-                V.add(v, b.vlambda, v);
+                Vadd(v, b.vlambda, v);
                 b.angularVelocity += b.wlambda;
             }
         }
