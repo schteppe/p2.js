@@ -167,6 +167,7 @@ var p2 = {};
     var Vdot = V.dot;
     var Vcross = V.cross;
     var Vnorm2 = V.norm2;
+    var Vcopy = V.copy;
 
     // Broadphase
     var dist = V.create();
@@ -186,7 +187,7 @@ var p2 = {};
         Vsub(c.position,p.position,dist);
         M.setFromRotation(rot,p.angle);
         M.vectorMultiply(rot,yAxis,worldNormal);
-        if(V.dot(dist,worldNormal) <= c.shape.radius){
+        if(Vdot(dist,worldNormal) <= c.shape.radius){
             result.push(c);
             result.push(p);
         }
@@ -418,7 +419,7 @@ var p2 = {};
 
         // Reset forces, add gravity
         for(var i=0; i!==Nbodies; i++)
-            V.copy(g,bodies[i].force);
+            Vcopy(g,bodies[i].force);
 
         // Calculate all new spring forces
         for(var i=0; i!==Nsprings; i++){
