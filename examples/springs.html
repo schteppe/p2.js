@@ -8,9 +8,11 @@
 </head>
 <body>
     <script>
+
         var V = p2.V;
 
         var demo = new CanvasDemo();
+
         demo.createScene(function(world){
             var particles = [];
             var l = 10, N=20, M=20;
@@ -26,7 +28,10 @@
             for(var i=0; i<N; i++){
                 particles.push([]);
                 for(var j=0; j<M; j++){
-                    var p = new p2.Body(j==M-1 ? 0 : m, shape);
+                    var p = new p2.Body({
+                        mass: j==M-1 ? 0 : m,
+                        shape: shape
+                    });
                     V.set(p.position,i*l*1.05+1,j*l*1.05+1);
                     particles[i].push(p);
                     world.addBody(p);
@@ -38,11 +43,12 @@
                 for(var j=0; j<M-1; j++){
                     var a = particles[i][j];
                     var b = particles[i][j+1];
-                    var spring = new p2.Spring(a,b);
-                    spring.stiffness = k;
+                    var spring = new p2.Spring(a,b, {
+                        stiffness: k,
+                        restLength: l
+                    });
                     world.addSpring(spring);
                     demo.addVisual(spring);
-                    spring.restLength = l;
                 }
             }
             // Horizontal
@@ -50,11 +56,12 @@
                 for(var j=0; j<M; j++){
                     var a = particles[i][j];
                     var b = particles[i+1][j];
-                    var spring = new p2.Spring(a,b);
-                    spring.stiffness = k;
+                    var spring = new p2.Spring(a,b, {
+                        stiffness: k,
+                        restLength: l
+                    });
                     world.addSpring(spring);
                     demo.addVisual(spring);
-                    spring.restLength = l;
                 }
             }
             // Diagonal right/down
@@ -62,10 +69,11 @@
                 for(var j=0; j<M-1; j++){
                     var a = particles[i][j];
                     var b = particles[i+1][j+1];
-                    var spring = new p2.Spring(a,b);
-                    spring.stiffness = k;
+                    var spring = new p2.Spring(a,b, {
+                        stiffness: k,
+                        restLength: Math.sqrt(l*l + l*l)
+                    });
                     world.addSpring(spring);
-                    spring.restLength = Math.sqrt(l*l + l*l);
                 }
             }
             // Diagonal left/down
@@ -73,10 +81,11 @@
                 for(var j=0; j<M-1; j++){
                     var a = particles[i+1][j];
                     var b = particles[i][j+1];
-                    var spring = new p2.Spring(a,b);
-                    spring.stiffness = k;
+                    var spring = new p2.Spring(a,b, {
+                        stiffness: k,
+                        restLength: Math.sqrt(l*l + l*l)
+                    });
                     world.addSpring(spring);
-                    spring.restLength = Math.sqrt(l*l + l*l);
                 }
             }
         });
