@@ -3,9 +3,7 @@
  * 2D physics library
  * @author Stefan Hedman <schteppe@gmail.com>
  */
-
 (function(p2){
-
 
     var p2 = {};
 
@@ -18,8 +16,6 @@
     var sin = Math.sin;
     var sqrt = Math.sqrt;
     var floor = Math.floor;
-
-
 
 
     // Typed arrays!
@@ -125,7 +121,6 @@
 
 
 
-
     // Matrices
     p2.tMat2 = {};
     p2.oMat2 = {};
@@ -180,7 +175,6 @@
     var M = p2.M = p2.tMat2;
 
 
-
     p2.Shape = function(){};
 
     p2.Particle = function(){
@@ -195,7 +189,6 @@
     p2.Plane = function(){
         p2.Shape.apply(this);
     };
-
 
 
     p2.Spring = function(bodyA,bodyB){
@@ -226,7 +219,6 @@
         this.force = V.create();
         this.angularForce = 0;
     };
-
 
 
     // Broadphase
@@ -313,7 +305,6 @@
     };
 
 
-
     p2.NaiveBroadphase = function(){
         p2.Broadphase.apply(this);
         this.getCollisionPairs = function(world){
@@ -340,7 +331,6 @@
         };
     };
     p2.NaiveBroadphase.prototype = new p2.Broadphase();
-
 
 
     p2.GridBroadphase = function(xmin,xmax,ymin,ymax,nx,ny){
@@ -453,7 +443,6 @@
         };
     };
     p2.GridBroadphase.prototype = new p2.Broadphase();
-
 
 
     p2.World = function(broadphase){
@@ -588,7 +577,6 @@
     };
 
 
-
     p2.Solver = function(){
         this.equations = [];
     };
@@ -604,7 +592,6 @@
     p2.Solver.prototype.removeAllEquations = function(){
         this.equations = [];
     };
-
 
 
     p2.GSSolver = function(){
@@ -727,7 +714,6 @@
     };
 
 
-
    p2.Equation = function(bi,bj,minForce,maxForce){
       this.id = -1;
       this.minForce = typeof(minForce)=="undefined" ? -1e6 : minForce;
@@ -736,7 +722,6 @@
       this.bj = bj;
     };
     p2.Equation.prototype.constructor = p2.Equation;
-
 
 
     p2.ContactEquation = function(bi,bj){
@@ -861,7 +846,6 @@
         bi.wlambda -= bi.invInertia * rixn * deltalambda;
         bj.wlambda += bj.invInertia * rjxn * deltalambda;
     };
-
 
 	if (typeof module !== 'undefined') {
    		// export for node
