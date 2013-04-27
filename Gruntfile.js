@@ -4,7 +4,7 @@ module.exports = function(grunt) {
         pkg: grunt.file.readJSON('package.json'),
         concat: {
             options: {
-                separator: '\n\n'
+                separator: '\n'
             },
             p2: {
                 src:   [// Wrapper start

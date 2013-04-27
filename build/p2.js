@@ -3,9 +3,7 @@
  * 2D physics library
  * @author Stefan Hedman <schteppe@gmail.com>
  */
-
 (function(p2){
-
 
     var p2 = {};
 
@@ -18,8 +16,6 @@
     var sin = Math.sin;
     var sqrt = Math.sqrt;
     var floor = Math.floor;
-
-
 
 
     // Typed arrays!
@@ -125,7 +121,6 @@
 
 
 
-
     // Matrices
     p2.tMat2 = {};
     p2.oMat2 = {};
@@ -180,7 +175,6 @@
     var M = p2.M = p2.tMat2;
 
 
-
     p2.Shape = function(){};
 
     p2.Particle = function(){
@@ -197,36 +191,38 @@
     };
 
 
-
-    p2.Spring = function(bodyA,bodyB){
-        this.restLength = 1;
-        this.stiffness = 100;
-        this.damping = 1;
+    p2.Spring = function(bodyA,bodyB,options){
+        this.restLength = options.restLength || 1;
+        this.stiffness = options.stiffness || 100;
+        this.damping = options.dampening || 1;
         this.bodyA = bodyA;
         this.bodyB = bodyB;
     };
 
-    p2.Body = function(mass,shape){
-        this.shape = shape;
+    p2.Body = function(options){
+        if (options.shape === undefined || options.mass === undefined) {
+            throw new Error("Bodies must has mass and a shape.");
+        }
 
-        this.mass = mass;
-        this.invMass = mass > 0 ? 1/mass : 0;
-        this.inertia = mass; // todo
-        this.invInertia = this.invMass; // todo
+        this.shape = options.shape;
 
-        this.position = V.create();
-        this.velocity = V.create();
+        this.mass = options.mass;
+        this.invMass = this.mass > 0 ? 1 / this.mass : 0;
+        this.inertia = options.inertia || mass; // todo
+        this.invInertia = this.inertia > 0 ? 1 / this.inertia : 0; // todo
+
+        this.position = options.position || V.create();
+        this.velocity = options.velocity || V.create();
 
         this.vlambda = V.create();
         this.wlambda = 0;
 
-        this.angle = 0;
-        this.angularVelocity = 0;
+        this.angle = options.angle || 0;
+        this.angularVelocity = options.angularVelocity || 0;
 
-        this.force = V.create();
-        this.angularForce = 0;
+        this.force = options.force || V.create();
+        this.angularForce = options.angularForce || 0;
     };
-
 
 
     // Broadphase
@@ -313,7 +309,6 @@
     };
 
 
-
     p2.NaiveBroadphase = function(){
         p2.Broadphase.apply(this);
         this.getCollisionPairs = function(world){
@@ -340,7 +335,6 @@
         };
     };
     p2.NaiveBroadphase.prototype = new p2.Broadphase();
-
 
 
     p2.GridBroadphase = function(xmin,xmax,ymin,ymax,nx,ny){
@@ -455,18 +449,17 @@
     p2.GridBroadphase.prototype = new p2.Broadphase();
 
 
-
-    p2.World = function(broadphase){
+    p2.World = function(options){
         this.springs = [];
         this.bodies = [];
-        this.solver = new p2.GSSolver();
+        this.solver = options.solver || new p2.GSSolver();
         this.contacts = [];
         this.oldContacts = [];
         this.collidingBodies = [];
-        this.gravity = V.create();
+        this.gravity = options.gravity || V.create();
         this.doProfiling = true;
         this.lastStepTime = 0.0;
-        this.broadphase = broadphase || new p2.NaiveBroadphase();
+        this.broadphase = options.broadphase || new p2.NaiveBroadphase();
     };
     p2.World.prototype.step = function(dt){
         var doProfiling = this.doProfiling,
@@ -588,7 +581,6 @@
     };
 
 
-
     p2.Solver = function(){
         this.equations = [];
     };
@@ -604,7 +596,6 @@
     p2.Solver.prototype.removeAllEquations = function(){
         this.equations = [];
     };
-
 
 
     p2.GSSolver = function(){
@@ -727,7 +718,6 @@
     };
 
 
-
    p2.Equation = function(bi,bj,minForce,maxForce){
       this.id = -1;
       this.minForce = typeof(minForce)=="undefined" ? -1e6 : minForce;
@@ -736,7 +726,6 @@
       this.bj = bj;
     };
     p2.Equation.prototype.constructor = p2.Equation;
-
 
 
     p2.ContactEquation = function(bi,bj){
@@ -861,7 +850,6 @@
         bi.wlambda -= bi.invInertia * rixn * deltalambda;
         bj.wlambda += bj.invInertia * rjxn * deltalambda;
     };
-
 
 	if (typeof module !== 'undefined') {
    		// export for node

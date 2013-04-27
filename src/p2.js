@@ -10,4 +10,3 @@
     var sin = Math.sin;
     var sqrt = Math.sqrt;
     var floor = Math.floor;
-
