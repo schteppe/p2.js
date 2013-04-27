@@ -3,8 +3,9 @@
  * 2D physics library
  * @author Stefan Hedman <schteppe@gmail.com>
  */
-var p2 = {};
 (function(p2){
+
+    var p2 = {};
 
     var vecCount = 0;
     var matCount = 0;
@@ -15,6 +16,7 @@ var p2 = {};
     var sin = Math.sin;
     var sqrt = Math.sqrt;
     var floor = Math.floor;
+
 
     // Typed arrays!
     p2.tVec2 = {};
@@ -108,6 +110,17 @@ var p2 = {};
     p2.oVec2.getX = function(v){ return v.x; };
     p2.oVec2.getY = function(v){ return v.y; };
 
+    var V = p2.V = p2.tVec2;
+    var Vadd = V.add;
+    var Vscale = V.scale;
+    var Vsub = V.subtract;
+    var Vdot = V.dot;
+    var Vcross = V.cross;
+    var Vnorm2 = V.norm2;
+    var Vcopy = V.copy;
+
+
+
     // Matrices
     p2.tMat2 = {};
     p2.oMat2 = {};
@@ -159,15 +172,58 @@ var p2 = {};
         m.e22 =  cos(angle);
     };
 
-    var V = p2.V = p2.tVec2;
     var M = p2.M = p2.tMat2;
-    var Vadd = V.add;
-    var Vscale = V.scale;
-    var Vsub = V.subtract;
-    var Vdot = V.dot;
-    var Vcross = V.cross;
-    var Vnorm2 = V.norm2;
-    var Vcopy = V.copy;
+
+
+    p2.Shape = function(){};
+
+    p2.Particle = function(){
+        p2.Shape.apply(this);
+    };
+
+    p2.Circle = function(radius){
+        p2.Shape.apply(this);
+        this.radius = radius || 1;
+    };
+
+    p2.Plane = function(){
+        p2.Shape.apply(this);
+    };
+
+
+    p2.Spring = function(bodyA,bodyB,options){
+        this.restLength = options.restLength || 1;
+        this.stiffness = options.stiffness || 100;
+        this.damping = options.dampening || 1;
+        this.bodyA = bodyA;
+        this.bodyB = bodyB;
+    };
+
+    p2.Body = function(options){
+        if (options.shape === undefined || options.mass === undefined) {
+            throw new Error("Bodies must has mass and a shape.");
+        }
+
+        this.shape = options.shape;
+
+        this.mass = options.mass;
+        this.invMass = this.mass > 0 ? 1 / this.mass : 0;
+        this.inertia = options.inertia || mass; // todo
+        this.invInertia = this.inertia > 0 ? 1 / this.inertia : 0; // todo
+
+        this.position = options.position || V.create();
+        this.velocity = options.velocity || V.create();
+
+        this.vlambda = V.create();
+        this.wlambda = 0;
+
+        this.angle = options.angle || 0;
+        this.angularVelocity = options.angularVelocity || 0;
+
+        this.force = options.force || V.create();
+        this.angularForce = options.angularForce || 0;
+    };
+
 
     // Broadphase
     var dist = V.create();
@@ -251,6 +307,8 @@ var p2 = {};
     p2.Broadphase = function(){
 
     };
+
+
     p2.NaiveBroadphase = function(){
         p2.Broadphase.apply(this);
         this.getCollisionPairs = function(world){
@@ -277,6 +335,8 @@ var p2 = {};
         };
     };
     p2.NaiveBroadphase.prototype = new p2.Broadphase();
+
+
     p2.GridBroadphase = function(xmin,xmax,ymin,ymax,nx,ny){
         p2.Broadphase.apply(this);
 
@@ -388,17 +448,18 @@ var p2 = {};
     };
     p2.GridBroadphase.prototype = new p2.Broadphase();
 
-    p2.World = function(broadphase){
+
+    p2.World = function(options){
         this.springs = [];
         this.bodies = [];
-        this.solver = new p2.GSSolver();
+        this.solver = options.solver || new p2.GSSolver();
         this.contacts = [];
         this.oldContacts = [];
         this.collidingBodies = [];
-        this.gravity = V.create();
+        this.gravity = options.gravity || V.create();
         this.doProfiling = true;
         this.lastStepTime = 0.0;
-        this.broadphase = broadphase || new p2.NaiveBroadphase();
+        this.broadphase = options.broadphase || new p2.NaiveBroadphase();
     };
     p2.World.prototype.step = function(dt){
         var doProfiling = this.doProfiling,
@@ -519,49 +580,6 @@ var p2 = {};
             this.bodies.splice(idx,1);
     };
 
-    p2.Spring = function(bodyA,bodyB){
-        this.restLength = 1;
-        this.stiffness = 100;
-        this.damping = 1;
-        this.bodyA = bodyA;
-        this.bodyB = bodyB;
-    };
-
-    p2.Body = function(mass,shape){
-        this.shape = shape;
-
-        this.mass = mass;
-        this.invMass = mass > 0 ? 1/mass : 0;
-        this.inertia = mass; // todo
-        this.invInertia = this.invMass; // todo
-
-        this.position = V.create();
-        this.velocity = V.create();
-
-        this.vlambda = V.create();
-        this.wlambda = 0;
-
-        this.angle = 0;
-        this.angularVelocity = 0;
-
-        this.force = V.create();
-        this.angularForce = 0;
-    };
-
-    p2.Shape = function(){};
-
-    p2.Particle = function(){
-        p2.Shape.apply(this);
-    };
-
-    p2.Circle = function(radius){
-        p2.Shape.apply(this);
-        this.radius = radius || 1;
-    };
-
-    p2.Plane = function(){
-        p2.Shape.apply(this);
-    };
 
     p2.Solver = function(){
         this.equations = [];
@@ -579,137 +597,6 @@ var p2 = {};
         this.equations = [];
     };
 
-    p2.Equation = function(bi,bj,minForce,maxForce){
-      this.id = -1;
-      this.minForce = typeof(minForce)=="undefined" ? -1e6 : minForce;
-      this.maxForce = typeof(maxForce)=="undefined" ? 1e6 : maxForce;
-      this.bi = bi;
-      this.bj = bj;
-    };
-    p2.Equation.prototype.constructor = p2.Equation;
-
-    p2.ContactEquation = function(bi,bj){
-        p2.Equation.call(this,bi,bj,0,1e6);
-        this.penetration = 0.0;
-        this.ri = V.create();
-        this.penetrationVec = V.create();
-        this.rj = V.create();
-        this.ni = V.create();
-        this.rixn = V.create();
-        this.rjxn = V.create();
-        this.rixw = V.create();
-        this.rjxw = V.create();
-        this.relVel = V.create();
-        this.relForce = V.create();
-    };
-    p2.ContactEquation.prototype = new p2.Equation();
-    p2.ContactEquation.prototype.constructor = p2.ContactEquation;
-    p2.ContactEquation.prototype.computeB = function(a,b,h){
-        var bi = this.bi,
-            bj = this.bj,
-            ri = this.ri,
-            rj = this.rj,
-            xi = bi.position,
-            xj = bj.position;
-
-        var vi = bi.velocity,
-            wi = bi.angularVelocity,
-            fi = bi.force,
-            taui = bi.angularForce;
-
-        var vj = bj.velocity,
-            wj = bj.angularVelocity,
-            fj = bj.force,
-            tauj = bj.angularForce;
-
-        var relVel = this.relVel,
-            relForce = this.relForce,
-            penetrationVec = this.penetrationVec,
-            invMassi = bi.invMass,
-            invMassj = bj.invMass,
-            invIi = bi.invInertia,
-            invIj = bj.invInertia,
-            n = this.ni;
-
-        // Caluclate cross products
-        var rixn = this.rixn = Vcross(ri,n);
-        var rjxn = this.rjxn = Vcross(rj,n);
-        
-        // Calculate q = xj+rj -(xi+ri) i.e. the penetration vector
-        V.set(penetrationVec,0,0);
-        Vadd(xj,rj,penetrationVec);
-        Vsub(penetrationVec,xi,penetrationVec);
-        Vsub(penetrationVec,ri,penetrationVec);
-
-        var Gq = Vdot(n,penetrationVec);
-
-        // Compute iteration
-        var GW = Vdot(vj,n) - Vdot(vi,n) + wj * rjxn - wi * rixn;
-        var GiMf = Vdot(fj,n)*invMassj - Vdot(fi,n)*invMassi + invIj*tauj*rjxn - invIi*taui*rixn;
-
-        var B = - Gq * a - GW * b - h*GiMf;
-
-        return B;
-    };
-    // Compute C = GMG+eps in the SPOOK equation
-    p2.ContactEquation.prototype.computeC = function(eps){
-        var bi = this.bi;
-        var bj = this.bj;
-        var rixn = this.rixn;
-        var rjxn = this.rjxn;
-        var invMassi = bi.invMass;
-        var invMassj = bj.invMass;
-
-        var C = invMassi + invMassj + eps;
-
-        var invIi = bi.invInertia;
-        var invIj = bj.invInertia;
-
-        // Compute rxn * I * rxn for each body
-        C += invIi * rixn * rixn;
-        C += invIj * rjxn * rjxn;
-
-        return C;
-    };
-    var computeGWlambda_ulambda = V.create();
-    p2.ContactEquation.prototype.computeGWlambda = function(){
-        var bi = this.bi;
-        var bj = this.bj;
-        var ulambda = computeGWlambda_ulambda;
-
-        var GWlambda = 0.0;
-        V.subtract(bj.vlambda, bi.vlambda, ulambda);
-        GWlambda += V.dot(ulambda,this.ni);
-
-        // Angular
-        GWlambda -= bi.wlambda * this.rixn;
-        GWlambda += bj.wlambda * this.rjxn;
-
-        return GWlambda;
-    };
-
-    var addToWlambda_temp = V.create();
-    p2.ContactEquation.prototype.addToWlambda = function(deltalambda){
-        var bi = this.bi;
-        var bj = this.bj;
-        var rixn = this.rixn;
-        var rjxn = this.rjxn;
-        var invMassi = bi.invMass;
-        var invMassj = bj.invMass;
-        var n = this.ni;
-        var temp = addToWlambda_temp;
-
-        // Add to linear velocity
-        Vscale(n,invMassi*deltalambda,temp);
-        Vsub(bi.vlambda, temp , bi.vlambda);
-
-        Vscale(n,invMassj*deltalambda,temp);
-        Vadd(bj.vlambda, temp, bj.vlambda);
-
-        // Add to angular velocity
-        bi.wlambda -= bi.invInertia * rixn * deltalambda;
-        bj.wlambda += bj.invInertia * rjxn * deltalambda;
-    };
 
     p2.GSSolver = function(){
         p2.Solver.call(this);
@@ -827,7 +714,149 @@ var p2 = {};
             }
         }
         errorTot = deltalambdaTot;
-        return iter; 
+        return iter;
     };
 
-})(p2);
+
+   p2.Equation = function(bi,bj,minForce,maxForce){
+      this.id = -1;
+      this.minForce = typeof(minForce)=="undefined" ? -1e6 : minForce;
+      this.maxForce = typeof(maxForce)=="undefined" ? 1e6 : maxForce;
+      this.bi = bi;
+      this.bj = bj;
+    };
+    p2.Equation.prototype.constructor = p2.Equation;
+
+
+    p2.ContactEquation = function(bi,bj){
+        p2.Equation.call(this,bi,bj,0,1e6);
+        this.penetration = 0.0;
+        this.ri = V.create();
+        this.penetrationVec = V.create();
+        this.rj = V.create();
+        this.ni = V.create();
+        this.rixn = V.create();
+        this.rjxn = V.create();
+        this.rixw = V.create();
+        this.rjxw = V.create();
+        this.relVel = V.create();
+        this.relForce = V.create();
+    };
+    p2.ContactEquation.prototype = new p2.Equation();
+    p2.ContactEquation.prototype.constructor = p2.ContactEquation;
+    p2.ContactEquation.prototype.computeB = function(a,b,h){
+        var bi = this.bi,
+            bj = this.bj,
+            ri = this.ri,
+            rj = this.rj,
+            xi = bi.position,
+            xj = bj.position;
+
+        var vi = bi.velocity,
+            wi = bi.angularVelocity,
+            fi = bi.force,
+            taui = bi.angularForce;
+
+        var vj = bj.velocity,
+            wj = bj.angularVelocity,
+            fj = bj.force,
+            tauj = bj.angularForce;
+
+        var relVel = this.relVel,
+            relForce = this.relForce,
+            penetrationVec = this.penetrationVec,
+            invMassi = bi.invMass,
+            invMassj = bj.invMass,
+            invIi = bi.invInertia,
+            invIj = bj.invInertia,
+            n = this.ni;
+
+        // Caluclate cross products
+        var rixn = this.rixn = Vcross(ri,n);
+        var rjxn = this.rjxn = Vcross(rj,n);
+
+        // Calculate q = xj+rj -(xi+ri) i.e. the penetration vector
+        V.set(penetrationVec,0,0);
+        Vadd(xj,rj,penetrationVec);
+        Vsub(penetrationVec,xi,penetrationVec);
+        Vsub(penetrationVec,ri,penetrationVec);
+
+        var Gq = Vdot(n,penetrationVec);
+
+        // Compute iteration
+        var GW = Vdot(vj,n) - Vdot(vi,n) + wj * rjxn - wi * rixn;
+        var GiMf = Vdot(fj,n)*invMassj - Vdot(fi,n)*invMassi + invIj*tauj*rjxn - invIi*taui*rixn;
+
+        var B = - Gq * a - GW * b - h*GiMf;
+
+        return B;
+    };
+    // Compute C = GMG+eps in the SPOOK equation
+    p2.ContactEquation.prototype.computeC = function(eps){
+        var bi = this.bi;
+        var bj = this.bj;
+        var rixn = this.rixn;
+        var rjxn = this.rjxn;
+        var invMassi = bi.invMass;
+        var invMassj = bj.invMass;
+
+        var C = invMassi + invMassj + eps;
+
+        var invIi = bi.invInertia;
+        var invIj = bj.invInertia;
+
+        // Compute rxn * I * rxn for each body
+        C += invIi * rixn * rixn;
+        C += invIj * rjxn * rjxn;
+
+        return C;
+    };
+    var computeGWlambda_ulambda = V.create();
+    p2.ContactEquation.prototype.computeGWlambda = function(){
+        var bi = this.bi;
+        var bj = this.bj;
+        var ulambda = computeGWlambda_ulambda;
+
+        var GWlambda = 0.0;
+        V.subtract(bj.vlambda, bi.vlambda, ulambda);
+        GWlambda += V.dot(ulambda,this.ni);
+
+        // Angular
+        GWlambda -= bi.wlambda * this.rixn;
+        GWlambda += bj.wlambda * this.rjxn;
+
+        return GWlambda;
+    };
+
+    var addToWlambda_temp = V.create();
+    p2.ContactEquation.prototype.addToWlambda = function(deltalambda){
+        var bi = this.bi;
+        var bj = this.bj;
+        var rixn = this.rixn;
+        var rjxn = this.rjxn;
+        var invMassi = bi.invMass;
+        var invMassj = bj.invMass;
+        var n = this.ni;
+        var temp = addToWlambda_temp;
+
+        // Add to linear velocity
+        Vscale(n,invMassi*deltalambda,temp);
+        Vsub(bi.vlambda, temp , bi.vlambda);
+
+        Vscale(n,invMassj*deltalambda,temp);
+        Vadd(bj.vlambda, temp, bj.vlambda);
+
+        // Add to angular velocity
+        bi.wlambda -= bi.invInertia * rixn * deltalambda;
+        bj.wlambda += bj.invInertia * rjxn * deltalambda;
+    };
+
+	if (typeof module !== 'undefined') {
+   		// export for node
+    	module.exports = p2;
+	} else {
+    	// assign to window
+    	this.p2 = p2;
+	}
+
+}).apply(this);
