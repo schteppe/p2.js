@@ -10,6 +10,8 @@
 <body>
     <script>
 
+        var V = p2.V;
+
         var demo = new WebGLDemo();
 
         var disturb = true;
@@ -18,9 +20,8 @@
         demo.createScene(function(world){
             var l = 20, N=20, M=20;
             var timeStep = 1/60,
-                r=0.2,
-                m=1;
-            p2.V.set(world.gravity,0,-15);
+                r=0.2;
+            V.set(world.gravity,0,-15);
             world.solver.setSpookParams(1e50,6);
             world.solver.iterations = solverIterations;
             world.solver.tolerance = 0.001;
@@ -29,10 +30,13 @@
             var shape = new p2.Circle(r);
             for(var i=0; i<N; i++){
                 for(var j=0; j<M; j++){
-                    var p = new p2.Body(m,shape);
                     var x = i*r*2.05+10*r+(disturb ? Math.random()*r : 0);
                     var y = j*r*2.1+2;
-                    p2.V.set(p.position, x, y);
+                    var p = new p2.Body({
+                        mass: 1,
+                        shape: shape,
+                        position: V.create(x, y)
+                    });
                     world.addBody(p);
                     demo.addVisual(p);
                 }
@@ -43,16 +47,22 @@
 
             // Create ground
             var planeShape = new p2.Plane();
-            var plane = new p2.Body(0,planeShape);
+            var plane = new p2.Body({
+                shape: planeShape
+            });
             world.addBody(plane);
 
-            var planeLeft = new p2.Body(0,planeShape);
-            planeLeft.angle = -Math.PI/2;
+            var planeLeft = new p2.Body({
+                shape: planeShape,
+                angle: -Math.PI/2
+            });
             world.addBody(planeLeft);
 
-            var planeRight = new p2.Body(0,planeShape);
-            planeRight.angle = Math.PI/2;
-            p2.V.set(planeRight.position,xmax,0);
+            var planeRight = new p2.Body({
+                shape: planeShape,
+                angle: Math.PI/2,
+                position: V.create(xmax, 0)
+            });
             world.addBody(planeRight);
 
             world.broadphase = new p2.GridBroadphase(xmin-2*r,xmax+r*2,ymin-2*r,ymax+2*r);

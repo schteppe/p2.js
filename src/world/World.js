@@ -1,15 +1,16 @@
 
-    p2.World = function(broadphase){
+    p2.World = function(options){
+        options = options || {};
         this.springs = [];
         this.bodies = [];
-        this.solver = new p2.GSSolver();
+        this.solver = options.solver || new p2.GSSolver();
         this.contacts = [];
         this.oldContacts = [];
         this.collidingBodies = [];
-        this.gravity = V.create();
+        this.gravity = options.gravity || V.create();
         this.doProfiling = true;
         this.lastStepTime = 0.0;
-        this.broadphase = broadphase || new p2.NaiveBroadphase();
+        this.broadphase = options.broadphase || new p2.NaiveBroadphase();
     };
     p2.World.prototype.step = function(dt){
         var doProfiling = this.doProfiling,
