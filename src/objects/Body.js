@@ -10,9 +10,6 @@
 
     p2.Body = function(options){
         options = options || {};
-        if (options.shape === undefined) {
-            throw new Error("Bodies must have a shape!"); // ... for now.
-        }
 
         this.shape = options.shape;
 
