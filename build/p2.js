@@ -191,33 +191,39 @@
     };
 
 
-    p2.Spring = function(bodyA,bodyB){
-        this.restLength = 1;
-        this.stiffness = 100;
-        this.damping = 1;
+    p2.Spring = function(bodyA,bodyB,options){
+        options = options || {};
+        this.restLength = options.restLength || 1;
+        this.stiffness = options.stiffness || 100;
+        this.damping = options.damping || 1;
         this.bodyA = bodyA;
         this.bodyB = bodyB;
     };
 
-    p2.Body = function(mass,shape){
-        this.shape = shape;
+    p2.Body = function(options){
+        options = options || {};
+        if (options.shape === undefined) {
+            throw new Error("Bodies must have a shape!"); // ... for now.
+        }
 
-        this.mass = mass;
-        this.invMass = mass > 0 ? 1/mass : 0;
-        this.inertia = mass; // todo
+        this.shape = options.shape;
+
+        this.mass = options.mass || 0;
+        this.invMass = this.mass > 0 ? 1 / this.mass : 0;
+        this.inertia = options.inertia || this.mass; // todo
         this.invInertia = this.invMass; // todo
 
-        this.position = V.create();
-        this.velocity = V.create();
+        this.position = options.position || V.create();
+        this.velocity = options.velocity || V.create();
 
         this.vlambda = V.create();
         this.wlambda = 0;
 
-        this.angle = 0;
-        this.angularVelocity = 0;
+        this.angle = options.angle || 0;
+        this.angularVelocity = options.angularVelocity || 0;
 
-        this.force = V.create();
-        this.angularForce = 0;
+        this.force = options.force || V.create();
+        this.angularForce = options.angularForce || 0;
     };
 
 
@@ -445,17 +451,18 @@
     p2.GridBroadphase.prototype = new p2.Broadphase();
 
 
-    p2.World = function(broadphase){
+    p2.World = function(options){
+        options = options || {};
         this.springs = [];
         this.bodies = [];
-        this.solver = new p2.GSSolver();
+        this.solver = options.solver || new p2.GSSolver();
         this.contacts = [];
         this.oldContacts = [];
         this.collidingBodies = [];
-        this.gravity = V.create();
+        this.gravity = options.gravity || V.create();
         this.doProfiling = true;
         this.lastStepTime = 0.0;
-        this.broadphase = broadphase || new p2.NaiveBroadphase();
+        this.broadphase = options.broadphase || new p2.NaiveBroadphase();
     };
     p2.World.prototype.step = function(dt){
         var doProfiling = this.doProfiling,
