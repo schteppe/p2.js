@@ -32,8 +32,9 @@
             for(var i=0; i!==Ncolliding; i++){
                 var bi = collidingBodies[i];
                 var si = bi.shape;
-
-                if(si instanceof Circle){
+                if (si === undefined) {
+                    continue;
+                } else if(si instanceof Circle){
                     // Put in bin
                     // check if overlap with other bins
                     var x = V.getX(bi.position);

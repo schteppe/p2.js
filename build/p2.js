@@ -202,9 +202,6 @@
 
     p2.Body = function(options){
         options = options || {};
-        if (options.shape === undefined) {
-            throw new Error("Bodies must have a shape!"); // ... for now.
-        }
 
         this.shape = options.shape;
 
@@ -319,10 +316,13 @@
             for(var i=0, Ncolliding=collidingBodies.length; i!==Ncolliding; i++){
                 var bi = collidingBodies[i];
                 var si = bi.shape;
+                if (si === undefined) continue;
                 for(var j=0; j!==i; j++){
                     var bj = collidingBodies[j];
                     var sj = bj.shape;
-                    if(si instanceof p2.Circle){
+                    if (sj === undefined) {
+                        continue;
+                    } else if(si instanceof p2.Circle){
                              if(sj instanceof p2.Circle)   checkCircleCircle  (bi,bj,result);
                         else if(sj instanceof p2.Particle) checkCircleParticle(bi,bj,result);
                         else if(sj instanceof p2.Plane)    checkCirclePlane   (bi,bj,result);
@@ -372,8 +372,9 @@
             for(var i=0; i!==Ncolliding; i++){
                 var bi = collidingBodies[i];
                 var si = bi.shape;
-
-                if(si instanceof Circle){
+                if (si === undefined) {
+                    continue;
+                } else if(si instanceof Circle){
                     // Put in bin
                     // check if overlap with other bins
                     var x = V.getX(bi.position);
