@@ -7,10 +7,13 @@
             for(var i=0, Ncolliding=collidingBodies.length; i!==Ncolliding; i++){
                 var bi = collidingBodies[i];
                 var si = bi.shape;
+                if (si === undefined) continue;
                 for(var j=0; j!==i; j++){
                     var bj = collidingBodies[j];
                     var sj = bj.shape;
-                    if(si instanceof p2.Circle){
+                    if (sj === undefined) {
+                        continue;
+                    } else if(si instanceof p2.Circle){
                              if(sj instanceof p2.Circle)   checkCircleCircle  (bi,bj,result);
                         else if(sj instanceof p2.Particle) checkCircleParticle(bi,bj,result);
                         else if(sj instanceof p2.Plane)    checkCirclePlane   (bi,bj,result);
