@@ -8,7 +8,7 @@
         this.oldContacts = [];
         this.collidingBodies = [];
         this.gravity = options.gravity || V.create();
-        this.doProfiling = true;
+        this.doProfiling = options.doProfiling || false;
         this.lastStepTime = 0.0;
         this.broadphase = options.broadphase || new p2.NaiveBroadphase();
     };
