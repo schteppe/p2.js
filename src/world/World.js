@@ -11,15 +11,64 @@
      */
     p2.World = function(options){
         options = options || {};
+
+        /**
+         * All springs in the world.
+         * @member {Array}
+         * @memberof p2.World
+         */
         this.springs = [];
+
+        /**
+         * All bodies in the world.
+         * @member {Array}
+         * @memberof p2.World
+         */
         this.bodies = [];
+
+        /**
+         * The solver used to satisfy constraints and contacts.
+         * @member {p2.Solver}
+         * @memberof p2.World
+         */
         this.solver = options.solver || new p2.GSSolver();
+
+        /**
+         * The contacts in the world that were generated during the last step().
+         * @member {Array}
+         * @memberof p2.World
+         */
         this.contacts = [];
+
         this.oldContacts = [];
         this.collidingBodies = [];
+
+        /**
+         * Gravity in the world. This is applied on all bodies in the beginning of each step().
+         * @member {vec2}
+         * @memberof p2.World
+         */
         this.gravity = options.gravity || V.create(0, -9.78);
+
+        /**
+         * Whether to do timing measurements during the step() or not.
+         * @member {bool}
+         * @memberof p2.World
+         */
         this.doProfiling = true;
+
+        /**
+         * How many millisecconds the last step() took. This is updated each step if .doProfiling is set to true.
+         * @member {number}
+         * @memberof p2.World
+         */
         this.lastStepTime = 0.0;
+
+        /**
+         * The broadphase algorithm to use.
+         * @member {p2.Broadphase}
+         * @memberof p2.World
+         */
         this.broadphase = options.broadphase || new p2.NaiveBroadphase();
     };
     
