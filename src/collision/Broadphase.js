@@ -1,4 +1,3 @@
-
     // Broadphase
     var dist = V.create();
     var rot = M.create();
@@ -78,6 +77,10 @@
         else new Date().getTime();
     }
 
+    /**
+     * Base class for broadphase implementations.
+     * @class
+     */
     p2.Broadphase = function(){
 
     };
