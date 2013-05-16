@@ -1,4 +1,14 @@
-
+    /**
+     * Broadphase that uses axis-aligned bins.
+     * @class
+     * @extends p2.Broadphase
+     * @param {number} xmin Lower x bound of the grid
+     * @param {number} xmax Upper x bound
+     * @param {number} ymin Lower y bound
+     * @param {number} ymax Upper y bound
+     * @param {number} nx Number of bins along x axis
+     * @param {number} ny Number of bins along y axis
+     */
     p2.GridBroadphase = function(xmin,xmax,ymin,ymax,nx,ny){
         p2.Broadphase.apply(this);
 
