@@ -20,11 +20,16 @@
      */
     p2.Circle = function(radius){
         p2.Shape.apply(this);
+        /**
+         * The radius of the circle.
+         * @member {number}
+         * @memberof p2.Circle
+         */
         this.radius = radius || 1;
     };
 
     /**
-     * Plane shape class.
+     * Plane shape class. The plane is facing in the Y direction.
      * @class
      * @extends p2.Shape
      */
