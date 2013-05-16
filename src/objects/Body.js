@@ -13,10 +13,40 @@
      */
     p2.Spring = function(bodyA,bodyB,options){
         options = options || {};
+
+        /**
+         * Rest length of the spring.
+         * @member {number}
+         * @memberof p2.Spring
+         */
         this.restLength = options.restLength || 1;
+
+        /**
+         * Stiffness of the spring.
+         * @member {number}
+         * @memberof p2.Spring
+         */
         this.stiffness = options.stiffness || 100;
+
+        /**
+         * Damping of the spring.
+         * @member {number}
+         * @memberof p2.Spring
+         */
         this.damping = options.damping || 1;
+
+        /**
+         * First connected body.
+         * @member {p2.Body}
+         * @memberof p2.Spring
+         */
         this.bodyA = bodyA;
+
+        /**
+         * Second connected body.
+         * @member {p2.Body}
+         * @memberof p2.Spring
+         */
         this.bodyB = bodyB;
     };
     
