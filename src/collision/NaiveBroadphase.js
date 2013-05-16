@@ -1,4 +1,9 @@
-
+    /**
+     * Naive broadphase implementation. Does N^2 tests.
+     * 
+     * @class
+     * @extends p2.Broadphase
+     */
     p2.NaiveBroadphase = function(){
         p2.Broadphase.apply(this);
         this.getCollisionPairs = function(world){
