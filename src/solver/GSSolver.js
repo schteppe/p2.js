@@ -1,4 +1,8 @@
-
+    /**
+     * Iterative Gauss-Seidel constraint equation solver.
+     * @class
+     * @extends p2.Solver
+     */
     p2.GSSolver = function(){
         p2.Solver.call(this);
         this.iterations = 10;
