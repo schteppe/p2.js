@@ -84,3 +84,14 @@
     p2.Broadphase = function(){
 
     };
+
+    /**
+     * Get all potential intersecting body pairs.
+     * @method
+     * @memberof p2.Broadphase
+     * @param  {p2.World} world The world to search in.
+     * @return {Array} An array of the bodies, ordered in pairs. Example: A result of [a,b,c,d] means that the potential pairs are: (a,b), (c,d).
+     */
+    p2.Broadphase.prototype.getCollisionPairs = function(world){
+        throw new Error("getCollisionPairs must be implemented in a subclass!");
+    };
