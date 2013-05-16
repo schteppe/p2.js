@@ -1,4 +1,10 @@
-
+    /**
+     * Non-penetration constraint equation.
+     * @class
+     * @extends p2.Equation
+     * @param {p2.Body} bi
+     * @param {p2.Body} bj
+     */
     p2.ContactEquation = function(bi,bj){
         p2.Equation.call(this,bi,bj,0,1e6);
         this.penetration = 0.0;
