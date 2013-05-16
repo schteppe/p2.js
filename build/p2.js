@@ -190,39 +190,138 @@
         p2.Shape.apply(this);
     };
 
-
+    /**
+     * A spring, connecting two bodies.
+     * 
+     * Options
+     * - restLength: A number > 0. Default is 1.
+     * - stiffness: A number >= 0 . Default is 100.
+     * - damping: A number >= 0.
+     * 
+     * @class
+     * @param {p2.Body} bodyA
+     * @param {p2.Body} bodyB
+     * @param {Object} options
+     */
     p2.Spring = function(bodyA,bodyB,options){
         options = options || {};
+
+        /**
+         * Rest length of the spring.
+         * @member {number}
+         * @memberof p2.Spring
+         */
         this.restLength = options.restLength || 1;
+
+        /**
+         * Stiffness of the spring.
+         * @member {number}
+         * @memberof p2.Spring
+         */
         this.stiffness = options.stiffness || 100;
+
+        /**
+         * Damping of the spring.
+         * @member {number}
+         * @memberof p2.Spring
+         */
         this.damping = options.damping || 1;
+
+        /**
+         * First connected body.
+         * @member {p2.Body}
+         * @memberof p2.Spring
+         */
         this.bodyA = bodyA;
+
+        /**
+         * Second connected body.
+         * @member {p2.Body}
+         * @memberof p2.Spring
+         */
         this.bodyB = bodyB;
     };
-
+    
+    /**
+     * A physics body.
+     * 
+     * Options:
+     * - mass: A number >= 0. If zero, the body becomes static. Default is 0.
+     * - position (vec2)
+     * - velocity (vec2)
+     * - angle (vec2)
+     * - angularVelocity (vec2)
+     * - force (vec2)
+     * - angularForce (vec2)
+     * 
+     * @class
+     * @param {Object} options
+     */
     p2.Body = function(options){
         options = options || {};
-
+    
+        /**
+         * The shape belonging to the body.
+         * @member {p2.Shape}
+         * @memberof p2.Body
+         */
         this.shape = options.shape;
-
+    
+        /**
+         * The mass of the body.
+         * @member {number}
+         * @memberof p2.Body
+         */
         this.mass = options.mass || 0;
         this.invMass = this.mass > 0 ? 1 / this.mass : 0;
         this.inertia = options.inertia || this.mass; // todo
         this.invInertia = this.invMass; // todo
-
+    
+        /**
+         * The position of the body
+         * @member {vec2}
+         * @memberof p2.Body
+         */
         this.position = options.position || V.create();
+        
+        /**
+         * The velocity of the body
+         * @member {vec2}
+         * @memberof p2.Body
+         */
         this.velocity = options.velocity || V.create();
-
+    
         this.vlambda = V.create();
         this.wlambda = 0;
-
+    
+        /**
+         * The angle of the body
+         * @member {number}
+         * @memberof p2.Body
+         */
         this.angle = options.angle || 0;
+        
+        /**
+         * The angular velocity of the body
+         * @member {number}
+         * @memberof p2.Body
+         */
         this.angularVelocity = options.angularVelocity || 0;
-
+    
+        /**
+         * The force acting on the body
+         * @member {vec2}
+         * @memberof p2.Body
+         */
         this.force = options.force || V.create();
+        
+        /**
+         * The angular force acting on the body
+         * @member {number}
+         * @memberof p2.Body
+         */
         this.angularForce = options.angularForce || 0;
     };
-
 
     // Broadphase
     var dist = V.create();
@@ -303,11 +402,31 @@
         else new Date().getTime();
     }
 
+    /**
+     * Base class for broadphase implementations.
+     * @class
+     */
     p2.Broadphase = function(){
 
     };
 
+    /**
+     * Get all potential intersecting body pairs.
+     * @method
+     * @memberof p2.Broadphase
+     * @param  {p2.World} world The world to search in.
+     * @return {Array} An array of the bodies, ordered in pairs. Example: A result of [a,b,c,d] means that the potential pairs are: (a,b), (c,d).
+     */
+    p2.Broadphase.prototype.getCollisionPairs = function(world){
+        throw new Error("getCollisionPairs must be implemented in a subclass!");
+    };
 
+    /**
+     * Naive broadphase implementation. Does N^2 tests.
+     * 
+     * @class
+     * @extends p2.Broadphase
+     */
     p2.NaiveBroadphase = function(){
         p2.Broadphase.apply(this);
         this.getCollisionPairs = function(world){
@@ -338,7 +457,17 @@
     };
     p2.NaiveBroadphase.prototype = new p2.Broadphase();
 
-
+    /**
+     * Broadphase that uses axis-aligned bins.
+     * @class
+     * @extends p2.Broadphase
+     * @param {number} xmin Lower x bound of the grid
+     * @param {number} xmax Upper x bound
+     * @param {number} ymin Lower y bound
+     * @param {number} ymax Upper y bound
+     * @param {number} nx Number of bins along x axis
+     * @param {number} ny Number of bins along y axis
+     */
     p2.GridBroadphase = function(xmin,xmax,ymin,ymax,nx,ny){
         p2.Broadphase.apply(this);
 
@@ -451,7 +580,17 @@
     };
     p2.GridBroadphase.prototype = new p2.Broadphase();
 
-
+    /**
+     * The dynamics world, where all bodies and constraints lives.
+     * 
+     * Options:
+     * - solver (p2.Solver)
+     * - gravity (vec2)
+     * - broadphase (p2.Broadphase)
+     * 
+     * @class
+     * @param {Object} options
+     */
     p2.World = function(options){
         options = options || {};
         this.springs = [];
@@ -460,11 +599,19 @@
         this.contacts = [];
         this.oldContacts = [];
         this.collidingBodies = [];
-        this.gravity = options.gravity || V.create();
+        this.gravity = options.gravity || V.create(0, -9.78);
         this.doProfiling = true;
         this.lastStepTime = 0.0;
         this.broadphase = options.broadphase || new p2.NaiveBroadphase();
     };
+    
+    /**
+     * Step the physics world forward in time.
+     * 
+     * @method
+     * @memberof p2.World
+     * @param {number} dt The time step size to use.
+     */
     p2.World.prototype.step = function(dt){
         var doProfiling = this.doProfiling,
             Nsprings = this.springs.length,
@@ -566,42 +713,106 @@
             this.matCreations = matCount;
         }
     };
+    
+    /**
+     * Add a spring to the simulation
+     * 
+     * @method
+     * @memberof p2.World
+     * @param {p2.Spring} s
+     */
     p2.World.prototype.addSpring = function(s){
         this.springs.push(s);
     };
+    
+    /**
+     * Remove a spring
+     * 
+     * @method
+     * @memberof p2.World
+     * @param {p2.Spring} s
+     */
     p2.World.prototype.removeSpring = function(s){
         var idx = this.springs.indexOf(s);
         if(idx===-1)
             this.springs.splice(idx,1);
     };
+    
+    /**
+     * Add a body to the simulation
+     * 
+     * @method
+     * @memberof p2.World
+     * @param {p2.Body} body
+     */
     p2.World.prototype.addBody = function(body){
         this.bodies.push(body);
         this.collidingBodies.push(body);
     };
+    
+    /**
+     * Remove a body from the simulation
+     * 
+     * @method
+     * @memberof p2.World
+     * @param {p2.Body} body
+     */
     p2.World.prototype.removeBody = function(body){
         var idx = this.bodies.indexOf(body);
         if(idx===-1)
             this.bodies.splice(idx,1);
     };
 
-
+    /**
+     * Base class for constraint solvers.
+     * @class
+     */
     p2.Solver = function(){
+        /**
+         * Current equations in the solver.
+         * @member {Array}
+         * @memberof p2.Solver
+         */
         this.equations = [];
     };
     p2.Solver.prototype.solve = function(dt,world){ return 0; };
+    
+    /**
+     * Add an equation to be solved.
+     * @method
+     * @memberof p2.Solver
+     * @param {p2.Equation} eq
+     */
     p2.Solver.prototype.addEquation = function(eq){
         this.equations.push(eq);
     };
+    
+    /**
+     * Remove an equation.
+     * @method
+     * @memberof p2.Solver
+     * @param {p2.Equation} eq
+     */
     p2.Solver.prototype.removeEquation = function(eq){
         var i = this.equations.indexOf(eq);
         if(i!=-1)
             this.equations.splice(i,1);
     };
+    
+    /**
+     * Remove all currently added equations.
+     * @method
+     * @memberof p2.Solver
+     */
     p2.Solver.prototype.removeAllEquations = function(){
         this.equations = [];
     };
 
-
+    /**
+     * Iterative Gauss-Seidel constraint equation solver.
+     * @class
+     * @extends p2.Solver
+     */
     p2.GSSolver = function(){
         p2.Solver.call(this);
         this.iterations = 10;
@@ -721,7 +932,14 @@
         return iter;
     };
 
-
+    /**
+     * Base class for constraint equations.
+     * @class
+     * @param {p2.Body} bi First body participating in the equation
+     * @param {p2.Body} bj Second body participating in the equation
+     * @param {number} minForce Minimum force to apply. Default: -1e6
+     * @param {number} maxForce Maximum force to apply. Default: 1e6
+     */
    p2.Equation = function(bi,bj,minForce,maxForce){
       this.id = -1;
       this.minForce = typeof(minForce)=="undefined" ? -1e6 : minForce;
@@ -731,7 +949,13 @@
     };
     p2.Equation.prototype.constructor = p2.Equation;
 
-
+    /**
+     * Non-penetration constraint equation.
+     * @class
+     * @extends p2.Equation
+     * @param {p2.Body} bi
+     * @param {p2.Body} bj
+     */
     p2.ContactEquation = function(bi,bj){
         p2.Equation.call(this,bi,bj,0,1e6);
         this.penetration = 0.0;
