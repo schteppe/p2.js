@@ -55,7 +55,7 @@
          * @member {bool}
          * @memberof p2.World
          */
-        this.doProfiling = true;
+        this.doProfiling = options.doProfiling || false;
 
         /**
          * How many millisecconds the last step() took. This is updated each step if .doProfiling is set to true.

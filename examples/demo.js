@@ -11,6 +11,7 @@ var requestAnimFrame = window.requestAnimationFrame       ||
 
 function Demo(){
     var world = this.world = new p2.World();
+    var world = this.world = new p2.World({ doProfiling: true });
     var that = this;
     this.bodies=[];
     this.springs=[];
