@@ -11,7 +11,7 @@
         this.equations = [];
     };
     p2.Solver.prototype.solve = function(dt,world){ return 0; };
-    
+
     /**
      * Add an equation to be solved.
      * @method
@@ -21,7 +21,7 @@
     p2.Solver.prototype.addEquation = function(eq){
         this.equations.push(eq);
     };
-    
+
     /**
      * Remove an equation.
      * @method
@@ -33,7 +33,7 @@
         if(i!=-1)
             this.equations.splice(i,1);
     };
-    
+
     /**
      * Remove all currently added equations.
      * @method
