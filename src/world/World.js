@@ -1,11 +1,11 @@
     /**
      * The dynamics world, where all bodies and constraints lives.
-     * 
+     *
      * Options:
      * - solver (p2.Solver)
      * - gravity (vec2)
      * - broadphase (p2.Broadphase)
-     * 
+     *
      * @class
      * @param {Object} options
      */
@@ -71,10 +71,10 @@
          */
         this.broadphase = options.broadphase || new p2.NaiveBroadphase();
     };
-    
+
     /**
      * Step the physics world forward in time.
-     * 
+     *
      * @method
      * @memberof p2.World
      * @param {number} dt The time step size to use.
@@ -180,10 +180,10 @@
             this.matCreations = matCount;
         }
     };
-    
+
     /**
      * Add a spring to the simulation
-     * 
+     *
      * @method
      * @memberof p2.World
      * @param {p2.Spring} s
@@ -191,10 +191,10 @@
     p2.World.prototype.addSpring = function(s){
         this.springs.push(s);
     };
-    
+
     /**
      * Remove a spring
-     * 
+     *
      * @method
      * @memberof p2.World
      * @param {p2.Spring} s
@@ -204,10 +204,10 @@
         if(idx===-1)
             this.springs.splice(idx,1);
     };
-    
+
     /**
      * Add a body to the simulation
-     * 
+     *
      * @method
      * @memberof p2.World
      * @param {p2.Body} body
@@ -216,10 +216,10 @@
         this.bodies.push(body);
         this.collidingBodies.push(body);
     };
-    
+
     /**
      * Remove a body from the simulation
-     * 
+     *
      * @method
      * @memberof p2.World
      * @param {p2.Body} body
