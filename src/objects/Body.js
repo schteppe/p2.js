@@ -1,10 +1,10 @@
     /**
      * A spring, connecting two bodies.
      *
-     * Options
-     * - restLength: A number > 0. Default is 1.
-     * - stiffness: A number >= 0 . Default is 100.
-     * - damping: A number >= 0.
+     * Options:
+     *   - restLength: A number > 0. Default: 1
+     *   - stiffness: A number >= 0. Default: 100
+     *   - damping: A number >= 0. Default: 1
      *
      * @class
      * @param {p2.Body} bodyA
@@ -54,13 +54,14 @@
      * A physics body.
      *
      * Options:
-     * - mass: A number >= 0. If zero, the body becomes static. Default is 0.
-     * - position (vec2)
-     * - velocity (vec2)
-     * - angle (vec2)
-     * - angularVelocity (vec2)
-     * - force (vec2)
-     * - angularForce (vec2)
+     *   - shape: A {p2.Shape} used for collision detection. If absent the body will not collide.
+     *   - mass: A number >= 0. If zero, the body becomes static. Defaults to static [0].
+     *   - position (vec2)
+     *   - velocity (vec2)
+     *   - angle (number)
+     *   - angularVelocity (number)
+     *   - force (vec2)
+     *   - angularForce (number)
      *
      * @class
      * @param {Object} options

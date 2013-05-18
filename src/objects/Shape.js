@@ -17,6 +17,7 @@
      * Circle shape class.
      * @class
      * @extends p2.Shape
+     * @param {number} radius
      */
     p2.Circle = function(radius){
         p2.Shape.apply(this);

@@ -2,9 +2,9 @@
      * The dynamics world, where all bodies and constraints lives.
      *
      * Options:
-     * - solver (p2.Solver)
-     * - gravity (vec2)
-     * - broadphase (p2.Broadphase)
+     *   - solver (p2.Solver) Default: {p2.GSSolver}
+     *   - gravity (vec2) Default: -9.78
+     *   - broadphase (p2.Broadphase) Default: {p2.NaiveBroadphase}
      *
      * @class
      * @param {Object} options
