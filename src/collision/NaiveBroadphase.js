@@ -1,6 +1,6 @@
     /**
      * Naive broadphase implementation. Does N^2 tests.
-     * 
+     *
      * @class
      * @extends p2.Broadphase
      */
