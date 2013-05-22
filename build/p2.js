@@ -799,7 +799,7 @@
         solver.solve(dt,this);
         solver.removeAllEquations();
 
-        // Step
+        // Step forward
         var fhMinv = step_fhMinv;
         var velodt = step_velodt;
         for(var i=0; i!==Nbodies; i++){
@@ -809,7 +809,12 @@
                     f = body.force,
                     pos = body.position,
                     velo = body.velocity;
+
+                // Angular step
                 body.angularVelocity += body.angularForce * body.invInertia * dt;
+                body.angle += body.angularVelocity * dt;
+
+                // Linear step
                 Vscale(f,dt*minv,fhMinv);
                 Vadd(fhMinv,velo,velo);
                 Vscale(velo,dt,velodt);
