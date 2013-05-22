@@ -86,6 +86,18 @@
     p2.oVec2.cross = function(a,b){
         return a.x*b.y - a.y*b.x;
     };
+    p2.tVec2.rotate = function(v,angle,out){
+        var c = cos(angle),
+            s = sin(angle);
+        out[0] = c*v[0] -s*v[1];
+        out[1] = s*v[0] +c*v[1];
+    };
+    p2.oVec2.rotate = function(v,angle,out){
+        var c = cos(angle),
+            s = sin(angle);
+        out.x = c*v.x -s*v.y;
+        out.y = s*v.x +c*v.y;
+    };
     p2.tVec2.getX = function(v){ return v[0]; };
     p2.tVec2.getY = function(v){ return v[1]; };
     p2.oVec2.getX = function(v){ return v.x; };
