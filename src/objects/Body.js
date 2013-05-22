@@ -131,3 +131,26 @@
          */
         this.angularForce = options.angularForce || 0;
     };
+
+    /**
+     * Apply force to a world point. This could for example be a point on the RigidBody surface. Applying force this way will add to Body.force and Body.angularForce.
+     * @method
+     * @memberof p2.Body
+     * @param {vec2} force The force to add.
+     * @param {vec2} worldPoint A world point to apply the force on.
+     */
+    var Body_applyForce_r = V.create();
+    p2.Body.prototype.applyForce = function(force,worldPoint){
+        // Compute point position relative to the body center
+        var r = Body_applyForce_r;
+        V.subtract(worldPoint,this.position,r);
+
+        // Add linear force
+        V.add(this.force,force,this.force);
+
+        // Compute produced rotational force
+        var rotForce = V.cross(r,force);
+
+        // Add rotational force
+        this.angularForce += rotForce;
+    };

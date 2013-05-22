@@ -174,30 +174,54 @@
 
     var M = p2.M = p2.tMat2;
 
-
+    /**
+     * Base class for shapes.
+     * @class
+     */
     p2.Shape = function(){};
 
+    /**
+     * Particle shape class.
+     * @class
+     * @extends p2.Shape
+     */
     p2.Particle = function(){
         p2.Shape.apply(this);
     };
 
+    /**
+     * Circle shape class.
+     * @class
+     * @extends p2.Shape
+     * @param {number} radius
+     */
     p2.Circle = function(radius){
         p2.Shape.apply(this);
+        /**
+         * The radius of the circle.
+         * @member {number}
+         * @memberof p2.Circle
+         */
         this.radius = radius || 1;
     };
 
+    /**
+     * Plane shape class. The plane is facing in the Y direction.
+     * @class
+     * @extends p2.Shape
+     */
     p2.Plane = function(){
         p2.Shape.apply(this);
     };
 
     /**
      * A spring, connecting two bodies.
-     * 
-     * Options
-     * - restLength: A number > 0. Default is 1.
-     * - stiffness: A number >= 0 . Default is 100.
-     * - damping: A number >= 0.
-     * 
+     *
+     * Options:
+     *   - restLength: A number > 0. Default: 1
+     *   - stiffness: A number >= 0. Default: 100
+     *   - damping: A number >= 0. Default: 1
+     *
      * @class
      * @param {p2.Body} bodyA
      * @param {p2.Body} bodyB
@@ -241,32 +265,33 @@
          */
         this.bodyB = bodyB;
     };
-    
+
     /**
      * A physics body.
-     * 
+     *
      * Options:
-     * - mass: A number >= 0. If zero, the body becomes static. Default is 0.
-     * - position (vec2)
-     * - velocity (vec2)
-     * - angle (vec2)
-     * - angularVelocity (vec2)
-     * - force (vec2)
-     * - angularForce (vec2)
-     * 
+     *   - shape: A {p2.Shape} used for collision detection. If absent the body will not collide.
+     *   - mass: A number >= 0. If zero, the body becomes static. Defaults to static [0].
+     *   - position (vec2)
+     *   - velocity (vec2)
+     *   - angle (number)
+     *   - angularVelocity (number)
+     *   - force (vec2)
+     *   - angularForce (number)
+     *
      * @class
      * @param {Object} options
      */
     p2.Body = function(options){
         options = options || {};
-    
+
         /**
          * The shape belonging to the body.
          * @member {p2.Shape}
          * @memberof p2.Body
          */
         this.shape = options.shape;
-    
+
         /**
          * The mass of the body.
          * @member {number}
@@ -276,51 +301,74 @@
         this.invMass = this.mass > 0 ? 1 / this.mass : 0;
         this.inertia = options.inertia || this.mass; // todo
         this.invInertia = this.invMass; // todo
-    
+
         /**
          * The position of the body
          * @member {vec2}
          * @memberof p2.Body
          */
         this.position = options.position || V.create();
-        
+
         /**
          * The velocity of the body
          * @member {vec2}
          * @memberof p2.Body
          */
         this.velocity = options.velocity || V.create();
-    
+
         this.vlambda = V.create();
         this.wlambda = 0;
-    
+
         /**
          * The angle of the body
          * @member {number}
          * @memberof p2.Body
          */
         this.angle = options.angle || 0;
-        
+
         /**
          * The angular velocity of the body
          * @member {number}
          * @memberof p2.Body
          */
         this.angularVelocity = options.angularVelocity || 0;
-    
+
         /**
          * The force acting on the body
          * @member {vec2}
          * @memberof p2.Body
          */
         this.force = options.force || V.create();
-        
+
         /**
          * The angular force acting on the body
          * @member {number}
          * @memberof p2.Body
          */
         this.angularForce = options.angularForce || 0;
+    };
+
+    /**
+     * Apply force to a world point. This could for example be a point on the RigidBody surface. Applying force this way will add to Body.force and Body.angularForce.
+     * @method
+     * @memberof p2.Body
+     * @param {vec2} force The force to add.
+     * @param {vec2} worldPoint A world point to apply the force on.
+     */
+    var Body_applyForce_r = V.create();
+    p2.Body.prototype.applyForce = function(force,worldPoint){
+        // Compute point position relative to the body center
+        var r = Body_applyForce_r;
+        V.subtract(worldPoint,this.position,r);
+
+        // Add linear force
+        V.add(this.force,force,this.force);
+
+        // Compute produced rotational force
+        var rotForce = V.cross(r,force);
+
+        // Add rotational force
+        this.angularForce += rotForce;
     };
 
     // Broadphase
@@ -423,7 +471,7 @@
 
     /**
      * Naive broadphase implementation. Does N^2 tests.
-     * 
+     *
      * @class
      * @extends p2.Broadphase
      */
@@ -582,32 +630,81 @@
 
     /**
      * The dynamics world, where all bodies and constraints lives.
-     * 
+     *
      * Options:
-     * - solver (p2.Solver)
-     * - gravity (vec2)
-     * - broadphase (p2.Broadphase)
-     * 
+     *   - solver (p2.Solver) Default: {p2.GSSolver}
+     *   - gravity (vec2) Default: -9.78
+     *   - broadphase (p2.Broadphase) Default: {p2.NaiveBroadphase}
+     *
      * @class
      * @param {Object} options
      */
     p2.World = function(options){
         options = options || {};
+
+        /**
+         * All springs in the world.
+         * @member {Array}
+         * @memberof p2.World
+         */
         this.springs = [];
+
+        /**
+         * All bodies in the world.
+         * @member {Array}
+         * @memberof p2.World
+         */
         this.bodies = [];
+
+        /**
+         * The solver used to satisfy constraints and contacts.
+         * @member {p2.Solver}
+         * @memberof p2.World
+         */
         this.solver = options.solver || new p2.GSSolver();
+
+        /**
+         * The contacts in the world that were generated during the last step().
+         * @member {Array}
+         * @memberof p2.World
+         */
         this.contacts = [];
+
         this.oldContacts = [];
         this.collidingBodies = [];
+
+        /**
+         * Gravity in the world. This is applied on all bodies in the beginning of each step().
+         * @member {vec2}
+         * @memberof p2.World
+         */
         this.gravity = options.gravity || V.create(0, -9.78);
-        this.doProfiling = true;
+
+        /**
+         * Whether to do timing measurements during the step() or not.
+         * @member {bool}
+         * @memberof p2.World
+         */
+        this.doProfiling = options.doProfiling || false;
+
+        /**
+         * How many millisecconds the last step() took. This is updated each step if .doProfiling is set to true.
+         * @member {number}
+         * @memberof p2.World
+         */
         this.lastStepTime = 0.0;
+
+        /**
+         * The broadphase algorithm to use.
+         * @member {p2.Broadphase}
+         * @memberof p2.World
+         */
         this.broadphase = options.broadphase || new p2.NaiveBroadphase();
     };
-    
+
     /**
      * Step the physics world forward in time.
-     * 
+     *
      * @method
      * @memberof p2.World
      * @param {number} dt The time step size to use.
@@ -713,10 +810,10 @@
             this.matCreations = matCount;
         }
     };
-    
+
     /**
      * Add a spring to the simulation
-     * 
+     *
      * @method
      * @memberof p2.World
      * @param {p2.Spring} s
@@ -724,10 +821,10 @@
     p2.World.prototype.addSpring = function(s){
         this.springs.push(s);
     };
-    
+
     /**
      * Remove a spring
-     * 
+     *
      * @method
      * @memberof p2.World
      * @param {p2.Spring} s
@@ -737,10 +834,10 @@
         if(idx===-1)
             this.springs.splice(idx,1);
     };
-    
+
     /**
      * Add a body to the simulation
-     * 
+     *
      * @method
      * @memberof p2.World
      * @param {p2.Body} body
@@ -749,10 +846,10 @@
         this.bodies.push(body);
         this.collidingBodies.push(body);
     };
-    
+
     /**
      * Remove a body from the simulation
-     * 
+     *
      * @method
      * @memberof p2.World
      * @param {p2.Body} body
@@ -776,7 +873,7 @@
         this.equations = [];
     };
     p2.Solver.prototype.solve = function(dt,world){ return 0; };
-    
+
     /**
      * Add an equation to be solved.
      * @method
@@ -786,7 +883,7 @@
     p2.Solver.prototype.addEquation = function(eq){
         this.equations.push(eq);
     };
-    
+
     /**
      * Remove an equation.
      * @method
@@ -798,7 +895,7 @@
         if(i!=-1)
             this.equations.splice(i,1);
     };
-    
+
     /**
      * Remove all currently added equations.
      * @method
