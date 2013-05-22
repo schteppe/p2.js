@@ -738,9 +738,11 @@
             matCount = 0;
         }
 
-        // Reset forces, add gravity
-        for(var i=0; i!==Nbodies; i++)
-            Vcopy(g,bodies[i].force);
+        // add gravity to bodies
+        for(var i=0; i!==Nbodies; i++){
+            var fi = bodies[i].force;
+            Vadd(fi,g,fi);
+        }
 
         // Calculate all new spring forces
         for(var i=0; i!==Nsprings; i++){
@@ -813,6 +815,13 @@
                 Vscale(velo,dt,velodt);
                 Vadd(pos,velodt,pos);
             }
+        }
+
+        // Reset force
+        for(var i=0; i!==Nbodies; i++){
+            var bi = bodies[i];
+            V.set(bi.force,0.0,0.0);
+            bi.angularForce = 0.0;
         }
 
         if(doProfiling){
