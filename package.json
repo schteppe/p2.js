@@ -2,7 +2,6 @@
     "name": "p2.js",
     "version": "0.1.0",
     "description": "A JavaScript 2D physics engine.",
-    "homepage": "https://github.com/schteppe/cannon.js",
     "author": "Stefan Hedman <schteppe@gmail.com> (http://steffe.se)",
     "keywords": [
         "p2.js",
@@ -35,7 +34,8 @@
         "grunt-contrib-jshint": "~0.1.1",
         "grunt-contrib-nodeunit": "~0.1.2",
         "grunt-contrib-concat": "~0.1.3",
-        "grunt-contrib-uglify": "*"
+        "grunt-contrib-uglify": "*",
+        "jox":"*"
     },
     "dependencies" : {
     }
