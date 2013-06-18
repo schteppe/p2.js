@@ -70,7 +70,7 @@
             // Reset vlambda
             for(i=0; i!==Nbodies; i++){
                 var b=bodies[i], vlambda=b.vlambda;
-                V.set(vlambda,0,0);
+                vec2.set(vlambda,0,0);
                 b.wlambda = 0;
             }
 
@@ -102,7 +102,7 @@
                     }
                     lambda[j] += deltalambda;
 
-                    deltalambdaTot += abs(deltalambda);
+                    deltalambdaTot += Math.abs(deltalambda);
 
                     c.addToWlambda(deltalambda);
                 }
@@ -114,10 +114,11 @@
             // Add result to velocity
             for(i=0; i!==Nbodies; i++){
                 var b=bodies[i], v=b.velocity;
-                Vadd(v, b.vlambda, v);
+                vec2.add( v,v, b.vlambda);
                 b.angularVelocity += b.wlambda;
             }
         }
         errorTot = deltalambdaTot;
         return iter;
     };
+

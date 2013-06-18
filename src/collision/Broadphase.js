@@ -1,22 +1,25 @@
     // Broadphase
-    var dist = V.create();
-    var rot = M.create();
-    var worldNormal = V.create();
-    var yAxis = V.create(0,1);
+    var dist = vec2.create();
+    var rot = mat2.create();
+    var worldNormal = vec2.create();
+    var yAxis = vec2.fromValues(0,1);
     function checkCircleCircle(c1,c2,result){
-        Vsub(c1.position,c2.position,dist);
+        vec2.sub(dist,c1.position,c2.position);
         var R1 = c1.shape.radius;
         var R2 = c2.shape.radius;
-        if(Vnorm2(dist) < (R1+R2)*(R1+R2)){
+        if(vec2.sqrLen(dist) < (R1+R2)*(R1+R2)){
             result.push(c1);
             result.push(c2);
         }
     }
     function checkCirclePlane(c,p,result){
-        Vsub(c.position,p.position,dist);
+        vec2.sub(dist,c.position,p.position);
+        /*
         M.setFromRotation(rot,p.angle);
-        M.vectorMultiply(rot,yAxis,worldNormal);
-        if(Vdot(dist,worldNormal) <= c.shape.radius){
+        vec2.transformMat2(worldNormal,yAxis,rot);
+        */
+        vec2.rotate(worldNormal,yAxis,p.angle);
+        if(vec2.dot(dist,worldNormal) <= c.shape.radius){
             result.push(c);
             result.push(p);
         }
@@ -32,18 +35,18 @@
         var c = oldContacts.length ? oldContacts.pop() : new p2.ContactEquation(c1,c2);
         c.bi = c1;
         c.bj = c2;
-        Vsub(c2.position,c1.position,c.ni);
-        V.normalize(c.ni,c.ni);
-        Vscale(c.ni, c1.shape.radius, c.ri);
-        Vscale(c.ni,-c2.shape.radius, c.rj);
+        vec2.sub(c.ni,c2.position,c1.position);
+        vec2.normalize(c.ni,c.ni);
+        vec2.scale( c.ri,c.ni, c1.shape.radius);
+        vec2.scale( c.rj,c.ni,-c2.shape.radius);
         result.push(c);
     }
     function nearphaseCircleParticle(c,p,result,oldContacts){
         // todo
     }
-    var nearphaseCirclePlane_rot = M.create();
-    var nearphaseCirclePlane_planeToCircle = V.create();
-    var nearphaseCirclePlane_temp = V.create();
+    var nearphaseCirclePlane_rot = mat2.create();
+    var nearphaseCirclePlane_planeToCircle = vec2.create();
+    var nearphaseCirclePlane_temp = vec2.create();
     function nearphaseCirclePlane(c,p,result,oldContacts){
         var rot = nearphaseCirclePlane_rot;
         var contact = oldContacts.length ? oldContacts.pop() : new p2.ContactEquation(p,c);
@@ -52,25 +55,28 @@
         var planeToCircle = nearphaseCirclePlane_planeToCircle;
         var temp = nearphaseCirclePlane_temp;
 
+        /*
         M.setFromRotation(rot,p.angle);
-        M.vectorMultiply(rot,yAxis,contact.ni);
+        vec2.transformMat2(contact.ni,yAxis,rot);
+        */
+        vec2.rotate(contact.ni,yAxis,p.angle);
 
-        V.scale(contact.ni, -c.shape.radius, contact.rj);
+        vec2.scale( contact.rj,contact.ni, -c.shape.radius);
 
-        V.subtract(c.position,p.position,planeToCircle);
-        var d = V.dot(contact.ni , planeToCircle );
-        V.scale(contact.ni,d,temp);
-        V.subtract(planeToCircle , temp , contact.ri );
+        vec2.sub(planeToCircle,c.position,p.position);
+        var d = vec2.dot(contact.ni , planeToCircle );
+        vec2.scale(temp,contact.ni,d);
+        vec2.sub( contact.ri ,planeToCircle , temp );
 
         result.push(contact);
     }
 
-    var step_r = V.create();
-    var step_runit = V.create();
-    var step_u = V.create();
-    var step_f = V.create();
-    var step_fhMinv = V.create();
-    var step_velodt = V.create();
+    var step_r = vec2.create();
+    var step_runit = vec2.create();
+    var step_u = vec2.create();
+    var step_f = vec2.create();
+    var step_fhMinv = vec2.create();
+    var step_velodt = vec2.create();
     function now(){
         if(performance.now) return performance.now();
         else if(performance.webkitNow) return performance.webkitNow();
@@ -95,3 +101,4 @@
     p2.Broadphase.prototype.getCollisionPairs = function(world){
         throw new Error("getCollisionPairs must be implemented in a subclass!");
     };
+

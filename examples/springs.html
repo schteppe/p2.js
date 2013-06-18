@@ -2,8 +2,10 @@
 <html>
 <head>
     <title>p2.js</title>
-    <script src="../build/p2.js"></script>
+    <script src="../node_modules/gl-matrix/dist/gl-matrix.js"></script>
+    <script src="../build/p2.glmatrix.js"></script>
     <script src="demo.js"></script>
+    <script src="three.js"></script>
     <link href="demo.css" rel="stylesheet"/>
 </head>
 <body>
@@ -21,7 +23,7 @@
                 d=10,
                 l=0.2,
                 m=1;
-            V.set(world.gravity,0,-2);
+            vec2.set(world.gravity,0,-2);
 
             // Create bodies
             for(var i=0; i<N; i++){
@@ -30,7 +32,7 @@
                     var p = new p2.Body({
                         mass: j==M-1 ? 0 : m
                     });
-                    V.set(p.position,i*l*1.05+1,j*l*1.05+1);
+                    vec2.set(p.position,i*l*1.05+1,j*l*1.05+1);
                     bodies[i].push(p);
                     world.addBody(p);
                 }

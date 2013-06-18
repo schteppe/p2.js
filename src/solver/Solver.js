@@ -42,3 +42,4 @@
     p2.Solver.prototype.removeAllEquations = function(){
         this.equations = [];
     };
+

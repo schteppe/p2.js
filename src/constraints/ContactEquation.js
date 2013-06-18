@@ -8,16 +8,16 @@
     p2.ContactEquation = function(bi,bj){
         p2.Equation.call(this,bi,bj,0,1e6);
         this.penetration = 0.0;
-        this.ri = V.create();
-        this.penetrationVec = V.create();
-        this.rj = V.create();
-        this.ni = V.create();
-        this.rixn = V.create();
-        this.rjxn = V.create();
-        this.rixw = V.create();
-        this.rjxw = V.create();
-        this.relVel = V.create();
-        this.relForce = V.create();
+        this.ri = vec2.create();
+        this.penetrationVec = vec2.create();
+        this.rj = vec2.create();
+        this.ni = vec2.create();
+        this.rixn = vec2.create();
+        this.rjxn = vec2.create();
+        this.rixw = vec2.create();
+        this.rjxw = vec2.create();
+        this.relVel = vec2.create();
+        this.relForce = vec2.create();
     };
     p2.ContactEquation.prototype = new p2.Equation();
     p2.ContactEquation.prototype.constructor = p2.ContactEquation;
@@ -49,20 +49,20 @@
             n = this.ni;
 
         // Caluclate cross products
-        var rixn = this.rixn = Vcross(ri,n);
-        var rjxn = this.rjxn = Vcross(rj,n);
+        var rixn = this.rixn = vec2.crossLength(ri,n);
+        var rjxn = this.rjxn = vec2.crossLength(rj,n);
 
         // Calculate q = xj+rj -(xi+ri) i.e. the penetration vector
-        V.set(penetrationVec,0,0);
-        Vadd(xj,rj,penetrationVec);
-        Vsub(penetrationVec,xi,penetrationVec);
-        Vsub(penetrationVec,ri,penetrationVec);
+        vec2.set(penetrationVec,0,0);
+        vec2.add(penetrationVec,xj,rj);
+        vec2.sub(penetrationVec,penetrationVec,xi);
+        vec2.sub(penetrationVec,penetrationVec,ri);
 
-        var Gq = Vdot(n,penetrationVec);
+        var Gq = vec2.dot(n,penetrationVec);
 
         // Compute iteration
-        var GW = Vdot(vj,n) - Vdot(vi,n) + wj * rjxn - wi * rixn;
-        var GiMf = Vdot(fj,n)*invMassj - Vdot(fi,n)*invMassi + invIj*tauj*rjxn - invIi*taui*rixn;
+        var GW = vec2.dot(vj,n) - vec2.dot(vi,n) + wj * rjxn - wi * rixn;
+        var GiMf = vec2.dot(fj,n)*invMassj - vec2.dot(fi,n)*invMassi + invIj*tauj*rjxn - invIi*taui*rixn;
 
         var B = - Gq * a - GW * b - h*GiMf;
 
@@ -88,15 +88,15 @@
 
         return C;
     };
-    var computeGWlambda_ulambda = V.create();
+    var computeGWlambda_ulambda = vec2.create();
     p2.ContactEquation.prototype.computeGWlambda = function(){
         var bi = this.bi;
         var bj = this.bj;
         var ulambda = computeGWlambda_ulambda;
 
         var GWlambda = 0.0;
-        V.subtract(bj.vlambda, bi.vlambda, ulambda);
-        GWlambda += V.dot(ulambda,this.ni);
+        vec2.sub( ulambda,bj.vlambda, bi.vlambda);
+        GWlambda += vec2.dot(ulambda,this.ni);
 
         // Angular
         GWlambda -= bi.wlambda * this.rixn;
@@ -105,7 +105,7 @@
         return GWlambda;
     };
 
-    var addToWlambda_temp = V.create();
+    var addToWlambda_temp = vec2.create();
     p2.ContactEquation.prototype.addToWlambda = function(deltalambda){
         var bi = this.bi;
         var bj = this.bj;
@@ -117,13 +117,14 @@
         var temp = addToWlambda_temp;
 
         // Add to linear velocity
-        Vscale(n,invMassi*deltalambda,temp);
-        Vsub(bi.vlambda, temp , bi.vlambda);
+        vec2.scale(temp,n,invMassi*deltalambda);
+        vec2.sub( bi.vlambda,bi.vlambda, temp );
 
-        Vscale(n,invMassj*deltalambda,temp);
-        Vadd(bj.vlambda, temp, bj.vlambda);
+        vec2.scale(temp,n,invMassj*deltalambda);
+        vec2.add( bj.vlambda,bj.vlambda, temp);
 
         // Add to angular velocity
         bi.wlambda -= bi.invInertia * rixn * deltalambda;
         bj.wlambda += bj.invInertia * rjxn * deltalambda;
     };
+

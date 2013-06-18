@@ -47,14 +47,14 @@
                 } else if(si instanceof Circle){
                     // Put in bin
                     // check if overlap with other bins
-                    var x = V.getX(bi.position);
-                    var y = V.getY(bi.position);
+                    var x = vec2.getX(bi.position);
+                    var y = vec2.getY(bi.position);
                     var r = si.radius;
 
-                    var xi1 = floor(xmult * (x-r - xmin));
-                    var yi1 = floor(ymult * (y-r - ymin));
-                    var xi2 = floor(xmult * (x+r - xmin));
-                    var yi2 = floor(ymult * (y+r - ymin));
+                    var xi1 = Math.floor(xmult * (x-r - xmin));
+                    var yi1 = Math.floor(ymult * (y-r - ymin));
+                    var xi2 = Math.floor(xmult * (x+r - xmin));
+                    var yi2 = Math.floor(ymult * (y+r - ymin));
 
                     for(var j=xi1; j<=xi2; j++){
                         for(var k=yi1; k<=yi2; k++){
@@ -67,20 +67,20 @@
                 } else if(si instanceof Plane){
                     // Put in all bins for now
                     if(bi.angle == 0){
-                        var y = V.getY(bi.position);
+                        var y = vec2.getY(bi.position);
                         for(var j=0; j!==Nbins && ymin+binsizeY*(j-1)<y; j++){
                             for(var k=0; k<nx; k++){
                                 var xi = k;
-                                var yi = floor(ymult * (binsizeY*j - ymin));
+                                var yi = Math.floor(ymult * (binsizeY*j - ymin));
                                 bins[ xi*(ny-1) + yi ].push(bi);
                             }
                         }
                     } else if(bi.angle == Math.PI*0.5){
-                        var x = V.getX(bi.position);
+                        var x = vec2.getX(bi.position);
                         for(var j=0; j!==Nbins && xmin+binsizeX*(j-1)<x; j++){
                             for(var k=0; k<ny; k++){
                                 var yi = k;
-                                var xi = floor(xmult * (binsizeX*j - xmin));
+                                var xi = Math.floor(xmult * (binsizeX*j - xmin));
                                 bins[ xi*(ny-1) + yi ].push(bi);
                             }
                         }
@@ -120,3 +120,4 @@
         };
     };
     p2.GridBroadphase.prototype = new p2.Broadphase();
+

@@ -48,7 +48,7 @@
          * @member {vec2}
          * @memberof p2.World
          */
-        this.gravity = options.gravity || V.create(0, -9.78);
+        this.gravity = options.gravity || vec2.fromValues(0, -9.78);
 
         /**
          * Whether to do timing measurements during the step() or not.
@@ -99,7 +99,7 @@
         // add gravity to bodies
         for(var i=0; i!==Nbodies; i++){
             var fi = bodies[i].force;
-            Vadd(fi,g,fi);
+            vec2.add(fi,fi,g);
         }
 
         // Calculate all new spring forces
@@ -115,13 +115,13 @@
             var u = step_u;
             var f = step_f;
 
-            Vsub(bodyA.position,bodyB.position,r);
-            Vsub(bodyA.velocity,bodyB.velocity,u);
-            var rlen = V.norm(r);
-            V.normalize(r,r_unit);
-            Vscale(r_unit, k*(rlen-l) + d*V.dot(u,r_unit), f);
-            Vsub(bodyA.force, f, bodyA.force);
-            Vadd(bodyB.force, f, bodyB.force);
+            vec2.sub(r,bodyA.position,bodyB.position);
+            vec2.sub(u,bodyA.velocity,bodyB.velocity);
+            var rlen = vec2.len(r);
+            vec2.normalize(r_unit,r);
+            vec2.scale(f, r_unit, k*(rlen-l) + d*vec2.dot(u,r_unit));
+            vec2.sub( bodyA.force,bodyA.force, f);
+            vec2.add( bodyB.force,bodyB.force, f);
         }
 
         // Broadphase
@@ -173,17 +173,17 @@
                 body.angle += body.angularVelocity * dt;
 
                 // Linear step
-                Vscale(f,dt*minv,fhMinv);
-                Vadd(fhMinv,velo,velo);
-                Vscale(velo,dt,velodt);
-                Vadd(pos,velodt,pos);
+                vec2.scale(fhMinv,f,dt*minv);
+                vec2.add(velo,fhMinv,velo);
+                vec2.scale(velodt,velo,dt);
+                vec2.add(pos,pos,velodt);
             }
         }
 
         // Reset force
         for(var i=0; i!==Nbodies; i++){
             var bi = bodies[i];
-            V.set(bi.force,0.0,0.0);
+            vec2.set(bi.force,0.0,0.0);
             bi.angularForce = 0.0;
         }
 
@@ -243,3 +243,4 @@
         if(idx===-1)
             this.bodies.splice(idx,1);
     };
+

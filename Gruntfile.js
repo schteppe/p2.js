@@ -12,9 +12,11 @@ module.exports = function(grunt) {
                         "src/wrapper/Start.js",
                         "src/p2.js",
 
+                        "src/gl-matrix-extensions.js",
+
                         // Math
-                        "src/math/Vec2.js",
-                        "src/math/Matrix.js",
+                        //"src/math/Vec2.js",
+                        //"src/math/Matrix.js",
 
                         // Objects
                         "src/objects/Shape.js",

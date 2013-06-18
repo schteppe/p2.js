@@ -14,3 +14,4 @@
       this.bj = bj;
     };
     p2.Equation.prototype.constructor = p2.Equation;
+
