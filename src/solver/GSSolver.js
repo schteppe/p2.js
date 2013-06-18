@@ -3,18 +3,18 @@
      * @class
      * @extends p2.Solver
      */
-    p2.GSSolver = function(){
+    p2.GSSolver = function(options){
         p2.Solver.call(this);
-        this.iterations = 10;
-        this.h = 1.0/60.0;
-        this.k = 1e7;
-        this.d = 6;
+        this.iterations = options.iterations || 10;
+        this.h = options.timeStep || 1.0/60.0;
+        this.k = options.stiffness || 1e7;
+        this.d = options.relaxation || 6;
         this.a = 0.0;
         this.b = 0.0;
         this.eps = 0.0;
-        this.tolerance = 0;
-        this.setSpookParams(this.k,this.d);
-        this.debug = false;
+        this.tolerance = options.tolerance || 0;
+        this.setSpookParams(this.k, this.d);
+        this.debug = options.debug || false;
         this.arrayStep = 30;
         this.lambda = new ARRAY_TYPE(this.arrayStep);
         this.Bs =     new ARRAY_TYPE(this.arrayStep);
