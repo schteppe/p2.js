@@ -5,6 +5,7 @@
      */
     p2.GSSolver = function(options){
         p2.Solver.call(this);
+        options = options || {};
         this.iterations = options.iterations || 10;
         this.h = options.timeStep || 1.0/60.0;
         this.k = options.stiffness || 1e7;
