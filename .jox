@@ -1,8 +1,6 @@
 {
     "template" : "doc/template.ejs",
-    "source" : ["src/math/Vec2.js",
-                "src/math/Matrix.js",
-                "src/objects/Shape.js",
+    "source" : ["src/objects/Shape.js",
                 "src/objects/Body.js",
                 "src/collision/Broadphase.js",
                 "src/collision/NaiveBroadphase.js",
