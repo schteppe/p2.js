@@ -1,3 +1,11 @@
+    var Equation = require("./Equation").Equation,
+        glMatrix = require('gl-matrix'),
+        vec2 = glMatrix.vec2,
+        glMatrixExtensions = require('../gl-matrix-extensions'),
+        vec2e = glMatrixExtensions.vec2;
+
+    exports.ContactEquation = ContactEquation;
+
     /**
      * Non-penetration constraint equation.
      * @class
@@ -5,8 +13,8 @@
      * @param {p2.Body} bi
      * @param {p2.Body} bj
      */
-    p2.ContactEquation = function(bi,bj){
-        p2.Equation.call(this,bi,bj,0,1e6);
+    function ContactEquation(bi,bj){
+        Equation.call(this,bi,bj,0,1e6);
         this.penetration = 0.0;
         this.ri = vec2.create();
         this.penetrationVec = vec2.create();
@@ -19,9 +27,9 @@
         this.relVel = vec2.create();
         this.relForce = vec2.create();
     };
-    p2.ContactEquation.prototype = new p2.Equation();
-    p2.ContactEquation.prototype.constructor = p2.ContactEquation;
-    p2.ContactEquation.prototype.computeB = function(a,b,h){
+    ContactEquation.prototype = new Equation();
+    ContactEquation.prototype.constructor = ContactEquation;
+    ContactEquation.prototype.computeB = function(a,b,h){
         var bi = this.bi,
             bj = this.bj,
             ri = this.ri,
@@ -49,8 +57,8 @@
             n = this.ni;
 
         // Caluclate cross products
-        var rixn = this.rixn = vec2.crossLength(ri,n);
-        var rjxn = this.rjxn = vec2.crossLength(rj,n);
+        var rixn = this.rixn = vec2e.crossLength(ri,n);
+        var rjxn = this.rjxn = vec2e.crossLength(rj,n);
 
         // Calculate q = xj+rj -(xi+ri) i.e. the penetration vector
         vec2.set(penetrationVec,0,0);
@@ -69,7 +77,7 @@
         return B;
     };
     // Compute C = GMG+eps in the SPOOK equation
-    p2.ContactEquation.prototype.computeC = function(eps){
+    ContactEquation.prototype.computeC = function(eps){
         var bi = this.bi;
         var bj = this.bj;
         var rixn = this.rixn;
@@ -89,7 +97,7 @@
         return C;
     };
     var computeGWlambda_ulambda = vec2.create();
-    p2.ContactEquation.prototype.computeGWlambda = function(){
+    ContactEquation.prototype.computeGWlambda = function(){
         var bi = this.bi;
         var bj = this.bj;
         var ulambda = computeGWlambda_ulambda;
@@ -106,7 +114,7 @@
     };
 
     var addToWlambda_temp = vec2.create();
-    p2.ContactEquation.prototype.addToWlambda = function(deltalambda){
+    ContactEquation.prototype.addToWlambda = function(deltalambda){
         var bi = this.bi;
         var bj = this.bj;
         var rixn = this.rixn;

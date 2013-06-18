@@ -1,3 +1,9 @@
+    var glMatrix = require("gl-matrix"),
+        vec2 = glMatrix.vec2;
+
+    exports.Body = Body;
+    exports.Spring = Spring;
+
     /**
      * A spring, connecting two bodies.
      *
@@ -11,7 +17,7 @@
      * @param {p2.Body} bodyB
      * @param {Object} options
      */
-    p2.Spring = function(bodyA,bodyB,options){
+    function Spring(bodyA,bodyB,options){
         options = options || {};
 
         /**
@@ -66,7 +72,7 @@
      * @class
      * @param {Object} options
      */
-    p2.Body = function(options){
+    function Body(options){
         options = options || {};
 
         /**
@@ -140,7 +146,7 @@
      * @param {vec2} worldPoint A world point to apply the force on.
      */
     var Body_applyForce_r = vec2.create();
-    p2.Body.prototype.applyForce = function(force,worldPoint){
+    Body.prototype.applyForce = function(force,worldPoint){
         // Compute point position relative to the body center
         var r = Body_applyForce_r;
         vec2.sub(r,worldPoint,this.position);

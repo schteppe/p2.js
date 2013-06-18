@@ -1,3 +1,21 @@
+    var GSSolver = require('../solver/GSSolver').GSSolver,
+        NaiveBroadphase = require('../collision/NaiveBroadphase').NaiveBroadphase,
+        glMatrix = require('gl-matrix'),
+        vec2 = glMatrix.vec2,
+        Circle = require('../objects/Shape').Circle,
+        Plane = require('../objects/Shape').Plane,
+        Particle = require('../objects/Shape').Particle,
+        bp = require('../collision/Broadphase'),
+        Broadphase = bp.Broadphase;
+
+    exports.World = World;
+
+    function now(){
+        if(performance.now) return performance.now();
+        else if(performance.webkitNow) return performance.webkitNow();
+        else new Date().getTime();
+    }
+
     /**
      * The dynamics world, where all bodies and constraints lives.
      *
@@ -9,34 +27,34 @@
      * @class
      * @param {Object} options
      */
-    p2.World = function(options){
+    function World(options){
         options = options || {};
 
         /**
          * All springs in the world.
          * @member {Array}
-         * @memberof p2.World
+         * @memberof World
          */
         this.springs = [];
 
         /**
          * All bodies in the world.
          * @member {Array}
-         * @memberof p2.World
+         * @memberof World
          */
         this.bodies = [];
 
         /**
          * The solver used to satisfy constraints and contacts.
          * @member {p2.Solver}
-         * @memberof p2.World
+         * @memberof World
          */
-        this.solver = options.solver || new p2.GSSolver();
+        this.solver = options.solver || new GSSolver();
 
         /**
          * The contacts in the world that were generated during the last step().
          * @member {Array}
-         * @memberof p2.World
+         * @memberof World
          */
         this.contacts = [];
 
@@ -46,40 +64,46 @@
         /**
          * Gravity in the world. This is applied on all bodies in the beginning of each step().
          * @member {vec2}
-         * @memberof p2.World
+         * @memberof World
          */
         this.gravity = options.gravity || vec2.fromValues(0, -9.78);
 
         /**
          * Whether to do timing measurements during the step() or not.
          * @member {bool}
-         * @memberof p2.World
+         * @memberof World
          */
         this.doProfiling = options.doProfiling || false;
 
         /**
          * How many millisecconds the last step() took. This is updated each step if .doProfiling is set to true.
          * @member {number}
-         * @memberof p2.World
+         * @memberof World
          */
         this.lastStepTime = 0.0;
 
         /**
          * The broadphase algorithm to use.
          * @member {p2.Broadphase}
-         * @memberof p2.World
+         * @memberof World
          */
-        this.broadphase = options.broadphase || new p2.NaiveBroadphase();
+        this.broadphase = options.broadphase || new NaiveBroadphase();
     };
 
     /**
      * Step the physics world forward in time.
      *
      * @method
-     * @memberof p2.World
+     * @memberof World
      * @param {number} dt The time step size to use.
      */
-    p2.World.prototype.step = function(dt){
+    var step_r = vec2.create();
+    var step_runit = vec2.create();
+    var step_u = vec2.create();
+    var step_f = vec2.create();
+    var step_fhMinv = vec2.create();
+    var step_velodt = vec2.create();
+    World.prototype.step = function(dt){
         var doProfiling = this.doProfiling,
             Nsprings = this.springs.length,
             springs = this.springs,
@@ -90,12 +114,13 @@
             Nbodies = this.bodies.length,
             broadphase = this.broadphase,
             t0, t1;
+        
         if(doProfiling){
             t0 = now();
             vecCount = 0; // Start counting vector creations
             matCount = 0;
         }
-
+        
         // add gravity to bodies
         for(var i=0; i!==Nbodies; i++){
             var fi = bodies[i].force;
@@ -130,22 +155,19 @@
         // Nearphase
         var oldContacts = this.contacts.concat(this.oldContacts);
         var contacts = this.contacts = [];
-        var Circle = p2.Circle,
-            Plane = p2.Plane,
-            Particle = p2.Particle;
         for(var i=0, Nresults=result.length; i!==Nresults; i+=2){
             var bi = result[i];
             var bj = result[i+1];
             var si = bi.shape;
             var sj = bj.shape;
-            if(si instanceof p2.Circle){
-                     if(sj instanceof Circle)   nearphaseCircleCircle  (bi,bj,contacts,oldContacts);
-                else if(sj instanceof Particle) nearphaseCircleParticle(bi,bj,contacts,oldContacts);
-                else if(sj instanceof Plane)    nearphaseCirclePlane   (bi,bj,contacts,oldContacts);
+            if(si instanceof Circle){
+                     if(sj instanceof Circle)   bp.nearphaseCircleCircle  (bi,bj,contacts,oldContacts);
+                else if(sj instanceof Particle) bp.nearphaseCircleParticle(bi,bj,contacts,oldContacts);
+                else if(sj instanceof Plane)    bp.nearphaseCirclePlane   (bi,bj,contacts,oldContacts);
             } else if(si instanceof Particle){
-                     if(sj instanceof Circle)   nearphaseCircleParticle(bj,bi,contacts,oldContacts);
+                     if(sj instanceof Circle)   bp.nearphaseCircleParticle(bj,bi,contacts,oldContacts);
             } else if(si instanceof Plane){
-                     if(sj instanceof Circle)   nearphaseCirclePlane   (bj,bi,contacts,oldContacts);
+                     if(sj instanceof Circle)   bp.nearphaseCirclePlane   (bj,bi,contacts,oldContacts);
             }
         }
         this.oldContacts = oldContacts;
@@ -199,10 +221,10 @@
      * Add a spring to the simulation
      *
      * @method
-     * @memberof p2.World
+     * @memberof World
      * @param {p2.Spring} s
      */
-    p2.World.prototype.addSpring = function(s){
+    World.prototype.addSpring = function(s){
         this.springs.push(s);
     };
 
@@ -210,10 +232,10 @@
      * Remove a spring
      *
      * @method
-     * @memberof p2.World
+     * @memberof World
      * @param {p2.Spring} s
      */
-    p2.World.prototype.removeSpring = function(s){
+    World.prototype.removeSpring = function(s){
         var idx = this.springs.indexOf(s);
         if(idx===-1)
             this.springs.splice(idx,1);
@@ -223,10 +245,10 @@
      * Add a body to the simulation
      *
      * @method
-     * @memberof p2.World
+     * @memberof World
      * @param {p2.Body} body
      */
-    p2.World.prototype.addBody = function(body){
+    World.prototype.addBody = function(body){
         this.bodies.push(body);
         this.collidingBodies.push(body);
     };
@@ -235,10 +257,10 @@
      * Remove a body from the simulation
      *
      * @method
-     * @memberof p2.World
+     * @memberof World
      * @param {p2.Body} body
      */
-    p2.World.prototype.removeBody = function(body){
+    World.prototype.removeBody = function(body){
         var idx = this.bodies.indexOf(body);
         if(idx===-1)
             this.bodies.splice(idx,1);

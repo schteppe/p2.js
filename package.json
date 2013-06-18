@@ -35,6 +35,7 @@
         "grunt-contrib-nodeunit": "~0.1.2",
         "grunt-contrib-concat": "~0.1.3",
         "grunt-contrib-uglify": "*",
+        "grunt-browserify":"*",
         "jox":"*",
         "gl-matrix":"2.0.0"
     },

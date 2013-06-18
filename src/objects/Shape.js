@@ -2,14 +2,14 @@
      * Base class for shapes.
      * @class
      */
-    p2.Shape = function(){};
+    exports.Shape = function(){};
 
     /**
      * Particle shape class.
      * @class
      * @extends p2.Shape
      */
-    p2.Particle = function(){
+    exports.Particle = function(){
         p2.Shape.apply(this);
     };
 
@@ -19,7 +19,7 @@
      * @extends p2.Shape
      * @param {number} radius
      */
-    p2.Circle = function(radius){
+    exports.Circle = function(radius){
         p2.Shape.apply(this);
         /**
          * The radius of the circle.
@@ -34,7 +34,7 @@
      * @class
      * @extends p2.Shape
      */
-    p2.Plane = function(){
+    exports.Plane = function(){
         p2.Shape.apply(this);
     };
 

@@ -1,3 +1,11 @@
+    var Circle = require('../objects/Shape').Circle,
+        Plane = require('../objects/Shape').Plane,
+        Particle = require('../objects/Shape').Particle,
+        bp = require('../collision/Broadphase'),
+        Broadphase = bp.Broadphase,
+        glMatrix = require('gl-matrix'),
+        vec2 = glMatrix.vec2;
+
     /**
      * Broadphase that uses axis-aligned bins.
      * @class
@@ -9,16 +17,13 @@
      * @param {number} nx Number of bins along x axis
      * @param {number} ny Number of bins along y axis
      */
-    p2.GridBroadphase = function(xmin,xmax,ymin,ymax,nx,ny){
-        p2.Broadphase.apply(this);
+    exports.GridBroadphase = function(xmin,xmax,ymin,ymax,nx,ny){
+        Broadphase.apply(this);
 
         nx = nx || 10;
         ny = ny || 10;
         var binsizeX = (xmax-xmin) / nx;
         var binsizeY = (ymax-ymin) / ny;
-        var Plane = p2.Plane,
-            Circle = p2.Circle,
-            Particle = p2.Particle;
 
         function getBinIndex(x,y){
             var xi = Math.floor(nx * (x - xmin) / (xmax-xmin));
@@ -47,8 +52,8 @@
                 } else if(si instanceof Circle){
                     // Put in bin
                     // check if overlap with other bins
-                    var x = vec2.getX(bi.position);
-                    var y = vec2.getY(bi.position);
+                    var x = bi.position[0];
+                    var y = bi.position[1];
                     var r = si.radius;
 
                     var xi1 = Math.floor(xmult * (x-r - xmin));
@@ -67,7 +72,7 @@
                 } else if(si instanceof Plane){
                     // Put in all bins for now
                     if(bi.angle == 0){
-                        var y = vec2.getY(bi.position);
+                        var y = bi.position[1];
                         for(var j=0; j!==Nbins && ymin+binsizeY*(j-1)<y; j++){
                             for(var k=0; k<nx; k++){
                                 var xi = k;
@@ -76,7 +81,7 @@
                             }
                         }
                     } else if(bi.angle == Math.PI*0.5){
-                        var x = vec2.getX(bi.position);
+                        var x = bi.position[0];
                         for(var j=0; j!==Nbins && xmin+binsizeX*(j-1)<x; j++){
                             for(var k=0; k<ny; k++){
                                 var yi = k;
@@ -104,14 +109,14 @@
                         var bj = bin[k];
                         var sj = bj.shape;
 
-                        if(si instanceof p2.Circle){
-                                 if(sj instanceof Circle)   checkCircleCircle  (bi,bj,result);
-                            else if(sj instanceof Particle) checkCircleParticle(bi,bj,result);
-                            else if(sj instanceof Plane)    checkCirclePlane   (bi,bj,result);
+                        if(si instanceof Circle){
+                                 if(sj instanceof Circle)   bp.checkCircleCircle  (bi,bj,result);
+                            else if(sj instanceof Particle) bp.checkCircleParticle(bi,bj,result);
+                            else if(sj instanceof Plane)    bp.checkCirclePlane   (bi,bj,result);
                         } else if(si instanceof Particle){
-                                 if(sj instanceof Circle)   checkCircleParticle(bj,bi,result);
+                                 if(sj instanceof Circle)   bp.checkCircleParticle(bj,bi,result);
                         } else if(si instanceof Plane){
-                                 if(sj instanceof Circle)   checkCirclePlane   (bj,bi,result);
+                                 if(sj instanceof Circle)   bp.checkCirclePlane   (bj,bi,result);
                         }
                     }
                 }
@@ -119,5 +124,5 @@
             return result;
         };
     };
-    p2.GridBroadphase.prototype = new p2.Broadphase();
+    exports.GridBroadphase.prototype = new Broadphase();
 

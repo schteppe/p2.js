@@ -42,7 +42,7 @@ function Demo(){
     var sum = 0;
     var N = 100;
     var Nsummed = 0;
-    var average = "???";
+    var average = "?";
     this.updateStats = function(){
         sum += world.lastStepTime;
         Nsummed++;
@@ -52,8 +52,6 @@ function Demo(){
             Nsummed = 0;
         }
         document.getElementById("step").innerHTML = "Physics step: "+average+"ms";
-        document.getElementById("vecs").innerHTML = "Vec create: "+world.vecCreations;
-        document.getElementById("mats").innerHTML = "Mat create: "+world.matCreations;
         document.getElementById("contacts").innerHTML = "Contacts: "+world.contacts.length;
     }
 
@@ -205,8 +203,8 @@ function WebGLDemo(){
         for(var i=0, Nc=meshes.length; i!==Nc; i++){
             var p = meshes[i].position;
             var r = meshes[i].rotation;
-            p.x = vec2.getX(that.bodies[i].position);
-            p.y = vec2.getY(that.bodies[i].position);
+            p.x = that.bodies[i].position[0];
+            p.y = that.bodies[i].position[1];
             r.z = that.bodies[i].angle;
         }
         t++;
@@ -329,18 +327,18 @@ function CanvasDemo(){
             // Render springs
             for(var i=0,Nsprings=springs.length; i!==Nsprings; i++){
                 var s = springs[i];
-                var x1 = toScreenX(vec2.getX(s.bodyA.position));
-                var y1 = toScreenY(vec2.getY(s.bodyA.position));
-                var x2 = toScreenX(vec2.getX(s.bodyB.position));
-                var y2 = toScreenY(vec2.getY(s.bodyB.position));
+                var x1 = toScreenX(s.bodyA.position[0]);
+                var y1 = toScreenY(s.bodyA.position[1]);
+                var x2 = toScreenX(s.bodyB.position[0]);
+                var y2 = toScreenY(s.bodyB.position[1]);
                 drawSpring(ctx,x1,y1,x2,y2,toScreenScale(s.restLength));
             }
 
             // Render bodies
             for(var i=0,Nbodies=bodies.length; i!==Nbodies; i++){
                 var b = bodies[i];
-                var x = toScreenX(vec2.getX(b.position));
-                var y = toScreenY(vec2.getY(b.position));
+                var x = toScreenX(b.position[0]);
+                var y = toScreenY(b.position[1]);
                 if(b.shape instanceof(p2.Circle)){
                     drawCircle(ctx,x,y,toScreenScale(b.shape.radius));
                 } else if(b.shape instanceof(p2.Particle)){

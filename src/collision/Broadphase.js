@@ -1,9 +1,14 @@
-    // Broadphase
+    var glMatrix = require('gl-matrix'),
+        glMatrixExtensions = require('../gl-matrix-extensions'),
+        vec2e = glMatrixExtensions.vec2,
+        vec2 = glMatrix.vec2,
+        mat2 = glMatrix.mat2;
+
     var dist = vec2.create();
     var rot = mat2.create();
     var worldNormal = vec2.create();
     var yAxis = vec2.fromValues(0,1);
-    function checkCircleCircle(c1,c2,result){
+    exports.checkCircleCircle = function(c1,c2,result){
         vec2.sub(dist,c1.position,c2.position);
         var R1 = c1.shape.radius;
         var R2 = c2.shape.radius;
@@ -11,26 +16,24 @@
             result.push(c1);
             result.push(c2);
         }
-    }
-    function checkCirclePlane(c,p,result){
+    };
+
+    exports.checkCirclePlane = function(c,p,result){
         vec2.sub(dist,c.position,p.position);
-        /*
-        M.setFromRotation(rot,p.angle);
-        vec2.transformMat2(worldNormal,yAxis,rot);
-        */
-        vec2.rotate(worldNormal,yAxis,p.angle);
+        vec2e.rotate(worldNormal,yAxis,p.angle);
         if(vec2.dot(dist,worldNormal) <= c.shape.radius){
             result.push(c);
             result.push(p);
         }
     }
-    function checkCircleParticle(c,p,result){
+
+    exports.checkCircleParticle = function(c,p,result){
         result.push(c);
         result.push(p);
-    }
+    };
 
     // Generate contacts / do nearphase
-    function nearphaseCircleCircle(c1,c2,result,oldContacts){
+    exports.nearphaseCircleCircle = function(c1,c2,result,oldContacts){
         //var c = new p2.ContactEquation(c1,c2);
         var c = oldContacts.length ? oldContacts.pop() : new p2.ContactEquation(c1,c2);
         c.bi = c1;
@@ -40,26 +43,23 @@
         vec2.scale( c.ri,c.ni, c1.shape.radius);
         vec2.scale( c.rj,c.ni,-c2.shape.radius);
         result.push(c);
-    }
-    function nearphaseCircleParticle(c,p,result,oldContacts){
+    };
+
+    exports.nearphaseCircleParticle = function(c,p,result,oldContacts){
         // todo
-    }
+    };
+
     var nearphaseCirclePlane_rot = mat2.create();
     var nearphaseCirclePlane_planeToCircle = vec2.create();
     var nearphaseCirclePlane_temp = vec2.create();
-    function nearphaseCirclePlane(c,p,result,oldContacts){
+    exports.nearphaseCirclePlane = function(c,p,result,oldContacts){
         var rot = nearphaseCirclePlane_rot;
         var contact = oldContacts.length ? oldContacts.pop() : new p2.ContactEquation(p,c);
         contact.bi = p;
         contact.bj = c;
         var planeToCircle = nearphaseCirclePlane_planeToCircle;
         var temp = nearphaseCirclePlane_temp;
-
-        /*
-        M.setFromRotation(rot,p.angle);
-        vec2.transformMat2(contact.ni,yAxis,rot);
-        */
-        vec2.rotate(contact.ni,yAxis,p.angle);
+        vec2e.rotate(contact.ni,yAxis,p.angle);
 
         vec2.scale( contact.rj,contact.ni, -c.shape.radius);
 
@@ -71,23 +71,11 @@
         result.push(contact);
     }
 
-    var step_r = vec2.create();
-    var step_runit = vec2.create();
-    var step_u = vec2.create();
-    var step_f = vec2.create();
-    var step_fhMinv = vec2.create();
-    var step_velodt = vec2.create();
-    function now(){
-        if(performance.now) return performance.now();
-        else if(performance.webkitNow) return performance.webkitNow();
-        else new Date().getTime();
-    }
-
     /**
      * Base class for broadphase implementations.
      * @class
      */
-    p2.Broadphase = function(){
+    exports.Broadphase = function(){
 
     };
 
@@ -98,7 +86,7 @@
      * @param  {p2.World} world The world to search in.
      * @return {Array} An array of the bodies, ordered in pairs. Example: A result of [a,b,c,d] means that the potential pairs are: (a,b), (c,d).
      */
-    p2.Broadphase.prototype.getCollisionPairs = function(world){
+    exports.Broadphase.prototype.getCollisionPairs = function(world){
         throw new Error("getCollisionPairs must be implemented in a subclass!");
     };
 

@@ -2,7 +2,6 @@
 <html>
 <head>
     <title>p2.js</title>
-    <script src="../node_modules/gl-matrix/dist/gl-matrix.js"></script>
     <script src="../build/p2.js"></script>
     <script src="demo.js"></script>
     <script src="three.js"></script>
@@ -20,7 +19,7 @@
             var l = 20, N=20, M=20;
             var timeStep = 1/60,
                 r=0.2;
-            vec2.set(world.gravity,0,-15);
+            p2.vec2.set(world.gravity,0,-15);
             world.solver.setSpookParams(1e50,6);
             world.solver.iterations = solverIterations;
             world.solver.tolerance = 0.001;
@@ -34,7 +33,7 @@
                     var p = new p2.Body({
                         mass: 1,
                         shape: shape,
-                        position: vec3.fromValues(x, y)
+                        position: p2.vec2.fromValues(x, y)
                     });
                     world.addBody(p);
                     demo.addVisual(p);
@@ -60,7 +59,7 @@
             var planeRight = new p2.Body({
                 shape: planeShape,
                 angle: Math.PI/2,
-                position: vec2.fromValues(xmax, 0)
+                position: p2.vec2.fromValues(xmax, 0)
             });
             world.addBody(planeRight);
 

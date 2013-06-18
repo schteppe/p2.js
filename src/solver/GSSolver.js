@@ -1,10 +1,18 @@
+    var glMatrix = require('gl-matrix'),
+        vec2 = glMatrix.vec2,
+        Solver = require('./Solver').Solver;
+
+    exports.GSSolver = GSSolver;
+
+    var ARRAY_TYPE = Float32Array || Array;
+
     /**
      * Iterative Gauss-Seidel constraint equation solver.
      * @class
      * @extends p2.Solver
      */
-    p2.GSSolver = function(options){
-        p2.Solver.call(this);
+    function GSSolver(options){
+        Solver.call(this);
         options = options || {};
         this.iterations = options.iterations || 10;
         this.h = options.timeStep || 1.0/60.0;
@@ -21,8 +29,8 @@
         this.Bs =     new ARRAY_TYPE(this.arrayStep);
         this.invCs =  new ARRAY_TYPE(this.arrayStep);
     };
-    p2.GSSolver.prototype = new p2.Solver();
-    p2.GSSolver.prototype.setSpookParams = function(k,d){
+    GSSolver.prototype = new Solver();
+    GSSolver.prototype.setSpookParams = function(k,d){
         var h=this.h;
         this.k = k;
         this.d = d;
@@ -30,7 +38,7 @@
         this.b = (4.0 * d) / (1 + 4 * d);
         this.eps = 4.0 / (h * h * k * (1 + 4 * d));
     };
-    p2.GSSolver.prototype.solve = function(dt,world){
+    GSSolver.prototype.solve = function(dt,world){
         var d = this.d,
             ks = this.k,
             iter = 0,
