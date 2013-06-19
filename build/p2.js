@@ -156,7 +156,29 @@ var glMatrix = require('gl-matrix');
 exports.vec2 = glMatrix.vec2;
 exports.mat2 = glMatrix.mat2;
 
-},{"./objects/Body":5,"./collision/Broadphase":6,"./objects/Shape":1,"./constraints/ContactEquation":7,"./constraints/Equation":2,"./collision/GridBroadphase":8,"./solver/GSSolver":9,"./collision/NaiveBroadphase":10,"./solver/Solver":3,"./world/World":11,"gl-matrix":12}],12:[function(require,module,exports){
+},{"./objects/Body":5,"./objects/Shape":1,"./collision/Broadphase":6,"./constraints/ContactEquation":7,"./constraints/Equation":2,"./solver/GSSolver":8,"./collision/NaiveBroadphase":9,"./collision/GridBroadphase":10,"./solver/Solver":3,"./world/World":11,"gl-matrix":12}],13:[function(require,module,exports){
+    exports.vec2 = {
+        getX : function(a){
+        	return a[0];
+        },
+
+        getY : function(a){
+        	return a[1];
+        },
+
+        crossLength : function(a,b){
+        	return a[0] * b[1] - a[1] * b[0];
+        },
+
+        rotate : function(out,a,angle){
+            var c = Math.cos(angle),
+                s = Math.sin(angle);
+            out[0] = c*a[0] -s*a[1];
+            out[1] = s*a[0] +c*a[1];
+        }
+    };
+
+},{}],12:[function(require,module,exports){
 (function(){/**
  * @fileoverview gl-matrix - High performance matrix and vector operations
  * @author Brandon Jones
@@ -3230,28 +3252,6 @@ if(typeof(exports) !== 'undefined') {
 })();
 
 })()
-},{}],13:[function(require,module,exports){
-    exports.vec2 = {
-        getX : function(a){
-        	return a[0];
-        },
-
-        getY : function(a){
-        	return a[1];
-        },
-
-        crossLength : function(a,b){
-        	return a[0] * b[1] - a[1] * b[0];
-        },
-
-        rotate : function(out,a,angle){
-            var c = Math.cos(angle),
-                s = Math.sin(angle);
-            out[0] = c*a[0] -s*a[1];
-            out[1] = s*a[0] +c*a[1];
-        }
-    };
-
 },{}],5:[function(require,module,exports){
     var glMatrix = require("gl-matrix"),
         vec2 = glMatrix.vec2;
@@ -3511,135 +3511,49 @@ if(typeof(exports) !== 'undefined') {
     };
 
 
-},{"../gl-matrix-extensions":13,"gl-matrix":12}],8:[function(require,module,exports){
+},{"../gl-matrix-extensions":13,"gl-matrix":12}],9:[function(require,module,exports){
     var Circle = require('../objects/Shape').Circle,
         Plane = require('../objects/Shape').Plane,
-        Particle = require('../objects/Shape').Particle,
         bp = require('../collision/Broadphase'),
         Broadphase = bp.Broadphase,
         glMatrix = require('gl-matrix'),
         vec2 = glMatrix.vec2;
 
     /**
-     * Broadphase that uses axis-aligned bins.
+     * Naive broadphase implementation. Does N^2 tests.
+     *
      * @class
      * @extends p2.Broadphase
-     * @param {number} xmin Lower x bound of the grid
-     * @param {number} xmax Upper x bound
-     * @param {number} ymin Lower y bound
-     * @param {number} ymax Upper y bound
-     * @param {number} nx Number of bins along x axis
-     * @param {number} ny Number of bins along y axis
      */
-    exports.GridBroadphase = function(xmin,xmax,ymin,ymax,nx,ny){
+    exports.NaiveBroadphase = function(){
         Broadphase.apply(this);
-
-        nx = nx || 10;
-        ny = ny || 10;
-        var binsizeX = (xmax-xmin) / nx;
-        var binsizeY = (ymax-ymin) / ny;
-
-        function getBinIndex(x,y){
-            var xi = Math.floor(nx * (x - xmin) / (xmax-xmin));
-            var yi = Math.floor(ny * (y - ymin) / (ymax-ymin));
-            return xi*ny + yi;
-        }
-
         this.getCollisionPairs = function(world){
-            var result = [];
             var collidingBodies = world.collidingBodies;
-            var Ncolliding = Ncolliding=collidingBodies.length;
-
-            var bins=[], Nbins=nx*ny;
-            for(var i=0; i<Nbins; i++)
-                bins.push([]);
-
-            var xmult = nx / (xmax-xmin);
-            var ymult = ny / (ymax-ymin);
-
-            // Put all bodies into bins
-            for(var i=0; i!==Ncolliding; i++){
+            var result = [];
+            for(var i=0, Ncolliding=collidingBodies.length; i!==Ncolliding; i++){
                 var bi = collidingBodies[i];
                 var si = bi.shape;
-                if (si === undefined) {
-                    continue;
-                } else if(si instanceof Circle){
-                    // Put in bin
-                    // check if overlap with other bins
-                    var x = bi.position[0];
-                    var y = bi.position[1];
-                    var r = si.radius;
-
-                    var xi1 = Math.floor(xmult * (x-r - xmin));
-                    var yi1 = Math.floor(ymult * (y-r - ymin));
-                    var xi2 = Math.floor(xmult * (x+r - xmin));
-                    var yi2 = Math.floor(ymult * (y+r - ymin));
-
-                    for(var j=xi1; j<=xi2; j++){
-                        for(var k=yi1; k<=yi2; k++){
-                            var xi = j;
-                            var yi = k;
-                            if(xi*(ny-1) + yi >= 0 && xi*(ny-1) + yi < Nbins)
-                                bins[ xi*(ny-1) + yi ].push(bi);
-                        }
-                    }
-                } else if(si instanceof Plane){
-                    // Put in all bins for now
-                    if(bi.angle == 0){
-                        var y = bi.position[1];
-                        for(var j=0; j!==Nbins && ymin+binsizeY*(j-1)<y; j++){
-                            for(var k=0; k<nx; k++){
-                                var xi = k;
-                                var yi = Math.floor(ymult * (binsizeY*j - ymin));
-                                bins[ xi*(ny-1) + yi ].push(bi);
-                            }
-                        }
-                    } else if(bi.angle == Math.PI*0.5){
-                        var x = bi.position[0];
-                        for(var j=0; j!==Nbins && xmin+binsizeX*(j-1)<x; j++){
-                            for(var k=0; k<ny; k++){
-                                var yi = k;
-                                var xi = Math.floor(xmult * (binsizeX*j - xmin));
-                                bins[ xi*(ny-1) + yi ].push(bi);
-                            }
-                        }
-                    } else {
-                        for(var j=0; j!==Nbins; j++)
-                            bins[j].push(bi);
-                    }
-                } else {
-                    throw new Error("Shape not supported in GridBroadphase!");
-                }
-            }
-
-            // Check each bin
-            for(var i=0; i!==Nbins; i++){
-                var bin = bins[i];
-                for(var j=0, NbodiesInBin=bin.length; j!==NbodiesInBin; j++){
-                    var bi = bin[j];
-                    var si = bi.shape;
-
-                    for(var k=0; k!==j; k++){
-                        var bj = bin[k];
-                        var sj = bj.shape;
-
-                        if(si instanceof Circle){
-                                 if(sj instanceof Circle)   bp.checkCircleCircle  (bi,bj,result);
-                            else if(sj instanceof Particle) bp.checkCircleParticle(bi,bj,result);
-                            else if(sj instanceof Plane)    bp.checkCirclePlane   (bi,bj,result);
-                        } else if(si instanceof Particle){
-                                 if(sj instanceof Circle)   bp.checkCircleParticle(bj,bi,result);
-                        } else if(si instanceof Plane){
-                                 if(sj instanceof Circle)   bp.checkCirclePlane   (bj,bi,result);
-                        }
+                if (si === undefined) continue;
+                for(var j=0; j!==i; j++){
+                    var bj = collidingBodies[j];
+                    var sj = bj.shape;
+                    if (sj === undefined) {
+                        continue;
+                    } else if(si instanceof bp.Circle){
+                             if(sj instanceof bp.Circle)   bp.checkCircleCircle  (bi,bj,result);
+                        else if(sj instanceof bp.Particle) bp.checkCircleParticle(bi,bj,result);
+                        else if(sj instanceof bp.Plane)    bp.checkCirclePlane   (bi,bj,result);
+                    } else if(si instanceof bp.Particle){
+                             if(sj instanceof bp.Circle)   bp.checkCircleParticle(bj,bi,result);
+                    } else if(si instanceof bp.Plane){
+                             if(sj instanceof bp.Circle)   bp.checkCirclePlane   (bj,bi,result);
                     }
                 }
             }
             return result;
         };
     };
-    exports.GridBroadphase.prototype = new Broadphase();
-
+    exports.NaiveBroadphase.prototype = new Broadphase();
 
 },{"../objects/Shape":1,"../collision/Broadphase":6,"gl-matrix":12}],7:[function(require,module,exports){
     var Equation = require("./Equation").Equation,
@@ -3781,7 +3695,7 @@ if(typeof(exports) !== 'undefined') {
     };
 
 
-},{"./Equation":2,"../gl-matrix-extensions":13,"gl-matrix":12}],9:[function(require,module,exports){
+},{"./Equation":2,"../gl-matrix-extensions":13,"gl-matrix":12}],8:[function(require,module,exports){
     var glMatrix = require('gl-matrix'),
         vec2 = glMatrix.vec2,
         Solver = require('./Solver').Solver;
@@ -3919,46 +3833,132 @@ if(typeof(exports) !== 'undefined') {
 },{"./Solver":3,"gl-matrix":12}],10:[function(require,module,exports){
     var Circle = require('../objects/Shape').Circle,
         Plane = require('../objects/Shape').Plane,
+        Particle = require('../objects/Shape').Particle,
         bp = require('../collision/Broadphase'),
         Broadphase = bp.Broadphase,
         glMatrix = require('gl-matrix'),
         vec2 = glMatrix.vec2;
 
     /**
-     * Naive broadphase implementation. Does N^2 tests.
-     *
+     * Broadphase that uses axis-aligned bins.
      * @class
      * @extends p2.Broadphase
+     * @param {number} xmin Lower x bound of the grid
+     * @param {number} xmax Upper x bound
+     * @param {number} ymin Lower y bound
+     * @param {number} ymax Upper y bound
+     * @param {number} nx Number of bins along x axis
+     * @param {number} ny Number of bins along y axis
      */
-    exports.NaiveBroadphase = function(){
+    exports.GridBroadphase = function(xmin,xmax,ymin,ymax,nx,ny){
         Broadphase.apply(this);
+
+        nx = nx || 10;
+        ny = ny || 10;
+        var binsizeX = (xmax-xmin) / nx;
+        var binsizeY = (ymax-ymin) / ny;
+
+        function getBinIndex(x,y){
+            var xi = Math.floor(nx * (x - xmin) / (xmax-xmin));
+            var yi = Math.floor(ny * (y - ymin) / (ymax-ymin));
+            return xi*ny + yi;
+        }
+
         this.getCollisionPairs = function(world){
-            var collidingBodies = world.collidingBodies;
             var result = [];
-            for(var i=0, Ncolliding=collidingBodies.length; i!==Ncolliding; i++){
+            var collidingBodies = world.collidingBodies;
+            var Ncolliding = Ncolliding=collidingBodies.length;
+
+            var bins=[], Nbins=nx*ny;
+            for(var i=0; i<Nbins; i++)
+                bins.push([]);
+
+            var xmult = nx / (xmax-xmin);
+            var ymult = ny / (ymax-ymin);
+
+            // Put all bodies into bins
+            for(var i=0; i!==Ncolliding; i++){
                 var bi = collidingBodies[i];
                 var si = bi.shape;
-                if (si === undefined) continue;
-                for(var j=0; j!==i; j++){
-                    var bj = collidingBodies[j];
-                    var sj = bj.shape;
-                    if (sj === undefined) {
-                        continue;
-                    } else if(si instanceof bp.Circle){
-                             if(sj instanceof bp.Circle)   bp.checkCircleCircle  (bi,bj,result);
-                        else if(sj instanceof bp.Particle) bp.checkCircleParticle(bi,bj,result);
-                        else if(sj instanceof bp.Plane)    bp.checkCirclePlane   (bi,bj,result);
-                    } else if(si instanceof bp.Particle){
-                             if(sj instanceof bp.Circle)   bp.checkCircleParticle(bj,bi,result);
-                    } else if(si instanceof bp.Plane){
-                             if(sj instanceof bp.Circle)   bp.checkCirclePlane   (bj,bi,result);
+                if (si === undefined) {
+                    continue;
+                } else if(si instanceof Circle){
+                    // Put in bin
+                    // check if overlap with other bins
+                    var x = bi.position[0];
+                    var y = bi.position[1];
+                    var r = si.radius;
+
+                    var xi1 = Math.floor(xmult * (x-r - xmin));
+                    var yi1 = Math.floor(ymult * (y-r - ymin));
+                    var xi2 = Math.floor(xmult * (x+r - xmin));
+                    var yi2 = Math.floor(ymult * (y+r - ymin));
+
+                    for(var j=xi1; j<=xi2; j++){
+                        for(var k=yi1; k<=yi2; k++){
+                            var xi = j;
+                            var yi = k;
+                            if(xi*(ny-1) + yi >= 0 && xi*(ny-1) + yi < Nbins)
+                                bins[ xi*(ny-1) + yi ].push(bi);
+                        }
+                    }
+                } else if(si instanceof Plane){
+                    // Put in all bins for now
+                    if(bi.angle == 0){
+                        var y = bi.position[1];
+                        for(var j=0; j!==Nbins && ymin+binsizeY*(j-1)<y; j++){
+                            for(var k=0; k<nx; k++){
+                                var xi = k;
+                                var yi = Math.floor(ymult * (binsizeY*j - ymin));
+                                bins[ xi*(ny-1) + yi ].push(bi);
+                            }
+                        }
+                    } else if(bi.angle == Math.PI*0.5){
+                        var x = bi.position[0];
+                        for(var j=0; j!==Nbins && xmin+binsizeX*(j-1)<x; j++){
+                            for(var k=0; k<ny; k++){
+                                var yi = k;
+                                var xi = Math.floor(xmult * (binsizeX*j - xmin));
+                                bins[ xi*(ny-1) + yi ].push(bi);
+                            }
+                        }
+                    } else {
+                        for(var j=0; j!==Nbins; j++)
+                            bins[j].push(bi);
+                    }
+                } else {
+                    throw new Error("Shape not supported in GridBroadphase!");
+                }
+            }
+
+            // Check each bin
+            for(var i=0; i!==Nbins; i++){
+                var bin = bins[i];
+                for(var j=0, NbodiesInBin=bin.length; j!==NbodiesInBin; j++){
+                    var bi = bin[j];
+                    var si = bi.shape;
+
+                    for(var k=0; k!==j; k++){
+                        var bj = bin[k];
+                        var sj = bj.shape;
+
+                        if(si instanceof Circle){
+                                 if(sj instanceof Circle)   bp.checkCircleCircle  (bi,bj,result);
+                            else if(sj instanceof Particle) bp.checkCircleParticle(bi,bj,result);
+                            else if(sj instanceof Plane)    bp.checkCirclePlane   (bi,bj,result);
+                        } else if(si instanceof Particle){
+                                 if(sj instanceof Circle)   bp.checkCircleParticle(bj,bi,result);
+                        } else if(si instanceof Plane){
+                                 if(sj instanceof Circle)   bp.checkCirclePlane   (bj,bi,result);
+                        }
                     }
                 }
             }
             return result;
         };
     };
-    exports.NaiveBroadphase.prototype = new Broadphase();
+    exports.GridBroadphase.prototype = new Broadphase();
+
 
 },{"../objects/Shape":1,"../collision/Broadphase":6,"gl-matrix":12}],11:[function(require,module,exports){
     var GSSolver = require('../solver/GSSolver').GSSolver,
@@ -4230,6 +4230,6 @@ if(typeof(exports) !== 'undefined') {
     };
 
 
-},{"../solver/GSSolver":9,"../collision/NaiveBroadphase":10,"../objects/Shape":1,"../collision/Broadphase":6,"gl-matrix":12}]},{},[4])(4)
+},{"../solver/GSSolver":8,"../collision/NaiveBroadphase":9,"../objects/Shape":1,"../collision/Broadphase":6,"gl-matrix":12}]},{},[4])(4)
 });
 ;
