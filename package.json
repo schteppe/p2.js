@@ -23,7 +23,7 @@
     },
     "licenses" : [
         {
-            "type" : "?"
+            "type" : "MIT"
         }
     ],
     "devDependencies" : {
