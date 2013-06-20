@@ -11,9 +11,12 @@
     exports.World = World;
 
     function now(){
-        if(performance.now) return performance.now();
-        else if(performance.webkitNow) return performance.webkitNow();
-        else new Date().getTime();
+        if(performance.now)
+            return performance.now();
+        else if(performance.webkitNow)
+            return performance.webkitNow();
+        else
+            return new Date().getTime();
     }
 
     /**
@@ -114,13 +117,13 @@
             Nbodies = this.bodies.length,
             broadphase = this.broadphase,
             t0, t1;
-        
+
         if(doProfiling){
             t0 = now();
             vecCount = 0; // Start counting vector creations
             matCount = 0;
         }
-        
+
         // add gravity to bodies
         for(var i=0; i!==Nbodies; i++){
             var fi = bodies[i].force;
