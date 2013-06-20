@@ -22,13 +22,11 @@
     /**
      * The dynamics world, where all bodies and constraints lives.
      *
-     * Options:
-     *   - solver (p2.Solver) Default: {p2.GSSolver}
-     *   - gravity (vec2) Default: -9.78
-     *   - broadphase (p2.Broadphase) Default: {p2.NaiveBroadphase}
-     *
      * @class
-     * @param {Object} options
+     * @param {Object} [options]
+     * @param {p2.Solver} options.solver Default: p2.GSSolver
+     * @param {vec2} options.gravity Default: [0,-9.78]
+     * @param {p2.Broadphase} options.broadphase Default: p2.NaiveBroadphase
      */
     function World(options){
         options = options || {};

@@ -42,6 +42,8 @@
         if(t.match(/p2/)){
             // Internal p2.js type
             return '<a href="#'+t.replace("p2.","")+'">'+t.replace("p2.","")+'</a>';
+        } else if(t=="vec2" || t=="mat2"){
+            return '<a href="http://glmatrix.net/docs/2.2.0/symbols/'+t+'.html">'+t+'</a>';
         } else {
             return t;
         }
@@ -71,7 +73,8 @@
 
                         var paramNames = [];
                         for(var j=0; j<paramTags.length; j++){
-                            paramNames.push(paramTags[j].name);
+                            if(paramTags[j].name.indexOf(".")==-1) // Do not add sub-object arguments
+                                paramNames.push(paramTags[j].name);
                         }
 
                         // Print constructor signature
@@ -86,18 +89,50 @@
                         %><p><%-f.description.summary%></p><%
 
                         // Parameter descriptions
+                        var optionsObjects = {}; // optionsObjectName : tagsArray
                         if(paramTags.length){
                             %><h4>Parameters</h4><%
                             %><dl class="dl-horizontal"><%
                             for(var j=0; j<paramTags.length; j++){
                                 var p = paramTags[j];
+                                var idx = p.name.indexOf(".");
+                                if(idx!=-1){
+                                    // Save option parameter for later!
+                                    var optionsObjectName = p.name.substring(0,idx);
+                                    optionsObjects[optionsObjectName] = optionsObjects[optionsObjectName] || [];
+                                    optionsObjects[optionsObjectName].push(p);
+                                    continue; // Dont list sub-object properties here
+                                }
+
+                                // Has it got a type?
                                 if(p.types.length){
                                     %><dt><i class="datatype"><%
                                     var t = p.types[0];
                                     %><%-linkMeMaybe(t)%><%
-                                    %></i> <%=p.name%></dt><%
+                                    %></i> <%=p.name.replace(/\[|\]/g,"")%></dt><%
                                 }
                                 %><dd><%-p.description%></dd><%
+                            }
+                            %></dl><%
+                        }
+
+                        // List "options" objects parameters
+                        for(var optionsObjectName in optionsObjects){
+                            var o = optionsObjects[optionsObjectName];
+                            %><h4><%=optionsObjectName%></h4><%
+                            %><dl><%
+                            for(var j=0; j<o.length; j++){
+
+                                // Has it got a type?
+                                var type = "";
+                                if(o[j].types.length){
+                                    var t = o[j].types[0];
+                                    type = ' <i class="datatype">{ '+linkMeMaybe(t)+' } </i>';
+                                }
+
+                                var idx = o[j].name.indexOf(".");
+                                %><dt><%=o[j].name.substring(idx)%><%-type%></dt><%
+                                %><dd><p><%=o[j].description%></p></dd><%
                             }
                             %></dl><%
                         }
@@ -107,6 +142,7 @@
                             %><%-f.description.body%><%
                         }
 
+                        // Methods
                         var methods = getCommentsByTag(methodComments,{ type : "memberof", string : f.ctx.name });
                         if(methods.length){
                             %><h4>Methods</h4>

@@ -7,15 +7,13 @@
     /**
      * A spring, connecting two bodies.
      *
-     * Options:
-     *   - restLength: A number > 0. Default: 1
-     *   - stiffness: A number >= 0. Default: 100
-     *   - damping: A number >= 0. Default: 1
-     *
      * @class
      * @param {p2.Body} bodyA
      * @param {p2.Body} bodyB
-     * @param {Object} options
+     * @param {Object} [options]
+     * @param {number} options.restLength A number > 0. Default: 1
+     * @param {number} options.stiffness A number >= 0. Default: 100
+     * @param {number} options.damping A number >= 0. Default: 1
      */
     function Spring(bodyA,bodyB,options){
         options = options || {};
@@ -59,18 +57,16 @@
     /**
      * A physics body.
      *
-     * Options:
-     *   - shape: A {p2.Shape} used for collision detection. If absent the body will not collide.
-     *   - mass: A number >= 0. If zero, the body becomes static. Defaults to static [0].
-     *   - position (vec2)
-     *   - velocity (vec2)
-     *   - angle (number)
-     *   - angularVelocity (number)
-     *   - force (vec2)
-     *   - angularForce (number)
-     *
      * @class
-     * @param {Object} options
+     * @param {Object} [options]
+     * @param {p2.Shape} options.shape Used for collision detection. If absent the body will not collide.
+     * @param {number} options.mass A number >= 0. If zero, the body becomes static. Defaults to static [0].
+     * @param {vec2} options.position
+     * @param {vec2} options.velocity
+     * @param {number} options.angle
+     * @param {number} options.angularVelocity
+     * @param {vec2} options.force
+     * @param {number} options.angularForce
      */
     function Body(options){
         options = options || {};
