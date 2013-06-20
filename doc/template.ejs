@@ -34,6 +34,16 @@
         else return 0;
     });
 
+    function linkMeMaybe(datatype){
+        var t = datatype;
+        if(t.match(/p2/)){
+            // Internal p2.js type
+            return '<a href="#'+t.replace("p2.","")+'">'+t+'</a>';
+        } else {
+            return t;
+        }
+    }
+
     %>
 
     <div class="container">
@@ -54,6 +64,7 @@
                     for(var i=0; i<classes.length; i++){
                         var f = classes[i];
                         var paramTags = filterTags(f.tags,{ type : "param" });
+                        var extendsTags = filterTags(f.tags,{ type : "extends" });
 
                         var paramNames = [];
                         for(var j=0; j<paramTags.length; j++){
@@ -62,6 +73,13 @@
 
                         // Print constructor signature
                         %><h2 id="<%=f.ctx.name%>">p2.<%=f.ctx.name%>(<%=paramNames.join(", ")%>)</h2><%
+
+                        // Extends other class?
+                        if(extendsTags.length){
+                            %><p>Extends <%-linkMeMaybe(extendsTags[0].string)%>.</p><%
+                        }
+
+                        // Summary
                         %><%-f.description.summary%><%
 
                         // Parameter descriptions
@@ -73,12 +91,7 @@
                                 if(p.types.length){
                                     %><dt><i><%
                                     var t = p.types[0];
-                                    if(t.match(/p2/)){
-                                        // Internal p2.js type
-                                        %><a href="#<%=t.replace("p2.","")%>"><%=t%></a><%
-                                    } else {
-                                        %><%=t%><%
-                                    }
+                                    %><%-linkMeMaybe(t)%><%
                                     %></i> <%=p.name%></dt><%
                                 }
                                 %><dd><%-p.description%></dd><%
