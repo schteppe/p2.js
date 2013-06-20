@@ -11,6 +11,7 @@
     <link href="css/bootstrap.css" rel="stylesheet">
     <link href="css/bootstrap-responsive.css" rel="stylesheet">
     <link href="css/docs.css" rel="stylesheet">
+
   </head>
 
   <body>
@@ -26,6 +27,8 @@
 
     // Filter
     var classes = getCommentsByTag(comments,{ type: "class" });
+    var propertyComments =  getCommentsByTag(comments,{ type : "property" }).concat(getCommentsByTag(comments,{ type : "member" }));
+    var methodComments =    getCommentsByTag(comments,{ type : "method" });
 
     // Sort
     classes.sort(function(a,b){
@@ -34,14 +37,26 @@
         else return 0;
     });
 
+    function linkMeMaybe(datatype){
+        var t = datatype;
+        if(t.match(/p2/)){
+            // Internal p2.js type
+            return '<a href="#'+t.replace("p2.","")+'">'+t.replace("p2.","")+'</a>';
+        } else if(t=="vec2" || t=="mat2"){
+            return '<a href="http://glmatrix.net/docs/2.2.0/symbols/'+t+'.html">'+t+'</a>';
+        } else {
+            return t;
+        }
+    }
+
     %>
 
     <div class="container">
 
         <div class="row">
             <div class="span3">
-                <h3>Classes</h3>
-                <ul class="nav nav-list"><%
+                <ul class="nav nav-list well">
+                    <li class="nav-header">Classes</li><%
                     for(var i=0; i<classes.length; i++){
                         var c = classes[i];
                         %><li><a href="#<%=c.ctx.name%>"><i class="icon-chevron-right"></i> p2.<%=c.ctx.name%></a></li><%
@@ -54,34 +69,70 @@
                     for(var i=0; i<classes.length; i++){
                         var f = classes[i];
                         var paramTags = filterTags(f.tags,{ type : "param" });
+                        var extendsTags = filterTags(f.tags,{ type : "extends" });
 
                         var paramNames = [];
                         for(var j=0; j<paramTags.length; j++){
-                            paramNames.push(paramTags[j].name);
+                            if(paramTags[j].name.indexOf(".")==-1) // Do not add sub-object arguments
+                                paramNames.push(paramTags[j].name);
                         }
 
                         // Print constructor signature
                         %><h2 id="<%=f.ctx.name%>">p2.<%=f.ctx.name%>(<%=paramNames.join(", ")%>)</h2><%
-                        %><%-f.description.summary%><%
+
+                        // Extends other class?
+                        if(extendsTags.length){
+                            %><p>Extends <%-linkMeMaybe(extendsTags[0].string)%>.</p><%
+                        }
+
+                        // Summary
+                        %><p><%-f.description.summary%></p><%
 
                         // Parameter descriptions
+                        var optionsObjects = {}; // optionsObjectName : tagsArray
                         if(paramTags.length){
                             %><h4>Parameters</h4><%
-                            %><dl><%
+                            %><dl class="dl-horizontal"><%
                             for(var j=0; j<paramTags.length; j++){
                                 var p = paramTags[j];
+                                var idx = p.name.indexOf(".");
+                                if(idx!=-1){
+                                    // Save option parameter for later!
+                                    var optionsObjectName = p.name.substring(0,idx);
+                                    optionsObjects[optionsObjectName] = optionsObjects[optionsObjectName] || [];
+                                    optionsObjects[optionsObjectName].push(p);
+                                    continue; // Dont list sub-object properties here
+                                }
+
+                                // Has it got a type?
                                 if(p.types.length){
-                                    %><dt><i><%
+                                    %><dt><i class="datatype"><%
                                     var t = p.types[0];
-                                    if(t.match(/p2/)){
-                                        // Internal p2.js type
-                                        %><a href="#<%=t.replace("p2.","")%>"><%=t%></a><%
-                                    } else {
-                                        %><%=t%><%
-                                    }
-                                    %></i> <%=p.name%></dt><%
+                                    %><%-linkMeMaybe(t)%><%
+                                    %></i> <%=p.name.replace(/\[|\]/g,"")%></dt><%
                                 }
                                 %><dd><%-p.description%></dd><%
+                            }
+                            %></dl><%
+                        }
+
+                        // List "options" objects parameters
+                        for(var optionsObjectName in optionsObjects){
+                            var o = optionsObjects[optionsObjectName];
+                            %><h4><%=optionsObjectName%></h4><%
+                            %><dl><%
+                            for(var j=0; j<o.length; j++){
+
+                                // Has it got a type?
+                                var type = "";
+                                if(o[j].types.length){
+                                    var t = o[j].types[0];
+                                    type = ' <i class="datatype">{ '+linkMeMaybe(t)+' } </i>';
+                                }
+
+                                var idx = o[j].name.indexOf(".");
+                                %><dt><%=o[j].name.substring(idx)%><%-type%></dt><%
+                                %><dd><p><%=o[j].description%></p></dd><%
                             }
                             %></dl><%
                         }
@@ -89,6 +140,42 @@
                         if(f.description.body){
                             %><h4>Description</h4><%
                             %><%-f.description.body%><%
+                        }
+
+                        // Methods
+                        var methods = getCommentsByTag(methodComments,{ type : "memberof", string : f.ctx.name });
+                        if(methods.length){
+                            %><h4>Methods</h4>
+                            <dl><%
+                            for(var j=0; j<methods.length; j++){
+                                var m = methods[j];
+                                var methodParamTags = filterTags(m.tags,{ type : "param" });
+                                var params = [];
+                                for(var k=0; k<methodParamTags.length; k++){
+                                    var type="";
+                                    if(methodParamTags[k].types.length)
+                                        type=methodParamTags[k].types[0];
+                                    params.push('<i class="datatype">' + linkMeMaybe(type)+"</i> "+methodParamTags[k].name);
+                                }
+                                %><dt>.<%=m.ctx.name%> ( <%-params.join(" , ")%> )</dt><%
+                                %><dd><%-m.description.full%></dd><%
+                            }
+                            %></dl><%
+                        }
+
+                        var properties = getCommentsByTag(propertyComments,{ type : "memberof", string : f.ctx.name });
+                        if(properties.length){
+                            %><h4>Properties</h4>
+                            <dl><%
+                            for(var j=0; j<properties.length; j++){
+                                var type = "";
+                                for(var k=0; k<properties[j].tags.length; k++)
+                                    if((properties[j].tags[k].type=="member" || properties[j].tags[k].type=="property") && properties[j].tags[k].string.indexOf("{")!=-1)
+                                        type =properties[j].tags[k].string.replace(/\{|\}/g,"")
+                                %><dt>.<%=properties[j].ctx.name%> <i class="datatype">{ <%-linkMeMaybe(type)%> }</i></dt><%
+                                %><dd><%-properties[j].description.full%></dd><%
+                            }
+                            %></dl><%
                         }
 
                         %><hr/><%

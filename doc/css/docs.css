@@ -100,3 +100,21 @@ section > ul li {
 .footer-links li:first-child {
   padding-left: 0;
 }
+
+.datatype {
+    font-weight:normal;
+}
+
+dd p.dl-horizontal {
+    margin-bottom:2px;
+}
+
+dl {
+    margin-left: 10px;
+}
+
+ul.nav {
+    margin-top:20px;
+    padding:10px;
+    padding-left:15px;
+}

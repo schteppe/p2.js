@@ -11,21 +11,22 @@
     exports.World = World;
 
     function now(){
-        if(performance.now) return performance.now();
-        else if(performance.webkitNow) return performance.webkitNow();
-        else new Date().getTime();
+        if(performance.now)
+            return performance.now();
+        else if(performance.webkitNow)
+            return performance.webkitNow();
+        else
+            return new Date().getTime();
     }
 
     /**
      * The dynamics world, where all bodies and constraints lives.
      *
-     * Options:
-     *   - solver (p2.Solver) Default: {p2.GSSolver}
-     *   - gravity (vec2) Default: -9.78
-     *   - broadphase (p2.Broadphase) Default: {p2.NaiveBroadphase}
-     *
      * @class
-     * @param {Object} options
+     * @param {Object} [options]
+     * @param {p2.Solver} options.solver Default: p2.GSSolver
+     * @param {vec2} options.gravity Default: [0,-9.78]
+     * @param {p2.Broadphase} options.broadphase Default: p2.NaiveBroadphase
      */
     function World(options){
         options = options || {};
@@ -90,6 +91,13 @@
         this.broadphase = options.broadphase || new NaiveBroadphase();
     };
 
+    var step_r = vec2.create();
+    var step_runit = vec2.create();
+    var step_u = vec2.create();
+    var step_f = vec2.create();
+    var step_fhMinv = vec2.create();
+    var step_velodt = vec2.create();
+
     /**
      * Step the physics world forward in time.
      *
@@ -97,12 +105,6 @@
      * @memberof World
      * @param {number} dt The time step size to use.
      */
-    var step_r = vec2.create();
-    var step_runit = vec2.create();
-    var step_u = vec2.create();
-    var step_f = vec2.create();
-    var step_fhMinv = vec2.create();
-    var step_velodt = vec2.create();
     World.prototype.step = function(dt){
         var doProfiling = this.doProfiling,
             Nsprings = this.springs.length,
@@ -114,13 +116,13 @@
             Nbodies = this.bodies.length,
             broadphase = this.broadphase,
             t0, t1;
-        
+
         if(doProfiling){
             t0 = now();
             vecCount = 0; // Start counting vector creations
             matCount = 0;
         }
-        
+
         // add gravity to bodies
         for(var i=0; i!==Nbodies; i++){
             var fi = bodies[i].force;

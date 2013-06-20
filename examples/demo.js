@@ -1,10 +1,10 @@
 
 // shim layer with setTimeout fallback
-var requestAnimFrame = window.requestAnimationFrame       || 
-                       window.webkitRequestAnimationFrame || 
-                       window.mozRequestAnimationFrame    || 
-                       window.oRequestAnimationFrame      || 
-                       window.msRequestAnimationFrame     || 
+var requestAnimFrame = window.requestAnimationFrame       ||
+                       window.webkitRequestAnimationFrame ||
+                       window.mozRequestAnimationFrame    ||
+                       window.oRequestAnimationFrame      ||
+                       window.msRequestAnimationFrame     ||
                        function( callback ){
                             window.setTimeout(callback, 1000 / 60);
                        };
@@ -21,7 +21,7 @@ function Demo(){
         var buf, s=body.shape;
         if(body instanceof p2.Spring){
             that.springs.push(body);
-        } else 
+        } else
             that.bodies.push(body);
     };
     this.createStats = function(){
@@ -72,6 +72,118 @@ function Demo(){
     });
 }
 
+function PixiDemo(){
+    Demo.call(this);
+    var world = this.world = new p2.World();
+
+    var pixelsPerLengthUnit = 128;
+
+    var that = this,
+        w,h,
+        container,
+        renderer,
+        sprites=[],
+        stage;
+
+    w = $(window).width();
+    h = $(window).height();
+
+    this.createScene = function(createFunc){
+        createFunc(that.world);
+        init();
+    };
+
+    function createCircleImage(radiusPixels){
+        var canvas = document.createElement('canvas');
+        canvas.width = canvas.height = radiusPixels*2;
+        var ctx = canvas.getContext('2d');
+        ctx.beginPath();
+        ctx.lineWidth = canvas.width * 0.07;
+        ctx.arc(canvas.width/2, canvas.height/2, canvas.height/2-ctx.lineWidth, 0, Math.PI*2, true);
+        ctx.fillStyle = 'green';
+        ctx.fill();
+        ctx.strokeStyle = '#003300';
+        ctx.stroke();
+        return canvas.toDataURL();
+    }
+
+    function init(){
+
+        renderer = PIXI.autoDetectRenderer(w, h);
+        stage = new PIXI.DisplayObjectContainer();
+        container = new PIXI.Stage();
+
+        document.body.appendChild(renderer.view);
+
+        for(var i=0; i<that.bodies.length; i++){
+            var img = createCircleImage(that.bodies[i].shape.radius * pixelsPerLengthUnit);
+            var ballTexture = new PIXI.Texture.fromImage(img);
+            var sprite = new PIXI.Sprite(ballTexture);
+            sprite.anchor.x = 0.5;
+            sprite.anchor.y = 0.5;
+            stage.addChild(sprite);
+            sprites.push(sprite);
+        }
+
+        container.addChild(stage);
+
+        resize();
+        requestAnimFrame(update);
+    }
+
+    function resize(){
+        w = $(window).width();
+        h = $(window).height();
+        renderer.resize(w, h);
+    }
+
+    function update(){
+        if(!that.paused) world.step(that.timeStep);
+        for(var i=0; i<that.bodies.length; i++){
+            var b = that.bodies[i],
+                s = sprites[i];
+            s.position.x = w - b.position[0] * pixelsPerLengthUnit;
+            s.position.y = h - b.position[1] * pixelsPerLengthUnit;
+            s.rotation = b.angle;
+        }
+        renderer.render(container);
+        requestAnimFrame(update);
+    }
+
+    var lastX, lastY, startX, startY, down=false;
+    $(document).mousedown(function(e){
+        lastX = e.clientX;
+        lastY = e.clientY;
+        startX = stage.position.x;
+        startY = stage.position.y;
+        down = true;
+    }).mousemove(function(e){
+        if(down){
+            stage.position.x = e.clientX-lastX+startX;
+            stage.position.y = e.clientY-lastY+startY;
+        }
+    }).mouseup(function(e){
+        down = false;
+    });
+
+    var scrollFactor = 0.1;
+    $(window).bind('mousewheel', function(e){
+        if (e.originalEvent.wheelDelta >= 0){
+            // Zoom in
+            stage.scale.x *= (1+scrollFactor);
+            stage.scale.y *= (1+scrollFactor);
+            stage.position.x += (scrollFactor) * (stage.position.x - e.clientX);
+            stage.position.y += (scrollFactor) * (stage.position.y - e.clientY);
+        } else {
+            // Zoom out
+            stage.scale.x *= (1-scrollFactor);
+            stage.scale.y *= (1-scrollFactor);
+            stage.position.x -= (scrollFactor) * (stage.position.x - e.clientX);
+            stage.position.y -= (scrollFactor) * (stage.position.y - e.clientY);
+        }
+    });
+}
+
 function WebGLDemo(){
     Demo.apply(this);
 
@@ -104,10 +216,10 @@ function WebGLDemo(){
             var v1 = new THREE.Vector3( radius*Math.cos(i*sectorAngle),
                                         radius*Math.sin(i*sectorAngle),
                                         0);
-            
+
             // Push vertices represented by position vectors
             circleGeometry.vertices.push(v1);
-            
+
             // Push face, defined with vertices in counter clock-wise order
             circleGeometry.faces.push(new THREE.Face3(0, i+1, i+2));
         }
@@ -141,7 +253,7 @@ function WebGLDemo(){
 
         renderer = new THREE.WebGLRenderer();
         renderer.setSize(window.innerWidth, window.innerHeight);
-        
+
         document.body.appendChild(renderer.domElement);
 
         that.createStats();
@@ -318,7 +430,7 @@ function CanvasDemo(){
         function render(){
 
             //ctx.clearRect(0,0,canvas.width,canvas.height);
-            
+
             // Clear the entire canvas
             var p = ctx.transformedPoint(0,0);
             var q = ctx.transformedPoint(canvas.width,canvas.height);
@@ -408,7 +520,7 @@ function CanvasDemo(){
         var svg = document.createElementNS("http://www.w3.org/2000/svg",'svg');
         var xform = svg.createSVGMatrix();
         ctx.getTransform = function(){ return xform; };
-        
+
         var savedTransforms = [];
         var save = ctx.save;
         ctx.save = function(){
