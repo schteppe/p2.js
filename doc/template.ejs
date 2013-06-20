@@ -41,7 +41,7 @@
         var t = datatype;
         if(t.match(/p2/)){
             // Internal p2.js type
-            return '<a href="#'+t.replace("p2.","")+'">'+t+'</a>';
+            return '<a href="#'+t.replace("p2.","")+'">'+t.replace("p2.","")+'</a>';
         } else {
             return t;
         }
@@ -130,9 +130,13 @@
                         var properties = getCommentsByTag(propertyComments,{ type : "memberof", string : f.ctx.name });
                         if(properties.length){
                             %><h4>Properties</h4>
-                            <dl class="dl-horizontal"><%
+                            <dl><%
                             for(var j=0; j<properties.length; j++){
-                                %><dt>.<%=properties[j].ctx.name%></dt><%
+                                var type = "";
+                                for(var k=0; k<properties[j].tags.length; k++)
+                                    if((properties[j].tags[k].type=="member" || properties[j].tags[k].type=="property") && properties[j].tags[k].string.indexOf("{")!=-1)
+                                        type =properties[j].tags[k].string.replace(/\{|\}/g,"")
+                                %><dt>.<%=properties[j].ctx.name%> <i class="datatype">{ <%-linkMeMaybe(type)%> }</i></dt><%
                                 %><dd><%-properties[j].description.full%></dd><%
                             }
                             %></dl><%

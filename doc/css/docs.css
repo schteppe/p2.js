@@ -105,6 +105,10 @@ section > ul li {
     font-weight:normal;
 }
 
-dd p {
+dd p.dl-horizontal {
     margin-bottom:2px;
+}
+
+dl {
+    margin-left: 10px;
 }
