@@ -104,3 +104,7 @@ section > ul li {
 .datatype {
     font-weight:normal;
 }
+
+dd p {
+    margin-bottom:2px;
+}
