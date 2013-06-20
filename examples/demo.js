@@ -80,7 +80,8 @@ function PixiDemo(){
         w,h,
         stage,
         renderer,
-        visuals=[];
+        visuals=[],
+        panZoom;
 
     w = $(window).width();
     h = $(window).height();
@@ -107,6 +108,7 @@ function PixiDemo(){
 
         var ballTexture = new PIXI.Texture.fromImage(dataURL);
         renderer = PIXI.autoDetectRenderer(w, h);
+        panZoom = new PIXI.DisplayObjectContainer();
         stage = new PIXI.Stage();
 
         document.body.appendChild(renderer.view);
@@ -115,7 +117,8 @@ function PixiDemo(){
         ball.anchor.x = 0.5;
         ball.anchor.y = 0.5;
 
-        stage.addChild(ball);
+        panZoom.addChild(ball);
+        stage.addChild(panZoom);
 
         resize();
         requestAnimFrame(update);
@@ -138,6 +141,39 @@ function PixiDemo(){
         renderer.render(stage);
         requestAnimFrame(update);
     }
+
+    var lastX, lastY, startX, startY, down=false;
+    $(document).mousedown(function(e){
+        lastX = e.clientX;
+        lastY = e.clientY;
+        startX = panZoom.position.x;
+        startY = panZoom.position.y;
+        down = true;
+    }).mousemove(function(e){
+        if(down){
+            panZoom.position.x = e.clientX-lastX+startX;
+            panZoom.position.y = e.clientY-lastY+startY;
+        }
+    }).mouseup(function(e){
+        down = false;
+    });
+
+    var scrollFactor = 0.1;
+    $(window).bind('mousewheel', function(e){
+        if (e.originalEvent.wheelDelta >= 0){
+            // Zoom in
+            panZoom.scale.x *= (1+scrollFactor);
+            panZoom.scale.y *= (1+scrollFactor);
+            panZoom.position.x += (scrollFactor) * (panZoom.position.x - e.clientX);
+            panZoom.position.y += (scrollFactor) * (panZoom.position.y - e.clientY);
+        } else {
+            // Zoom out
+            panZoom.scale.x *= (1-scrollFactor);
+            panZoom.scale.y *= (1-scrollFactor);
+            panZoom.position.x -= (scrollFactor) * (panZoom.position.x - e.clientX);
+            panZoom.position.y -= (scrollFactor) * (panZoom.position.y - e.clientY);
+        }
+    });
 }
 
 function WebGLDemo(){
