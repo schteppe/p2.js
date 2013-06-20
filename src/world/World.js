@@ -93,6 +93,13 @@
         this.broadphase = options.broadphase || new NaiveBroadphase();
     };
 
+    var step_r = vec2.create();
+    var step_runit = vec2.create();
+    var step_u = vec2.create();
+    var step_f = vec2.create();
+    var step_fhMinv = vec2.create();
+    var step_velodt = vec2.create();
+
     /**
      * Step the physics world forward in time.
      *
@@ -100,12 +107,6 @@
      * @memberof World
      * @param {number} dt The time step size to use.
      */
-    var step_r = vec2.create();
-    var step_runit = vec2.create();
-    var step_u = vec2.create();
-    var step_f = vec2.create();
-    var step_fhMinv = vec2.create();
-    var step_velodt = vec2.create();
     World.prototype.step = function(dt){
         var doProfiling = this.doProfiling,
             Nsprings = this.springs.length,

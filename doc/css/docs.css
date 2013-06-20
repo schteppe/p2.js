@@ -100,3 +100,7 @@ section > ul li {
 .footer-links li:first-child {
   padding-left: 0;
 }
+
+.datatype {
+    font-weight:normal;
+}

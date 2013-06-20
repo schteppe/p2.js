@@ -11,6 +11,7 @@
     <link href="css/bootstrap.css" rel="stylesheet">
     <link href="css/bootstrap-responsive.css" rel="stylesheet">
     <link href="css/docs.css" rel="stylesheet">
+
   </head>
 
   <body>
@@ -26,6 +27,8 @@
 
     // Filter
     var classes = getCommentsByTag(comments,{ type: "class" });
+    var propertyComments =  getCommentsByTag(comments,{ type : "property" }).concat(getCommentsByTag(comments,{ type : "member" }));
+    var methodComments =    getCommentsByTag(comments,{ type : "method" });
 
     // Sort
     classes.sort(function(a,b){
@@ -80,16 +83,16 @@
                         }
 
                         // Summary
-                        %><%-f.description.summary%><%
+                        %><p><%-f.description.summary%></p><%
 
                         // Parameter descriptions
                         if(paramTags.length){
                             %><h4>Parameters</h4><%
-                            %><dl><%
+                            %><dl class="dl-horizontal"><%
                             for(var j=0; j<paramTags.length; j++){
                                 var p = paramTags[j];
                                 if(p.types.length){
-                                    %><dt><i><%
+                                    %><dt><i class="datatype"><%
                                     var t = p.types[0];
                                     %><%-linkMeMaybe(t)%><%
                                     %></i> <%=p.name%></dt><%
@@ -102,6 +105,37 @@
                         if(f.description.body){
                             %><h4>Description</h4><%
                             %><%-f.description.body%><%
+                        }
+
+                        var methods = getCommentsByTag(methodComments,{ type : "memberof", string : f.ctx.name });
+                        if(methods.length){
+                            %><h4>Methods</h4>
+                            <dl><%
+                            for(var j=0; j<methods.length; j++){
+                                var m = methods[j];
+                                var methodParamTags = filterTags(m.tags,{ type : "param" });
+                                var params = [];
+                                for(var k=0; k<methodParamTags.length; k++){
+                                    var type="";
+                                    if(methodParamTags[k].types.length)
+                                        type=methodParamTags[k].types[0];
+                                    params.push('<i class="datatype">' + linkMeMaybe(type)+"</i> "+methodParamTags[k].name);
+                                }
+                                %><dt>.<%=m.ctx.name%> ( <%-params.join(" , ")%> )</dt><%
+                                %><dd><%-m.description.full%></dd><%
+                            }
+                            %></dl><%
+                        }
+
+                        var properties = getCommentsByTag(propertyComments,{ type : "memberof", string : f.ctx.name });
+                        if(properties.length){
+                            %><h4>Properties</h4>
+                            <dl class="dl-horizontal"><%
+                            for(var j=0; j<properties.length; j++){
+                                %><dt>.<%=properties[j].ctx.name%></dt><%
+                                %><dd><%-properties[j].description.full%></dd><%
+                            }
+                            %></dl><%
                         }
 
                         %><hr/><%
