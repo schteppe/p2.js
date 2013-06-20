@@ -1,10 +1,10 @@
 
 // shim layer with setTimeout fallback
-var requestAnimFrame = window.requestAnimationFrame       || 
-                       window.webkitRequestAnimationFrame || 
-                       window.mozRequestAnimationFrame    || 
-                       window.oRequestAnimationFrame      || 
-                       window.msRequestAnimationFrame     || 
+var requestAnimFrame = window.requestAnimationFrame       ||
+                       window.webkitRequestAnimationFrame ||
+                       window.mozRequestAnimationFrame    ||
+                       window.oRequestAnimationFrame      ||
+                       window.msRequestAnimationFrame     ||
                        function( callback ){
                             window.setTimeout(callback, 1000 / 60);
                        };
@@ -21,7 +21,7 @@ function Demo(){
         var buf, s=body.shape;
         if(body instanceof p2.Spring){
             that.springs.push(body);
-        } else 
+        } else
             that.bodies.push(body);
     };
     this.createStats = function(){
@@ -72,6 +72,74 @@ function Demo(){
     });
 }
 
+function PixiDemo(){
+    Demo.call(this);
+    var world = this.world = new p2.World();
+
+    var that = this,
+        w,h,
+        stage,
+        renderer,
+        visuals=[];
+
+    w = $(window).width();
+    h = $(window).height();
+
+    this.createScene = function(createFunc) {
+        createFunc(that.world);
+        init();
+    };
+
+    function init(){
+        var canvas = document.createElement('canvas');
+        canvas.width = 64;
+        canvas.height = 64;
+        var ctx = canvas.getContext('2d');
+        ctx.beginPath();
+        ctx.lineWidth = 5;
+        ctx.arc(canvas.width/2, canvas.height/2, canvas.height/2-ctx.lineWidth, 0, Math.PI*2, true);
+        ctx.fillStyle = 'green';
+        ctx.fill();
+        ctx.strokeStyle = '#003300';
+        ctx.stroke();
+
+        var dataURL = canvas.toDataURL();
+
+        var ballTexture = new PIXI.Texture.fromImage(dataURL);
+        renderer = PIXI.autoDetectRenderer(w, h);
+        stage = new PIXI.Stage();
+
+        document.body.appendChild(renderer.view);
+
+        ball = new PIXI.Sprite(ballTexture);
+        ball.anchor.x = 0.5;
+        ball.anchor.y = 0.5;
+
+        stage.addChild(ball);
+
+        resize();
+        requestAnimFrame(update);
+    }
+
+    function resize(){
+        w = $(window).width();
+        h = $(window).height();
+        renderer.resize(w, h);
+    }
+
+    function update(){
+        var t = new Date().getTime() / 1000;
+        var R = 200, speed = 4;
+        ball.position.x = R*Math.sin(speed*t) + w/2;
+        ball.position.y = R*Math.cos(speed*t) + h/2;
+        ball.scale.x = ball.scale.y = Math.sin(t)*0.5 + 1;
+        ball.rotation = t;
+
+        renderer.render(stage);
+        requestAnimFrame(update);
+    }
+}
+
 function WebGLDemo(){
     Demo.apply(this);
 
@@ -104,10 +172,10 @@ function WebGLDemo(){
             var v1 = new THREE.Vector3( radius*Math.cos(i*sectorAngle),
                                         radius*Math.sin(i*sectorAngle),
                                         0);
-            
+
             // Push vertices represented by position vectors
             circleGeometry.vertices.push(v1);
-            
+
             // Push face, defined with vertices in counter clock-wise order
             circleGeometry.faces.push(new THREE.Face3(0, i+1, i+2));
         }
@@ -141,7 +209,7 @@ function WebGLDemo(){
 
         renderer = new THREE.WebGLRenderer();
         renderer.setSize(window.innerWidth, window.innerHeight);
-        
+
         document.body.appendChild(renderer.domElement);
 
         that.createStats();
@@ -318,7 +386,7 @@ function CanvasDemo(){
         function render(){
 
             //ctx.clearRect(0,0,canvas.width,canvas.height);
-            
+
             // Clear the entire canvas
             var p = ctx.transformedPoint(0,0);
             var q = ctx.transformedPoint(canvas.width,canvas.height);
@@ -408,7 +476,7 @@ function CanvasDemo(){
         var svg = document.createElementNS("http://www.w3.org/2000/svg",'svg');
         var xform = svg.createSVGMatrix();
         ctx.getTransform = function(){ return xform; };
-        
+
         var savedTransforms = [];
         var save = ctx.save;
         ctx.save = function(){
