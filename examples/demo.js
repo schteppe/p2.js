@@ -76,49 +76,56 @@ function PixiDemo(){
     Demo.call(this);
     var world = this.world = new p2.World();
 
+    var pixelsPerLengthUnit = 128;
+
     var that = this,
         w,h,
-        stage,
+        container,
         renderer,
-        visuals=[],
-        panZoom;
+        sprites=[],
+        stage;
 
     w = $(window).width();
     h = $(window).height();
 
-    this.createScene = function(createFunc) {
+    this.createScene = function(createFunc){
         createFunc(that.world);
         init();
     };
 
-    function init(){
+    function createCircleImage(radiusPixels){
         var canvas = document.createElement('canvas');
-        canvas.width = 64;
-        canvas.height = 64;
+        canvas.width = canvas.height = radiusPixels*2;
         var ctx = canvas.getContext('2d');
         ctx.beginPath();
-        ctx.lineWidth = 5;
+        ctx.lineWidth = canvas.width * 0.07;
         ctx.arc(canvas.width/2, canvas.height/2, canvas.height/2-ctx.lineWidth, 0, Math.PI*2, true);
         ctx.fillStyle = 'green';
         ctx.fill();
         ctx.strokeStyle = '#003300';
         ctx.stroke();
+        return canvas.toDataURL();
+    }
 
-        var dataURL = canvas.toDataURL();
+    function init(){
 
-        var ballTexture = new PIXI.Texture.fromImage(dataURL);
         renderer = PIXI.autoDetectRenderer(w, h);
-        panZoom = new PIXI.DisplayObjectContainer();
-        stage = new PIXI.Stage();
+        stage = new PIXI.DisplayObjectContainer();
+        container = new PIXI.Stage();
 
         document.body.appendChild(renderer.view);
 
-        ball = new PIXI.Sprite(ballTexture);
-        ball.anchor.x = 0.5;
-        ball.anchor.y = 0.5;
+        for(var i=0; i<that.bodies.length; i++){
+            var img = createCircleImage(that.bodies[i].shape.radius * pixelsPerLengthUnit);
+            var ballTexture = new PIXI.Texture.fromImage(img);
+            var sprite = new PIXI.Sprite(ballTexture);
+            sprite.anchor.x = 0.5;
+            sprite.anchor.y = 0.5;
+            stage.addChild(sprite);
+            sprites.push(sprite);
+        }
 
-        panZoom.addChild(ball);
-        stage.addChild(panZoom);
+        container.addChild(stage);
 
         resize();
         requestAnimFrame(update);
@@ -131,14 +138,15 @@ function PixiDemo(){
     }
 
     function update(){
-        var t = new Date().getTime() / 1000;
-        var R = 200, speed = 4;
-        ball.position.x = R*Math.sin(speed*t) + w/2;
-        ball.position.y = R*Math.cos(speed*t) + h/2;
-        ball.scale.x = ball.scale.y = Math.sin(t)*0.5 + 1;
-        ball.rotation = t;
-
-        renderer.render(stage);
+        if(!that.paused) world.step(that.timeStep);
+        for(var i=0; i<that.bodies.length; i++){
+            var b = that.bodies[i],
+                s = sprites[i];
+            s.position.x = w - b.position[0] * pixelsPerLengthUnit;
+            s.position.y = h - b.position[1] * pixelsPerLengthUnit;
+            s.rotation = b.angle;
+        }
+        renderer.render(container);
         requestAnimFrame(update);
     }
 
@@ -146,13 +154,13 @@ function PixiDemo(){
     $(document).mousedown(function(e){
         lastX = e.clientX;
         lastY = e.clientY;
-        startX = panZoom.position.x;
-        startY = panZoom.position.y;
+        startX = stage.position.x;
+        startY = stage.position.y;
         down = true;
     }).mousemove(function(e){
         if(down){
-            panZoom.position.x = e.clientX-lastX+startX;
-            panZoom.position.y = e.clientY-lastY+startY;
+            stage.position.x = e.clientX-lastX+startX;
+            stage.position.y = e.clientY-lastY+startY;
         }
     }).mouseup(function(e){
         down = false;
@@ -162,16 +170,16 @@ function PixiDemo(){
     $(window).bind('mousewheel', function(e){
         if (e.originalEvent.wheelDelta >= 0){
             // Zoom in
-            panZoom.scale.x *= (1+scrollFactor);
-            panZoom.scale.y *= (1+scrollFactor);
-            panZoom.position.x += (scrollFactor) * (panZoom.position.x - e.clientX);
-            panZoom.position.y += (scrollFactor) * (panZoom.position.y - e.clientY);
+            stage.scale.x *= (1+scrollFactor);
+            stage.scale.y *= (1+scrollFactor);
+            stage.position.x += (scrollFactor) * (stage.position.x - e.clientX);
+            stage.position.y += (scrollFactor) * (stage.position.y - e.clientY);
         } else {
             // Zoom out
-            panZoom.scale.x *= (1-scrollFactor);
-            panZoom.scale.y *= (1-scrollFactor);
-            panZoom.position.x -= (scrollFactor) * (panZoom.position.x - e.clientX);
-            panZoom.position.y -= (scrollFactor) * (panZoom.position.y - e.clientY);
+            stage.scale.x *= (1-scrollFactor);
+            stage.scale.y *= (1-scrollFactor);
+            stage.position.x -= (scrollFactor) * (stage.position.x - e.clientX);
+            stage.position.y -= (scrollFactor) * (stage.position.y - e.clientY);
         }
     });
 }
