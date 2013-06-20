@@ -55,8 +55,8 @@
 
         <div class="row">
             <div class="span3">
-                <h3>Classes</h3>
-                <ul class="nav nav-list"><%
+                <ul class="nav nav-list well">
+                    <li class="nav-header">Classes</li><%
                     for(var i=0; i<classes.length; i++){
                         var c = classes[i];
                         %><li><a href="#<%=c.ctx.name%>"><i class="icon-chevron-right"></i> p2.<%=c.ctx.name%></a></li><%

@@ -112,3 +112,9 @@ dd p.dl-horizontal {
 dl {
     margin-left: 10px;
 }
+
+ul.nav {
+    margin-top:20px;
+    padding:10px;
+    padding-left:15px;
+}
