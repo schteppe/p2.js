@@ -38,7 +38,7 @@
         this.b = (4.0 * d) / (1 + 4 * d);
         this.eps = 4.0 / (h * h * k * (1 + 4 * d));
     };
-    GSSolver.prototype.solve = function(dt,world){
+    GSSolver.prototype.solve = function(dt,world,callback){
         var d = this.d,
             ks = this.k,
             iter = 0,
@@ -128,6 +128,7 @@
             }
         }
         errorTot = deltalambdaTot;
-        return iter;
+
+        callback();
     };
 

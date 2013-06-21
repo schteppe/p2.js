@@ -138,7 +138,7 @@
      * @memberof World
      * @param {number} dt The time step size to use.
      */
-    World.prototype.step = function(dt){
+    World.prototype.step = function(dt,callback){
         var doProfiling = this.doProfiling,
             Nsprings = this.springs.length,
             springs = this.springs,
@@ -220,43 +220,46 @@
                 solver.addEquation(eq);
             }
         }
-        solver.solve(dt,this);
-        solver.removeAllEquations();
+        solver.solve(dt,this,function(){
+            solver.removeAllEquations();
 
-        // Step forward
-        var fhMinv = step_fhMinv;
-        var velodt = step_velodt;
-        for(var i=0; i!==Nbodies; i++){
-            var body = bodies[i];
-            if(body.mass>0){
-                var minv = 1.0 / body.mass,
-                    f = body.force,
-                    pos = body.position,
-                    velo = body.velocity;
+            // Step forward
+            var fhMinv = step_fhMinv;
+            var velodt = step_velodt;
+            for(var i=0; i!==Nbodies; i++){
+                var body = bodies[i];
+                if(body.mass>0){
+                    var minv = 1.0 / body.mass,
+                        f = body.force,
+                        pos = body.position,
+                        velo = body.velocity;
 
-                // Angular step
-                body.angularVelocity += body.angularForce * body.invInertia * dt;
-                body.angle += body.angularVelocity * dt;
+                    // Angular step
+                    body.angularVelocity += body.angularForce * body.invInertia * dt;
+                    body.angle += body.angularVelocity * dt;
 
-                // Linear step
-                vec2.scale(fhMinv,f,dt*minv);
-                vec2.add(velo,fhMinv,velo);
-                vec2.scale(velodt,velo,dt);
-                vec2.add(pos,pos,velodt);
+                    // Linear step
+                    vec2.scale(fhMinv,f,dt*minv);
+                    vec2.add(velo,fhMinv,velo);
+                    vec2.scale(velodt,velo,dt);
+                    vec2.add(pos,pos,velodt);
+                }
             }
-        }
 
-        // Reset force
-        for(var i=0; i!==Nbodies; i++){
-            var bi = bodies[i];
-            vec2.set(bi.force,0.0,0.0);
-            bi.angularForce = 0.0;
-        }
+            // Reset force
+            for(var i=0; i!==Nbodies; i++){
+                var bi = bodies[i];
+                vec2.set(bi.force,0.0,0.0);
+                bi.angularForce = 0.0;
+            }
 
-        if(doProfiling){
-            t1 = now();
-            this.lastStepTime = t1-t0;
-        }
+            if(doProfiling){
+                t1 = now();
+                this.lastStepTime = t1-t0;
+            }
+
+            callback();
+        });
     };
 
     /**

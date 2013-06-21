@@ -12,7 +12,7 @@
          */
         this.equations = [];
     };
-    Solver.prototype.solve = function(dt,world){ return 0; };
+    Solver.prototype.solve = function(dt,world,callback){ return callback(); };
 
     /**
      * Add an equation to be solved.

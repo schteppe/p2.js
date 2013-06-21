@@ -22,7 +22,7 @@
 
         demo.createScene(function(world){
             p2.vec2.set(world.gravity,5,-15);
-            world.solver = new p2.ParallelIslandSolver(subsolver,2,"../build/p2.js");
+            world.solver = new p2.ParallelIslandSolver(subsolver,2,window.location.href.replace(/[^\/]+$/,"")+"../build/p2.js");
             subsolver.setSpookParams(1e50,3);
             subsolver.iterations = N;
 

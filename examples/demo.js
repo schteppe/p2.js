@@ -61,12 +61,6 @@ function Demo(){
                 case 112: // p
                 that.paused = !that.paused;
                 break;
-
-                case 115: // s
-                if(that.paused){
-                    world.step(that.timeStep);
-                }
-                break;
             }
         }
     });
@@ -140,7 +134,13 @@ function PixiDemo(){
     }
 
     function update(){
-        if(!that.paused) world.step(that.timeStep);
+        if(!that.paused)
+            world.step(that.timeStep,render);
+        else
+            render();
+    }
+
+    function render(){
         for(var i=0; i<that.bodies.length; i++){
             var b = that.bodies[i],
                 s = sprites[i];

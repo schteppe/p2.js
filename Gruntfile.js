@@ -1,3 +1,5 @@
+var fs = require('fs');
+
 module.exports = function(grunt) {
 
     grunt.initConfig({
@@ -23,6 +25,10 @@ module.exports = function(grunt) {
 
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-browserify');
-    grunt.registerTask('default', ['browserify','uglify']);
+    grunt.registerTask('default', ['browserify','webworkerify','uglify']);
 
+    grunt.registerTask('webworkerify','Fixes the browserify bundle so it works in Web Workers',function(){
+        var src = fs.readFileSync("build/p2.js");
+        fs.writeFileSync("build/p2.js",src.toString().replace("global.p2","self.p2"));
+    });
 };
