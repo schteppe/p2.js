@@ -5,13 +5,14 @@ var Constraint = require('./Constraint').Constraint
 exports.DistanceConstraint = DistanceConstraint;
 
 /**
- * @class p2.DistanceConstraint
- * @brief Constrains two bodies to be at a constant distance from each other.
+ * Constraint that tries to keep the distance between two bodies constant.
+ * 
+ * @class
  * @author schteppe
- * @param p2.Body bodyA
- * @param p2.Body bodyB
- * @param float distance
- * @param float maxForce
+ * @param {p2.Body} bodyA
+ * @param {p2.Body} bodyB
+ * @param {number} dist The distance to keep between the bodies.
+ * @param {number} maxForce
  */
 function DistanceConstraint(bodyA,bodyB,distance,maxForce){
     Constraint.call(this,bodyA,bodyB);
@@ -32,12 +33,10 @@ function DistanceConstraint(bodyA,bodyB,distance,maxForce){
 
     // Update 
     this.update = function(){
-        vec2.subtract(normal.ni, bodyB.position, bodyA.position); //bodyB.position.vsub(bodyA.position,normal.ni);
-        vec2.normalize(normal.ni,normal.ni);//normal.ni.normalize();
-        /*bodyA.quaternion.vmult(pivotA,normal.ri);
-        bodyB.quaternion.vmult(pivotB,normal.rj);*/
-        vec2.scale(normal.ri, normal.ni, distance*0.5);//normal.ni.mult( distance*0.5,normal.ri);
-        vec2.scale(normal.rj, normal.ni, -distance*0.5);//normal.ni.mult( -distance*0.5,normal.rj);
+        vec2.subtract(normal.ni, bodyB.position, bodyA.position);
+        vec2.normalize(normal.ni,normal.ni);
+        vec2.scale(normal.ri, normal.ni, distance*0.5);
+        vec2.scale(normal.rj, normal.ni, -distance*0.5);
     };
 }
 DistanceConstraint.prototype = new Constraint();

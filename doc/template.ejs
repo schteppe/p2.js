@@ -91,7 +91,7 @@
                         // Parameter descriptions
                         var optionsObjects = {}; // optionsObjectName : tagsArray
                         if(paramTags.length){
-                            %><h4>Parameters</h4><%
+                            %><h4>Constructor parameters</h4><%
                             %><dl class="dl-horizontal"><%
                             for(var j=0; j<paramTags.length; j++){
                                 var p = paramTags[j];
@@ -111,7 +111,7 @@
                                     %><%-linkMeMaybe(t)%><%
                                     %></i> <%=p.name.replace(/\[|\]/g,"")%></dt><%
                                 }
-                                %><dd><%-p.description%></dd><%
+                                %><dd><%-p.description ? p.description : "&nbsp;"%></dd><%
                             }
                             %></dl><%
                         }

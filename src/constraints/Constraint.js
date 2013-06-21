@@ -1,37 +1,41 @@
 exports.Constraint = Constraint;
 
 /**
- * @class p2.Constraint
- * @brief Constraint base class
+ * Base constraint class.
+ * @class
  * @author schteppe
- * @param p2.Body bodyA
- * @param p2.Body bodyB
+ * @param {p2.Body} bodyA
+ * @param {p2.Body} bodyB
  */
 function Constraint(bodyA,bodyB){
 
     /**
-     * @property Array equations
-     * @memberOf p2.Constraint
-     * @brief Equations to be solved in this constraint
+     * Equations to be solved in this constraint
+     * @member {Array}
+     * @memberof Constraint
      */
     this.equations = [];
 
     /**
-     * @property p2.Body bodyA
-     * @memberOf p2.Constraint
+     * First body participating in the constraint.
+     * @member {p2.Body}
+     * @memberof Constraint
      */
     this.bodyA = bodyA;
 
     /**
-     * @property p2.Body bodyB
-     * @memberOf p2.Constraint
+     * Second body participating in the constraint.
+     * @member {p2.Body}
+     * @memberof Constraint
      */
     this.bodyB = bodyB;
 };
 
 /**
- * @method update
- * @memberOf p2.Constraint
+ * To be implemented by subclasses. Should update the internal constraint parameters.
+ * 
+ * @method
+ * @memberof Constraint
  */
 Constraint.prototype.update = function(){
     throw new Error("method update() not implmemented in this Constraint subclass!");

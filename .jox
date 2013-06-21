@@ -9,6 +9,8 @@
                 "src/solver/Solver.js",
                 "src/solver/GSSolver.js",
                 "src/constraints/Equation.js",
-                "src/constraints/ContactEquation.js"],
+                "src/constraints/ContactEquation.js",
+                "src/constraints/DistanceConstraint.js",
+                "src/constraints/Constraint.js"],
     "destination" : "doc/index.html"
 }
