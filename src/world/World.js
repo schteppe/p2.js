@@ -89,6 +89,39 @@
          * @memberof World
          */
         this.broadphase = options.broadphase || new NaiveBroadphase();
+
+        /**
+         * User-added constraints.
+         * @member {Array}
+         * @memberof World
+         */
+        this.constraints = [];
+
+        // Id counters
+        this._constraintIdCounter = 0;
+        this._bodyIdCounter = 0;
+    };
+
+    /**
+     * Add a constraint to the simulation.
+     * @memberof World
+     * @param {p2.Constraint} c
+     */
+    World.prototype.addConstraint = function(c){
+        this.constraints.push(c);
+        c.id = this._constraintIdCounter++;
+    };
+
+    /**
+     * Removes a constraint
+     * @memberof World
+     * @param {p2.Constraint} c
+     */
+    World.prototype.removeConstraint = function(c){
+        var idx = this.constraints.indexOf(c);
+        if(idx!==-1){
+            this.constraints.splice(idx,1);
+        }
     };
 
     var step_r = vec2.create();
@@ -115,12 +148,11 @@
             solver = this.solver,
             Nbodies = this.bodies.length,
             broadphase = this.broadphase,
+            constraints = this.constraints,
             t0, t1;
 
         if(doProfiling){
             t0 = now();
-            vecCount = 0; // Start counting vector creations
-            matCount = 0;
         }
 
         // add gravity to bodies
@@ -174,9 +206,19 @@
         }
         this.oldContacts = oldContacts;
 
-        // Solver
+        // Add equations to solver
         for(var i=0, Ncontacts=contacts.length; i!==Ncontacts; i++){
             solver.addEquation(contacts[i]);
+        }
+        // Add user-defined constraint equations
+        var Nconstraints = constraints.length;
+        for(i=0; i!==Nconstraints; i++){
+            var c = constraints[i];
+            c.update();
+            for(var j=0, Neq=c.equations.length; j!==Neq; j++){
+                var eq = c.equations[j];
+                solver.addEquation(eq);
+            }
         }
         solver.solve(dt,this);
         solver.removeAllEquations();
@@ -214,8 +256,6 @@
         if(doProfiling){
             t1 = now();
             this.lastStepTime = t1-t0;
-            this.vecCreations = vecCount;
-            this.matCreations = matCount;
         }
     };
 
@@ -253,6 +293,7 @@
     World.prototype.addBody = function(body){
         this.bodies.push(body);
         this.collidingBodies.push(body);
+        body.id = this._bodyIdCounter++;
     };
 
     /**

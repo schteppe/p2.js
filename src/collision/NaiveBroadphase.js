@@ -25,14 +25,14 @@
                     var sj = bj.shape;
                     if (sj === undefined) {
                         continue;
-                    } else if(si instanceof bp.Circle){
-                             if(sj instanceof bp.Circle)   bp.checkCircleCircle  (bi,bj,result);
-                        else if(sj instanceof bp.Particle) bp.checkCircleParticle(bi,bj,result);
-                        else if(sj instanceof bp.Plane)    bp.checkCirclePlane   (bi,bj,result);
-                    } else if(si instanceof bp.Particle){
-                             if(sj instanceof bp.Circle)   bp.checkCircleParticle(bj,bi,result);
-                    } else if(si instanceof bp.Plane){
-                             if(sj instanceof bp.Circle)   bp.checkCirclePlane   (bj,bi,result);
+                    } else if(si instanceof Circle){
+                             if(sj instanceof Circle)   bp.checkCircleCircle  (bi,bj,result);
+                        else if(sj instanceof Particle) bp.checkCircleParticle(bi,bj,result);
+                        else if(sj instanceof Plane)    bp.checkCirclePlane   (bi,bj,result);
+                    } else if(si instanceof Particle){
+                             if(sj instanceof Circle)   bp.checkCircleParticle(bj,bi,result);
+                    } else if(si instanceof Plane){
+                             if(sj instanceof Circle)   bp.checkCirclePlane   (bj,bi,result);
                     }
                 }
             }

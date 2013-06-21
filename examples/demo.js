@@ -126,6 +126,8 @@ function PixiDemo(){
         }
 
         container.addChild(stage);
+        stage.position.x = -w/2; // center at origin
+        stage.position.y = -h/2;
 
         resize();
         requestAnimFrame(update);
