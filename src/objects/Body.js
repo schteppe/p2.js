@@ -132,6 +132,18 @@
          * @memberof p2.Body
          */
         this.angularForce = options.angularForce || 0;
+
+        /**
+         * The type of motion this body has.
+         * @member {number} One of: Body.MotionState.STATIC, Body.MotionState.DYNAMIC and Body.MotionState.KINEMATIC.
+         */
+        this.motionState = this.mass == 0 ? Body.MotionState.STATIC : Body.MotionState.DYNAMIC;
+    };
+
+    Body.MotionState = {
+        DYNAMIC : 1,
+        STATIC : 2,
+        KINEMATIC : 4
     };
 
     /**

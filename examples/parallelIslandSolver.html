@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>p2.js</title>
+    <script src="../build/p2.js"></script>
+    <script src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
+    <script src="pixi.js"></script>
+    <script src="demo.js"></script>
+    <script src="three.js"></script>
+    <link href="demo.css" rel="stylesheet"/>
+</head>
+<body>
+    <script>
+
+        var demo = new PixiDemo();
+
+        var N=10, // Number of circles in each rope
+            M = 2, // Number of nodes
+            timeStep = 1/60,
+            r=0.2,
+            subsolver = new p2.GSSolver();
+
+        demo.createScene(function(world){
+            p2.vec2.set(world.gravity,5,-15);
+            world.solver = new p2.ParallelIslandSolver(subsolver,2,"../build/p2.js");
+            subsolver.setSpookParams(1e50,3);
+            subsolver.iterations = N;
+
+            // Create circle ropes
+            var shape = new p2.Circle(r);
+            var lastBody;
+            for(var i=N-1; i>=0; i--){
+                var x = 0;
+                var y = (N-i)*r*2.1;
+                var p = new p2.Body({
+                    mass: i==0 ? 0 : 1,
+                    shape: shape,
+                    position: p2.vec2.fromValues(x, y)
+                });
+                if(lastBody){
+                    var c = new p2.DistanceConstraint(p,lastBody,Math.abs(p.position[1]-lastBody.position[1]));
+                    world.addConstraint(c);
+                } else {
+                    p.velocity[0] = 10;
+                }
+                lastBody = p;
+                world.addBody(p);
+                demo.addVisual(p);
+            }
+        });
+    </script>
+</body>
+</html>
