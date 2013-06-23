@@ -14,38 +14,40 @@
 
         var demo = new PixiDemo();
 
-        var N=10, // Number of circles in each rope
-            M = 2, // Number of nodes
+        var N=10,  // Number of circles in each rope
+            M = 1, // Number of ropes
             timeStep = 1/60,
             r=0.2,
             subsolver = new p2.GSSolver();
 
         demo.createScene(function(world){
-            p2.vec2.set(world.gravity,5,-15);
+            p2.vec2.set(world.gravity,0,-15);
             world.solver = new p2.ParallelIslandSolver(subsolver,2,window.location.href.replace(/[^\/]+$/,"")+"../build/p2.js");
             subsolver.setSpookParams(1e50,3);
             subsolver.iterations = N;
 
             // Create circle ropes
-            var shape = new p2.Circle(r);
-            var lastBody;
-            for(var i=N-1; i>=0; i--){
-                var x = 0;
-                var y = (N-i)*r*2.1;
-                var p = new p2.Body({
-                    mass: i==0 ? 0 : 1,
-                    shape: shape,
-                    position: p2.vec2.fromValues(x, y)
-                });
-                if(lastBody){
-                    var c = new p2.DistanceConstraint(p,lastBody,Math.abs(p.position[1]-lastBody.position[1]));
-                    world.addConstraint(c);
-                } else {
-                    p.velocity[0] = 10;
+            for(var j=0; j<M; j++){
+                var shape = new p2.Circle(r);
+                var lastBody;
+                for(var i=N; i>=0; i--){
+                    var x = 0;
+                    var y = (N-i)*r*2.1;
+                    var p = new p2.Body({
+                        mass: i==0 ? 0 : 1,
+                        shape: shape,
+                        position: p2.vec2.fromValues(x+(j-0.5)*r*2, y)
+                    });
+                    if(lastBody){
+                        var c = new p2.DistanceConstraint(p,lastBody, 1.1*Math.abs(p.position[1]-lastBody.position[1]));
+                        world.addConstraint(c);
+                    } else {
+                        p2.vec2.set(p.velocity,10,0);
+                    }
+                    lastBody = p;
+                    world.addBody(p);
+                    demo.addVisual(p);
                 }
-                lastBody = p;
-                world.addBody(p);
-                demo.addVisual(p);
             }
         });
     </script>

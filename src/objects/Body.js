@@ -71,6 +71,9 @@
     function Body(options){
         options = options || {};
 
+        // Add id
+        this.id = ++Body._idCounter;
+
         /**
          * The shape belonging to the body.
          * @member {p2.Shape}
@@ -139,6 +142,8 @@
          */
         this.motionState = this.mass == 0 ? Body.MotionState.STATIC : Body.MotionState.DYNAMIC;
     };
+
+    Body._idCounter = 0;
 
     Body.MotionState = {
         DYNAMIC : 1,

@@ -296,7 +296,6 @@
     World.prototype.addBody = function(body){
         this.bodies.push(body);
         this.collidingBodies.push(body);
-        body.id = this._bodyIdCounter++;
     };
 
     /**

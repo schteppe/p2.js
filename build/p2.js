@@ -193,6 +193,8 @@ exports.GSSolver =              require('./solver/GSSolver')                .GSS
 exports.NaiveBroadphase =       require('./collision/NaiveBroadphase')      .NaiveBroadphase;
 exports.Plane =                 require('./objects/Shape')                  .Plane;
 exports.ParallelIslandSolver =  require('./solver/ParallelIslandSolver')    .ParallelIslandSolver;
+exports.Island =                require('./solver/ParallelIslandSolver')    .Island;
+exports.IslandGroup =           require('./solver/ParallelIslandSolver')    .IslandGroup;
 exports.Shape =                 require('./objects/Shape')                  .Shape;
 exports.Solver =                require('./solver/Solver')                  .Solver;
 exports.Spring =                require('./objects/Body')                   .Spring;
@@ -203,7 +205,7 @@ var glMatrix = require('gl-matrix');
 exports.vec2 = glMatrix.vec2;
 exports.mat2 = glMatrix.mat2;
 
-},{"./objects/Body":6,"./collision/Broadphase":7,"./objects/Shape":1,"./constraints/Constraint":2,"./constraints/ContactEquation":8,"./constraints/DistanceConstraint":9,"./constraints/Equation":3,"./collision/GridBroadphase":10,"./solver/GSSolver":11,"./collision/NaiveBroadphase":12,"./solver/ParallelIslandSolver":13,"./solver/Solver":4,"./world/World":14,"gl-matrix":15}],15:[function(require,module,exports){
+},{"./objects/Body":6,"./collision/Broadphase":7,"./objects/Shape":1,"./constraints/Constraint":2,"./constraints/ContactEquation":8,"./constraints/DistanceConstraint":9,"./collision/GridBroadphase":10,"./constraints/Equation":3,"./solver/GSSolver":11,"./collision/NaiveBroadphase":12,"./solver/ParallelIslandSolver":13,"./solver/Solver":4,"./world/World":14,"gl-matrix":15}],15:[function(require,module,exports){
 (function(){/**
  * @fileoverview gl-matrix - High performance matrix and vector operations
  * @author Brandon Jones
@@ -3373,6 +3375,9 @@ if(typeof(exports) !== 'undefined') {
     function Body(options){
         options = options || {};
 
+        // Add id
+        this.id = ++Body._idCounter;
+
         /**
          * The shape belonging to the body.
          * @member {p2.Shape}
@@ -3441,6 +3446,8 @@ if(typeof(exports) !== 'undefined') {
          */
         this.motionState = this.mass == 0 ? Body.MotionState.STATIC : Body.MotionState.DYNAMIC;
     };
+
+    Body._idCounter = 0;
 
     Body.MotionState = {
         DYNAMIC : 1,
@@ -4061,13 +4068,15 @@ DistanceConstraint.prototype = new Constraint();
     exports.NaiveBroadphase.prototype = new Broadphase();
 
 },{"../objects/Shape":1,"../collision/Broadphase":7,"gl-matrix":15}],13:[function(require,module,exports){
-(function(){var Solver = require('./Solver').Solver,
-    ContactEquation = require('../constraints/ContactEquation').ContactEquation,
-    vec2 = require('gl-matrix').vec2,
-    STATIC = require('../objects/Body').Body.MotionState.STATIC;
+var Solver = require('./Solver').Solver
+,   ContactEquation = require('../constraints/ContactEquation').ContactEquation
+,   vec2 = require('gl-matrix').vec2
+,   Body = require('../objects/Body').Body
+,   STATIC = Body.MotionState.STATIC
 
 exports.ParallelIslandSolver = ParallelIslandSolver;
 exports.Island = Island;
+exports.IslandGroup = IslandGroup;
 
 /**
  * Splits the system of bodies and equations into independent islands, and solves them in parallel using Web Workers.
@@ -4080,21 +4089,71 @@ function ParallelIslandSolver(subsolver,numWorkers,p2Url){
     Solver.call(this);
     numWorkers = numWorkers || 2;
     p2Url = p2Url || "p2.js";
+    var that = this;
     this.subsolver = subsolver;
     this.numIslands = 0;
     this._nodePool = [];
-    this._workers = [];
-    this._workerData = []; // TypedArrays used to transfer data from/to each worker
+    this._workers = [];      // All webworkers 
+    this._workerData = [];   // TypedArrays used to transfer data from/to each worker
+    this._workerBodies = []; // Needed to keep track of the total order of bodies in each worker
+    this._workerIslandGroups = [];
+    this._numWorking = 0;    // Keep track of how many workers are working
+    this._stepDoneCallback = function(){};
 
-    var blob = new Blob(['this.onmessage = function(e){\n    var global;\n    importScripts("'+p2Url+'");\n};'],{type: "text/javascript"});
+    var blob = new Blob([[
+        'importScripts("'+p2Url+'");',
+        'var id = 0; // Worker id',
+        'var dt = 1/60; // Solve timestep',
+        'var islandGroup = new p2.IslandGroup();',
+        'var solver;',
+        'this.onmessage = function(e){',
+        '    var that=this;',
+        '    if(typeof(e.data.id)!="undefined"){',
+        '        id = parseInt(e.data.id);',
+        '        dt = e.data.timeStep;',
+        '        solver = new p2.GSSolver(); // Todo: user picked solver',
+        '        solver.setSpookParams(1e10,3);',
+        '        solver.iterations = 20;',
+        '        return;',
+        '    } else {',
+        '        // Parse islands and solve',
+        '        var array = e.data;',
+        '        islandGroup.fromArray(array);',
+        '        islandGroup.solve(dt,solver,function(){',
+        '            islandGroup.resultToArray(array);',
+        '            that.postMessage(array,[array.buffer]);',
+        '            islandGroup.reset();',
+        '        });',
+        '    }',
+        '};'
+    ].join('\n')],{type: "text/javascript"});
+    var blobUrl = window.URL.createObjectURL(blob);
+
+    function handleWorkerMessage(e){
+        var workerId = that._workers.indexOf(this);
+        var group = that._workerIslandGroups[workerId];
+
+        // Apply result data
+        group.applyResult(e.data);
+        group.reset();
+
+        that._workerData[workerId] = e.data; // Release the worker array
+
+        // Check if we are done
+        that._numWorking--;
+        if(that._numWorking==0)
+            that._stepDoneCallback();
+    }
 
     // Init workers
     for(var i=0; i<numWorkers; i++){
-        var worker = new Worker(window.URL.createObjectURL(blob));
-        worker.postMessage({});
+        var worker = new Worker(blobUrl);
+        worker.onmessage = handleWorkerMessage;
+        worker.postMessage({ id : i, timeStep : 1/60 }); // todo apply user timestep
         var workerData = new Float32Array(1000);
         this._workers.push(worker);
         this._workerData.push(workerData);
+        this._workerIslandGroups.push(new IslandGroup());
     }
 };
 ParallelIslandSolver.prototype = new Solver();
@@ -4136,7 +4195,11 @@ ParallelIslandSolver.prototype.solve = function(dt,world,callback){
         Nbodies=bodies.length,
         subsolver=this.subsolver,
         workers = this._workers,
-        workerData = this._workerData;
+        workerData = this._workerData,
+        workerIslandGroups = this._workerIslandGroups;
+
+    // To be run later
+    this._stepDoneCallback = callback;
 
     // Create needed nodes, reuse if possible
     for(var i=0; i!==Nbodies; i++){
@@ -4191,7 +4254,6 @@ ParallelIslandSolver.prototype.solve = function(dt,world,callback){
     var islands = [];
     while((child = getUnvisitedNode(nodes))){
         var island = new Island();
-        islands.push(island);
         eqs.length = 0;
         bds.length = 0;
         bfs(child,visitFunc); // run search algo to gather an island of bodies
@@ -4199,17 +4261,12 @@ ParallelIslandSolver.prototype.solve = function(dt,world,callback){
         // Add equations to island
         var Neqs = eqs.length;
         for(var i=0; i!==Neqs; i++){
-            //subsolver.addEquation(eqs[i]);
-            island.equations.push(eqs[i]);
+            var eq = eqs[i];
+            island.equations.push(eq);
         }
 
-        /*
-        // Solve island
-        var dummyWorld = {bodies:bds};
-        var iter = subsolver.solve(dt,dummyWorld);
-        subsolver.removeAllEquations();
-        */
         n++;
+        islands.push(island);
     }
     this.numIslands = n;
 
@@ -4227,45 +4284,42 @@ ParallelIslandSolver.prototype.solve = function(dt,world,callback){
         var leastEquations = 0;
         var leastEquationsIdx = 0;
         for(var i=0; i<workers.length; i++){
-            if(numWorkerEquations[i] < leastEquations){
-                leastEquations = numWorkerEquations;
+            var numEq = workerIslandGroups[i].numEquations();
+            if(numEq < leastEquations){
+                leastEquations = numEq;
                 leastEquationsIdx = i;
             }
         }
-        // Add island to that worker
-        workerIslands[leastEquationsIdx].push(island);
 
-        // Calculate new number of equations
-        numWorkerEquations[leastEquationsIdx] += island.equations.length;
+        // Add island to that worker
+        workerIslandGroups[leastEquationsIdx].islands.push(island);
     }
     
-    // Send islands to workers
-    for(var i=0; i<workers.length; i++){
-        // Compute total storage size needed
-        var totalStorageSize = 0;
-        for(var j=0; j<workerIslands[i].length; j++){
-            totalStorageSize += workerIslands[i][j].storageSize();
-        }
+    // Send island groups to workers
+    for(var i=0; i!==workers.length; i++){
+        var group = workerIslandGroups[i];
 
-        // Resize the array if needed
-        workerData[i] = resizeWorkerData(workerData[i],totalStorageSize);
+        if(group.islands.length){ // Only work if there's work
 
-        // pack data into array
-        var offset = 0;
-        for(var j=0; j<workerIslands[i].length; j++){
-            var island = workerIslands[i][j];
-            island.toArray(workerData[i],offset);
-            offset += island.storageSize();
+            // Get storage size
+            var size = group.storageSize();
+
+            // Resize the array if needed
+            workerData[i] = resizeWorkerData(workerData[i], size);
+
+            // Store data into array
+            group.toArray(workerData[i]);
+
+            // Send to worker
+            this._numWorking++;
+            workers[i].postMessage(workerData[i],[workerData[i].buffer]);
         }
     }
-
-    callback();
-
-    return n;
 };
 
 Island.ARRAY_CHUNK = 10;
 
+// Internal function for expanding data arrays
 function resizeWorkerData(array,requiredElements){
     if(array.length < requiredElements){
         return new Float32Array(requiredElements+Island.ARRAY_CHUNK);
@@ -4287,10 +4341,16 @@ function Island(){
 Island.EquationTypes = {
     CONTACT : 1
 };
+Island.getEquationTypes = function(){
+    var result = [];
+    for(var key in Island.EquationTypes)
+        result.push(Island.EquationTypes[key]);
+    return result;
+};
 
-Island.NUMBERS_PER_BODY = 7;
+Island.NUMBERS_PER_BODY = 12;
 Island.NUMBERS_PER_EQUATION = {
-    1 : 8
+    1 : 10
 };
 
 /**
@@ -4303,9 +4363,12 @@ Island.NUMBERS_PER_EQUATION = {
  * a[7*N+1 to end] : Equation data (at least 2 numbers per equation, see Island.NUMBERS_PER_EQUATION)
  * 
  * @param  {Float32Array} a The array to load data from.
+ * @return {number} The array index immediately after the last one parsed.
  */
 Island.prototype.fromArray = function(a,offset){
-    // Reset
+    offset = offset || 0;
+
+    // Reset. Store bodies and equations for later
     while(this.bodies.length){
         this._bodyPool.push(this.bodies.pop());
     }
@@ -4327,21 +4390,37 @@ Island.prototype.fromArray = function(a,offset){
         body.id = a[i++];
         vec2.set(body.position,a[i++],a[i++]);
         vec2.set(body.velocity,a[i++],a[i++]);
-        body.rotation = a[i++];
+        body.angle = a[i++];
         body.angularVelocity = a[i++];
+        body.mass = a[i++];
+        body.inertia = a[i++];
+
+        vec2.set(body.force,a[i++],a[i++]);
+        body.angularForce = a[i++];
+
+        body.invMass    = body.mass > 0 ? 1 / body.mass : 0;
+        body.invInertia = body.inertia > 0 ? 1 / body.inertia : 0;
 
         this.bodies.push(body);
-        bodies[body.id] = body;
+        bodies[body.id+""] = body;
     }
+
+    var types = Island.getEquationTypes();
 
     // Parse all equations
     for(var j=0; j<numEquations; j++){
         // First is type
         var type = a[i++];
+        if(type in types)
+            throw new Error("Equation type not recognized: "+type);
 
         // Then two body ids
         var id1 = a[i++],
             id2 = a[i++];
+
+        // Then the force range
+        var minForce = a[i++],
+            maxForce = a[i++];
 
         // Then specific constraint data depending on type
         var eq;
@@ -4358,11 +4437,20 @@ Island.prototype.fromArray = function(a,offset){
         }
 
         // Add participating bodies
-        eq.bi = bodies[id1];
-        eq.bj = bodies[id2];
+        eq.bi = bodies[id1+""];
+        eq.bj = bodies[id2+""];
+        if(!eq.bi)
+            throw new Error("Body "+id1+" not found");
+        if(!eq.bj)
+            throw new Error("Body "+id2+" not found");
+
+        eq.minForce = minForce;
+        eq.maxForce = maxForce;
 
         this.equations.push(eq);
     }
+
+    return i;
 };
 
 /**
@@ -4370,25 +4458,31 @@ Island.prototype.fromArray = function(a,offset){
  * @param  {Float32Array} array The array to save to
  * @return {number} The number of elements the island takes.
  */
-Island.prototype.toArray = function(a,offset,num){
+Island.prototype.toArray = function(a,offset){
     var i = offset,  // Current index in the array
-        numBodies =  this.bodies.length,
+        bodies = this.getBodies(),
+        numBodies = bodies.length,
         numEquations = this.equations.length;
     a[i++] = numEquations;
     a[i++] = numBodies;
 
     // bodies
     for(var j=0; j<numBodies; j++){
-        var b = this.bodies[j],
+        var b = bodies[j],
             p = b.position,
             v = b.velocity;
-        a[i++] = body.id;
+        a[i++] = b.id;
         a[i++] = p[0];
         a[i++] = p[1];
         a[i++] = v[0];
         a[i++] = v[1];
-        a[i++] = body.rotation;
-        a[i++] = body.angularVelocity;
+        a[i++] = b.angle;
+        a[i++] = b.angularVelocity;
+        a[i++] = b.mass;
+        a[i++] = b.inertia;
+        a[i++] = b.force[0];
+        a[i++] = b.force[1];
+        a[i++] = b.angularForce;
     }
 
     // equations
@@ -4401,9 +4495,10 @@ Island.prototype.toArray = function(a,offset,num){
         else
             throw new Error("Equation type not recognized");
         a[i++] = type;
-
         a[i++] = eq.bi.id;
         a[i++] = eq.bj.id;
+        a[i++] = eq.minForce;
+        a[i++] = eq.maxForce;
 
         switch(type){
             case Island.EquationTypes.CONTACT:
@@ -4419,6 +4514,8 @@ Island.prototype.toArray = function(a,offset,num){
                 throw new Error('Equation type not recognized: '+type);
         }
     }
+
+    return i;
 };
 
 /**
@@ -4440,9 +4537,204 @@ Island.prototype.storageSize = function(){
         if(eq instanceof ContactEquation)
             size += Island.NUMBERS_PER_EQUATION[Island.EquationTypes.CONTACT];
     }
-}
+};
 
-})()
+/**
+ * Get all unique bodies in this island.
+ * @return {Array} An array of Body
+ */
+Island.prototype.getBodies = function(){
+    var bodies = [],
+        bodyIds = [],
+        eqs = this.equations;
+    for(var i=0; i!==eqs.length; i++){
+        var eq = eqs[i];
+        if(!(eq.bi.id in bodyIds)){
+            bodies.push(eq.bi);
+            bodyIds.push(eq.bi.id);
+        }
+        if(!(eq.bj.id in bodyIds)){
+            bodies.push(eq.bj);
+            bodyIds.push(eq.bj.id);
+        }
+    }
+    return bodies;
+};
+
+/**
+ * Container for a number of islands.
+ * @class
+ */
+function IslandGroup(){
+    this.islands = [];
+    this._islandPool = []; // Left over islands
+};
+
+IslandGroup.prototype.reset = function(){
+    while(this.islands.length)
+        this._islandPool.push(this.islands.pop());
+};
+
+/**
+ * Computes the total number of equations in this island group.
+ * @return {number}
+ */
+IslandGroup.prototype.numEquations = function(){
+    var islands = this.islands,
+        numIslands = islands.length,
+        total = 0;
+    for(var i=0; i!==numIslands; i++){
+        total += islands[i].equations.length;
+    }
+    return total;
+};
+
+/**
+ * Compute the total storage size of equations and bodies.
+ */
+IslandGroup.prototype.storageSize = function(){
+    var islands = this.islands;
+
+    // Compute total storage size needed
+    var totalStorageSize = 0;
+    for(var j=0; j<islands.length; j++){
+        totalStorageSize += islands[j].storageSize();
+    }
+
+    return totalStorageSize;
+};
+
+/**
+ * Store all the bodies and equations.
+ * @param  {Float32Array} a
+ */
+IslandGroup.prototype.toArray = function(a){
+    var islands = this.islands;
+
+    // pack data into array
+    var offset = 0;
+
+    // First is number of islands
+    a[offset++] = this.islands.length;
+
+    for(var j=0; j<islands.length; j++){
+        var island = islands[j];
+        offset += island.toArray(a,offset);
+        //offset += island.storageSize();
+    }
+};
+
+/**
+ * Parses a group of islands from an array
+ * @param  {Float32Array} a 
+ */
+IslandGroup.prototype.fromArray = function(a){
+    var islands = this.islands;
+
+    // Reset
+    while(islands.length)
+        this._islandPool.push(islands.pop());
+
+    // Parse islands
+    var offset = 0,
+        numIslands=a[offset++];
+
+    while(islands.length < numIslands)
+        this.islands.push(this._islandPool.pop() || new Island());
+
+    for(var i=0; i<numIslands; i++){
+        var island = this.islands[numIslands-1];
+        offset = island.fromArray(a,offset);
+    }
+};
+
+/**
+ * Solves all constraints in the group of islands.
+ * @param  {number} dt
+ * @param  {p2.Solver} solver
+ */
+IslandGroup.prototype.solve = function(dt,solver,callback){
+    var islands = this.islands,
+        numIslands = islands.length,
+        bodies = [];
+
+    solver.removeAllEquations();
+
+    // Add equations to solver
+    for(var i=0; i!==numIslands; i++){
+        var island = islands[i];
+        var numEquations = island.equations.length;
+        for(var j=0; j!==numEquations; j++){
+            solver.addEquation(island.equations[j]);
+        }
+        var islandBodies = island.getBodies();
+        var numBodies = islandBodies.length;
+        for(var j=0; j!==numBodies; j++){
+            bodies.push(islandBodies[j]);
+        }
+    }
+
+    // Solve
+    solver.solve(dt,{bodies:bodies},callback);
+};
+
+/**
+ * Packs resulting constraint velocities to an array.
+ * @param {Float32Array} a
+ */
+IslandGroup.prototype.resultToArray = function(a){
+    var islands=this.islands,
+        numIslands = islands.length,
+        i=0;
+
+    for(var j=0; j!==numIslands; j++){
+        var bodies = islands[j].getBodies(),
+            numBodies = bodies.length;
+        for(var k=0; k!==numBodies; k++){
+            var b=bodies[k],
+                vlambda=b.vlambda
+            a[i++] = vlambda[0];
+            a[i++] = vlambda[1];
+            a[i++] = b.wlambda;
+        }
+    }
+};
+
+/**
+ * Applies the resulting constraint velocities on the bodies in the island.
+ * @param  {Float32Array} a 
+ */
+IslandGroup.prototype.applyResult = function(a){
+    // Add result to velocity
+    var islands=this.islands,
+        numIslands = islands.length,
+        i=0;
+
+        var s ="";
+
+    // Assumed is the order of the bodies
+    for(var j=0; j!==numIslands; j++){
+        var bodies = islands[j].getBodies(),
+            numBodies = bodies.length;
+        for(var k=0; k!==numBodies; k++){
+            var b=bodies[k],
+                v=b.velocity,
+                vlambdax = a[i++],
+                vlambday = a[i++],
+                wlambda = a[i++];
+
+            s += b.id+ " ("+vlambdax+" "+vlambday+") "+wlambda+"\n";
+
+            vec2.set(b.vlambda, vlambdax, vlambday);
+            vec2.add( v, v, b.vlambda);
+            b.wlambda = wlambda;
+            b.angularVelocity += wlambda;
+        }
+    }
+
+    //throw new Error(s);
+};
+
 },{"./Solver":4,"../constraints/ContactEquation":8,"../objects/Body":6,"gl-matrix":15}],14:[function(require,module,exports){
     var GSSolver = require('../solver/GSSolver').GSSolver,
         NaiveBroadphase = require('../collision/NaiveBroadphase').NaiveBroadphase,
@@ -4742,7 +5034,6 @@ Island.prototype.storageSize = function(){
     World.prototype.addBody = function(body){
         this.bodies.push(body);
         this.collidingBodies.push(body);
-        body.id = this._bodyIdCounter++;
     };
 
     /**
