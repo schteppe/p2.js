@@ -80,7 +80,7 @@ function ParallelIslandSolver(subsolver,numWorkers,p2Url){
         var worker = new Worker(blobUrl);
         worker.onmessage = handleWorkerMessage;
         worker.postMessage({ id : i, timeStep : 1/60 }); // todo apply user timestep
-        var workerData = new Float32Array(10000);
+        var workerData = new Float32Array(100);
         this._workers.push(worker);
         this._workerData.push(workerData);
         this._workerIslandGroups.push(new IslandGroup());
@@ -187,7 +187,7 @@ ParallelIslandSolver.prototype.solve = function(dt,world,callback){
     // Get islands
     var islands = [];
     while((child = getUnvisitedNode(nodes))){
-        var island = new Island();
+        var island = new Island(); // @todo Should be reused from somewhere
         eqs.length = 0;
         bds.length = 0;
         bfs(child,visitFunc); // run search algo to gather an island of bodies
@@ -251,14 +251,15 @@ ParallelIslandSolver.prototype.solve = function(dt,world,callback){
     }
 };
 
-Island.ARRAY_CHUNK = 10;
+Island.ARRAY_CHUNK = 0;
 
 // Internal function for expanding data arrays
 function resizeWorkerData(array,requiredElements){
     if(array.length < requiredElements){
         return new Float32Array(requiredElements+Island.ARRAY_CHUNK);
-    } else 
+    } else {
         return array;
+    }
 }
 
 /**
@@ -284,7 +285,7 @@ Island.getEquationTypes = function(){
 
 Island.NUMBERS_PER_BODY = 12;
 Island.NUMBERS_PER_EQUATION = {
-    1 : 10
+    1 : 11
 };
 
 Island.prototype.reset = function(){
@@ -347,6 +348,10 @@ Island.prototype.fromArray = function(a,offset){
     }
 
     var types = Island.getEquationTypes();
+
+    if(i>a.length){
+        throw new Error("Trying to read element "+i+" of an array of length "+a.length);
+    }
 
     // Parse all equations
     for(var j=0; j<numEquations; j++){
@@ -470,7 +475,7 @@ Island.prototype.storageSize = function(){
     var size = 2; 
 
     // Body data
-    size += Island.NUMBERS_PER_BODY * this.bodies.length;
+    size += Island.NUMBERS_PER_BODY * this.getBodies().length;
 
     // Equation data
     var eqs = this.equations;
@@ -482,6 +487,8 @@ Island.prototype.storageSize = function(){
         else
             throw new Error("Equation type not recognized!");
     }
+
+    return size;
 };
 
 /**
