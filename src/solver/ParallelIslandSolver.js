@@ -10,20 +10,35 @@ exports.IslandGroup = IslandGroup;
 
 /**
  * Splits the system of bodies and equations into independent islands, and solves them in parallel using Web Workers.
+ *
+ * @class
  * @param {p2.Solver} subsolver
  * @param {number} numWorkers
- * @param {string} p2Url
- * @extends {Solver}
+ * @param {string} p2Url URL to the p2 library. Needed by workers.
+ * @extends p2.Solver
  */
 function ParallelIslandSolver(subsolver,numWorkers,p2Url){
     Solver.call(this);
     numWorkers = numWorkers || 2;
     p2Url = p2Url || "p2.js";
     var that = this;
+
+    /**
+     * The solver used in the workers.
+     * @member {p2.Solver}
+     * @memberof ParallelIslandSolver
+     */
     this.subsolver = subsolver;
+
+    /**
+     * Number of islands
+     * @member {number}
+     * @memberof ParallelIslandSolver
+     */
     this.numIslands = 0;
+
     this._nodePool = [];
-    this._workers = [];      // All webworkers 
+    this._workers = [];      // All webworkers
     this._workerData = [];   // TypedArrays used to transfer data from/to each worker
     this._workerBodies = []; // Needed to keep track of the total order of bodies in each worker
     this._workerIslandGroups = [];
@@ -267,8 +282,21 @@ function resizeWorkerData(array,requiredElements){
  * @class
  */
 function Island(){
+
+    /**
+     * Current equations in this island.
+     * @member {Array}
+     * @memberof Island
+     */
     this.equations = [];
+
+    /**
+     * Current bodies in this island.
+     * @member {Array}
+     * @memberof Island
+     */
     this.bodies = [];
+
     this._contactEquationPool = [];
     this._bodyPool = [];
 }
@@ -288,6 +316,12 @@ Island.NUMBERS_PER_EQUATION = {
     1 : 11
 };
 
+
+/**
+ * Clean this island from bodies and equations.
+ * @method
+ * @memberof Island
+ */
 Island.prototype.reset = function(){
     // Reset. Store bodies and equations for later
     while(this.bodies.length){
@@ -306,7 +340,9 @@ Island.prototype.reset = function(){
  * a[1] : Number of equations
  * a[2 to Island.NUMBERS_PER_BODY*N] : Body data
  * a[7*N+1 to end] : Equation data (at least 2 numbers per equation, see Island.NUMBERS_PER_EQUATION)
- * 
+ *
+ * @method
+ * @memberof Island
  * @param  {Float32Array} a The array to load data from.
  * @return {number} The array index immediately after the last one parsed.
  */
@@ -402,6 +438,9 @@ Island.prototype.fromArray = function(a,offset){
 
 /**
  * Save bodies and equations to a Float32Array.
+ *
+ * @method
+ * @memberof Island
  * @param  {Float32Array} array The array to save to
  * @return {number} The number of elements the island takes.
  */
@@ -468,11 +507,13 @@ Island.prototype.toArray = function(a,offset){
 
 /**
  * Calculates the number of array elements needed to store this island.
+ * @method
+ * @memberof Island
  * @return {number} Number of array elements it takes to store.
  */
 Island.prototype.storageSize = function(){
     // numEquations and numBodies
-    var size = 2; 
+    var size = 2;
 
     // Body data
     size += Island.NUMBERS_PER_BODY * this.getBodies().length;
@@ -493,6 +534,8 @@ Island.prototype.storageSize = function(){
 
 /**
  * Get all unique bodies in this island.
+ * @method
+ * @memberof Island
  * @return {Array} An array of Body
  */
 Island.prototype.getBodies = function(){
@@ -518,10 +561,22 @@ Island.prototype.getBodies = function(){
  * @class
  */
 function IslandGroup(){
+
+    /**
+     * Current islands in the group.
+     * @member {Array}
+     * @memberof IslandGroup
+     */
     this.islands = [];
+
     this._islandPool = []; // Left over islands
 };
 
+/**
+ * Removes all islands from this group.
+ * @method
+ * @memberof IslandGroup
+ */
 IslandGroup.prototype.reset = function(){
     while(this.islands.length){
         var island = this.islands.pop();
@@ -532,6 +587,8 @@ IslandGroup.prototype.reset = function(){
 
 /**
  * Computes the total number of equations in this island group.
+ * @method
+ * @memberof IslandGroup
  * @return {number}
  */
 IslandGroup.prototype.numEquations = function(){
@@ -546,6 +603,9 @@ IslandGroup.prototype.numEquations = function(){
 
 /**
  * Compute the total storage size of equations and bodies.
+ * @method
+ * @memberof IslandGroup
+ * @return {number}
  */
 IslandGroup.prototype.storageSize = function(){
     var islands = this.islands;
@@ -561,6 +621,8 @@ IslandGroup.prototype.storageSize = function(){
 
 /**
  * Store all the bodies and equations.
+ * @method
+ * @memberof IslandGroup
  * @param  {Float32Array} a
  */
 IslandGroup.prototype.toArray = function(a){
@@ -580,7 +642,9 @@ IslandGroup.prototype.toArray = function(a){
 
 /**
  * Parses a group of islands from an array
- * @param  {Float32Array} a 
+ * @method
+ * @memberof IslandGroup
+ * @param  {Float32Array} a
  */
 IslandGroup.prototype.fromArray = function(a){
     var islands = this.islands;
@@ -602,6 +666,8 @@ IslandGroup.prototype.fromArray = function(a){
 
 /**
  * Solves all constraints in the group of islands.
+ * @method
+ * @memberof IslandGroup
  * @param  {number} dt
  * @param  {p2.Solver} solver
  */
@@ -632,6 +698,8 @@ IslandGroup.prototype.solve = function(dt,solver,callback){
 
 /**
  * Packs resulting constraint velocities to an array.
+ * @method
+ * @memberof IslandGroup
  * @param {Float32Array} a
  */
 IslandGroup.prototype.resultToArray = function(a){
@@ -654,15 +722,15 @@ IslandGroup.prototype.resultToArray = function(a){
 
 /**
  * Applies the resulting constraint velocities on the bodies in the island.
- * @param  {Float32Array} a 
+ * @method
+ * @memberof IslandGroup
+ * @param  {Float32Array} a
  */
 IslandGroup.prototype.applyResult = function(a){
     // Add result to velocity
     var islands=this.islands,
         numIslands = islands.length,
         i=0;
-
-        var s ="";
 
     // Assumed is the order of the bodies
     for(var j=0; j!==numIslands; j++){
@@ -675,14 +743,10 @@ IslandGroup.prototype.applyResult = function(a){
                 vlambday = a[i++],
                 wlambda = a[i++];
 
-            s += b.id+ " ("+vlambdax+" "+vlambday+") "+wlambda+"\n";
-
             vec2.set(b.vlambda, vlambdax, vlambday);
             vec2.add( v, v, b.vlambda);
             b.wlambda = wlambda;
             b.angularVelocity += wlambda;
         }
     }
-
-    //throw new Error(s);
 };
