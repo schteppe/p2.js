@@ -109,9 +109,17 @@ function PixiDemo(){
 
         document.body.appendChild(renderer.view);
 
+        var cachedCircleTextures = {};
         for(var i=0; i<that.bodies.length; i++){
-            var img = createCircleImage(that.bodies[i].shape.radius * pixelsPerLengthUnit);
-            var ballTexture = new PIXI.Texture.fromImage(img);
+            var ballTexture;
+            var radiusPixels = that.bodies[i].shape.radius * pixelsPerLengthUnit;
+            if(cachedCircleTextures[radiusPixels]){
+                ballTexture = cachedCircleTextures[radiusPixels];
+            } else {
+                var img = createCircleImage(radiusPixels);
+                ballTexture = new PIXI.Texture.fromImage(img);
+                cachedCircleTextures[radiusPixels] = ballTexture;
+            }
             var sprite = new PIXI.Sprite(ballTexture);
             sprite.anchor.x = 0.5;
             sprite.anchor.y = 0.5;
@@ -122,6 +130,8 @@ function PixiDemo(){
         container.addChild(stage);
         stage.position.x = -w/2; // center at origin
         stage.position.y = -h/2;
+
+        that.createStats();
 
         resize();
         requestAnimFrame(update);
@@ -138,6 +148,7 @@ function PixiDemo(){
             world.step(that.timeStep,render);
         else
             render();
+        that.updateStats();
     }
 
     function render(){
