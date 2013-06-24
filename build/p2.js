@@ -3573,137 +3573,7 @@ if(typeof(exports) !== 'undefined') {
     };
 
 
-},{"../gl-matrix-extensions":16,"gl-matrix":15}],10:[function(require,module,exports){
-    var Circle = require('../objects/Shape').Circle,
-        Plane = require('../objects/Shape').Plane,
-        Particle = require('../objects/Shape').Particle,
-        bp = require('../collision/Broadphase'),
-        Broadphase = bp.Broadphase,
-        glMatrix = require('gl-matrix'),
-        vec2 = glMatrix.vec2;
-
-    /**
-     * Broadphase that uses axis-aligned bins.
-     * @class
-     * @extends p2.Broadphase
-     * @param {number} xmin Lower x bound of the grid
-     * @param {number} xmax Upper x bound
-     * @param {number} ymin Lower y bound
-     * @param {number} ymax Upper y bound
-     * @param {number} nx Number of bins along x axis
-     * @param {number} ny Number of bins along y axis
-     */
-    exports.GridBroadphase = function(xmin,xmax,ymin,ymax,nx,ny){
-        Broadphase.apply(this);
-
-        nx = nx || 10;
-        ny = ny || 10;
-        var binsizeX = (xmax-xmin) / nx;
-        var binsizeY = (ymax-ymin) / ny;
-
-        function getBinIndex(x,y){
-            var xi = Math.floor(nx * (x - xmin) / (xmax-xmin));
-            var yi = Math.floor(ny * (y - ymin) / (ymax-ymin));
-            return xi*ny + yi;
-        }
-
-        this.getCollisionPairs = function(world){
-            var result = [];
-            var collidingBodies = world.collidingBodies;
-            var Ncolliding = Ncolliding=collidingBodies.length;
-
-            var bins=[], Nbins=nx*ny;
-            for(var i=0; i<Nbins; i++)
-                bins.push([]);
-
-            var xmult = nx / (xmax-xmin);
-            var ymult = ny / (ymax-ymin);
-
-            // Put all bodies into bins
-            for(var i=0; i!==Ncolliding; i++){
-                var bi = collidingBodies[i];
-                var si = bi.shape;
-                if (si === undefined) {
-                    continue;
-                } else if(si instanceof Circle){
-                    // Put in bin
-                    // check if overlap with other bins
-                    var x = bi.position[0];
-                    var y = bi.position[1];
-                    var r = si.radius;
-
-                    var xi1 = Math.floor(xmult * (x-r - xmin));
-                    var yi1 = Math.floor(ymult * (y-r - ymin));
-                    var xi2 = Math.floor(xmult * (x+r - xmin));
-                    var yi2 = Math.floor(ymult * (y+r - ymin));
-
-                    for(var j=xi1; j<=xi2; j++){
-                        for(var k=yi1; k<=yi2; k++){
-                            var xi = j;
-                            var yi = k;
-                            if(xi*(ny-1) + yi >= 0 && xi*(ny-1) + yi < Nbins)
-                                bins[ xi*(ny-1) + yi ].push(bi);
-                        }
-                    }
-                } else if(si instanceof Plane){
-                    // Put in all bins for now
-                    if(bi.angle == 0){
-                        var y = bi.position[1];
-                        for(var j=0; j!==Nbins && ymin+binsizeY*(j-1)<y; j++){
-                            for(var k=0; k<nx; k++){
-                                var xi = k;
-                                var yi = Math.floor(ymult * (binsizeY*j - ymin));
-                                bins[ xi*(ny-1) + yi ].push(bi);
-                            }
-                        }
-                    } else if(bi.angle == Math.PI*0.5){
-                        var x = bi.position[0];
-                        for(var j=0; j!==Nbins && xmin+binsizeX*(j-1)<x; j++){
-                            for(var k=0; k<ny; k++){
-                                var yi = k;
-                                var xi = Math.floor(xmult * (binsizeX*j - xmin));
-                                bins[ xi*(ny-1) + yi ].push(bi);
-                            }
-                        }
-                    } else {
-                        for(var j=0; j!==Nbins; j++)
-                            bins[j].push(bi);
-                    }
-                } else {
-                    throw new Error("Shape not supported in GridBroadphase!");
-                }
-            }
-
-            // Check each bin
-            for(var i=0; i!==Nbins; i++){
-                var bin = bins[i];
-                for(var j=0, NbodiesInBin=bin.length; j!==NbodiesInBin; j++){
-                    var bi = bin[j];
-                    var si = bi.shape;
-
-                    for(var k=0; k!==j; k++){
-                        var bj = bin[k];
-                        var sj = bj.shape;
-
-                        if(si instanceof Circle){
-                                 if(sj instanceof Circle)   bp.checkCircleCircle  (bi,bj,result);
-                            else if(sj instanceof Particle) bp.checkCircleParticle(bi,bj,result);
-                            else if(sj instanceof Plane)    bp.checkCirclePlane   (bi,bj,result);
-                        } else if(si instanceof Particle){
-                                 if(sj instanceof Circle)   bp.checkCircleParticle(bj,bi,result);
-                        } else if(si instanceof Plane){
-                                 if(sj instanceof Circle)   bp.checkCirclePlane   (bj,bi,result);
-                        }
-                    }
-                }
-            }
-            return result;
-        };
-    };
-    exports.GridBroadphase.prototype = new Broadphase();
-
-
-},{"../objects/Shape":1,"../collision/Broadphase":7,"gl-matrix":15}],8:[function(require,module,exports){
+},{"../gl-matrix-extensions":16,"gl-matrix":15}],8:[function(require,module,exports){
     var Equation = require("./Equation").Equation,
         glMatrix = require('gl-matrix'),
         vec2 = glMatrix.vec2,
@@ -3887,7 +3757,137 @@ function DistanceConstraint(bodyA,bodyB,distance,maxForce){
 }
 DistanceConstraint.prototype = new Constraint();
 
-},{"./Constraint":2,"./ContactEquation":8,"gl-matrix":15}],11:[function(require,module,exports){
+},{"./Constraint":2,"./ContactEquation":8,"gl-matrix":15}],10:[function(require,module,exports){
+    var Circle = require('../objects/Shape').Circle,
+        Plane = require('../objects/Shape').Plane,
+        Particle = require('../objects/Shape').Particle,
+        bp = require('../collision/Broadphase'),
+        Broadphase = bp.Broadphase,
+        glMatrix = require('gl-matrix'),
+        vec2 = glMatrix.vec2;
+
+    /**
+     * Broadphase that uses axis-aligned bins.
+     * @class
+     * @extends p2.Broadphase
+     * @param {number} xmin Lower x bound of the grid
+     * @param {number} xmax Upper x bound
+     * @param {number} ymin Lower y bound
+     * @param {number} ymax Upper y bound
+     * @param {number} nx Number of bins along x axis
+     * @param {number} ny Number of bins along y axis
+     */
+    exports.GridBroadphase = function(xmin,xmax,ymin,ymax,nx,ny){
+        Broadphase.apply(this);
+
+        nx = nx || 10;
+        ny = ny || 10;
+        var binsizeX = (xmax-xmin) / nx;
+        var binsizeY = (ymax-ymin) / ny;
+
+        function getBinIndex(x,y){
+            var xi = Math.floor(nx * (x - xmin) / (xmax-xmin));
+            var yi = Math.floor(ny * (y - ymin) / (ymax-ymin));
+            return xi*ny + yi;
+        }
+
+        this.getCollisionPairs = function(world){
+            var result = [];
+            var collidingBodies = world.collidingBodies;
+            var Ncolliding = Ncolliding=collidingBodies.length;
+
+            var bins=[], Nbins=nx*ny;
+            for(var i=0; i<Nbins; i++)
+                bins.push([]);
+
+            var xmult = nx / (xmax-xmin);
+            var ymult = ny / (ymax-ymin);
+
+            // Put all bodies into bins
+            for(var i=0; i!==Ncolliding; i++){
+                var bi = collidingBodies[i];
+                var si = bi.shape;
+                if (si === undefined) {
+                    continue;
+                } else if(si instanceof Circle){
+                    // Put in bin
+                    // check if overlap with other bins
+                    var x = bi.position[0];
+                    var y = bi.position[1];
+                    var r = si.radius;
+
+                    var xi1 = Math.floor(xmult * (x-r - xmin));
+                    var yi1 = Math.floor(ymult * (y-r - ymin));
+                    var xi2 = Math.floor(xmult * (x+r - xmin));
+                    var yi2 = Math.floor(ymult * (y+r - ymin));
+
+                    for(var j=xi1; j<=xi2; j++){
+                        for(var k=yi1; k<=yi2; k++){
+                            var xi = j;
+                            var yi = k;
+                            if(xi*(ny-1) + yi >= 0 && xi*(ny-1) + yi < Nbins)
+                                bins[ xi*(ny-1) + yi ].push(bi);
+                        }
+                    }
+                } else if(si instanceof Plane){
+                    // Put in all bins for now
+                    if(bi.angle == 0){
+                        var y = bi.position[1];
+                        for(var j=0; j!==Nbins && ymin+binsizeY*(j-1)<y; j++){
+                            for(var k=0; k<nx; k++){
+                                var xi = k;
+                                var yi = Math.floor(ymult * (binsizeY*j - ymin));
+                                bins[ xi*(ny-1) + yi ].push(bi);
+                            }
+                        }
+                    } else if(bi.angle == Math.PI*0.5){
+                        var x = bi.position[0];
+                        for(var j=0; j!==Nbins && xmin+binsizeX*(j-1)<x; j++){
+                            for(var k=0; k<ny; k++){
+                                var yi = k;
+                                var xi = Math.floor(xmult * (binsizeX*j - xmin));
+                                bins[ xi*(ny-1) + yi ].push(bi);
+                            }
+                        }
+                    } else {
+                        for(var j=0; j!==Nbins; j++)
+                            bins[j].push(bi);
+                    }
+                } else {
+                    throw new Error("Shape not supported in GridBroadphase!");
+                }
+            }
+
+            // Check each bin
+            for(var i=0; i!==Nbins; i++){
+                var bin = bins[i];
+                for(var j=0, NbodiesInBin=bin.length; j!==NbodiesInBin; j++){
+                    var bi = bin[j];
+                    var si = bi.shape;
+
+                    for(var k=0; k!==j; k++){
+                        var bj = bin[k];
+                        var sj = bj.shape;
+
+                        if(si instanceof Circle){
+                                 if(sj instanceof Circle)   bp.checkCircleCircle  (bi,bj,result);
+                            else if(sj instanceof Particle) bp.checkCircleParticle(bi,bj,result);
+                            else if(sj instanceof Plane)    bp.checkCirclePlane   (bi,bj,result);
+                        } else if(si instanceof Particle){
+                                 if(sj instanceof Circle)   bp.checkCircleParticle(bj,bi,result);
+                        } else if(si instanceof Plane){
+                                 if(sj instanceof Circle)   bp.checkCirclePlane   (bj,bi,result);
+                        }
+                    }
+                }
+            }
+            return result;
+        };
+    };
+    exports.GridBroadphase.prototype = new Broadphase();
+
+
+},{"../objects/Shape":1,"../collision/Broadphase":7,"gl-matrix":15}],11:[function(require,module,exports){
     var glMatrix = require('gl-matrix'),
         vec2 = glMatrix.vec2,
         Solver = require('./Solver').Solver;
@@ -4080,20 +4080,35 @@ exports.IslandGroup = IslandGroup;
 
 /**
  * Splits the system of bodies and equations into independent islands, and solves them in parallel using Web Workers.
+ *
+ * @class
  * @param {p2.Solver} subsolver
  * @param {number} numWorkers
- * @param {string} p2Url
- * @extends {Solver}
+ * @param {string} p2Url URL to the p2 library. Needed by workers.
+ * @extends p2.Solver
  */
 function ParallelIslandSolver(subsolver,numWorkers,p2Url){
     Solver.call(this);
     numWorkers = numWorkers || 2;
     p2Url = p2Url || "p2.js";
     var that = this;
+
+    /**
+     * The solver used in the workers.
+     * @member {p2.Solver}
+     * @memberof ParallelIslandSolver
+     */
     this.subsolver = subsolver;
+
+    /**
+     * Number of islands
+     * @member {number}
+     * @memberof ParallelIslandSolver
+     */
     this.numIslands = 0;
+
     this._nodePool = [];
-    this._workers = [];      // All webworkers 
+    this._workers = [];      // All webworkers
     this._workerData = [];   // TypedArrays used to transfer data from/to each worker
     this._workerBodies = []; // Needed to keep track of the total order of bodies in each worker
     this._workerIslandGroups = [];
@@ -4257,7 +4272,7 @@ ParallelIslandSolver.prototype.solve = function(dt,world,callback){
     // Get islands
     var islands = [];
     while((child = getUnvisitedNode(nodes))){
-        var island = new Island();
+        var island = new Island(); // @todo Should be reused from somewhere
         eqs.length = 0;
         bds.length = 0;
         bfs(child,visitFunc); // run search algo to gather an island of bodies
@@ -4337,8 +4352,21 @@ function resizeWorkerData(array,requiredElements){
  * @class
  */
 function Island(){
+
+    /**
+     * Current equations in this island.
+     * @member {Array}
+     * @memberof Island
+     */
     this.equations = [];
+
+    /**
+     * Current bodies in this island.
+     * @member {Array}
+     * @memberof Island
+     */
     this.bodies = [];
+
     this._contactEquationPool = [];
     this._bodyPool = [];
 }
@@ -4358,6 +4386,12 @@ Island.NUMBERS_PER_EQUATION = {
     1 : 11
 };
 
+
+/**
+ * Clean this island from bodies and equations.
+ * @method
+ * @memberof Island
+ */
 Island.prototype.reset = function(){
     // Reset. Store bodies and equations for later
     while(this.bodies.length){
@@ -4376,7 +4410,9 @@ Island.prototype.reset = function(){
  * a[1] : Number of equations
  * a[2 to Island.NUMBERS_PER_BODY*N] : Body data
  * a[7*N+1 to end] : Equation data (at least 2 numbers per equation, see Island.NUMBERS_PER_EQUATION)
- * 
+ *
+ * @method
+ * @memberof Island
  * @param  {Float32Array} a The array to load data from.
  * @return {number} The array index immediately after the last one parsed.
  */
@@ -4390,6 +4426,8 @@ Island.prototype.fromArray = function(a,offset){
         numEquations = a[i++],
         numBodies = a[i++],
         bodies = {};
+
+    //throw new Error(" ("+numBodies+" bodies, "+numEquations+" eqs)");
 
     // Parse bodies
     for(var j=0; j<numBodies; j++){
@@ -4419,8 +4457,9 @@ Island.prototype.fromArray = function(a,offset){
 
     var types = Island.getEquationTypes();
 
+
     if(i>a.length){
-        throw new Error("Trying to read element "+i+" of an array of length "+a.length);
+        throw new Error("Trying to read element "+i+" of an array of length "+a.length+" ("+numBodies+" bodies, "+numEquations+" eqs)");
     }
 
     // Parse all equations
@@ -4472,6 +4511,9 @@ Island.prototype.fromArray = function(a,offset){
 
 /**
  * Save bodies and equations to a Float32Array.
+ *
+ * @method
+ * @memberof Island
  * @param  {Float32Array} array The array to save to
  * @return {number} The number of elements the island takes.
  */
@@ -4533,16 +4575,18 @@ Island.prototype.toArray = function(a,offset){
         }
     }
 
-    return i;
+    return i; // offset immediately after last
 };
 
 /**
  * Calculates the number of array elements needed to store this island.
+ * @method
+ * @memberof Island
  * @return {number} Number of array elements it takes to store.
  */
 Island.prototype.storageSize = function(){
     // numEquations and numBodies
-    var size = 2; 
+    var size = 2;
 
     // Body data
     size += Island.NUMBERS_PER_BODY * this.getBodies().length;
@@ -4563,6 +4607,8 @@ Island.prototype.storageSize = function(){
 
 /**
  * Get all unique bodies in this island.
+ * @method
+ * @memberof Island
  * @return {Array} An array of Body
  */
 Island.prototype.getBodies = function(){
@@ -4588,10 +4634,22 @@ Island.prototype.getBodies = function(){
  * @class
  */
 function IslandGroup(){
+
+    /**
+     * Current islands in the group.
+     * @member {Array}
+     * @memberof IslandGroup
+     */
     this.islands = [];
+
     this._islandPool = []; // Left over islands
 };
 
+/**
+ * Removes all islands from this group.
+ * @method
+ * @memberof IslandGroup
+ */
 IslandGroup.prototype.reset = function(){
     while(this.islands.length){
         var island = this.islands.pop();
@@ -4602,6 +4660,8 @@ IslandGroup.prototype.reset = function(){
 
 /**
  * Computes the total number of equations in this island group.
+ * @method
+ * @memberof IslandGroup
  * @return {number}
  */
 IslandGroup.prototype.numEquations = function(){
@@ -4616,6 +4676,9 @@ IslandGroup.prototype.numEquations = function(){
 
 /**
  * Compute the total storage size of equations and bodies.
+ * @method
+ * @memberof IslandGroup
+ * @return {number}
  */
 IslandGroup.prototype.storageSize = function(){
     var islands = this.islands;
@@ -4623,7 +4686,8 @@ IslandGroup.prototype.storageSize = function(){
     // Compute total storage size needed
     var totalStorageSize = 1;
     for(var j=0; j<islands.length; j++){
-        totalStorageSize += islands[j].storageSize();
+        var s = islands[j].storageSize();
+        totalStorageSize += s;
     }
 
     return totalStorageSize;
@@ -4631,6 +4695,8 @@ IslandGroup.prototype.storageSize = function(){
 
 /**
  * Store all the bodies and equations.
+ * @method
+ * @memberof IslandGroup
  * @param  {Float32Array} a
  */
 IslandGroup.prototype.toArray = function(a){
@@ -4644,13 +4710,15 @@ IslandGroup.prototype.toArray = function(a){
 
     for(var j=0; j<islands.length; j++){
         var island = islands[j];
-        offset += island.toArray(a,offset);
+        offset = island.toArray(a,offset);
     }
 };
 
 /**
  * Parses a group of islands from an array
- * @param  {Float32Array} a 
+ * @method
+ * @memberof IslandGroup
+ * @param  {Float32Array} a
  */
 IslandGroup.prototype.fromArray = function(a){
     var islands = this.islands;
@@ -4672,6 +4740,8 @@ IslandGroup.prototype.fromArray = function(a){
 
 /**
  * Solves all constraints in the group of islands.
+ * @method
+ * @memberof IslandGroup
  * @param  {number} dt
  * @param  {p2.Solver} solver
  */
@@ -4702,6 +4772,8 @@ IslandGroup.prototype.solve = function(dt,solver,callback){
 
 /**
  * Packs resulting constraint velocities to an array.
+ * @method
+ * @memberof IslandGroup
  * @param {Float32Array} a
  */
 IslandGroup.prototype.resultToArray = function(a){
@@ -4724,15 +4796,15 @@ IslandGroup.prototype.resultToArray = function(a){
 
 /**
  * Applies the resulting constraint velocities on the bodies in the island.
- * @param  {Float32Array} a 
+ * @method
+ * @memberof IslandGroup
+ * @param  {Float32Array} a
  */
 IslandGroup.prototype.applyResult = function(a){
     // Add result to velocity
     var islands=this.islands,
         numIslands = islands.length,
         i=0;
-
-        var s ="";
 
     // Assumed is the order of the bodies
     for(var j=0; j!==numIslands; j++){
@@ -4745,16 +4817,12 @@ IslandGroup.prototype.applyResult = function(a){
                 vlambday = a[i++],
                 wlambda = a[i++];
 
-            s += b.id+ " ("+vlambdax+" "+vlambday+") "+wlambda+"\n";
-
             vec2.set(b.vlambda, vlambdax, vlambday);
             vec2.add( v, v, b.vlambda);
             b.wlambda = wlambda;
             b.angularVelocity += wlambda;
         }
     }
-
-    //throw new Error(s);
 };
 
 },{"./Solver":4,"../constraints/ContactEquation":8,"../objects/Body":6,"gl-matrix":15}],14:[function(require,module,exports){

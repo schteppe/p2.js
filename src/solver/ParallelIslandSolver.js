@@ -357,6 +357,8 @@ Island.prototype.fromArray = function(a,offset){
         numBodies = a[i++],
         bodies = {};
 
+    //throw new Error(" ("+numBodies+" bodies, "+numEquations+" eqs)");
+
     // Parse bodies
     for(var j=0; j<numBodies; j++){
         var body = this._bodyPool.pop() || new Body();
@@ -385,8 +387,9 @@ Island.prototype.fromArray = function(a,offset){
 
     var types = Island.getEquationTypes();
 
+
     if(i>a.length){
-        throw new Error("Trying to read element "+i+" of an array of length "+a.length);
+        throw new Error("Trying to read element "+i+" of an array of length "+a.length+" ("+numBodies+" bodies, "+numEquations+" eqs)");
     }
 
     // Parse all equations
@@ -502,7 +505,7 @@ Island.prototype.toArray = function(a,offset){
         }
     }
 
-    return i;
+    return i; // offset immediately after last
 };
 
 /**
@@ -613,7 +616,8 @@ IslandGroup.prototype.storageSize = function(){
     // Compute total storage size needed
     var totalStorageSize = 1;
     for(var j=0; j<islands.length; j++){
-        totalStorageSize += islands[j].storageSize();
+        var s = islands[j].storageSize();
+        totalStorageSize += s;
     }
 
     return totalStorageSize;
@@ -636,7 +640,7 @@ IslandGroup.prototype.toArray = function(a){
 
     for(var j=0; j<islands.length; j++){
         var island = islands[j];
-        offset += island.toArray(a,offset);
+        offset = island.toArray(a,offset);
     }
 };
 

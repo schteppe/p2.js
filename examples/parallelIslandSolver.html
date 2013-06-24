@@ -15,14 +15,14 @@
         var demo = new PixiDemo();
 
         var N=10,  // Number of circles in each rope
-            M = 4, // Number of ropes
+            M = 10, // Number of ropes
             timeStep = 1/60,
             r=0.2,
             subsolver = new p2.GSSolver();
 
         demo.createScene(function(world){
             p2.vec2.set(world.gravity,0,-15);
-            world.solver = new p2.ParallelIslandSolver(subsolver,M,window.location.href.replace(/[^\/]+$/,"")+"../build/p2.js");
+            world.solver = new p2.ParallelIslandSolver(subsolver,4,window.location.href.replace(/[^\/]+$/,"")+"../build/p2.js");
             subsolver.setSpookParams(1e50,3);
             subsolver.iterations = N;
 
@@ -36,13 +36,13 @@
                     var p = new p2.Body({
                         mass: i==0 ? 0 : 1,
                         shape: shape,
-                        position: p2.vec2.fromValues(x+(j-0.5)*r*3, y)
+                        position: p2.vec2.fromValues(x+(j-0.5)*r*10, y)
                     });
                     if(lastBody){
                         var c = new p2.DistanceConstraint(p,lastBody, Math.abs(p.position[1]-lastBody.position[1]));
                         world.addConstraint(c);
                     } else {
-                        p2.vec2.set(p.velocity,5*j,0);
+                        p2.vec2.set(p.velocity,1*i,0);
                     }
                     lastBody = p;
                     world.addBody(p);
