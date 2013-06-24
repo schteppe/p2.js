@@ -14,17 +14,24 @@
 
         var demo = new PixiDemo();
 
-        var N=10,  // Number of circles in each rope
-            M = 20, // Number of ropes
+        var parallel = true,
+            N = 10,  // Number of circles in each rope
+            M = 10, // Number of ropes
             timeStep = 1/60,
-            r=0.2,
+            r = 0.2,
+            iter = N,
             subsolver = new p2.GSSolver();
 
         demo.createScene(function(world){
             p2.vec2.set(world.gravity,0,-15);
-            world.solver = new p2.ParallelIslandSolver(subsolver,4,window.location.href.replace(/[^\/]+$/,"")+"../build/p2.js");
-            subsolver.setSpookParams(1e50,3);
-            subsolver.iterations = N;
+            if(parallel){
+                world.solver = new p2.ParallelIslandSolver(subsolver,4,window.location.href.replace(/[^\/]+$/,"")+"../build/p2.js");
+                subsolver.setSpookParams(1e50,3);
+                subsolver.iterations = iter;
+            } else {
+                world.solver.setSpookParams(1e50,3);
+                world.solver.iterations = iter;
+            }
 
             // Create circle ropes
             for(var j=0; j<M; j++){

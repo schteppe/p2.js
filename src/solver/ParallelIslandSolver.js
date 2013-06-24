@@ -58,7 +58,7 @@ function ParallelIslandSolver(subsolver,numWorkers,p2Url){
         '        dt = e.data.timeStep;',
         '        solver = new p2.GSSolver(); // Todo: user picked solver',
         '        solver.setSpookParams(1e10,3);',
-        '        solver.iterations = 20;',
+        '        solver.iterations = 20; // and other params',
         '        return;',
         '    } else {',
         '        // Parse islands and solve',
