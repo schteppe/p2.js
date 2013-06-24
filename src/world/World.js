@@ -139,7 +139,8 @@
      * @param {number} dt The time step size to use.
      */
     World.prototype.step = function(dt,callback){
-        var doProfiling = this.doProfiling,
+        var that = this,
+            doProfiling = this.doProfiling,
             Nsprings = this.springs.length,
             springs = this.springs,
             bodies = this.bodies,
@@ -255,7 +256,7 @@
 
             if(doProfiling){
                 t1 = now();
-                this.lastStepTime = t1-t0;
+                that.lastStepTime = t1-t0;
             }
 
             callback();
