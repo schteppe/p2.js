@@ -4,7 +4,7 @@
                 "src/collision/Broadphase.js",
                 "src/collision/GridBroadphase.js",
                 "src/collision/NaiveBroadphase.js",
-                "src/constraints/Constraint.js"
+                "src/constraints/Constraint.js",
                 "src/constraints/ContactEquation.js",
                 "src/constraints/DistanceConstraint.js",
                 "src/constraints/Equation.js",
@@ -13,7 +13,7 @@
                 "src/solver/GSSolver.js",
                 "src/solver/ParallelIslandSolver.js",
                 "src/solver/Solver.js",
-                "src/world/World.js",
+                "src/world/World.js"
                 ],
     "destination" : "doc/index.html"
 }
