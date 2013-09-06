@@ -6,11 +6,12 @@ exports.DistanceConstraint = DistanceConstraint;
 
 /**
  * Constraint that tries to keep the distance between two bodies constant.
- * 
- * @class
+ *
+ * @class DistanceConstraint
+ * @constructor
  * @author schteppe
- * @param {p2.Body} bodyA
- * @param {p2.Body} bodyB
+ * @param {Body} bodyA
+ * @param {Body} bodyB
  * @param {number} dist The distance to keep between the bodies.
  * @param {number} maxForce
  */
@@ -31,7 +32,7 @@ function DistanceConstraint(bodyA,bodyB,distance,maxForce){
     normal.minForce = -maxForce;
     normal.maxForce =  maxForce;
 
-    // Update 
+    // Update
     this.update = function(){
         vec2.subtract(normal.ni, bodyB.position, bodyA.position);
         vec2.normalize(normal.ni,normal.ni);

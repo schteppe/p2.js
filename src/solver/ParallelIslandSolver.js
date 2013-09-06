@@ -11,11 +11,11 @@ exports.IslandGroup = IslandGroup;
 /**
  * Splits the system of bodies and equations into independent islands, and solves them in parallel using Web Workers.
  *
- * @class
- * @param {p2.Solver} subsolver
+ * @class ParallelIslandSolver
+ * @param {Solver} subsolver
  * @param {number} numWorkers
  * @param {string} p2Url URL to the p2 library. Needed by workers.
- * @extends p2.Solver
+ * @extends Solver
  */
 function ParallelIslandSolver(subsolver,numWorkers,p2Url){
     Solver.call(this);

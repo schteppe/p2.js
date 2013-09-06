@@ -23,40 +23,45 @@ function now(){
 /**
  * The dynamics world, where all bodies and constraints lives.
  *
- * @class
- * @param {Object} [options]
- * @param {p2.Solver} options.solver Default: p2.GSSolver
- * @param {vec2} options.gravity Default: [0,-9.78]
- * @param {p2.Broadphase} options.broadphase Default: p2.NaiveBroadphase
+ * @class World
+ * @constructor
+ * @param {Object}      [options]
+ * @param {Solver}      options.solver Defaults to GSSolver.
+ * @param {vec2}        options.gravity Defaults to [0,-9.78]
+ * @param {Broadphase}  options.broadphase Defaults to NaiveBroadphase
  */
 function World(options){
     options = options || {};
 
     /**
      * All springs in the world.
-     * @member {Array}
-     * @memberof World
+     *
+     * @property springs
+     * @type {Array}
      */
     this.springs = [];
 
     /**
      * All bodies in the world.
-     * @member {Array}
-     * @memberof World
+     *
+     * @property bodies
+     * @type {Array}
      */
     this.bodies = [];
 
     /**
      * The solver used to satisfy constraints and contacts.
-     * @member {p2.Solver}
-     * @memberof World
+     *
+     * @property solver
+     * @type {Solver}
      */
     this.solver = options.solver || new GSSolver();
 
     /**
      * The contacts in the world that were generated during the last step().
-     * @member {Array}
-     * @memberof World
+     *
+     * @property contacts
+     * @type {Array}
      */
     this.contacts = [];
 
@@ -65,36 +70,41 @@ function World(options){
 
     /**
      * Gravity in the world. This is applied on all bodies in the beginning of each step().
-     * @member {vec2}
-     * @memberof World
+     *
+     * @property
+     * @type {vec2}
      */
     this.gravity = options.gravity || vec2.fromValues(0, -9.78);
 
     /**
      * Whether to do timing measurements during the step() or not.
-     * @member {bool}
-     * @memberof World
+     *
+     * @property doPofiling
+     * @type {Boolean}
      */
     this.doProfiling = options.doProfiling || false;
 
     /**
      * How many millisecconds the last step() took. This is updated each step if .doProfiling is set to true.
-     * @member {number}
-     * @memberof World
+     *
+     * @property lastStepTime
+     * @type {Number}
      */
     this.lastStepTime = 0.0;
 
     /**
      * The broadphase algorithm to use.
-     * @member {p2.Broadphase}
-     * @memberof World
+     *
+     * @property broadphase
+     * @type {Broadphase}
      */
     this.broadphase = options.broadphase || new NaiveBroadphase();
 
     /**
      * User-added constraints.
-     * @member {Array}
-     * @memberof World
+     *
+     * @property constraints
+     * @type {Array}
      */
     this.constraints = [];
 
@@ -105,8 +115,9 @@ function World(options){
 
 /**
  * Add a constraint to the simulation.
- * @memberof World
- * @param {p2.Constraint} c
+ *
+ * @method addConstraint
+ * @param {Constraint} c
  */
 World.prototype.addConstraint = function(c){
     this.constraints.push(c);
@@ -115,8 +126,9 @@ World.prototype.addConstraint = function(c){
 
 /**
  * Removes a constraint
- * @memberof World
- * @param {p2.Constraint} c
+ *
+ * @method removeConstraint
+ * @param {Constraint} c
  */
 World.prototype.removeConstraint = function(c){
     var idx = this.constraints.indexOf(c);
@@ -135,9 +147,9 @@ var step_velodt = vec2.create();
 /**
  * Step the physics world forward in time.
  *
- * @method
- * @memberof World
- * @param {number} dt The time step size to use.
+ * @method step
+ * @param {Number} dt The time step size to use.
+ * @param {Function} callback Called when done.
  */
 World.prototype.step = function(dt,callback){
     var that = this,
@@ -267,9 +279,8 @@ World.prototype.step = function(dt,callback){
 /**
  * Add a spring to the simulation
  *
- * @method
- * @memberof World
- * @param {p2.Spring} s
+ * @method addSpring
+ * @param {Spring} s
  */
 World.prototype.addSpring = function(s){
     this.springs.push(s);
@@ -278,9 +289,8 @@ World.prototype.addSpring = function(s){
 /**
  * Remove a spring
  *
- * @method
- * @memberof World
- * @param {p2.Spring} s
+ * @method removeSpring
+ * @param {Spring} s
  */
 World.prototype.removeSpring = function(s){
     var idx = this.springs.indexOf(s);
@@ -291,9 +301,8 @@ World.prototype.removeSpring = function(s){
 /**
  * Add a body to the simulation
  *
- * @method
- * @memberof World
- * @param {p2.Body} body
+ * @method addBody
+ * @param {Body} body
  */
 World.prototype.addBody = function(body){
     this.bodies.push(body);
@@ -303,9 +312,8 @@ World.prototype.addBody = function(body){
 /**
  * Remove a body from the simulation
  *
- * @method
- * @memberof World
- * @param {p2.Body} body
+ * @method removeBody
+ * @param {Body} body
  */
 World.prototype.removeBody = function(body){
     var idx = this.bodies.indexOf(body);
@@ -315,6 +323,8 @@ World.prototype.removeBody = function(body){
 
 /**
  * Serialize the world to a JSON-serializable Object.
+ *
+ * @method toJSON
  * @param  {Boolean} stringify Set to true if you want to get the stringified JSON representation.
  * @return {Object}
  */
@@ -348,6 +358,8 @@ World.prototype.toJSON = function(){
 
 /**
  * Load a scene from a serialized state.
+ *
+ * @method fromJSON
  * @param  {Object} json
  * @return {Boolean} True on success, else false.
  */
@@ -384,6 +396,8 @@ World.prototype.fromJSON = function(json){
 
 /**
  * Resets the World, removes all bodies and constraints.
+ *
+ * @method clear
  */
 World.prototype.clear = function(){
 

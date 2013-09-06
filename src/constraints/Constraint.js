@@ -2,10 +2,12 @@ exports.Constraint = Constraint;
 
 /**
  * Base constraint class.
- * @class
+ *
+ * @class Constraint
+ * @constructor
  * @author schteppe
- * @param {p2.Body} bodyA
- * @param {p2.Body} bodyB
+ * @param {Body} bodyA
+ * @param {Body} bodyB
  */
 function Constraint(bodyA,bodyB){
 
@@ -33,7 +35,7 @@ function Constraint(bodyA,bodyB){
 
 /**
  * To be implemented by subclasses. Should update the internal constraint parameters.
- * 
+ *
  * @method
  * @memberof Constraint
  */

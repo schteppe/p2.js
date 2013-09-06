@@ -7,7 +7,8 @@ exports.Spring = Spring;
 /**
  * A spring, connecting two bodies.
  *
- * @class
+ * @class Spring
+ * @constructor
  * @param {p2.Body} bodyA
  * @param {p2.Body} bodyB
  * @param {Object} [options]
@@ -57,21 +58,26 @@ function Spring(bodyA,bodyB,options){
 /**
  * A physics body.
  *
- * @class
+ * @class Body
+ * @constructor
  * @param {Object} [options]
- * @param {p2.Shape} options.shape Used for collision detection. If absent the body will not collide.
- * @param {number} options.mass A number >= 0. If zero, the body becomes static. Defaults to static [0].
- * @param {vec2} options.position
- * @param {vec2} options.velocity
- * @param {number} options.angle
- * @param {number} options.angularVelocity
- * @param {vec2} options.force
- * @param {number} options.angularForce
+ * @param {Shape}   options.shape           Used for collision detection. If absent the body will not collide.
+ * @param {number}  options.mass            A number >= 0. If zero, the body becomes static. Defaults to static [0].
+ * @param {vec2}    options.position
+ * @param {vec2}    options.velocity
+ * @param {number}  options.angle
+ * @param {number}  options.angularVelocity
+ * @param {vec2}    options.force
+ * @param {number}  options.angularForce
  */
 function Body(options){
     options = options || {};
 
-    // Add id
+    /**
+     * The body identifyer
+     * @property id
+     * @type {Number}
+     */
     this.id = ++Body._idCounter;
 
     /**
@@ -134,25 +140,23 @@ function Body(options){
 
     /**
      * The angular force acting on the body
-     * @member {number}
-     * @memberof p2.Body
+     *
+     * @property angularForce
+     * @type {number}
      */
     this.angularForce = options.angularForce || 0;
 
     /**
-     * The type of motion this body has.
-     * @member {number} One of: Body.MotionState.STATIC, Body.MotionState.DYNAMIC and Body.MotionState.KINEMATIC.
+     * The type of motion this body has. Should be one of: Body.MotionState.STATIC, Body.MotionState.DYNAMIC and Body.MotionState.KINEMATIC.
+     *
+     * @property motionState
+     * @type {number}
      */
     this.motionState = this.mass == 0 ? Body.MotionState.STATIC : Body.MotionState.DYNAMIC;
 };
 
 Body._idCounter = 0;
 
-Body.MotionState = {
-    DYNAMIC : 1,
-    STATIC : 2,
-    KINEMATIC : 4
-};
 
 /**
  * Apply force to a world point. This could for example be a point on the RigidBody surface. Applying force this way will add to Body.force and Body.angularForce.
@@ -175,4 +179,36 @@ Body.prototype.applyForce = function(force,worldPoint){
 
     // Add rotational force
     this.angularForce += rotForce;
+};
+
+/*
+ * The available motionstates.
+ * @property MotionState
+ * @type {Object}
+ */
+Body.MotionState = {
+
+    /**
+     * Dynamic body.
+     * @property DYNAMIC
+     * @type {Number}
+     * @static
+     */
+    DYNAMIC : 1,
+
+    /**
+     * Static body.
+     * @property STATIC
+     * @type {Number}
+     * @static
+     */
+    STATIC : 2,
+
+    /**
+     * Kinematic body.
+     * @property KINEMATIC
+     * @type {Number}
+     * @static
+     */
+    KINEMATIC : 4
 };
