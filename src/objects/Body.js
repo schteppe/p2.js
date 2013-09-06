@@ -129,7 +129,8 @@
          * @member {vec2}
          * @memberof p2.Body
          */
-        this.force = options.force || vec2.create();
+        this.force = vec2.create();
+        if(options.force) vec2.copy(this.force, options.force);
 
         /**
          * The angular force acting on the body

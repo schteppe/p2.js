@@ -335,6 +335,8 @@ World.prototype.toJSON = function(){
             angle : b.angle,
             position : v2a(b.position),
             velocity : v2a(b.velocity),
+            angularVelocity : b.angularVelocity,
+            force : v2a(b.force),
         });
     }
     return json;
@@ -361,10 +363,12 @@ World.prototype.fromJSON = function(json){
         for(var i=0; i<json.bodies.length; i++){
             var jb = json.bodies[i];
             var b = new Body({
-                mass :      jb.mass,
-                position :  jb.position,
-                angle :     jb.angle,
-                velocity :  jb.velocity,
+                mass :              jb.mass,
+                position :          jb.position,
+                angle :             jb.angle,
+                velocity :          jb.velocity,
+                angularVelocity :   jb.angularVelocity,
+                force :             jb.force,
             });
             this.addBody(b);
         }
