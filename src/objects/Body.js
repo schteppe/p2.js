@@ -96,14 +96,16 @@
          * @member {vec2}
          * @memberof p2.Body
          */
-        this.position = options.position || vec2.create();
+        this.position = vec2.create();
+        if(options.position) vec2.copy(this.position, options.position);
 
         /**
          * The velocity of the body
          * @member {vec2}
          * @memberof p2.Body
          */
-        this.velocity = options.velocity || vec2.create();
+        this.velocity = vec2.create();
+        if(options.velocity) vec2.copy(this.velocity, options.velocity);
 
         this.vlambda = vec2.create();
         this.wlambda = 0;
