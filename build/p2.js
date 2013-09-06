@@ -205,29 +205,7 @@ var glMatrix = require('gl-matrix');
 exports.vec2 = glMatrix.vec2;
 exports.mat2 = glMatrix.mat2;
 
-},{"./collision/Broadphase":6,"./objects/Body":7,"./objects/Shape":1,"./constraints/Constraint":2,"./constraints/ContactEquation":8,"./constraints/DistanceConstraint":9,"./constraints/Equation":3,"./collision/GridBroadphase":10,"./solver/GSSolver":11,"./collision/NaiveBroadphase":12,"./solver/ParallelIslandSolver":13,"./solver/Solver":4,"./world/World":14,"gl-matrix":15}],16:[function(require,module,exports){
-    exports.vec2 = {
-        getX : function(a){
-        	return a[0];
-        },
-
-        getY : function(a){
-        	return a[1];
-        },
-
-        crossLength : function(a,b){
-        	return a[0] * b[1] - a[1] * b[0];
-        },
-
-        rotate : function(out,a,angle){
-            var c = Math.cos(angle),
-                s = Math.sin(angle);
-            out[0] = c*a[0] -s*a[1];
-            out[1] = s*a[0] +c*a[1];
-        }
-    };
-
-},{}],15:[function(require,module,exports){
+},{"./objects/Shape":1,"./objects/Body":6,"./collision/Broadphase":7,"./constraints/Constraint":2,"./constraints/ContactEquation":8,"./constraints/DistanceConstraint":9,"./constraints/Equation":3,"./collision/GridBroadphase":10,"./solver/GSSolver":11,"./collision/NaiveBroadphase":12,"./solver/ParallelIslandSolver":13,"./solver/Solver":4,"./world/World":14,"gl-matrix":15}],15:[function(require,module,exports){
 (function(){/**
  * @fileoverview gl-matrix - High performance matrix and vector operations
  * @author Brandon Jones
@@ -3301,101 +3279,29 @@ if(typeof(exports) !== 'undefined') {
 })();
 
 })()
+},{}],16:[function(require,module,exports){
+    exports.vec2 = {
+        getX : function(a){
+        	return a[0];
+        },
+
+        getY : function(a){
+        	return a[1];
+        },
+
+        crossLength : function(a,b){
+        	return a[0] * b[1] - a[1] * b[0];
+        },
+
+        rotate : function(out,a,angle){
+            var c = Math.cos(angle),
+                s = Math.sin(angle);
+            out[0] = c*a[0] -s*a[1];
+            out[1] = s*a[0] +c*a[1];
+        }
+    };
+
 },{}],6:[function(require,module,exports){
-    var glMatrix = require('gl-matrix'),
-        glMatrixExtensions = require('../gl-matrix-extensions'),
-        vec2e = glMatrixExtensions.vec2,
-        vec2 = glMatrix.vec2,
-        mat2 = glMatrix.mat2;
-
-    var dist = vec2.create();
-    var rot = mat2.create();
-    var worldNormal = vec2.create();
-    var yAxis = vec2.fromValues(0,1);
-    exports.checkCircleCircle = function(c1,c2,result){
-        vec2.sub(dist,c1.position,c2.position);
-        var R1 = c1.shape.radius;
-        var R2 = c2.shape.radius;
-        if(vec2.sqrLen(dist) < (R1+R2)*(R1+R2)){
-            result.push(c1);
-            result.push(c2);
-        }
-    };
-
-    exports.checkCirclePlane = function(c,p,result){
-        vec2.sub(dist,c.position,p.position);
-        vec2e.rotate(worldNormal,yAxis,p.angle);
-        if(vec2.dot(dist,worldNormal) <= c.shape.radius){
-            result.push(c);
-            result.push(p);
-        }
-    }
-
-    exports.checkCircleParticle = function(c,p,result){
-        result.push(c);
-        result.push(p);
-    };
-
-    // Generate contacts / do nearphase
-    exports.nearphaseCircleCircle = function(c1,c2,result,oldContacts){
-        //var c = new p2.ContactEquation(c1,c2);
-        var c = oldContacts.length ? oldContacts.pop() : new p2.ContactEquation(c1,c2);
-        c.bi = c1;
-        c.bj = c2;
-        vec2.sub(c.ni,c2.position,c1.position);
-        vec2.normalize(c.ni,c.ni);
-        vec2.scale( c.ri,c.ni, c1.shape.radius);
-        vec2.scale( c.rj,c.ni,-c2.shape.radius);
-        result.push(c);
-    };
-
-    exports.nearphaseCircleParticle = function(c,p,result,oldContacts){
-        // todo
-    };
-
-    var nearphaseCirclePlane_rot = mat2.create();
-    var nearphaseCirclePlane_planeToCircle = vec2.create();
-    var nearphaseCirclePlane_temp = vec2.create();
-    exports.nearphaseCirclePlane = function(c,p,result,oldContacts){
-        var rot = nearphaseCirclePlane_rot;
-        var contact = oldContacts.length ? oldContacts.pop() : new p2.ContactEquation(p,c);
-        contact.bi = p;
-        contact.bj = c;
-        var planeToCircle = nearphaseCirclePlane_planeToCircle;
-        var temp = nearphaseCirclePlane_temp;
-        vec2e.rotate(contact.ni,yAxis,p.angle);
-
-        vec2.scale( contact.rj,contact.ni, -c.shape.radius);
-
-        vec2.sub(planeToCircle,c.position,p.position);
-        var d = vec2.dot(contact.ni , planeToCircle );
-        vec2.scale(temp,contact.ni,d);
-        vec2.sub( contact.ri ,planeToCircle , temp );
-
-        result.push(contact);
-    }
-
-    /**
-     * Base class for broadphase implementations.
-     * @class
-     */
-    exports.Broadphase = function(){
-
-    };
-
-    /**
-     * Get all potential intersecting body pairs.
-     * @method
-     * @memberof p2.Broadphase
-     * @param  {p2.World} world The world to search in.
-     * @return {Array} An array of the bodies, ordered in pairs. Example: A result of [a,b,c,d] means that the potential pairs are: (a,b), (c,d).
-     */
-    exports.Broadphase.prototype.getCollisionPairs = function(world){
-        throw new Error("getCollisionPairs must be implemented in a subclass!");
-    };
-
-
-},{"../gl-matrix-extensions":16,"gl-matrix":15}],7:[function(require,module,exports){
     var glMatrix = require("gl-matrix"),
         vec2 = glMatrix.vec2;
 
@@ -3527,7 +3433,8 @@ if(typeof(exports) !== 'undefined') {
          * @member {vec2}
          * @memberof p2.Body
          */
-        this.force = options.force || vec2.create();
+        this.force = vec2.create();
+        if(options.force) vec2.copy(this.force, options.force);
 
         /**
          * The angular force acting on the body
@@ -3575,51 +3482,101 @@ if(typeof(exports) !== 'undefined') {
     };
 
 
-},{"gl-matrix":15}],9:[function(require,module,exports){
-var Constraint = require('./Constraint').Constraint
-,   ContactEquation = require('./ContactEquation').ContactEquation
-,   vec2 = require('gl-matrix').vec2
+},{"gl-matrix":15}],7:[function(require,module,exports){
+    var glMatrix = require('gl-matrix'),
+        glMatrixExtensions = require('../gl-matrix-extensions'),
+        vec2e = glMatrixExtensions.vec2,
+        vec2 = glMatrix.vec2,
+        mat2 = glMatrix.mat2;
 
-exports.DistanceConstraint = DistanceConstraint;
+    var dist = vec2.create();
+    var rot = mat2.create();
+    var worldNormal = vec2.create();
+    var yAxis = vec2.fromValues(0,1);
+    exports.checkCircleCircle = function(c1,c2,result){
+        vec2.sub(dist,c1.position,c2.position);
+        var R1 = c1.shape.radius;
+        var R2 = c2.shape.radius;
+        if(vec2.sqrLen(dist) < (R1+R2)*(R1+R2)){
+            result.push(c1);
+            result.push(c2);
+        }
+    };
 
-/**
- * Constraint that tries to keep the distance between two bodies constant.
- * 
- * @class
- * @author schteppe
- * @param {p2.Body} bodyA
- * @param {p2.Body} bodyB
- * @param {number} dist The distance to keep between the bodies.
- * @param {number} maxForce
- */
-function DistanceConstraint(bodyA,bodyB,distance,maxForce){
-    Constraint.call(this,bodyA,bodyB);
-
-    if(typeof(maxForce)==="undefined" ) {
-        maxForce = 1e6;
+    exports.checkCirclePlane = function(c,p,result){
+        vec2.sub(dist,c.position,p.position);
+        vec2e.rotate(worldNormal,yAxis,p.angle);
+        if(vec2.dot(dist,worldNormal) <= c.shape.radius){
+            result.push(c);
+            result.push(p);
+        }
     }
 
-    // Equations to be fed to the solver
-    var eqs = this.equations = [
-        new ContactEquation(bodyA,bodyB), // Just in the normal direction
-    ];
-
-    var normal = eqs[0];
-
-    normal.minForce = -maxForce;
-    normal.maxForce =  maxForce;
-
-    // Update 
-    this.update = function(){
-        vec2.subtract(normal.ni, bodyB.position, bodyA.position);
-        vec2.normalize(normal.ni,normal.ni);
-        vec2.scale(normal.ri, normal.ni, distance*0.5);
-        vec2.scale(normal.rj, normal.ni, -distance*0.5);
+    exports.checkCircleParticle = function(c,p,result){
+        result.push(c);
+        result.push(p);
     };
-}
-DistanceConstraint.prototype = new Constraint();
 
-},{"./Constraint":2,"./ContactEquation":8,"gl-matrix":15}],8:[function(require,module,exports){
+    // Generate contacts / do nearphase
+    exports.nearphaseCircleCircle = function(c1,c2,result,oldContacts){
+        //var c = new p2.ContactEquation(c1,c2);
+        var c = oldContacts.length ? oldContacts.pop() : new p2.ContactEquation(c1,c2);
+        c.bi = c1;
+        c.bj = c2;
+        vec2.sub(c.ni,c2.position,c1.position);
+        vec2.normalize(c.ni,c.ni);
+        vec2.scale( c.ri,c.ni, c1.shape.radius);
+        vec2.scale( c.rj,c.ni,-c2.shape.radius);
+        result.push(c);
+    };
+
+    exports.nearphaseCircleParticle = function(c,p,result,oldContacts){
+        // todo
+    };
+
+    var nearphaseCirclePlane_rot = mat2.create();
+    var nearphaseCirclePlane_planeToCircle = vec2.create();
+    var nearphaseCirclePlane_temp = vec2.create();
+    exports.nearphaseCirclePlane = function(c,p,result,oldContacts){
+        var rot = nearphaseCirclePlane_rot;
+        var contact = oldContacts.length ? oldContacts.pop() : new p2.ContactEquation(p,c);
+        contact.bi = p;
+        contact.bj = c;
+        var planeToCircle = nearphaseCirclePlane_planeToCircle;
+        var temp = nearphaseCirclePlane_temp;
+        vec2e.rotate(contact.ni,yAxis,p.angle);
+
+        vec2.scale( contact.rj,contact.ni, -c.shape.radius);
+
+        vec2.sub(planeToCircle,c.position,p.position);
+        var d = vec2.dot(contact.ni , planeToCircle );
+        vec2.scale(temp,contact.ni,d);
+        vec2.sub( contact.ri ,planeToCircle , temp );
+
+        result.push(contact);
+    }
+
+    /**
+     * Base class for broadphase implementations.
+     * @class
+     */
+    exports.Broadphase = function(){
+
+    };
+
+    /**
+     * Get all potential intersecting body pairs.
+     * @method
+     * @memberof p2.Broadphase
+     * @param  {p2.World} world The world to search in.
+     * @return {Array} An array of the bodies, ordered in pairs. Example: A result of [a,b,c,d] means that the potential pairs are: (a,b), (c,d).
+     */
+    exports.Broadphase.prototype.getCollisionPairs = function(world){
+        throw new Error("getCollisionPairs must be implemented in a subclass!");
+    };
+
+
+},{"../gl-matrix-extensions":16,"gl-matrix":15}],8:[function(require,module,exports){
     var Equation = require("./Equation").Equation,
         glMatrix = require('gl-matrix'),
         vec2 = glMatrix.vec2,
@@ -3889,143 +3846,7 @@ DistanceConstraint.prototype = new Constraint();
     exports.GridBroadphase.prototype = new Broadphase();
 
 
-},{"../objects/Shape":1,"../collision/Broadphase":6,"gl-matrix":15}],11:[function(require,module,exports){
-    var glMatrix = require('gl-matrix'),
-        vec2 = glMatrix.vec2,
-        Solver = require('./Solver').Solver;
-
-    exports.GSSolver = GSSolver;
-
-    var ARRAY_TYPE = Float32Array || Array;
-
-    /**
-     * Iterative Gauss-Seidel constraint equation solver.
-     * @class
-     * @extends p2.Solver
-     */
-    function GSSolver(options){
-        Solver.call(this);
-        options = options || {};
-        this.iterations = options.iterations || 10;
-        this.h = options.timeStep || 1.0/60.0;
-        this.k = options.stiffness || 1e7;
-        this.d = options.relaxation || 6;
-        this.a = 0.0;
-        this.b = 0.0;
-        this.eps = 0.0;
-        this.tolerance = options.tolerance || 0;
-        this.setSpookParams(this.k, this.d);
-        this.debug = options.debug || false;
-        this.arrayStep = 30;
-        this.lambda = new ARRAY_TYPE(this.arrayStep);
-        this.Bs =     new ARRAY_TYPE(this.arrayStep);
-        this.invCs =  new ARRAY_TYPE(this.arrayStep);
-    };
-    GSSolver.prototype = new Solver();
-    GSSolver.prototype.setSpookParams = function(k,d){
-        var h=this.h;
-        this.k = k;
-        this.d = d;
-        this.a = 4.0 / (h * (1 + 4 * d));
-        this.b = (4.0 * d) / (1 + 4 * d);
-        this.eps = 4.0 / (h * h * k * (1 + 4 * d));
-    };
-    GSSolver.prototype.solve = function(dt,world,callback){
-        var d = this.d,
-            ks = this.k,
-            iter = 0,
-            maxIter = this.iterations,
-            tolSquared = this.tolerance*this.tolerance,
-            a = this.a,
-            b = this.b,
-            eps = this.eps,
-            equations = this.equations,
-            Neq = equations.length,
-            bodies = world.bodies,
-            Nbodies = world.bodies.length,
-            h = dt;
-
-        // Things that does not change during iteration can be computed once
-        if(this.lambda.length < Neq){
-            this.lambda = new ARRAY_TYPE(Neq + this.arrayStep);
-            this.Bs =     new ARRAY_TYPE(Neq + this.arrayStep);
-            this.invCs =  new ARRAY_TYPE(Neq + this.arrayStep);
-        }
-        var invCs = this.invCs;
-        var Bs = this.Bs;
-        var lambda = this.lambda;
-
-        // Create array for lambdas
-        for(var i=0; i!==Neq; i++){
-            var c = equations[i];
-            lambda[i] = 0.0;
-            Bs[i] = c.computeB(a,b,h);
-            invCs[i] = 1.0 / c.computeC(eps);
-        }
-
-        var q, B, c, invC, deltalambda, deltalambdaTot, GWlambda, lambdaj;
-
-        if(Neq !== 0){
-            var i,j, minForce, maxForce, lambdaj_plus_deltalambda;
-
-            // Reset vlambda
-            for(i=0; i!==Nbodies; i++){
-                var b=bodies[i], vlambda=b.vlambda;
-                vec2.set(vlambda,0,0);
-                b.wlambda = 0;
-            }
-
-            // Iterate over equations
-            for(iter=0; iter!==maxIter; iter++){
-
-                // Accumulate the total error for each iteration.
-                deltalambdaTot = 0.0;
-
-                for(j=0; j!==Neq; j++){
-
-                    c = equations[j];
-
-                    // Compute iteration
-                    maxForce = c.maxForce;
-                    minForce = c.minForce;
-                    B = Bs[j];
-                    invC = invCs[j];
-                    lambdaj = lambda[j];
-                    GWlambda = c.computeGWlambda(eps);
-                    deltalambda = invC * ( B - GWlambda - eps * lambdaj );
-
-                    // Clamp if we are not within the min/max interval
-                    lambdaj_plus_deltalambda = lambdaj + deltalambda;
-                    if(lambdaj_plus_deltalambda < minForce){
-                        deltalambda = minForce - lambdaj;
-                    } else if(lambdaj_plus_deltalambda > maxForce){
-                        deltalambda = maxForce - lambdaj;
-                    }
-                    lambda[j] += deltalambda;
-
-                    deltalambdaTot += Math.abs(deltalambda);
-
-                    c.addToWlambda(deltalambda);
-                }
-
-                // If the total error is small enough - stop iterate
-                if(deltalambdaTot*deltalambdaTot <= tolSquared) break;
-            }
-
-            // Add result to velocity
-            for(i=0; i!==Nbodies; i++){
-                var b=bodies[i], v=b.velocity;
-                vec2.add( v,v, b.vlambda);
-                b.angularVelocity += b.wlambda;
-            }
-        }
-        errorTot = deltalambdaTot;
-
-        callback();
-    };
-
-
-},{"./Solver":4,"gl-matrix":15}],12:[function(require,module,exports){
+},{"../objects/Shape":1,"../collision/Broadphase":7,"gl-matrix":15}],12:[function(require,module,exports){
     var Circle = require('../objects/Shape').Circle,
         Plane = require('../objects/Shape').Plane,
         bp = require('../collision/Broadphase'),
@@ -4069,7 +3890,7 @@ DistanceConstraint.prototype = new Constraint();
     };
     exports.NaiveBroadphase.prototype = new Broadphase();
 
-},{"../objects/Shape":1,"../collision/Broadphase":6,"gl-matrix":15}],13:[function(require,module,exports){
+},{"../objects/Shape":1,"../collision/Broadphase":7,"gl-matrix":15}],13:[function(require,module,exports){
 var Solver = require('./Solver').Solver
 ,   ContactEquation = require('../constraints/ContactEquation').ContactEquation
 ,   vec2 = require('gl-matrix').vec2
@@ -4827,7 +4648,143 @@ IslandGroup.prototype.applyResult = function(a){
     }
 };
 
-},{"./Solver":4,"../constraints/ContactEquation":8,"../objects/Body":7,"gl-matrix":15}],14:[function(require,module,exports){
+},{"./Solver":4,"../constraints/ContactEquation":8,"../objects/Body":6,"gl-matrix":15}],11:[function(require,module,exports){
+    var glMatrix = require('gl-matrix'),
+        vec2 = glMatrix.vec2,
+        Solver = require('./Solver').Solver;
+
+    exports.GSSolver = GSSolver;
+
+    var ARRAY_TYPE = Float32Array || Array;
+
+    /**
+     * Iterative Gauss-Seidel constraint equation solver.
+     * @class
+     * @extends p2.Solver
+     */
+    function GSSolver(options){
+        Solver.call(this);
+        options = options || {};
+        this.iterations = options.iterations || 10;
+        this.h = options.timeStep || 1.0/60.0;
+        this.k = options.stiffness || 1e7;
+        this.d = options.relaxation || 6;
+        this.a = 0.0;
+        this.b = 0.0;
+        this.eps = 0.0;
+        this.tolerance = options.tolerance || 0;
+        this.setSpookParams(this.k, this.d);
+        this.debug = options.debug || false;
+        this.arrayStep = 30;
+        this.lambda = new ARRAY_TYPE(this.arrayStep);
+        this.Bs =     new ARRAY_TYPE(this.arrayStep);
+        this.invCs =  new ARRAY_TYPE(this.arrayStep);
+    };
+    GSSolver.prototype = new Solver();
+    GSSolver.prototype.setSpookParams = function(k,d){
+        var h=this.h;
+        this.k = k;
+        this.d = d;
+        this.a = 4.0 / (h * (1 + 4 * d));
+        this.b = (4.0 * d) / (1 + 4 * d);
+        this.eps = 4.0 / (h * h * k * (1 + 4 * d));
+    };
+    GSSolver.prototype.solve = function(dt,world,callback){
+        var d = this.d,
+            ks = this.k,
+            iter = 0,
+            maxIter = this.iterations,
+            tolSquared = this.tolerance*this.tolerance,
+            a = this.a,
+            b = this.b,
+            eps = this.eps,
+            equations = this.equations,
+            Neq = equations.length,
+            bodies = world.bodies,
+            Nbodies = world.bodies.length,
+            h = dt;
+
+        // Things that does not change during iteration can be computed once
+        if(this.lambda.length < Neq){
+            this.lambda = new ARRAY_TYPE(Neq + this.arrayStep);
+            this.Bs =     new ARRAY_TYPE(Neq + this.arrayStep);
+            this.invCs =  new ARRAY_TYPE(Neq + this.arrayStep);
+        }
+        var invCs = this.invCs;
+        var Bs = this.Bs;
+        var lambda = this.lambda;
+
+        // Create array for lambdas
+        for(var i=0; i!==Neq; i++){
+            var c = equations[i];
+            lambda[i] = 0.0;
+            Bs[i] = c.computeB(a,b,h);
+            invCs[i] = 1.0 / c.computeC(eps);
+        }
+
+        var q, B, c, invC, deltalambda, deltalambdaTot, GWlambda, lambdaj;
+
+        if(Neq !== 0){
+            var i,j, minForce, maxForce, lambdaj_plus_deltalambda;
+
+            // Reset vlambda
+            for(i=0; i!==Nbodies; i++){
+                var b=bodies[i], vlambda=b.vlambda;
+                vec2.set(vlambda,0,0);
+                b.wlambda = 0;
+            }
+
+            // Iterate over equations
+            for(iter=0; iter!==maxIter; iter++){
+
+                // Accumulate the total error for each iteration.
+                deltalambdaTot = 0.0;
+
+                for(j=0; j!==Neq; j++){
+
+                    c = equations[j];
+
+                    // Compute iteration
+                    maxForce = c.maxForce;
+                    minForce = c.minForce;
+                    B = Bs[j];
+                    invC = invCs[j];
+                    lambdaj = lambda[j];
+                    GWlambda = c.computeGWlambda(eps);
+                    deltalambda = invC * ( B - GWlambda - eps * lambdaj );
+
+                    // Clamp if we are not within the min/max interval
+                    lambdaj_plus_deltalambda = lambdaj + deltalambda;
+                    if(lambdaj_plus_deltalambda < minForce){
+                        deltalambda = minForce - lambdaj;
+                    } else if(lambdaj_plus_deltalambda > maxForce){
+                        deltalambda = maxForce - lambdaj;
+                    }
+                    lambda[j] += deltalambda;
+
+                    deltalambdaTot += Math.abs(deltalambda);
+
+                    c.addToWlambda(deltalambda);
+                }
+
+                // If the total error is small enough - stop iterate
+                if(deltalambdaTot*deltalambdaTot <= tolSquared) break;
+            }
+
+            // Add result to velocity
+            for(i=0; i!==Nbodies; i++){
+                var b=bodies[i], v=b.velocity;
+                vec2.add( v,v, b.vlambda);
+                b.angularVelocity += b.wlambda;
+            }
+        }
+        errorTot = deltalambdaTot;
+
+        callback();
+    };
+
+
+},{"./Solver":4,"gl-matrix":15}],14:[function(require,module,exports){
 var GSSolver = require('../solver/GSSolver').GSSolver,
     NaiveBroadphase = require('../collision/NaiveBroadphase').NaiveBroadphase,
     glMatrix = require('gl-matrix'),
@@ -5148,7 +5105,7 @@ World.prototype.removeBody = function(body){
  * @param  {Boolean} stringify Set to true if you want to get the stringified JSON representation.
  * @return {Object}
  */
-World.prototype.toJSON = function(stringify){
+World.prototype.toJSON = function(){
     var json = {
         p2 : "0.1.0",
         bodies : [],
@@ -5165,6 +5122,8 @@ World.prototype.toJSON = function(stringify){
             angle : b.angle,
             position : v2a(b.position),
             velocity : v2a(b.velocity),
+            angularVelocity : b.angularVelocity,
+            force : v2a(b.force),
         });
     }
     return json;
@@ -5191,11 +5150,14 @@ World.prototype.fromJSON = function(json){
         for(var i=0; i<json.bodies.length; i++){
             var jb = json.bodies[i];
             var b = new Body({
-                mass :      jb.mass,
-                position :  jb.position,
-                angle :     jb.angle,
-                velocity :  jb.velocity,
+                mass :              jb.mass,
+                position :          jb.position,
+                angle :             jb.angle,
+                velocity :          jb.velocity,
+                angularVelocity :   jb.angularVelocity,
+                force :             jb.force,
             });
+            this.addBody(b);
         }
         break;
 
@@ -5229,6 +5191,50 @@ World.prototype.clear = function(){
 
 };
 
-},{"../solver/GSSolver":11,"../collision/NaiveBroadphase":12,"../objects/Shape":1,"../objects/Body":7,"../collision/Broadphase":6,"gl-matrix":15}]},{},[5])(5)
+},{"../solver/GSSolver":11,"../collision/NaiveBroadphase":12,"../objects/Shape":1,"../objects/Body":6,"../collision/Broadphase":7,"gl-matrix":15}],9:[function(require,module,exports){
+var Constraint = require('./Constraint').Constraint
+,   ContactEquation = require('./ContactEquation').ContactEquation
+,   vec2 = require('gl-matrix').vec2
+
+exports.DistanceConstraint = DistanceConstraint;
+
+/**
+ * Constraint that tries to keep the distance between two bodies constant.
+ * 
+ * @class
+ * @author schteppe
+ * @param {p2.Body} bodyA
+ * @param {p2.Body} bodyB
+ * @param {number} dist The distance to keep between the bodies.
+ * @param {number} maxForce
+ */
+function DistanceConstraint(bodyA,bodyB,distance,maxForce){
+    Constraint.call(this,bodyA,bodyB);
+
+    if(typeof(maxForce)==="undefined" ) {
+        maxForce = 1e6;
+    }
+
+    // Equations to be fed to the solver
+    var eqs = this.equations = [
+        new ContactEquation(bodyA,bodyB), // Just in the normal direction
+    ];
+
+    var normal = eqs[0];
+
+    normal.minForce = -maxForce;
+    normal.maxForce =  maxForce;
+
+    // Update 
+    this.update = function(){
+        vec2.subtract(normal.ni, bodyB.position, bodyA.position);
+        vec2.normalize(normal.ni,normal.ni);
+        vec2.scale(normal.ri, normal.ni, distance*0.5);
+        vec2.scale(normal.rj, normal.ni, -distance*0.5);
+    };
+}
+DistanceConstraint.prototype = new Constraint();
+
+},{"./Constraint":2,"./ContactEquation":8,"gl-matrix":15}]},{},[5])(5)
 });
 ;
