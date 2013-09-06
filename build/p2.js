@@ -205,7 +205,29 @@ var glMatrix = require('gl-matrix');
 exports.vec2 = glMatrix.vec2;
 exports.mat2 = glMatrix.mat2;
 
-},{"./objects/Body":6,"./collision/Broadphase":7,"./objects/Shape":1,"./constraints/Constraint":2,"./constraints/ContactEquation":8,"./constraints/DistanceConstraint":9,"./constraints/Equation":3,"./collision/GridBroadphase":10,"./solver/GSSolver":11,"./collision/NaiveBroadphase":12,"./solver/ParallelIslandSolver":13,"./solver/Solver":4,"./world/World":14,"gl-matrix":15}],15:[function(require,module,exports){
+},{"./collision/Broadphase":6,"./objects/Body":7,"./objects/Shape":1,"./constraints/Constraint":2,"./constraints/ContactEquation":8,"./constraints/DistanceConstraint":9,"./constraints/Equation":3,"./collision/GridBroadphase":10,"./solver/GSSolver":11,"./collision/NaiveBroadphase":12,"./solver/ParallelIslandSolver":13,"./solver/Solver":4,"./world/World":14,"gl-matrix":15}],16:[function(require,module,exports){
+    exports.vec2 = {
+        getX : function(a){
+        	return a[0];
+        },
+
+        getY : function(a){
+        	return a[1];
+        },
+
+        crossLength : function(a,b){
+        	return a[0] * b[1] - a[1] * b[0];
+        },
+
+        rotate : function(out,a,angle){
+            var c = Math.cos(angle),
+                s = Math.sin(angle);
+            out[0] = c*a[0] -s*a[1];
+            out[1] = s*a[0] +c*a[1];
+        }
+    };
+
+},{}],15:[function(require,module,exports){
 (function(){/**
  * @fileoverview gl-matrix - High performance matrix and vector operations
  * @author Brandon Jones
@@ -3279,29 +3301,101 @@ if(typeof(exports) !== 'undefined') {
 })();
 
 })()
-},{}],16:[function(require,module,exports){
-    exports.vec2 = {
-        getX : function(a){
-        	return a[0];
-        },
+},{}],6:[function(require,module,exports){
+    var glMatrix = require('gl-matrix'),
+        glMatrixExtensions = require('../gl-matrix-extensions'),
+        vec2e = glMatrixExtensions.vec2,
+        vec2 = glMatrix.vec2,
+        mat2 = glMatrix.mat2;
 
-        getY : function(a){
-        	return a[1];
-        },
-
-        crossLength : function(a,b){
-        	return a[0] * b[1] - a[1] * b[0];
-        },
-
-        rotate : function(out,a,angle){
-            var c = Math.cos(angle),
-                s = Math.sin(angle);
-            out[0] = c*a[0] -s*a[1];
-            out[1] = s*a[0] +c*a[1];
+    var dist = vec2.create();
+    var rot = mat2.create();
+    var worldNormal = vec2.create();
+    var yAxis = vec2.fromValues(0,1);
+    exports.checkCircleCircle = function(c1,c2,result){
+        vec2.sub(dist,c1.position,c2.position);
+        var R1 = c1.shape.radius;
+        var R2 = c2.shape.radius;
+        if(vec2.sqrLen(dist) < (R1+R2)*(R1+R2)){
+            result.push(c1);
+            result.push(c2);
         }
     };
 
-},{}],6:[function(require,module,exports){
+    exports.checkCirclePlane = function(c,p,result){
+        vec2.sub(dist,c.position,p.position);
+        vec2e.rotate(worldNormal,yAxis,p.angle);
+        if(vec2.dot(dist,worldNormal) <= c.shape.radius){
+            result.push(c);
+            result.push(p);
+        }
+    }
+
+    exports.checkCircleParticle = function(c,p,result){
+        result.push(c);
+        result.push(p);
+    };
+
+    // Generate contacts / do nearphase
+    exports.nearphaseCircleCircle = function(c1,c2,result,oldContacts){
+        //var c = new p2.ContactEquation(c1,c2);
+        var c = oldContacts.length ? oldContacts.pop() : new p2.ContactEquation(c1,c2);
+        c.bi = c1;
+        c.bj = c2;
+        vec2.sub(c.ni,c2.position,c1.position);
+        vec2.normalize(c.ni,c.ni);
+        vec2.scale( c.ri,c.ni, c1.shape.radius);
+        vec2.scale( c.rj,c.ni,-c2.shape.radius);
+        result.push(c);
+    };
+
+    exports.nearphaseCircleParticle = function(c,p,result,oldContacts){
+        // todo
+    };
+
+    var nearphaseCirclePlane_rot = mat2.create();
+    var nearphaseCirclePlane_planeToCircle = vec2.create();
+    var nearphaseCirclePlane_temp = vec2.create();
+    exports.nearphaseCirclePlane = function(c,p,result,oldContacts){
+        var rot = nearphaseCirclePlane_rot;
+        var contact = oldContacts.length ? oldContacts.pop() : new p2.ContactEquation(p,c);
+        contact.bi = p;
+        contact.bj = c;
+        var planeToCircle = nearphaseCirclePlane_planeToCircle;
+        var temp = nearphaseCirclePlane_temp;
+        vec2e.rotate(contact.ni,yAxis,p.angle);
+
+        vec2.scale( contact.rj,contact.ni, -c.shape.radius);
+
+        vec2.sub(planeToCircle,c.position,p.position);
+        var d = vec2.dot(contact.ni , planeToCircle );
+        vec2.scale(temp,contact.ni,d);
+        vec2.sub( contact.ri ,planeToCircle , temp );
+
+        result.push(contact);
+    }
+
+    /**
+     * Base class for broadphase implementations.
+     * @class
+     */
+    exports.Broadphase = function(){
+
+    };
+
+    /**
+     * Get all potential intersecting body pairs.
+     * @method
+     * @memberof p2.Broadphase
+     * @param  {p2.World} world The world to search in.
+     * @return {Array} An array of the bodies, ordered in pairs. Example: A result of [a,b,c,d] means that the potential pairs are: (a,b), (c,d).
+     */
+    exports.Broadphase.prototype.getCollisionPairs = function(world){
+        throw new Error("getCollisionPairs must be implemented in a subclass!");
+    };
+
+
+},{"../gl-matrix-extensions":16,"gl-matrix":15}],7:[function(require,module,exports){
     var glMatrix = require("gl-matrix"),
         vec2 = glMatrix.vec2;
 
@@ -3400,14 +3494,16 @@ if(typeof(exports) !== 'undefined') {
          * @member {vec2}
          * @memberof p2.Body
          */
-        this.position = options.position || vec2.create();
+        this.position = vec2.create();
+        if(options.position) vec2.copy(this.position, options.position);
 
         /**
          * The velocity of the body
          * @member {vec2}
          * @memberof p2.Body
          */
-        this.velocity = options.velocity || vec2.create();
+        this.velocity = vec2.create();
+        if(options.velocity) vec2.copy(this.velocity, options.velocity);
 
         this.vlambda = vec2.create();
         this.wlambda = 0;
@@ -3479,101 +3575,51 @@ if(typeof(exports) !== 'undefined') {
     };
 
 
-},{"gl-matrix":15}],7:[function(require,module,exports){
-    var glMatrix = require('gl-matrix'),
-        glMatrixExtensions = require('../gl-matrix-extensions'),
-        vec2e = glMatrixExtensions.vec2,
-        vec2 = glMatrix.vec2,
-        mat2 = glMatrix.mat2;
+},{"gl-matrix":15}],9:[function(require,module,exports){
+var Constraint = require('./Constraint').Constraint
+,   ContactEquation = require('./ContactEquation').ContactEquation
+,   vec2 = require('gl-matrix').vec2
 
-    var dist = vec2.create();
-    var rot = mat2.create();
-    var worldNormal = vec2.create();
-    var yAxis = vec2.fromValues(0,1);
-    exports.checkCircleCircle = function(c1,c2,result){
-        vec2.sub(dist,c1.position,c2.position);
-        var R1 = c1.shape.radius;
-        var R2 = c2.shape.radius;
-        if(vec2.sqrLen(dist) < (R1+R2)*(R1+R2)){
-            result.push(c1);
-            result.push(c2);
-        }
-    };
+exports.DistanceConstraint = DistanceConstraint;
 
-    exports.checkCirclePlane = function(c,p,result){
-        vec2.sub(dist,c.position,p.position);
-        vec2e.rotate(worldNormal,yAxis,p.angle);
-        if(vec2.dot(dist,worldNormal) <= c.shape.radius){
-            result.push(c);
-            result.push(p);
-        }
+/**
+ * Constraint that tries to keep the distance between two bodies constant.
+ * 
+ * @class
+ * @author schteppe
+ * @param {p2.Body} bodyA
+ * @param {p2.Body} bodyB
+ * @param {number} dist The distance to keep between the bodies.
+ * @param {number} maxForce
+ */
+function DistanceConstraint(bodyA,bodyB,distance,maxForce){
+    Constraint.call(this,bodyA,bodyB);
+
+    if(typeof(maxForce)==="undefined" ) {
+        maxForce = 1e6;
     }
 
-    exports.checkCircleParticle = function(c,p,result){
-        result.push(c);
-        result.push(p);
+    // Equations to be fed to the solver
+    var eqs = this.equations = [
+        new ContactEquation(bodyA,bodyB), // Just in the normal direction
+    ];
+
+    var normal = eqs[0];
+
+    normal.minForce = -maxForce;
+    normal.maxForce =  maxForce;
+
+    // Update 
+    this.update = function(){
+        vec2.subtract(normal.ni, bodyB.position, bodyA.position);
+        vec2.normalize(normal.ni,normal.ni);
+        vec2.scale(normal.ri, normal.ni, distance*0.5);
+        vec2.scale(normal.rj, normal.ni, -distance*0.5);
     };
+}
+DistanceConstraint.prototype = new Constraint();
 
-    // Generate contacts / do nearphase
-    exports.nearphaseCircleCircle = function(c1,c2,result,oldContacts){
-        //var c = new p2.ContactEquation(c1,c2);
-        var c = oldContacts.length ? oldContacts.pop() : new p2.ContactEquation(c1,c2);
-        c.bi = c1;
-        c.bj = c2;
-        vec2.sub(c.ni,c2.position,c1.position);
-        vec2.normalize(c.ni,c.ni);
-        vec2.scale( c.ri,c.ni, c1.shape.radius);
-        vec2.scale( c.rj,c.ni,-c2.shape.radius);
-        result.push(c);
-    };
-
-    exports.nearphaseCircleParticle = function(c,p,result,oldContacts){
-        // todo
-    };
-
-    var nearphaseCirclePlane_rot = mat2.create();
-    var nearphaseCirclePlane_planeToCircle = vec2.create();
-    var nearphaseCirclePlane_temp = vec2.create();
-    exports.nearphaseCirclePlane = function(c,p,result,oldContacts){
-        var rot = nearphaseCirclePlane_rot;
-        var contact = oldContacts.length ? oldContacts.pop() : new p2.ContactEquation(p,c);
-        contact.bi = p;
-        contact.bj = c;
-        var planeToCircle = nearphaseCirclePlane_planeToCircle;
-        var temp = nearphaseCirclePlane_temp;
-        vec2e.rotate(contact.ni,yAxis,p.angle);
-
-        vec2.scale( contact.rj,contact.ni, -c.shape.radius);
-
-        vec2.sub(planeToCircle,c.position,p.position);
-        var d = vec2.dot(contact.ni , planeToCircle );
-        vec2.scale(temp,contact.ni,d);
-        vec2.sub( contact.ri ,planeToCircle , temp );
-
-        result.push(contact);
-    }
-
-    /**
-     * Base class for broadphase implementations.
-     * @class
-     */
-    exports.Broadphase = function(){
-
-    };
-
-    /**
-     * Get all potential intersecting body pairs.
-     * @method
-     * @memberof p2.Broadphase
-     * @param  {p2.World} world The world to search in.
-     * @return {Array} An array of the bodies, ordered in pairs. Example: A result of [a,b,c,d] means that the potential pairs are: (a,b), (c,d).
-     */
-    exports.Broadphase.prototype.getCollisionPairs = function(world){
-        throw new Error("getCollisionPairs must be implemented in a subclass!");
-    };
-
-
-},{"../gl-matrix-extensions":16,"gl-matrix":15}],8:[function(require,module,exports){
+},{"./Constraint":2,"./ContactEquation":8,"gl-matrix":15}],8:[function(require,module,exports){
     var Equation = require("./Equation").Equation,
         glMatrix = require('gl-matrix'),
         vec2 = glMatrix.vec2,
@@ -3713,51 +3759,137 @@ if(typeof(exports) !== 'undefined') {
     };
 
 
-},{"./Equation":3,"../gl-matrix-extensions":16,"gl-matrix":15}],9:[function(require,module,exports){
-var Constraint = require('./Constraint').Constraint
-,   ContactEquation = require('./ContactEquation').ContactEquation
-,   vec2 = require('gl-matrix').vec2
+},{"./Equation":3,"../gl-matrix-extensions":16,"gl-matrix":15}],10:[function(require,module,exports){
+    var Circle = require('../objects/Shape').Circle,
+        Plane = require('../objects/Shape').Plane,
+        Particle = require('../objects/Shape').Particle,
+        bp = require('../collision/Broadphase'),
+        Broadphase = bp.Broadphase,
+        glMatrix = require('gl-matrix'),
+        vec2 = glMatrix.vec2;
 
-exports.DistanceConstraint = DistanceConstraint;
+    /**
+     * Broadphase that uses axis-aligned bins.
+     * @class
+     * @extends p2.Broadphase
+     * @param {number} xmin Lower x bound of the grid
+     * @param {number} xmax Upper x bound
+     * @param {number} ymin Lower y bound
+     * @param {number} ymax Upper y bound
+     * @param {number} nx Number of bins along x axis
+     * @param {number} ny Number of bins along y axis
+     */
+    exports.GridBroadphase = function(xmin,xmax,ymin,ymax,nx,ny){
+        Broadphase.apply(this);
 
-/**
- * Constraint that tries to keep the distance between two bodies constant.
- * 
- * @class
- * @author schteppe
- * @param {p2.Body} bodyA
- * @param {p2.Body} bodyB
- * @param {number} dist The distance to keep between the bodies.
- * @param {number} maxForce
- */
-function DistanceConstraint(bodyA,bodyB,distance,maxForce){
-    Constraint.call(this,bodyA,bodyB);
+        nx = nx || 10;
+        ny = ny || 10;
+        var binsizeX = (xmax-xmin) / nx;
+        var binsizeY = (ymax-ymin) / ny;
 
-    if(typeof(maxForce)==="undefined" ) {
-        maxForce = 1e6;
-    }
+        function getBinIndex(x,y){
+            var xi = Math.floor(nx * (x - xmin) / (xmax-xmin));
+            var yi = Math.floor(ny * (y - ymin) / (ymax-ymin));
+            return xi*ny + yi;
+        }
 
-    // Equations to be fed to the solver
-    var eqs = this.equations = [
-        new ContactEquation(bodyA,bodyB), // Just in the normal direction
-    ];
+        this.getCollisionPairs = function(world){
+            var result = [];
+            var collidingBodies = world.collidingBodies;
+            var Ncolliding = Ncolliding=collidingBodies.length;
 
-    var normal = eqs[0];
+            var bins=[], Nbins=nx*ny;
+            for(var i=0; i<Nbins; i++)
+                bins.push([]);
 
-    normal.minForce = -maxForce;
-    normal.maxForce =  maxForce;
+            var xmult = nx / (xmax-xmin);
+            var ymult = ny / (ymax-ymin);
 
-    // Update 
-    this.update = function(){
-        vec2.subtract(normal.ni, bodyB.position, bodyA.position);
-        vec2.normalize(normal.ni,normal.ni);
-        vec2.scale(normal.ri, normal.ni, distance*0.5);
-        vec2.scale(normal.rj, normal.ni, -distance*0.5);
+            // Put all bodies into bins
+            for(var i=0; i!==Ncolliding; i++){
+                var bi = collidingBodies[i];
+                var si = bi.shape;
+                if (si === undefined) {
+                    continue;
+                } else if(si instanceof Circle){
+                    // Put in bin
+                    // check if overlap with other bins
+                    var x = bi.position[0];
+                    var y = bi.position[1];
+                    var r = si.radius;
+
+                    var xi1 = Math.floor(xmult * (x-r - xmin));
+                    var yi1 = Math.floor(ymult * (y-r - ymin));
+                    var xi2 = Math.floor(xmult * (x+r - xmin));
+                    var yi2 = Math.floor(ymult * (y+r - ymin));
+
+                    for(var j=xi1; j<=xi2; j++){
+                        for(var k=yi1; k<=yi2; k++){
+                            var xi = j;
+                            var yi = k;
+                            if(xi*(ny-1) + yi >= 0 && xi*(ny-1) + yi < Nbins)
+                                bins[ xi*(ny-1) + yi ].push(bi);
+                        }
+                    }
+                } else if(si instanceof Plane){
+                    // Put in all bins for now
+                    if(bi.angle == 0){
+                        var y = bi.position[1];
+                        for(var j=0; j!==Nbins && ymin+binsizeY*(j-1)<y; j++){
+                            for(var k=0; k<nx; k++){
+                                var xi = k;
+                                var yi = Math.floor(ymult * (binsizeY*j - ymin));
+                                bins[ xi*(ny-1) + yi ].push(bi);
+                            }
+                        }
+                    } else if(bi.angle == Math.PI*0.5){
+                        var x = bi.position[0];
+                        for(var j=0; j!==Nbins && xmin+binsizeX*(j-1)<x; j++){
+                            for(var k=0; k<ny; k++){
+                                var yi = k;
+                                var xi = Math.floor(xmult * (binsizeX*j - xmin));
+                                bins[ xi*(ny-1) + yi ].push(bi);
+                            }
+                        }
+                    } else {
+                        for(var j=0; j!==Nbins; j++)
+                            bins[j].push(bi);
+                    }
+                } else {
+                    throw new Error("Shape not supported in GridBroadphase!");
+                }
+            }
+
+            // Check each bin
+            for(var i=0; i!==Nbins; i++){
+                var bin = bins[i];
+                for(var j=0, NbodiesInBin=bin.length; j!==NbodiesInBin; j++){
+                    var bi = bin[j];
+                    var si = bi.shape;
+
+                    for(var k=0; k!==j; k++){
+                        var bj = bin[k];
+                        var sj = bj.shape;
+
+                        if(si instanceof Circle){
+                                 if(sj instanceof Circle)   bp.checkCircleCircle  (bi,bj,result);
+                            else if(sj instanceof Particle) bp.checkCircleParticle(bi,bj,result);
+                            else if(sj instanceof Plane)    bp.checkCirclePlane   (bi,bj,result);
+                        } else if(si instanceof Particle){
+                                 if(sj instanceof Circle)   bp.checkCircleParticle(bj,bi,result);
+                        } else if(si instanceof Plane){
+                                 if(sj instanceof Circle)   bp.checkCirclePlane   (bj,bi,result);
+                        }
+                    }
+                }
+            }
+            return result;
+        };
     };
-}
-DistanceConstraint.prototype = new Constraint();
+    exports.GridBroadphase.prototype = new Broadphase();
 
-},{"./Constraint":2,"./ContactEquation":8,"gl-matrix":15}],11:[function(require,module,exports){
+
+},{"../objects/Shape":1,"../collision/Broadphase":6,"gl-matrix":15}],11:[function(require,module,exports){
     var glMatrix = require('gl-matrix'),
         vec2 = glMatrix.vec2,
         Solver = require('./Solver').Solver;
@@ -3893,137 +4025,7 @@ DistanceConstraint.prototype = new Constraint();
     };
 
 
-},{"./Solver":4,"gl-matrix":15}],10:[function(require,module,exports){
-    var Circle = require('../objects/Shape').Circle,
-        Plane = require('../objects/Shape').Plane,
-        Particle = require('../objects/Shape').Particle,
-        bp = require('../collision/Broadphase'),
-        Broadphase = bp.Broadphase,
-        glMatrix = require('gl-matrix'),
-        vec2 = glMatrix.vec2;
-
-    /**
-     * Broadphase that uses axis-aligned bins.
-     * @class
-     * @extends p2.Broadphase
-     * @param {number} xmin Lower x bound of the grid
-     * @param {number} xmax Upper x bound
-     * @param {number} ymin Lower y bound
-     * @param {number} ymax Upper y bound
-     * @param {number} nx Number of bins along x axis
-     * @param {number} ny Number of bins along y axis
-     */
-    exports.GridBroadphase = function(xmin,xmax,ymin,ymax,nx,ny){
-        Broadphase.apply(this);
-
-        nx = nx || 10;
-        ny = ny || 10;
-        var binsizeX = (xmax-xmin) / nx;
-        var binsizeY = (ymax-ymin) / ny;
-
-        function getBinIndex(x,y){
-            var xi = Math.floor(nx * (x - xmin) / (xmax-xmin));
-            var yi = Math.floor(ny * (y - ymin) / (ymax-ymin));
-            return xi*ny + yi;
-        }
-
-        this.getCollisionPairs = function(world){
-            var result = [];
-            var collidingBodies = world.collidingBodies;
-            var Ncolliding = Ncolliding=collidingBodies.length;
-
-            var bins=[], Nbins=nx*ny;
-            for(var i=0; i<Nbins; i++)
-                bins.push([]);
-
-            var xmult = nx / (xmax-xmin);
-            var ymult = ny / (ymax-ymin);
-
-            // Put all bodies into bins
-            for(var i=0; i!==Ncolliding; i++){
-                var bi = collidingBodies[i];
-                var si = bi.shape;
-                if (si === undefined) {
-                    continue;
-                } else if(si instanceof Circle){
-                    // Put in bin
-                    // check if overlap with other bins
-                    var x = bi.position[0];
-                    var y = bi.position[1];
-                    var r = si.radius;
-
-                    var xi1 = Math.floor(xmult * (x-r - xmin));
-                    var yi1 = Math.floor(ymult * (y-r - ymin));
-                    var xi2 = Math.floor(xmult * (x+r - xmin));
-                    var yi2 = Math.floor(ymult * (y+r - ymin));
-
-                    for(var j=xi1; j<=xi2; j++){
-                        for(var k=yi1; k<=yi2; k++){
-                            var xi = j;
-                            var yi = k;
-                            if(xi*(ny-1) + yi >= 0 && xi*(ny-1) + yi < Nbins)
-                                bins[ xi*(ny-1) + yi ].push(bi);
-                        }
-                    }
-                } else if(si instanceof Plane){
-                    // Put in all bins for now
-                    if(bi.angle == 0){
-                        var y = bi.position[1];
-                        for(var j=0; j!==Nbins && ymin+binsizeY*(j-1)<y; j++){
-                            for(var k=0; k<nx; k++){
-                                var xi = k;
-                                var yi = Math.floor(ymult * (binsizeY*j - ymin));
-                                bins[ xi*(ny-1) + yi ].push(bi);
-                            }
-                        }
-                    } else if(bi.angle == Math.PI*0.5){
-                        var x = bi.position[0];
-                        for(var j=0; j!==Nbins && xmin+binsizeX*(j-1)<x; j++){
-                            for(var k=0; k<ny; k++){
-                                var yi = k;
-                                var xi = Math.floor(xmult * (binsizeX*j - xmin));
-                                bins[ xi*(ny-1) + yi ].push(bi);
-                            }
-                        }
-                    } else {
-                        for(var j=0; j!==Nbins; j++)
-                            bins[j].push(bi);
-                    }
-                } else {
-                    throw new Error("Shape not supported in GridBroadphase!");
-                }
-            }
-
-            // Check each bin
-            for(var i=0; i!==Nbins; i++){
-                var bin = bins[i];
-                for(var j=0, NbodiesInBin=bin.length; j!==NbodiesInBin; j++){
-                    var bi = bin[j];
-                    var si = bi.shape;
-
-                    for(var k=0; k!==j; k++){
-                        var bj = bin[k];
-                        var sj = bj.shape;
-
-                        if(si instanceof Circle){
-                                 if(sj instanceof Circle)   bp.checkCircleCircle  (bi,bj,result);
-                            else if(sj instanceof Particle) bp.checkCircleParticle(bi,bj,result);
-                            else if(sj instanceof Plane)    bp.checkCirclePlane   (bi,bj,result);
-                        } else if(si instanceof Particle){
-                                 if(sj instanceof Circle)   bp.checkCircleParticle(bj,bi,result);
-                        } else if(si instanceof Plane){
-                                 if(sj instanceof Circle)   bp.checkCirclePlane   (bj,bi,result);
-                        }
-                    }
-                }
-            }
-            return result;
-        };
-    };
-    exports.GridBroadphase.prototype = new Broadphase();
-
-
-},{"../objects/Shape":1,"../collision/Broadphase":7,"gl-matrix":15}],12:[function(require,module,exports){
+},{"./Solver":4,"gl-matrix":15}],12:[function(require,module,exports){
     var Circle = require('../objects/Shape').Circle,
         Plane = require('../objects/Shape').Plane,
         bp = require('../collision/Broadphase'),
@@ -4067,7 +4069,7 @@ DistanceConstraint.prototype = new Constraint();
     };
     exports.NaiveBroadphase.prototype = new Broadphase();
 
-},{"../objects/Shape":1,"../collision/Broadphase":7,"gl-matrix":15}],13:[function(require,module,exports){
+},{"../objects/Shape":1,"../collision/Broadphase":6,"gl-matrix":15}],13:[function(require,module,exports){
 var Solver = require('./Solver').Solver
 ,   ContactEquation = require('../constraints/ContactEquation').ContactEquation
 ,   vec2 = require('gl-matrix').vec2
@@ -4128,7 +4130,7 @@ function ParallelIslandSolver(subsolver,numWorkers,p2Url){
         '        dt = e.data.timeStep;',
         '        solver = new p2.GSSolver(); // Todo: user picked solver',
         '        solver.setSpookParams(1e10,3);',
-        '        solver.iterations = 20;',
+        '        solver.iterations = 20; // and other params',
         '        return;',
         '    } else {',
         '        // Parse islands and solve',
@@ -4825,322 +4827,408 @@ IslandGroup.prototype.applyResult = function(a){
     }
 };
 
-},{"./Solver":4,"../constraints/ContactEquation":8,"../objects/Body":6,"gl-matrix":15}],14:[function(require,module,exports){
-    var GSSolver = require('../solver/GSSolver').GSSolver,
-        NaiveBroadphase = require('../collision/NaiveBroadphase').NaiveBroadphase,
-        glMatrix = require('gl-matrix'),
-        vec2 = glMatrix.vec2,
-        Circle = require('../objects/Shape').Circle,
-        Plane = require('../objects/Shape').Plane,
-        Particle = require('../objects/Shape').Particle,
-        bp = require('../collision/Broadphase'),
-        Broadphase = bp.Broadphase;
+},{"./Solver":4,"../constraints/ContactEquation":8,"../objects/Body":7,"gl-matrix":15}],14:[function(require,module,exports){
+var GSSolver = require('../solver/GSSolver').GSSolver,
+    NaiveBroadphase = require('../collision/NaiveBroadphase').NaiveBroadphase,
+    glMatrix = require('gl-matrix'),
+    vec2 = glMatrix.vec2,
+    Circle = require('../objects/Shape').Circle,
+    Plane = require('../objects/Shape').Plane,
+    Particle = require('../objects/Shape').Particle,
+    Body = require('../objects/Body').Body,
+    bp = require('../collision/Broadphase'),
+    Broadphase = bp.Broadphase;
 
-    exports.World = World;
+exports.World = World;
 
-    function now(){
-        if(performance.now)
-            return performance.now();
-        else if(performance.webkitNow)
-            return performance.webkitNow();
-        else
-            return new Date().getTime();
+function now(){
+    if(performance.now)
+        return performance.now();
+    else if(performance.webkitNow)
+        return performance.webkitNow();
+    else
+        return new Date().getTime();
+}
+
+/**
+ * The dynamics world, where all bodies and constraints lives.
+ *
+ * @class
+ * @param {Object} [options]
+ * @param {p2.Solver} options.solver Default: p2.GSSolver
+ * @param {vec2} options.gravity Default: [0,-9.78]
+ * @param {p2.Broadphase} options.broadphase Default: p2.NaiveBroadphase
+ */
+function World(options){
+    options = options || {};
+
+    /**
+     * All springs in the world.
+     * @member {Array}
+     * @memberof World
+     */
+    this.springs = [];
+
+    /**
+     * All bodies in the world.
+     * @member {Array}
+     * @memberof World
+     */
+    this.bodies = [];
+
+    /**
+     * The solver used to satisfy constraints and contacts.
+     * @member {p2.Solver}
+     * @memberof World
+     */
+    this.solver = options.solver || new GSSolver();
+
+    /**
+     * The contacts in the world that were generated during the last step().
+     * @member {Array}
+     * @memberof World
+     */
+    this.contacts = [];
+
+    this.oldContacts = [];
+    this.collidingBodies = [];
+
+    /**
+     * Gravity in the world. This is applied on all bodies in the beginning of each step().
+     * @member {vec2}
+     * @memberof World
+     */
+    this.gravity = options.gravity || vec2.fromValues(0, -9.78);
+
+    /**
+     * Whether to do timing measurements during the step() or not.
+     * @member {bool}
+     * @memberof World
+     */
+    this.doProfiling = options.doProfiling || false;
+
+    /**
+     * How many millisecconds the last step() took. This is updated each step if .doProfiling is set to true.
+     * @member {number}
+     * @memberof World
+     */
+    this.lastStepTime = 0.0;
+
+    /**
+     * The broadphase algorithm to use.
+     * @member {p2.Broadphase}
+     * @memberof World
+     */
+    this.broadphase = options.broadphase || new NaiveBroadphase();
+
+    /**
+     * User-added constraints.
+     * @member {Array}
+     * @memberof World
+     */
+    this.constraints = [];
+
+    // Id counters
+    this._constraintIdCounter = 0;
+    this._bodyIdCounter = 0;
+};
+
+/**
+ * Add a constraint to the simulation.
+ * @memberof World
+ * @param {p2.Constraint} c
+ */
+World.prototype.addConstraint = function(c){
+    this.constraints.push(c);
+    c.id = this._constraintIdCounter++;
+};
+
+/**
+ * Removes a constraint
+ * @memberof World
+ * @param {p2.Constraint} c
+ */
+World.prototype.removeConstraint = function(c){
+    var idx = this.constraints.indexOf(c);
+    if(idx!==-1){
+        this.constraints.splice(idx,1);
+    }
+};
+
+var step_r = vec2.create();
+var step_runit = vec2.create();
+var step_u = vec2.create();
+var step_f = vec2.create();
+var step_fhMinv = vec2.create();
+var step_velodt = vec2.create();
+
+/**
+ * Step the physics world forward in time.
+ *
+ * @method
+ * @memberof World
+ * @param {number} dt The time step size to use.
+ */
+World.prototype.step = function(dt,callback){
+    var that = this,
+        doProfiling = this.doProfiling,
+        Nsprings = this.springs.length,
+        springs = this.springs,
+        bodies = this.bodies,
+        collidingBodies=this.collidingBodies,
+        g = this.gravity,
+        solver = this.solver,
+        Nbodies = this.bodies.length,
+        broadphase = this.broadphase,
+        constraints = this.constraints,
+        t0, t1;
+
+    if(doProfiling){
+        t0 = now();
     }
 
-    /**
-     * The dynamics world, where all bodies and constraints lives.
-     *
-     * @class
-     * @param {Object} [options]
-     * @param {p2.Solver} options.solver Default: p2.GSSolver
-     * @param {vec2} options.gravity Default: [0,-9.78]
-     * @param {p2.Broadphase} options.broadphase Default: p2.NaiveBroadphase
-     */
-    function World(options){
-        options = options || {};
+    // add gravity to bodies
+    for(var i=0; i!==Nbodies; i++){
+        var fi = bodies[i].force;
+        vec2.add(fi,fi,g);
+    }
 
-        /**
-         * All springs in the world.
-         * @member {Array}
-         * @memberof World
-         */
-        this.springs = [];
+    // Calculate all new spring forces
+    for(var i=0; i!==Nsprings; i++){
+        var s = springs[i];
+        var k = s.stiffness;
+        var d = s.damping;
+        var l = s.restLength;
+        var bodyA = s.bodyA;
+        var bodyB = s.bodyB;
+        var r = step_r;
+        var r_unit = step_runit;
+        var u = step_u;
+        var f = step_f;
 
-        /**
-         * All bodies in the world.
-         * @member {Array}
-         * @memberof World
-         */
-        this.bodies = [];
+        vec2.sub(r,bodyA.position,bodyB.position);
+        vec2.sub(u,bodyA.velocity,bodyB.velocity);
+        var rlen = vec2.len(r);
+        vec2.normalize(r_unit,r);
+        vec2.scale(f, r_unit, k*(rlen-l) + d*vec2.dot(u,r_unit));
+        vec2.sub( bodyA.force,bodyA.force, f);
+        vec2.add( bodyB.force,bodyB.force, f);
+    }
 
-        /**
-         * The solver used to satisfy constraints and contacts.
-         * @member {p2.Solver}
-         * @memberof World
-         */
-        this.solver = options.solver || new GSSolver();
+    // Broadphase
+    var result = broadphase.getCollisionPairs(this);
 
-        /**
-         * The contacts in the world that were generated during the last step().
-         * @member {Array}
-         * @memberof World
-         */
-        this.contacts = [];
-
-        this.oldContacts = [];
-        this.collidingBodies = [];
-
-        /**
-         * Gravity in the world. This is applied on all bodies in the beginning of each step().
-         * @member {vec2}
-         * @memberof World
-         */
-        this.gravity = options.gravity || vec2.fromValues(0, -9.78);
-
-        /**
-         * Whether to do timing measurements during the step() or not.
-         * @member {bool}
-         * @memberof World
-         */
-        this.doProfiling = options.doProfiling || false;
-
-        /**
-         * How many millisecconds the last step() took. This is updated each step if .doProfiling is set to true.
-         * @member {number}
-         * @memberof World
-         */
-        this.lastStepTime = 0.0;
-
-        /**
-         * The broadphase algorithm to use.
-         * @member {p2.Broadphase}
-         * @memberof World
-         */
-        this.broadphase = options.broadphase || new NaiveBroadphase();
-
-        /**
-         * User-added constraints.
-         * @member {Array}
-         * @memberof World
-         */
-        this.constraints = [];
-
-        // Id counters
-        this._constraintIdCounter = 0;
-        this._bodyIdCounter = 0;
-    };
-
-    /**
-     * Add a constraint to the simulation.
-     * @memberof World
-     * @param {p2.Constraint} c
-     */
-    World.prototype.addConstraint = function(c){
-        this.constraints.push(c);
-        c.id = this._constraintIdCounter++;
-    };
-
-    /**
-     * Removes a constraint
-     * @memberof World
-     * @param {p2.Constraint} c
-     */
-    World.prototype.removeConstraint = function(c){
-        var idx = this.constraints.indexOf(c);
-        if(idx!==-1){
-            this.constraints.splice(idx,1);
+    // Nearphase
+    var oldContacts = this.contacts.concat(this.oldContacts);
+    var contacts = this.contacts = [];
+    for(var i=0, Nresults=result.length; i!==Nresults; i+=2){
+        var bi = result[i];
+        var bj = result[i+1];
+        var si = bi.shape;
+        var sj = bj.shape;
+        if(si instanceof Circle){
+                 if(sj instanceof Circle)   bp.nearphaseCircleCircle  (bi,bj,contacts,oldContacts);
+            else if(sj instanceof Particle) bp.nearphaseCircleParticle(bi,bj,contacts,oldContacts);
+            else if(sj instanceof Plane)    bp.nearphaseCirclePlane   (bi,bj,contacts,oldContacts);
+        } else if(si instanceof Particle){
+                 if(sj instanceof Circle)   bp.nearphaseCircleParticle(bj,bi,contacts,oldContacts);
+        } else if(si instanceof Plane){
+                 if(sj instanceof Circle)   bp.nearphaseCirclePlane   (bj,bi,contacts,oldContacts);
         }
-    };
+    }
+    this.oldContacts = oldContacts;
 
-    var step_r = vec2.create();
-    var step_runit = vec2.create();
-    var step_u = vec2.create();
-    var step_f = vec2.create();
-    var step_fhMinv = vec2.create();
-    var step_velodt = vec2.create();
+    // Add equations to solver
+    for(var i=0, Ncontacts=contacts.length; i!==Ncontacts; i++){
+        solver.addEquation(contacts[i]);
+    }
+    // Add user-defined constraint equations
+    var Nconstraints = constraints.length;
+    for(i=0; i!==Nconstraints; i++){
+        var c = constraints[i];
+        c.update();
+        for(var j=0, Neq=c.equations.length; j!==Neq; j++){
+            var eq = c.equations[j];
+            solver.addEquation(eq);
+        }
+    }
+    solver.solve(dt,this,function(){
+        solver.removeAllEquations();
 
-    /**
-     * Step the physics world forward in time.
-     *
-     * @method
-     * @memberof World
-     * @param {number} dt The time step size to use.
-     */
-    World.prototype.step = function(dt,callback){
-        var that = this,
-            doProfiling = this.doProfiling,
-            Nsprings = this.springs.length,
-            springs = this.springs,
-            bodies = this.bodies,
-            collidingBodies=this.collidingBodies,
-            g = this.gravity,
-            solver = this.solver,
-            Nbodies = this.bodies.length,
-            broadphase = this.broadphase,
-            constraints = this.constraints,
-            t0, t1;
+        // Step forward
+        var fhMinv = step_fhMinv;
+        var velodt = step_velodt;
+        for(var i=0; i!==Nbodies; i++){
+            var body = bodies[i];
+            if(body.mass>0){
+                var minv = 1.0 / body.mass,
+                    f = body.force,
+                    pos = body.position,
+                    velo = body.velocity;
+
+                // Angular step
+                body.angularVelocity += body.angularForce * body.invInertia * dt;
+                body.angle += body.angularVelocity * dt;
+
+                // Linear step
+                vec2.scale(fhMinv,f,dt*minv);
+                vec2.add(velo,fhMinv,velo);
+                vec2.scale(velodt,velo,dt);
+                vec2.add(pos,pos,velodt);
+            }
+        }
+
+        // Reset force
+        for(var i=0; i!==Nbodies; i++){
+            var bi = bodies[i];
+            vec2.set(bi.force,0.0,0.0);
+            bi.angularForce = 0.0;
+        }
 
         if(doProfiling){
-            t0 = now();
+            t1 = now();
+            that.lastStepTime = t1-t0;
         }
 
-        // add gravity to bodies
-        for(var i=0; i!==Nbodies; i++){
-            var fi = bodies[i].force;
-            vec2.add(fi,fi,g);
-        }
+        callback();
+    });
+};
 
-        // Calculate all new spring forces
-        for(var i=0; i!==Nsprings; i++){
-            var s = springs[i];
-            var k = s.stiffness;
-            var d = s.damping;
-            var l = s.restLength;
-            var bodyA = s.bodyA;
-            var bodyB = s.bodyB;
-            var r = step_r;
-            var r_unit = step_runit;
-            var u = step_u;
-            var f = step_f;
+/**
+ * Add a spring to the simulation
+ *
+ * @method
+ * @memberof World
+ * @param {p2.Spring} s
+ */
+World.prototype.addSpring = function(s){
+    this.springs.push(s);
+};
 
-            vec2.sub(r,bodyA.position,bodyB.position);
-            vec2.sub(u,bodyA.velocity,bodyB.velocity);
-            var rlen = vec2.len(r);
-            vec2.normalize(r_unit,r);
-            vec2.scale(f, r_unit, k*(rlen-l) + d*vec2.dot(u,r_unit));
-            vec2.sub( bodyA.force,bodyA.force, f);
-            vec2.add( bodyB.force,bodyB.force, f);
-        }
+/**
+ * Remove a spring
+ *
+ * @method
+ * @memberof World
+ * @param {p2.Spring} s
+ */
+World.prototype.removeSpring = function(s){
+    var idx = this.springs.indexOf(s);
+    if(idx===-1)
+        this.springs.splice(idx,1);
+};
 
-        // Broadphase
-        var result = broadphase.getCollisionPairs(this);
+/**
+ * Add a body to the simulation
+ *
+ * @method
+ * @memberof World
+ * @param {p2.Body} body
+ */
+World.prototype.addBody = function(body){
+    this.bodies.push(body);
+    this.collidingBodies.push(body);
+};
 
-        // Nearphase
-        var oldContacts = this.contacts.concat(this.oldContacts);
-        var contacts = this.contacts = [];
-        for(var i=0, Nresults=result.length; i!==Nresults; i+=2){
-            var bi = result[i];
-            var bj = result[i+1];
-            var si = bi.shape;
-            var sj = bj.shape;
-            if(si instanceof Circle){
-                     if(sj instanceof Circle)   bp.nearphaseCircleCircle  (bi,bj,contacts,oldContacts);
-                else if(sj instanceof Particle) bp.nearphaseCircleParticle(bi,bj,contacts,oldContacts);
-                else if(sj instanceof Plane)    bp.nearphaseCirclePlane   (bi,bj,contacts,oldContacts);
-            } else if(si instanceof Particle){
-                     if(sj instanceof Circle)   bp.nearphaseCircleParticle(bj,bi,contacts,oldContacts);
-            } else if(si instanceof Plane){
-                     if(sj instanceof Circle)   bp.nearphaseCirclePlane   (bj,bi,contacts,oldContacts);
-            }
-        }
-        this.oldContacts = oldContacts;
+/**
+ * Remove a body from the simulation
+ *
+ * @method
+ * @memberof World
+ * @param {p2.Body} body
+ */
+World.prototype.removeBody = function(body){
+    var idx = this.bodies.indexOf(body);
+    if(idx===-1)
+        this.bodies.splice(idx,1);
+};
 
-        // Add equations to solver
-        for(var i=0, Ncontacts=contacts.length; i!==Ncontacts; i++){
-            solver.addEquation(contacts[i]);
-        }
-        // Add user-defined constraint equations
-        var Nconstraints = constraints.length;
-        for(i=0; i!==Nconstraints; i++){
-            var c = constraints[i];
-            c.update();
-            for(var j=0, Neq=c.equations.length; j!==Neq; j++){
-                var eq = c.equations[j];
-                solver.addEquation(eq);
-            }
-        }
-        solver.solve(dt,this,function(){
-            solver.removeAllEquations();
-
-            // Step forward
-            var fhMinv = step_fhMinv;
-            var velodt = step_velodt;
-            for(var i=0; i!==Nbodies; i++){
-                var body = bodies[i];
-                if(body.mass>0){
-                    var minv = 1.0 / body.mass,
-                        f = body.force,
-                        pos = body.position,
-                        velo = body.velocity;
-
-                    // Angular step
-                    body.angularVelocity += body.angularForce * body.invInertia * dt;
-                    body.angle += body.angularVelocity * dt;
-
-                    // Linear step
-                    vec2.scale(fhMinv,f,dt*minv);
-                    vec2.add(velo,fhMinv,velo);
-                    vec2.scale(velodt,velo,dt);
-                    vec2.add(pos,pos,velodt);
-                }
-            }
-
-            // Reset force
-            for(var i=0; i!==Nbodies; i++){
-                var bi = bodies[i];
-                vec2.set(bi.force,0.0,0.0);
-                bi.angularForce = 0.0;
-            }
-
-            if(doProfiling){
-                t1 = now();
-                that.lastStepTime = t1-t0;
-            }
-
-            callback();
+/**
+ * Serialize the world to a JSON-serializable Object.
+ * @param  {Boolean} stringify Set to true if you want to get the stringified JSON representation.
+ * @return {Object}
+ */
+World.prototype.toJSON = function(stringify){
+    var json = {
+        p2 : "0.1.0",
+        bodies : [],
+        springs : [],
+        solver : {},
+        gravity : v2a(this.gravity),
+        broadphase : {},
+        constraints : [],
+    };
+    for(var i=0; i<this.bodies.length; i++){
+        var b = this.bodies[i];
+        json.bodies.push({
+            mass : b.mass,
+            angle : b.angle,
+            position : v2a(b.position),
+            velocity : v2a(b.velocity),
         });
-    };
+    }
+    return json;
 
-    /**
-     * Add a spring to the simulation
-     *
-     * @method
-     * @memberof World
-     * @param {p2.Spring} s
-     */
-    World.prototype.addSpring = function(s){
-        this.springs.push(s);
-    };
+    function v2a(v){
+        return [v[0],v[1]];
+    }
+};
 
-    /**
-     * Remove a spring
-     *
-     * @method
-     * @memberof World
-     * @param {p2.Spring} s
-     */
-    World.prototype.removeSpring = function(s){
-        var idx = this.springs.indexOf(s);
-        if(idx===-1)
-            this.springs.splice(idx,1);
-    };
+/**
+ * Load a scene from a serialized state.
+ * @param  {Object} json
+ * @return {Boolean} True on success, else false.
+ */
+World.prototype.fromJSON = function(json){
+    this.clear();
 
-    /**
-     * Add a body to the simulation
-     *
-     * @method
-     * @memberof World
-     * @param {p2.Body} body
-     */
-    World.prototype.addBody = function(body){
-        this.bodies.push(body);
-        this.collidingBodies.push(body);
-    };
+    if(!json.p2)
+        return false;
 
-    /**
-     * Remove a body from the simulation
-     *
-     * @method
-     * @memberof World
-     * @param {p2.Body} body
-     */
-    World.prototype.removeBody = function(body){
-        var idx = this.bodies.indexOf(body);
-        if(idx===-1)
-            this.bodies.splice(idx,1);
-    };
+    switch(json.p2){
 
+    case "0.1.0":
+        for(var i=0; i<json.bodies.length; i++){
+            var jb = json.bodies[i];
+            var b = new Body({
+                mass :      jb.mass,
+                position :  jb.position,
+                angle :     jb.angle,
+                velocity :  jb.velocity,
+            });
+        }
+        break;
 
-},{"../solver/GSSolver":11,"../collision/NaiveBroadphase":12,"../objects/Shape":1,"../collision/Broadphase":7,"gl-matrix":15}]},{},[5])(5)
+    default:
+        return false;
+        break;
+    }
+
+    return true;
+};
+
+/**
+ * Resets the World, removes all bodies and constraints.
+ */
+World.prototype.clear = function(){
+
+    // Remove all constraints
+    var cs = this.constraints;
+    for(var i=0; i<cs.length; i++)
+        this.removeConstraint(cs[i]);
+
+    // Remove all bodies
+    var bodies = this.bodies;
+    for(var i=0; i<bodies.length; i++)
+        this.removeBody(bodies[i]);
+
+    // Remove all springs
+    var springs = this.springs;
+    for(var i=0; i<springs.length; i++)
+        this.removeSpring(springs[i]);
+
+};
+
+},{"../solver/GSSolver":11,"../collision/NaiveBroadphase":12,"../objects/Shape":1,"../objects/Body":7,"../collision/Broadphase":6,"gl-matrix":15}]},{},[5])(5)
 });
 ;

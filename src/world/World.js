@@ -366,6 +366,7 @@ World.prototype.fromJSON = function(json){
                 angle :     jb.angle,
                 velocity :  jb.velocity,
             });
+            this.addBody(b);
         }
         break;
 
