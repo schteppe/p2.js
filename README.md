@@ -70,7 +70,7 @@ setInterval(function(){
 | Particle  | -      | -     | -         | -        | -       | -        |
 
 ### Change log
-##### 0.2
+##### Not released yet
 
 * Moved properties of ```Body.MotionState``` to ```Body```. Usage is now ```Body.STATIC```, ```Body.DYNAMIC```, ```Body.KINEMATIC```.
 * Removed asynchronous behaviour of ```World.step()```.
