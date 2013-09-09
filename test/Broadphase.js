@@ -27,3 +27,14 @@ exports.findSeparatingAxis = function(test){
     broadphase.findSeparatingAxis(c1,c2,axis);
     test.done();
 };
+
+exports.nearphaseConvexConvex = function(test){
+    var axis = vec2.create();
+
+    var c1 = new Body({ shape:shape });
+    var c2 = new Body({ shape:shape, position:[0,1] });
+
+    broadphase.findSeparatingAxis(c1,c2,axis);
+    broadphase.nearphaseConvexConvex(c1,c2,axis);
+    test.done();
+};
