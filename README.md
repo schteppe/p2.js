@@ -1,45 +1,51 @@
 p2.js
 =====
 
-JavaScript 2D physics engine.
+JavaScript 2D rigid body physics engine.
 
-## Install
-#### Browser
-download either p2.js or the minified p2.min.js and include the script in your HTML:
+### Features
+* Rigid body physics
+* Collision detection (no CCD)
+* Distance constraints
+* Springs
+* Body motion states (dynamic, kinematic, static)
+* Various shapes and collisions (see table below)
+
+### Install
+##### Browser
+Download either [p2.js](build/p2.js) or the minified [p2.min.js](build/p2.min.js) and include the script in your HTML:
 ```html
 <script src="p2.js" type="text/javascript"></script>
 ```
-#### Node.js
-Install:
+##### Node.js
 ```
 npm install git://github.com/schteppe/p2.js
 ```
-Or add the code to dependencies in your ```package.json```:
+Or add the dependency to your ```package.json```:
 ```
-{
+    ...
     "dependencies" : {
         "p2" : "git://github.com/schteppe/p2.js"
     }
-}
+    ...
 ```
 
-## Example
-```
+### Example
+```js
 // Setup our world
-var world = new p2.World();
-world.broadphase = new p2.NaiveBroadphase();
-world.gravity[1] = -9.82;
+var world = new p2.World({ gravity:[0,-9.82] });
 
 // Create a circle
 var radius = 1,
     circleShape = new p2.Circle(radius),
-    circleBody = new p2.Body({ mass:5, shape: circleShape });
-circleBody.position[1] = 10;
-world.addBody(circleBody);
+    circleBody = new p2.Body({ mass:5, shape: circleShape, position:[0,10] });
 
 // Create a plane
-var groundShape = new p2.Plane();
-var groundBody = new p2.Body({ mass:0, shape:groundShape });
+var groundShape = new p2.Plane(),
+    groundBody = new p2.Body({ mass:0, shape:groundShape });
+    
+// Add the bodies to the world
+world.addBody(circleBody);
 world.addBody(groundBody);
 
 // Step the simulation
@@ -49,8 +55,23 @@ setInterval(function(){
 }, 1000.0/60.0);
 ```
 
-### How to build
-Requires [Node.js](http://nodejs.org), NPM and [grunt](http://gruntjs.com/). Just run ```grunt``` in the project directory:
+### Supported collision pairs
+|           | Circle | Plane | Rectangle | Compound | Convex  | Particle |
+| :-------: |:------:|:-----:|:---------:|:--------:|:-------:|:--------:|
+| Circle    | Yes    | Yes   | todo      | todo     | todo    | todo     |
+| Plane     | -      | -     | todo      | todo     | todo    | todo     |
+| Rectangle | -      | -     | todo      | todo     | todo    | todo     |
+| Compound  | -      | -     | -         | todo     | todo    | todo     |
+| Convex    | -      | -     | -         | -        | todo    | todo     |
+| Particle  | -      | -     | -         | -        | -       | -        |
+
+### Contribute
+Make sure you have git, [Node.js](http://nodejs.org), NPM and [grunt](http://gruntjs.com/) installed.
 ```
-grunt   # Bundles build/p2.js and build/p2.min.js
+git clone https://github.com/schteppe/p2.js.git; # Clone the repo
+cd p2.js;
+npm install;                                     # Install dependencies
+                                                 # (make changes to source)
+grunt;                                           # Builds build/p2.js and build/p2.min.js
 ```
+The most recent commits are currently pushed to the ```master``` branch. Thanks for contributing!
