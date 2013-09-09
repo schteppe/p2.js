@@ -13,6 +13,11 @@ var ARRAY_TYPE = Float32Array || Array;
  * @constructor
  * @extends Solver
  * @param {Object} [options]
+ * @param {Number} options.iterations
+ * @param {Number} options.timeStep
+ * @param {Number} options.stiffness
+ * @param {Number} options.relaxation
+ * @param {Number} options.tolerance
  */
 function GSSolver(options){
     Solver.call(this);
@@ -52,7 +57,8 @@ GSSolver.prototype.setSpookParams = function(k,d){
 
 /**
  * Solve the system of equations
- * @param  {Number}   dt       Time step
+ * @method solve
+ * @param  {Number}  dt       Time step
  * @param  {World}   world    World to solve
  */
 GSSolver.prototype.solve = function(dt,world){

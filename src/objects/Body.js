@@ -21,30 +21,35 @@ function Spring(bodyA,bodyB,options){
 
     /**
      * Rest length of the spring.
+     * @property restLength
      * @type {number}
      */
     this.restLength = options.restLength || 1;
 
     /**
      * Stiffness of the spring.
+     * @property stiffness
      * @type {number}
      */
     this.stiffness = options.stiffness || 100;
 
     /**
      * Damping of the spring.
+     * @property damping
      * @type {number}
      */
     this.damping = options.damping || 1;
 
     /**
      * First connected body.
+     * @property bodyA
      * @type {Body}
      */
     this.bodyA = bodyA;
 
     /**
      * Second connected body.
+     * @property bodyB
      * @type {Body}
      */
     this.bodyB = bodyB;
@@ -58,11 +63,11 @@ function Spring(bodyA,bodyB,options){
  * @param {Object} [options]
  * @param {Shape}   options.shape           Used for collision detection. If absent the body will not collide.
  * @param {number}  options.mass            A number >= 0. If zero, the body becomes static. Defaults to static [0].
- * @param {vec2}    options.position
- * @param {vec2}    options.velocity
+ * @param {Float32Array}    options.position
+ * @param {Float32Array}    options.velocity
  * @param {number}  options.angle
  * @param {number}  options.angularVelocity
- * @param {vec2}    options.force
+ * @param {Float32Array}    options.force
  * @param {number}  options.angularForce
  */
 function Body(options){
@@ -95,7 +100,7 @@ function Body(options){
     /**
      * The position of the body
      * @property position
-     * @type {vec2}
+     * @type {Float32Array}
      */
     this.position = vec2.create();
     if(options.position) vec2.copy(this.position, options.position);
@@ -103,7 +108,7 @@ function Body(options){
     /**
      * The velocity of the body
      * @property velocity
-     * @type {vec2}
+     * @type {Float32Array}
      */
     this.velocity = vec2.create();
     if(options.velocity) vec2.copy(this.velocity, options.velocity);
@@ -128,7 +133,7 @@ function Body(options){
     /**
      * The force acting on the body
      * @property force
-     * @type {vec2}
+     * @type {Float32Array}
      */
     this.force = vec2.create();
     if(options.force) vec2.copy(this.force, options.force);
@@ -154,8 +159,8 @@ Body._idCounter = 0;
 /**
  * Apply force to a world point. This could for example be a point on the RigidBody surface. Applying force this way will add to Body.force and Body.angularForce.
  * @method applyForce
- * @param {vec2} force The force to add.
- * @param {vec2} worldPoint A world point to apply the force on.
+ * @param {Float32Array} force The force to add.
+ * @param {Float32Array} worldPoint A world point to apply the force on.
  */
 var Body_applyForce_r = vec2.create();
 Body.prototype.applyForce = function(force,worldPoint){

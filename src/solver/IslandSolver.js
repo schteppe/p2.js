@@ -68,6 +68,7 @@ function bfs(root,visitFunc){
 
 /**
  * Solves the full system.
+ * @method solve
  * @param  {Number} dt
  * @param  {World} world
  */

@@ -27,7 +27,7 @@ function now(){
  * @constructor
  * @param {Object}      [options]
  * @param {Solver}      options.solver Defaults to GSSolver.
- * @param {vec2}        options.gravity Defaults to [0,-9.78]
+ * @param {Float32Array}        options.gravity Defaults to [0,-9.78]
  * @param {Broadphase}  options.broadphase Defaults to NaiveBroadphase
  */
 function World(options){
@@ -72,7 +72,7 @@ function World(options){
      * Gravity in the world. This is applied on all bodies in the beginning of each step().
      *
      * @property
-     * @type {vec2}
+     * @type {Float32Array}
      */
     this.gravity = options.gravity || vec2.fromValues(0, -9.78);
 

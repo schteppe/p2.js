@@ -84,7 +84,6 @@ exports.Broadphase = function(){
  * Get all potential intersecting body pairs.
  *
  * @method getCollisionPairs
- * @memberof Broadphase
  * @param  {World} world The world to search in.
  * @return {Array} An array of the bodies, ordered in pairs. Example: A result of [a,b,c,d] means that the potential pairs are: (a,b), (c,d).
  */
