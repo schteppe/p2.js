@@ -3,7 +3,10 @@
  * @class Shape
  * @constructor
  */
-exports.Shape = function(){};
+exports.Shape = Shape;
+function Shape(){
+
+};
 
 /**
  * Particle shape class.
@@ -12,7 +15,7 @@ exports.Shape = function(){};
  * @extends Shape
  */
 exports.Particle = function(){
-    p2.Shape.apply(this);
+    Shape.apply(this);
 };
 
 /**
@@ -23,7 +26,7 @@ exports.Particle = function(){
  * @param {number} radius
  */
 exports.Circle = function(radius){
-    p2.Shape.apply(this);
+    Shape.apply(this);
 
     /**
      * The radius of the circle.
@@ -40,6 +43,24 @@ exports.Circle = function(radius){
  * @constructor
  */
 exports.Plane = function(){
-    p2.Shape.apply(this);
+    Shape.apply(this);
 };
 
+/**
+ * Convex shape class.
+ * @class Convex
+ * @constructor
+ * @extends Shape
+ * @param {Array} vertices An array of Float32Array vertices that span this shape. Vertices are given in counter-clockwise (CCW) direction.
+ */
+exports.Convex = Convex;
+function Convex(vertices){
+    Shape.apply(this);
+
+    /**
+     * Vertices defined in the local frame.
+     * @property vertices
+     * @type {Array}
+     */
+    this.vertices = vertices;
+};
