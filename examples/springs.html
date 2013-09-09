@@ -3,8 +3,9 @@
 <head>
     <title>p2.js</title>
     <script src="../build/p2.js"></script>
+    <script src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
+    <script src="pixi.js"></script>
     <script src="demo.js"></script>
-    <script src="three.js"></script>
     <link href="demo.css" rel="stylesheet"/>
 </head>
 <body>
@@ -12,28 +13,31 @@
 
         var vec2 = p2.vec2;
 
-        var demo = new CanvasDemo();
+        var demo = new PixiDemo();
 
         demo.createScene(function(world){
             var bodies = [];
-            var l = 10, N=20, M=20;
+            var l = 10, N=10, M=10;
             var timeStep = 1/60,
                 k=500,
                 d=10,
                 l=0.2,
                 m=1;
-            vec2.set(world.gravity,0,-2);
+            vec2.set(world.gravity,0,-10);
 
             // Create bodies
+            var circleShape = new p2.Circle(l*0.3);
             for(var i=0; i<N; i++){
                 bodies.push([]);
                 for(var j=0; j<M; j++){
                     var p = new p2.Body({
-                        mass: j==M-1 ? 0 : m
+                        mass: j==M-1 ? 0 : m,
+                        shape : circleShape,
+                        position : [(i-N/2)*l*1.05, (j-M/2)*l*1.05]
                     });
-                    vec2.set(p.position,i*l*1.05+1,j*l*1.05+1);
                     bodies[i].push(p);
                     world.addBody(p);
+                    demo.addVisual(p);
                 }
             }
 
@@ -50,6 +54,7 @@
                     demo.addVisual(spring);
                 }
             }
+
             // Horizontal
             for(var i=0; i<N-1; i++){
                 for(var j=0; j<M; j++){

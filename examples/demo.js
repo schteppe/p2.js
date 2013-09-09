@@ -9,6 +9,8 @@ var requestAnimFrame = window.requestAnimationFrame       ||
                             window.setTimeout(callback, 1000 / 60);
                        };
 
+var vec2 = p2.vec2;
+
 function Demo(){
     var world = this.world = new p2.World({ doProfiling: true });
     var that = this;
@@ -76,6 +78,7 @@ function PixiDemo(){
         container,
         renderer,
         sprites=[],
+        springSprites=[],
         stage;
 
     w = $(window).width();
@@ -87,7 +90,7 @@ function PixiDemo(){
     };
 
     function drawCircle(g,x,y,radius,color,lineWidth){
-        lineWidth = lineWidth || defaultLineWidth;
+        lineWidth = lineWidth || 1;
         color = color || 0xffffff;
         g.lineStyle(lineWidth, 0x000000, 1);
         g.beginFill(color, 1.0);
@@ -102,6 +105,14 @@ function PixiDemo(){
         }*/
     }
 
+    function drawSpring(g,restLength,color,lineWidth){
+        lineWidth = lineWidth || 1;
+        color = typeof(color)=="undefined" ? 0xffffff : color;
+        g.lineStyle(lineWidth, color, 1);
+        g.moveTo(-restLength/2,0);
+        g.lineTo(restLength/2,0);
+    }
+
     function init(){
 
         renderer = PIXI.autoDetectRenderer(w, h);
@@ -110,14 +121,20 @@ function PixiDemo(){
 
         document.body.appendChild(renderer.view);
 
-        var cachedCircleTextures = {};
         for(var i=0; i<that.bodies.length; i++){
-            //var ballTexture;
             var radiusPixels = that.bodies[i].shape.radius * pixelsPerLengthUnit;
             var sprite = new PIXI.Graphics();
             drawCircle(sprite,0,0,radiusPixels,0xFFFFFF,2);
             stage.addChild(sprite);
             sprites.push(sprite);
+        }
+
+        for(var i=0; i<that.springs.length; i++){
+            var restLengthPixels = that.springs[i].restLength * pixelsPerLengthUnit;
+            var sprite = new PIXI.Graphics();
+            drawSpring(sprite,restLengthPixels,0x000000,2);
+            stage.addChild(sprite);
+            springSprites.push(sprite);
         }
 
         container.addChild(stage);
@@ -145,7 +162,11 @@ function PixiDemo(){
         that.updateStats();
     }
 
+    var X = vec2.fromValues(1,0);
+    var distVec = vec2.fromValues(0,0);
     function render(){
+
+        // Update body transforms
         for(var i=0; i<that.bodies.length; i++){
             var b = that.bodies[i],
                 s = sprites[i];
@@ -153,6 +174,26 @@ function PixiDemo(){
             s.position.y = h - b.position[1] * pixelsPerLengthUnit;
             s.rotation = b.angle;
         }
+
+        // Update spring transforms
+        for(var i=0; i<that.springs.length; i++){
+            var s = that.springs[i],
+                sprite = springSprites[i],
+                bA = s.bodyA,
+                bB = s.bodyB;
+            if(bA.position[1] < bB.position[1]){
+                var tmp = bA;
+                bA = bB;
+                bB = tmp;
+            }
+            sprite.position.x = ( ( w - bA.position[0] * pixelsPerLengthUnit ) + ( w - bB.position[0] * pixelsPerLengthUnit ) ) / 2;
+            sprite.position.y = ( ( h - bA.position[1] * pixelsPerLengthUnit ) + ( h - bB.position[1] * pixelsPerLengthUnit ) ) / 2;
+            distVec[0] = ( w - bA.position[0] * pixelsPerLengthUnit ) - ( w - bB.position[0] * pixelsPerLengthUnit );
+            distVec[1] = ( h - bA.position[1] * pixelsPerLengthUnit ) - ( h - bB.position[1] * pixelsPerLengthUnit );
+            sprite.rotation = -Math.acos( vec2.dot(X, distVec) / vec2.length(distVec) );
+            sprite.scale.x = vec2.length(distVec) / (s.restLength * pixelsPerLengthUnit);
+        }
+
         renderer.render(container);
         requestAnimFrame(update);
     }
