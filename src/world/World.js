@@ -322,10 +322,9 @@ World.prototype.removeBody = function(body){
 };
 
 /**
- * Serialize the world to a JSON-serializable Object.
+ * Convert the world to a JSON-serializable Object.
  *
  * @method toJSON
- * @param  {Boolean} stringify Set to true if you want to get the stringified JSON representation.
  * @return {Object}
  */
 World.prototype.toJSON = function(){
