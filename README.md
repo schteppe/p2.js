@@ -5,41 +5,39 @@ JavaScript 2D physics engine.
 
 ## Install
 #### Browser
-download either p2.js or the minified p2.min.js and include the script in your HTML:
+Download either [p2.js](build/p2.js) or the minified [p2.min.js](build/p2.min.js) and include the script in your HTML:
 ```html
 <script src="p2.js" type="text/javascript"></script>
 ```
 #### Node.js
-Install:
 ```
 npm install git://github.com/schteppe/p2.js
 ```
-Or add the code to dependencies in your ```package.json```:
+Or add the dependency to your ```package.json```:
 ```
-{
+    ...
     "dependencies" : {
         "p2" : "git://github.com/schteppe/p2.js"
     }
-}
+    ...
 ```
 
 ## Example
-```
+```js
 // Setup our world
-var world = new p2.World();
-world.broadphase = new p2.NaiveBroadphase();
-world.gravity[1] = -9.82;
+var world = new p2.World({ gravity:[0,-9.82] });
 
 // Create a circle
 var radius = 1,
     circleShape = new p2.Circle(radius),
-    circleBody = new p2.Body({ mass:5, shape: circleShape });
-circleBody.position[1] = 10;
-world.addBody(circleBody);
+    circleBody = new p2.Body({ mass:5, shape: circleShape, position:[0,10] });
 
 // Create a plane
-var groundShape = new p2.Plane();
-var groundBody = new p2.Body({ mass:0, shape:groundShape });
+var groundShape = new p2.Plane(),
+    groundBody = new p2.Body({ mass:0, shape:groundShape });
+    
+// Add the bodies to the world
+world.addBody(circleBody);
 world.addBody(groundBody);
 
 // Step the simulation
