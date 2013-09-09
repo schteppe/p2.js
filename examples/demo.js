@@ -41,7 +41,7 @@ function Demo(){
     var sum = 0;
     var N = 100;
     var Nsummed = 0;
-    var average = "?";
+    var average = -1;
     this.updateStats = function(){
         sum += world.lastStepTime;
         Nsummed++;
@@ -50,7 +50,7 @@ function Demo(){
             sum = 0.0;
             Nsummed = 0;
         }
-        document.getElementById("step").innerHTML = "Physics step: "+average+"ms";
+        document.getElementById("step").innerHTML = "Physics step: "+(Math.round(average*100)/100)+"ms";
         document.getElementById("contacts").innerHTML = "Contacts: "+world.contacts.length;
     }
 
@@ -86,42 +86,36 @@ function PixiDemo(){
         init();
     };
 
-    function createCircleImage(radiusPixels){
-        var canvas = document.createElement('canvas');
-        canvas.width = canvas.height = radiusPixels*2;
-        var ctx = canvas.getContext('2d');
-        ctx.beginPath();
-        ctx.lineWidth = canvas.width * 0.07;
-        ctx.arc(canvas.width/2, canvas.height/2, canvas.height/2-ctx.lineWidth, 0, Math.PI*2, true);
-        ctx.fillStyle = 'green';
-        ctx.fill();
-        ctx.strokeStyle = '#003300';
-        ctx.stroke();
-        return canvas.toDataURL();
+    function drawCircle(g,x,y,radius,color,lineWidth){
+        lineWidth = lineWidth || defaultLineWidth;
+        color = color || 0xffffff;
+        g.lineStyle(lineWidth, 0x000000, 1);
+        g.beginFill(color, 1.0);
+        g.drawCircle(0, 0, radius);
+        g.endFill();
+
+        // Dashed line from center to edge
+        /*var Ndashes = 4;
+        for(var j=0; j<Ndashes; j++){
+            g.moveTo(0,-j/Ndashes*radius);
+            g.lineTo(0,-(j+0.5)/Ndashes*radius);
+        }*/
     }
 
     function init(){
 
         renderer = PIXI.autoDetectRenderer(w, h);
         stage = new PIXI.DisplayObjectContainer();
-        container = new PIXI.Stage();
+        container = new PIXI.Stage(0xFFFFFF,true);
 
         document.body.appendChild(renderer.view);
 
         var cachedCircleTextures = {};
         for(var i=0; i<that.bodies.length; i++){
-            var ballTexture;
+            //var ballTexture;
             var radiusPixels = that.bodies[i].shape.radius * pixelsPerLengthUnit;
-            if(cachedCircleTextures[radiusPixels]){
-                ballTexture = cachedCircleTextures[radiusPixels];
-            } else {
-                var img = createCircleImage(radiusPixels);
-                ballTexture = new PIXI.Texture.fromImage(img);
-                cachedCircleTextures[radiusPixels] = ballTexture;
-            }
-            var sprite = new PIXI.Sprite(ballTexture);
-            sprite.anchor.x = 0.5;
-            sprite.anchor.y = 0.5;
+            var sprite = new PIXI.Graphics();
+            drawCircle(sprite,0,0,radiusPixels,0xFFFFFF,2);
             stage.addChild(sprite);
             sprites.push(sprite);
         }
