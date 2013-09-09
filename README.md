@@ -29,6 +29,10 @@ Or add the dependency to your ```package.json```:
     }
     ...
 ```
+Then require it like so:
+```js
+var p2 = require('p2');
+```
 
 ### Example
 ```js
