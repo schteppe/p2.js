@@ -1,7 +1,7 @@
 p2.js
 =====
 
-JavaScript 2D physics engine.
+JavaScript 2D rigid body physics engine.
 
 ## Install
 #### Browser
