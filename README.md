@@ -1,28 +1,56 @@
 p2.js
-===========
+=====
 
 JavaScript 2D physics engine.
 
-## Usage ##
-See examples.
-
-### How to build ###
-
-p2.js is built with Grunt. Grunt is a [npm](https://npmjs.org/) module.
-Once you have npm, run this to install grunt globally.
-
+## Install
+#### Browser
+download either p2.js or the minified p2.min.js and include the script in your HTML:
+```html
+<script src="p2.js" type="text/javascript"></script>
 ```
-$> npm install -g grunt-cli
+#### Node.js
+Install:
+```
+npm install git://github.com/schteppe/p2.js
+```
+Or add the code to dependencies in your ```package.json```:
+```
+{
+    "dependencies" : {
+        "p2" : "git://github.com/schteppe/p2.js"
+    }
+}
 ```
 
-Then, in the folder where you have downloaded the source, install the build dependencies using npm:
-
+## Example
 ```
-$> npm install
+// Setup our world
+var world = new p2.World();
+world.broadphase = new p2.NaiveBroadphase();
+world.gravity[1] = -9.82;
+
+// Create a circle
+var radius = 1,
+    circleShape = new p2.Circle(radius),
+    circleBody = new p2.Body({ mass:5, shape: circleShape });
+circleBody.position[1] = 10;
+world.addBody(circleBody);
+
+// Create a plane
+var groundShape = new p2.Plane();
+var groundBody = new p2.Body({ mass:0, shape:groundShape });
+world.addBody(groundBody);
+
+// Step the simulation
+setInterval(function(){
+    world.step(1.0/60.0);
+    console.log("Circle y position: " + circleBody.position[1]);
+}, 1000.0/60.0);
 ```
 
-Then build:
-
+### How to build
+Requires [Node.js](http://nodejs.org), NPM and [grunt](http://gruntjs.com/). Just run ```grunt``` in the project directory:
 ```
-$> grunt
+grunt   # Bundles build/p2.js and build/p2.min.js
 ```
