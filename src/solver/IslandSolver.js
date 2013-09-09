@@ -2,7 +2,7 @@ var Solver = require('./Solver').Solver
 ,   ContactEquation = require('../constraints/ContactEquation').ContactEquation
 ,   vec2 = require('gl-matrix').vec2
 ,   Body = require('../objects/Body').Body
-,   STATIC = Body.MotionState.STATIC
+,   STATIC = Body.STATIC
 
 exports.IslandSolver = IslandSolver;
 exports.Island = Island;

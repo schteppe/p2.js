@@ -9,8 +9,8 @@ exports.Spring = Spring;
  *
  * @class Spring
  * @constructor
- * @param {p2.Body} bodyA
- * @param {p2.Body} bodyB
+ * @param {Body} bodyA
+ * @param {Body} bodyB
  * @param {Object} [options]
  * @param {number} options.restLength A number > 0. Default: 1
  * @param {number} options.stiffness A number >= 0. Default: 100
@@ -21,36 +21,31 @@ function Spring(bodyA,bodyB,options){
 
     /**
      * Rest length of the spring.
-     * @member {number}
-     * @memberof p2.Spring
+     * @type {number}
      */
     this.restLength = options.restLength || 1;
 
     /**
      * Stiffness of the spring.
-     * @member {number}
-     * @memberof p2.Spring
+     * @type {number}
      */
     this.stiffness = options.stiffness || 100;
 
     /**
      * Damping of the spring.
-     * @member {number}
-     * @memberof p2.Spring
+     * @type {number}
      */
     this.damping = options.damping || 1;
 
     /**
      * First connected body.
-     * @member {p2.Body}
-     * @memberof p2.Spring
+     * @type {Body}
      */
     this.bodyA = bodyA;
 
     /**
      * Second connected body.
-     * @member {p2.Body}
-     * @memberof p2.Spring
+     * @type {Body}
      */
     this.bodyB = bodyB;
 };
@@ -82,15 +77,15 @@ function Body(options){
 
     /**
      * The shape belonging to the body.
-     * @member {p2.Shape}
-     * @memberof p2.Body
+     * @property shape
+     * @type {Shape}
      */
     this.shape = options.shape;
 
     /**
      * The mass of the body.
-     * @member {number}
-     * @memberof p2.Body
+     * @property mass
+     * @type {number}
      */
     this.mass = options.mass || 0;
     this.invMass = this.mass > 0 ? 1 / this.mass : 0;
@@ -99,16 +94,16 @@ function Body(options){
 
     /**
      * The position of the body
-     * @member {vec2}
-     * @memberof p2.Body
+     * @property position
+     * @type {vec2}
      */
     this.position = vec2.create();
     if(options.position) vec2.copy(this.position, options.position);
 
     /**
      * The velocity of the body
-     * @member {vec2}
-     * @memberof p2.Body
+     * @property velocity
+     * @type {vec2}
      */
     this.velocity = vec2.create();
     if(options.velocity) vec2.copy(this.velocity, options.velocity);
@@ -118,41 +113,39 @@ function Body(options){
 
     /**
      * The angle of the body
-     * @member {number}
-     * @memberof p2.Body
+     * @property angle
+     * @type {number}
      */
     this.angle = options.angle || 0;
 
     /**
      * The angular velocity of the body
-     * @member {number}
-     * @memberof p2.Body
+     * @property angularVelocity
+     * @type {number}
      */
     this.angularVelocity = options.angularVelocity || 0;
 
     /**
      * The force acting on the body
-     * @member {vec2}
-     * @memberof p2.Body
+     * @property force
+     * @type {vec2}
      */
     this.force = vec2.create();
     if(options.force) vec2.copy(this.force, options.force);
 
     /**
      * The angular force acting on the body
-     *
      * @property angularForce
      * @type {number}
      */
     this.angularForce = options.angularForce || 0;
 
     /**
-     * The type of motion this body has. Should be one of: Body.MotionState.STATIC, Body.MotionState.DYNAMIC and Body.MotionState.KINEMATIC.
-     *
+     * The type of motion this body has. Should be one of: Body.STATIC, Body.DYNAMIC and Body.KINEMATIC.
      * @property motionState
      * @type {number}
      */
-    this.motionState = this.mass == 0 ? Body.MotionState.STATIC : Body.MotionState.DYNAMIC;
+    this.motionState = this.mass == 0 ? Body.STATIC : Body.DYNAMIC;
 };
 
 Body._idCounter = 0;
@@ -160,8 +153,7 @@ Body._idCounter = 0;
 
 /**
  * Apply force to a world point. This could for example be a point on the RigidBody surface. Applying force this way will add to Body.force and Body.angularForce.
- * @method
- * @memberof p2.Body
+ * @method applyForce
  * @param {vec2} force The force to add.
  * @param {vec2} worldPoint A world point to apply the force on.
  */
@@ -181,34 +173,26 @@ Body.prototype.applyForce = function(force,worldPoint){
     this.angularForce += rotForce;
 };
 
-/*
- * The available motionstates.
- * @property MotionState
- * @type {Object}
+/**
+ * Dynamic body.
+ * @property DYNAMIC
+ * @type {Number}
+ * @static
  */
-Body.MotionState = {
+Body.DYNAMIC = 1;
 
-    /**
-     * Dynamic body.
-     * @property DYNAMIC
-     * @type {Number}
-     * @static
-     */
-    DYNAMIC : 1,
+/**
+ * Static body.
+ * @property STATIC
+ * @type {Number}
+ * @static
+ */
+Body.STATIC = 2;
 
-    /**
-     * Static body.
-     * @property STATIC
-     * @type {Number}
-     * @static
-     */
-    STATIC : 2,
-
-    /**
-     * Kinematic body.
-     * @property KINEMATIC
-     * @type {Number}
-     * @static
-     */
-    KINEMATIC : 4
-};
+/**
+ * Kinematic body.
+ * @property KINEMATIC
+ * @type {Number}
+ * @static
+ */
+Body.KINEMATIC = 4;
