@@ -47,7 +47,7 @@ var radius = 1,
 // Create a plane
 var groundShape = new p2.Plane(),
     groundBody = new p2.Body({ mass:0, shape:groundShape });
-    
+
 // Add the bodies to the world
 world.addBody(circleBody);
 world.addBody(groundBody);
@@ -68,6 +68,12 @@ setInterval(function(){
 | Compound  | -      | -     | -         | todo     | todo    | todo     |
 | Convex    | -      | -     | -         | -        | todo    | todo     |
 | Particle  | -      | -     | -         | -        | -       | -        |
+
+### Change log
+##### 0.2
+
+* Moved properties of ```Body.MotionState``` to ```Body```. Usage is now ```Body.STATIC```, ```Body.DYNAMIC```, ```Body.KINEMATIC```.
+* Removed asynchronous behaviour of ```World.step()```.
 
 ### Contribute
 Make sure you have git, [Node.js](http://nodejs.org), NPM and [grunt](http://gruntjs.com/) installed.
