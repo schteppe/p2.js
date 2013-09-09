@@ -143,10 +143,11 @@ function PixiDemo(){
     }
 
     function update(){
-        if(!that.paused)
-            world.step(that.timeStep,render);
-        else
-            render();
+        if(!that.paused){
+            world.step(that.timeStep);
+        }
+
+        render();
         that.updateStats();
     }
 

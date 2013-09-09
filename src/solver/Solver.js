@@ -15,7 +15,10 @@ function Solver(){
      */
     this.equations = [];
 };
-Solver.prototype.solve = function(dt,world,callback){ return callback(); };
+
+Solver.prototype.solve = function(dt,world){
+    throw new Error("Solver.solve should be implemented by subclasses!");
+};
 
 /**
  * Add an equation to be solved.

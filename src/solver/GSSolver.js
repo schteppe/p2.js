@@ -54,9 +54,8 @@ GSSolver.prototype.setSpookParams = function(k,d){
  * Solve the system of equations
  * @param  {Number}   dt       Time step
  * @param  {World}   world    World to solve
- * @param  {Function} callback called when done.
  */
-GSSolver.prototype.solve = function(dt,world,callback){
+GSSolver.prototype.solve = function(dt,world){
     var d = this.d,
         ks = this.k,
         iter = 0,
@@ -146,7 +145,5 @@ GSSolver.prototype.solve = function(dt,world,callback){
         }
     }
     errorTot = deltalambdaTot;
-
-    callback();
 };
 
