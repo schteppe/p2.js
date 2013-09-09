@@ -1,0 +1,9 @@
+{
+    "name": "p2.js",
+    "description": "2D physics engine for the web",
+    "version": "0.1.0",
+    "options": {
+        "outdir" : "docs",
+        "paths" : ["./src/"]
+    }
+}

@@ -1,16 +1,16 @@
 
 // shim layer with setTimeout fallback
-var requestAnimFrame = window.requestAnimationFrame       || 
-                       window.webkitRequestAnimationFrame || 
-                       window.mozRequestAnimationFrame    || 
-                       window.oRequestAnimationFrame      || 
-                       window.msRequestAnimationFrame     || 
+var requestAnimFrame = window.requestAnimationFrame       ||
+                       window.webkitRequestAnimationFrame ||
+                       window.mozRequestAnimationFrame    ||
+                       window.oRequestAnimationFrame      ||
+                       window.msRequestAnimationFrame     ||
                        function( callback ){
                             window.setTimeout(callback, 1000 / 60);
                        };
 
 function Demo(){
-    var world = this.world = new p2.World();
+    var world = this.world = new p2.World({ doProfiling: true });
     var that = this;
     this.bodies=[];
     this.springs=[];
@@ -20,7 +20,7 @@ function Demo(){
         var buf, s=body.shape;
         if(body instanceof p2.Spring){
             that.springs.push(body);
-        } else 
+        } else
             that.bodies.push(body);
     };
     this.createStats = function(){
@@ -41,7 +41,7 @@ function Demo(){
     var sum = 0;
     var N = 100;
     var Nsummed = 0;
-    var average = "???";
+    var average = "?";
     this.updateStats = function(){
         sum += world.lastStepTime;
         Nsummed++;
@@ -51,8 +51,6 @@ function Demo(){
             Nsummed = 0;
         }
         document.getElementById("step").innerHTML = "Physics step: "+average+"ms";
-        document.getElementById("vecs").innerHTML = "Vec create: "+world.vecCreations;
-        document.getElementById("mats").innerHTML = "Mat create: "+world.matCreations;
         document.getElementById("contacts").innerHTML = "Contacts: "+world.contacts.length;
     }
 
@@ -62,13 +60,139 @@ function Demo(){
                 case 112: // p
                 that.paused = !that.paused;
                 break;
-
-                case 115: // s
-                if(that.paused){
-                    world.step(that.timeStep);
-                }
-                break;
             }
+        }
+    });
+}
+
+function PixiDemo(){
+    Demo.call(this);
+    var world = this.world;
+
+    var pixelsPerLengthUnit = 128;
+
+    var that = this,
+        w,h,
+        container,
+        renderer,
+        sprites=[],
+        stage;
+
+    w = $(window).width();
+    h = $(window).height();
+
+    this.createScene = function(createFunc){
+        createFunc(that.world);
+        init();
+    };
+
+    function createCircleImage(radiusPixels){
+        var canvas = document.createElement('canvas');
+        canvas.width = canvas.height = radiusPixels*2;
+        var ctx = canvas.getContext('2d');
+        ctx.beginPath();
+        ctx.lineWidth = canvas.width * 0.07;
+        ctx.arc(canvas.width/2, canvas.height/2, canvas.height/2-ctx.lineWidth, 0, Math.PI*2, true);
+        ctx.fillStyle = 'green';
+        ctx.fill();
+        ctx.strokeStyle = '#003300';
+        ctx.stroke();
+        return canvas.toDataURL();
+    }
+
+    function init(){
+
+        renderer = PIXI.autoDetectRenderer(w, h);
+        stage = new PIXI.DisplayObjectContainer();
+        container = new PIXI.Stage();
+
+        document.body.appendChild(renderer.view);
+
+        var cachedCircleTextures = {};
+        for(var i=0; i<that.bodies.length; i++){
+            var ballTexture;
+            var radiusPixels = that.bodies[i].shape.radius * pixelsPerLengthUnit;
+            if(cachedCircleTextures[radiusPixels]){
+                ballTexture = cachedCircleTextures[radiusPixels];
+            } else {
+                var img = createCircleImage(radiusPixels);
+                ballTexture = new PIXI.Texture.fromImage(img);
+                cachedCircleTextures[radiusPixels] = ballTexture;
+            }
+            var sprite = new PIXI.Sprite(ballTexture);
+            sprite.anchor.x = 0.5;
+            sprite.anchor.y = 0.5;
+            stage.addChild(sprite);
+            sprites.push(sprite);
+        }
+
+        container.addChild(stage);
+        stage.position.x = -w/2; // center at origin
+        stage.position.y = -h/2;
+
+        that.createStats();
+
+        resize();
+        requestAnimFrame(update);
+    }
+
+    function resize(){
+        w = $(window).width();
+        h = $(window).height();
+        renderer.resize(w, h);
+    }
+
+    function update(){
+        if(!that.paused){
+            world.step(that.timeStep);
+        }
+
+        render();
+        that.updateStats();
+    }
+
+    function render(){
+        for(var i=0; i<that.bodies.length; i++){
+            var b = that.bodies[i],
+                s = sprites[i];
+            s.position.x = w - b.position[0] * pixelsPerLengthUnit;
+            s.position.y = h - b.position[1] * pixelsPerLengthUnit;
+            s.rotation = b.angle;
+        }
+        renderer.render(container);
+        requestAnimFrame(update);
+    }
+
+    var lastX, lastY, startX, startY, down=false;
+    $(document).mousedown(function(e){
+        lastX = e.clientX;
+        lastY = e.clientY;
+        startX = stage.position.x;
+        startY = stage.position.y;
+        down = true;
+    }).mousemove(function(e){
+        if(down){
+            stage.position.x = e.clientX-lastX+startX;
+            stage.position.y = e.clientY-lastY+startY;
+        }
+    }).mouseup(function(e){
+        down = false;
+    });
+
+    var scrollFactor = 0.1;
+    $(window).bind('mousewheel', function(e){
+        if (e.originalEvent.wheelDelta >= 0){
+            // Zoom in
+            stage.scale.x *= (1+scrollFactor);
+            stage.scale.y *= (1+scrollFactor);
+            stage.position.x += (scrollFactor) * (stage.position.x - e.clientX);
+            stage.position.y += (scrollFactor) * (stage.position.y - e.clientY);
+        } else {
+            // Zoom out
+            stage.scale.x *= (1-scrollFactor);
+            stage.scale.y *= (1-scrollFactor);
+            stage.position.x -= (scrollFactor) * (stage.position.x - e.clientX);
+            stage.position.y -= (scrollFactor) * (stage.position.y - e.clientY);
         }
     });
 }
@@ -105,10 +229,10 @@ function WebGLDemo(){
             var v1 = new THREE.Vector3( radius*Math.cos(i*sectorAngle),
                                         radius*Math.sin(i*sectorAngle),
                                         0);
-            
+
             // Push vertices represented by position vectors
             circleGeometry.vertices.push(v1);
-            
+
             // Push face, defined with vertices in counter clock-wise order
             circleGeometry.faces.push(new THREE.Face3(0, i+1, i+2));
         }
@@ -142,7 +266,7 @@ function WebGLDemo(){
 
         renderer = new THREE.WebGLRenderer();
         renderer.setSize(window.innerWidth, window.innerHeight);
-        
+
         document.body.appendChild(renderer.domElement);
 
         that.createStats();
@@ -204,8 +328,8 @@ function WebGLDemo(){
         for(var i=0, Nc=meshes.length; i!==Nc; i++){
             var p = meshes[i].position;
             var r = meshes[i].rotation;
-            p.x = V.getX(that.bodies[i].position);
-            p.y = V.getY(that.bodies[i].position);
+            p.x = that.bodies[i].position[0];
+            p.y = that.bodies[i].position[1];
             r.z = that.bodies[i].angle;
         }
         t++;
@@ -319,7 +443,7 @@ function CanvasDemo(){
         function render(){
 
             //ctx.clearRect(0,0,canvas.width,canvas.height);
-            
+
             // Clear the entire canvas
             var p = ctx.transformedPoint(0,0);
             var q = ctx.transformedPoint(canvas.width,canvas.height);
@@ -328,18 +452,18 @@ function CanvasDemo(){
             // Render springs
             for(var i=0,Nsprings=springs.length; i!==Nsprings; i++){
                 var s = springs[i];
-                var x1 = toScreenX(V.getX(s.bodyA.position));
-                var y1 = toScreenY(V.getY(s.bodyA.position));
-                var x2 = toScreenX(V.getX(s.bodyB.position));
-                var y2 = toScreenY(V.getY(s.bodyB.position));
+                var x1 = toScreenX(s.bodyA.position[0]);
+                var y1 = toScreenY(s.bodyA.position[1]);
+                var x2 = toScreenX(s.bodyB.position[0]);
+                var y2 = toScreenY(s.bodyB.position[1]);
                 drawSpring(ctx,x1,y1,x2,y2,toScreenScale(s.restLength));
             }
 
             // Render bodies
             for(var i=0,Nbodies=bodies.length; i!==Nbodies; i++){
                 var b = bodies[i];
-                var x = toScreenX(V.getX(b.position));
-                var y = toScreenY(V.getY(b.position));
+                var x = toScreenX(b.position[0]);
+                var y = toScreenY(b.position[1]);
                 if(b.shape instanceof(p2.Circle)){
                     drawCircle(ctx,x,y,toScreenScale(b.shape.radius));
                 } else if(b.shape instanceof(p2.Particle)){
@@ -409,7 +533,7 @@ function CanvasDemo(){
         var svg = document.createElementNS("http://www.w3.org/2000/svg",'svg');
         var xform = svg.createSVGMatrix();
         ctx.getTransform = function(){ return xform; };
-        
+
         var savedTransforms = [];
         var save = ctx.save;
         ctx.save = function(){

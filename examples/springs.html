@@ -2,33 +2,37 @@
 <html>
 <head>
     <title>p2.js</title>
-    <script src="../p2.js"></script>
+    <script src="../build/p2.js"></script>
     <script src="demo.js"></script>
+    <script src="three.js"></script>
     <link href="demo.css" rel="stylesheet"/>
 </head>
 <body>
     <script>
-        var V = p2.V;
+
+        var vec2 = p2.vec2;
 
         var demo = new CanvasDemo();
+
         demo.createScene(function(world){
-            var particles = [];
+            var bodies = [];
             var l = 10, N=20, M=20;
             var timeStep = 1/60,
                 k=500,
                 d=10,
                 l=0.2,
                 m=1;
-            V.set(world.gravity,0,-2);
+            vec2.set(world.gravity,0,-2);
 
-            // Create particles
-            var shape = new p2.Particle();
+            // Create bodies
             for(var i=0; i<N; i++){
-                particles.push([]);
+                bodies.push([]);
                 for(var j=0; j<M; j++){
-                    var p = new p2.Body(j==M-1 ? 0 : m, shape);
-                    V.set(p.position,i*l*1.05+1,j*l*1.05+1);
-                    particles[i].push(p);
+                    var p = new p2.Body({
+                        mass: j==M-1 ? 0 : m
+                    });
+                    vec2.set(p.position,i*l*1.05+1,j*l*1.05+1);
+                    bodies[i].push(p);
                     world.addBody(p);
                 }
             }
@@ -36,50 +40,54 @@
             // Vertical
             for(var i=0; i<N; i++){
                 for(var j=0; j<M-1; j++){
-                    var a = particles[i][j];
-                    var b = particles[i][j+1];
-                    var spring = new p2.Spring(a,b);
-                    spring.stiffness = k;
+                    var a = bodies[i][j];
+                    var b = bodies[i][j+1];
+                    var spring = new p2.Spring(a,b, {
+                        stiffness: k,
+                        restLength: l
+                    });
                     world.addSpring(spring);
                     demo.addVisual(spring);
-                    spring.restLength = l;
                 }
             }
             // Horizontal
             for(var i=0; i<N-1; i++){
                 for(var j=0; j<M; j++){
-                    var a = particles[i][j];
-                    var b = particles[i+1][j];
-                    var spring = new p2.Spring(a,b);
-                    spring.stiffness = k;
+                    var a = bodies[i][j];
+                    var b = bodies[i+1][j];
+                    var spring = new p2.Spring(a,b, {
+                        stiffness: k,
+                        restLength: l
+                    });
                     world.addSpring(spring);
                     demo.addVisual(spring);
-                    spring.restLength = l;
                 }
             }
             // Diagonal right/down
             for(var i=0; i<N-1; i++){
                 for(var j=0; j<M-1; j++){
-                    var a = particles[i][j];
-                    var b = particles[i+1][j+1];
-                    var spring = new p2.Spring(a,b);
-                    spring.stiffness = k;
+                    var a = bodies[i][j];
+                    var b = bodies[i+1][j+1];
+                    var spring = new p2.Spring(a,b, {
+                        stiffness: k,
+                        restLength: Math.sqrt(l*l + l*l)
+                    });
                     world.addSpring(spring);
-                    spring.restLength = Math.sqrt(l*l + l*l);
                 }
             }
             // Diagonal left/down
             for(var i=0; i<N-1; i++){
                 for(var j=0; j<M-1; j++){
-                    var a = particles[i+1][j];
-                    var b = particles[i][j+1];
-                    var spring = new p2.Spring(a,b);
-                    spring.stiffness = k;
+                    var a = bodies[i+1][j];
+                    var b = bodies[i][j+1];
+                    var spring = new p2.Spring(a,b, {
+                        stiffness: k,
+                        restLength: Math.sqrt(l*l + l*l)
+                    });
                     world.addSpring(spring);
-                    spring.restLength = Math.sqrt(l*l + l*l);
                 }
             }
-        });        
+        });
     </script>
 </body>
 </html>
