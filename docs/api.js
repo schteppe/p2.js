@@ -10,6 +10,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "Equation",
         "GSSolver",
         "GridBroadphase",
+        "Island",
         "IslandSolver",
         "NaiveBroadphase",
         "Particle",
@@ -18,8 +19,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "Solver",
         "Spring",
         "World",
-        "vec2",
-        null
+        "vec2"
     ],
     "modules": [],
     "allModules": []

@@ -59,6 +59,8 @@
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
             
+                <li><a href="../classes/Island.html">Island</a></li>
+            
                 <li><a href="../classes/IslandSolver.html">IslandSolver</a></li>
             
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
@@ -66,8 +68,6 @@
                 <li><a href="../classes/Particle.html">Particle</a></li>
             
                 <li><a href="../classes/Plane.html">Plane</a></li>
-            
-                <li><a href="../classes/.html"></a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -262,6 +262,8 @@
             <li class="api-class-tab methods"><a href="#methods">Methods</a></li>
         
         
+            <li class="api-class-tab properties"><a href="#properties">Properties</a></li>
+        
         
         
     </ul>
@@ -277,28 +279,38 @@
                     <ul class="index-list methods">
                         
                             <li class="index-item method">
-                                <a href="#method_"></a>
+                                <a href="#method_update">update</a>
 
                                 
                                 
                             </li>
                         
-                            <li class="index-item method">
-                                <a href="#method_"></a>
+                    </ul>
+                </div>
+            
+
+            
+                <div class="index-section properties">
+                    <h3>Properties</h3>
+
+                    <ul class="index-list properties">
+                        
+                            <li class="index-item property">
+                                <a href="#property_bodyA">bodyA</a>
 
                                 
                                 
                             </li>
                         
-                            <li class="index-item method">
-                                <a href="#method_"></a>
+                            <li class="index-item property">
+                                <a href="#property_bodyB">bodyB</a>
 
                                 
                                 
                             </li>
                         
-                            <li class="index-item method">
-                                <a href="#method_"></a>
+                            <li class="index-item property">
+                                <a href="#property_equations">equations</a>
 
                                 
                                 
@@ -311,8 +323,6 @@
             
 
             
-
-            
         </div>
 
         
@@ -320,170 +330,8 @@
                 <h2 class="off-left">Methods</h2>
 
                 
-                    <div id="method_" class="method item">
-    <h3 class="name"><code></code></h3>
-
-    
-        <span class="paren">()</span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_constraints_Constraint.js.html#l14"><code>src&#x2F;constraints&#x2F;Constraint.js:14</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Equations to be solved in this constraint</p>
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_" class="method item">
-    <h3 class="name"><code></code></h3>
-
-    
-        <span class="paren">()</span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_constraints_Constraint.js.html#l21"><code>src&#x2F;constraints&#x2F;Constraint.js:21</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>First body participating in the constraint.</p>
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_" class="method item">
-    <h3 class="name"><code></code></h3>
-
-    
-        <span class="paren">()</span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_constraints_Constraint.js.html#l28"><code>src&#x2F;constraints&#x2F;Constraint.js:28</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Second body participating in the constraint.</p>
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_" class="method item">
-    <h3 class="name"><code></code></h3>
+                    <div id="method_update" class="method item">
+    <h3 class="name"><code>update</code></h3>
 
     
         <span class="paren">()</span>
@@ -539,6 +387,144 @@
             </div>
         
 
+        
+            <div id="properties" class="api-class-tabpanel">
+                <h2 class="off-left">Properties</h2>
+
+                
+                    <div id="property_bodyA" class="property item">
+    <h3 class="name"><code>bodyA</code></h3>
+    <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_constraints_Constraint.js.html#l21"><code>src&#x2F;constraints&#x2F;Constraint.js:21</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>First body participating in the constraint.</p>
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_bodyB" class="property item">
+    <h3 class="name"><code>bodyB</code></h3>
+    <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_constraints_Constraint.js.html#l28"><code>src&#x2F;constraints&#x2F;Constraint.js:28</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Second body participating in the constraint.</p>
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_equations" class="property item">
+    <h3 class="name"><code>equations</code></h3>
+    <span class="type">Array</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_constraints_Constraint.js.html#l14"><code>src&#x2F;constraints&#x2F;Constraint.js:14</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Equations to be solved in this constraint</p>
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+            </div>
         
 
         

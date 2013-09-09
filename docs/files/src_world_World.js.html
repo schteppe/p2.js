@@ -59,6 +59,8 @@
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
             
+                <li><a href="../classes/Island.html">Island</a></li>
+            
                 <li><a href="../classes/IslandSolver.html">IslandSolver</a></li>
             
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
@@ -66,8 +68,6 @@
                 <li><a href="../classes/Particle.html">Particle</a></li>
             
                 <li><a href="../classes/Plane.html">Plane</a></li>
-            
-                <li><a href="../classes/.html"></a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -151,7 +151,7 @@ function now(){
  * @constructor
  * @param {Object}      [options]
  * @param {Solver}      options.solver Defaults to GSSolver.
- * @param {vec2}        options.gravity Defaults to [0,-9.78]
+ * @param {Float32Array}        options.gravity Defaults to [0,-9.78]
  * @param {Broadphase}  options.broadphase Defaults to NaiveBroadphase
  */
 function World(options){
@@ -196,7 +196,7 @@ function World(options){
      * Gravity in the world. This is applied on all bodies in the beginning of each step().
      *
      * @property
-     * @type {vec2}
+     * @type {Float32Array}
      */
     this.gravity = options.gravity || vec2.fromValues(0, -9.78);
 

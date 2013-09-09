@@ -59,6 +59,8 @@
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
             
+                <li><a href="../classes/Island.html">Island</a></li>
+            
                 <li><a href="../classes/IslandSolver.html">IslandSolver</a></li>
             
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
@@ -66,8 +68,6 @@
                 <li><a href="../classes/Particle.html">Particle</a></li>
             
                 <li><a href="../classes/Plane.html">Plane</a></li>
-            
-                <li><a href="../classes/.html"></a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -224,6 +224,75 @@
                     </div>
 
                     
+                        <ul class="params-list">
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name">iterations</code>
+                                    <span class="type">Number</span>
+                                
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name">timeStep</code>
+                                    <span class="type">Number</span>
+                                
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name">stiffness</code>
+                                    <span class="type">Number</span>
+                                
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name">relaxation</code>
+                                    <span class="type">Number</span>
+                                
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name">tolerance</code>
+                                    <span class="type">Number</span>
+                                
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                                
+                            </li>
+                            
+                        </ul>
+                    
                 </li>
             
             </ul>
@@ -270,13 +339,6 @@
                             </li>
                         
                             <li class="index-item method inherited">
-                                <a href="#method_getBodies">getBodies</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method inherited">
                                 <a href="#method_removeAllEquations">removeAllEquations</a>
 
                                 
@@ -290,13 +352,6 @@
                                 
                             </li>
                         
-                            <li class="index-item method inherited">
-                                <a href="#method_reset">reset</a>
-
-                                
-                                
-                            </li>
-                        
                             <li class="index-item method">
                                 <a href="#method_setSpookParams">setSpookParams</a>
 
@@ -304,7 +359,7 @@
                                 
                             </li>
                         
-                            <li class="index-item method inherited">
+                            <li class="index-item method">
                                 <a href="#method_solve">solve</a>
 
                                 
@@ -322,13 +377,6 @@
                     <ul class="index-list properties extends">
                         
                             <li class="index-item property inherited">
-                                <a href="#property_bodies">bodies</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property inherited inherited">
                                 <a href="#property_equations">equations</a>
 
                                 
@@ -427,74 +475,6 @@
         </div>
     
 
-    
-
-    
-</div>
-
-                
-                    <div id="method_getBodies" class="method item inherited">
-    <h3 class="name"><code>getBodies</code></h3>
-
-    
-        <span class="paren">()</span>
-    
-
-    
-        <span class="returns-inline">
-            <span class="type">Array</span>
-        </span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/Solver.html#method_getBodies">Solver</a>:
-            
-        
-        
-        <a href="../files/src_solver_IslandSolver.js.html#l192"><code>src&#x2F;solver&#x2F;IslandSolver.js:192</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Get all unique bodies in this island.</p>
-    </div>
-
-    
-
-    
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                
-                    
-                        <span class="type">Array</span>:
-                    
-                    An array of Body
-                
-            </div>
-        </div>
     
 
     
@@ -636,57 +616,6 @@
 </div>
 
                 
-                    <div id="method_reset" class="method item inherited">
-    <h3 class="name"><code>reset</code></h3>
-
-    
-        <span class="paren">()</span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/Solver.html#method_reset">Solver</a>:
-            
-        
-        
-        <a href="../files/src_solver_IslandSolver.js.html#l183"><code>src&#x2F;solver&#x2F;IslandSolver.js:183</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Clean this island from bodies and equations.</p>
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
                     <div id="method_setSpookParams" class="method item">
     <h3 class="name"><code>setSpookParams</code></h3>
 
@@ -735,7 +664,7 @@
             
         
         
-        <a href="../files/src_solver_GSSolver.js.html#l37"><code>src&#x2F;solver&#x2F;GSSolver.js:37</code></a>
+        <a href="../files/src_solver_GSSolver.js.html#l42"><code>src&#x2F;solver&#x2F;GSSolver.js:42</code></a>
         
         </p>
 
@@ -795,7 +724,7 @@
 </div>
 
                 
-                    <div id="method_solve" class="method item inherited">
+                    <div id="method_solve" class="method item">
     <h3 class="name"><code>solve</code></h3>
 
     
@@ -810,7 +739,7 @@
             
                 <li class="arg">
                     
-                        <code>solver</code>
+                        <code>world</code>
                     
                 </li>
             
@@ -835,12 +764,15 @@
     <div class="meta">
         
             
-                <p>Inherited from
-                <a href="../classes/Solver.html#method_solve">Solver</a>:
+                
+                <p>
+                
+                Defined in
+                
             
         
         
-        <a href="../files/src_solver_IslandSolver.js.html#l215"><code>src&#x2F;solver&#x2F;IslandSolver.js:215</code></a>
+        <a href="../files/src_solver_GSSolver.js.html#l58"><code>src&#x2F;solver&#x2F;GSSolver.js:58</code></a>
         
         </p>
 
@@ -851,7 +783,7 @@
     </div>
 
     <div class="description">
-        <p>Solves all constraints in the group of islands.</p>
+        <p>Solve the system of equations</p>
     </div>
 
     
@@ -869,7 +801,7 @@
                     
 
                     <div class="param-description">
-                         
+                        <p>Time step</p>
                     </div>
 
                     
@@ -877,14 +809,14 @@
             
                 <li class="param">
                     
-                        <code class="param-name">solver</code>
-                        <span class="type"><a href="../classes/Solver.html" class="crosslink">Solver</a></span>
+                        <code class="param-name">world</code>
+                        <span class="type"><a href="../classes/World.html" class="crosslink">World</a></span>
                     
 
                     
 
                     <div class="param-description">
-                         
+                        <p>World to solve</p>
                     </div>
 
                     
@@ -908,47 +840,6 @@
                 <h2 class="off-left">Properties</h2>
 
                 
-                    <div id="property_bodies" class="property item inherited">
-    <h3 class="name"><code>bodies</code></h3>
-    <span class="type">Array</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/Solver.html#property_bodies">Solver</a>:
-            
-        
-        
-        <a href="../files/src_solver_IslandSolver.js.html#l175"><code>src&#x2F;solver&#x2F;IslandSolver.js:175</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Current bodies in this island.</p>
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
                     <div id="property_equations" class="property item inherited">
     <h3 class="name"><code>equations</code></h3>
     <span class="type">Array</span>
@@ -963,16 +854,13 @@
 
     <div class="meta">
         
-            <p>Inherited from
-            <a href="../classes/Solver.html#property_equations">
-                Solver
-            </a>
             
-            but overwritten in
+                <p>Inherited from
+                <a href="../classes/Solver.html#property_equations">Solver</a>:
             
         
         
-        <a href="../files/src_solver_IslandSolver.js.html#l168"><code>src&#x2F;solver&#x2F;IslandSolver.js:168</code></a>
+        <a href="../files/src_solver_Solver.js.html#l10"><code>src&#x2F;solver&#x2F;Solver.js:10</code></a>
         
         </p>
 
@@ -982,7 +870,7 @@
     </div>
 
     <div class="description">
-        <p>Current equations in this island.</p>
+        <p>Current equations in the solver.</p>
     </div>
 
     

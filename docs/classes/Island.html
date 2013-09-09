@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>NaiveBroadphase - p2.js</title>
+    <title>Island - p2.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -118,19 +118,15 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>NaiveBroadphase Class</h1>
+                        <h1>Island Class</h1>
 <div class="box meta">
     
 
     
-        <div class="extends">
-            Extends <a href="../classes/Broadphase.html" class="crosslink">Broadphase</a>
-        </div>
-    
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_collision_NaiveBroadphase.js.html#l8"><code>src&#x2F;collision&#x2F;NaiveBroadphase.js:8</code></a>
+            Defined in: <a href="../files/src_solver_IslandSolver.js.html#l162"><code>src&#x2F;solver&#x2F;IslandSolver.js:162</code></a>
         </div>
     
 
@@ -142,14 +138,14 @@
 
 
 <div class="box intro">
-    <p>Naive broadphase implementation. Does N^2 tests.</p>
+    <p>An island of bodies connected with equations.</p>
 </div>
 
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_NaiveBroadphase" class="method item">
-    <h3 class="name"><code>NaiveBroadphase</code></h3>
+        <div id="method_Island" class="method item">
+    <h3 class="name"><code>Island</code></h3>
 
     
         <span class="paren">()</span>
@@ -180,7 +176,7 @@
             
         
         
-        <a href="../files/src_collision_NaiveBroadphase.js.html#l8"><code>src&#x2F;collision&#x2F;NaiveBroadphase.js:8</code></a>
+        <a href="../files/src_solver_IslandSolver.js.html#l162"><code>src&#x2F;solver&#x2F;IslandSolver.js:162</code></a>
         
         </p>
 
@@ -212,6 +208,8 @@
             <li class="api-class-tab methods"><a href="#methods">Methods</a></li>
         
         
+            <li class="api-class-tab properties"><a href="#properties">Properties</a></li>
+        
         
         
     </ul>
@@ -224,10 +222,48 @@
                 <div class="index-section methods">
                     <h3>Methods</h3>
 
-                    <ul class="index-list methods extends">
+                    <ul class="index-list methods">
                         
-                            <li class="index-item method inherited">
-                                <a href="#method_getCollisionPairs">getCollisionPairs</a>
+                            <li class="index-item method">
+                                <a href="#method_getBodies">getBodies</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_reset">reset</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_solve">solve</a>
+
+                                
+                                
+                            </li>
+                        
+                    </ul>
+                </div>
+            
+
+            
+                <div class="index-section properties">
+                    <h3>Properties</h3>
+
+                    <ul class="index-list properties">
+                        
+                            <li class="index-item property">
+                                <a href="#property_bodies">bodies</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_equations">equations</a>
 
                                 
                                 
@@ -240,8 +276,6 @@
             
 
             
-
-            
         </div>
 
         
@@ -249,21 +283,11 @@
                 <h2 class="off-left">Methods</h2>
 
                 
-                    <div id="method_getCollisionPairs" class="method item inherited">
-    <h3 class="name"><code>getCollisionPairs</code></h3>
+                    <div id="method_getBodies" class="method item">
+    <h3 class="name"><code>getBodies</code></h3>
 
     
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>world</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
+        <span class="paren">()</span>
     
 
     
@@ -287,12 +311,15 @@
     <div class="meta">
         
             
-                <p>Inherited from
-                <a href="../classes/Broadphase.html#method_getCollisionPairs">Broadphase</a>:
+                
+                <p>
+                
+                Defined in
+                
             
         
         
-        <a href="../files/src_collision_Broadphase.js.html#l83"><code>src&#x2F;collision&#x2F;Broadphase.js:83</code></a>
+        <a href="../files/src_solver_IslandSolver.js.html#l193"><code>src&#x2F;solver&#x2F;IslandSolver.js:193</code></a>
         
         </p>
 
@@ -303,32 +330,9 @@
     </div>
 
     <div class="description">
-        <p>Get all potential intersecting body pairs.</p>
+        <p>Get all unique bodies in this island.</p>
     </div>
 
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">world</code>
-                        <span class="type"><a href="../classes/World.html" class="crosslink">World</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>The world to search in.</p>
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
     
 
     
@@ -340,7 +344,7 @@
                     
                         <span class="type">Array</span>:
                     
-                    An array of the bodies, ordered in pairs. Example: A result of [a,b,c,d] means that the potential pairs are: (a,b), (c,d).
+                    An array of Body
                 
             </div>
         </div>
@@ -350,9 +354,265 @@
 </div>
 
                 
+                    <div id="method_reset" class="method item">
+    <h3 class="name"><code>reset</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_solver_IslandSolver.js.html#l184"><code>src&#x2F;solver&#x2F;IslandSolver.js:184</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Clean this island from bodies and equations.</p>
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_solve" class="method item">
+    <h3 class="name"><code>solve</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>dt</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>solver</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_solver_IslandSolver.js.html#l216"><code>src&#x2F;solver&#x2F;IslandSolver.js:216</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Solves all constraints in the group of islands.</p>
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">dt</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">solver</code>
+                        <span class="type"><a href="../classes/Solver.html" class="crosslink">Solver</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
             </div>
         
 
+        
+            <div id="properties" class="api-class-tabpanel">
+                <h2 class="off-left">Properties</h2>
+
+                
+                    <div id="property_bodies" class="property item">
+    <h3 class="name"><code>bodies</code></h3>
+    <span class="type">Array</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_solver_IslandSolver.js.html#l176"><code>src&#x2F;solver&#x2F;IslandSolver.js:176</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Current bodies in this island.</p>
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_equations" class="property item">
+    <h3 class="name"><code>equations</code></h3>
+    <span class="type">Array</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_solver_IslandSolver.js.html#l169"><code>src&#x2F;solver&#x2F;IslandSolver.js:169</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Current equations in this island.</p>
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+            </div>
         
 
         

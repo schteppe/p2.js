@@ -59,6 +59,8 @@
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
             
+                <li><a href="../classes/Island.html">Island</a></li>
+            
                 <li><a href="../classes/IslandSolver.html">IslandSolver</a></li>
             
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
@@ -66,8 +68,6 @@
                 <li><a href="../classes/Particle.html">Particle</a></li>
             
                 <li><a href="../classes/Plane.html">Plane</a></li>
-            
-                <li><a href="../classes/.html"></a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -137,6 +137,11 @@ var ARRAY_TYPE = Float32Array || Array;
  * @constructor
  * @extends Solver
  * @param {Object} [options]
+ * @param {Number} options.iterations
+ * @param {Number} options.timeStep
+ * @param {Number} options.stiffness
+ * @param {Number} options.relaxation
+ * @param {Number} options.tolerance
  */
 function GSSolver(options){
     Solver.call(this);
@@ -176,7 +181,8 @@ GSSolver.prototype.setSpookParams = function(k,d){
 
 /**
  * Solve the system of equations
- * @param  {Number}   dt       Time step
+ * @method solve
+ * @param  {Number}  dt       Time step
  * @param  {World}   world    World to solve
  */
 GSSolver.prototype.solve = function(dt,world){

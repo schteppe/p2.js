@@ -104,7 +104,7 @@
             "modules": {},
             "classes": {
                 "IslandSolver": 1,
-                "": 1
+                "Island": 1
             },
             "fors": {},
             "namespaces": {}
@@ -392,7 +392,7 @@
             "plugin_for": [],
             "extension_for": [],
             "file": "src/objects/Body.js",
-            "line": 53,
+            "line": 58,
             "description": "A physics body.",
             "is_constructor": 1,
             "params": [
@@ -415,12 +415,12 @@
                         {
                             "name": "position",
                             "description": "",
-                            "type": "Vec2"
+                            "type": "Float32Array"
                         },
                         {
                             "name": "velocity",
                             "description": "",
-                            "type": "Vec2"
+                            "type": "Float32Array"
                         },
                         {
                             "name": "angle",
@@ -435,7 +435,7 @@
                         {
                             "name": "force",
                             "description": "",
-                            "type": "Vec2"
+                            "type": "Float32Array"
                         },
                         {
                             "name": "angularForce",
@@ -526,7 +526,34 @@
                     "name": "options",
                     "description": "",
                     "type": "Object",
-                    "optional": true
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "iterations",
+                            "description": "",
+                            "type": "Number"
+                        },
+                        {
+                            "name": "timeStep",
+                            "description": "",
+                            "type": "Number"
+                        },
+                        {
+                            "name": "stiffness",
+                            "description": "",
+                            "type": "Number"
+                        },
+                        {
+                            "name": "relaxation",
+                            "description": "",
+                            "type": "Number"
+                        },
+                        {
+                            "name": "tolerance",
+                            "description": "",
+                            "type": "Number"
+                        }
+                    ]
                 }
             ]
         },
@@ -551,9 +578,16 @@
             ],
             "extends": "Solver"
         },
-        "": {
+        "Island": {
+            "name": "Island",
+            "shortname": "Island",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
             "file": "src/solver/IslandSolver.js",
-            "line": 161,
+            "line": 162,
             "description": "An island of bodies connected with equations.",
             "is_constructor": 1
         },
@@ -597,7 +631,7 @@
                         {
                             "name": "gravity",
                             "description": "Defaults to [0,-9.78]",
-                            "type": "Vec2"
+                            "type": "Float32Array"
                         },
                         {
                             "name": "broadphase",
@@ -628,7 +662,6 @@
             "description": "Get all potential intersecting body pairs.",
             "itemtype": "method",
             "name": "getCollisionPairs",
-            "memberof": "Broadphase",
             "params": [
                 {
                     "name": "world",
@@ -646,30 +679,27 @@
             "file": "src/constraints/Constraint.js",
             "line": 14,
             "description": "Equations to be solved in this constraint",
-            "itemtype": "method",
-            "name": "",
-            "type": "Array",
-            "memberof": "Constraint",
+            "itemtype": "property",
+            "name": "equations",
+            "type": "{Array}",
             "class": "Constraint"
         },
         {
             "file": "src/constraints/Constraint.js",
             "line": 21,
             "description": "First body participating in the constraint.",
-            "itemtype": "method",
-            "name": "",
-            "type": "p2.Body",
-            "memberof": "Constraint",
+            "itemtype": "property",
+            "name": "bodyA",
+            "type": "{Body}",
             "class": "Constraint"
         },
         {
             "file": "src/constraints/Constraint.js",
             "line": 28,
             "description": "Second body participating in the constraint.",
-            "itemtype": "method",
-            "name": "",
-            "type": "p2.Body",
-            "memberof": "Constraint",
+            "itemtype": "property",
+            "name": "bodyB",
+            "type": "{Body}",
             "class": "Constraint"
         },
         {
@@ -677,48 +707,57 @@
             "line": 36,
             "description": "To be implemented by subclasses. Should update the internal constraint parameters.",
             "itemtype": "method",
-            "name": "",
-            "memberof": "Constraint",
+            "name": "update",
             "class": "Constraint"
         },
         {
             "file": "src/objects/Body.js",
             "line": 22,
             "description": "Rest length of the spring.",
+            "itemtype": "property",
+            "name": "restLength",
             "type": "{number}",
             "class": "Spring"
         },
         {
             "file": "src/objects/Body.js",
-            "line": 28,
+            "line": 29,
             "description": "Stiffness of the spring.",
+            "itemtype": "property",
+            "name": "stiffness",
             "type": "{number}",
             "class": "Spring"
         },
         {
             "file": "src/objects/Body.js",
-            "line": 34,
+            "line": 36,
             "description": "Damping of the spring.",
+            "itemtype": "property",
+            "name": "damping",
             "type": "{number}",
             "class": "Spring"
         },
         {
             "file": "src/objects/Body.js",
-            "line": 40,
+            "line": 43,
             "description": "First connected body.",
+            "itemtype": "property",
+            "name": "bodyA",
             "type": "{Body}",
             "class": "Spring"
         },
         {
             "file": "src/objects/Body.js",
-            "line": 46,
+            "line": 50,
             "description": "Second connected body.",
+            "itemtype": "property",
+            "name": "bodyB",
             "type": "{Body}",
             "class": "Spring"
         },
         {
             "file": "src/objects/Body.js",
-            "line": 71,
+            "line": 76,
             "description": "The body identifyer",
             "itemtype": "property",
             "name": "id",
@@ -727,7 +766,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 78,
+            "line": 83,
             "description": "The shape belonging to the body.",
             "itemtype": "property",
             "name": "shape",
@@ -736,7 +775,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 85,
+            "line": 90,
             "description": "The mass of the body.",
             "itemtype": "property",
             "name": "mass",
@@ -745,25 +784,25 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 95,
+            "line": 100,
             "description": "The position of the body",
             "itemtype": "property",
             "name": "position",
-            "type": "{vec2}",
+            "type": "{Float32Array}",
             "class": "Body"
         },
         {
             "file": "src/objects/Body.js",
-            "line": 103,
+            "line": 108,
             "description": "The velocity of the body",
             "itemtype": "property",
             "name": "velocity",
-            "type": "{vec2}",
+            "type": "{Float32Array}",
             "class": "Body"
         },
         {
             "file": "src/objects/Body.js",
-            "line": 114,
+            "line": 119,
             "description": "The angle of the body",
             "itemtype": "property",
             "name": "angle",
@@ -772,7 +811,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 121,
+            "line": 126,
             "description": "The angular velocity of the body",
             "itemtype": "property",
             "name": "angularVelocity",
@@ -781,16 +820,16 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 128,
+            "line": 133,
             "description": "The force acting on the body",
             "itemtype": "property",
             "name": "force",
-            "type": "{vec2}",
+            "type": "{Float32Array}",
             "class": "Body"
         },
         {
             "file": "src/objects/Body.js",
-            "line": 136,
+            "line": 141,
             "description": "The angular force acting on the body",
             "itemtype": "property",
             "name": "angularForce",
@@ -799,7 +838,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 143,
+            "line": 148,
             "description": "The type of motion this body has. Should be one of: Body.STATIC, Body.DYNAMIC and Body.KINEMATIC.",
             "itemtype": "property",
             "name": "motionState",
@@ -808,7 +847,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 154,
+            "line": 159,
             "description": "Apply force to a world point. This could for example be a point on the RigidBody surface. Applying force this way will add to Body.force and Body.angularForce.",
             "itemtype": "method",
             "name": "applyForce",
@@ -816,19 +855,19 @@
                 {
                     "name": "force",
                     "description": "The force to add.",
-                    "type": "Vec2"
+                    "type": "Float32Array"
                 },
                 {
                     "name": "worldPoint",
                     "description": "A world point to apply the force on.",
-                    "type": "Vec2"
+                    "type": "Float32Array"
                 }
             ],
             "class": "Body"
         },
         {
             "file": "src/objects/Body.js",
-            "line": 176,
+            "line": 181,
             "description": "Dynamic body.",
             "itemtype": "property",
             "name": "DYNAMIC",
@@ -838,7 +877,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 184,
+            "line": 189,
             "description": "Static body.",
             "itemtype": "property",
             "name": "STATIC",
@@ -848,7 +887,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 192,
+            "line": 197,
             "description": "Kinematic body.",
             "itemtype": "property",
             "name": "KINEMATIC",
@@ -867,7 +906,7 @@
         },
         {
             "file": "src/solver/GSSolver.js",
-            "line": 37,
+            "line": 42,
             "description": "Set stiffness parameters",
             "itemtype": "method",
             "name": "setSpookParams",
@@ -887,8 +926,10 @@
         },
         {
             "file": "src/solver/GSSolver.js",
-            "line": 53,
+            "line": 58,
             "description": "Solve the system of equations",
+            "itemtype": "method",
+            "name": "solve",
             "params": [
                 {
                     "name": "dt",
@@ -925,6 +966,8 @@
             "file": "src/solver/IslandSolver.js",
             "line": 69,
             "description": "Solves the full system.",
+            "itemtype": "method",
+            "name": "solve",
             "params": [
                 {
                     "name": "dt",
@@ -941,33 +984,33 @@
         },
         {
             "file": "src/solver/IslandSolver.js",
-            "line": 168,
+            "line": 169,
             "description": "Current equations in this island.",
             "itemtype": "property",
             "name": "equations",
             "type": "{Array}",
-            "class": "Solver"
+            "class": "Island"
         },
         {
             "file": "src/solver/IslandSolver.js",
-            "line": 175,
+            "line": 176,
             "description": "Current bodies in this island.",
             "itemtype": "property",
             "name": "bodies",
             "type": "{Array}",
-            "class": "Solver"
+            "class": "Island"
         },
         {
             "file": "src/solver/IslandSolver.js",
-            "line": 183,
+            "line": 184,
             "description": "Clean this island from bodies and equations.",
             "itemtype": "method",
             "name": "reset",
-            "class": "Solver"
+            "class": "Island"
         },
         {
             "file": "src/solver/IslandSolver.js",
-            "line": 192,
+            "line": 193,
             "description": "Get all unique bodies in this island.",
             "itemtype": "method",
             "name": "getBodies",
@@ -975,11 +1018,11 @@
                 "description": "An array of Body",
                 "type": "Array"
             },
-            "class": "Solver"
+            "class": "Island"
         },
         {
             "file": "src/solver/IslandSolver.js",
-            "line": 215,
+            "line": 216,
             "description": "Solves all constraints in the group of islands.",
             "itemtype": "method",
             "name": "solve",
@@ -995,7 +1038,7 @@
                     "type": "Solver"
                 }
             ],
-            "class": "Solver"
+            "class": "Island"
         },
         {
             "file": "src/solver/Solver.js",
@@ -1086,7 +1129,7 @@
             "description": "Gravity in the world. This is applied on all bodies in the beginning of each step().",
             "itemtype": "property",
             "name": "",
-            "type": "{vec2}",
+            "type": "{Float32Array}",
             "class": "World"
         },
         {
@@ -1362,66 +1405,5 @@
             "class": "vec2"
         }
     ],
-    "warnings": [
-        {
-            "message": "unknown tag: memberof",
-            "line": " src/collision/Broadphase.js:83"
-        },
-        {
-            "message": "replacing incorrect tag: member with method",
-            "line": " src/constraints/Constraint.js:14"
-        },
-        {
-            "message": "unknown tag: memberof",
-            "line": " src/constraints/Constraint.js:14"
-        },
-        {
-            "message": "replacing incorrect tag: member with method",
-            "line": " src/constraints/Constraint.js:21"
-        },
-        {
-            "message": "unknown tag: memberof",
-            "line": " src/constraints/Constraint.js:21"
-        },
-        {
-            "message": "replacing incorrect tag: member with method",
-            "line": " src/constraints/Constraint.js:28"
-        },
-        {
-            "message": "unknown tag: memberof",
-            "line": " src/constraints/Constraint.js:28"
-        },
-        {
-            "message": "unknown tag: memberof",
-            "line": " src/constraints/Constraint.js:36"
-        },
-        {
-            "message": "Missing item type\nRest length of the spring.",
-            "line": " src/objects/Body.js:22"
-        },
-        {
-            "message": "Missing item type\nStiffness of the spring.",
-            "line": " src/objects/Body.js:28"
-        },
-        {
-            "message": "Missing item type\nDamping of the spring.",
-            "line": " src/objects/Body.js:34"
-        },
-        {
-            "message": "Missing item type\nFirst connected body.",
-            "line": " src/objects/Body.js:40"
-        },
-        {
-            "message": "Missing item type\nSecond connected body.",
-            "line": " src/objects/Body.js:46"
-        },
-        {
-            "message": "Missing item type\nSolve the system of equations",
-            "line": " src/solver/GSSolver.js:53"
-        },
-        {
-            "message": "Missing item type\nSolves the full system.",
-            "line": " src/solver/IslandSolver.js:69"
-        }
-    ]
+    "warnings": []
 }

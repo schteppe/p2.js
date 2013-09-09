@@ -161,7 +161,7 @@ IslandSolver.prototype.solve = function(dt,world){
 
 /**
  * An island of bodies connected with equations.
- * @class
+ * @class Island
  * @constructor
  */
 function Island(){
