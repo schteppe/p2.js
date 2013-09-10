@@ -30,6 +30,7 @@ exports.Constraint =            require('./constraints/Constraint')         .Con
 exports.ContactEquation =       require('./constraints/ContactEquation')    .ContactEquation;
 exports.DistanceConstraint=     require('./constraints/DistanceConstraint') .DistanceConstraint;
 exports.Equation =              require('./constraints/Equation')           .Equation;
+exports.EventEmitter =          require('./events/EventEmitter')            .EventEmitter;
 exports.GridBroadphase =        require('./collision/GridBroadphase')       .GridBroadphase;
 exports.GSSolver =              require('./solver/GSSolver')                .GSSolver;
 exports.NaiveBroadphase =       require('./collision/NaiveBroadphase')      .NaiveBroadphase;
