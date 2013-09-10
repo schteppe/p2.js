@@ -157,6 +157,54 @@ Equation.prototype.constructor = Equation;
 
 
 },{}],4:[function(require,module,exports){
+var EventEmitter = function () {}
+
+exports.EventEmitter = EventEmitter;
+
+EventEmitter.prototype = {
+    constructor: EventEmitter,
+    on: function ( type, listener ) {
+        if ( this._listeners === undefined ) this._listeners = {};
+        var listeners = this._listeners;
+        if ( listeners[ type ] === undefined ) {
+            listeners[ type ] = [];
+        }
+        if ( listeners[ type ].indexOf( listener ) === - 1 ) {
+            listeners[ type ].push( listener );
+        }
+        return this;
+    },
+    has: function ( type, listener ) {
+        if ( this._listeners === undefined ) return false;
+        var listeners = this._listeners;
+        if ( listeners[ type ] !== undefined && listeners[ type ].indexOf( listener ) !== - 1 ) {
+            return true;
+        }
+        return false;
+    },
+    off: function ( type, listener ) {
+        if ( this._listeners === undefined ) return;
+        var listeners = this._listeners;
+        var index = listeners[ type ].indexOf( listener );
+        if ( index !== - 1 ) {
+            listeners[ type ].splice( index, 1 );
+        }
+    },
+    emit: function ( event ) {
+        if ( this._listeners === undefined ) return;
+        var listeners = this._listeners;
+        var listenerArray = listeners[ event.type ];
+        if ( listenerArray !== undefined ) {
+            event.target = this;
+            for ( var i = 0, l = listenerArray.length; i < l; i ++ ) {
+                listenerArray[ i ].call( this, event );
+            }
+        }
+        return this;
+    }
+};
+
+},{}],5:[function(require,module,exports){
 exports.Solver = Solver;
 
 /**
@@ -211,7 +259,7 @@ Solver.prototype.removeAllEquations = function(){
 };
 
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 /*
  * The MIT License (MIT)
  *
@@ -244,6 +292,7 @@ exports.Constraint =            require('./constraints/Constraint')         .Con
 exports.ContactEquation =       require('./constraints/ContactEquation')    .ContactEquation;
 exports.DistanceConstraint=     require('./constraints/DistanceConstraint') .DistanceConstraint;
 exports.Equation =              require('./constraints/Equation')           .Equation;
+exports.EventEmitter =          require('./events/EventEmitter')            .EventEmitter;
 exports.GridBroadphase =        require('./collision/GridBroadphase')       .GridBroadphase;
 exports.GSSolver =              require('./solver/GSSolver')                .GSSolver;
 exports.NaiveBroadphase =       require('./collision/NaiveBroadphase')      .NaiveBroadphase;
@@ -260,7 +309,7 @@ var glMatrix = require('gl-matrix');
 exports.vec2 = glMatrix.vec2;
 exports.mat2 = glMatrix.mat2;
 
-},{"./objects/Body":6,"./collision/Broadphase":7,"./objects/Shape":1,"./constraints/Constraint":2,"./constraints/ContactEquation":8,"./constraints/DistanceConstraint":9,"./constraints/Equation":3,"./solver/GSSolver":10,"./collision/NaiveBroadphase":11,"./collision/GridBroadphase":12,"./solver/IslandSolver":13,"./solver/Solver":4,"./world/World":14,"gl-matrix":15}],15:[function(require,module,exports){
+},{"./objects/Body":7,"./objects/Shape":1,"./constraints/Constraint":2,"./constraints/DistanceConstraint":8,"./constraints/ContactEquation":9,"./collision/Broadphase":10,"./constraints/Equation":3,"./events/EventEmitter":4,"./collision/GridBroadphase":11,"./solver/GSSolver":12,"./collision/NaiveBroadphase":13,"./solver/IslandSolver":14,"./solver/Solver":5,"./world/World":15,"gl-matrix":16}],16:[function(require,module,exports){
 (function(){/**
  * @fileoverview gl-matrix - High performance matrix and vector operations
  * @author Brandon Jones
@@ -3334,7 +3383,7 @@ if(typeof(exports) !== 'undefined') {
 })();
 
 })()
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 /**
  * Extensions for the vec2 object
  * @class vec2
@@ -3388,6 +3437,257 @@ exports.vec2 = {
 };
 
 },{}],7:[function(require,module,exports){
+var glMatrix = require("gl-matrix"),
+    vec2 = glMatrix.vec2;
+
+exports.Body = Body;
+exports.Spring = Spring;
+
+/**
+ * A spring, connecting two bodies.
+ *
+ * @class Spring
+ * @constructor
+ * @param {Body} bodyA
+ * @param {Body} bodyB
+ * @param {Object} [options]
+ * @param {number} options.restLength A number > 0. Default: 1
+ * @param {number} options.stiffness A number >= 0. Default: 100
+ * @param {number} options.damping A number >= 0. Default: 1
+ */
+function Spring(bodyA,bodyB,options){
+    options = options || {};
+
+    /**
+     * Rest length of the spring.
+     * @property restLength
+     * @type {number}
+     */
+    this.restLength = options.restLength || 1;
+
+    /**
+     * Stiffness of the spring.
+     * @property stiffness
+     * @type {number}
+     */
+    this.stiffness = options.stiffness || 100;
+
+    /**
+     * Damping of the spring.
+     * @property damping
+     * @type {number}
+     */
+    this.damping = options.damping || 1;
+
+    /**
+     * First connected body.
+     * @property bodyA
+     * @type {Body}
+     */
+    this.bodyA = bodyA;
+
+    /**
+     * Second connected body.
+     * @property bodyB
+     * @type {Body}
+     */
+    this.bodyB = bodyB;
+};
+
+/**
+ * A physics body.
+ *
+ * @class Body
+ * @constructor
+ * @param {Object} [options]
+ * @param {Shape}   options.shape           Used for collision detection. If absent the body will not collide.
+ * @param {number}  options.mass            A number >= 0. If zero, the body becomes static. Defaults to static [0].
+ * @param {Float32Array}    options.position
+ * @param {Float32Array}    options.velocity
+ * @param {number}  options.angle
+ * @param {number}  options.angularVelocity
+ * @param {Float32Array}    options.force
+ * @param {number}  options.angularForce
+ */
+function Body(options){
+    options = options || {};
+
+    /**
+     * The body identifyer
+     * @property id
+     * @type {Number}
+     */
+    this.id = ++Body._idCounter;
+
+    /**
+     * The shape belonging to the body.
+     * @property shape
+     * @type {Shape}
+     */
+    this.shape = options.shape;
+
+    /**
+     * The mass of the body.
+     * @property mass
+     * @type {number}
+     */
+    this.mass = options.mass || 0;
+    this.invMass = this.mass > 0 ? 1 / this.mass : 0;
+    this.inertia = options.inertia || this.mass; // todo
+    this.invInertia = this.invMass; // todo
+
+    /**
+     * The position of the body
+     * @property position
+     * @type {Float32Array}
+     */
+    this.position = vec2.create();
+    if(options.position) vec2.copy(this.position, options.position);
+
+    /**
+     * The velocity of the body
+     * @property velocity
+     * @type {Float32Array}
+     */
+    this.velocity = vec2.create();
+    if(options.velocity) vec2.copy(this.velocity, options.velocity);
+
+    this.vlambda = vec2.create();
+    this.wlambda = 0;
+
+    /**
+     * The angle of the body
+     * @property angle
+     * @type {number}
+     */
+    this.angle = options.angle || 0;
+
+    /**
+     * The angular velocity of the body
+     * @property angularVelocity
+     * @type {number}
+     */
+    this.angularVelocity = options.angularVelocity || 0;
+
+    /**
+     * The force acting on the body
+     * @property force
+     * @type {Float32Array}
+     */
+    this.force = vec2.create();
+    if(options.force) vec2.copy(this.force, options.force);
+
+    /**
+     * The angular force acting on the body
+     * @property angularForce
+     * @type {number}
+     */
+    this.angularForce = options.angularForce || 0;
+
+    /**
+     * The type of motion this body has. Should be one of: Body.STATIC, Body.DYNAMIC and Body.KINEMATIC.
+     * @property motionState
+     * @type {number}
+     */
+    this.motionState = this.mass == 0 ? Body.STATIC : Body.DYNAMIC;
+};
+
+Body._idCounter = 0;
+
+
+/**
+ * Apply force to a world point. This could for example be a point on the RigidBody surface. Applying force this way will add to Body.force and Body.angularForce.
+ * @method applyForce
+ * @param {Float32Array} force The force to add.
+ * @param {Float32Array} worldPoint A world point to apply the force on.
+ */
+var Body_applyForce_r = vec2.create();
+Body.prototype.applyForce = function(force,worldPoint){
+    // Compute point position relative to the body center
+    var r = Body_applyForce_r;
+    vec2.sub(r,worldPoint,this.position);
+
+    // Add linear force
+    vec2.add(this.force,this.force,force);
+
+    // Compute produced rotational force
+    var rotForce = vec2.crossLength(r,force);
+
+    // Add rotational force
+    this.angularForce += rotForce;
+};
+
+/**
+ * Dynamic body.
+ * @property DYNAMIC
+ * @type {Number}
+ * @static
+ */
+Body.DYNAMIC = 1;
+
+/**
+ * Static body.
+ * @property STATIC
+ * @type {Number}
+ * @static
+ */
+Body.STATIC = 2;
+
+/**
+ * Kinematic body.
+ * @property KINEMATIC
+ * @type {Number}
+ * @static
+ */
+Body.KINEMATIC = 4;
+
+},{"gl-matrix":16}],8:[function(require,module,exports){
+var Constraint = require('./Constraint').Constraint
+,   ContactEquation = require('./ContactEquation').ContactEquation
+,   vec2 = require('gl-matrix').vec2
+
+exports.DistanceConstraint = DistanceConstraint;
+
+/**
+ * Constraint that tries to keep the distance between two bodies constant.
+ *
+ * @class DistanceConstraint
+ * @constructor
+ * @author schteppe
+ * @param {Body} bodyA
+ * @param {Body} bodyB
+ * @param {number} dist The distance to keep between the bodies.
+ * @param {number} maxForce
+ */
+function DistanceConstraint(bodyA,bodyB,distance,maxForce){
+    Constraint.call(this,bodyA,bodyB);
+
+    if(typeof(maxForce)==="undefined" ) {
+        maxForce = 1e6;
+    }
+
+    // Equations to be fed to the solver
+    var eqs = this.equations = [
+        new ContactEquation(bodyA,bodyB), // Just in the normal direction
+    ];
+
+    var normal = eqs[0];
+
+    normal.minForce = -maxForce;
+    normal.maxForce =  maxForce;
+
+    // Update
+    // Should be appended to the .prototype
+    this.update = function(){
+        vec2.subtract(normal.ni, bodyB.position, bodyA.position);
+        vec2.normalize(normal.ni,normal.ni);
+        vec2.scale(normal.ri, normal.ni, distance*0.5);
+        vec2.scale(normal.rj, normal.ni, -distance*0.5);
+    };
+}
+DistanceConstraint.prototype = new Object(Constraint.prototype);
+
+},{"./Constraint":2,"./ContactEquation":9,"gl-matrix":16}],10:[function(require,module,exports){
 var glMatrix = require('gl-matrix'),
     glMatrixExtensions = require('../gl-matrix-extensions'),
     vec2e = glMatrixExtensions.vec2,
@@ -3603,258 +3903,7 @@ exports.Broadphase.prototype.getCollisionPairs = function(world){
 };
 
 
-},{"../gl-matrix-extensions":16,"gl-matrix":15}],6:[function(require,module,exports){
-var glMatrix = require("gl-matrix"),
-    vec2 = glMatrix.vec2;
-
-exports.Body = Body;
-exports.Spring = Spring;
-
-/**
- * A spring, connecting two bodies.
- *
- * @class Spring
- * @constructor
- * @param {Body} bodyA
- * @param {Body} bodyB
- * @param {Object} [options]
- * @param {number} options.restLength A number > 0. Default: 1
- * @param {number} options.stiffness A number >= 0. Default: 100
- * @param {number} options.damping A number >= 0. Default: 1
- */
-function Spring(bodyA,bodyB,options){
-    options = options || {};
-
-    /**
-     * Rest length of the spring.
-     * @property restLength
-     * @type {number}
-     */
-    this.restLength = options.restLength || 1;
-
-    /**
-     * Stiffness of the spring.
-     * @property stiffness
-     * @type {number}
-     */
-    this.stiffness = options.stiffness || 100;
-
-    /**
-     * Damping of the spring.
-     * @property damping
-     * @type {number}
-     */
-    this.damping = options.damping || 1;
-
-    /**
-     * First connected body.
-     * @property bodyA
-     * @type {Body}
-     */
-    this.bodyA = bodyA;
-
-    /**
-     * Second connected body.
-     * @property bodyB
-     * @type {Body}
-     */
-    this.bodyB = bodyB;
-};
-
-/**
- * A physics body.
- *
- * @class Body
- * @constructor
- * @param {Object} [options]
- * @param {Shape}   options.shape           Used for collision detection. If absent the body will not collide.
- * @param {number}  options.mass            A number >= 0. If zero, the body becomes static. Defaults to static [0].
- * @param {Float32Array}    options.position
- * @param {Float32Array}    options.velocity
- * @param {number}  options.angle
- * @param {number}  options.angularVelocity
- * @param {Float32Array}    options.force
- * @param {number}  options.angularForce
- */
-function Body(options){
-    options = options || {};
-
-    /**
-     * The body identifyer
-     * @property id
-     * @type {Number}
-     */
-    this.id = ++Body._idCounter;
-
-    /**
-     * The shape belonging to the body.
-     * @property shape
-     * @type {Shape}
-     */
-    this.shape = options.shape;
-
-    /**
-     * The mass of the body.
-     * @property mass
-     * @type {number}
-     */
-    this.mass = options.mass || 0;
-    this.invMass = this.mass > 0 ? 1 / this.mass : 0;
-    this.inertia = options.inertia || this.mass; // todo
-    this.invInertia = this.invMass; // todo
-
-    /**
-     * The position of the body
-     * @property position
-     * @type {Float32Array}
-     */
-    this.position = vec2.create();
-    if(options.position) vec2.copy(this.position, options.position);
-
-    /**
-     * The velocity of the body
-     * @property velocity
-     * @type {Float32Array}
-     */
-    this.velocity = vec2.create();
-    if(options.velocity) vec2.copy(this.velocity, options.velocity);
-
-    this.vlambda = vec2.create();
-    this.wlambda = 0;
-
-    /**
-     * The angle of the body
-     * @property angle
-     * @type {number}
-     */
-    this.angle = options.angle || 0;
-
-    /**
-     * The angular velocity of the body
-     * @property angularVelocity
-     * @type {number}
-     */
-    this.angularVelocity = options.angularVelocity || 0;
-
-    /**
-     * The force acting on the body
-     * @property force
-     * @type {Float32Array}
-     */
-    this.force = vec2.create();
-    if(options.force) vec2.copy(this.force, options.force);
-
-    /**
-     * The angular force acting on the body
-     * @property angularForce
-     * @type {number}
-     */
-    this.angularForce = options.angularForce || 0;
-
-    /**
-     * The type of motion this body has. Should be one of: Body.STATIC, Body.DYNAMIC and Body.KINEMATIC.
-     * @property motionState
-     * @type {number}
-     */
-    this.motionState = this.mass == 0 ? Body.STATIC : Body.DYNAMIC;
-};
-
-Body._idCounter = 0;
-
-
-/**
- * Apply force to a world point. This could for example be a point on the RigidBody surface. Applying force this way will add to Body.force and Body.angularForce.
- * @method applyForce
- * @param {Float32Array} force The force to add.
- * @param {Float32Array} worldPoint A world point to apply the force on.
- */
-var Body_applyForce_r = vec2.create();
-Body.prototype.applyForce = function(force,worldPoint){
-    // Compute point position relative to the body center
-    var r = Body_applyForce_r;
-    vec2.sub(r,worldPoint,this.position);
-
-    // Add linear force
-    vec2.add(this.force,this.force,force);
-
-    // Compute produced rotational force
-    var rotForce = vec2.crossLength(r,force);
-
-    // Add rotational force
-    this.angularForce += rotForce;
-};
-
-/**
- * Dynamic body.
- * @property DYNAMIC
- * @type {Number}
- * @static
- */
-Body.DYNAMIC = 1;
-
-/**
- * Static body.
- * @property STATIC
- * @type {Number}
- * @static
- */
-Body.STATIC = 2;
-
-/**
- * Kinematic body.
- * @property KINEMATIC
- * @type {Number}
- * @static
- */
-Body.KINEMATIC = 4;
-
-},{"gl-matrix":15}],9:[function(require,module,exports){
-var Constraint = require('./Constraint').Constraint
-,   ContactEquation = require('./ContactEquation').ContactEquation
-,   vec2 = require('gl-matrix').vec2
-
-exports.DistanceConstraint = DistanceConstraint;
-
-/**
- * Constraint that tries to keep the distance between two bodies constant.
- *
- * @class DistanceConstraint
- * @constructor
- * @author schteppe
- * @param {Body} bodyA
- * @param {Body} bodyB
- * @param {number} dist The distance to keep between the bodies.
- * @param {number} maxForce
- */
-function DistanceConstraint(bodyA,bodyB,distance,maxForce){
-    Constraint.call(this,bodyA,bodyB);
-
-    if(typeof(maxForce)==="undefined" ) {
-        maxForce = 1e6;
-    }
-
-    // Equations to be fed to the solver
-    var eqs = this.equations = [
-        new ContactEquation(bodyA,bodyB), // Just in the normal direction
-    ];
-
-    var normal = eqs[0];
-
-    normal.minForce = -maxForce;
-    normal.maxForce =  maxForce;
-
-    // Update
-    // Should be appended to the .prototype
-    this.update = function(){
-        vec2.subtract(normal.ni, bodyB.position, bodyA.position);
-        vec2.normalize(normal.ni,normal.ni);
-        vec2.scale(normal.ri, normal.ni, distance*0.5);
-        vec2.scale(normal.rj, normal.ni, -distance*0.5);
-    };
-}
-DistanceConstraint.prototype = new Constraint();
-
-},{"./Constraint":2,"./ContactEquation":8,"gl-matrix":15}],8:[function(require,module,exports){
+},{"../gl-matrix-extensions":17,"gl-matrix":16}],9:[function(require,module,exports){
 var Equation = require("./Equation").Equation,
     glMatrix = require('gl-matrix'),
     vec2 = glMatrix.vec2,
@@ -3996,7 +4045,7 @@ ContactEquation.prototype.addToWlambda = function(deltalambda){
 };
 
 
-},{"./Equation":3,"../gl-matrix-extensions":16,"gl-matrix":15}],10:[function(require,module,exports){
+},{"./Equation":3,"../gl-matrix-extensions":17,"gl-matrix":16}],12:[function(require,module,exports){
 var glMatrix = require('gl-matrix'),
     vec2 = glMatrix.vec2,
     Solver = require('./Solver').Solver;
@@ -4153,9 +4202,10 @@ GSSolver.prototype.solve = function(dt,world){
 };
 
 
-},{"./Solver":4,"gl-matrix":15}],11:[function(require,module,exports){
+},{"./Solver":5,"gl-matrix":16}],13:[function(require,module,exports){
 var Circle = require('../objects/Shape').Circle,
     Plane = require('../objects/Shape').Plane,
+    Particle = require('../objects/Shape').Particle,
     bp = require('../collision/Broadphase'),
     Broadphase = bp.Broadphase,
     glMatrix = require('gl-matrix'),
@@ -4198,7 +4248,7 @@ exports.NaiveBroadphase = function(){
 };
 exports.NaiveBroadphase.prototype = new Broadphase();
 
-},{"../objects/Shape":1,"../collision/Broadphase":7,"gl-matrix":15}],12:[function(require,module,exports){
+},{"../objects/Shape":1,"../collision/Broadphase":10,"gl-matrix":16}],11:[function(require,module,exports){
 var Circle = require('../objects/Shape').Circle,
     Plane = require('../objects/Shape').Plane,
     Particle = require('../objects/Shape').Particle,
@@ -4329,7 +4379,7 @@ exports.GridBroadphase = function(xmin,xmax,ymin,ymax,nx,ny){
 exports.GridBroadphase.prototype = new Broadphase();
 
 
-},{"../objects/Shape":1,"../collision/Broadphase":7,"gl-matrix":15}],13:[function(require,module,exports){
+},{"../objects/Shape":1,"../collision/Broadphase":10,"gl-matrix":16}],14:[function(require,module,exports){
 var Solver = require('./Solver').Solver
 ,   ContactEquation = require('../constraints/ContactEquation').ContactEquation
 ,   vec2 = require('gl-matrix').vec2
@@ -4571,7 +4621,7 @@ Island.prototype.solve = function(dt,solver){
     solver.solve(dt,{bodies:bodies});
 };
 
-},{"./Solver":4,"../constraints/ContactEquation":8,"../objects/Body":6,"gl-matrix":15}],14:[function(require,module,exports){
+},{"./Solver":5,"../constraints/ContactEquation":9,"../objects/Body":7,"gl-matrix":16}],15:[function(require,module,exports){
 var GSSolver = require('../solver/GSSolver').GSSolver,
     NaiveBroadphase = require('../collision/NaiveBroadphase').NaiveBroadphase,
     glMatrix = require('gl-matrix'),
@@ -4579,6 +4629,7 @@ var GSSolver = require('../solver/GSSolver').GSSolver,
     Circle = require('../objects/Shape').Circle,
     Plane = require('../objects/Shape').Plane,
     Particle = require('../objects/Shape').Particle,
+    EventEmitter = require('../events/EventEmitter').EventEmitter,
     Body = require('../objects/Body').Body,
     bp = require('../collision/Broadphase'),
     Broadphase = bp.Broadphase;
@@ -4599,12 +4650,15 @@ function now(){
  *
  * @class World
  * @constructor
- * @param {Object}      [options]
- * @param {Solver}      options.solver Defaults to GSSolver.
- * @param {Float32Array}        options.gravity Defaults to [0,-9.78]
- * @param {Broadphase}  options.broadphase Defaults to NaiveBroadphase
+ * @param {Object}          [options]
+ * @param {Solver}          options.solver Defaults to GSSolver.
+ * @param {Float32Array}    options.gravity Defaults to [0,-9.78]
+ * @param {Broadphase}      options.broadphase Defaults to NaiveBroadphase
+ * @extends {EventEmitter}
  */
 function World(options){
+    EventEmitter.apply(this);
+
     options = options || {};
 
     /**
@@ -4685,7 +4739,21 @@ function World(options){
     // Id counters
     this._constraintIdCounter = 0;
     this._bodyIdCounter = 0;
+
+    // Event objects that are reused
+    this.postStepEvent = {
+        type : "postStep",
+    };
+    this.addBodyEvent = {
+        type : "addBody",
+        body : null
+    };
+    this.addSpringEvent = {
+        type : "addSpring",
+        body : null
+    };
 };
+World.prototype = new Object(EventEmitter.prototype);
 
 /**
  * Add a constraint to the simulation.
@@ -4846,6 +4914,8 @@ World.prototype.step = function(dt){
         t1 = now();
         that.lastStepTime = t1-t0;
     }
+
+    this.emit(this.postStepEvent);
 };
 
 /**
@@ -4856,6 +4926,8 @@ World.prototype.step = function(dt){
  */
 World.prototype.addSpring = function(s){
     this.springs.push(s);
+    this.addSpringEvent.spring = s;
+    this.emit(this.addSpringEvent);
 };
 
 /**
@@ -4879,6 +4951,8 @@ World.prototype.removeSpring = function(s){
 World.prototype.addBody = function(body){
     this.bodies.push(body);
     this.collidingBodies.push(body);
+    this.addBodyEvent.body = body;
+    this.emit(this.addBodyEvent);
 };
 
 /**
@@ -4989,6 +5063,6 @@ World.prototype.clear = function(){
 
 };
 
-},{"../solver/GSSolver":10,"../collision/NaiveBroadphase":11,"../objects/Shape":1,"../objects/Body":6,"../collision/Broadphase":7,"gl-matrix":15}]},{},[5])(5)
+},{"../solver/GSSolver":12,"../collision/NaiveBroadphase":13,"../objects/Shape":1,"../objects/Body":7,"../events/EventEmitter":4,"../collision/Broadphase":10,"gl-matrix":16}]},{},[6])(6)
 });
 ;
