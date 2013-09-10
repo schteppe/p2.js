@@ -33,6 +33,7 @@ function DistanceConstraint(bodyA,bodyB,distance,maxForce){
     normal.maxForce =  maxForce;
 
     // Update
+    // Should be appended to the .prototype
     this.update = function(){
         vec2.subtract(normal.ni, bodyB.position, bodyA.position);
         vec2.normalize(normal.ni,normal.ni);
@@ -40,4 +41,4 @@ function DistanceConstraint(bodyA,bodyB,distance,maxForce){
         vec2.scale(normal.rj, normal.ni, -distance*0.5);
     };
 }
-DistanceConstraint.prototype = new Constraint();
+DistanceConstraint.prototype = new Object(Constraint.prototype);

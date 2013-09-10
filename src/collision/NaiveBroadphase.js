@@ -1,5 +1,6 @@
 var Circle = require('../objects/Shape').Circle,
     Plane = require('../objects/Shape').Plane,
+    Particle = require('../objects/Shape').Particle,
     bp = require('../collision/Broadphase'),
     Broadphase = bp.Broadphase,
     glMatrix = require('gl-matrix'),

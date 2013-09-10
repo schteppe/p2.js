@@ -5,6 +5,7 @@ var GSSolver = require('../solver/GSSolver').GSSolver,
     Circle = require('../objects/Shape').Circle,
     Plane = require('../objects/Shape').Plane,
     Particle = require('../objects/Shape').Particle,
+    EventEmitter = require('../events/EventEmitter').EventEmitter,
     Body = require('../objects/Body').Body,
     bp = require('../collision/Broadphase'),
     Broadphase = bp.Broadphase;
@@ -25,12 +26,15 @@ function now(){
  *
  * @class World
  * @constructor
- * @param {Object}      [options]
- * @param {Solver}      options.solver Defaults to GSSolver.
- * @param {vec2}        options.gravity Defaults to [0,-9.78]
- * @param {Broadphase}  options.broadphase Defaults to NaiveBroadphase
+ * @param {Object}          [options]
+ * @param {Solver}          options.solver Defaults to GSSolver.
+ * @param {Float32Array}    options.gravity Defaults to [0,-9.78]
+ * @param {Broadphase}      options.broadphase Defaults to NaiveBroadphase
+ * @extends {EventEmitter}
  */
 function World(options){
+    EventEmitter.apply(this);
+
     options = options || {};
 
     /**
@@ -72,7 +76,7 @@ function World(options){
      * Gravity in the world. This is applied on all bodies in the beginning of each step().
      *
      * @property
-     * @type {vec2}
+     * @type {Float32Array}
      */
     this.gravity = options.gravity || vec2.fromValues(0, -9.78);
 
@@ -111,7 +115,21 @@ function World(options){
     // Id counters
     this._constraintIdCounter = 0;
     this._bodyIdCounter = 0;
+
+    // Event objects that are reused
+    this.postStepEvent = {
+        type : "postStep",
+    };
+    this.addBodyEvent = {
+        type : "addBody",
+        body : null
+    };
+    this.addSpringEvent = {
+        type : "addSpring",
+        body : null
+    };
 };
+World.prototype = new Object(EventEmitter.prototype);
 
 /**
  * Add a constraint to the simulation.
@@ -272,6 +290,8 @@ World.prototype.step = function(dt){
         t1 = now();
         that.lastStepTime = t1-t0;
     }
+
+    this.emit(this.postStepEvent);
 };
 
 /**
@@ -282,6 +302,8 @@ World.prototype.step = function(dt){
  */
 World.prototype.addSpring = function(s){
     this.springs.push(s);
+    this.addSpringEvent.spring = s;
+    this.emit(this.addSpringEvent);
 };
 
 /**
@@ -305,6 +327,8 @@ World.prototype.removeSpring = function(s){
 World.prototype.addBody = function(body){
     this.bodies.push(body);
     this.collidingBodies.push(body);
+    this.addBodyEvent.body = body;
+    this.emit(this.addBodyEvent);
 };
 
 /**
