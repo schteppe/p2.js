@@ -1,5 +1,4 @@
-var glMatrix = require("gl-matrix"),
-    vec2 = glMatrix.vec2;
+var vec2 = require('../math/vec2');
 
 exports.Body = Body;
 exports.Spring = Spring;

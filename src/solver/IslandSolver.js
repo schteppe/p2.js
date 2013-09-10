@@ -1,6 +1,6 @@
 var Solver = require('./Solver').Solver
 ,   ContactEquation = require('../constraints/ContactEquation').ContactEquation
-,   vec2 = require('gl-matrix').vec2
+,   vec2 = require('../math/vec2')
 ,   Body = require('../objects/Body').Body
 ,   STATIC = Body.STATIC
 

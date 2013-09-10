@@ -1,8 +1,5 @@
-var glMatrix = require('gl-matrix'),
-    glMatrixExtensions = require('../gl-matrix-extensions'),
-    vec2e = glMatrixExtensions.vec2,
-    vec2 = glMatrix.vec2,
-    mat2 = glMatrix.mat2;
+var vec2 = require('../math/vec2')
+,   mat2 = require('../math/mat2')
 
 var dist = vec2.create();
 var rot = mat2.create();
@@ -20,7 +17,7 @@ exports.checkCircleCircle = function(c1,c2,result){
 
 exports.checkCirclePlane = function(c,p,result){
     vec2.sub(dist,c.position,p.position);
-    vec2e.rotate(worldNormal,yAxis,p.angle);
+    vec2.rotate(worldNormal,yAxis,p.angle);
     if(vec2.dot(dist,worldNormal) <= c.shape.radius){
         result.push(c);
         result.push(p);
@@ -59,7 +56,7 @@ exports.nearphaseCirclePlane = function(c,p,result,oldContacts){
     contact.bj = c;
     var planeToCircle = nearphaseCirclePlane_planeToCircle;
     var temp = nearphaseCirclePlane_temp;
-    vec2e.rotate(contact.ni,yAxis,p.angle);
+    vec2.rotate(contact.ni,yAxis,p.angle);
 
     vec2.scale( contact.rj,contact.ni, -c.shape.radius);
 
@@ -80,7 +77,7 @@ function projectConvexOntoAxis(c,axis,result){
         value;
 
     // Convert the axis to local coords of the body
-    vec2e.rotate(localAxis, axis, c.angle);
+    vec2.rotate(localAxis, axis, c.angle);
 
     // Project the position of the body onto the axis - need to add this to the result
     var offset = vec2.dot(c.position, axis);
@@ -113,7 +110,7 @@ function findSeparatingAxis(c1,c2,sepAxis){
             vec2.subtract(edge, c.shape.vertices[i], c.shape.vertices[i-1]);
 
             // Get normal - just rotate 90 degrees since vertices are given in CCW
-            vec2e.rotate(normal, edge, -Math.PI / 2);
+            vec2.rotate(normal, edge, -Math.PI / 2);
             vec2.normalize(normal,normal);
 
             // Project hulls onto that normal
@@ -144,7 +141,7 @@ function findSeparatingAxis(c1,c2,sepAxis){
 function getClosestEdge(c,axis){
 
     // Convert the axis to local coords of the body
-    vec2e.rotate(localAxis, axis, c.angle);
+    vec2.rotate(localAxis, axis, c.angle);
 
     var closestEdge = -1;
     for(var i=1; i<c.shape.vertices.length; i++){
@@ -152,7 +149,7 @@ function getClosestEdge(c,axis){
         vec2.subtract(edge, c.shape.vertices[i], c.shape.vertices[i-1]);
 
         // Get normal - just rotate 90 degrees since vertices are given in CCW
-        vec2e.rotate(normal, edge, -Math.PI / 2);
+        vec2.rotate(normal, edge, -Math.PI / 2);
         vec2.normalize(normal,normal);
 
         var dot = vec2.dot(normal,axis);

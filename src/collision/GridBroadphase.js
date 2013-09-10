@@ -3,8 +3,7 @@ var Circle = require('../objects/Shape').Circle,
     Particle = require('../objects/Shape').Particle,
     bp = require('../collision/Broadphase'),
     Broadphase = bp.Broadphase,
-    glMatrix = require('gl-matrix'),
-    vec2 = glMatrix.vec2;
+    vec2 = require('../math/vec2');
 
 /**
  * Broadphase that uses axis-aligned bins.

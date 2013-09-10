@@ -1,6 +1,6 @@
 var Constraint = require('./Constraint').Constraint
 ,   ContactEquation = require('./ContactEquation').ContactEquation
-,   vec2 = require('gl-matrix').vec2
+,   vec2 = require('../math/vec2')
 
 exports.DistanceConstraint = DistanceConstraint;
 

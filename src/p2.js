@@ -18,7 +18,6 @@ exports.Solver =                require('./solver/Solver')                  .Sol
 exports.Spring =                require('./objects/Body')                   .Spring;
 exports.World =                 require('./world/World')                    .World;
 
-// Export gl-matrix. Why shouldn't we?
-var glMatrix = require('gl-matrix');
-exports.vec2 = glMatrix.vec2;
-exports.mat2 = glMatrix.mat2;
+// Export the gl-matrix stuff we already use internally. Why shouldn't we? It's already in the bundle.
+exports.vec2 = require('./math/vec2');
+exports.mat2 = require('./math/mat2');

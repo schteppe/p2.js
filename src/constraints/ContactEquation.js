@@ -1,8 +1,5 @@
 var Equation = require("./Equation").Equation,
-    glMatrix = require('gl-matrix'),
-    vec2 = glMatrix.vec2,
-    glMatrixExtensions = require('../gl-matrix-extensions'),
-    vec2e = glMatrixExtensions.vec2;
+    vec2 = require('../math/vec2');
 
 exports.ContactEquation = ContactEquation;
 
@@ -59,8 +56,8 @@ ContactEquation.prototype.computeB = function(a,b,h){
         n = this.ni;
 
     // Caluclate cross products
-    var rixn = this.rixn = vec2e.crossLength(ri,n);
-    var rjxn = this.rjxn = vec2e.crossLength(rj,n);
+    var rixn = this.rixn = vec2.crossLength(ri,n);
+    var rjxn = this.rjxn = vec2.crossLength(rj,n);
 
     // Calculate q = xj+rj -(xi+ri) i.e. the penetration vector
     vec2.set(penetrationVec,0,0);

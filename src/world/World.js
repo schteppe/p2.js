@@ -1,7 +1,6 @@
 var GSSolver = require('../solver/GSSolver').GSSolver,
     NaiveBroadphase = require('../collision/NaiveBroadphase').NaiveBroadphase,
-    glMatrix = require('gl-matrix'),
-    vec2 = glMatrix.vec2,
+    vec2 = require('../math/vec2'),
     Circle = require('../objects/Shape').Circle,
     Plane = require('../objects/Shape').Plane,
     Particle = require('../objects/Shape').Particle,
