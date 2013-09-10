@@ -109,8 +109,23 @@ function PixiDemo(){
         lineWidth = lineWidth || 1;
         color = typeof(color)=="undefined" ? 0xffffff : color;
         g.lineStyle(lineWidth, color, 1);
+        var M = 8;
+        var dx = restLength/M;
         g.moveTo(-restLength/2,0);
+        for(var i=0; i<M; i++){
+            var x = -restLength/2 + dx*i;
+            var y = 0;
+            if(i<=1 || i>=M-1 ){
+                // Do nothing
+            } else if(i % 2 === 0){
+                y -= 0.1*restLength;
+            } else {
+                y += 0.1*restLength;
+            }
+            g.lineTo(x,y);
+        }
         g.lineTo(restLength/2,0);
+
     }
 
     function init(){
@@ -132,7 +147,7 @@ function PixiDemo(){
         for(var i=0; i<that.springs.length; i++){
             var restLengthPixels = that.springs[i].restLength * pixelsPerLengthUnit;
             var sprite = new PIXI.Graphics();
-            drawSpring(sprite,restLengthPixels,0x000000,2);
+            drawSpring(sprite,restLengthPixels,0x000000,1);
             stage.addChild(sprite);
             springSprites.push(sprite);
         }
