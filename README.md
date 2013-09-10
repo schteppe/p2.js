@@ -70,7 +70,7 @@ setInterval(function(){
 | Particle  | -      | -     | -         | -        | -       | -        |
 
 ### Change log
-##### Not released yet
+##### 0.1
 
 * Added ```EventEmitter```
 * ```World``` now emits the following events: ```postStep```, ```addBody```, ```addSpring```

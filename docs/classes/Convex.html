@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/objects/Shape.js - p2.js</title>
+    <title>Convex - p2.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -120,78 +120,223 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: src/objects/Shape.js</h1>
+                        <h1>Convex Class</h1>
+<div class="box meta">
+    
 
-<div class="file">
-    <pre class="code prettyprint linenums">
-/**
- * Base class for shapes.
- * @class Shape
- * @constructor
- */
-exports.Shape = Shape;
-function Shape(){
+    
+        <div class="extends">
+            Extends <a href="../classes/Shape.html" class="crosslink">Shape</a>
+        </div>
+    
 
-};
+    
+        <div class="foundat">
+            Defined in: <a href="../files/src_objects_Shape.js.html#l49"><code>src&#x2F;objects&#x2F;Shape.js:49</code></a>
+        </div>
+    
 
-/**
- * Particle shape class.
- * @class Particle
- * @constructor
- * @extends Shape
- */
-exports.Particle = function(){
-    Shape.apply(this);
-};
+    
 
-/**
- * Circle shape class.
- * @class Circle
- * @extends Shape
- * @constructor
- * @param {number} radius
- */
-exports.Circle = function(radius){
-    Shape.apply(this);
+    
+</div>
 
-    /**
-     * The radius of the circle.
-     * @property radius
-     * @type {number}
-     */
-    this.radius = radius || 1;
-};
 
-/**
- * Plane shape class. The plane is facing in the Y direction.
- * @class Plane
- * @extends Shape
- * @constructor
- */
-exports.Plane = function(){
-    Shape.apply(this);
-};
 
-/**
- * Convex shape class.
- * @class Convex
- * @constructor
- * @extends Shape
- * @param {Array} vertices An array of Float32Array vertices that span this shape. Vertices are given in counter-clockwise (CCW) direction.
- */
-exports.Convex = Convex;
-function Convex(vertices){
-    Shape.apply(this);
+<div class="box intro">
+    <p>Convex shape class.</p>
+</div>
 
-    /**
-     * Vertices defined in the local frame.
-     * @property vertices
-     * @type {Array}
-     */
-    this.vertices = vertices;
-};
 
-    </pre>
+    <div class="constructor">
+        <h2>Constructor</h2>
+        <div id="method_Convex" class="method item">
+    <h3 class="name"><code>Convex</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>vertices</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Shape.js.html#l49"><code>src&#x2F;objects&#x2F;Shape.js:49</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">vertices</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>An array of Float32Array vertices that span this shape. Vertices are given in counter-clockwise (CCW) direction.</p>
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+    </div>
+
+
+<div id="classdocs" class="tabview">
+    <ul class="api-class-tabs">
+        <li class="api-class-tab index"><a href="#index">Index</a></li>
+
+        
+        
+            <li class="api-class-tab properties"><a href="#properties">Properties</a></li>
+        
+        
+        
+    </ul>
+
+    <div>
+        <div id="index" class="api-class-tabpanel index">
+            <h2 class="off-left">Item Index</h2>
+
+            
+
+            
+                <div class="index-section properties">
+                    <h3>Properties</h3>
+
+                    <ul class="index-list properties extends">
+                        
+                            <li class="index-item property">
+                                <a href="#property_vertices">vertices</a>
+
+                                
+                                
+                            </li>
+                        
+                    </ul>
+                </div>
+            
+
+            
+
+            
+        </div>
+
+        
+
+        
+            <div id="properties" class="api-class-tabpanel">
+                <h2 class="off-left">Properties</h2>
+
+                
+                    <div id="property_vertices" class="property item">
+    <h3 class="name"><code>vertices</code></h3>
+    <span class="type">Array</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Shape.js.html#l60"><code>src&#x2F;objects&#x2F;Shape.js:60</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Vertices defined in the local frame.</p>
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+            </div>
+        
+
+        
+
+        
+    </div>
 </div>
 
                     </div>

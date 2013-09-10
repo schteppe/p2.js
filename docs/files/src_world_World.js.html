@@ -51,6 +51,8 @@
             
                 <li><a href="../classes/ContactEquation.html">ContactEquation</a></li>
             
+                <li><a href="../classes/Convex.html">Convex</a></li>
+            
                 <li><a href="../classes/DistanceConstraint.html">DistanceConstraint</a></li>
             
                 <li><a href="../classes/Equation.html">Equation</a></li>
@@ -129,6 +131,7 @@ var GSSolver = require(&#x27;../solver/GSSolver&#x27;).GSSolver,
     Circle = require(&#x27;../objects/Shape&#x27;).Circle,
     Plane = require(&#x27;../objects/Shape&#x27;).Plane,
     Particle = require(&#x27;../objects/Shape&#x27;).Particle,
+    EventEmitter = require(&#x27;../events/EventEmitter&#x27;).EventEmitter,
     Body = require(&#x27;../objects/Body&#x27;).Body,
     bp = require(&#x27;../collision/Broadphase&#x27;),
     Broadphase = bp.Broadphase;
@@ -149,12 +152,15 @@ function now(){
  *
  * @class World
  * @constructor
- * @param {Object}      [options]
- * @param {Solver}      options.solver Defaults to GSSolver.
- * @param {Float32Array}        options.gravity Defaults to [0,-9.78]
- * @param {Broadphase}  options.broadphase Defaults to NaiveBroadphase
+ * @param {Object}          [options]
+ * @param {Solver}          options.solver Defaults to GSSolver.
+ * @param {Float32Array}    options.gravity Defaults to [0,-9.78]
+ * @param {Broadphase}      options.broadphase Defaults to NaiveBroadphase
+ * @extends {EventEmitter}
  */
 function World(options){
+    EventEmitter.apply(this);
+
     options = options || {};
 
     /**
@@ -235,7 +241,21 @@ function World(options){
     // Id counters
     this._constraintIdCounter = 0;
     this._bodyIdCounter = 0;
+
+    // Event objects that are reused
+    this.postStepEvent = {
+        type : &quot;postStep&quot;,
+    };
+    this.addBodyEvent = {
+        type : &quot;addBody&quot;,
+        body : null
+    };
+    this.addSpringEvent = {
+        type : &quot;addSpring&quot;,
+        body : null
+    };
 };
+World.prototype = new Object(EventEmitter.prototype);
 
 /**
  * Add a constraint to the simulation.
@@ -396,6 +416,8 @@ World.prototype.step = function(dt){
         t1 = now();
         that.lastStepTime = t1-t0;
     }
+
+    this.emit(this.postStepEvent);
 };
 
 /**
@@ -406,6 +428,8 @@ World.prototype.step = function(dt){
  */
 World.prototype.addSpring = function(s){
     this.springs.push(s);
+    this.addSpringEvent.spring = s;
+    this.emit(this.addSpringEvent);
 };
 
 /**
@@ -429,6 +453,8 @@ World.prototype.removeSpring = function(s){
 World.prototype.addBody = function(body){
     this.bodies.push(body);
     this.collidingBodies.push(body);
+    this.addBodyEvent.body = body;
+    this.emit(this.addBodyEvent);
 };
 
 /**

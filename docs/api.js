@@ -6,6 +6,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "Circle",
         "Constraint",
         "ContactEquation",
+        "Convex",
         "DistanceConstraint",
         "Equation",
         "GSSolver",

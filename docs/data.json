@@ -85,7 +85,8 @@
                 "Shape": 1,
                 "Particle": 1,
                 "Circle": 1,
-                "Plane": 1
+                "Plane": 1,
+                "Convex": 1
             },
             "fors": {},
             "namespaces": {}
@@ -148,7 +149,7 @@
             "plugin_for": [],
             "extension_for": [],
             "file": "src/collision/Broadphase.js",
-            "line": 74,
+            "line": 195,
             "description": "Base class for broadphase implementations.",
             "is_constructor": 1
         },
@@ -207,7 +208,7 @@
             "plugin_for": [],
             "extension_for": [],
             "file": "src/collision/NaiveBroadphase.js",
-            "line": 8,
+            "line": 9,
             "description": "Naive broadphase implementation. Does N^2 tests.",
             "is_constructor": 1,
             "extends": "Broadphase"
@@ -468,7 +469,7 @@
             "plugin_for": [],
             "extension_for": [],
             "file": "src/objects/Shape.js",
-            "line": 8,
+            "line": 11,
             "description": "Particle shape class.",
             "is_constructor": 1,
             "extends": "Shape"
@@ -482,7 +483,7 @@
             "plugin_for": [],
             "extension_for": [],
             "file": "src/objects/Shape.js",
-            "line": 18,
+            "line": 21,
             "description": "Circle shape class.",
             "extends": "Shape",
             "is_constructor": 1,
@@ -503,10 +504,31 @@
             "plugin_for": [],
             "extension_for": [],
             "file": "src/objects/Shape.js",
-            "line": 36,
+            "line": 39,
             "description": "Plane shape class. The plane is facing in the Y direction.",
             "extends": "Shape",
             "is_constructor": 1
+        },
+        "Convex": {
+            "name": "Convex",
+            "shortname": "Convex",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/objects/Shape.js",
+            "line": 49,
+            "description": "Convex shape class.",
+            "is_constructor": 1,
+            "extends": "Shape",
+            "params": [
+                {
+                    "name": "vertices",
+                    "description": "An array of Float32Array vertices that span this shape. Vertices are given in counter-clockwise (CCW) direction.",
+                    "type": "Array"
+                }
+            ]
         },
         "GSSolver": {
             "name": "GSSolver",
@@ -613,7 +635,7 @@
             "plugin_for": [],
             "extension_for": [],
             "file": "src/world/World.js",
-            "line": 23,
+            "line": 24,
             "description": "The dynamics world, where all bodies and constraints lives.",
             "is_constructor": 1,
             "params": [
@@ -640,7 +662,8 @@
                         }
                     ]
                 }
-            ]
+            ],
+            "extends": "{EventEmitter}"
         },
         "vec2": {
             "name": "vec2",
@@ -658,7 +681,7 @@
     "classitems": [
         {
             "file": "src/collision/Broadphase.js",
-            "line": 83,
+            "line": 204,
             "description": "Get all potential intersecting body pairs.",
             "itemtype": "method",
             "name": "getCollisionPairs",
@@ -897,12 +920,21 @@
         },
         {
             "file": "src/objects/Shape.js",
-            "line": 28,
+            "line": 31,
             "description": "The radius of the circle.",
             "itemtype": "property",
             "name": "radius",
             "type": "{number}",
             "class": "Circle"
+        },
+        {
+            "file": "src/objects/Shape.js",
+            "line": 60,
+            "description": "Vertices defined in the local frame.",
+            "itemtype": "property",
+            "name": "vertices",
+            "type": "{Array}",
+            "class": "Convex"
         },
         {
             "file": "src/solver/GSSolver.js",
@@ -1089,7 +1121,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 36,
+            "line": 40,
             "description": "All springs in the world.",
             "itemtype": "property",
             "name": "springs",
@@ -1098,7 +1130,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 44,
+            "line": 48,
             "description": "All bodies in the world.",
             "itemtype": "property",
             "name": "bodies",
@@ -1107,7 +1139,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 52,
+            "line": 56,
             "description": "The solver used to satisfy constraints and contacts.",
             "itemtype": "property",
             "name": "solver",
@@ -1116,7 +1148,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 60,
+            "line": 64,
             "description": "The contacts in the world that were generated during the last step().",
             "itemtype": "property",
             "name": "contacts",
@@ -1125,7 +1157,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 71,
+            "line": 75,
             "description": "Gravity in the world. This is applied on all bodies in the beginning of each step().",
             "itemtype": "property",
             "name": "",
@@ -1134,7 +1166,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 79,
+            "line": 83,
             "description": "Whether to do timing measurements during the step() or not.",
             "itemtype": "property",
             "name": "doPofiling",
@@ -1143,7 +1175,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 87,
+            "line": 91,
             "description": "How many millisecconds the last step() took. This is updated each step if .doProfiling is set to true.",
             "itemtype": "property",
             "name": "lastStepTime",
@@ -1152,7 +1184,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 95,
+            "line": 99,
             "description": "The broadphase algorithm to use.",
             "itemtype": "property",
             "name": "broadphase",
@@ -1161,7 +1193,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 103,
+            "line": 107,
             "description": "User-added constraints.",
             "itemtype": "property",
             "name": "constraints",
@@ -1170,7 +1202,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 116,
+            "line": 134,
             "description": "Add a constraint to the simulation.",
             "itemtype": "method",
             "name": "addConstraint",
@@ -1185,7 +1217,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 127,
+            "line": 145,
             "description": "Removes a constraint",
             "itemtype": "method",
             "name": "removeConstraint",
@@ -1200,7 +1232,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 147,
+            "line": 165,
             "description": "Step the physics world forward in time.",
             "itemtype": "method",
             "name": "step",
@@ -1220,7 +1252,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 277,
+            "line": 297,
             "description": "Add a spring to the simulation",
             "itemtype": "method",
             "name": "addSpring",
@@ -1235,7 +1267,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 287,
+            "line": 309,
             "description": "Remove a spring",
             "itemtype": "method",
             "name": "removeSpring",
@@ -1250,7 +1282,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 299,
+            "line": 321,
             "description": "Add a body to the simulation",
             "itemtype": "method",
             "name": "addBody",
@@ -1265,7 +1297,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 310,
+            "line": 334,
             "description": "Remove a body from the simulation",
             "itemtype": "method",
             "name": "removeBody",
@@ -1280,7 +1312,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 322,
+            "line": 346,
             "description": "Convert the world to a JSON-serializable Object.",
             "itemtype": "method",
             "name": "toJSON",
@@ -1292,7 +1324,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 356,
+            "line": 380,
             "description": "Load a scene from a serialized state.",
             "itemtype": "method",
             "name": "fromJSON",
@@ -1311,7 +1343,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 394,
+            "line": 418,
             "description": "Resets the World, removes all bodies and constraints.",
             "itemtype": "method",
             "name": "clear",

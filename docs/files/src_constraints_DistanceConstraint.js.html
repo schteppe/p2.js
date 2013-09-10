@@ -51,6 +51,8 @@
             
                 <li><a href="../classes/ContactEquation.html">ContactEquation</a></li>
             
+                <li><a href="../classes/Convex.html">Convex</a></li>
+            
                 <li><a href="../classes/DistanceConstraint.html">DistanceConstraint</a></li>
             
                 <li><a href="../classes/Equation.html">Equation</a></li>
@@ -165,7 +167,7 @@ function DistanceConstraint(bodyA,bodyB,distance,maxForce){
         vec2.scale(normal.rj, normal.ni, -distance*0.5);
     };
 }
-DistanceConstraint.prototype = new Constraint();
+DistanceConstraint.prototype = new Object(Constraint.prototype);
 
     </pre>
 </div>
