@@ -1,60 +1,64 @@
+function extend(a,b){
+    for(var key in b)
+        a[key] = b[key];
+}
+
 
 // shim layer with setTimeout fallback
-var requestAnimFrame = window.requestAnimationFrame       ||
-                       window.webkitRequestAnimationFrame ||
-                       window.mozRequestAnimationFrame    ||
-                       window.oRequestAnimationFrame      ||
-                       window.msRequestAnimationFrame     ||
-                       function( callback ){
-                            window.setTimeout(callback, 1000 / 60);
-                       };
+var requestAnimationFrame =     window.requestAnimationFrame       ||
+                                window.webkitRequestAnimationFrame ||
+                                window.mozRequestAnimationFrame    ||
+                                window.oRequestAnimationFrame      ||
+                                window.msRequestAnimationFrame     ||
+                                function( callback ){
+                                    window.setTimeout(callback, 1000 / 60);
+                                };
 
-var vec2 = p2.vec2;
+var vec2 =      p2.vec2;
+var Spring =    p2.Spring;
+var Body =      p2.Body;
+var EventDispatcher = p2.EventDispatcher;
 
-function Demo(){
-    var world = this.world = new p2.World({ doProfiling: true });
+/**
+ * Base class for rendering of a scene.
+ * @class Demo
+ * @constructor
+ */
+function Demo(world){
     var that = this;
+
+    this.world = world;
+
     this.bodies=[];
     this.springs=[];
     this.paused = false;
     this.timeStep = 1/60;
-    this.addVisual = function(body){
-        var buf, s=body.shape;
-        if(body instanceof p2.Spring){
-            that.springs.push(body);
-        } else
-            that.bodies.push(body);
-    };
-    this.createStats = function(){
-        var stepDiv = document.createElement("div");
-        var vecsDiv = document.createElement("div");
-        var matsDiv = document.createElement("div");
-        var contactsDiv = document.createElement("div");
-        stepDiv.setAttribute("id","step");
-        vecsDiv.setAttribute("id","vecs");
-        matsDiv.setAttribute("id","mats");
-        contactsDiv.setAttribute("id","contacts");
-        document.body.appendChild(stepDiv);
-        document.body.appendChild(vecsDiv);
-        document.body.appendChild(matsDiv);
-        document.body.appendChild(contactsDiv);
-    };
 
-    var sum = 0;
-    var N = 100;
-    var Nsummed = 0;
-    var average = -1;
-    this.updateStats = function(){
-        sum += world.lastStepTime;
-        Nsummed++;
-        if(Nsummed == N){
-            average = sum/N;
-            sum = 0.0;
-            Nsummed = 0;
-        }
-        document.getElementById("step").innerHTML = "Physics step: "+(Math.round(average*100)/100)+"ms";
-        document.getElementById("contacts").innerHTML = "Contacts: "+world.contacts.length;
-    }
+    this.stats_sum = 0;
+    this.stats_N = 100;
+    this.stats_Nsummed = 0;
+    this.stats_average = -1;
+
+    this.w = $(window).width();
+    this.h = $(window).height();
+
+    this.init();
+    this.resize(this.w,this.h);
+    this.render();
+    this.createStats();
+
+    world.on("postStep",function(e){
+        that.render();
+        that.updateStats();
+    }).on("addBody",function(e){
+        that.addVisual(e.body);
+    }).on("addSpring",function(e){
+        that.addVisual(e.spring);
+    });
+
+    $(window).resize(function(){
+        that.resize($(window).width(), $(window).height());
+    });
 
     document.addEventListener('keypress',function(e){
         if(e.keyCode){
@@ -67,156 +71,82 @@ function Demo(){
     });
 }
 
-function PixiDemo(){
-    Demo.call(this);
-    var world = this.world;
+/**
+ * Update stats
+ */
+Demo.prototype.updateStats = function(){
+    this.stats_sum += this.world.lastStepTime;
+    this.stats_Nsummed++;
+    if(this.stats_Nsummed == this.stats_N){
+        this.stats_average = this.stats_sum/this.stats_N;
+        this.stats_sum = 0.0;
+        this.stats_Nsummed = 0;
+    }
+    this.stats_stepdiv.innerHTML = "Physics step: "+(Math.round(this.stats_average*100)/100)+"ms";
+    this.stats_contactsdiv.innerHTML = "Contacts: "+this.world.contacts.length;
+};
 
-    var pixelsPerLengthUnit = 128;
+/**
+ * Add an object to the demo
+ * @param  {mixed} obj Either Body or Spring
+ */
+Demo.prototype.addVisual = function(obj){
+    var buf, s=obj.shape;
+    if(obj instanceof Spring)   this.springs.push(obj);
+    else                        this.bodies.push(obj);
+    this.addRenderable(obj);
+};
 
-    var that = this,
-        w,h,
-        container,
-        renderer,
-        sprites=[],
-        springSprites=[],
-        stage;
+/**
+ * Create the container/divs for stats
+ */
+Demo.prototype.createStats = function(){
+    var stepDiv = document.createElement("div");
+    var vecsDiv = document.createElement("div");
+    var matsDiv = document.createElement("div");
+    var contactsDiv = document.createElement("div");
+    stepDiv.setAttribute("id","step");
+    vecsDiv.setAttribute("id","vecs");
+    matsDiv.setAttribute("id","mats");
+    contactsDiv.setAttribute("id","contacts");
+    document.body.appendChild(stepDiv);
+    document.body.appendChild(vecsDiv);
+    document.body.appendChild(matsDiv);
+    document.body.appendChild(contactsDiv);
+    this.stats_stepdiv = stepDiv;
+    this.stats_contactsdiv = contactsDiv;
+};
 
-    w = $(window).width();
-    h = $(window).height();
+/**
+ * Demo using Pixi.js as renderer
+ * @class PixiDemo
+ * @constructor
+ * @extends Demo
+ */
+function PixiDemo(world,options){
+    options = options || {};
 
-    this.createScene = function(createFunc){
-        createFunc(that.world);
-        init();
+    var settings = {
+        lineWidth : 2,
+        scrollFactor : 0.1,
+        pixelsPerLengthUnit : 128,
     };
+    extend(settings,options);
 
-    function drawCircle(g,x,y,radius,color,lineWidth){
-        lineWidth = lineWidth || 1;
-        color = color || 0xffffff;
-        g.lineStyle(lineWidth, 0x000000, 1);
-        g.beginFill(color, 1.0);
-        g.drawCircle(0, 0, radius);
-        g.endFill();
+    this.pixelsPerLengthUnit =  settings.pixelsPerLengthUnit;
+    this.lineWidth =            settings.lineWidth;
+    this.scrollFactor =         settings.scrollFactor;
 
-        // Dashed line from center to edge
-        /*var Ndashes = 4;
-        for(var j=0; j<Ndashes; j++){
-            g.moveTo(0,-j/Ndashes*radius);
-            g.lineTo(0,-(j+0.5)/Ndashes*radius);
-        }*/
-    }
+    this.sprites = [],
+    this.springSprites = [];
 
-    function drawSpring(g,restLength,color,lineWidth){
-        lineWidth = lineWidth || 1;
-        color = typeof(color)=="undefined" ? 0xffffff : color;
-        g.lineStyle(lineWidth, color, 1);
-        var M = 12;
-        var dx = restLength/M;
-        g.moveTo(-restLength/2,0);
-        for(var i=1; i<M; i++){
-            var x = -restLength/2 + dx*i;
-            var y = 0;
-            if(i<=1 || i>=M-1 ){
-                // Do nothing
-            } else if(i % 2 === 0){
-                y -= 0.1*restLength;
-            } else {
-                y += 0.1*restLength;
-            }
-            g.lineTo(x,y);
-        }
-        g.lineTo(restLength/2,0);
+    Demo.call(this,world);
 
-    }
-
-    function init(){
-
-        renderer = PIXI.autoDetectRenderer(w, h);
-        stage = new PIXI.DisplayObjectContainer();
-        container = new PIXI.Stage(0xFFFFFF,true);
-
-        document.body.appendChild(renderer.view);
-
-        for(var i=0; i<that.bodies.length; i++){
-            var radiusPixels = that.bodies[i].shape.radius * pixelsPerLengthUnit;
-            var sprite = new PIXI.Graphics();
-            drawCircle(sprite,0,0,radiusPixels,0xFFFFFF,2);
-            stage.addChild(sprite);
-            sprites.push(sprite);
-        }
-
-        for(var i=0; i<that.springs.length; i++){
-            var restLengthPixels = that.springs[i].restLength * pixelsPerLengthUnit;
-            var sprite = new PIXI.Graphics();
-            drawSpring(sprite,restLengthPixels,0x000000,1);
-            stage.addChild(sprite);
-            springSprites.push(sprite);
-        }
-
-        container.addChild(stage);
-        stage.position.x = -w/2; // center at origin
-        stage.position.y = -h/2;
-
-        that.createStats();
-
-        resize();
-        requestAnimFrame(update);
-    }
-
-    function resize(){
-        w = $(window).width();
-        h = $(window).height();
-        renderer.resize(w, h);
-    }
-
-    function update(){
-        if(!that.paused){
-            world.step(that.timeStep);
-        }
-
-        render();
-        that.updateStats();
-    }
-
-    var X = vec2.fromValues(1,0);
-    var distVec = vec2.fromValues(0,0);
-    function render(){
-
-        // Update body transforms
-        for(var i=0; i<that.bodies.length; i++){
-            var b = that.bodies[i],
-                s = sprites[i];
-            s.position.x = w - b.position[0] * pixelsPerLengthUnit;
-            s.position.y = h - b.position[1] * pixelsPerLengthUnit;
-            s.rotation = b.angle;
-        }
-
-        // Update spring transforms
-        for(var i=0; i<that.springs.length; i++){
-            var s = that.springs[i],
-                sprite = springSprites[i],
-                bA = s.bodyA,
-                bB = s.bodyB;
-            sprite.scale.y = 1;
-            if(bA.position[1] < bB.position[1]){
-                var tmp = bA;
-                bA = bB;
-                bB = tmp;
-                sprite.scale.y = -1;
-            }
-            sprite.position.x = ( ( w - bA.position[0] * pixelsPerLengthUnit ) + ( w - bB.position[0] * pixelsPerLengthUnit ) ) / 2;
-            sprite.position.y = ( ( h - bA.position[1] * pixelsPerLengthUnit ) + ( h - bB.position[1] * pixelsPerLengthUnit ) ) / 2;
-            distVec[0] = ( w - bA.position[0] * pixelsPerLengthUnit ) - ( w - bB.position[0] * pixelsPerLengthUnit );
-            distVec[1] = ( h - bA.position[1] * pixelsPerLengthUnit ) - ( h - bB.position[1] * pixelsPerLengthUnit );
-            sprite.rotation = -Math.acos( vec2.dot(X, distVec) / vec2.length(distVec) );
-            sprite.scale.x = vec2.length(distVec) / (s.restLength * pixelsPerLengthUnit);
-        }
-
-        renderer.render(container);
-        requestAnimFrame(update);
-    }
+    var that = this;
 
     var lastX, lastY, startX, startY, down=false;
     $(document).mousedown(function(e){
+        var stage = that.stage;
         lastX = e.clientX;
         lastY = e.clientY;
         startX = stage.position.x;
@@ -224,15 +154,16 @@ function PixiDemo(){
         down = true;
     }).mousemove(function(e){
         if(down){
-            stage.position.x = e.clientX-lastX+startX;
-            stage.position.y = e.clientY-lastY+startY;
+            that.stage.position.x = e.clientX-lastX+startX;
+            that.stage.position.y = e.clientY-lastY+startY;
         }
     }).mouseup(function(e){
         down = false;
     });
 
-    var scrollFactor = 0.1;
     $(window).bind('mousewheel', function(e){
+        var scrollFactor = that.scrollFactor,
+            stage = that.stage;
         if (e.originalEvent.wheelDelta >= 0){
             // Zoom in
             stage.scale.x *= (1+scrollFactor);
@@ -248,4 +179,129 @@ function PixiDemo(){
         }
         stage.updateTransform();
     });
+};
+PixiDemo.prototype = new Object(Demo.prototype);
+
+/**
+ * Draw a circle onto a graphics object
+ * @method drawCircle
+ * @static
+ * @param  {PIXI.Graphics} g
+ * @param  {Number} x
+ * @param  {Number} y
+ * @param  {Number} radius
+ * @param  {Number} color
+ * @param  {Number} lineWidth
+ */
+PixiDemo.drawCircle = function(g,x,y,radius,color,lineWidth){
+    lineWidth = lineWidth || 1;
+    color = color || 0xffffff;
+    g.lineStyle(lineWidth, 0x000000, 1);
+    g.beginFill(color, 1.0);
+    g.drawCircle(0, 0, radius);
+    g.endFill();
+
+    // Dashed line from center to edge
+    /*var Ndashes = 4;
+    for(var j=0; j<Ndashes; j++){
+        g.moveTo(0,-j/Ndashes*radius);
+        g.lineTo(0,-(j+0.5)/Ndashes*radius);
+    }*/
+};
+
+PixiDemo.drawSpring = function(g,restLength,color,lineWidth){
+    lineWidth = lineWidth || 1;
+    color = typeof(color)=="undefined" ? 0xffffff : color;
+    g.lineStyle(lineWidth, color, 1);
+    var M = 12;
+    var dx = restLength/M;
+    g.moveTo(-restLength/2,0);
+    for(var i=1; i<M; i++){
+        var x = -restLength/2 + dx*i;
+        var y = 0;
+        if(i<=1 || i>=M-1 ){
+            // Do nothing
+        } else if(i % 2 === 0){
+            y -= 0.1*restLength;
+        } else {
+            y += 0.1*restLength;
+        }
+        g.lineTo(x,y);
+    }
+    g.lineTo(restLength/2,0);
+};
+
+var X = vec2.fromValues(1,0);
+var distVec = vec2.fromValues(0,0);
+PixiDemo.prototype.render = function(){
+    var w = this.w,
+        h = this.h,
+        pixelsPerLengthUnit = this.pixelsPerLengthUnit,
+        springSprites = this.springSprites,
+        sprites = this.sprites;
+
+    // Update body transforms
+    for(var i=0; i<this.bodies.length; i++){
+        var b = this.bodies[i],
+            s = this.sprites[i];
+        s.position.x = w - b.position[0] * pixelsPerLengthUnit;
+        s.position.y = h - b.position[1] * pixelsPerLengthUnit;
+        s.rotation = b.angle;
+    }
+
+    // Update spring transforms
+    for(var i=0; i<this.springs.length; i++){
+        var s = this.springs[i],
+            sprite = springSprites[i],
+            bA = s.bodyA,
+            bB = s.bodyB;
+        sprite.scale.y = 1;
+        if(bA.position[1] < bB.position[1]){
+            var tmp = bA;
+            bA = bB;
+            bB = tmp;
+            sprite.scale.y = -1;
+        }
+        sprite.position.x = ( ( w - bA.position[0] * pixelsPerLengthUnit ) + ( w - bB.position[0] * pixelsPerLengthUnit ) ) / 2;
+        sprite.position.y = ( ( h - bA.position[1] * pixelsPerLengthUnit ) + ( h - bB.position[1] * pixelsPerLengthUnit ) ) / 2;
+        distVec[0] = ( w - bA.position[0] * pixelsPerLengthUnit ) - ( w - bB.position[0] * pixelsPerLengthUnit );
+        distVec[1] = ( h - bA.position[1] * pixelsPerLengthUnit ) - ( h - bB.position[1] * pixelsPerLengthUnit );
+        sprite.rotation = -Math.acos( vec2.dot(X, distVec) / vec2.length(distVec) );
+        sprite.scale.x = vec2.length(distVec) / (s.restLength * pixelsPerLengthUnit);
+    }
+
+    this.renderer.render(this.container);
 }
+
+PixiDemo.prototype.init = function(){
+    var w = this.w,
+        h = this.h;
+
+    this.renderer = PIXI.autoDetectRenderer(w, h);
+    var stage = this.stage = new PIXI.DisplayObjectContainer();
+    this.container = new PIXI.Stage(0xFFFFFF,true);
+
+    document.body.appendChild(this.renderer.view);
+
+    this.container.addChild(stage);
+    stage.position.x = -w/2; // center at origin
+    stage.position.y = -h/2;
+}
+
+PixiDemo.prototype.addRenderable = function(obj){
+    var sprite = new PIXI.Graphics();
+    if(obj instanceof Body){
+        var radiusPixels = obj.shape.radius * this.pixelsPerLengthUnit;
+        PixiDemo.drawCircle(sprite,0,0,radiusPixels,0xFFFFFF,this.lineWidth);
+        this.sprites.push(sprite);
+    } else if(obj instanceof Spring){
+        var restLengthPixels = obj.restLength * this.pixelsPerLengthUnit;
+        PixiDemo.drawSpring(sprite,restLengthPixels,0x000000,this.lineWidth);
+        this.springSprites.push(sprite);
+    }
+    this.stage.addChild(sprite);
+};
+
+PixiDemo.prototype.resize = function(w,h){
+    this.renderer.resize(w, h);
+};

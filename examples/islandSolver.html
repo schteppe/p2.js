@@ -6,58 +6,61 @@
     <script src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
     <script src="pixi.js"></script>
     <script src="demo.js"></script>
-    <script src="three.js"></script>
     <link href="demo.css" rel="stylesheet"/>
 </head>
 <body>
     <script>
 
-        var demo = new PixiDemo();
-
-        var parallel = true,
-            N = 10,  // Number of circles in each rope
-            M = 10, // Number of ropes
-            timeStep = 1/60,
-            r = 0.2,
-            iter = N,
-            subsolver = new p2.GSSolver();
-
-        demo.createScene(function(world){
-            p2.vec2.set(world.gravity,0,-15);
-            if(parallel){
-                world.solver = new p2.IslandSolver(subsolver);
-                subsolver.setSpookParams(1e50,3);
-                subsolver.iterations = iter;
-            } else {
-                world.solver.setSpookParams(1e50,3);
-                world.solver.iterations = iter;
-            }
-
-            // Create circle ropes
-            for(var j=0; j<M; j++){
-                var shape = new p2.Circle(r);
-                var lastBody;
-                for(var i=N; i>=0; i--){
-                    var x = 0;
-                    var y = (N-i)*r*2.1;
-                    var p = new p2.Body({
-                        mass: i==0 ? 0 : 1,
-                        shape: shape,
-                        position: p2.vec2.fromValues(x+(j-0.5)*r*10, y)
-                    });
-                    if(lastBody){
-                        var c = new p2.DistanceConstraint(p,lastBody, Math.abs(p.position[1]-lastBody.position[1]));
-                        world.addConstraint(c);
-                    } else {
-                        p2.vec2.set(p.velocity,1*i,0);
-                    }
-                    lastBody = p;
-                    world.addBody(p);
-                    demo.addVisual(p);
-                }
-                lastBody = null;
-            }
+        var world = new p2.World({
+            doProfiling : true,
+            gravity : [0,-15],
         });
+
+        var demo = new PixiDemo(world);
+
+        var N = 10,                         // Number of circles in each rope
+            M = 10,                         // Number of ropes
+            r = 0.1,                        // Circle radius
+            subsolver = new p2.GSSolver();  // Solver to use in each subsystem
+
+        world.solver = new p2.IslandSolver(subsolver);
+        subsolver.setSpookParams(1e7,3);
+        subsolver.tolerance = 0.1;
+        subsolver.iterations = N;
+
+        // Create circle ropes
+        for(var j=0; j<M; j++){
+            var shape = new p2.Circle(r);
+            var lastBody;
+            for(var i=N; i>=0; i--){
+                var x = (j+0.5-M/2)*r*8;
+                var y = (N/2-i)*r*2.1;
+                var p = new p2.Body({
+                    mass: i==0 ? 0 : 1,
+                    shape: shape,
+                    position: [x, y]
+                });
+                if(lastBody){
+                    var dist = Math.abs(p.position[1]-lastBody.position[1]);
+                    var c = new p2.DistanceConstraint(p,lastBody, dist);
+                    world.addConstraint(c);
+                } else {
+                    p.velocity[0] = 1*i;
+                }
+                lastBody = p;
+                world.addBody(p);
+                demo.addVisual(p);
+            }
+            lastBody = null;
+        }
+
+        function update(){
+            if(!demo.paused)
+                world.step(1/60);
+            requestAnimationFrame(update);
+        }
+        requestAnimationFrame(update);
+
     </script>
 </body>
 </html>

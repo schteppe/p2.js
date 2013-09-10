@@ -41,4 +41,4 @@ function DistanceConstraint(bodyA,bodyB,distance,maxForce){
         vec2.scale(normal.rj, normal.ni, -distance*0.5);
     };
 }
-DistanceConstraint.prototype = new Constraint();
+DistanceConstraint.prototype = new Object(Constraint.prototype);
