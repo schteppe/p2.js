@@ -109,10 +109,10 @@ function PixiDemo(){
         lineWidth = lineWidth || 1;
         color = typeof(color)=="undefined" ? 0xffffff : color;
         g.lineStyle(lineWidth, color, 1);
-        var M = 8;
+        var M = 12;
         var dx = restLength/M;
         g.moveTo(-restLength/2,0);
-        for(var i=0; i<M; i++){
+        for(var i=1; i<M; i++){
             var x = -restLength/2 + dx*i;
             var y = 0;
             if(i<=1 || i>=M-1 ){
@@ -196,10 +196,12 @@ function PixiDemo(){
                 sprite = springSprites[i],
                 bA = s.bodyA,
                 bB = s.bodyB;
+            sprite.scale.y = 1;
             if(bA.position[1] < bB.position[1]){
                 var tmp = bA;
                 bA = bB;
                 bB = tmp;
+                sprite.scale.y = -1;
             }
             sprite.position.x = ( ( w - bA.position[0] * pixelsPerLengthUnit ) + ( w - bB.position[0] * pixelsPerLengthUnit ) ) / 2;
             sprite.position.y = ( ( h - bA.position[1] * pixelsPerLengthUnit ) + ( h - bB.position[1] * pixelsPerLengthUnit ) ) / 2;
@@ -244,6 +246,7 @@ function PixiDemo(){
             stage.position.x -= (scrollFactor) * (stage.position.x - e.clientX);
             stage.position.y -= (scrollFactor) * (stage.position.y - e.clientY);
         }
+        stage.updateTransform();
     });
 }
 
