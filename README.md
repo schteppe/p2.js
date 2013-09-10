@@ -62,16 +62,18 @@ setInterval(function(){
 ### Supported collision pairs
 |           | Circle | Plane | Rectangle | Compound | Convex  | Particle |
 | :-------: |:------:|:-----:|:---------:|:--------:|:-------:|:--------:|
-| Circle    | Yes    | Yes   | todo      | todo     | todo    | todo     |
-| Plane     | -      | -     | todo      | todo     | todo    | todo     |
-| Rectangle | -      | -     | todo      | todo     | todo    | todo     |
-| Compound  | -      | -     | -         | todo     | todo    | todo     |
-| Convex    | -      | -     | -         | -        | todo    | todo     |
+| Circle    | Yes    | Yes   | (todo)    | (todo)   | (todo)  | (todo)   |
+| Plane     | -      | -     | (todo)    | (todo)   | (todo)  | (todo)   |
+| Rectangle | -      | -     | (todo)    | (todo)   | (todo)  | (todo)   |
+| Compound  | -      | -     | -         | (todo)   | (todo)  | (todo)   |
+| Convex    | -      | -     | -         | -        | (todo)  | (todo)   |
 | Particle  | -      | -     | -         | -        | -       | -        |
 
 ### Change log
 ##### Not released yet
 
+* Added ```EventEmitter```
+* ```World``` now emits the following events: ```postStep```, ```addBody```, ```addSpring```
 * Moved properties of ```Body.MotionState``` to ```Body```. Usage is now ```Body.STATIC```, ```Body.DYNAMIC```, ```Body.KINEMATIC```.
 * Removed asynchronous behaviour of ```World.step()```.
 
