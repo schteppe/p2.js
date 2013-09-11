@@ -19,13 +19,12 @@
         });
 
         var bodies = [];
-        var l = 10,
-            N=10,
+        var N=15,
             M=10,
             timeStep = 1/60,
-            k=500,
+            k=1000,
             d=10,
-            l=0.2,
+            l=0.35,
             m=1;
 
         // Create bodies
@@ -34,7 +33,7 @@
             bodies.push([]);
             for(var j=0; j<M; j++){
                 var p = new p2.Body({
-                    mass: j==M-1 ? 0 : m,
+                    mass: m,//j==M-1 ? 0 : m,
                     shape : circleShape,
                     position : [(i-N/2)*l*1.05, (j-M/2)*l*1.05]
                 });
@@ -70,6 +69,39 @@
                 world.addSpring(spring);
             }
         }
+
+        // Diagonal right/down
+        for(var i=0; i<N-1; i++){
+            for(var j=0; j<M-1; j++){
+                var a = bodies[i][j];
+                var b = bodies[i+1][j+1];
+                var spring = new p2.Spring(a,b, {
+                    stiffness: k,
+                    restLength: Math.sqrt(l*l + l*l)
+                });
+                world.addSpring(spring);
+            }
+        }
+        // Diagonal left/down
+        for(var i=0; i<N-1; i++){
+            for(var j=0; j<M-1; j++){
+                var a = bodies[i+1][j];
+                var b = bodies[i][j+1];
+                var spring = new p2.Spring(a,b, {
+                    stiffness: k,
+                    restLength: Math.sqrt(l*l + l*l)
+                });
+                world.addSpring(spring);
+            }
+        }
+
+        // Create ground
+        var planeShape = new p2.Plane();
+        var plane = new p2.Body({
+            shape: planeShape,
+            position : [0, (-M/2)*l*1.05 - 0.1]
+        });
+        world.addBody(plane);
 
         var demo = new PixiDemo(world,{
             lineWidth : 1

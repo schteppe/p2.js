@@ -24,6 +24,15 @@ exports.checkCirclePlane = function(c,p,result){
     }
 }
 
+exports.checkParticlePlane = function(particle,plane,result){
+    vec2.sub(dist, particle.position, plane.position);
+    vec2.rotate(worldNormal, yAxis, plane.angle);
+    if(vec2.dot(dist,worldNormal) < 0){
+        result.push(particle);
+        result.push(plane);
+    }
+}
+
 exports.checkCircleParticle = function(c,p,result){
     result.push(c);
     result.push(p);
@@ -31,7 +40,6 @@ exports.checkCircleParticle = function(c,p,result){
 
 // Generate contacts / do nearphase
 exports.nearphaseCircleCircle = function(c1,c2,result,oldContacts){
-    //var c = new p2.ContactEquation(c1,c2);
     var c = oldContacts.length ? oldContacts.pop() : new p2.ContactEquation(c1,c2);
     c.bi = c1;
     c.bj = c2;
@@ -39,6 +47,25 @@ exports.nearphaseCircleCircle = function(c1,c2,result,oldContacts){
     vec2.normalize(c.ni,c.ni);
     vec2.scale( c.ri,c.ni, c1.shape.radius);
     vec2.scale( c.rj,c.ni,-c2.shape.radius);
+    result.push(c);
+};
+
+exports.nearphaseParticlePlane = function(particle,plane,result,oldContacts){
+    var c = oldContacts.length ? oldContacts.pop() : new p2.ContactEquation(plane,particle);
+    c.bi = plane;
+    c.bj = particle;
+
+    vec2.sub(dist, particle.position, plane.position);
+    vec2.rotate(c.ni, yAxis, plane.angle);
+
+    vec2.scale( dist, c.ni, vec2.dot(dist, c.ni) );
+    // dist is now the distance vector in the normal direction
+
+    // ri is the particle position projected down onto the plane
+    vec2.copy( c.ri, particle.position);
+    vec2.sub( c.ri, c.ri, plane.position);
+    vec2.sub( c.ri, c.ri, dist);
+    vec2.set( c.rj, 0, 0 );
     result.push(c);
 };
 

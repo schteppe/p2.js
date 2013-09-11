@@ -1,3 +1,8 @@
+/**
+ * The vec2 object from glMatrix, extended with the functions documented here. See http://glmatrix.net for full doc.
+ * @class vec2
+ */
+
 // Only import vec2 from gl-matrix and skip the rest
 var vec2 = require('../../node_modules/gl-matrix/src/gl-matrix/vec2').vec2;
 
@@ -6,6 +11,7 @@ var vec2 = require('../../node_modules/gl-matrix/src/gl-matrix/vec2').vec2;
 /**
  * Get the vector x component
  * @method getX
+ * @static
  * @param  {Float32Array} a
  * @return {Number}
  */
@@ -16,6 +22,7 @@ vec2.getX = function(a){
 /**
  * Get the vector y component
  * @method getY
+ * @static
  * @param  {Float32Array} a
  * @return {Number}
  */
@@ -26,6 +33,7 @@ vec2.getY = function(a){
 /**
  * Make a cross product and only return the z component
  * @method crossLength
+ * @static
  * @param  {Float32Array} a
  * @param  {Float32Arrat} b
  * @return {Number}
@@ -37,6 +45,7 @@ vec2.crossLength = function(a,b){
 /**
  * Rotate a vector by an angle
  * @method rotate
+ * @static
  * @param  {Float32Array} out
  * @param  {Float32Array} a
  * @param  {Number} angle
