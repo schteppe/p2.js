@@ -64,3 +64,14 @@ function Convex(vertices){
      */
     this.vertices = vertices;
 };
+
+/**
+ * Line shape class. The line shape is along the x direction, and stretches from [-length/2, 0] to [length/2,0].
+ * @class Plane
+ * @extends Shape
+ * @constructor
+ */
+exports.Line = function(length){
+    Shape.apply(this);
+    this.length = length;
+};

@@ -60,14 +60,15 @@ setInterval(function(){
 ```
 
 ### Supported collision pairs
-|           | Circle | Plane | Rectangle | Compound | Convex  | Particle |
-| :-------: |:------:|:-----:|:---------:|:--------:|:-------:|:--------:|
-| Circle    | Yes    | Yes   | (todo)    | (todo)   | (todo)  | Yes      |
-| Plane     | -      | -     | (todo)    | (todo)   | (todo)  | Yes      |
-| Rectangle | -      | -     | (todo)    | (todo)   | (todo)  | (todo)   |
-| Compound  | -      | -     | -         | (todo)   | (todo)  | (todo)   |
-| Convex    | -      | -     | -         | -        | (todo)  | (todo)   |
-| Particle  | -      | -     | -         | -        | -       | -        |
+|           | Circle | Plane | Rectangle | Compound | Convex  | Particle | Line   |
+| :-------: |:------:|:-----:|:---------:|:--------:|:-------:|:--------:|:------:|
+| Circle    | Yes    | Yes   | (todo)    | (todo)   | (todo)  | Yes      | (todo) |
+| Plane     | -      | -     | (todo)    | (todo)   | (todo)  | Yes      | (todo) |
+| Rectangle | -      | -     | (todo)    | (todo)   | (todo)  | (todo)   | (todo) |
+| Compound  | -      | -     | -         | (todo)   | (todo)  | (todo)   | (todo) |
+| Convex    | -      | -     | -         | -        | (todo)  | (todo)   | (todo) |
+| Particle  | -      | -     | -         | -        | -       | -        | (todo) |
+| Line      | -      | -     | -         | -        | -       | -        | (todo) |
 
 ### Change log
 ##### Current
