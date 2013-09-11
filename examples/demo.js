@@ -207,6 +207,7 @@ function PixiDemo(world,options){
     var that = this;
 
     var lastX, lastY, startX, startY, down=false;
+    /*
     $(document).mousedown(function(e){
         var stage = that.stage;
         lastX = e.clientX;
@@ -222,7 +223,8 @@ function PixiDemo(world,options){
     }).mouseup(function(e){
         down = false;
     });
-
+    */
+/*
     $(window).bind('mousewheel', function(e){
         var scrollFactor = that.scrollFactor,
             stage = that.stage;
@@ -240,7 +242,7 @@ function PixiDemo(world,options){
             stage.position.y -= (scrollFactor) * (stage.position.y - e.clientY);
         }
         stage.updateTransform();
-    });
+    });*/
 };
 PixiDemo.prototype = new Object(Demo.prototype);
 
@@ -365,15 +367,60 @@ PixiDemo.prototype.init = function(){
     var w = this.w,
         h = this.h;
 
-    this.renderer = PIXI.autoDetectRenderer(w, h);
-    var stage = this.stage = new PIXI.DisplayObjectContainer();
-    this.container = new PIXI.Stage(0xFFFFFF,true);
+    var that = this;
 
+    var renderer = this.renderer = PIXI.autoDetectRenderer(1280, 720);
+    var stage = this.stage = new PIXI.DisplayObjectContainer();
+    var container = this.container = new PIXI.Stage(0xFFFFFF,true);
     document.body.appendChild(this.renderer.view);
 
     this.container.addChild(stage);
-    stage.position.x = -w/2; // center at origin
-    stage.position.y = -h/2;
+    stage.position.x = -renderer.width/2*0; // center at origin
+    stage.position.y = -renderer.height/2*0;
+
+    var lastX, lastY, lastMoveX, lastMoveY, startX, startY, down=false;
+
+    container.mousedown = function(e){
+        lastX = e.global.x;
+        lastY = e.global.y;
+        startX = stage.position.x;
+        startY = stage.position.y;
+        down = true;
+        lastMoveX = e.global.x;
+        lastMoveY = e.global.y;
+    };
+    container.mousemove = function(e){
+        if(down){
+            stage.position.x = e.global.x-lastX+startX;
+            stage.position.y = e.global.y-lastY+startY;
+        }
+        lastMoveX = e.global.x;
+        lastMoveY = e.global.y;
+    };
+    container.mouseup = function(e){
+        down = false;
+        lastMoveX = e.global.x;
+        lastMoveY = e.global.y;
+    };
+
+    $(window).bind('mousewheel', function(e){
+        var scrollFactor = that.scrollFactor,
+            stage = that.stage;
+        if (e.originalEvent.wheelDelta >= 0){
+            // Zoom in
+            stage.scale.x *= (1+scrollFactor);
+            stage.scale.y *= (1+scrollFactor);
+            stage.position.x += (scrollFactor) * (stage.position.x - lastMoveX);
+            stage.position.y += (scrollFactor) * (stage.position.y - lastMoveY);
+        } else {
+            // Zoom out
+            stage.scale.x *= (1-scrollFactor);
+            stage.scale.y *= (1-scrollFactor);
+            stage.position.x -= (scrollFactor) * (stage.position.x - lastMoveX);
+            stage.position.y -= (scrollFactor) * (stage.position.y - lastMoveY);
+        }
+        stage.updateTransform();
+    });
 }
 
 PixiDemo.prototype.addRenderable = function(obj){
@@ -438,5 +485,20 @@ PixiDemo.prototype.removeRenderable = function(obj){
 };
 
 PixiDemo.prototype.resize = function(w,h){
-    this.renderer.resize(w, h);
+    var renderer = this.renderer;
+    var view = renderer.view;
+    view.style.position = "absolute";
+
+    var ratio = w / h;
+    var pixiRatio = renderer.width / renderer.height;
+
+    if(ratio > pixiRatio){ // Screen is wider than our renderer
+        view.style.height = h + "px";
+        view.style.width =  (h * pixiRatio) +"px";
+        view.style.left = ( (w - h * pixiRatio) / 2 ) +"px";
+    } else { // Screen is narrower
+        view.style.height =  (w / pixiRatio) +"px";
+        view.style.width = w + "px";
+        view.style.top = ( (h - w / pixiRatio) / 2 ) +"px";
+    }
 };
