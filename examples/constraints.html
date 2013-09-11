@@ -41,6 +41,25 @@
             world.addBody(p);
         }
 
+        // Create PointToPointConstraint
+        var bodyA = new p2.Body({
+            mass: 1,
+            shape: new p2.Circle(1),
+            position: [3,0],
+            angularVelocity: 10
+        });
+        world.addBody(bodyA);
+        var bodyB = new p2.Body({
+            mass: 0,
+            shape: new p2.Circle(1),
+            position: [3,4],
+        });
+        world.addBody(bodyB);
+        var pivotA = [0,2];
+        var pivotB = [0,-2];
+        var c = new p2.PointToPointConstraint(bodyA, pivotA, bodyB, pivotB);
+        world.addConstraint(c);
+
         var demo = new PixiDemo(world);
 
         function update(){

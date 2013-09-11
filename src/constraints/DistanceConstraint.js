@@ -38,7 +38,7 @@ function DistanceConstraint(bodyA,bodyB,distance,maxForce){
 
 }
 
-DistanceConstraint.prototype = new Object(Constraint.prototype);
+DistanceConstraint.prototype = new Constraint();
 
 /**
  * Update the constraint equations. Should be done if any of the bodies changed position, before solving.
@@ -54,4 +54,3 @@ DistanceConstraint.prototype.update = function(){
     vec2.scale(normal.ri, normal.ni,  distance*0.5);
     vec2.scale(normal.rj, normal.ni, -distance*0.5);
 };
-

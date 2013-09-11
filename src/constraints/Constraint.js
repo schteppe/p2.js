@@ -37,6 +37,6 @@ function Constraint(bodyA,bodyB){
  * To be implemented by subclasses. Should update the internal constraint parameters.
  * @method update
  */
-Constraint.prototype.update = function(){
+/*Constraint.prototype.update = function(){
     throw new Error("method update() not implmemented in this Constraint subclass!");
-};
+};*/
