@@ -19,6 +19,23 @@
         world.solver.setSpookParams(1e7,3);
         world.solver.iterations = N;
 
+        // Add a line
+        var line = new p2.Body({
+            mass: 1,
+            shape: new p2.Line(1),
+            position: [0,-0.5],
+            angle: Math.PI / 2,
+            angularVelocity : 1
+        });
+        world.addBody(line);
+
+        // Add a "null" body
+        var groundBody = new p2.Body();
+        world.addBody(groundBody);
+
+        world.addConstraint( new p2.PointToPointConstraint(line, [0.5,0], groundBody, [0,0]) );
+
+
         // Create circle rope
         var shape = new p2.Circle(r);
         var lastBody;
@@ -59,6 +76,7 @@
         var pivotB = [0,-2];
         var c = new p2.PointToPointConstraint(bodyA, pivotA, bodyB, pivotB);
         world.addConstraint(c);
+
 
         var demo = new PixiDemo(world);
 

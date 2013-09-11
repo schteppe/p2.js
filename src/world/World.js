@@ -2,11 +2,13 @@ var GSSolver = require('../solver/GSSolver').GSSolver,
     NaiveBroadphase = require('../collision/NaiveBroadphase').NaiveBroadphase,
     vec2 = require('../math/vec2'),
     Circle = require('../objects/Shape').Circle,
+    Line = require('../objects/Shape').Line,
     Plane = require('../objects/Shape').Plane,
     Particle = require('../objects/Shape').Particle,
     EventEmitter = require('../events/EventEmitter').EventEmitter,
     Body = require('../objects/Body').Body,
     DistanceConstraint = require('../constraints/DistanceConstraint').DistanceConstraint,
+    PointToPointConstraint = require('../constraints/PointToPointConstraint').PointToPointConstraint,
     bp = require('../collision/Broadphase'),
     Broadphase = bp.Broadphase;
 
@@ -383,7 +385,14 @@ World.prototype.toJSON = function(){
         if(c instanceof DistanceConstraint){
             jc.type = "DistanceConstraint";
             jc.distance = c.distance;
-        }
+        } else if(c instanceof PointToPointConstraint){
+            jc.type = "PointToPointConstraint";
+            jc.pivotA = v2a(c.pivotA);
+            jc.pivotB = v2a(c.pivotB);
+            jc.maxForce = c.maxForce;
+        } else
+            throw new Error("Constraint not supported yet!");
+
         json.constraints.push(jc);
     }
 
@@ -391,7 +400,7 @@ World.prototype.toJSON = function(){
     for(var i=0; i<this.bodies.length; i++){
         var b = this.bodies[i],
             s = b.shape,
-            jsonShape;
+            jsonShape = null;
         if(!s){
             // No shape
         } else if(s instanceof Circle){
@@ -406,6 +415,11 @@ World.prototype.toJSON = function(){
         } else if(s instanceof Particle){
             jsonShape = {
                 type : "Particle",
+            };
+        } else if(s instanceof Line){
+            jsonShape = {
+                type : "Line",
+                length : s.length
             };
         } else {
             throw new Error("Shape type not supported yet!");
@@ -451,20 +465,25 @@ World.prototype.fromJSON = function(json){
             for(var i=0; i<json.bodies.length; i++){
                 var jb = json.bodies[i],
                     js = jb.shape,
-                    shape;
-                switch(js.type){
-                    case "Circle":
-                        shape = new Circle(js.radius);
-                        break;
-                    case "Plane":
-                        shape = new Plane();
-                        break;
-                    case "Particle":
-                        shape = new Particle();
-                        break;
-                    default:
-                        throw new Error("Shape type not supported: "+js.type);
-                        break;
+                    shape = null;
+                if(js){
+                    switch(js.type){
+                        case "Circle":
+                            shape = new Circle(js.radius);
+                            break;
+                        case "Plane":
+                            shape = new Plane();
+                            break;
+                        case "Particle":
+                            shape = new Particle();
+                            break;
+                        case "Line":
+                            shape = new Line(js.length);
+                            break;
+                        default:
+                            throw new Error("Shape type not supported: "+js.type);
+                            break;
+                    }
                 }
                 var b = new Body({
                     mass :              jb.mass,
@@ -497,6 +516,11 @@ World.prototype.fromJSON = function(json){
                     case "DistanceConstraint":
                         c = new DistanceConstraint(this.bodies[jc.bodyA], this.bodies[jc.bodyB], jc.distance);
                         break;
+                    case "PointToPointConstraint":
+                        c = new PointToPointConstraint(this.bodies[jc.bodyA], jc.pivotA, this.bodies[jc.bodyB], jc.pivotB, jc.maxForce);
+                        break;
+                    default:
+                        throw new Error("Constraint type not recognized: "+jc.type);
                 }
                 this.addConstraint(c);
             }

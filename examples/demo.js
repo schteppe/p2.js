@@ -1,3 +1,12 @@
+var vec2 =      p2.vec2
+,   Spring =    p2.Spring
+,   Body =      p2.Body
+,   Circle =    p2.Circle
+,   Plane =     p2.Plane
+,   Particle =  p2.Particle
+,   Line =      p2.Line
+,   EventDispatcher = p2.EventDispatcher
+
 /**
  * Extend object a with properties in body b
  * @param  {Object} a
@@ -19,13 +28,6 @@ var requestAnimationFrame =     window.requestAnimationFrame       ||
                                     window.setTimeout(callback, 1000 / 60);
                                 };
 
-var vec2 =      p2.vec2
-,   Spring =    p2.Spring
-,   Body =      p2.Body
-,   Circle =    p2.Circle
-,   Plane =     p2.Plane
-,   Particle =  p2.Particle
-,   EventDispatcher = p2.EventDispatcher
 
 /**
  * Base class for rendering of a scene.
@@ -114,10 +116,16 @@ Demo.prototype.updateStats = function(){
  * @param  {mixed} obj Either Body or Spring
  */
 Demo.prototype.addVisual = function(obj){
-    if(obj instanceof Spring)       this.springs.push(obj);
-    else if(obj instanceof Body)    this.bodies.push(obj);
-    else throw new Error("Visual type not recognized.");
-    this.addRenderable(obj);
+    if(obj instanceof Spring){
+        this.springs.push(obj);
+        this.addRenderable(obj);
+    } else if(obj instanceof Body){
+        if(obj.shape){ // Only draw things that can be seen
+            this.bodies.push(obj);
+            this.addRenderable(obj);
+        }
+    } else
+        throw new Error("Visual type not recognized.");
 };
 
 /**
@@ -300,6 +308,17 @@ PixiDemo.drawPlane = function(g, x0, x1, color, lineWidth, diagMargin, diagSize)
 };
 
 
+PixiDemo.drawLine = function(g, len, color, lineWidth){
+    lineWidth = lineWidth || 1;
+    color = typeof(color)=="undefined" ? 0x000000 : color;
+    g.lineStyle(lineWidth, color, 1);
+
+    // Draw the actual plane
+    g.moveTo(-len/2,0);
+    g.lineTo( len/2,0);
+};
+
+
 var X = vec2.fromValues(1,0);
 var distVec = vec2.fromValues(0,0);
 PixiDemo.prototype.render = function(){
@@ -360,7 +379,7 @@ PixiDemo.prototype.init = function(){
 PixiDemo.prototype.addRenderable = function(obj){
     var ppu = this.pixelsPerLengthUnit;
 
-    if(obj instanceof Body){
+    if(obj instanceof Body && obj.shape){
 
         if(obj.shape instanceof Circle){
             var sprite = new PIXI.Graphics();
@@ -381,6 +400,12 @@ PixiDemo.prototype.addRenderable = function(obj){
             // TODO draw something.. How big should this plane be?
             var sprite = new PIXI.Graphics();
             PixiDemo.drawPlane(sprite, -10*ppu, 10*ppu, 0x000000, this.lineWidth, this.lineWidth*10, this.lineWidth*10);
+            this.sprites.push(sprite);
+            this.stage.addChild(sprite);
+
+        } else if(obj.shape instanceof Line){
+            var sprite = new PIXI.Graphics();
+            PixiDemo.drawLine(sprite, obj.shape.length*ppu, 0x000000, this.lineWidth);
             this.sprites.push(sprite);
             this.stage.addChild(sprite);
 
