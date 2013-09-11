@@ -6,7 +6,7 @@ JavaScript 2D rigid body physics engine.
 ### Features
 * Rigid body physics
 * Collision detection (no CCD)
-* Distance constraints
+* Constraints (strong forces): Contact, DistanceConstraint, PointToPoint
 * Springs
 * Body motion states (dynamic, kinematic, static)
 * Various shapes and collisions (see table below)
@@ -76,6 +76,7 @@ setInterval(function(){
 * Added property ```DistanceConstraint.distance```
 * Added contact collision response between ```Particle``` and ```Plane```
 * Added contact collision response between ```Circle``` and ```Plane```
+* Added ```PointToPointConstraint```
 
 ##### 0.1
 
