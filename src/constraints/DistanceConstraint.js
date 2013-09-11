@@ -14,6 +14,7 @@ exports.DistanceConstraint = DistanceConstraint;
  * @param {Body} bodyB
  * @param {number} dist The distance to keep between the bodies.
  * @param {number} maxForce
+ * @extends {Constraint}
  */
 function DistanceConstraint(bodyA,bodyB,distance,maxForce){
     Constraint.call(this,bodyA,bodyB);
