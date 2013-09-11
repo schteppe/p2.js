@@ -47,17 +47,12 @@ PointToPointConstraint.prototype.update = function(){
         normal = eqs[0],
         tangent= eqs[1];
 
-    vec2.subtract(normal.ni, bodyB.position, bodyA.position);   //bodyB.position.vsub(bodyA.position, normal.ni);
-    vec2.normalize(normal.ni,normal.ni);                        //normal.ni.normalize();
-    vec2.rotate(normal.ri, pivotA, bodyA.angle);                //bodyA.quaternion.vmult(pivotA, normal.ri);
-    vec2.rotate(normal.rj, pivotB, bodyB.angle);                //bodyB.quaternion.vmult(pivotB, normal.rj);
+    vec2.subtract(normal.ni, bodyB.position, bodyA.position);
+    vec2.normalize(normal.ni,normal.ni);
+    vec2.rotate(normal.ri, pivotA, bodyA.angle);
+    vec2.rotate(normal.rj, pivotB, bodyB.angle);
 
-    vec2.rotate(tangent.ni, normal.ni, Math.PI / 2); //normal.ni.tangents(t1.ni,t2.ni);
+    vec2.rotate(tangent.ni, normal.ni, Math.PI / 2);
     vec2.copy(tangent.ri, normal.ri);
     vec2.copy(tangent.rj, normal.rj);
-
-    //normal.ri.copy(t1.ri);
-    //normal.rj.copy(t1.rj);
-    //normal.ri.copy(t2.ri);
-    //normal.rj.copy(t2.rj);
 };
