@@ -14,10 +14,13 @@ var requestAnimationFrame =     window.requestAnimationFrame       ||
                                     window.setTimeout(callback, 1000 / 60);
                                 };
 
-var vec2 =      p2.vec2;
-var Spring =    p2.Spring;
-var Body =      p2.Body;
-var EventDispatcher = p2.EventDispatcher;
+var vec2 =      p2.vec2
+,   Spring =    p2.Spring
+,   Body =      p2.Body
+,   Circle =    p2.Circle
+,   Plane =     p2.Plane
+,   Particle =  p2.Particle
+,   EventDispatcher = p2.EventDispatcher
 
 /**
  * Base class for rendering of a scene.
@@ -238,7 +241,7 @@ PixiDemo.prototype = new Object(Demo.prototype);
  */
 PixiDemo.drawCircle = function(g,x,y,radius,color,lineWidth){
     lineWidth = lineWidth || 1;
-    color = color || 0xffffff;
+    color = typeof(color)!="undefined" ? color : 0xffffff;
     g.lineStyle(lineWidth, 0x000000, 1);
     g.beginFill(color, 1.0);
     g.drawCircle(0, 0, radius);
@@ -273,6 +276,24 @@ PixiDemo.drawSpring = function(g,restLength,color,lineWidth){
     }
     g.lineTo(restLength/2,0);
 };
+
+
+PixiDemo.drawPlane = function(g, x0, x1, color, lineWidth, diagMargin, diagSize){
+    lineWidth = lineWidth || 1;
+    color = typeof(color)=="undefined" ? 0xffffff : color;
+    g.lineStyle(lineWidth, color, 1);
+
+    // Draw the actual plane
+    g.moveTo(x0,0);
+    g.lineTo(x1,0);
+
+    // Draw diagonal lines
+    for(var i=0; x0 + i*diagMargin < x1; i++){
+        g.moveTo(x0 + i*diagMargin,            0);
+        g.lineTo(x0 + i*diagMargin +diagSize,  +diagSize);
+    }
+};
+
 
 var X = vec2.fromValues(1,0);
 var distVec = vec2.fromValues(0,0);
@@ -332,17 +353,42 @@ PixiDemo.prototype.init = function(){
 }
 
 PixiDemo.prototype.addRenderable = function(obj){
-    var sprite = new PIXI.Graphics();
+    var ppu = this.pixelsPerLengthUnit;
+
     if(obj instanceof Body){
-        var radiusPixels = obj.shape.radius * this.pixelsPerLengthUnit;
-        PixiDemo.drawCircle(sprite,0,0,radiusPixels,0xFFFFFF,this.lineWidth);
-        this.sprites.push(sprite);
+
+        if(obj.shape instanceof Circle){
+            var sprite = new PIXI.Graphics();
+            var radiusPixels = obj.shape.radius * ppu;
+            PixiDemo.drawCircle(sprite,0,0,radiusPixels,0xFFFFFF,this.lineWidth);
+            this.sprites.push(sprite);
+            this.stage.addChild(sprite);
+
+        } else if(obj.shape instanceof Particle){
+            var sprite = new PIXI.Graphics();
+            var radiusPixels = obj.shape.radius * ppu;
+            // Make a circle with radius=2*lineWidth
+            PixiDemo.drawCircle(sprite,0,0,2*this.lineWidth,0x000000,0);
+            this.sprites.push(sprite);
+            this.stage.addChild(sprite);
+
+        } else if(obj.shape instanceof Plane){
+            // TODO draw something.. How big should this plane be?
+            var sprite = new PIXI.Graphics();
+            PixiDemo.drawPlane(sprite, -10*ppu, 10*ppu, 0x000000, this.lineWidth, this.lineWidth*10, this.lineWidth*10);
+            this.sprites.push(sprite);
+            this.stage.addChild(sprite);
+
+        } else {
+            console.warn("Shape could not be rendered:",obj.shape);
+        }
     } else if(obj instanceof Spring){
-        var restLengthPixels = obj.restLength * this.pixelsPerLengthUnit;
+        var sprite = new PIXI.Graphics();
+        var restLengthPixels = obj.restLength * ppu;
         PixiDemo.drawSpring(sprite,restLengthPixels,0x000000,this.lineWidth);
         this.springSprites.push(sprite);
+        this.stage.addChild(sprite);
     }
-    this.stage.addChild(sprite);
 };
 
 PixiDemo.prototype.removeRenderable = function(obj){

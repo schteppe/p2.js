@@ -399,6 +399,12 @@ World.prototype.toJSON = function(){
             jsonShape = {
                 type : "Plane",
             };
+        } else if(s instanceof Particle){
+            jsonShape = {
+                type : "Particle",
+            };
+        } else {
+            throw new Error("Shape type not supported yet!");
         }
         json.bodies.push({
             mass : b.mass,
@@ -448,6 +454,12 @@ World.prototype.fromJSON = function(json){
                         break;
                     case "Plane":
                         shape = new Plane();
+                        break;
+                    case "Particle":
+                        shape = new Particle();
+                        break;
+                    default:
+                        throw new Error("Shape type not supported: "+js.type);
                         break;
                 }
                 var b = new Body({

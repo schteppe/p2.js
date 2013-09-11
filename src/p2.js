@@ -11,6 +11,7 @@ exports.GridBroadphase =        require('./collision/GridBroadphase')       .Gri
 exports.GSSolver =              require('./solver/GSSolver')                .GSSolver;
 exports.NaiveBroadphase =       require('./collision/NaiveBroadphase')      .NaiveBroadphase;
 exports.Plane =                 require('./objects/Shape')                  .Plane;
+exports.Particle =              require('./objects/Shape')                  .Particle;
 exports.IslandSolver =          require('./solver/IslandSolver')            .IslandSolver;
 exports.Island =                require('./solver/IslandSolver')            .Island;
 exports.Shape =                 require('./objects/Shape')                  .Shape;
