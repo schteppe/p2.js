@@ -18,6 +18,8 @@ exports.DistanceConstraint = DistanceConstraint;
 function DistanceConstraint(bodyA,bodyB,distance,maxForce){
     Constraint.call(this,bodyA,bodyB);
 
+    this.distance = distance;
+
     if(typeof(maxForce)==="undefined" ) {
         maxForce = 1e6;
     }

@@ -6,6 +6,7 @@ var GSSolver = require('../solver/GSSolver').GSSolver,
     Particle = require('../objects/Shape').Particle,
     EventEmitter = require('../events/EventEmitter').EventEmitter,
     Body = require('../objects/Body').Body,
+    DistanceConstraint = require('../constraints/DistanceConstraint').DistanceConstraint,
     bp = require('../collision/Broadphase'),
     Broadphase = bp.Broadphase;
 
@@ -355,6 +356,34 @@ World.prototype.toJSON = function(){
         broadphase : {},
         constraints : [],
     };
+
+    // Serialize springs
+    for(var i=0; i<this.springs.length; i++){
+        var s = this.springs[i];
+        json.springs.push({
+            bodyA : this.bodies.indexOf(s.bodyA),
+            bodyB : this.bodies.indexOf(s.bodyB),
+            stiffness : s.stiffness,
+            damping : s.damping,
+            restLength : s.restLength,
+        });
+    }
+
+    // Serialize constraints
+    for(var i=0; i<this.constraints.length; i++){
+        var c = this.constraints[i];
+        var jc = {
+            bodyA : this.bodies.indexOf(c.bodyA),
+            bodyB : this.bodies.indexOf(c.bodyB),
+        }
+        if(c instanceof DistanceConstraint){
+            jc.type = "DistanceConstraint";
+            jc.distance = c.distance;
+        }
+        json.constraints.push(jc);
+    }
+
+    // Serialize bodies
     for(var i=0; i<this.bodies.length; i++){
         var b = this.bodies[i],
             s = b.shape,
@@ -404,8 +433,11 @@ World.prototype.fromJSON = function(json){
     switch(json.p2){
 
         case "0.1.0":
+
             // Set gravity
             vec2.copy(world.gravity, json.gravity);
+
+            // Load bodies
             for(var i=0; i<json.bodies.length; i++){
                 var jb = json.bodies[i],
                     js = jb.shape,
@@ -429,6 +461,30 @@ World.prototype.fromJSON = function(json){
                 });
                 this.addBody(b);
             }
+
+            // Load springs
+            for(var i=0; i<json.springs.length; i++){
+                var js = json.springs[i];
+                var s = new Spring(this.bodies[js.bodyA], this.bodies[js.bodyB], {
+                    stiffness : js.stiffness,
+                    damping : js.damping,
+                    restLength : js.restLength,
+                });
+                this.addSpring(s);
+            }
+
+            // Load constraints
+            for(var i=0; i<json.constraints.length; i++){
+                var jc = json.constraints[i],
+                    c;
+                switch(jc.type){
+                    case "DistanceConstraint":
+                        c = new DistanceConstraint(this.bodies[jc.bodyA], this.bodies[jc.bodyB], jc.distance);
+                        break;
+                }
+                this.addConstraint(c);
+            }
+
             break;
 
         default:
@@ -448,8 +504,9 @@ World.prototype.clear = function(){
 
     // Remove all constraints
     var cs = this.constraints;
-    for(var i=0; i<cs.length; i++)
+    for(var i=cs.length-1; i>=0; i--){
         this.removeConstraint(cs[i]);
+    }
 
     // Remove all bodies
     var bodies = this.bodies;

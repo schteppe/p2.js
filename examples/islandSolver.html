@@ -16,8 +16,6 @@
             gravity : [0,-15],
         });
 
-        var demo = new PixiDemo(world);
-
         var N = 10,                         // Number of circles in each rope
             M = 10,                         // Number of ropes
             r = 0.1,                        // Circle radius
@@ -49,10 +47,11 @@
                 }
                 lastBody = p;
                 world.addBody(p);
-                demo.addVisual(p);
             }
             lastBody = null;
         }
+
+        var demo = new PixiDemo(world);
 
         function update(){
             if(!demo.paused)

@@ -72,6 +72,7 @@ setInterval(function(){
 ### Change log
 ##### Current
 * Removed ```World.collidingBodies``` since ```World.bodies``` can be used equivalently.
+* Added property  ```DistanceConstraint.distance```
 
 ##### 0.1
 

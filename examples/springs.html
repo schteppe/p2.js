@@ -17,9 +17,6 @@
             doProfiling : true,
             gravity : [0,-5]
         });
-        var demo = new PixiDemo(world,{
-            lineWidth : 1
-        });
 
         var bodies = [];
         var l = 10,
@@ -73,6 +70,10 @@
                 world.addSpring(spring);
             }
         }
+
+        var demo = new PixiDemo(world,{
+            lineWidth : 1
+        });
 
         function update(){
             if(!demo.paused)
