@@ -72,7 +72,9 @@ setInterval(function(){
 ### Change log
 ##### Current
 * Removed ```World.collidingBodies``` since ```World.bodies``` can be used equivalently.
-* Added property  ```DistanceConstraint.distance```
+* Added property ```DistanceConstraint.distance```
+* Added contact collision response between ```Particle``` and ```Plane```
+* Added contact collision response between ```Circle``` and ```Plane```
 
 ##### 0.1
 
