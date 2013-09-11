@@ -726,14 +726,17 @@ exports.checkCirclePlane = function(c,p,result){
     }
 }
 
-exports.checkCircleParticle = function(c,p,result){
-    result.push(c);
-    result.push(p);
-};
+exports.checkParticlePlane = function(particle,plane,result){
+    vec2.sub(dist, particle.position, plane.position);
+    vec2.rotate(worldNormal, yAxis, plane.angle);
+    if(vec2.dot(dist,worldNormal) < 0){
+        result.push(particle);
+        result.push(plane);
+    }
+}
 
 // Generate contacts / do nearphase
 exports.nearphaseCircleCircle = function(c1,c2,result,oldContacts){
-    //var c = new p2.ContactEquation(c1,c2);
     var c = oldContacts.length ? oldContacts.pop() : new p2.ContactEquation(c1,c2);
     c.bi = c1;
     c.bj = c2;
@@ -744,8 +747,45 @@ exports.nearphaseCircleCircle = function(c1,c2,result,oldContacts){
     result.push(c);
 };
 
-exports.nearphaseCircleParticle = function(c,p,result,oldContacts){
-    // todo
+exports.nearphaseParticlePlane = function(particle,plane,result,oldContacts){
+    var c = oldContacts.length ? oldContacts.pop() : new p2.ContactEquation(plane,particle);
+    c.bi = plane;
+    c.bj = particle;
+
+    vec2.sub(dist, particle.position, plane.position);
+    vec2.rotate(c.ni, yAxis, plane.angle);
+
+    vec2.scale( dist, c.ni, vec2.dot(dist, c.ni) );
+    // dist is now the distance vector in the normal direction
+
+    // ri is the particle position projected down onto the plane
+    vec2.copy( c.ri, particle.position);
+    vec2.sub( c.ri, c.ri, plane.position);
+    vec2.sub( c.ri, c.ri, dist);
+    vec2.set( c.rj, 0, 0 );
+    result.push(c);
+};
+
+exports.checkCircleParticle = function(c,p,result){
+    var r = c.shape.radius;
+    vec2.sub(dist, c.position, p.position);
+    if( vec2.squaredLength(dist) < r*r ){
+        result.push(c,p);
+    }
+};
+
+exports.nearphaseCircleParticle = function(circle, particle, result, oldContacts){
+    var c = oldContacts.length ? oldContacts.pop() : new p2.ContactEquation(circle,particle);
+    c.bi = circle;
+    c.bj = particle;
+
+    vec2.sub(dist, particle.position, circle.position);
+    vec2.copy(c.ni, dist);
+    vec2.normalize(c.ni,c.ni);
+    vec2.copy(c.ri, dist);
+    vec2.set(c.rj,0,0);
+
+    result.push(c);
 };
 
 var nearphaseCirclePlane_rot = mat2.create();
@@ -912,7 +952,7 @@ exports.Broadphase.prototype.getCollisionPairs = function(world){
 };
 
 
-},{"../math/mat2":11,"../math/vec2":12}],4:[function(require,module,exports){
+},{"../math/mat2":12,"../math/vec2":13}],4:[function(require,module,exports){
 var Circle = require('../objects/Shape').Circle,
     Plane = require('../objects/Shape').Plane,
     Particle = require('../objects/Shape').Particle,
@@ -1042,13 +1082,15 @@ exports.GridBroadphase = function(xmin,xmax,ymin,ymax,nx,ny){
 exports.GridBroadphase.prototype = new Broadphase();
 
 
-},{"../collision/Broadphase":3,"../math/vec2":12,"../objects/Shape":14}],5:[function(require,module,exports){
+},{"../collision/Broadphase":3,"../math/vec2":13,"../objects/Shape":15}],5:[function(require,module,exports){
 var Circle = require('../objects/Shape').Circle,
     Plane = require('../objects/Shape').Plane,
     Particle = require('../objects/Shape').Particle,
     bp = require('../collision/Broadphase'),
     Broadphase = bp.Broadphase,
     vec2 = require('../math/vec2');
+
+exports.NaiveBroadphase = NaiveBroadphase;
 
 /**
  * Naive broadphase implementation. Does N^2 tests.
@@ -1057,37 +1099,49 @@ var Circle = require('../objects/Shape').Circle,
  * @constructor
  * @extends Broadphase
  */
-exports.NaiveBroadphase = function(){
+function NaiveBroadphase(){
     Broadphase.apply(this);
-    this.getCollisionPairs = function(world){
-        var collidingBodies = world.bodies;
-        var result = [];
-        for(var i=0, Ncolliding=collidingBodies.length; i!==Ncolliding; i++){
-            var bi = collidingBodies[i];
-            var si = bi.shape;
-            if (si === undefined) continue;
-            for(var j=0; j!==i; j++){
-                var bj = collidingBodies[j];
-                var sj = bj.shape;
-                if (sj === undefined) {
-                    continue;
-                } else if(si instanceof Circle){
-                         if(sj instanceof Circle)   bp.checkCircleCircle  (bi,bj,result);
-                    else if(sj instanceof Particle) bp.checkCircleParticle(bi,bj,result);
-                    else if(sj instanceof Plane)    bp.checkCirclePlane   (bi,bj,result);
-                } else if(si instanceof Particle){
-                         if(sj instanceof Circle)   bp.checkCircleParticle(bj,bi,result);
-                } else if(si instanceof Plane){
-                         if(sj instanceof Circle)   bp.checkCirclePlane   (bj,bi,result);
-                }
+};
+NaiveBroadphase.prototype = new Object(Broadphase.prototype);
+
+/**
+ * Get the colliding pairs
+ * @param  {World} world
+ * @return {Array}
+ */
+NaiveBroadphase.prototype.getCollisionPairs = function(world){
+    var collidingBodies = world.bodies;
+    var result = [];
+    for(var i=0, Ncolliding=collidingBodies.length; i!==Ncolliding; i++){
+        var bi = collidingBodies[i];
+        var si = bi.shape;
+        if (si === undefined) continue;
+        for(var j=0; j!==i; j++){
+            var bj = collidingBodies[j];
+            var sj = bj.shape;
+            if (sj === undefined) {
+                continue;
+
+            } else if(si instanceof Circle){
+                     if(sj instanceof Circle)   bp.checkCircleCircle  (bi,bj,result);
+                else if(sj instanceof Particle) bp.checkCircleParticle(bi,bj,result);
+                else if(sj instanceof Plane)    bp.checkCirclePlane   (bi,bj,result);
+
+            } else if(si instanceof Particle){
+                     if(sj instanceof Circle)   bp.checkCircleParticle(bj,bi,result);
+                else if(sj instanceof Plane)    bp.checkParticlePlane (bi,bj,result);
+
+            } else if(si instanceof Plane){
+                     if(sj instanceof Circle)   bp.checkCirclePlane   (bj,bi,result);
+                else if(sj instanceof Particle) bp.checkParticlePlane (bj,bi,result);
+
             }
         }
-        return result;
-    };
+    }
+    return result;
 };
-exports.NaiveBroadphase.prototype = new Broadphase();
 
-},{"../collision/Broadphase":3,"../math/vec2":12,"../objects/Shape":14}],6:[function(require,module,exports){
+},{"../collision/Broadphase":3,"../math/vec2":13,"../objects/Shape":15}],6:[function(require,module,exports){
 exports.Constraint = Constraint;
 
 /**
@@ -1127,9 +1181,9 @@ function Constraint(bodyA,bodyB){
  * To be implemented by subclasses. Should update the internal constraint parameters.
  * @method update
  */
-Constraint.prototype.update = function(){
+/*Constraint.prototype.update = function(){
     throw new Error("method update() not implmemented in this Constraint subclass!");
-};
+};*/
 
 },{}],7:[function(require,module,exports){
 var Equation = require("./Equation").Equation,
@@ -1270,7 +1324,7 @@ ContactEquation.prototype.addToWlambda = function(deltalambda){
 };
 
 
-},{"../math/vec2":12,"./Equation":9}],8:[function(require,module,exports){
+},{"../math/vec2":13,"./Equation":9}],8:[function(require,module,exports){
 var Constraint = require('./Constraint').Constraint
 ,   ContactEquation = require('./ContactEquation').ContactEquation
 ,   vec2 = require('../math/vec2')
@@ -1287,9 +1341,12 @@ exports.DistanceConstraint = DistanceConstraint;
  * @param {Body} bodyB
  * @param {number} dist The distance to keep between the bodies.
  * @param {number} maxForce
+ * @extends {Constraint}
  */
 function DistanceConstraint(bodyA,bodyB,distance,maxForce){
     Constraint.call(this,bodyA,bodyB);
+
+    this.distance = distance;
 
     if(typeof(maxForce)==="undefined" ) {
         maxForce = 1e6;
@@ -1302,21 +1359,30 @@ function DistanceConstraint(bodyA,bodyB,distance,maxForce){
 
     var normal = eqs[0];
 
+    // Make the contact constraint bilateral
     normal.minForce = -maxForce;
     normal.maxForce =  maxForce;
 
-    // Update
-    // Should be appended to the .prototype
-    this.update = function(){
-        vec2.subtract(normal.ni, bodyB.position, bodyA.position);
-        vec2.normalize(normal.ni,normal.ni);
-        vec2.scale(normal.ri, normal.ni, distance*0.5);
-        vec2.scale(normal.rj, normal.ni, -distance*0.5);
-    };
 }
-DistanceConstraint.prototype = new Object(Constraint.prototype);
 
-},{"../math/vec2":12,"./Constraint":6,"./ContactEquation":7}],9:[function(require,module,exports){
+DistanceConstraint.prototype = new Constraint();
+
+/**
+ * Update the constraint equations. Should be done if any of the bodies changed position, before solving.
+ */
+DistanceConstraint.prototype.update = function(){
+    var normal = this.equations[0],
+        bodyA = this.bodyA,
+        bodyB = this.bodyB,
+        distance = this.distance;
+
+    vec2.subtract(normal.ni, bodyB.position, bodyA.position);
+    vec2.normalize(normal.ni,normal.ni);
+    vec2.scale(normal.ri, normal.ni,  distance*0.5);
+    vec2.scale(normal.rj, normal.ni, -distance*0.5);
+};
+
+},{"../math/vec2":13,"./Constraint":6,"./ContactEquation":7}],9:[function(require,module,exports){
 exports.Equation = Equation;
 
 /**
@@ -1332,6 +1398,8 @@ function Equation(bi,bj,minForce,maxForce){
     this.id = -1;
     this.minForce = typeof(minForce)=="undefined" ? -1e6 : minForce;
     this.maxForce = typeof(maxForce)=="undefined" ? 1e6 : maxForce;
+
+    // @todo should rename these to bodyA and bodyB to keep things uniform
     this.bi = bi;
     this.bj = bj;
 };
@@ -1339,6 +1407,66 @@ Equation.prototype.constructor = Equation;
 
 
 },{}],10:[function(require,module,exports){
+var Constraint = require('./Constraint').Constraint
+,   ContactEquation = require('./ContactEquation').ContactEquation
+,   vec2 = require('../math/vec2')
+
+exports.PointToPointConstraint = PointToPointConstraint;
+
+/**
+ * Connects two bodies at given offset points
+ * @class PointToPointConstraint
+ * @constructor
+ * @author schteppe
+ * @param {Body}            bodyA
+ * @param {Float32Array}    pivotA The point relative to the center of mass of bodyA which bodyA is constrained to.
+ * @param {Body}            bodyB Body that will be constrained in a similar way to the same point as bodyA. We will therefore get sort of a link between bodyA and bodyB. If not specified, bodyA will be constrained to a static point.
+ * @param {Float32Array}    pivotB See pivotA.
+ * @param {Number}          maxForce The maximum force that should be applied to constrain the bodies.
+ * @extends {Constraint}
+ */
+function PointToPointConstraint(bodyA, pivotA, bodyB, pivotB, maxForce){
+    Constraint.call(this,bodyA,bodyB);
+
+    maxForce = typeof(maxForce)!="undefined" ? maxForce : 1e7;
+
+    this.pivotA = pivotA;
+    this.pivotB = pivotB;
+
+    // Equations to be fed to the solver
+    var eqs = this.equations = [
+        new ContactEquation(bodyA,bodyB), // Normal
+        new ContactEquation(bodyA,bodyB), // Tangent
+    ];
+
+    var normal =  eqs[0];
+    var tangent = eqs[1];
+
+    tangent.minForce = normal.minForce = -maxForce;
+    tangent.maxForce = normal.maxForce =  maxForce;
+}
+PointToPointConstraint.prototype = new Constraint();
+
+PointToPointConstraint.prototype.update = function(){
+    var bodyA =  this.bodyA,
+        bodyB =  this.bodyB,
+        pivotA = this.pivotA,
+        pivotB = this.pivotB,
+        eqs =    this.equations,
+        normal = eqs[0],
+        tangent= eqs[1];
+
+    vec2.subtract(normal.ni, bodyB.position, bodyA.position);
+    vec2.normalize(normal.ni,normal.ni);
+    vec2.rotate(normal.ri, pivotA, bodyA.angle);
+    vec2.rotate(normal.rj, pivotB, bodyB.angle);
+
+    vec2.rotate(tangent.ni, normal.ni, Math.PI / 2);
+    vec2.copy(tangent.ri, normal.ri);
+    vec2.copy(tangent.rj, normal.rj);
+};
+
+},{"../math/vec2":13,"./Constraint":6,"./ContactEquation":7}],11:[function(require,module,exports){
 var EventEmitter = function () {}
 
 exports.EventEmitter = EventEmitter;
@@ -1386,14 +1514,24 @@ EventEmitter.prototype = {
     }
 };
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
+/**
+ * The mat2 object from glMatrix, extended with the functions documented here. See http://glmatrix.net for full doc.
+ * @class mat2
+ */
+
 // Only import mat2 from gl-matrix and skip the rest
 var mat2 = require('../../node_modules/gl-matrix/src/gl-matrix/mat2').mat2;
 
 // Export everything
 module.exports = mat2;
 
-},{"../../node_modules/gl-matrix/src/gl-matrix/mat2":1}],12:[function(require,module,exports){
+},{"../../node_modules/gl-matrix/src/gl-matrix/mat2":1}],13:[function(require,module,exports){
+/**
+ * The vec2 object from glMatrix, extended with the functions documented here. See http://glmatrix.net for full doc.
+ * @class vec2
+ */
+
 // Only import vec2 from gl-matrix and skip the rest
 var vec2 = require('../../node_modules/gl-matrix/src/gl-matrix/vec2').vec2;
 
@@ -1402,6 +1540,7 @@ var vec2 = require('../../node_modules/gl-matrix/src/gl-matrix/vec2').vec2;
 /**
  * Get the vector x component
  * @method getX
+ * @static
  * @param  {Float32Array} a
  * @return {Number}
  */
@@ -1412,6 +1551,7 @@ vec2.getX = function(a){
 /**
  * Get the vector y component
  * @method getY
+ * @static
  * @param  {Float32Array} a
  * @return {Number}
  */
@@ -1422,6 +1562,7 @@ vec2.getY = function(a){
 /**
  * Make a cross product and only return the z component
  * @method crossLength
+ * @static
  * @param  {Float32Array} a
  * @param  {Float32Arrat} b
  * @return {Number}
@@ -1433,6 +1574,7 @@ vec2.crossLength = function(a,b){
 /**
  * Rotate a vector by an angle
  * @method rotate
+ * @static
  * @param  {Float32Array} out
  * @param  {Float32Array} a
  * @param  {Number} angle
@@ -1447,7 +1589,7 @@ vec2.rotate = function(out,a,angle){
 // Export everything
 module.exports = vec2;
 
-},{"../../node_modules/gl-matrix/src/gl-matrix/vec2":2}],13:[function(require,module,exports){
+},{"../../node_modules/gl-matrix/src/gl-matrix/vec2":2}],14:[function(require,module,exports){
 var vec2 = require('../math/vec2');
 
 exports.Body = Body;
@@ -1651,7 +1793,7 @@ Body.STATIC = 2;
  */
 Body.KINEMATIC = 4;
 
-},{"../math/vec2":12}],14:[function(require,module,exports){
+},{"../math/vec2":13}],15:[function(require,module,exports){
 /**
  * Base class for shapes.
  * @class Shape
@@ -1719,32 +1861,45 @@ function Convex(vertices){
     this.vertices = vertices;
 };
 
-},{}],15:[function(require,module,exports){
+/**
+ * Line shape class. The line shape is along the x direction, and stretches from [-length/2, 0] to [length/2,0].
+ * @class Plane
+ * @extends Shape
+ * @constructor
+ */
+exports.Line = function(length){
+    Shape.apply(this);
+    this.length = length;
+};
+
+},{}],16:[function(require,module,exports){
 // Export p2 classes
-exports.Body =                  require('./objects/Body')                   .Body;
-exports.Broadphase =            require('./collision/Broadphase')           .Broadphase;
-exports.Circle =                require('./objects/Shape')                  .Circle;
-exports.Constraint =            require('./constraints/Constraint')         .Constraint;
-exports.ContactEquation =       require('./constraints/ContactEquation')    .ContactEquation;
-exports.DistanceConstraint=     require('./constraints/DistanceConstraint') .DistanceConstraint;
-exports.Equation =              require('./constraints/Equation')           .Equation;
-exports.EventEmitter =          require('./events/EventEmitter')            .EventEmitter;
-exports.GridBroadphase =        require('./collision/GridBroadphase')       .GridBroadphase;
-exports.GSSolver =              require('./solver/GSSolver')                .GSSolver;
-exports.NaiveBroadphase =       require('./collision/NaiveBroadphase')      .NaiveBroadphase;
-exports.Plane =                 require('./objects/Shape')                  .Plane;
-exports.IslandSolver =          require('./solver/IslandSolver')            .IslandSolver;
-exports.Island =                require('./solver/IslandSolver')            .Island;
-exports.Shape =                 require('./objects/Shape')                  .Shape;
-exports.Solver =                require('./solver/Solver')                  .Solver;
-exports.Spring =                require('./objects/Body')                   .Spring;
-exports.World =                 require('./world/World')                    .World;
+exports.Body =                  require('./objects/Body')                       .Body;
+exports.Broadphase =            require('./collision/Broadphase')               .Broadphase;
+exports.Circle =                require('./objects/Shape')                      .Circle;
+exports.Constraint =            require('./constraints/Constraint')             .Constraint;
+exports.ContactEquation =       require('./constraints/ContactEquation')        .ContactEquation;
+exports.DistanceConstraint=     require('./constraints/DistanceConstraint')     .DistanceConstraint;
+exports.Equation =              require('./constraints/Equation')               .Equation;
+exports.EventEmitter =          require('./events/EventEmitter')                .EventEmitter;
+exports.GridBroadphase =        require('./collision/GridBroadphase')           .GridBroadphase;
+exports.GSSolver =              require('./solver/GSSolver')                    .GSSolver;
+exports.NaiveBroadphase =       require('./collision/NaiveBroadphase')          .NaiveBroadphase;
+exports.Particle =              require('./objects/Shape')                      .Particle;
+exports.Plane =                 require('./objects/Shape')                      .Plane;
+exports.PointToPointConstraint= require('./constraints/PointToPointConstraint') .PointToPointConstraint;
+exports.IslandSolver =          require('./solver/IslandSolver')                .IslandSolver;
+exports.Island =                require('./solver/IslandSolver')                .Island;
+exports.Shape =                 require('./objects/Shape')                      .Shape;
+exports.Solver =                require('./solver/Solver')                      .Solver;
+exports.Spring =                require('./objects/Body')                       .Spring;
+exports.World =                 require('./world/World')                        .World;
 
 // Export the gl-matrix stuff we already use internally. Why shouldn't we? It's already in the bundle.
 exports.vec2 = require('./math/vec2');
 exports.mat2 = require('./math/mat2');
 
-},{"./collision/Broadphase":3,"./collision/GridBroadphase":4,"./collision/NaiveBroadphase":5,"./constraints/Constraint":6,"./constraints/ContactEquation":7,"./constraints/DistanceConstraint":8,"./constraints/Equation":9,"./events/EventEmitter":10,"./math/mat2":11,"./math/vec2":12,"./objects/Body":13,"./objects/Shape":14,"./solver/GSSolver":16,"./solver/IslandSolver":17,"./solver/Solver":18,"./world/World":19}],16:[function(require,module,exports){
+},{"./collision/Broadphase":3,"./collision/GridBroadphase":4,"./collision/NaiveBroadphase":5,"./constraints/Constraint":6,"./constraints/ContactEquation":7,"./constraints/DistanceConstraint":8,"./constraints/Equation":9,"./constraints/PointToPointConstraint":10,"./events/EventEmitter":11,"./math/mat2":12,"./math/vec2":13,"./objects/Body":14,"./objects/Shape":15,"./solver/GSSolver":17,"./solver/IslandSolver":18,"./solver/Solver":19,"./world/World":20}],17:[function(require,module,exports){
 var vec2 = require('../math/vec2'),
     Solver = require('./Solver').Solver;
 
@@ -1900,7 +2055,7 @@ GSSolver.prototype.solve = function(dt,world){
 };
 
 
-},{"../math/vec2":12,"./Solver":18}],17:[function(require,module,exports){
+},{"../math/vec2":13,"./Solver":19}],18:[function(require,module,exports){
 var Solver = require('./Solver').Solver
 ,   ContactEquation = require('../constraints/ContactEquation').ContactEquation
 ,   vec2 = require('../math/vec2')
@@ -2142,7 +2297,7 @@ Island.prototype.solve = function(dt,solver){
     solver.solve(dt,{bodies:bodies});
 };
 
-},{"../constraints/ContactEquation":7,"../math/vec2":12,"../objects/Body":13,"./Solver":18}],18:[function(require,module,exports){
+},{"../constraints/ContactEquation":7,"../math/vec2":13,"../objects/Body":14,"./Solver":19}],19:[function(require,module,exports){
 exports.Solver = Solver;
 
 /**
@@ -2197,7 +2352,7 @@ Solver.prototype.removeAllEquations = function(){
 };
 
 
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 var GSSolver = require('../solver/GSSolver').GSSolver,
     NaiveBroadphase = require('../collision/NaiveBroadphase').NaiveBroadphase,
     vec2 = require('../math/vec2'),
@@ -2206,6 +2361,7 @@ var GSSolver = require('../solver/GSSolver').GSSolver,
     Particle = require('../objects/Shape').Particle,
     EventEmitter = require('../events/EventEmitter').EventEmitter,
     Body = require('../objects/Body').Body,
+    DistanceConstraint = require('../constraints/DistanceConstraint').DistanceConstraint,
     bp = require('../collision/Broadphase'),
     Broadphase = bp.Broadphase;
 
@@ -2427,10 +2583,14 @@ World.prototype.step = function(dt){
                  if(sj instanceof Circle)   bp.nearphaseCircleCircle  (bi,bj,contacts,oldContacts);
             else if(sj instanceof Particle) bp.nearphaseCircleParticle(bi,bj,contacts,oldContacts);
             else if(sj instanceof Plane)    bp.nearphaseCirclePlane   (bi,bj,contacts,oldContacts);
+
         } else if(si instanceof Particle){
                  if(sj instanceof Circle)   bp.nearphaseCircleParticle(bj,bi,contacts,oldContacts);
+            else if(sj instanceof Plane)    bp.nearphaseParticlePlane (bi,bj,contacts,oldContacts);
+
         } else if(si instanceof Plane){
                  if(sj instanceof Circle)   bp.nearphaseCirclePlane   (bj,bi,contacts,oldContacts);
+            else if(sj instanceof Particle) bp.nearphaseParticlePlane (bj,bi,contacts,oldContacts);
         }
     }
     this.oldContacts = oldContacts;
@@ -2555,6 +2715,34 @@ World.prototype.toJSON = function(){
         broadphase : {},
         constraints : [],
     };
+
+    // Serialize springs
+    for(var i=0; i<this.springs.length; i++){
+        var s = this.springs[i];
+        json.springs.push({
+            bodyA : this.bodies.indexOf(s.bodyA),
+            bodyB : this.bodies.indexOf(s.bodyB),
+            stiffness : s.stiffness,
+            damping : s.damping,
+            restLength : s.restLength,
+        });
+    }
+
+    // Serialize constraints
+    for(var i=0; i<this.constraints.length; i++){
+        var c = this.constraints[i];
+        var jc = {
+            bodyA : this.bodies.indexOf(c.bodyA),
+            bodyB : this.bodies.indexOf(c.bodyB),
+        }
+        if(c instanceof DistanceConstraint){
+            jc.type = "DistanceConstraint";
+            jc.distance = c.distance;
+        }
+        json.constraints.push(jc);
+    }
+
+    // Serialize bodies
     for(var i=0; i<this.bodies.length; i++){
         var b = this.bodies[i],
             s = b.shape,
@@ -2570,6 +2758,12 @@ World.prototype.toJSON = function(){
             jsonShape = {
                 type : "Plane",
             };
+        } else if(s instanceof Particle){
+            jsonShape = {
+                type : "Particle",
+            };
+        } else {
+            throw new Error("Shape type not supported yet!");
         }
         json.bodies.push({
             mass : b.mass,
@@ -2604,8 +2798,11 @@ World.prototype.fromJSON = function(json){
     switch(json.p2){
 
         case "0.1.0":
+
             // Set gravity
             vec2.copy(world.gravity, json.gravity);
+
+            // Load bodies
             for(var i=0; i<json.bodies.length; i++){
                 var jb = json.bodies[i],
                     js = jb.shape,
@@ -2616,6 +2813,12 @@ World.prototype.fromJSON = function(json){
                         break;
                     case "Plane":
                         shape = new Plane();
+                        break;
+                    case "Particle":
+                        shape = new Particle();
+                        break;
+                    default:
+                        throw new Error("Shape type not supported: "+js.type);
                         break;
                 }
                 var b = new Body({
@@ -2629,6 +2832,30 @@ World.prototype.fromJSON = function(json){
                 });
                 this.addBody(b);
             }
+
+            // Load springs
+            for(var i=0; i<json.springs.length; i++){
+                var js = json.springs[i];
+                var s = new Spring(this.bodies[js.bodyA], this.bodies[js.bodyB], {
+                    stiffness : js.stiffness,
+                    damping : js.damping,
+                    restLength : js.restLength,
+                });
+                this.addSpring(s);
+            }
+
+            // Load constraints
+            for(var i=0; i<json.constraints.length; i++){
+                var jc = json.constraints[i],
+                    c;
+                switch(jc.type){
+                    case "DistanceConstraint":
+                        c = new DistanceConstraint(this.bodies[jc.bodyA], this.bodies[jc.bodyB], jc.distance);
+                        break;
+                }
+                this.addConstraint(c);
+            }
+
             break;
 
         default:
@@ -2648,8 +2875,9 @@ World.prototype.clear = function(){
 
     // Remove all constraints
     var cs = this.constraints;
-    for(var i=0; i<cs.length; i++)
+    for(var i=cs.length-1; i>=0; i--){
         this.removeConstraint(cs[i]);
+    }
 
     // Remove all bodies
     var bodies = this.bodies;
@@ -2664,6 +2892,6 @@ World.prototype.clear = function(){
     }
 };
 
-},{"../collision/Broadphase":3,"../collision/NaiveBroadphase":5,"../events/EventEmitter":10,"../math/vec2":12,"../objects/Body":13,"../objects/Shape":14,"../solver/GSSolver":16}]},{},[15])(15)
+},{"../collision/Broadphase":3,"../collision/NaiveBroadphase":5,"../constraints/DistanceConstraint":8,"../events/EventEmitter":11,"../math/vec2":13,"../objects/Body":14,"../objects/Shape":15,"../solver/GSSolver":17}]},{},[16])(16)
 });
 ;
