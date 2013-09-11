@@ -1,3 +1,8 @@
+/**
+ * Extend object a with properties in body b
+ * @param  {Object} a
+ * @param  {Object} b
+ */
 function extend(a,b){
     for(var key in b)
         a[key] = b[key];
@@ -115,6 +120,9 @@ Demo.prototype.addVisual = function(obj){
     this.addRenderable(obj);
 };
 
+/**
+ * Removes all visuals from the scene
+ */
 Demo.prototype.removeAllVisuals = function(){
     var bodies = this.bodies,
         springs = this.springs;
@@ -247,12 +255,9 @@ PixiDemo.drawCircle = function(g,x,y,radius,color,lineWidth){
     g.drawCircle(0, 0, radius);
     g.endFill();
 
-    // Dashed line from center to edge
-    /*var Ndashes = 4;
-    for(var j=0; j<Ndashes; j++){
-        g.moveTo(0,-j/Ndashes*radius);
-        g.lineTo(0,-(j+0.5)/Ndashes*radius);
-    }*/
+    // line from center to edge
+    g.moveTo(x,y);
+    g.lineTo(x+radius,y);
 };
 
 PixiDemo.drawSpring = function(g,restLength,color,lineWidth){
