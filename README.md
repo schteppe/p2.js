@@ -62,8 +62,8 @@ setInterval(function(){
 ### Supported collision pairs
 |           | Circle | Plane | Rectangle | Compound | Convex  | Particle |
 | :-------: |:------:|:-----:|:---------:|:--------:|:-------:|:--------:|
-| Circle    | Yes    | Yes   | (todo)    | (todo)   | (todo)  | (todo)   |
-| Plane     | -      | -     | (todo)    | (todo)   | (todo)  | (todo)   |
+| Circle    | Yes    | Yes   | (todo)    | (todo)   | (todo)  | Yes      |
+| Plane     | -      | -     | (todo)    | (todo)   | (todo)  | Yes      |
 | Rectangle | -      | -     | (todo)    | (todo)   | (todo)  | (todo)   |
 | Compound  | -      | -     | -         | (todo)   | (todo)  | (todo)   |
 | Convex    | -      | -     | -         | -        | (todo)  | (todo)   |

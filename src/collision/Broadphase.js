@@ -33,11 +33,6 @@ exports.checkParticlePlane = function(particle,plane,result){
     }
 }
 
-exports.checkCircleParticle = function(c,p,result){
-    result.push(c);
-    result.push(p);
-};
-
 // Generate contacts / do nearphase
 exports.nearphaseCircleCircle = function(c1,c2,result,oldContacts){
     var c = oldContacts.length ? oldContacts.pop() : new p2.ContactEquation(c1,c2);
@@ -69,8 +64,26 @@ exports.nearphaseParticlePlane = function(particle,plane,result,oldContacts){
     result.push(c);
 };
 
-exports.nearphaseCircleParticle = function(c,p,result,oldContacts){
-    // todo
+exports.checkCircleParticle = function(c,p,result){
+    var r = c.shape.radius;
+    vec2.sub(dist, c.position, p.position);
+    if( vec2.squaredLength(dist) < r*r ){
+        result.push(c,p);
+    }
+};
+
+exports.nearphaseCircleParticle = function(circle, particle, result, oldContacts){
+    var c = oldContacts.length ? oldContacts.pop() : new p2.ContactEquation(circle,particle);
+    c.bi = circle;
+    c.bj = particle;
+
+    vec2.sub(dist, particle.position, circle.position);
+    vec2.copy(c.ni, dist);
+    vec2.normalize(c.ni,c.ni);
+    vec2.copy(c.ri, dist);
+    vec2.set(c.rj,0,0);
+
+    result.push(c);
 };
 
 var nearphaseCirclePlane_rot = mat2.create();

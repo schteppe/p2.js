@@ -19,7 +19,7 @@
         });
 
         var bodies = [];
-        var N=15,
+        var N=10,
             M=10,
             timeStep = 1/60,
             k=1000,
@@ -28,13 +28,13 @@
             m=1;
 
         // Create bodies
-        var circleShape = new p2.Particle();
+        var particleShape = new p2.Particle();
         for(var i=0; i<N; i++){
             bodies.push([]);
             for(var j=0; j<M; j++){
                 var p = new p2.Body({
                     mass: m,//j==M-1 ? 0 : m,
-                    shape : circleShape,
+                    shape : particleShape,
                     position : [(i-N/2)*l*1.05, (j-M/2)*l*1.05]
                 });
                 bodies[i].push(p);
@@ -102,6 +102,16 @@
             position : [0, (-M/2)*l*1.05 - 0.1]
         });
         world.addBody(plane);
+
+        // Create circle
+        var radius = 1;
+        var circleShape = new p2.Circle(radius);
+        var circle = new p2.Body({
+            mass : 1,
+            shape: circleShape,
+            position : [0, (M/2)*l*1.05 + radius]
+        });
+        world.addBody(circle);
 
         var demo = new PixiDemo(world,{
             lineWidth : 1
