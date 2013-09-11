@@ -28,6 +28,7 @@ function Demo(world){
     var that = this;
 
     this.world = world;
+    this.initialState = world.toJSON();
 
     this.bodies=[];
     this.springs=[];
@@ -52,8 +53,12 @@ function Demo(world){
         that.updateStats();
     }).on("addBody",function(e){
         that.addVisual(e.body);
+    }).on("removeBody",function(e){
+        that.removeVisual(e.body);
     }).on("addSpring",function(e){
         that.addVisual(e.spring);
+    }).on("removeSpring",function(e){
+        that.removeVisual(e.spring);
     });
 
     $(window).resize(function(){
@@ -63,12 +68,22 @@ function Demo(world){
     document.addEventListener('keypress',function(e){
         if(e.keyCode){
             switch(e.keyCode){
-                case 112: // p
-                that.paused = !that.paused;
-                break;
+                case 112: // p - pause
+                    that.paused = !that.paused;
+                    break;
+                case 114: // r - restart
+                    that.removeAllVisuals();
+                    that.world.fromJSON(that.initialState);
+                    break;
             }
         }
     });
+
+    // Add initial bodies
+    for(var i=0; i<world.bodies.length; i++)
+        this.addVisual(world.bodies[i]);
+    for(var i=0; i<world.springs.length; i++)
+        this.addVisual(world.springs[i]);
 }
 
 /**
@@ -91,10 +106,38 @@ Demo.prototype.updateStats = function(){
  * @param  {mixed} obj Either Body or Spring
  */
 Demo.prototype.addVisual = function(obj){
-    var buf, s=obj.shape;
-    if(obj instanceof Spring)   this.springs.push(obj);
-    else                        this.bodies.push(obj);
+    if(obj instanceof Spring)       this.springs.push(obj);
+    else if(obj instanceof Body)    this.bodies.push(obj);
+    else throw new Error("Visual type not recognized.");
     this.addRenderable(obj);
+};
+
+Demo.prototype.removeAllVisuals = function(){
+    var bodies = this.bodies,
+        springs = this.springs;
+    while(bodies.length)
+        this.removeVisual(bodies[bodies.length-1]);
+    while(springs.length)
+        this.removeVisual(springs[springs.length-1]);
+};
+
+/**
+ * Remove an object from the demo
+ * @param  {mixed} obj Either Body or Spring
+ */
+Demo.prototype.removeVisual = function(obj){
+    this.removeRenderable(obj);
+    if(obj instanceof Spring){
+        var idx = this.springs.indexOf(obj);
+        if(idx != -1)
+            this.springs.splice(idx,1);
+    } else if(obj instanceof Body){
+        var idx = this.bodies.indexOf(obj);
+        if(idx != -1)
+            this.bodies.splice(idx,1);
+    } else {
+        console.error("Visual type not recognized...");
+    }
 };
 
 /**
@@ -300,6 +343,22 @@ PixiDemo.prototype.addRenderable = function(obj){
         this.springSprites.push(sprite);
     }
     this.stage.addChild(sprite);
+};
+
+PixiDemo.prototype.removeRenderable = function(obj){
+    if(obj instanceof Body){
+        var i = this.bodies.indexOf(obj);
+        if(i!=-1){
+            this.stage.removeChild(this.sprites[i]);
+            this.sprites.splice(i,1);
+        }
+    } else if(obj instanceof Spring){
+        var i = this.springs.indexOf(obj);
+        if(i!=-1){
+            this.stage.removeChild(this.springSprites[i]);
+            this.springSprites.splice(i,1);
+        }
+    }
 };
 
 PixiDemo.prototype.resize = function(w,h){

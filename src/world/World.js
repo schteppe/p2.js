@@ -69,7 +69,6 @@ function World(options){
     this.contacts = [];
 
     this.oldContacts = [];
-    this.collidingBodies = [];
 
     /**
      * Gravity in the world. This is applied on all bodies in the beginning of each step().
@@ -174,7 +173,6 @@ World.prototype.step = function(dt){
         Nsprings = this.springs.length,
         springs = this.springs,
         bodies = this.bodies,
-        collidingBodies=this.collidingBodies,
         g = this.gravity,
         solver = this.solver,
         Nbodies = this.bodies.length,
@@ -325,7 +323,6 @@ World.prototype.removeSpring = function(s){
  */
 World.prototype.addBody = function(body){
     this.bodies.push(body);
-    this.collidingBodies.push(body);
     this.addBodyEvent.body = body;
     this.emit(this.addBodyEvent);
 };
@@ -338,7 +335,7 @@ World.prototype.addBody = function(body){
  */
 World.prototype.removeBody = function(body){
     var idx = this.bodies.indexOf(body);
-    if(idx===-1)
+    if(idx!==-1)
         this.bodies.splice(idx,1);
 };
 
@@ -359,7 +356,21 @@ World.prototype.toJSON = function(){
         constraints : [],
     };
     for(var i=0; i<this.bodies.length; i++){
-        var b = this.bodies[i];
+        var b = this.bodies[i],
+            s = b.shape,
+            jsonShape;
+        if(!s){
+            // No shape
+        } else if(s instanceof Circle){
+            jsonShape = {
+                type : "Circle",
+                radius : s.radius,
+            };
+        } else if(s instanceof Plane){
+            jsonShape = {
+                type : "Plane",
+            };
+        }
         json.bodies.push({
             mass : b.mass,
             angle : b.angle,
@@ -367,6 +378,7 @@ World.prototype.toJSON = function(){
             velocity : v2a(b.velocity),
             angularVelocity : b.angularVelocity,
             force : v2a(b.force),
+            shape : jsonShape,
         });
     }
     return json;
@@ -391,31 +403,44 @@ World.prototype.fromJSON = function(json){
 
     switch(json.p2){
 
-    case "0.1.0":
-        for(var i=0; i<json.bodies.length; i++){
-            var jb = json.bodies[i];
-            var b = new Body({
-                mass :              jb.mass,
-                position :          jb.position,
-                angle :             jb.angle,
-                velocity :          jb.velocity,
-                angularVelocity :   jb.angularVelocity,
-                force :             jb.force,
-            });
-            this.addBody(b);
-        }
-        break;
+        case "0.1.0":
+            // Set gravity
+            vec2.copy(world.gravity, json.gravity);
+            for(var i=0; i<json.bodies.length; i++){
+                var jb = json.bodies[i],
+                    js = jb.shape,
+                    shape;
+                switch(js.type){
+                    case "Circle":
+                        shape = new Circle(js.radius);
+                        break;
+                    case "Plane":
+                        shape = new Plane();
+                        break;
+                }
+                var b = new Body({
+                    mass :              jb.mass,
+                    position :          jb.position,
+                    angle :             jb.angle,
+                    velocity :          jb.velocity,
+                    angularVelocity :   jb.angularVelocity,
+                    force :             jb.force,
+                    shape :             shape,
+                });
+                this.addBody(b);
+            }
+            break;
 
-    default:
-        return false;
-        break;
+        default:
+            return false;
+            break;
     }
 
     return true;
 };
 
 /**
- * Resets the World, removes all bodies and constraints.
+ * Resets the World, removes all bodies, constraints and springs.
  *
  * @method clear
  */
@@ -428,12 +453,13 @@ World.prototype.clear = function(){
 
     // Remove all bodies
     var bodies = this.bodies;
-    for(var i=0; i<bodies.length; i++)
+    for(var i=bodies.length-1; i>=0; i--){
         this.removeBody(bodies[i]);
+    }
 
     // Remove all springs
     var springs = this.springs;
-    for(var i=0; i<springs.length; i++)
+    for(var i=springs.length-1; i>=0; i--){
         this.removeSpring(springs[i]);
-
+    }
 };

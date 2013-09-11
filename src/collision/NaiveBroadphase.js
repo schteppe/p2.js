@@ -15,7 +15,7 @@ var Circle = require('../objects/Shape').Circle,
 exports.NaiveBroadphase = function(){
     Broadphase.apply(this);
     this.getCollisionPairs = function(world){
-        var collidingBodies = world.collidingBodies;
+        var collidingBodies = world.bodies;
         var result = [];
         for(var i=0, Ncolliding=collidingBodies.length; i!==Ncolliding; i++){
             var bi = collidingBodies[i];

@@ -70,6 +70,9 @@ setInterval(function(){
 | Particle  | -      | -     | -         | -        | -       | -        |
 
 ### Change log
+##### Current
+* Removed ```World.collidingBodies``` since ```World.bodies``` can be used equivalently.
+
 ##### 0.1
 
 * Added ```EventEmitter```

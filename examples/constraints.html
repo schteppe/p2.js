@@ -19,9 +19,6 @@
         world.solver.setSpookParams(1e7,3);
         world.solver.iterations = N;
 
-        var demo = new PixiDemo(world);
-
-
         // Create circle rope
         var shape = new p2.Circle(r);
         var lastBody;
@@ -43,6 +40,8 @@
             lastBody = p;
             world.addBody(p);
         }
+
+        var demo = new PixiDemo(world);
 
         function update(){
             if(!demo.paused)

@@ -33,7 +33,7 @@ exports.GridBroadphase = function(xmin,xmax,ymin,ymax,nx,ny){
 
     this.getCollisionPairs = function(world){
         var result = [];
-        var collidingBodies = world.collidingBodies;
+        var collidingBodies = world.bodies;
         var Ncolliding = Ncolliding=collidingBodies.length;
 
         var bins=[], Nbins=nx*ny;
