@@ -77,6 +77,7 @@ setInterval(function(){
 * Added contact collision response between ```Particle``` and ```Plane```
 * Added contact collision response between ```Circle``` and ```Plane```
 * Added ```PointToPointConstraint```
+* Added ```Line```
 
 ##### 0.1
 
