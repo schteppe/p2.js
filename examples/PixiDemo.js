@@ -21,7 +21,8 @@ function PixiDemo(world,options){
         width : 1280, // Pixi screen resolution
         height : 720,
     };
-    extend(settings,options);
+    for(var key in options)
+        settings[key] = options[key];
 
     this.settings = settings;
     this.pixelsPerLengthUnit =  settings.pixelsPerLengthUnit;
@@ -33,7 +34,7 @@ function PixiDemo(world,options){
 
     Demo.call(this,world);
 };
-PixiDemo.prototype = new Object(Demo.prototype);
+PixiDemo.prototype = Object.create(Demo.prototype);
 
 /**
  * Initialize the renderer and stage

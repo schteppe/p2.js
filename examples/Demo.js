@@ -7,17 +7,6 @@ var vec2 =      p2.vec2
 ,   Line =      p2.Line
 ,   EventDispatcher = p2.EventDispatcher
 
-/**
- * Extend object a with properties in body b
- * @param  {Object} a
- * @param  {Object} b
- */
-function extend(a,b){
-    for(var key in b)
-        a[key] = b[key];
-}
-
-
 // shim layer with setTimeout fallback
 var requestAnimationFrame =     window.requestAnimationFrame       ||
                                 window.webkitRequestAnimationFrame ||
@@ -33,6 +22,7 @@ var requestAnimationFrame =     window.requestAnimationFrame       ||
  * Base class for rendering of a scene.
  * @class Demo
  * @constructor
+ * @param {World} world
  */
 function Demo(world){
     var that = this;
