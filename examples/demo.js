@@ -324,8 +324,8 @@ PixiDemo.drawLine = function(g, len, color, lineWidth){
 var X = vec2.fromValues(1,0);
 var distVec = vec2.fromValues(0,0);
 PixiDemo.prototype.render = function(){
-    var w = this.w,
-        h = this.h,
+    var w = this.renderer.width,
+        h = this.renderer.height,
         pixelsPerLengthUnit = this.pixelsPerLengthUnit,
         springSprites = this.springSprites,
         sprites = this.sprites;
@@ -369,14 +369,15 @@ PixiDemo.prototype.init = function(){
 
     var that = this;
 
-    var renderer = this.renderer = PIXI.autoDetectRenderer(1280, 720);
-    var stage = this.stage = new PIXI.DisplayObjectContainer();
-    var container = this.container = new PIXI.Stage(0xFFFFFF,true);
+    var renderer =  this.renderer =     PIXI.autoDetectRenderer(1280, 720);
+    var stage =     this.stage =        new PIXI.DisplayObjectContainer();
+    var container = this.container =    new PIXI.Stage(0xFFFFFF,true);
     document.body.appendChild(this.renderer.view);
 
     this.container.addChild(stage);
-    stage.position.x = -renderer.width/2*0; // center at origin
-    stage.position.y = -renderer.height/2*0;
+
+    stage.position.x = -renderer.width/2; // center at origin
+    stage.position.y = -renderer.height/2;
 
     var lastX, lastY, lastMoveX, lastMoveY, startX, startY, down=false;
 
