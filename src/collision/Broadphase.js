@@ -143,30 +143,81 @@ function nearphaseParticlePlane(particle,plane,result,oldContacts){
 };
 
 exports.checkCircleParticle = checkCircleParticle;
-function checkCircleParticle(c,p,result){
-    var r = c.shape.radius;
-    vec2.sub(dist, c.position, p.position);
+function checkCircleParticle(   circleBody,
+                                circleShape,
+                                circleOffset,
+                                particleBody,
+                                particleShape,
+                                particleOffset,
+                                result){
+    var r = circleBody.shape.radius;
+
+    vec2.sub(dist, circleBody.position, particleBody.position);
+    if(circleOffset)    vec2.add(dist, dist, circleOffset);
+    if(particleOffset)  vec2.sub(dist, dist, particleOffset);
+
     if( vec2.squaredLength(dist) < r*r ){
-        result.push(c,p);
+        result.push(circleBody,particleBody);
     }
 };
 
 exports.nearphaseCircleParticle = nearphaseCircleParticle;
-function nearphaseCircleParticle(circle, particle, result, oldContacts){
-    var c = oldContacts.length ? oldContacts.pop() : new ContactEquation(circle,particle);
-    c.bi = circle;
-    c.bj = particle;
+function nearphaseCircleParticle(   circleBody,
+                                    circleShape,
+                                    circleOffset,
+                                    particleBody,
+                                    particleShape,
+                                    particleOffset,
+                                    result,
+                                    oldContacts,
+                                    doFriction,
+                                    frictionResult,
+                                    oldFrictionEquations,
+                                    slipForce){
+    var c = oldContacts.length ? oldContacts.pop() : new ContactEquation(circleBody,particleBody);
+    c.bi = circleBody;
+    c.bj = particleBody;
 
-    vec2.sub(dist, particle.position, circle.position);
+    vec2.sub(dist, particleBody.position, circleBody.position);
     vec2.copy(c.ni, dist);
     vec2.normalize(c.ni,c.ni);
-    vec2.copy(c.ri, dist);
+
+    // Vector from circle to contact point is the normal times the circle radius
+    vec2.scale(c.ri, c.ni, circleShape.radius);
+
+    // Vector from particle center to contact point is zero
     vec2.set(c.rj,0,0);
 
     result.push(c);
+
+    if(doFriction){
+        var eq = oldFrictionEquations.length ? oldFrictionEquations.pop() : new FrictionEquation(circleBody,particleBody);
+        eq.bi = circleBody;
+        eq.bj = particleBody;
+        eq.setSlipForce(slipForce);
+
+        // Use same ri and rj, but the tangent vector needs to be constructed from the collision normal
+        vec2.copy(eq.ri, c.ri);
+        vec2.copy(eq.rj, c.rj);
+        vec2.rotate(eq.t, c.ni, -Math.PI / 2);
+        frictionResult.push(eq);
+    }
 };
 
 exports.checkCirclePlane = checkCirclePlane;
+
+/**
+ * Check whether a circle and a plane collides. See nearphaseCirclePlane() for param details.
+ * @param  {Body}    circleBody
+ * @param  {Circle}  circleShape
+ * @param  {Array}   circleOffset
+ * @param  {Body}    planeBody
+ * @param  {Plane}   planeShape
+ * @param  {Array}   planeOffset
+ * @param  {Number}  planeAngle
+ * @param  {Array}   result         The Bodies will be pushed into this array if they collide.
+ * @return {Boolean} True if collision.
+ */
 function checkCirclePlane(  circleBody,
                             circleShape,
                             circleOffset, // Rotated offset!

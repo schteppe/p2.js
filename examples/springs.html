@@ -110,7 +110,8 @@
         var circle = new p2.Body({
             mass : 1,
             shape: circleShape,
-            position : [0, (M/2)*l*1.05 + radius]
+            position : [0, (M/2)*l*1.05 + radius],
+            angularVelocity:1,
         });
         world.addBody(circle);
 

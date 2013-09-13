@@ -40,11 +40,11 @@ NaiveBroadphase.prototype.getCollisionPairs = function(world){
 
             } else if(si instanceof Circle){
                      if(sj instanceof Circle)   bp.checkCircleCircle  (bi.shape,bi.position,bj.shape,bj.position) && result.push(bi,bj);
-                else if(sj instanceof Particle) bp.checkCircleParticle(bi,bj,result);
+                else if(sj instanceof Particle) bp.checkCircleParticle(bi,bi.shape,null,bj,bj.shape,null,result);
                 else if(sj instanceof Plane)    bp.checkCirclePlane   (bi,bi.shape,null,bj,bj.shape,null,null,result);
 
             } else if(si instanceof Particle){
-                     if(sj instanceof Circle)   bp.checkCircleParticle(bj,bi,result);
+                     if(sj instanceof Circle)   bp.checkCircleParticle(bj,bj.shape,null,bi,bi.shape,null,result);
                 else if(sj instanceof Plane)    bp.checkParticlePlane (bi,bj,result);
 
             } else if(si instanceof Plane){

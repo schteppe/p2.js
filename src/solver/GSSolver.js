@@ -120,6 +120,7 @@ GSSolver.prototype.solve = function(dt,world){
                 // Compute iteration
                 maxForce = c.maxForce;
                 minForce = c.minForce;
+
                 B = Bs[j];
                 invC = invCs[j];
                 lambdaj = lambda[j];
