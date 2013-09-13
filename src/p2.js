@@ -7,6 +7,7 @@ exports.ContactEquation =       require('./constraints/ContactEquation')        
 exports.DistanceConstraint=     require('./constraints/DistanceConstraint')     .DistanceConstraint;
 exports.Equation =              require('./constraints/Equation')               .Equation;
 exports.EventEmitter =          require('./events/EventEmitter')                .EventEmitter;
+exports.FrictionEquation =      require('./constraints/FrictionEquation')       .FrictionEquation;
 exports.GridBroadphase =        require('./collision/GridBroadphase')           .GridBroadphase;
 exports.GSSolver =              require('./solver/GSSolver')                    .GSSolver;
 exports.Island =                require('./solver/IslandSolver')                .Island;

@@ -75,23 +75,18 @@ ContactEquation.prototype.computeB = function(a,b,h){
 
     return B;
 };
+
 // Compute C = GMG+eps in the SPOOK equation
 ContactEquation.prototype.computeC = function(eps){
     var bi = this.bi;
     var bj = this.bj;
     var rixn = this.rixn;
     var rjxn = this.rjxn;
-    var invMassi = bi.invMass;
-    var invMassj = bj.invMass;
 
-    var C = invMassi + invMassj + eps;
+    var C = bi.invMass + bj.invMass + eps;
 
-    var invIi = bi.invInertia;
-    var invIj = bj.invInertia;
-
-    // Compute rxn * I * rxn for each body
-    C += invIi * rixn * rixn;
-    C += invIj * rjxn * rjxn;
+    C += bi.invInertia * rixn * rixn;
+    C += bj.invInertia * rjxn * rjxn;
 
     return C;
 };
@@ -102,11 +97,10 @@ ContactEquation.prototype.computeGWlambda = function(){
     var ulambda = computeGWlambda_ulambda;
 
     var GWlambda = 0.0;
-    vec2.sub( ulambda,bj.vlambda, bi.vlambda);
-    GWlambda += vec2.dot(ulambda,this.ni);
 
-    // Angular
+    GWlambda -= vec2.dot(this.ni, bi.vlambda);
     GWlambda -= bi.wlambda * this.rixn;
+    GWlambda += vec2.dot(this.ni, bj.vlambda);
     GWlambda += bj.wlambda * this.rjxn;
 
     return GWlambda;
@@ -114,20 +108,18 @@ ContactEquation.prototype.computeGWlambda = function(){
 
 var addToWlambda_temp = vec2.create();
 ContactEquation.prototype.addToWlambda = function(deltalambda){
-    var bi = this.bi;
-    var bj = this.bj;
-    var rixn = this.rixn;
-    var rjxn = this.rjxn;
-    var invMassi = bi.invMass;
-    var invMassj = bj.invMass;
-    var n = this.ni;
-    var temp = addToWlambda_temp;
+    var bi = this.bi,
+        bj = this.bj,
+        rixn = this.rixn,
+        rjxn = this.rjxn,
+        n = this.ni,
+        temp = addToWlambda_temp;
 
     // Add to linear velocity
-    vec2.scale(temp,n,invMassi*deltalambda);
-    vec2.sub( bi.vlambda,bi.vlambda, temp );
+    vec2.scale(temp,n,-bi.invMass*deltalambda);
+    vec2.add( bi.vlambda,bi.vlambda, temp );
 
-    vec2.scale(temp,n,invMassj*deltalambda);
+    vec2.scale(temp,n,bj.invMass*deltalambda);
     vec2.add( bj.vlambda,bj.vlambda, temp);
 
     // Add to angular velocity

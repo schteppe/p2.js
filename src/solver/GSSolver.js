@@ -35,6 +35,8 @@ function GSSolver(options){
     this.lambda = new ARRAY_TYPE(this.arrayStep);
     this.Bs =     new ARRAY_TYPE(this.arrayStep);
     this.invCs =  new ARRAY_TYPE(this.arrayStep);
+
+    this.setSpookParams(1e6,4);
 };
 GSSolver.prototype = new Solver();
 
@@ -145,7 +147,7 @@ GSSolver.prototype.solve = function(dt,world){
         // Add result to velocity
         for(i=0; i!==Nbodies; i++){
             var b=bodies[i], v=b.velocity;
-            vec2.add( v,v, b.vlambda);
+            vec2.add( v, v, b.vlambda);
             b.angularVelocity += b.wlambda;
         }
     }

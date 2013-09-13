@@ -35,11 +35,41 @@ vec2.getY = function(a){
  * @method crossLength
  * @static
  * @param  {Float32Array} a
- * @param  {Float32Arrat} b
+ * @param  {Float32Array} b
  * @return {Number}
  */
 vec2.crossLength = function(a,b){
     return a[0] * b[1] - a[1] * b[0];
+};
+
+/**
+ * Cross product between a vector and the Z component of a vector
+ * @method crossVZ
+ * @static
+ * @param  {Float32Array} out
+ * @param  {Float32Array} vec
+ * @param  {Number} zcomp
+ * @return {Number}
+ */
+vec2.crossVZ = function(out, vec, zcomp){
+    vec2.rotate(out,vec,-Math.PI/2);// Rotate according to the right hand rule
+    vec2.scale(out,out,zcomp);      // Scale with z
+    return out;
+};
+
+/**
+ * Cross product between a vector and the Z component of a vector
+ * @method crossZV
+ * @static
+ * @param  {Float32Array} out
+ * @param  {Number} zcomp
+ * @param  {Float32Array} vec
+ * @return {Number}
+ */
+vec2.crossZV = function(out, zcomp, vec){
+    vec2.rotate(out,vec,Math.PI/2); // Rotate according to the right hand rule
+    vec2.scale(out,out,zcomp);      // Scale with z
+    return out;
 };
 
 /**

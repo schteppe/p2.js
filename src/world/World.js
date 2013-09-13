@@ -70,8 +70,10 @@ function World(options){
      * @type {Array}
      */
     this.contacts = [];
-
     this.oldContacts = [];
+
+    this.frictionEquations = [];
+    this.oldFrictionEquations = [];
 
     /**
      * Gravity in the world. This is applied on all bodies in the beginning of each step().
@@ -220,7 +222,9 @@ World.prototype.step = function(dt){
 
     // Nearphase
     var oldContacts = this.contacts.concat(this.oldContacts);
+    var oldFrictionEquations = this.frictionEquations.concat(this.oldFrictionEquations);
     var contacts = this.contacts = [];
+    var frictionEquations = this.frictionEquations = [];
     for(var i=0, Nresults=result.length; i!==Nresults; i+=2){
         var bi = result[i];
         var bj = result[i+1];
@@ -229,23 +233,39 @@ World.prototype.step = function(dt){
         if(si instanceof Circle){
                  if(sj instanceof Circle)   bp.nearphaseCircleCircle  (bi,bj,contacts,oldContacts);
             else if(sj instanceof Particle) bp.nearphaseCircleParticle(bi,bj,contacts,oldContacts);
-            else if(sj instanceof Plane)    bp.nearphaseCirclePlane   (bi,bj,contacts,oldContacts);
+            else if(sj instanceof Plane)    bp.nearphaseCirclePlane   (bi,bj,contacts,oldContacts,true,frictionEquations,oldFrictionEquations);
 
         } else if(si instanceof Particle){
                  if(sj instanceof Circle)   bp.nearphaseCircleParticle(bj,bi,contacts,oldContacts);
             else if(sj instanceof Plane)    bp.nearphaseParticlePlane (bi,bj,contacts,oldContacts);
 
         } else if(si instanceof Plane){
-                 if(sj instanceof Circle)   bp.nearphaseCirclePlane   (bj,bi,contacts,oldContacts);
+                 if(sj instanceof Circle)   bp.nearphaseCirclePlane   (bj,bi,contacts,oldContacts,true,frictionEquations,oldFrictionEquations);
             else if(sj instanceof Particle) bp.nearphaseParticlePlane (bj,bi,contacts,oldContacts);
+        }
+
+        // TODO: fix
+        var reducedMass = (bi.invMass + bj.invMass);
+        if(reducedMass > 0){
+            reducedMass = 1/reducedMass;
+        }
+        var mug = vec2.length(this.gravity) * 0.3;
+        for(var j=0; j!==frictionEquations.length; j++){
+            frictionEquations[j].maxForce = 0.1;
+            frictionEquations[j].minForce = -0.1;
         }
     }
     this.oldContacts = oldContacts;
+    this.oldFrictionEquations = oldFrictionEquations;
 
-    // Add equations to solver
+    // Add contact equations to solver
     for(var i=0, Ncontacts=contacts.length; i!==Ncontacts; i++){
         solver.addEquation(contacts[i]);
     }
+    for(var i=0, Nfriction=frictionEquations.length; i!==Nfriction; i++){
+        solver.addEquation(frictionEquations[i]);
+    }
+
     // Add user-defined constraint equations
     var Nconstraints = constraints.length;
     for(i=0; i!==Nconstraints; i++){

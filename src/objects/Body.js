@@ -112,7 +112,7 @@ function Body(options){
     this.velocity = vec2.create();
     if(options.velocity) vec2.copy(this.velocity, options.velocity);
 
-    this.vlambda = vec2.create();
+    this.vlambda = vec2.fromValues(0,0);
     this.wlambda = 0;
 
     /**
