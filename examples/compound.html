@@ -12,6 +12,11 @@
 <body>
     <script>
 
+        var N = 2,
+            M = 2,
+            d = 1.2,
+            r = 0.4;
+
         var world = new p2.World({
             doProfiling:true,
             gravity : [0,-10],
@@ -19,29 +24,27 @@
 
         // Create circle bodies
         var shape = new p2.Compound();
-        var p = new p2.Body({
-            mass: 1,
-            shape: shape,
-            position: [0, 5]
-        });
-        world.addBody(p);
-        var N = 3,
-            M = 3,
-            d = 1,
-            r = 1;
         var circleShape = new p2.Circle(r);
         for(var i=0; i<N; i++){
             for(var j=0; j<M; j++){
-                var x = (i-N/2)*2*r*d;
-                var y = (j-M/2)*2*r*d;
+                var x = (i-N/2+1/2)*2*r*d;
+                var y = (j-M/2+1/2)*2*r*d;
                 shape.addChild(circleShape, [x,y], 0);
             }
         }
+        var p = new p2.Body({
+            mass: 1,
+            shape: shape,
+            position: [0, (N)*r*d*2],
+            angularVelocity : 1
+        });
+        world.addBody(p);
 
         // Create ground
         var planeShape = new p2.Plane();
         var plane = new p2.Body({
             shape: planeShape,
+            position:[0,-1],
         });
         world.addBody(plane);
 

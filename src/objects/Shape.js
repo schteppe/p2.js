@@ -128,7 +128,19 @@ function Compound(){
 };
 Compound.prototype = new Shape();
 Compound.prototype.computeMomentOfInertia = function(mass){
-    return 1; // Todo
+    var children = this.children,
+        N = children.length,
+        m = mass / N,
+        I = 0;
+
+    for(var i=0; i<N; i++){
+        var child = children[i],
+            r = vec2.length(this.childOffsets[i]),
+            Icm = child.computeMomentOfInertia(m);
+        I += Icm + m*r*r;
+    }
+
+    return I;
 };
 
 Compound.prototype.addChild = function(shape,offset,angle){

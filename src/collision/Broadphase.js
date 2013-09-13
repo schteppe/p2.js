@@ -17,39 +17,38 @@ function checkCircleCircle(c1, offset1, c2, offset2){
 
 // Generate contacts / do nearphase
 exports.nearphaseCircleCircle = nearphaseCircleCircle;
-function nearphaseCircleCircle( c1,c2,
+function nearphaseCircleCircle( bodyA,
+                                shapeA,
+                                offsetA,
+                                bodyB,
+                                shapeB,
+                                offsetB,
                                 result,
                                 oldContacts,
                                 doFriction,
                                 frictionResult,
                                 oldFrictionEquations,
-                                slipForce,
-                                offset1,
-                                offset2){
-    var c = oldContacts.length ? oldContacts.pop() : new ContactEquation(c1,c2);
-    c.bi = c1;
-    c.bj = c2;
-    vec2.sub(c.ni,c2.position,c1.position);
-    if(offset1){
-        vec2.add(c.ni,c.ni,offset2);
-        vec2.sub(c.ni,c.ni,offset1);
-    }
+                                slipForce){
+    var c = oldContacts.length ? oldContacts.pop() : new ContactEquation(bodyA,bodyB);
+    c.bi = bodyA;
+    c.bj = bodyB;
+    vec2.sub(c.ni, bodyB.position, bodyA.position);
+    if(offsetA) vec2.add(c.ni, c.ni, offsetB);
+    if(offsetB) vec2.sub(c.ni, c.ni, offsetA);
     vec2.normalize(c.ni,c.ni);
 
-    vec2.scale( c.ri,c.ni, c1.shape.radius);
-    vec2.scale( c.rj,c.ni,-c2.shape.radius);
+    vec2.scale( c.ri,c.ni, shapeA.radius);
+    vec2.scale( c.rj,c.ni,-shapeB.radius);
 
-    if(offset1){
-        vec2.add(c.ri,c.ri,offset1);
-        vec2.add(c.rj,c.rj,offset2);
-    }
+    if(offsetA) vec2.add(c.ri, c.ri, offsetA);
+    if(offsetB) vec2.add(c.rj, c.rj, offsetB);
 
     result.push(c);
 
     if(doFriction){
-        var eq = oldFrictionEquations.length ? oldFrictionEquations.pop() : new FrictionEquation(c1,c2);
-        eq.bi = c1;
-        eq.bj = c2;
+        var eq = oldFrictionEquations.length ? oldFrictionEquations.pop() : new FrictionEquation(bodyA,bodyB);
+        eq.bi = bodyA;
+        eq.bj = bodyB;
         eq.setSlipForce(slipForce);
         // Use same ri and rj, but the tangent vector needs to be constructed from the collision normal
         vec2.copy(eq.ri, c.ri);
@@ -59,6 +58,7 @@ function nearphaseCircleCircle( c1,c2,
     }
 };
 
+var rotatedOffset = vec2.create();
 exports.checkCompoundPlane = checkCompoundPlane;
 function checkCompoundPlane(compound,plane,result){
     for(var i=0; i<compound.shape.children.length; i++){
@@ -66,30 +66,48 @@ function checkCompoundPlane(compound,plane,result){
             offset = compound.shape.childOffsets[i],
             angle = compound.shape.childAngles[i];
 
-        if(s instanceof Circle){
-            // Compute distance vector between plane center and circle center
-            vec2.sub(dist, compound.position, plane.position);
-            vec2.add(dist, dist, offset);
+        vec2.rotate(rotatedOffset, offset, compound.angle);
+        //vec2.add(rotatedOffset, rotatedOffset, compound.position);
 
-            // Collision normal is the plane normal in world coords
-            vec2.rotate(worldNormal,yAxis,plane.angle);
-            if(vec2.dot(dist,worldNormal) <= s.radius){
-                result.push(compound,plane);
-                return;
-            }
+        if(s instanceof Circle){
+            if(checkCirclePlane(compound,s,rotatedOffset,plane,plane.shape,null,null,result)) return;
         }
     }
 };
 
+var rotatedOffset2 = vec2.create();
 exports.nearphaseCompoundPlane = nearphaseCompoundPlane;
-function nearphaseCompoundPlane(compound,plane,result){
-    for(var i=0; i<compound.shape.children.length; i++){
-        var s = compound.shape.children[i],
-            offset = compound.shape.childOffsets[i],
-            angle = compound.shape.childAngles[i];
+function nearphaseCompoundPlane(    compound,
+                                    plane,
+                                    result,
+                                    oldContacts,
+                                    doFriction,
+                                    frictionResult,
+                                    oldFrictionEquations,
+                                    slipForce){
+    var cs = compound.shape;
+    for(var i=0; i<cs.children.length; i++){
+        var s = cs.children[i],
+            offset = cs.childOffsets[i],
+            angle = cs.childAngles[i];
+
+        vec2.rotate(rotatedOffset2, offset, compound.angle);
+        //vec2.add(rotatedOffset2, rotatedOffset2, compound.position);
 
         if(s instanceof Circle){
-            //exports.nearphaseCirclePlane();
+            nearphaseCirclePlane(   compound,
+                                    s,
+                                    rotatedOffset2,
+                                    plane,
+                                    plane.shape,
+                                    null, // plane offset
+                                    null, // plane angle
+                                    result,
+                                    oldContacts,
+                                    doFriction,
+                                    frictionResult,
+                                    oldFrictionEquations,
+                                    slipForce);
         }
     }
 };
@@ -149,59 +167,107 @@ function nearphaseCircleParticle(circle, particle, result, oldContacts){
 };
 
 exports.checkCirclePlane = checkCirclePlane;
-function checkCirclePlane(c,p,result,circleOffset,circleAngle,planeOffset,planeAngle){
+function checkCirclePlane(  circleBody,
+                            circleShape,
+                            circleOffset, // Rotated offset!
+                            planeBody,
+                            planeShape,
+                            planeOffset,
+                            planeAngle,
+                            result){
+
     planeAngle = planeAngle || 0;
 
     // Compute distance vector between plane center and circle center
-    vec2.sub(dist,c.position,p.position);
-    if(circleOffset){
-        vec2.add(dist, dist, circleOffset);
-        vec2.sub(dist, dist, planeOffset);
-    }
+    vec2.sub(dist, circleBody.position, planeBody.position);
+    if(circleOffset) vec2.add(dist, dist, circleOffset);
+    if(planeOffset)  vec2.sub(dist, dist, planeOffset);
 
     // Collision normal is the plane normal in world coords
-    vec2.rotate(worldNormal,yAxis,p.angle + planeAngle);
-    if(vec2.dot(dist,worldNormal) <= c.shape.radius){
-        result.push(c);
-        result.push(p);
+    vec2.rotate(worldNormal, yAxis, planeBody.angle + planeAngle);
+    if(vec2.dot(dist,worldNormal) <= circleShape.radius){
+        result.push(circleBody, planeBody);
+        return true;
     }
+
+    return false;
 };
 
 var nearphaseCirclePlane_planeToCircle = vec2.create();
 var nearphaseCirclePlane_temp = vec2.create();
 
 exports.nearphaseCirclePlane = nearphaseCirclePlane;
-function nearphaseCirclePlane(c,p,
-                                        result,
-                                        oldContacts,
-                                        doFriction,
-                                        frictionResult,
-                                        oldFrictionEquations,
-                                        slipForce,
-                                        circleOffset,
-                                        circleAngle,
-                                        planeOffset,
-                                        planeAngle){
-    var contact = oldContacts.length ? oldContacts.pop() : new ContactEquation(p,c);
-    contact.bi = p;
-    contact.bj = c;
+
+/**
+ * Creates ContactEquations and FrictionEquations for a collision.
+ * @param  {Body}    circleBody           The first body that should be connected to the equations.
+ * @param  {Circle}  circleShape          The circle shape participating in the collision.
+ * @param  {Array}   circleOffset         Extra offset to take into account for the Shape, in addition to the one in circleBody.position. Will *not* be rotated by circleBody.angle (maybe it should, for sake of homogenity?). Set to null if none.
+ * @param  {Body}    planeBody            The second body that should be connected to the equations.
+ * @param  {Shape}   shapeB               The Plane shape that is participating
+ * @param  {Array}   planeOffset          Extra offset for the plane shape.
+ * @param  {Number}  planeAngle           Extra angle to apply to the plane
+ * @param  {Array}   result               Resulting ContactEquations will be pushed into this array
+ * @param  {Array}   oldContacts          Reusable ContactEquations
+ * @param  {Array}   doFriction           Whether to create FrictionEquations
+ * @param  {Array}   frictionResult       Resulting FrictionEquations will be pushed into this array
+ * @param  {Array}   oldFrictionEquations Reusable FrictionEquation objects
+ * @param  {Number}  slipForce            To be passed to created FrictionEquations
+ * @return {Boolean}                      True if we created any Equations.
+ */
+function nearphaseCirclePlane(  circleBody,
+                                circleShape,
+                                circleOffset, // Offset from body center, rotated!
+                                planeBody,
+                                shapeB,
+                                planeOffset,
+                                planeAngle,
+                                result,
+                                oldContacts,
+                                doFriction,
+                                frictionResult,
+                                oldFrictionEquations,
+                                slipForce){
+    planeAngle = planeAngle || 0;
+
+    // Vector from plane to circle
     var planeToCircle = nearphaseCirclePlane_planeToCircle;
+    vec2.sub(planeToCircle, circleBody.position, planeBody.position);
+    if(circleOffset) vec2.add(planeToCircle, planeToCircle, circleOffset);
+    if(planeOffset)  vec2.sub(planeToCircle, planeToCircle, planeOffset);
+
+    // World plane normal
+    vec2.rotate(worldNormal, yAxis, planeBody.angle+planeAngle);
+
+    // Normal direction distance
+    var d = vec2.dot(worldNormal, planeToCircle);
+
+    if(d > circleShape.radius) return false; // No overlap. Abort.
+
+    // Create contact
+    var contact = oldContacts.length ? oldContacts.pop() : new ContactEquation(planeBody,circleBody);
+    contact.bi = planeBody;
+    contact.bj = circleBody;
     var temp = nearphaseCirclePlane_temp;
-    vec2.rotate(contact.ni, yAxis, p.angle);
 
-    vec2.scale( contact.rj, contact.ni, -c.shape.radius);
+    // ni is the plane world normal
+    vec2.copy(contact.ni, worldNormal);
 
-    vec2.sub(planeToCircle,c.position,p.position);
-    var d = vec2.dot(contact.ni , planeToCircle );
-    vec2.scale(temp,contact.ni,d);
-    vec2.sub( contact.ri ,planeToCircle , temp );
+    // rj is the vector from circle center to the contact point
+    vec2.scale( contact.rj, contact.ni, -circleShape.radius);
+    if(circleOffset) vec2.add(contact.rj, contact.rj, circleOffset);
+
+    // ri is the distance from plane center to contact.
+    vec2.scale(temp, contact.ni, d);
+    vec2.sub( contact.ri, planeToCircle, temp ); // Subtract normal distance vector from the distance vector
+    if(planeOffset) vec2.add(contact.ri, contact.ri, planeOffset);
 
     result.push(contact);
 
     if(doFriction){
-        var eq = oldFrictionEquations.length ? oldFrictionEquations.pop() : new FrictionEquation(p,c);
-        eq.bi = p;
-        eq.bj = c;
+        var eq = oldFrictionEquations.length ? oldFrictionEquations.pop() : new FrictionEquation(planeBody,circleBody);
+        eq.bi = planeBody;
+        eq.bj = circleBody;
         eq.setSlipForce(slipForce);
         // Use same ri and rj, but the tangent vector needs to be constructed from the plane normal
         vec2.copy(eq.ri, contact.ri);
@@ -209,6 +275,8 @@ function nearphaseCirclePlane(c,p,
         vec2.rotate(eq.t, contact.ni, -Math.PI / 2);
         frictionResult.push(eq);
     }
+
+    return true;
 };
 
 var localAxis = vec2.create();
