@@ -79,7 +79,8 @@ setInterval(function(){
 * Added ```PointToPointConstraint```
 * Added ```Line```
 * Added ```Compound```
-* Added ```Shape.computeMomentOfInertia``` and made the ```Body``` use it
+* Added method ```Shape.computeMomentOfInertia```
+* Added method ```Body.updateMassProperties```
 * Added friction for ```Circle```/```Circle``` and ```Circle```/```Plane```
 * Removed ```mat2``` as it is not needed inside the library for now.
 
