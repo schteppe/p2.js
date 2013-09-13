@@ -225,34 +225,33 @@ World.prototype.step = function(dt){
     var oldFrictionEquations = this.frictionEquations.concat(this.oldFrictionEquations);
     var contacts = this.contacts = [];
     var frictionEquations = this.frictionEquations = [];
+    var glen = vec2.length(this.gravity);
     for(var i=0, Nresults=result.length; i!==Nresults; i+=2){
-        var bi = result[i];
-        var bj = result[i+1];
-        var si = bi.shape;
-        var sj = bj.shape;
+        var bi = result[i],
+            bj = result[i+1],
+            si = bi.shape,
+            sj = bj.shape;
+
+        var reducedMass = (bi.invMass + bj.invMass);
+        if(reducedMass > 0)
+            reducedMass = 1/reducedMass;
+
+        var mu = 0.1; // Todo: Should be looked up in a material table
+        var mug = mu * glen * reducedMass;
+        var doFriction = mu>0;
+
         if(si instanceof Circle){
-                 if(sj instanceof Circle)   bp.nearphaseCircleCircle  (bi,bj,contacts,oldContacts);
+                 if(sj instanceof Circle)   bp.nearphaseCircleCircle  (bi,bj,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
             else if(sj instanceof Particle) bp.nearphaseCircleParticle(bi,bj,contacts,oldContacts);
-            else if(sj instanceof Plane)    bp.nearphaseCirclePlane   (bi,bj,contacts,oldContacts,true,frictionEquations,oldFrictionEquations);
+            else if(sj instanceof Plane)    bp.nearphaseCirclePlane   (bi,bj,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
 
         } else if(si instanceof Particle){
                  if(sj instanceof Circle)   bp.nearphaseCircleParticle(bj,bi,contacts,oldContacts);
             else if(sj instanceof Plane)    bp.nearphaseParticlePlane (bi,bj,contacts,oldContacts);
 
         } else if(si instanceof Plane){
-                 if(sj instanceof Circle)   bp.nearphaseCirclePlane   (bj,bi,contacts,oldContacts,true,frictionEquations,oldFrictionEquations);
+                 if(sj instanceof Circle)   bp.nearphaseCirclePlane   (bj,bi,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
             else if(sj instanceof Particle) bp.nearphaseParticlePlane (bj,bi,contacts,oldContacts);
-        }
-
-        // TODO: fix
-        var reducedMass = (bi.invMass + bj.invMass);
-        if(reducedMass > 0){
-            reducedMass = 1/reducedMass;
-        }
-        var mug = vec2.length(this.gravity) * 0.3;
-        for(var j=0; j!==frictionEquations.length; j++){
-            frictionEquations[j].maxForce = 0.1;
-            frictionEquations[j].minForce = -0.1;
         }
     }
     this.oldContacts = oldContacts;

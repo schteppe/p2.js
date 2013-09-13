@@ -17,13 +17,11 @@
             gravity : [0,-1],
         });
 
-        // Create circle bodies
         var shape = new p2.Circle(1);
         var p = new p2.Body({
             mass: 1,
             shape: shape,
             position: [0, 1.5],
-            angularVelocity:0,
         });
         world.addBody(p);
 

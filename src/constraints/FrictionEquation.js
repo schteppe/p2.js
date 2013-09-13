@@ -37,6 +37,16 @@ function FrictionEquation(bi,bj,slipForce){
 FrictionEquation.prototype = new Equation();
 FrictionEquation.prototype.constructor = FrictionEquation;
 
+/**
+ * Set the slipping condition for the constraint. If the force
+ * @method setSlipForce
+ * @param  {Number} slipForce
+ */
+FrictionEquation.prototype.setSlipForce = function(slipForce){
+    this.maxForce = slipForce;
+    this.minForce = -slipForce;
+};
+
 var rixtVec = [0,0,0];
 var rjxtVec = [0,0,0];
 FrictionEquation.prototype.computeB = function(a,b,h){

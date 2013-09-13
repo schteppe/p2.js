@@ -59,15 +59,15 @@ function Spring(bodyA,bodyB,options){
  *
  * @class Body
  * @constructor
- * @param {Object} [options]
- * @param {Shape}   options.shape           Used for collision detection. If absent the body will not collide.
- * @param {number}  options.mass            A number >= 0. If zero, the body becomes static. Defaults to static [0].
+ * @param {Object}          [options]
+ * @param {Shape}           options.shape           Used for collision detection. If absent the body will not collide.
+ * @param {number}          options.mass            A number >= 0. If zero, the body becomes static. Defaults to static [0].
  * @param {Float32Array}    options.position
  * @param {Float32Array}    options.velocity
- * @param {number}  options.angle
- * @param {number}  options.angularVelocity
+ * @param {number}          options.angle
+ * @param {number}          options.angularVelocity
  * @param {Float32Array}    options.force
- * @param {number}  options.angularForce
+ * @param {number}          options.angularForce
  */
 function Body(options){
     options = options || {};
@@ -92,9 +92,29 @@ function Body(options){
      * @type {number}
      */
     this.mass = options.mass || 0;
-    this.invMass = this.mass > 0 ? 1 / this.mass : 0;
-    this.inertia = options.inertia || this.mass; // todo
-    this.invInertia = this.invMass; // todo
+
+    /**
+     * The inverse mass of the body.
+     * @property invMass
+     * @type {number}
+     */
+    this.invMass = 0;
+
+    /**
+     * The inertia of the body around the Z axis.
+     * @property inertia
+     * @type {number}
+     */
+    this.inertia = 0;
+
+    /**
+     * The inverse inertia of the body.
+     * @property invInertia
+     * @type {number}
+     */
+    this.invInertia = 0;
+
+    this.updateMassProperties();
 
     /**
      * The position of the body
@@ -154,6 +174,26 @@ function Body(options){
 
 Body._idCounter = 0;
 
+Body.prototype.updateMassProperties = function(){
+    // Mass should already be given
+    var m = this.mass,
+        I = this.inertia,
+        s = this.shape;
+
+    if(s){
+        I = s.computeMomentOfInertia(m);
+    } else {
+        m = 0;
+        I = 0;
+    }
+
+    this.mass = m;
+    this.inertia = I;
+
+    // Inverse mass properties are easy
+    this.invMass = m > 0 ? 1/m : 0;
+    this.invInertia = I>0 ? 1/I : 0;
+};
 
 /**
  * Apply force to a world point. This could for example be a point on the RigidBody surface. Applying force this way will add to Body.force and Body.angularForce.

@@ -36,7 +36,13 @@ exports.checkParticlePlane = function(particle,plane,result){
 }
 
 // Generate contacts / do nearphase
-exports.nearphaseCircleCircle = function(c1,c2,result,oldContacts){
+exports.nearphaseCircleCircle = function(c1,c2,
+                                        result,
+                                        oldContacts,
+                                        doFriction,
+                                        frictionResult,
+                                        oldFrictionEquations,
+                                        slipForce){
     var c = oldContacts.length ? oldContacts.pop() : new ContactEquation(c1,c2);
     c.bi = c1;
     c.bj = c2;
@@ -45,6 +51,18 @@ exports.nearphaseCircleCircle = function(c1,c2,result,oldContacts){
     vec2.scale( c.ri,c.ni, c1.shape.radius);
     vec2.scale( c.rj,c.ni,-c2.shape.radius);
     result.push(c);
+
+    if(doFriction){
+        var eq = oldFrictionEquations.length ? oldFrictionEquations.pop() : new FrictionEquation(c1,c2);
+        eq.bi = c1;
+        eq.bj = c2;
+        eq.setSlipForce(slipForce);
+        // Use same ri and rj, but the tangent vector needs to be constructed from the collision normal
+        vec2.copy(eq.ri, c.ri);
+        vec2.copy(eq.rj, c.rj);
+        vec2.rotate(eq.t, c.ni, -Math.PI / 2);
+        frictionResult.push(eq);
+    }
 };
 
 exports.nearphaseParticlePlane = function(particle,plane,result,oldContacts){
@@ -91,7 +109,13 @@ exports.nearphaseCircleParticle = function(circle, particle, result, oldContacts
 var nearphaseCirclePlane_rot = mat2.create();
 var nearphaseCirclePlane_planeToCircle = vec2.create();
 var nearphaseCirclePlane_temp = vec2.create();
-exports.nearphaseCirclePlane = function(c,p,result,oldContacts,doFriction,frictionResult,oldFrictionEquations){
+exports.nearphaseCirclePlane = function(c,p,
+                                        result,
+                                        oldContacts,
+                                        doFriction,
+                                        frictionResult,
+                                        oldFrictionEquations,
+                                        slipForce){
     var rot = nearphaseCirclePlane_rot;
     var contact = oldContacts.length ? oldContacts.pop() : new ContactEquation(p,c);
     contact.bi = p;
@@ -113,6 +137,7 @@ exports.nearphaseCirclePlane = function(c,p,result,oldContacts,doFriction,fricti
         var eq = oldFrictionEquations.length ? oldFrictionEquations.pop() : new FrictionEquation(p,c);
         eq.bi = p;
         eq.bj = c;
+        eq.setSlipForce(slipForce);
         // Use same ri and rj, but the tangent vector needs to be constructed from the plane normal
         vec2.copy(eq.ri, contact.ri);
         vec2.copy(eq.rj, contact.rj);

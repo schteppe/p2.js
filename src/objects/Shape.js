@@ -1,11 +1,22 @@
+exports.Shape = Shape;
+exports.Particle = Particle;
+exports.Circle = Circle;
+exports.Plane = Plane;
+exports.Convex = Convex;
+exports.Line = Line;
+
 /**
  * Base class for shapes.
  * @class Shape
  * @constructor
  */
-exports.Shape = Shape;
 function Shape(){
 
+};
+
+// http://en.wikipedia.org/wiki/List_of_moments_of_inertia
+Shape.prototype.computeMomentOfInertia = function(mass){
+    throw new Error("Shape.computeMomentOfInertia is not implemented in this Shape...");
 };
 
 /**
@@ -14,9 +25,14 @@ function Shape(){
  * @constructor
  * @extends Shape
  */
-exports.Particle = function(){
+function Particle(){
     Shape.apply(this);
 };
+Particle.prototype = new Shape();
+Particle.prototype.computeMomentOfInertia = function(mass){
+    return 0;
+};
+
 
 /**
  * Circle shape class.
@@ -25,7 +41,7 @@ exports.Particle = function(){
  * @constructor
  * @param {number} radius
  */
-exports.Circle = function(radius){
+function Circle(radius){
     Shape.apply(this);
 
     /**
@@ -35,6 +51,11 @@ exports.Circle = function(radius){
      */
     this.radius = radius || 1;
 };
+Circle.prototype = new Shape();
+Circle.prototype.computeMomentOfInertia = function(mass){
+    var r = this.radius;
+    return mass * r * r / 2;
+};
 
 /**
  * Plane shape class. The plane is facing in the Y direction.
@@ -42,8 +63,12 @@ exports.Circle = function(radius){
  * @extends Shape
  * @constructor
  */
-exports.Plane = function(){
+function Plane(){
     Shape.apply(this);
+};
+Plane.prototype = new Shape();
+Plane.prototype.computeMomentOfInertia = function(mass){
+    return 0;
 };
 
 /**
@@ -53,7 +78,6 @@ exports.Plane = function(){
  * @extends Shape
  * @param {Array} vertices An array of Float32Array vertices that span this shape. Vertices are given in counter-clockwise (CCW) direction.
  */
-exports.Convex = Convex;
 function Convex(vertices){
     Shape.apply(this);
 
@@ -64,6 +88,10 @@ function Convex(vertices){
      */
     this.vertices = vertices;
 };
+Convex.prototype = new Shape();
+Convex.prototype.computeMomentOfInertia = function(mass){
+    return 1;
+};
 
 /**
  * Line shape class. The line shape is along the x direction, and stretches from [-length/2, 0] to [length/2,0].
@@ -71,7 +99,11 @@ function Convex(vertices){
  * @extends Shape
  * @constructor
  */
-exports.Line = function(length){
+function Line(length){
     Shape.apply(this);
     this.length = length;
+};
+Line.prototype = new Shape();
+Line.prototype.computeMomentOfInertia = function(mass){
+    return 1;
 };
