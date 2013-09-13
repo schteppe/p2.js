@@ -112,3 +112,26 @@ Line.prototype = new Shape();
 Line.prototype.computeMomentOfInertia = function(mass){
     return 1;
 };
+
+/**
+ * Compound shape class. Use it if you need several basic shapes in your body.
+ * @class Compound
+ * @extends {Shape}
+ * @constructor
+ */
+function Compound(){
+    Shape.apply(this);
+    this.children       = [];
+    this.childOffsets   = [];
+    this.childAngles    = [];
+};
+Compound.prototype = new Shape();
+Compound.prototype.computeMomentOfInertia = function(mass){
+    return 1; // Todo
+};
+
+Compound.prototype.addChild = function(shape,offset,angle){
+    this.children.push(shape);
+    this.childOffsets.push(offset);
+    this.childAngles.push(angle);
+};
