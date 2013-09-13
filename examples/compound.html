@@ -15,7 +15,7 @@
         var N = 2,
             M = 2,
             d = 1.2,
-            r = 0.4;
+            r = 0.2;
 
         var world = new p2.World({
             doProfiling:true,
@@ -24,12 +24,13 @@
 
         // Create circle bodies
         var shape = new p2.Compound();
-        var circleShape = new p2.Circle(r);
+        //var childShape = new p2.Circle(r);
+        var childShape = new p2.Particle();
         for(var i=0; i<N; i++){
             for(var j=0; j<M; j++){
                 var x = (i-N/2+1/2)*2*r*d;
                 var y = (j-M/2+1/2)*2*r*d;
-                shape.addChild(circleShape, [x,y], 0);
+                shape.addChild(childShape, [x,y], 0);
             }
         }
         var p = new p2.Body({

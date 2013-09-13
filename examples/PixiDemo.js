@@ -248,6 +248,8 @@ PixiDemo.prototype.addRenderable = function(obj){
                 var angle = obj.shape.childAngles[i];
                 if(child instanceof Circle){
                     PixiDemo.drawCircle(sprite,offset[0]*ppu,offset[1]*ppu,angle,child.radius*ppu,0xFFFFFF,lw);
+                } else if(child instanceof Particle){
+                    PixiDemo.drawCircle(sprite,offset[0]*ppu,offset[1]*ppu,angle,2*lw,0x000000,0);
                 }
             }
             this.sprites.push(sprite);

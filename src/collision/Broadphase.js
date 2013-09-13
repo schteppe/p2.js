@@ -109,6 +109,20 @@ function nearphaseCompoundPlane(    compound,
                                     frictionResult,
                                     oldFrictionEquations,
                                     slipForce);
+        } else if(s instanceof Particle){
+            nearphaseParticlePlane( compound,
+                                    s,
+                                    rotatedOffset2,
+                                    plane,
+                                    plane.shape,
+                                    null, // plane offset
+                                    null, // plane angle
+                                    result,
+                                    oldContacts,
+                                    doFriction,
+                                    frictionResult,
+                                    oldFrictionEquations,
+                                    slipForce);
         }
     }
 };
@@ -131,7 +145,10 @@ function checkParticlePlane(particleBody,
     vec2.rotate(worldNormal, yAxis, planeBody.angle + planeAngle);
     if(vec2.dot(dist,worldNormal) < 0){
         result.push(particleBody,planeBody);
+        return true;
     }
+
+    return false;
 };
 
 exports.nearphaseParticlePlane = nearphaseParticlePlane;
@@ -160,14 +177,23 @@ function nearphaseParticlePlane(particleBody,
 
     vec2.rotate(c.ni, yAxis, planeBody.angle + planeAngle);
 
-    vec2.scale( dist, c.ni, vec2.dot(dist, c.ni) );
+    var d = vec2.dot(dist, c.ni);
+
+    if(d > 0) return false;
+
+    vec2.scale( dist, c.ni, d );
     // dist is now the distance vector in the normal direction
 
     // ri is the particleBody position projected down onto the plane
     vec2.copy( c.ri, particleBody.position);
     vec2.sub( c.ri, c.ri, planeBody.position);
+    if(particleOffset)  vec2.add( c.ri, c.ri, particleOffset);
+    if(planeOffset)     vec2.sub( c.ri, c.ri, planeOffset);
     vec2.sub( c.ri, c.ri, dist);
+
     vec2.set( c.rj, 0, 0 );
+    if(particleOffset) vec2.add( c.rj, c.rj, particleOffset );
+
     result.push(c);
 
     if(doFriction){
@@ -181,7 +207,10 @@ function nearphaseParticlePlane(particleBody,
         vec2.copy(eq.rj, c.rj);
         vec2.rotate(eq.t, c.ni, -Math.PI / 2);
         frictionResult.push(eq);
+        return true;
     }
+
+    return false;
 };
 
 exports.checkCircleParticle = checkCircleParticle;
