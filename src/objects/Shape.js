@@ -14,7 +14,12 @@ function Shape(){
 
 };
 
-// http://en.wikipedia.org/wiki/List_of_moments_of_inertia
+/**
+ * Should return the moment of inertia around the Z axis of the body given the total mass. See <a href="http://en.wikipedia.org/wiki/List_of_moments_of_inertia">Wikipedia's list of moments of inertia</a>.
+ * @method computeMomentOfInertia
+ * @param  {Number} mass
+ * @return {Number} If the inertia is infinity or if the object simply isn't possible to rotate, return 0.
+ */
 Shape.prototype.computeMomentOfInertia = function(mass){
     throw new Error("Shape.computeMomentOfInertia is not implemented in this Shape...");
 };
@@ -23,21 +28,21 @@ Shape.prototype.computeMomentOfInertia = function(mass){
  * Particle shape class.
  * @class Particle
  * @constructor
- * @extends Shape
+ * @extends {Shape}
  */
 function Particle(){
     Shape.apply(this);
 };
 Particle.prototype = new Shape();
 Particle.prototype.computeMomentOfInertia = function(mass){
-    return 0;
+    return 0; // Can't rotate a particle
 };
 
 
 /**
  * Circle shape class.
  * @class Circle
- * @extends Shape
+ * @extends {Shape}
  * @constructor
  * @param {number} radius
  */
@@ -60,7 +65,7 @@ Circle.prototype.computeMomentOfInertia = function(mass){
 /**
  * Plane shape class. The plane is facing in the Y direction.
  * @class Plane
- * @extends Shape
+ * @extends {Shape}
  * @constructor
  */
 function Plane(){
@@ -68,14 +73,14 @@ function Plane(){
 };
 Plane.prototype = new Shape();
 Plane.prototype.computeMomentOfInertia = function(mass){
-    return 0;
+    return 0; // Plane is infinite. The inertia should therefore be infinty but by convention we set 0 here
 };
 
 /**
  * Convex shape class.
  * @class Convex
  * @constructor
- * @extends Shape
+ * @extends {Shape}
  * @param {Array} vertices An array of Float32Array vertices that span this shape. Vertices are given in counter-clockwise (CCW) direction.
  */
 function Convex(vertices){
@@ -96,7 +101,7 @@ Convex.prototype.computeMomentOfInertia = function(mass){
 /**
  * Line shape class. The line shape is along the x direction, and stretches from [-length/2, 0] to [length/2,0].
  * @class Plane
- * @extends Shape
+ * @extends {Shape}
  * @constructor
  */
 function Line(length){
