@@ -78,6 +78,10 @@ setInterval(function(){
 * Added contact collision response between ```Circle``` and ```Plane```
 * Added ```PointToPointConstraint```
 * Added ```Line```
+* Added ```Compound```
+* Added ```Shape.computeMomentOfInertia``` and made the ```Body``` use it
+* Added friction for ```Circle```/```Circle``` and ```Circle```/```Plane```
+* Removed ```mat2``` as it is not needed inside the library for now.
 
 ##### 0.1
 
