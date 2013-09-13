@@ -1,5 +1,4 @@
 var vec2 = require('../math/vec2')
-,   mat2 = require('../math/mat2')
 ,   Equation = require('./Equation').Equation
 
 exports.FrictionEquation = FrictionEquation;

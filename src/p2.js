@@ -24,4 +24,3 @@ exports.World =                 require('./world/World')                        
 
 // Export the gl-matrix stuff we already use internally. Why shouldn't we? It's already in the bundle.
 exports.vec2 = require('./math/vec2');
-exports.mat2 = require('./math/mat2');

@@ -1,12 +1,11 @@
 var vec2 = require('../math/vec2')
-,   mat2 = require('../math/mat2')
 ,   ContactEquation = require('../constraints/ContactEquation').ContactEquation
 ,   FrictionEquation = require('../constraints/FrictionEquation').FrictionEquation
 
 var dist = vec2.create();
-var rot = mat2.create();
 var worldNormal = vec2.create();
 var yAxis = vec2.fromValues(0,1);
+
 exports.checkCircleCircle = function(c1,c2,result){
     vec2.sub(dist,c1.position,c2.position);
     var R1 = c1.shape.radius;
@@ -16,24 +15,6 @@ exports.checkCircleCircle = function(c1,c2,result){
         result.push(c2);
     }
 };
-
-exports.checkCirclePlane = function(c,p,result){
-    vec2.sub(dist,c.position,p.position);
-    vec2.rotate(worldNormal,yAxis,p.angle);
-    if(vec2.dot(dist,worldNormal) <= c.shape.radius){
-        result.push(c);
-        result.push(p);
-    }
-}
-
-exports.checkParticlePlane = function(particle,plane,result){
-    vec2.sub(dist, particle.position, plane.position);
-    vec2.rotate(worldNormal, yAxis, plane.angle);
-    if(vec2.dot(dist,worldNormal) < 0){
-        result.push(particle);
-        result.push(plane);
-    }
-}
 
 // Generate contacts / do nearphase
 exports.nearphaseCircleCircle = function(c1,c2,
@@ -64,6 +45,15 @@ exports.nearphaseCircleCircle = function(c1,c2,
         frictionResult.push(eq);
     }
 };
+
+exports.checkParticlePlane = function(particle,plane,result){
+    vec2.sub(dist, particle.position, plane.position);
+    vec2.rotate(worldNormal, yAxis, plane.angle);
+    if(vec2.dot(dist,worldNormal) < 0){
+        result.push(particle);
+        result.push(plane);
+    }
+}
 
 exports.nearphaseParticlePlane = function(particle,plane,result,oldContacts){
     var c = oldContacts.length ? oldContacts.pop() : new ContactEquation(plane,particle);
@@ -106,7 +96,15 @@ exports.nearphaseCircleParticle = function(circle, particle, result, oldContacts
     result.push(c);
 };
 
-var nearphaseCirclePlane_rot = mat2.create();
+exports.checkCirclePlane = function(c,p,result){
+    vec2.sub(dist,c.position,p.position);
+    vec2.rotate(worldNormal,yAxis,p.angle);
+    if(vec2.dot(dist,worldNormal) <= c.shape.radius){
+        result.push(c);
+        result.push(p);
+    }
+}
+
 var nearphaseCirclePlane_planeToCircle = vec2.create();
 var nearphaseCirclePlane_temp = vec2.create();
 exports.nearphaseCirclePlane = function(c,p,
@@ -116,7 +114,6 @@ exports.nearphaseCirclePlane = function(c,p,
                                         frictionResult,
                                         oldFrictionEquations,
                                         slipForce){
-    var rot = nearphaseCirclePlane_rot;
     var contact = oldContacts.length ? oldContacts.pop() : new ContactEquation(p,c);
     contact.bi = p;
     contact.bj = c;
