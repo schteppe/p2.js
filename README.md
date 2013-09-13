@@ -81,7 +81,7 @@ setInterval(function(){
 * Added ```Compound```
 * Added method ```Shape.computeMomentOfInertia```
 * Added method ```Body.updateMassProperties```
-* Added friction for ```Circle```/```Circle``` and ```Circle```/```Plane```
+* Added friction for ```Circle```/```Circle```, ```Circle```/```Plane```, ```Particle```/```Plane``` and  ```Circle```/```Particle```
 * Removed ```mat2``` as it is not needed inside the library for now.
 
 ##### 0.1

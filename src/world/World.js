@@ -248,11 +248,11 @@ World.prototype.step = function(dt){
 
         } else if(si instanceof Particle){
                  if(sj instanceof Circle)   bp.nearphaseCircleParticle(bj,sj,null,bi,si,null,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
-            else if(sj instanceof Plane)    bp.nearphaseParticlePlane (bi,bj,contacts,oldContacts);
+            else if(sj instanceof Plane)    bp.nearphaseParticlePlane (bi,si,null,bj,sj,null,null,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
 
         } else if(si instanceof Plane){
                  if(sj instanceof Circle)   bp.nearphaseCirclePlane   (bj,sj,null,bi,si,null,null,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
-            else if(sj instanceof Particle) bp.nearphaseParticlePlane (bj,bi,contacts,oldContacts);
+            else if(sj instanceof Particle) bp.nearphaseParticlePlane (bj,sj,null,bi,si,null,null,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
             else if(sj instanceof Compound) bp.nearphaseCompoundPlane (bj,bi,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
 
         } else if(si instanceof Compound){

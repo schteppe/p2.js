@@ -67,10 +67,11 @@ function checkCompoundPlane(compound,plane,result){
             angle = compound.shape.childAngles[i];
 
         vec2.rotate(rotatedOffset, offset, compound.angle);
-        //vec2.add(rotatedOffset, rotatedOffset, compound.position);
 
         if(s instanceof Circle){
             if(checkCirclePlane(compound,s,rotatedOffset,plane,plane.shape,null,null,result)) return;
+        } else if(s instanceof Particle){
+            if(checkParticlePlane(compound,s,rotatedOffset,plane,plane.shape,null,null,result)) return;
         }
     }
 };
@@ -113,33 +114,74 @@ function nearphaseCompoundPlane(    compound,
 };
 
 exports.checkParticlePlane = checkParticlePlane;
-function checkParticlePlane(particle,plane,result){
-    vec2.sub(dist, particle.position, plane.position);
-    vec2.rotate(worldNormal, yAxis, plane.angle);
+function checkParticlePlane(particleBody,
+                            particleShape,
+                            particleOffset,
+                            planeBody,
+                            planeShape,
+                            planeOffset,
+                            planeAngle,
+                            result){
+    planeAngle = planeAngle || 0;
+
+    vec2.sub(dist, particleBody.position, planeBody.position);
+    if(particleOffset)  vec2.add(dist, dist, particleOffset);
+    if(planeOffset)     vec2.sub(dist, dist, planeOffset);
+
+    vec2.rotate(worldNormal, yAxis, planeBody.angle + planeAngle);
     if(vec2.dot(dist,worldNormal) < 0){
-        result.push(particle);
-        result.push(plane);
+        result.push(particleBody,planeBody);
     }
 };
 
 exports.nearphaseParticlePlane = nearphaseParticlePlane;
-function nearphaseParticlePlane(particle,plane,result,oldContacts){
-    var c = oldContacts.length ? oldContacts.pop() : new ContactEquation(plane,particle);
-    c.bi = plane;
-    c.bj = particle;
+function nearphaseParticlePlane(particleBody,
+                                particleShape,
+                                particleOffset,
+                                planeBody,
+                                planeShape,
+                                planeOffset,
+                                planeAngle,
+                                result,
+                                oldContacts,
+                                doFriction,
+                                frictionResult,
+                                oldFrictionEquations,
+                                slipForce){
+    planeAngle = planeAngle || 0;
 
-    vec2.sub(dist, particle.position, plane.position);
-    vec2.rotate(c.ni, yAxis, plane.angle);
+    var c = oldContacts.length ? oldContacts.pop() : new ContactEquation(planeBody,particleBody);
+    c.bi = planeBody;
+    c.bj = particleBody;
+
+    vec2.sub(dist, particleBody.position, planeBody.position);
+    if(particleOffset)  vec2.add(dist, dist, particleOffset);
+    if(planeOffset)     vec2.sub(dist, dist, planeOffset);
+
+    vec2.rotate(c.ni, yAxis, planeBody.angle + planeAngle);
 
     vec2.scale( dist, c.ni, vec2.dot(dist, c.ni) );
     // dist is now the distance vector in the normal direction
 
-    // ri is the particle position projected down onto the plane
-    vec2.copy( c.ri, particle.position);
-    vec2.sub( c.ri, c.ri, plane.position);
+    // ri is the particleBody position projected down onto the plane
+    vec2.copy( c.ri, particleBody.position);
+    vec2.sub( c.ri, c.ri, planeBody.position);
     vec2.sub( c.ri, c.ri, dist);
     vec2.set( c.rj, 0, 0 );
     result.push(c);
+
+    if(doFriction){
+        var eq = oldFrictionEquations.length ? oldFrictionEquations.pop() : new FrictionEquation(planeBody,particleBody);
+        eq.bi = planeBody;
+        eq.bj = particleBody;
+        eq.setSlipForce(slipForce);
+
+        // Use same ri and rj, but the tangent vector needs to be constructed from the collision normal
+        vec2.copy(eq.ri, c.ri);
+        vec2.copy(eq.rj, c.rj);
+        vec2.rotate(eq.t, c.ni, -Math.PI / 2);
+        frictionResult.push(eq);
+    }
 };
 
 exports.checkCircleParticle = checkCircleParticle;
