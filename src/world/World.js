@@ -2,6 +2,7 @@ var GSSolver = require('../solver/GSSolver').GSSolver,
     NaiveBroadphase = require('../collision/NaiveBroadphase').NaiveBroadphase,
     vec2 = require('../math/vec2'),
     Circle = require('../objects/Shape').Circle,
+    Compound = require('../objects/Shape').Compound,
     Line = require('../objects/Shape').Line,
     Plane = require('../objects/Shape').Plane,
     Particle = require('../objects/Shape').Particle,
@@ -252,6 +253,11 @@ World.prototype.step = function(dt){
         } else if(si instanceof Plane){
                  if(sj instanceof Circle)   bp.nearphaseCirclePlane   (bj,bi,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
             else if(sj instanceof Particle) bp.nearphaseParticlePlane (bj,bi,contacts,oldContacts);
+            else if(sj instanceof Compound) bp.nearphaseCompoundPlane (bj,bi,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
+
+        } else if(si instanceof Compound){
+                 if(sj instanceof Plane)    bp.nearphaseCompoundPlane (bi,bj,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
+
         }
     }
     this.oldContacts = oldContacts;
@@ -440,6 +446,11 @@ World.prototype.toJSON = function(){
                 type : "Line",
                 length : s.length
             };
+        } else if(s instanceof Compound){
+            jsonShape = {
+                type : "Compound",
+                // TODO: CHILDREN
+            };
         } else {
             throw new Error("Shape type not supported yet!");
         }
@@ -498,6 +509,9 @@ World.prototype.fromJSON = function(json){
                             break;
                         case "Line":
                             shape = new Line(js.length);
+                            break;
+                        case "Compound":
+                            shape = new Compound();
                             break;
                         default:
                             throw new Error("Shape type not supported: "+js.type);

@@ -1,5 +1,6 @@
 exports.Shape = Shape;
 exports.Particle = Particle;
+exports.Compound = Compound;
 exports.Circle = Circle;
 exports.Plane = Plane;
 exports.Convex = Convex;

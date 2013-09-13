@@ -2,6 +2,7 @@ var vec2 =      p2.vec2
 ,   Spring =    p2.Spring
 ,   Body =      p2.Body
 ,   Circle =    p2.Circle
+,   Compound =  p2.Compound
 ,   Plane =     p2.Plane
 ,   Particle =  p2.Particle
 ,   Line =      p2.Line
