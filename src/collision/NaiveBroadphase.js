@@ -104,6 +104,16 @@ NaiveBroadphase.prototype.getCollisionPairs = function(world){
                             collide = bp.checkParticlePlane(si1,xi1_world,sj1,xj1_world,aj1_world);
                             break;
                         }
+                        break;
+
+                    case Shape.PLANE:
+
+                        switch(sj1.type){
+                        case Shape.CONVEX:
+                            collide = bp.checkConvexPlane(sj1,xj1_world,aj1_world, si1,xi1_world,ai1_world);
+                            break;
+                        }
+                        break;
                     }
 
                     if(collide){

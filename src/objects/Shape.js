@@ -1,5 +1,6 @@
 exports.Shape = Shape;
 exports.Particle = Particle;
+exports.Rectangle = Rectangle;
 exports.Circle = Circle;
 exports.Plane = Plane;
 exports.Convex = Convex;
@@ -19,6 +20,7 @@ Shape.PARTICLE =    2;
 Shape.PLANE =       4;
 Shape.CONVEX =      8;
 Shape.LINE =        16;
+Shape.RECTANGLE =   32;
 
 /**
  * Should return the moment of inertia around the Z axis of the body given the total mass. See <a href="http://en.wikipedia.org/wiki/List_of_moments_of_inertia">Wikipedia's list of moments of inertia</a>.
@@ -42,6 +44,35 @@ function Particle(){
 Particle.prototype = new Shape();
 Particle.prototype.computeMomentOfInertia = function(mass){
     return 0; // Can't rotate a particle
+};
+
+/**
+ * Rectangle shape class.
+ * @class Rectangle
+ * @constructor
+ * @extends {Convex}
+ */
+function Rectangle(w,h){
+    var verts = [   vec2.fromValues(-w/2, -h/2),
+                    vec2.fromValues( w/2, -h/2),
+                    vec2.fromValues( w/2,  h/2),
+                    vec2.fromValues(-w/2,  h/2)];
+    Convex.call(this,verts);
+    this.width = w;
+    this.height = h;
+};
+Rectangle.prototype = new Convex();
+
+/**
+ * Compute moment of inertia
+ * @method computeMomentOfInertia
+ * @param  {Number} mass
+ * @return {Number}
+ */
+Rectangle.prototype.computeMomentOfInertia = function(mass){
+    var w = this.width,
+        h = this.height;
+    return mass * (h*h + w*w) / 12;
 };
 
 
@@ -97,7 +128,7 @@ function Convex(vertices){
      * @property vertices
      * @type {Array}
      */
-    this.vertices = vertices;
+    this.vertices = vertices || [];
 };
 Convex.prototype = new Shape();
 Convex.prototype.computeMomentOfInertia = function(mass){

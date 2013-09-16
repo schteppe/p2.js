@@ -2,6 +2,7 @@ var GSSolver = require('../solver/GSSolver').GSSolver,
     NaiveBroadphase = require('../collision/NaiveBroadphase').NaiveBroadphase,
     vec2 = require('../math/vec2'),
     Circle = require('../objects/Shape').Circle,
+    Rectangle = require('../objects/Shape').Rectangle,
     Compound = require('../objects/Shape').Compound,
     Line = require('../objects/Shape').Line,
     Plane = require('../objects/Shape').Plane,
@@ -243,7 +244,7 @@ World.prototype.step = function(dt){
                 ai = bi.shapeAngles[k] || 0;
 
             // All shapes of body j
-            for(var l=0; l<bi.shapes.length; l++){
+            for(var l=0; l<bj.shapes.length; l++){
                 var sj = bj.shapes[l],
                     xj = bj.shapeOffsets[l] || zero,
                     aj = bj.shapeAngles[l] || 0;
@@ -254,7 +255,6 @@ World.prototype.step = function(dt){
                 vec2.add(xj_world, xj_world, bj.position);
                 var ai_world = ai + bi.angle;
                 var aj_world = aj + bj.angle;
-
                 if(si instanceof Circle){
                          if(sj instanceof Circle)   bp.nearphaseCircleCircle  (bi,si,xi_world,ai_world, bj,sj,xj_world,aj_world,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
                     else if(sj instanceof Particle) bp.nearphaseCircleParticle(bi,si,xi_world,ai_world, bj,sj,xj_world,aj_world,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
@@ -267,6 +267,10 @@ World.prototype.step = function(dt){
                 } else if(si instanceof Plane){
                          if(sj instanceof Circle)   bp.nearphaseCirclePlane   (bj,sj,xj_world,aj_world, bi,si,xi_world,ai_world,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
                     else if(sj instanceof Particle) bp.nearphaseParticlePlane (bj,sj,xj_world,aj_world, bi,si,xi_world,ai_world,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
+                    else if(sj instanceof Rectangle)bp.nearphaseConvexPlane   (bj,sj,xj_world,aj_world, bi,si,xi_world,ai_world,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
+
+                } else if(si instanceof Rectangle){
+                         if(sj instanceof Plane)   bp.nearphaseConvexPlane    (bi,si,xi_world,ai_world, bj,sj,xj_world,aj_world,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
 
                 }
             }
@@ -460,10 +464,12 @@ World.prototype.toJSON = function(){
                     type : "Particle",
                 };
             } else if(s instanceof Line){
-                jsonShape = {
-                    type : "Line",
-                    length : s.length
-                };
+                jsonShape = {   type : "Line",
+                                length : s.length };
+            } else if(s instanceof Rectangle){
+                jsonShape = {   type : "Rectangle",
+                                width : s.width,
+                                height : s.height };
             } else {
                 throw new Error("Shape type not supported yet!");
             }
@@ -528,18 +534,11 @@ World.prototype.fromJSON = function(json){
                     var shape, js=jss[j];
 
                     switch(js.type){
-                        case "Circle":
-                            shape = new Circle(js.radius);
-                            break;
-                        case "Plane":
-                            shape = new Plane();
-                            break;
-                        case "Particle":
-                            shape = new Particle();
-                            break;
-                        case "Line":
-                            shape = new Line(js.length);
-                            break;
+                        case "Circle":      shape = new Circle(js.radius);              break;
+                        case "Plane":       shape = new Plane();                        break;
+                        case "Particle":    shape = new Particle();                     break;
+                        case "Line":        shape = new Line(js.length);                break;
+                        case "Rectangle":   shape = new Rectangle(js.width,js.height);  break;
                         default:
                             throw new Error("Shape type not supported: "+js.type);
                             break;

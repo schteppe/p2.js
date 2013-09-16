@@ -4,6 +4,7 @@ var vec2 =      p2.vec2
 ,   Circle =    p2.Circle
 ,   Compound =  p2.Compound
 ,   Plane =     p2.Plane
+,   Rectangle=  p2.Rectangle
 ,   Particle =  p2.Particle
 ,   Line =      p2.Line
 ,   EventDispatcher = p2.EventDispatcher

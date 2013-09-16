@@ -17,6 +17,7 @@
             d = 1.2,
             r = 0.3;
 
+
         var childShape1 = new p2.Particle();
         var childShape2 = new p2.Circle(r);
 
@@ -46,6 +47,17 @@
         }
         world.addBody(body1);
         world.addBody(body2);
+
+        // Create box
+        var boxShape = new p2.Rectangle(1,1);
+        var box = new p2.Body({
+            position:[3,1],
+            mass : 1,
+            angularVelocity:0.2
+        });
+        box.addShape(boxShape,[0,0.5]);
+        box.addShape(boxShape,[0,-0.5]);
+        world.addBody(box);
 
         // Create ground
         var planeShape = new p2.Plane();

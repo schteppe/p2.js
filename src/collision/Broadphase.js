@@ -61,6 +61,111 @@ function nearphaseCircleCircle(bi,si,xi,ai, bj,sj,xj,aj,
     }
 };
 
+exports.checkConvexPlane = checkConvexPlane;
+var checkConvexPlane_convexSpan = vec2.create();
+function checkConvexPlane(  convexShape,
+                            convexOffset,
+                            convexAngle,
+                            planeShape,
+                            planeOffset,
+                            planeAngle){
+    var convexSpan = checkConvexPlane_convexSpan;
+
+    vec2.rotate(worldNormal, yAxis, planeAngle);
+    projectConvexOntoAxis(convexShape, convexOffset, convexAngle, worldNormal, convexSpan);
+
+    // Project the plane position
+    var planePos = vec2.dot(planeOffset,worldNormal);
+    return convexSpan[0] < planePos;
+}
+
+var worldVertex = vec2.create();
+exports.nearphaseConvexPlane = nearphaseConvexPlane;
+function nearphaseConvexPlane ( bi,si,xi,ai, bj,sj,xj,aj,
+                                result,
+                                oldContacts,
+                                doFriction,
+                                frictionResult,
+                                oldFrictionEquations,
+                                slipForce){
+    var convexBody = bi,
+        convexOffset = xi,
+        convexShape = si,
+        convexAngle = ai,
+        planeBody = bj,
+        planeShape = sj,
+        planeOffset = xj,
+        planeAngle = aj;
+
+    var numReported = 0;
+    vec2.rotate(worldNormal, yAxis, planeAngle);
+
+    for(var i=0; i<si.vertices.length; i++){
+        var v = si.vertices[i];
+        vec2.rotate(worldVertex, v, convexAngle);
+        vec2.add(worldVertex, worldVertex, convexOffset);
+
+        vec2.sub(dist, worldVertex, planeOffset);
+
+        //console.log(vec2.str(worldVertex));
+
+        if(vec2.dot(dist,worldNormal) < 0){
+
+            // Found vertex
+            numReported++;
+
+            var c = oldContacts.length ? oldContacts.pop() : new ContactEquation(planeBody,convexBody);
+            c.bi = planeBody;
+            c.bj = convexBody;
+
+            vec2.sub(dist, worldVertex, planeOffset);
+
+            vec2.copy(c.ni, worldNormal);
+
+            var d = vec2.dot(dist, c.ni);
+            vec2.scale(dist, c.ni, d);
+
+            // rj is from convex center to contact
+            vec2.sub(c.rj, worldVertex, convexBody.position);
+            //vec2.add(c.rj, c.rj, convexBody.position);
+
+            //console.log("rj",vec2.str(c.rj));
+            //console.log("dist",vec2.str(dist));
+
+
+
+
+            // ri is from plane center to contact
+            vec2.sub( c.ri, worldVertex, dist);
+            vec2.sub( c.ri, c.ri, planeBody.position);
+
+            //console.log("rj",vec2.str(c.rj));
+            //console.log("ni",vec2.str(c.ni));
+
+            result.push(c);
+
+            if(doFriction){
+                var eq = oldFrictionEquations.length ? oldFrictionEquations.pop() : new FrictionEquation(planeBody,convexBody);
+                eq.bi = planeBody;
+                eq.bj = convexBody;
+                eq.setSlipForce(slipForce);
+
+                // Use same ri and rj, but the tangent vector needs to be constructed from the collision normal
+                vec2.copy(eq.ri, c.ri);
+                vec2.copy(eq.rj, c.rj);
+                vec2.rotate(eq.t, c.ni, -Math.PI / 2);
+                frictionResult.push(eq);
+            }
+
+            if(numReported >= 2)
+                break;
+        }
+    }
+
+    return numReported > 0;
+}
+
+
 exports.checkParticlePlane = checkParticlePlane;
 function checkParticlePlane(particleShape,
                             particleOffset,
@@ -75,7 +180,6 @@ function checkParticlePlane(particleShape,
     if(vec2.dot(dist,worldNormal) < 0){
         return true;
     }
-
     return false;
 };
 
@@ -149,10 +253,9 @@ function nearphaseParticlePlane(bi,si,xi,ai, bj,sj,xj,aj,
         vec2.copy(eq.rj, c.rj);
         vec2.rotate(eq.t, c.ni, -Math.PI / 2);
         frictionResult.push(eq);
-        return true;
     }
 
-    return false;
+    return true;
 };
 
 exports.checkCircleParticle = checkCircleParticle;
@@ -342,20 +445,20 @@ function nearphaseCirclePlane(  bi,si,xi,ai, bj,sj,xj,aj,
 
 var localAxis = vec2.create();
 exports.projectConvexOntoAxis = projectConvexOntoAxis;
-function projectConvexOntoAxis(c,axis,result){
+function projectConvexOntoAxis(convexShape, convexOffset, convexAngle, worldAxis, result){
     var max=null,
         min=null,
         v,
         value;
 
     // Convert the axis to local coords of the body
-    vec2.rotate(localAxis, axis, c.angle);
+    vec2.rotate(localAxis, worldAxis, convexAngle);
 
     // Project the position of the body onto the axis - need to add this to the result
-    var offset = vec2.dot(c.position, axis);
+    var offset = vec2.dot(convexOffset, localAxis);
 
-    for(var i=1; i<c.shape.vertices.length; i++){
-        v = c.shape.vertices[i];
+    for(var i=1; i<convexShape.vertices.length; i++){
+        v = convexShape.vertices[i];
         value = vec2.dot(v,localAxis);
         if(max === null || value > max) max = value;
         if(min === null || value < min) min = value;

@@ -187,6 +187,12 @@ PixiDemo.drawLine = function(g, len, color, lineWidth){
     g.lineTo( len/2,0);
 };
 
+PixiDemo.drawRectangle = function(g,x,y,angle,w,h,color,lineWidth){
+    lineWidth = lineWidth || 1;
+    color = typeof(color)=="undefined" ? 0x000000 : color;
+    g.lineStyle(lineWidth, color, 1);
+    g.drawRect(x-w/2,y-h/2,w,h);
+};
 
 var X = vec2.fromValues(1,0);
 var distVec = vec2.fromValues(0,0);
@@ -259,59 +265,13 @@ PixiDemo.prototype.addRenderable = function(obj){
             } else if(child instanceof Line){
                 PixiDemo.drawLine(sprite, child.length*ppu, 0x000000, lw);
 
+            } else if(child instanceof Rectangle){
+                PixiDemo.drawRectangle(sprite, offset[0]*ppu, offset[1]*ppu, angle, child.width*ppu, child.height*ppu, 0x000000, lw);
+
             }
         }
         this.sprites.push(sprite);
         this.stage.addChild(sprite);
-
-        /*
-        if(obj.shape instanceof Circle){
-            var sprite = new PIXI.Graphics();
-            var radiusPixels = obj.shape.radius * ppu;
-            PixiDemo.drawCircle(sprite,0,0,0,radiusPixels,0xFFFFFF,lw);
-            this.sprites.push(sprite);
-            this.stage.addChild(sprite);
-
-        } else if(obj.shape instanceof Particle){
-            var sprite = new PIXI.Graphics();
-            var radiusPixels = obj.shape.radius * ppu;
-            // Make a circle with radius=2*lineWidth
-            PixiDemo.drawCircle(sprite,0,0,0,2*lw,0x000000,0);
-            this.sprites.push(sprite);
-            this.stage.addChild(sprite);
-
-        } else if(obj.shape instanceof Compound){
-            var sprite = new PIXI.Graphics();
-            for(var i=0; i<obj.shape.children.length; i++){
-                var child = obj.shape.children[i];
-                var offset = obj.shape.childOffsets[i];
-                var angle = obj.shape.childAngles[i];
-                if(child instanceof Circle){
-                    PixiDemo.drawCircle(sprite,offset[0]*ppu,offset[1]*ppu,angle,child.radius*ppu,0xFFFFFF,lw);
-                } else if(child instanceof Particle){
-                    PixiDemo.drawCircle(sprite,offset[0]*ppu,offset[1]*ppu,angle,2*lw,0x000000,0);
-                }
-            }
-            this.sprites.push(sprite);
-            this.stage.addChild(sprite);
-
-        } else if(obj.shape instanceof Plane){
-            // TODO draw something.. How big should this plane be?
-            var sprite = new PIXI.Graphics();
-            PixiDemo.drawPlane(sprite, -10*ppu, 10*ppu, 0x000000, lw, lw*10, lw*10);
-            this.sprites.push(sprite);
-            this.stage.addChild(sprite);
-
-        } else if(obj.shape instanceof Line){
-            var sprite = new PIXI.Graphics();
-            PixiDemo.drawLine(sprite, obj.shape.length*ppu, 0x000000, lw);
-            this.sprites.push(sprite);
-            this.stage.addChild(sprite);
-
-        } else {
-            console.warn("Shape could not be rendered:",obj.shape);
-        }
-        */
 
     } else if(obj instanceof Spring){
         var sprite = new PIXI.Graphics();
