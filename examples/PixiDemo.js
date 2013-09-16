@@ -53,7 +53,7 @@ PixiDemo.prototype.init = function(){
 
     this.container.addChild(stage);
 
-    stage.position.x = -renderer.width/2; // center at origin
+    stage.position.x = renderer.width/2; // center at origin
     stage.position.y = -renderer.height/2;
 
     var lastX, lastY, lastMoveX, lastMoveY, startX, startY, down=false;
@@ -190,9 +190,9 @@ PixiDemo.prototype.render = function(){
     for(var i=0; i<this.bodies.length; i++){
         var b = this.bodies[i],
             s = this.sprites[i];
-        s.position.x = w - b.position[0] * pixelsPerLengthUnit;
+        s.position.x =     b.position[0] * pixelsPerLengthUnit;
         s.position.y = h - b.position[1] * pixelsPerLengthUnit;
-        s.rotation = b.angle;
+        s.rotation = -b.angle;
     }
 
     // Update spring transforms
@@ -208,9 +208,9 @@ PixiDemo.prototype.render = function(){
             bB = tmp;
             sprite.scale.y = -1;
         }
-        sprite.position.x = ( ( w - bA.position[0] * pixelsPerLengthUnit ) + ( w - bB.position[0] * pixelsPerLengthUnit ) ) / 2;
+        sprite.position.x = ( (     bA.position[0] * pixelsPerLengthUnit ) + (     bB.position[0] * pixelsPerLengthUnit ) ) / 2;
         sprite.position.y = ( ( h - bA.position[1] * pixelsPerLengthUnit ) + ( h - bB.position[1] * pixelsPerLengthUnit ) ) / 2;
-        distVec[0] = ( w - bA.position[0] * pixelsPerLengthUnit ) - ( w - bB.position[0] * pixelsPerLengthUnit );
+        distVec[0] = (     bA.position[0] * pixelsPerLengthUnit ) - (     bB.position[0] * pixelsPerLengthUnit );
         distVec[1] = ( h - bA.position[1] * pixelsPerLengthUnit ) - ( h - bB.position[1] * pixelsPerLengthUnit );
         sprite.rotation = -Math.acos( vec2.dot(X, distVec) / vec2.length(distVec) );
         sprite.scale.x = vec2.length(distVec) / (s.restLength * pixelsPerLengthUnit);
@@ -242,7 +242,7 @@ PixiDemo.prototype.addRenderable = function(obj){
                 PixiDemo.drawCircle(sprite,offset[0]*ppu,offset[1]*ppu,angle,2*lw,0x000000,0);
 
             } else if(child instanceof Plane){
-                // TODO angle
+                // TODO use shape angle
                 PixiDemo.drawPlane(sprite, -10*ppu, 10*ppu, 0x000000, lw, lw*10, lw*10);
 
             } else if(child instanceof Line){
