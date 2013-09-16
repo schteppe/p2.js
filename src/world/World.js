@@ -12,6 +12,7 @@ var GSSolver = require('../solver/GSSolver').GSSolver,
     DistanceConstraint = require('../constraints/DistanceConstraint').DistanceConstraint,
     PointToPointConstraint = require('../constraints/PointToPointConstraint').PointToPointConstraint,
     bp = require('../collision/Broadphase'),
+    pkg = require('../../package.json'),
     Broadphase = bp.Broadphase;
 
 exports.World = World;
@@ -392,7 +393,7 @@ World.prototype.removeBody = function(body){
  */
 World.prototype.toJSON = function(){
     var json = {
-        p2 : "0.1.0",
+        p2 : pkg.version,
         bodies : [],
         springs : [],
         solver : {},
@@ -504,7 +505,7 @@ World.prototype.fromJSON = function(json){
 
     switch(json.p2){
 
-        case "0.1.0":
+        case pkg.version:
 
             // Set gravity
             vec2.copy(world.gravity, json.gravity);
