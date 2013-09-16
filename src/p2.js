@@ -20,7 +20,7 @@ exports.Plane =                 require('./objects/Shape')                      
 exports.PointToPointConstraint= require('./constraints/PointToPointConstraint') .PointToPointConstraint;
 exports.Shape =                 require('./objects/Shape')                      .Shape;
 exports.Solver =                require('./solver/Solver')                      .Solver;
-exports.Spring =                require('./objects/Body')                       .Spring;
+exports.Spring =                require('./objects/Spring')                     .Spring;
 exports.World =                 require('./world/World')                        .World;
 
 // Export the gl-matrix stuff we already use internally. Why shouldn't we? It's already in the bundle.
