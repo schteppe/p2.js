@@ -223,8 +223,34 @@ PixiDemo.prototype.addRenderable = function(obj){
     var ppu = this.pixelsPerLengthUnit,
         lw = this.lineWidth;
 
-    if(obj instanceof Body && obj.shape){
+    var zero = [0,0];
 
+    if(obj instanceof Body && obj.shapes.length){
+
+        var sprite = new PIXI.Graphics();
+        for(var i=0; i<obj.shapes.length; i++){
+            var child = obj.shapes[i],
+                offset = obj.shapeOffsets[i],
+                angle = obj.shapeAngles[i];
+            offset = offset || zero;
+            angle = angle || 0;
+
+            if(child instanceof Circle){
+                PixiDemo.drawCircle(sprite,offset[0]*ppu,offset[1]*ppu,angle,child.radius*ppu,0xFFFFFF,lw);
+
+            } else if(child instanceof Particle){
+                PixiDemo.drawCircle(sprite,offset[0]*ppu,offset[1]*ppu,angle,2*lw,0x000000,0);
+
+            } else if(child instanceof Plane){
+                // TODO angle
+                PixiDemo.drawPlane(sprite, -10*ppu, 10*ppu, 0x000000, lw, lw*10, lw*10);
+
+            }
+        }
+        this.sprites.push(sprite);
+        this.stage.addChild(sprite);
+
+        /*
         if(obj.shape instanceof Circle){
             var sprite = new PIXI.Graphics();
             var radiusPixels = obj.shape.radius * ppu;
@@ -271,6 +297,7 @@ PixiDemo.prototype.addRenderable = function(obj){
         } else {
             console.warn("Shape could not be rendered:",obj.shape);
         }
+        */
 
     } else if(obj instanceof Spring){
         var sprite = new PIXI.Graphics();

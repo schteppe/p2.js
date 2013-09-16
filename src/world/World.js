@@ -167,6 +167,10 @@ var step_f = vec2.create();
 var step_fhMinv = vec2.create();
 var step_velodt = vec2.create();
 
+var xi_world = vec2.fromValues(0,0),
+    xj_world = vec2.fromValues(0,0),
+    zero = vec2.fromValues(0,0);
+
 /**
  * Step the physics world forward in time.
  *
@@ -214,9 +218,7 @@ World.prototype.step = function(dt){
     var glen = vec2.length(this.gravity);
     for(var i=0, Nresults=result.length; i!==Nresults; i+=2){
         var bi = result[i],
-            bj = result[i+1],
-            si = bi.shape,
-            sj = bj.shape;
+            bj = result[i+1];
 
         var reducedMass = (bi.invMass + bj.invMass);
         if(reducedMass > 0)
@@ -226,23 +228,40 @@ World.prototype.step = function(dt){
         var mug = mu * glen * reducedMass;
         var doFriction = mu>0;
 
-        if(si instanceof Circle){
-                 if(sj instanceof Circle)   bp.nearphaseCircleCircle  (bi,si,null,0,bj,sj,null,0,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
-            else if(sj instanceof Particle) bp.nearphaseCircleParticle(bi,si,null,0,bj,sj,null,0,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
-            else if(sj instanceof Plane)    bp.nearphaseCirclePlane   (bi,si,null,0,bj,sj,null,0,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
+        // Loop over all shapes of body i
+        for(var k=0; k<bi.shapes.length; k++){
+            var si = bi.shapes[k],
+                xi = bi.shapeOffsets[k] || zero,
+                ai = bi.shapeAngles[k] || 0;
 
-        } else if(si instanceof Particle){
-                 if(sj instanceof Circle)   bp.nearphaseCircleParticle(bj,sj,null,0,bi,si,null,0,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
-            else if(sj instanceof Plane)    bp.nearphaseParticlePlane (bi,si,null,0,bj,sj,null,0,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
+            // All shapes of body j
+            for(var l=0; l<bi.shapes.length; l++){
+                var sj = bj.shapes[l],
+                    xj = bj.shapeOffsets[l] || zero,
+                    aj = bj.shapeAngles[l] || 0;
 
-        } else if(si instanceof Plane){
-                 if(sj instanceof Circle)   bp.nearphaseCirclePlane   (bj,sj,null,0,bi,si,null,0,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
-            else if(sj instanceof Particle) bp.nearphaseParticlePlane (bj,sj,null,0,bi,si,null,0,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
-            else if(sj instanceof Compound) bp.nearphaseCompoundPlane (bj,bi,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
+                vec2.rotate(xi_world, xi, bi.angle);
+                vec2.rotate(xj_world, xj, bj.angle);
+                vec2.add(xi_world, xi_world, bi.position);
+                vec2.add(xj_world, xj_world, bj.position);
+                var ai_world = ai + bi.angle;
+                var aj_world = aj + bj.angle;
 
-        } else if(si instanceof Compound){
-                 if(sj instanceof Plane)    bp.nearphaseCompoundPlane (bi,bj,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
+                if(si instanceof Circle){
+                         if(sj instanceof Circle)   bp.nearphaseCircleCircle  (bi,si,xi_world,ai_world, bj,sj,xj_world,aj_world,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
+                    else if(sj instanceof Particle) bp.nearphaseCircleParticle(bi,si,xi_world,ai_world, bj,sj,xj_world,aj_world,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
+                    else if(sj instanceof Plane)    bp.nearphaseCirclePlane   (bi,si,xi_world,ai_world, bj,sj,xj_world,aj_world,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
 
+                } else if(si instanceof Particle){
+                         if(sj instanceof Circle)   bp.nearphaseCircleParticle(bj,sj,xj_world,aj_world, bi,si,xi_world,ai_world,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
+                    else if(sj instanceof Plane)    bp.nearphaseParticlePlane (bi,si,xi_world,ai_world, bj,sj,xj_world,aj_world,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
+
+                } else if(si instanceof Plane){
+                         if(sj instanceof Circle)   bp.nearphaseCirclePlane   (bj,sj,xj_world,aj_world, bi,si,xi_world,ai_world,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
+                    else if(sj instanceof Particle) bp.nearphaseParticlePlane (bj,sj,xj_world,aj_world, bi,si,xi_world,ai_world,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
+
+                }
+            }
         }
     }
     this.oldContacts = oldContacts;
@@ -273,8 +292,10 @@ World.prototype.step = function(dt){
     // Step forward
     var fhMinv = step_fhMinv;
     var velodt = step_velodt;
+
     for(var i=0; i!==Nbodies; i++){
         var body = bodies[i];
+
         if(body.mass>0){
             var minv = 1.0 / body.mass,
                 f = body.force,

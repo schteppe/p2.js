@@ -23,30 +23,28 @@
         });
 
         // Create circle bodies
-        var shape = new p2.Compound();
-        //var childShape = new p2.Circle(r);
+        var p = new p2.Body({
+            mass: 1,
+            position: [0, (N)*r*d*2],
+            angularVelocity : 1
+        });
         var childShape = new p2.Particle();
+        //var childShape = new p2.Circle(r);
         for(var i=0; i<N; i++){
             for(var j=0; j<M; j++){
                 var x = (i-N/2+1/2)*2*r*d;
                 var y = (j-M/2+1/2)*2*r*d;
-                shape.addChild(childShape, [x,y], 0);
+                p.addShape(childShape, [x,y], 0);
             }
         }
-        var p = new p2.Body({
-            mass: 1,
-            shape: shape,
-            position: [0, (N)*r*d*2],
-            angularVelocity : 1
-        });
         world.addBody(p);
 
         // Create ground
         var planeShape = new p2.Plane();
         var plane = new p2.Body({
-            shape: planeShape,
             position:[0,-1],
         });
+        plane.addShape(planeShape);
         world.addBody(plane);
 
         var demo = new PixiDemo(world);

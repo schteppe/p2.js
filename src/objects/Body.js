@@ -16,6 +16,7 @@ exports.Body = Body;
  * @param {number}          options.angularVelocity
  * @param {Float32Array}    options.force
  * @param {number}          options.angularForce
+ * @todo Should not take mass as an argument to Body, but as density to each Shape
  */
 function Body(options){
     options = options || {};
@@ -26,15 +27,6 @@ function Body(options){
      * @type {Number}
      */
     this.id = ++Body._idCounter;
-
-    /**
-     * The shape belonging to the body.
-     * @deprecated Should start using .shapes instead
-     * @property shape
-     * @type {Shape}
-     */
-    this.shape = options.shape;
-
 
     this.shapes = [];
     this.shapeOffsets = [];
@@ -138,8 +130,10 @@ Body.prototype.addShape = function(shape,offset,angle){
     this.shapes      .push(shape);
     this.shapeOffsets.push(offset);
     this.shapeAngles .push(angle);
+    this.updateMassProperties();
 };
 
+/*
 Body.prototype.updateMassProperties = function(){
     // Mass should already be given
     var m = this.mass,
@@ -158,6 +152,28 @@ Body.prototype.updateMassProperties = function(){
 
     // Inverse mass properties are easy
     this.invMass = m > 0 ? 1/m : 0;
+    this.invInertia = I>0 ? 1/I : 0;
+};
+*/
+
+var zero = vec2.fromValues(0,0);
+Body.prototype.updateMassProperties = function(){
+    var shapes = this.shapes,
+        N = shapes.length,
+        m = this.mass / N,
+        I = 0;
+
+    for(var i=0; i<N; i++){
+        var shape = shapes[i],
+            r2 = vec2.squaredLength(this.shapeOffsets[i] || zero),
+            Icm = shape.computeMomentOfInertia(m);
+        I += Icm + m*r2;
+    }
+
+    this.inertia = I;
+
+    // Inverse mass properties are easy
+    this.invMass = this.mass > 0 ? 1/this.mass : 0;
     this.invInertia = I>0 ? 1/I : 0;
 };
 

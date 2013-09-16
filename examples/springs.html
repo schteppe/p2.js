@@ -35,9 +35,9 @@
             for(var j=0; j<M; j++){
                 var p = new p2.Body({
                     mass: m,//j==M-1 ? 0 : m,
-                    shape : particleShape,
                     position : [(i-N/2)*l*1.05, (j-M/2)*l*1.05]
                 });
+                p.addShape(particleShape);
                 bodies[i].push(p);
                 world.addBody(p);
             }
@@ -99,9 +99,9 @@
         // Create ground
         var planeShape = new p2.Plane();
         var plane = new p2.Body({
-            shape: planeShape,
             position : [0, (-M/2)*l*1.05 - 0.1]
         });
+        plane.addShape(planeShape);
         world.addBody(plane);
 
         // Create circle
@@ -109,10 +109,10 @@
         var circleShape = new p2.Circle(radius);
         var circle = new p2.Body({
             mass : 1,
-            shape: circleShape,
             position : [0, (M/2)*l*1.05 + radius],
             angularVelocity:1,
         });
+        circle.addShape(circleShape);
         world.addBody(circle);
 
         var demo = new PixiDemo(world,{

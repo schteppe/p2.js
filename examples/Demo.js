@@ -111,7 +111,7 @@ Demo.prototype.addVisual = function(obj){
         this.springs.push(obj);
         this.addRenderable(obj);
     } else if(obj instanceof Body){
-        if(obj.shape){ // Only draw things that can be seen
+        if(obj.shapes.length){ // Only draw things that can be seen
             this.bodies.push(obj);
             this.addRenderable(obj);
         }

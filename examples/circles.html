@@ -29,9 +29,9 @@
                 var y = (j-M/2)*r*d;
                 var p = new p2.Body({
                     mass: 1,
-                    shape: shape,
-                    position: [x, y]
+                    position: [x, y],
                 });
+                p.addShape(shape);
                 world.addBody(p);
             }
         }
@@ -42,23 +42,23 @@
         // Create ground
         var planeShape = new p2.Plane();
         var plane = new p2.Body({
-            shape: planeShape,
             position : [0,ymin],
         });
+        plane.addShape(planeShape);
         world.addBody(plane);
 
         var planeLeft = new p2.Body({
-            shape: planeShape,
             angle: -Math.PI/2,
             position: [xmin, 0]
         });
+        planeLeft.addShape(planeShape);
         world.addBody(planeLeft);
 
         var planeRight = new p2.Body({
-            shape: planeShape,
             angle: Math.PI/2,
             position: [xmax, 0]
         });
+        planeRight.addShape(planeShape);
         world.addBody(planeRight);
 
         var demo = new PixiDemo(world);

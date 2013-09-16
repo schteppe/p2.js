@@ -36,9 +36,9 @@
                 var y = (N/2-i)*r*2.1;
                 var p = new p2.Body({
                     mass: i==0 ? 0 : 1,
-                    shape: shape,
                     position: [x, y]
                 });
+                p.addShape(shape);
                 if(lastBody){
                     var dist = Math.abs(p.position[1]-lastBody.position[1]);
                     var c = new p2.DistanceConstraint(p,lastBody, dist);

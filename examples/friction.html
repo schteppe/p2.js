@@ -14,24 +14,23 @@
 
         var world = new p2.World({
             doProfiling:true,
-            gravity : [0,-1],
+            gravity : [0,-10],
         });
 
         var shape = new p2.Circle(1);
         var p = new p2.Body({
             mass: 1,
-            shape: shape,
             position: [0, 1.5],
         });
+        p.addShape(shape);
         world.addBody(p);
 
         // Create ground
         var planeShape = new p2.Plane();
         var plane = new p2.Body({
-            shape: planeShape,
-            position : [0,-2],
             angle:Math.PI/4,
         });
+        plane.addShape(planeShape);
         world.addBody(plane);
 
         var demo = new PixiDemo(world);
