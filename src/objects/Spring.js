@@ -1,3 +1,5 @@
+var vec2 = require('../math/vec2');
+
 exports.Spring = Spring;
 
 /**
@@ -49,4 +51,32 @@ function Spring(bodyA,bodyB,options){
      * @type {Body}
      */
     this.bodyB = bodyB;
+};
+
+var applyForce_r =      vec2.create(),
+    applyForce_r_unit = vec2.create(),
+    applyForce_u =      vec2.create(),
+    applyForce_f =      vec2.create();
+
+/**
+ * Apply the spring force to the connected bodies.
+ */
+Spring.prototype.applyForce = function(){
+    var k = this.stiffness,
+        d = this.damping,
+        l = this.restLength,
+        bodyA = this.bodyA,
+        bodyB = this.bodyB,
+        r = applyForce_r,
+        r_unit = applyForce_r_unit,
+        u = applyForce_u,
+        f = applyForce_f;
+
+    vec2.sub(r, bodyA.position, bodyB.position);
+    vec2.sub(u, bodyA.velocity, bodyB.velocity);
+    var rlen = vec2.len(r);
+    vec2.normalize(r_unit,r);
+    vec2.scale(f, r_unit, k*(rlen-l) + d*vec2.dot(u,r_unit));
+    vec2.sub( bodyA.force, bodyA.force, f);
+    vec2.add( bodyB.force, bodyB.force, f);
 };

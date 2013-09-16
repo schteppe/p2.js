@@ -197,26 +197,10 @@ World.prototype.step = function(dt){
         vec2.add(fi,fi,g);
     }
 
-    // Calculate all new spring forces
+    // Add spring forces
     for(var i=0; i!==Nsprings; i++){
         var s = springs[i];
-        var k = s.stiffness;
-        var d = s.damping;
-        var l = s.restLength;
-        var bodyA = s.bodyA;
-        var bodyB = s.bodyB;
-        var r = step_r;
-        var r_unit = step_runit;
-        var u = step_u;
-        var f = step_f;
-
-        vec2.sub(r,bodyA.position,bodyB.position);
-        vec2.sub(u,bodyA.velocity,bodyB.velocity);
-        var rlen = vec2.len(r);
-        vec2.normalize(r_unit,r);
-        vec2.scale(f, r_unit, k*(rlen-l) + d*vec2.dot(u,r_unit));
-        vec2.sub( bodyA.force,bodyA.force, f);
-        vec2.add( bodyB.force,bodyB.force, f);
+        s.applyForce();
     }
 
     // Broadphase
