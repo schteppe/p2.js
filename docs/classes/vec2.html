@@ -57,6 +57,8 @@
             
                 <li><a href="../classes/Equation.html">Equation</a></li>
             
+                <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
+            
                 <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
@@ -65,11 +67,15 @@
             
                 <li><a href="../classes/IslandSolver.html">IslandSolver</a></li>
             
+                <li><a href="../classes/mat2.html">mat2</a></li>
+            
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
                 <li><a href="../classes/Particle.html">Particle</a></li>
             
                 <li><a href="../classes/Plane.html">Plane</a></li>
+            
+                <li><a href="../classes/PointToPointConstraint.html">PointToPointConstraint</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -128,7 +134,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_gl-matrix-extensions.js.html#l1"><code>src&#x2F;gl-matrix-extensions.js:1</code></a>
+            Defined in: <a href="../files/src_math_vec2.js.html#l1"><code>src&#x2F;math&#x2F;vec2.js:1</code></a>
         </div>
     
 
@@ -140,7 +146,7 @@
 
 
 <div class="box intro">
-    <p>Extensions for the vec2 object</p>
+    <p>The vec2 object from glMatrix, extended with the functions documented here. See http://glmatrix.net for full doc.</p>
 </div>
 
 
@@ -171,12 +177,34 @@
                                 <a href="#method_crossLength">crossLength</a>
 
                                 
+                                    <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_crossVZ">crossVZ</a>
+
+                                
+                                    <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_crossZV">crossZV</a>
+
+                                
+                                    <span class="flag static">static</span>
+                                
                                 
                             </li>
                         
                             <li class="index-item method">
                                 <a href="#method_getX">getX</a>
 
+                                
+                                    <span class="flag static">static</span>
                                 
                                 
                             </li>
@@ -185,12 +213,16 @@
                                 <a href="#method_getY">getY</a>
 
                                 
+                                    <span class="flag static">static</span>
+                                
                                 
                             </li>
                         
                             <li class="index-item method">
                                 <a href="#method_rotate">rotate</a>
 
+                                
+                                    <span class="flag static">static</span>
                                 
                                 
                             </li>
@@ -247,6 +279,8 @@
     
 
     
+        <span class="flag static">static</span>
+    
 
     
 
@@ -263,7 +297,7 @@
             
         
         
-        <a href="../files/src_gl-matrix-extensions.js.html#l27"><code>src&#x2F;gl-matrix-extensions.js:27</code></a>
+        <a href="../files/src_math_vec2.js.html#l33"><code>src&#x2F;math&#x2F;vec2.js:33</code></a>
         
         </p>
 
@@ -301,7 +335,301 @@
                 <li class="param">
                     
                         <code class="param-name">b</code>
-                        <span class="type">Float32Arrat</span>
+                        <span class="type">Float32Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Number</span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_crossVZ" class="method item">
+    <h3 class="name"><code>crossVZ</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>out</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>vec</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>zcomp</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Number</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_math_vec2.js.html#l45"><code>src&#x2F;math&#x2F;vec2.js:45</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Cross product between a vector and the Z component of a vector</p>
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">out</code>
+                        <span class="type">Float32Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">vec</code>
+                        <span class="type">Float32Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">zcomp</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Number</span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_crossZV" class="method item">
+    <h3 class="name"><code>crossZV</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>out</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>zcomp</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>vec</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Number</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_math_vec2.js.html#l60"><code>src&#x2F;math&#x2F;vec2.js:60</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Cross product between a vector and the Z component of a vector</p>
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">out</code>
+                        <span class="type">Float32Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">zcomp</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">vec</code>
+                        <span class="type">Float32Array</span>
                     
 
                     
@@ -365,6 +693,8 @@
     
 
     
+        <span class="flag static">static</span>
+    
 
     
 
@@ -381,7 +711,7 @@
             
         
         
-        <a href="../files/src_gl-matrix-extensions.js.html#l7"><code>src&#x2F;gl-matrix-extensions.js:7</code></a>
+        <a href="../files/src_math_vec2.js.html#l11"><code>src&#x2F;math&#x2F;vec2.js:11</code></a>
         
         </p>
 
@@ -468,6 +798,8 @@
     
 
     
+        <span class="flag static">static</span>
+    
 
     
 
@@ -484,7 +816,7 @@
             
         
         
-        <a href="../files/src_gl-matrix-extensions.js.html#l17"><code>src&#x2F;gl-matrix-extensions.js:17</code></a>
+        <a href="../files/src_math_vec2.js.html#l22"><code>src&#x2F;math&#x2F;vec2.js:22</code></a>
         
         </p>
 
@@ -579,6 +911,8 @@
     
 
     
+        <span class="flag static">static</span>
+    
 
     
 
@@ -595,7 +929,7 @@
             
         
         
-        <a href="../files/src_gl-matrix-extensions.js.html#l38"><code>src&#x2F;gl-matrix-extensions.js:38</code></a>
+        <a href="../files/src_math_vec2.js.html#l75"><code>src&#x2F;math&#x2F;vec2.js:75</code></a>
         
         </p>
 

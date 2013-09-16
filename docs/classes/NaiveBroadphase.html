@@ -57,6 +57,8 @@
             
                 <li><a href="../classes/Equation.html">Equation</a></li>
             
+                <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
+            
                 <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
@@ -65,11 +67,15 @@
             
                 <li><a href="../classes/IslandSolver.html">IslandSolver</a></li>
             
+                <li><a href="../classes/mat2.html">mat2</a></li>
+            
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
                 <li><a href="../classes/Particle.html">Particle</a></li>
             
                 <li><a href="../classes/Plane.html">Plane</a></li>
+            
+                <li><a href="../classes/PointToPointConstraint.html">PointToPointConstraint</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -132,7 +138,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_collision_NaiveBroadphase.js.html#l9"><code>src&#x2F;collision&#x2F;NaiveBroadphase.js:9</code></a>
+            Defined in: <a href="../files/src_collision_NaiveBroadphase.js.html#l11"><code>src&#x2F;collision&#x2F;NaiveBroadphase.js:11</code></a>
         </div>
     
 
@@ -182,7 +188,7 @@
             
         
         
-        <a href="../files/src_collision_NaiveBroadphase.js.html#l9"><code>src&#x2F;collision&#x2F;NaiveBroadphase.js:9</code></a>
+        <a href="../files/src_collision_NaiveBroadphase.js.html#l11"><code>src&#x2F;collision&#x2F;NaiveBroadphase.js:11</code></a>
         
         </p>
 
@@ -251,7 +257,7 @@
                 <h2 class="off-left">Methods</h2>
 
                 
-                    <div id="method_getCollisionPairs" class="method item inherited">
+                    <div id="method_getCollisionPairs" class="method item">
     <h3 class="name"><code>getCollisionPairs</code></h3>
 
     
@@ -288,13 +294,16 @@
 
     <div class="meta">
         
+            <p>Inherited from
+            <a href="../classes/Broadphase.html#method_getCollisionPairs">
+                Broadphase
+            </a>
             
-                <p>Inherited from
-                <a href="../classes/Broadphase.html#method_getCollisionPairs">Broadphase</a>:
+            but overwritten in
             
         
         
-        <a href="../files/src_collision_Broadphase.js.html#l204"><code>src&#x2F;collision&#x2F;Broadphase.js:204</code></a>
+        <a href="../files/src_collision_NaiveBroadphase.js.html#l27"><code>src&#x2F;collision&#x2F;NaiveBroadphase.js:27</code></a>
         
         </p>
 
@@ -305,7 +314,7 @@
     </div>
 
     <div class="description">
-        <p>Get all potential intersecting body pairs.</p>
+        <p>Get the colliding pairs</p>
     </div>
 
     
@@ -323,7 +332,7 @@
                     
 
                     <div class="param-description">
-                        <p>The world to search in.</p>
+                         
                     </div>
 
                     
@@ -342,7 +351,6 @@
                     
                         <span class="type">Array</span>:
                     
-                    An array of the bodies, ordered in pairs. Example: A result of [a,b,c,d] means that the potential pairs are: (a,b), (c,d).
                 
             </div>
         </div>

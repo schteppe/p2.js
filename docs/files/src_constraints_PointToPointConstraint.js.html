@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/collision/GridBroadphase.js - p2.js</title>
+    <title>src/constraints/PointToPointConstraint.js - p2.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -126,138 +126,68 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: src/collision/GridBroadphase.js</h1>
+                        <h1 class="file-heading">File: src/constraints/PointToPointConstraint.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
-var Circle = require(&#x27;../objects/Shape&#x27;).Circle,
-    Plane = require(&#x27;../objects/Shape&#x27;).Plane,
-    Particle = require(&#x27;../objects/Shape&#x27;).Particle,
-    bp = require(&#x27;../collision/Broadphase&#x27;),
-    Broadphase = bp.Broadphase,
-    vec2 = require(&#x27;../math/vec2&#x27;);
+var Constraint = require(&#x27;./Constraint&#x27;).Constraint
+,   ContactEquation = require(&#x27;./ContactEquation&#x27;).ContactEquation
+,   vec2 = require(&#x27;../math/vec2&#x27;)
+
+exports.PointToPointConstraint = PointToPointConstraint;
 
 /**
- * Broadphase that uses axis-aligned bins.
- * @class GridBroadphase
+ * Connects two bodies at given offset points
+ * @class PointToPointConstraint
  * @constructor
- * @extends Broadphase
- * @param {number} xmin Lower x bound of the grid
- * @param {number} xmax Upper x bound
- * @param {number} ymin Lower y bound
- * @param {number} ymax Upper y bound
- * @param {number} nx Number of bins along x axis
- * @param {number} ny Number of bins along y axis
+ * @author schteppe
+ * @param {Body}            bodyA
+ * @param {Float32Array}    pivotA The point relative to the center of mass of bodyA which bodyA is constrained to.
+ * @param {Body}            bodyB Body that will be constrained in a similar way to the same point as bodyA. We will therefore get sort of a link between bodyA and bodyB. If not specified, bodyA will be constrained to a static point.
+ * @param {Float32Array}    pivotB See pivotA.
+ * @param {Number}          maxForce The maximum force that should be applied to constrain the bodies.
+ * @extends {Constraint}
  */
-exports.GridBroadphase = function(xmin,xmax,ymin,ymax,nx,ny){
-    Broadphase.apply(this);
+function PointToPointConstraint(bodyA, pivotA, bodyB, pivotB, maxForce){
+    Constraint.call(this,bodyA,bodyB);
 
-    nx = nx || 10;
-    ny = ny || 10;
-    var binsizeX = (xmax-xmin) / nx;
-    var binsizeY = (ymax-ymin) / ny;
+    maxForce = typeof(maxForce)!=&quot;undefined&quot; ? maxForce : 1e7;
 
-    function getBinIndex(x,y){
-        var xi = Math.floor(nx * (x - xmin) / (xmax-xmin));
-        var yi = Math.floor(ny * (y - ymin) / (ymax-ymin));
-        return xi*ny + yi;
-    }
+    this.pivotA = pivotA;
+    this.pivotB = pivotB;
 
-    this.getCollisionPairs = function(world){
-        var result = [];
-        var collidingBodies = world.bodies;
-        var Ncolliding = Ncolliding=collidingBodies.length;
+    // Equations to be fed to the solver
+    var eqs = this.equations = [
+        new ContactEquation(bodyA,bodyB), // Normal
+        new ContactEquation(bodyA,bodyB), // Tangent
+    ];
 
-        var bins=[], Nbins=nx*ny;
-        for(var i=0; i&lt;Nbins; i++)
-            bins.push([]);
+    var normal =  eqs[0];
+    var tangent = eqs[1];
 
-        var xmult = nx / (xmax-xmin);
-        var ymult = ny / (ymax-ymin);
+    tangent.minForce = normal.minForce = -maxForce;
+    tangent.maxForce = normal.maxForce =  maxForce;
+}
+PointToPointConstraint.prototype = new Constraint();
 
-        // Put all bodies into bins
-        for(var i=0; i!==Ncolliding; i++){
-            var bi = collidingBodies[i];
-            var si = bi.shape;
-            if (si === undefined) {
-                continue;
-            } else if(si instanceof Circle){
-                // Put in bin
-                // check if overlap with other bins
-                var x = bi.position[0];
-                var y = bi.position[1];
-                var r = si.radius;
+PointToPointConstraint.prototype.update = function(){
+    var bodyA =  this.bodyA,
+        bodyB =  this.bodyB,
+        pivotA = this.pivotA,
+        pivotB = this.pivotB,
+        eqs =    this.equations,
+        normal = eqs[0],
+        tangent= eqs[1];
 
-                var xi1 = Math.floor(xmult * (x-r - xmin));
-                var yi1 = Math.floor(ymult * (y-r - ymin));
-                var xi2 = Math.floor(xmult * (x+r - xmin));
-                var yi2 = Math.floor(ymult * (y+r - ymin));
+    vec2.subtract(normal.ni, bodyB.position, bodyA.position);
+    vec2.normalize(normal.ni,normal.ni);
+    vec2.rotate(normal.ri, pivotA, bodyA.angle);
+    vec2.rotate(normal.rj, pivotB, bodyB.angle);
 
-                for(var j=xi1; j&lt;=xi2; j++){
-                    for(var k=yi1; k&lt;=yi2; k++){
-                        var xi = j;
-                        var yi = k;
-                        if(xi*(ny-1) + yi &gt;= 0 &amp;&amp; xi*(ny-1) + yi &lt; Nbins)
-                            bins[ xi*(ny-1) + yi ].push(bi);
-                    }
-                }
-            } else if(si instanceof Plane){
-                // Put in all bins for now
-                if(bi.angle == 0){
-                    var y = bi.position[1];
-                    for(var j=0; j!==Nbins &amp;&amp; ymin+binsizeY*(j-1)&lt;y; j++){
-                        for(var k=0; k&lt;nx; k++){
-                            var xi = k;
-                            var yi = Math.floor(ymult * (binsizeY*j - ymin));
-                            bins[ xi*(ny-1) + yi ].push(bi);
-                        }
-                    }
-                } else if(bi.angle == Math.PI*0.5){
-                    var x = bi.position[0];
-                    for(var j=0; j!==Nbins &amp;&amp; xmin+binsizeX*(j-1)&lt;x; j++){
-                        for(var k=0; k&lt;ny; k++){
-                            var yi = k;
-                            var xi = Math.floor(xmult * (binsizeX*j - xmin));
-                            bins[ xi*(ny-1) + yi ].push(bi);
-                        }
-                    }
-                } else {
-                    for(var j=0; j!==Nbins; j++)
-                        bins[j].push(bi);
-                }
-            } else {
-                throw new Error(&quot;Shape not supported in GridBroadphase!&quot;);
-            }
-        }
-
-        // Check each bin
-        for(var i=0; i!==Nbins; i++){
-            var bin = bins[i];
-            for(var j=0, NbodiesInBin=bin.length; j!==NbodiesInBin; j++){
-                var bi = bin[j];
-                var si = bi.shape;
-
-                for(var k=0; k!==j; k++){
-                    var bj = bin[k];
-                    var sj = bj.shape;
-
-                    if(si instanceof Circle){
-                             if(sj instanceof Circle)   bp.checkCircleCircle  (bi,bj,result);
-                        else if(sj instanceof Particle) bp.checkCircleParticle(bi,bj,result);
-                        else if(sj instanceof Plane)    bp.checkCirclePlane   (bi,bj,result);
-                    } else if(si instanceof Particle){
-                             if(sj instanceof Circle)   bp.checkCircleParticle(bj,bi,result);
-                    } else if(si instanceof Plane){
-                             if(sj instanceof Circle)   bp.checkCirclePlane   (bj,bi,result);
-                    }
-                }
-            }
-        }
-        return result;
-    };
+    vec2.rotate(tangent.ni, normal.ni, Math.PI / 2);
+    vec2.copy(tangent.ri, normal.ri);
+    vec2.copy(tangent.rj, normal.rj);
 };
-exports.GridBroadphase.prototype = new Broadphase();
-
 
     </pre>
 </div>

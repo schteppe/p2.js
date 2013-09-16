@@ -57,6 +57,8 @@
             
                 <li><a href="../classes/Equation.html">Equation</a></li>
             
+                <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
+            
                 <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
@@ -65,11 +67,15 @@
             
                 <li><a href="../classes/IslandSolver.html">IslandSolver</a></li>
             
+                <li><a href="../classes/mat2.html">mat2</a></li>
+            
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
                 <li><a href="../classes/Particle.html">Particle</a></li>
             
                 <li><a href="../classes/Plane.html">Plane</a></li>
+            
+                <li><a href="../classes/PointToPointConstraint.html">PointToPointConstraint</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -126,7 +132,7 @@
     <pre class="code prettyprint linenums">
 var Solver = require(&#x27;./Solver&#x27;).Solver
 ,   ContactEquation = require(&#x27;../constraints/ContactEquation&#x27;).ContactEquation
-,   vec2 = require(&#x27;gl-matrix&#x27;).vec2
+,   vec2 = require(&#x27;../math/vec2&#x27;)
 ,   Body = require(&#x27;../objects/Body&#x27;).Body
 ,   STATIC = Body.STATIC
 

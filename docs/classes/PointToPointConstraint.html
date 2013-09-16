@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>GridBroadphase - p2.js</title>
+    <title>PointToPointConstraint - p2.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -126,19 +126,19 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>GridBroadphase Class</h1>
+                        <h1>PointToPointConstraint Class</h1>
 <div class="box meta">
     
 
     
         <div class="extends">
-            Extends <a href="../classes/Broadphase.html" class="crosslink">Broadphase</a>
+            Extends <a href="../classes/Constraint.html" class="crosslink">Constraint</a>
         </div>
     
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_collision_GridBroadphase.js.html#l8"><code>src&#x2F;collision&#x2F;GridBroadphase.js:8</code></a>
+            Defined in: <a href="../files/src_constraints_PointToPointConstraint.js.html#l7"><code>src&#x2F;constraints&#x2F;PointToPointConstraint.js:7</code></a>
         </div>
     
 
@@ -150,14 +150,14 @@
 
 
 <div class="box intro">
-    <p>Broadphase that uses axis-aligned bins.</p>
+    <p>Connects two bodies at given offset points</p>
 </div>
 
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_GridBroadphase" class="method item">
-    <h3 class="name"><code>GridBroadphase</code></h3>
+        <div id="method_PointToPointConstraint" class="method item">
+    <h3 class="name"><code>PointToPointConstraint</code></h3>
 
     
         <div class="args">
@@ -165,37 +165,31 @@
             
                 <li class="arg">
                     
-                        <code>xmin</code>
+                        <code>bodyA</code>
                     
                 </li>
             
                 <li class="arg">
                     
-                        <code>xmax</code>
+                        <code>pivotA</code>
                     
                 </li>
             
                 <li class="arg">
                     
-                        <code>ymin</code>
+                        <code>bodyB</code>
                     
                 </li>
             
                 <li class="arg">
                     
-                        <code>ymax</code>
+                        <code>pivotB</code>
                     
                 </li>
             
                 <li class="arg">
                     
-                        <code>nx</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>ny</code>
+                        <code>maxForce</code>
                     
                 </li>
             
@@ -228,7 +222,7 @@
             
         
         
-        <a href="../files/src_collision_GridBroadphase.js.html#l8"><code>src&#x2F;collision&#x2F;GridBroadphase.js:8</code></a>
+        <a href="../files/src_constraints_PointToPointConstraint.js.html#l7"><code>src&#x2F;constraints&#x2F;PointToPointConstraint.js:7</code></a>
         
         </p>
 
@@ -250,14 +244,14 @@
             
                 <li class="param">
                     
-                        <code class="param-name">xmin</code>
-                        <span class="type">Number</span>
+                        <code class="param-name">bodyA</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>Lower x bound of the grid</p>
+                         
                     </div>
 
                     
@@ -265,14 +259,14 @@
             
                 <li class="param">
                     
-                        <code class="param-name">xmax</code>
-                        <span class="type">Number</span>
+                        <code class="param-name">pivotA</code>
+                        <span class="type">Float32Array</span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>Upper x bound</p>
+                        <p>The point relative to the center of mass of bodyA which bodyA is constrained to.</p>
                     </div>
 
                     
@@ -280,14 +274,14 @@
             
                 <li class="param">
                     
-                        <code class="param-name">ymin</code>
-                        <span class="type">Number</span>
+                        <code class="param-name">bodyB</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>Lower y bound</p>
+                        <p>Body that will be constrained in a similar way to the same point as bodyA. We will therefore get sort of a link between bodyA and bodyB. If not specified, bodyA will be constrained to a static point.</p>
                     </div>
 
                     
@@ -295,14 +289,14 @@
             
                 <li class="param">
                     
-                        <code class="param-name">ymax</code>
-                        <span class="type">Number</span>
+                        <code class="param-name">pivotB</code>
+                        <span class="type">Float32Array</span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>Upper y bound</p>
+                        <p>See pivotA.</p>
                     </div>
 
                     
@@ -310,29 +304,14 @@
             
                 <li class="param">
                     
-                        <code class="param-name">nx</code>
+                        <code class="param-name">maxForce</code>
                         <span class="type">Number</span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>Number of bins along x axis</p>
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">ny</code>
-                        <span class="type">Number</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>Number of bins along y axis</p>
+                        <p>The maximum force that should be applied to constrain the bodies.</p>
                     </div>
 
                     
@@ -355,8 +334,6 @@
         <li class="api-class-tab index"><a href="#index">Index</a></li>
 
         
-            <li class="api-class-tab methods"><a href="#methods">Methods</a></li>
-        
         
         
         
@@ -367,21 +344,6 @@
             <h2 class="off-left">Item Index</h2>
 
             
-                <div class="index-section methods">
-                    <h3>Methods</h3>
-
-                    <ul class="index-list methods extends">
-                        
-                            <li class="index-item method inherited">
-                                <a href="#method_getCollisionPairs">getCollisionPairs</a>
-
-                                
-                                
-                            </li>
-                        
-                    </ul>
-                </div>
-            
 
             
 
@@ -390,113 +352,6 @@
             
         </div>
 
-        
-            <div id="methods" class="api-class-tabpanel">
-                <h2 class="off-left">Methods</h2>
-
-                
-                    <div id="method_getCollisionPairs" class="method item inherited">
-    <h3 class="name"><code>getCollisionPairs</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>world</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-        <span class="returns-inline">
-            <span class="type">Array</span>
-        </span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/Broadphase.html#method_getCollisionPairs">Broadphase</a>:
-            
-        
-        
-        <a href="../files/src_collision_Broadphase.js.html#l473"><code>src&#x2F;collision&#x2F;Broadphase.js:473</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Get all potential intersecting body pairs.</p>
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">world</code>
-                        <span class="type"><a href="../classes/World.html" class="crosslink">World</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>The world to search in.</p>
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                
-                    
-                        <span class="type">Array</span>:
-                    
-                    An array of the bodies, ordered in pairs. Example: A result of [a,b,c,d] means that the potential pairs are: (a,b), (c,d).
-                
-            </div>
-        </div>
-    
-
-    
-</div>
-
-                
-            </div>
         
 
         

@@ -57,6 +57,8 @@
             
                 <li><a href="../classes/Equation.html">Equation</a></li>
             
+                <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
+            
                 <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
@@ -65,11 +67,15 @@
             
                 <li><a href="../classes/IslandSolver.html">IslandSolver</a></li>
             
+                <li><a href="../classes/mat2.html">mat2</a></li>
+            
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
                 <li><a href="../classes/Particle.html">Particle</a></li>
             
                 <li><a href="../classes/Plane.html">Plane</a></li>
+            
+                <li><a href="../classes/PointToPointConstraint.html">PointToPointConstraint</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -126,7 +132,7 @@
     <pre class="code prettyprint linenums">
 var Constraint = require(&#x27;./Constraint&#x27;).Constraint
 ,   ContactEquation = require(&#x27;./ContactEquation&#x27;).ContactEquation
-,   vec2 = require(&#x27;gl-matrix&#x27;).vec2
+,   vec2 = require(&#x27;../math/vec2&#x27;)
 
 exports.DistanceConstraint = DistanceConstraint;
 
@@ -140,9 +146,12 @@ exports.DistanceConstraint = DistanceConstraint;
  * @param {Body} bodyB
  * @param {number} dist The distance to keep between the bodies.
  * @param {number} maxForce
+ * @extends {Constraint}
  */
 function DistanceConstraint(bodyA,bodyB,distance,maxForce){
     Constraint.call(this,bodyA,bodyB);
+
+    this.distance = distance;
 
     if(typeof(maxForce)===&quot;undefined&quot; ) {
         maxForce = 1e6;
@@ -155,19 +164,29 @@ function DistanceConstraint(bodyA,bodyB,distance,maxForce){
 
     var normal = eqs[0];
 
+    // Make the contact constraint bilateral
     normal.minForce = -maxForce;
     normal.maxForce =  maxForce;
 
-    // Update
-    // Should be appended to the .prototype
-    this.update = function(){
-        vec2.subtract(normal.ni, bodyB.position, bodyA.position);
-        vec2.normalize(normal.ni,normal.ni);
-        vec2.scale(normal.ri, normal.ni, distance*0.5);
-        vec2.scale(normal.rj, normal.ni, -distance*0.5);
-    };
 }
-DistanceConstraint.prototype = new Object(Constraint.prototype);
+
+DistanceConstraint.prototype = new Constraint();
+
+/**
+ * Update the constraint equations. Should be done if any of the bodies changed position, before solving.
+ * @method update
+ */
+DistanceConstraint.prototype.update = function(){
+    var normal = this.equations[0],
+        bodyA = this.bodyA,
+        bodyB = this.bodyB,
+        distance = this.distance;
+
+    vec2.subtract(normal.ni, bodyB.position, bodyA.position);
+    vec2.normalize(normal.ni,normal.ni);
+    vec2.scale(normal.ri, normal.ni,  distance*0.5);
+    vec2.scale(normal.rj, normal.ni, -distance*0.5);
+};
 
     </pre>
 </div>

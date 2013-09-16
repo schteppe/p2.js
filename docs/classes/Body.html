@@ -57,6 +57,8 @@
             
                 <li><a href="../classes/Equation.html">Equation</a></li>
             
+                <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
+            
                 <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
@@ -65,11 +67,15 @@
             
                 <li><a href="../classes/IslandSolver.html">IslandSolver</a></li>
             
+                <li><a href="../classes/mat2.html">mat2</a></li>
+            
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
                 <li><a href="../classes/Particle.html">Particle</a></li>
             
                 <li><a href="../classes/Plane.html">Plane</a></li>
+            
+                <li><a href="../classes/PointToPointConstraint.html">PointToPointConstraint</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -128,7 +134,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_objects_Body.js.html#l58"><code>src&#x2F;objects&#x2F;Body.js:58</code></a>
+            Defined in: <a href="../files/src_objects_Body.js.html#l5"><code>src&#x2F;objects&#x2F;Body.js:5</code></a>
         </div>
     
 
@@ -188,7 +194,7 @@
             
         
         
-        <a href="../files/src_objects_Body.js.html#l58"><code>src&#x2F;objects&#x2F;Body.js:58</code></a>
+        <a href="../files/src_objects_Body.js.html#l5"><code>src&#x2F;objects&#x2F;Body.js:5</code></a>
         
         </p>
 
@@ -369,7 +375,21 @@
                     <ul class="index-list methods">
                         
                             <li class="index-item method">
+                                <a href="#method_addShape">addShape</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
                                 <a href="#method_applyForce">applyForce</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_updateMassProperties">updateMassProperties</a>
 
                                 
                                 
@@ -430,6 +450,27 @@
                             </li>
                         
                             <li class="index-item property">
+                                <a href="#property_inertia">inertia</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_invInertia">invInertia</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_invMass">invMass</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
                                 <a href="#property_KINEMATIC">KINEMATIC</a>
 
                                 
@@ -460,7 +501,21 @@
                             </li>
                         
                             <li class="index-item property">
-                                <a href="#property_shape">shape</a>
+                                <a href="#property_shapeAngles">shapeAngles</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_shapeOffsets">shapeOffsets</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_shapes">shapes</a>
 
                                 
                                 
@@ -482,6 +537,20 @@
                                 
                             </li>
                         
+                            <li class="index-item property">
+                                <a href="#property_vlambda">vlambda</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_wlambda">wlambda</a>
+
+                                
+                                
+                            </li>
+                        
                     </ul>
                 </div>
             
@@ -494,6 +563,135 @@
         
             <div id="methods" class="api-class-tabpanel">
                 <h2 class="off-left">Methods</h2>
+
+                
+                    <div id="method_addShape" class="method item">
+    <h3 class="name"><code>addShape</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>shape</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>offset</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>angle</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Body.js.html#l151"><code>src&#x2F;objects&#x2F;Body.js:151</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Add a shape to the body</p>
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">shape</code>
+                        <span class="type"><a href="../classes/Shape.html" class="crosslink">Shape</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">offset</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">angle</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
 
                 
                     <div id="method_applyForce" class="method item">
@@ -544,7 +742,7 @@
             
         
         
-        <a href="../files/src_objects_Body.js.html#l159"><code>src&#x2F;objects&#x2F;Body.js:159</code></a>
+        <a href="../files/src_objects_Body.js.html#l191"><code>src&#x2F;objects&#x2F;Body.js:191</code></a>
         
         </p>
 
@@ -604,6 +802,60 @@
 </div>
 
                 
+                    <div id="method_updateMassProperties" class="method item">
+    <h3 class="name"><code>updateMassProperties</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Body.js.html#l167"><code>src&#x2F;objects&#x2F;Body.js:167</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Updates .inertia, .invMass, .invInertia for this Body. Should be called when changing the structure of the Body.</p>
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
             </div>
         
 
@@ -635,7 +887,7 @@
             
         
         
-        <a href="../files/src_objects_Body.js.html#l119"><code>src&#x2F;objects&#x2F;Body.js:119</code></a>
+        <a href="../files/src_objects_Body.js.html#l112"><code>src&#x2F;objects&#x2F;Body.js:112</code></a>
         
         </p>
 
@@ -679,7 +931,7 @@
             
         
         
-        <a href="../files/src_objects_Body.js.html#l141"><code>src&#x2F;objects&#x2F;Body.js:141</code></a>
+        <a href="../files/src_objects_Body.js.html#l134"><code>src&#x2F;objects&#x2F;Body.js:134</code></a>
         
         </p>
 
@@ -723,7 +975,7 @@
             
         
         
-        <a href="../files/src_objects_Body.js.html#l126"><code>src&#x2F;objects&#x2F;Body.js:126</code></a>
+        <a href="../files/src_objects_Body.js.html#l119"><code>src&#x2F;objects&#x2F;Body.js:119</code></a>
         
         </p>
 
@@ -769,7 +1021,7 @@
             
         
         
-        <a href="../files/src_objects_Body.js.html#l181"><code>src&#x2F;objects&#x2F;Body.js:181</code></a>
+        <a href="../files/src_objects_Body.js.html#l213"><code>src&#x2F;objects&#x2F;Body.js:213</code></a>
         
         </p>
 
@@ -813,7 +1065,7 @@
             
         
         
-        <a href="../files/src_objects_Body.js.html#l133"><code>src&#x2F;objects&#x2F;Body.js:133</code></a>
+        <a href="../files/src_objects_Body.js.html#l126"><code>src&#x2F;objects&#x2F;Body.js:126</code></a>
         
         </p>
 
@@ -857,7 +1109,7 @@
             
         
         
-        <a href="../files/src_objects_Body.js.html#l76"><code>src&#x2F;objects&#x2F;Body.js:76</code></a>
+        <a href="../files/src_objects_Body.js.html#l24"><code>src&#x2F;objects&#x2F;Body.js:24</code></a>
         
         </p>
 
@@ -868,6 +1120,138 @@
 
     <div class="description">
         <p>The body identifyer</p>
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_inertia" class="property item">
+    <h3 class="name"><code>inertia</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Body.js.html#l66"><code>src&#x2F;objects&#x2F;Body.js:66</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The inertia of the body around the Z axis.</p>
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_invInertia" class="property item">
+    <h3 class="name"><code>invInertia</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Body.js.html#l73"><code>src&#x2F;objects&#x2F;Body.js:73</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The inverse inertia of the body.</p>
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_invMass" class="property item">
+    <h3 class="name"><code>invMass</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Body.js.html#l59"><code>src&#x2F;objects&#x2F;Body.js:59</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The inverse mass of the body.</p>
     </div>
 
     
@@ -903,7 +1287,7 @@
             
         
         
-        <a href="../files/src_objects_Body.js.html#l197"><code>src&#x2F;objects&#x2F;Body.js:197</code></a>
+        <a href="../files/src_objects_Body.js.html#l229"><code>src&#x2F;objects&#x2F;Body.js:229</code></a>
         
         </p>
 
@@ -947,7 +1331,7 @@
             
         
         
-        <a href="../files/src_objects_Body.js.html#l90"><code>src&#x2F;objects&#x2F;Body.js:90</code></a>
+        <a href="../files/src_objects_Body.js.html#l52"><code>src&#x2F;objects&#x2F;Body.js:52</code></a>
         
         </p>
 
@@ -991,7 +1375,7 @@
             
         
         
-        <a href="../files/src_objects_Body.js.html#l148"><code>src&#x2F;objects&#x2F;Body.js:148</code></a>
+        <a href="../files/src_objects_Body.js.html#l141"><code>src&#x2F;objects&#x2F;Body.js:141</code></a>
         
         </p>
 
@@ -1035,7 +1419,7 @@
             
         
         
-        <a href="../files/src_objects_Body.js.html#l100"><code>src&#x2F;objects&#x2F;Body.js:100</code></a>
+        <a href="../files/src_objects_Body.js.html#l82"><code>src&#x2F;objects&#x2F;Body.js:82</code></a>
         
         </p>
 
@@ -1056,9 +1440,9 @@
 </div>
 
                 
-                    <div id="property_shape" class="property item">
-    <h3 class="name"><code>shape</code></h3>
-    <span class="type"><a href="../classes/Shape.html" class="crosslink">Shape</a></span>
+                    <div id="property_shapeAngles" class="property item">
+    <h3 class="name"><code>shapeAngles</code></h3>
+    <span class="type">Array</span>
 
     
 
@@ -1079,7 +1463,7 @@
             
         
         
-        <a href="../files/src_objects_Body.js.html#l83"><code>src&#x2F;objects&#x2F;Body.js:83</code></a>
+        <a href="../files/src_objects_Body.js.html#l45"><code>src&#x2F;objects&#x2F;Body.js:45</code></a>
         
         </p>
 
@@ -1089,7 +1473,95 @@
     </div>
 
     <div class="description">
-        <p>The shape belonging to the body.</p>
+        <p>The body-local shape angle transformations.</p>
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_shapeOffsets" class="property item">
+    <h3 class="name"><code>shapeOffsets</code></h3>
+    <span class="type">Array</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Body.js.html#l38"><code>src&#x2F;objects&#x2F;Body.js:38</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The local shape offsets, relative to the body center of mass.</p>
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_shapes" class="property item">
+    <h3 class="name"><code>shapes</code></h3>
+    <span class="type">Array</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Body.js.html#l31"><code>src&#x2F;objects&#x2F;Body.js:31</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The shapes of the body.</p>
     </div>
 
     
@@ -1125,7 +1597,7 @@
             
         
         
-        <a href="../files/src_objects_Body.js.html#l189"><code>src&#x2F;objects&#x2F;Body.js:189</code></a>
+        <a href="../files/src_objects_Body.js.html#l221"><code>src&#x2F;objects&#x2F;Body.js:221</code></a>
         
         </p>
 
@@ -1169,7 +1641,7 @@
             
         
         
-        <a href="../files/src_objects_Body.js.html#l108"><code>src&#x2F;objects&#x2F;Body.js:108</code></a>
+        <a href="../files/src_objects_Body.js.html#l90"><code>src&#x2F;objects&#x2F;Body.js:90</code></a>
         
         </p>
 
@@ -1180,6 +1652,94 @@
 
     <div class="description">
         <p>The velocity of the body</p>
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_vlambda" class="property item">
+    <h3 class="name"><code>vlambda</code></h3>
+    <span class="type">Float32Array</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Body.js.html#l98"><code>src&#x2F;objects&#x2F;Body.js:98</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Constraint velocity that was added to the body during the last step.</p>
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_wlambda" class="property item">
+    <h3 class="name"><code>wlambda</code></h3>
+    <span class="type">Float32Array</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Body.js.html#l105"><code>src&#x2F;objects&#x2F;Body.js:105</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Angular constraint velocity that was added to the body during the last step.</p>
     </div>
 
     

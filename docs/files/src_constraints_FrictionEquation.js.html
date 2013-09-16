@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/gl-matrix-extensions.js - p2.js</title>
+    <title>src/constraints/FrictionEquation.js - p2.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -57,6 +57,8 @@
             
                 <li><a href="../classes/Equation.html">Equation</a></li>
             
+                <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
+            
                 <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
@@ -65,11 +67,15 @@
             
                 <li><a href="../classes/IslandSolver.html">IslandSolver</a></li>
             
+                <li><a href="../classes/mat2.html">mat2</a></li>
+            
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
                 <li><a href="../classes/Particle.html">Particle</a></li>
             
                 <li><a href="../classes/Plane.html">Plane</a></li>
+            
+                <li><a href="../classes/PointToPointConstraint.html">PointToPointConstraint</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -120,60 +126,145 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: src/gl-matrix-extensions.js</h1>
+                        <h1 class="file-heading">File: src/constraints/FrictionEquation.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
+var vec2 = require(&#x27;../math/vec2&#x27;)
+,   Equation = require(&#x27;./Equation&#x27;).Equation
+
+exports.FrictionEquation = FrictionEquation;
+
+// 3D cross product from glmatrix, until we get this to work...
+function cross(out, a, b) {
+    var ax = a[0], ay = a[1], az = a[2],
+        bx = b[0], by = b[1], bz = b[2];
+
+    out[0] = ay * bz - az * by;
+    out[1] = az * bx - ax * bz;
+    out[2] = ax * by - ay * bx;
+    return out;
+};
+
+var dot = vec2.dot;
+
 /**
- * Extensions for the vec2 object
- * @class vec2
+ * Constrains the slipping in a contact along a tangent
+ *
+ * @class FrictionEquation
+ * @constructor
+ * @param {Body} bi
+ * @param {Body} bj
+ * @param {Number} slipForce
+ * @extends {Equation}
  */
-exports.vec2 = {
+function FrictionEquation(bi,bj,slipForce){
+    Equation.call(this,bi,bj,-slipForce,slipForce);
+    this.ri = vec2.create(); // Vector from center of body i to the contact point
+    this.rj = vec2.create(); // Vector from center of body j to the contact point
+    this.t = vec2.create();  // Tangent vector so that
+    this.rixt = 0;
+    this.rjxt = 0;
+};
+FrictionEquation.prototype = new Equation();
+FrictionEquation.prototype.constructor = FrictionEquation;
 
-    /**
-     * Get the vector x component
-     * @method getX
-     * @param  {Float32Array} a
-     * @return {Number}
-     */
-    getX : function(a){
-        return a[0];
-    },
+/**
+ * Set the slipping condition for the constraint. If the force
+ * @method setSlipForce
+ * @param  {Number} slipForce
+ */
+FrictionEquation.prototype.setSlipForce = function(slipForce){
+    this.maxForce = slipForce;
+    this.minForce = -slipForce;
+};
 
-    /**
-     * Get the vector y component
-     * @method getY
-     * @param  {Float32Array} a
-     * @return {Number}
-     */
-    getY : function(a){
-        return a[1];
-    },
+var rixtVec = [0,0,0];
+var rjxtVec = [0,0,0];
+FrictionEquation.prototype.computeB = function(a,b,h){
+    var a = this.a,
+        b = this.b,
+        bi = this.bi,
+        bj = this.bj,
+        ri = this.ri,
+        rj = this.rj,
+        rixt = this.rixt,
+        rjxt = this.rjxt,
+        t = this.t;
 
-    /**
-     * Make a cross product and only return the z component
-     * @method crossLength
-     * @param  {Float32Array} a
-     * @param  {Float32Arrat} b
-     * @return {Number}
-     */
-    crossLength : function(a,b){
-        return a[0] * b[1] - a[1] * b[0];
-    },
+    // Caluclate cross products
+    cross(rixtVec, [ri[0], ri[1], 0], [t[0], t[1], 0]);//ri.cross(t,rixt);
+    cross(rjxtVec, [rj[0], rj[1], 0], [t[0], t[1], 0]);//rj.cross(t,rjxt);
+    var rixt = this.rixt = rixtVec[2];
+    var rjxt = this.rjxt = rjxtVec[2];
 
-    /**
-     * Rotate a vector by an angle
-     * @method rotate
-     * @param  {Float32Array} out
-     * @param  {Float32Array} a
-     * @param  {Number} angle
-     */
-    rotate : function(out,a,angle){
-        var c = Math.cos(angle),
-            s = Math.sin(angle);
-        out[0] = c*a[0] -s*a[1];
-        out[1] = s*a[0] +c*a[1];
-    }
+    var Gq = 0; // we do only want to constrain motion
+    var GW = -dot(bi.velocity,t) + dot(bj.velocity,t) - rixt*bi.angularVelocity + rjxt*bj.angularVelocity; // eq. 40
+    var GiMf = -dot(bi.force,t)*bi.invMass +dot(bj.force,t)*bj.invMass -rixt*bi.invInertia*bi.angularForce + rjxt*bj.invInertia*bj.angularForce;
+
+    var B = - Gq * a - GW * b - h*GiMf;
+
+    return B;
+};
+
+// Compute C = G * iM * G&#x27; + eps
+//
+// G*iM*G&#x27; =
+//
+//                             [ iM1          ] [-t     ]
+// [-t (-ri x t) t (rj x t)] * [    iI1       ] [-ri x t]
+//                             [       iM2    ] [t      ]
+//                             [          iI2 ] [rj x t ]
+//
+// = (-t)*iM1*(-t) + (-ri x t)*iI1*(-ri x t) + t*iM2*t + (rj x t)*iI2*(rj x t)
+//
+// = t*iM1*t + (ri x t)*iI1*(ri x t) + t*iM2*t + (rj x t)*iI2*(rj x t)
+//
+FrictionEquation.prototype.computeC = function(eps){
+    var bi = this.bi,
+        bj = this.bj,
+        rixt = this.rixt,
+        rjxt = this.rjxt,
+        C;
+
+    C = bi.invMass + bj.invMass + eps;
+
+    C += bi.invInertia * rixt * rixt;
+    C += bj.invInertia * rjxt * rjxt;
+
+    return C;
+};
+
+FrictionEquation.prototype.computeGWlambda = function(){
+    var bi = this.bi;
+    var bj = this.bj;
+    var GWlambda = 0.0;
+
+    GWlambda -= vec2.dot(this.t, bi.vlambda);
+    GWlambda -= bi.wlambda * this.rixt;
+    GWlambda += vec2.dot(this.t, bj.vlambda);
+    GWlambda += bj.wlambda * this.rjxt;
+
+    return GWlambda;
+};
+
+var FrictionEquation_addToWlambda_tmp = vec2.create();
+FrictionEquation.prototype.addToWlambda = function(deltalambda){
+    var bi = this.bi,
+        bj = this.bj,
+        rixt = this.rixt,
+        rjxt = this.rjxt,
+        t = this.t,
+        tmp = FrictionEquation_addToWlambda_tmp;
+
+    vec2.scale(tmp, t, -bi.invMass * deltalambda);  //t.mult(invMassi * deltalambda, tmp);
+    vec2.add(bi.vlambda, bi.vlambda, tmp);          //bi.vlambda.vsub(tmp,bi.vlambda);
+
+    vec2.scale(tmp, t, bj.invMass * deltalambda);   //t.mult(invMassj * deltalambda, tmp);
+    vec2.add(bj.vlambda, bj.vlambda, tmp);          //bj.vlambda.vadd(tmp,bj.vlambda);
+
+    bi.wlambda -= bi.invInertia * rixt * deltalambda;
+    bj.wlambda += bj.invInertia * rjxt * deltalambda;
 };
 
     </pre>

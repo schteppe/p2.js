@@ -68,11 +68,46 @@
             "fors": {},
             "namespaces": {}
         },
+        "src/constraints/FrictionEquation.js": {
+            "name": "src/constraints/FrictionEquation.js",
+            "modules": {},
+            "classes": {
+                "FrictionEquation": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/constraints/PointToPointConstraint.js": {
+            "name": "src/constraints/PointToPointConstraint.js",
+            "modules": {},
+            "classes": {
+                "PointToPointConstraint": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/math/mat2.js": {
+            "name": "src/math/mat2.js",
+            "modules": {},
+            "classes": {
+                "mat2": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/math/vec2.js": {
+            "name": "src/math/vec2.js",
+            "modules": {},
+            "classes": {
+                "vec2": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
         "src/objects/Body.js": {
             "name": "src/objects/Body.js",
             "modules": {},
             "classes": {
-                "Spring": 1,
                 "Body": 1
             },
             "fors": {},
@@ -87,6 +122,15 @@
                 "Circle": 1,
                 "Plane": 1,
                 "Convex": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/objects/Spring.js": {
+            "name": "src/objects/Spring.js",
+            "modules": {},
+            "classes": {
+                "Spring": 1
             },
             "fors": {},
             "namespaces": {}
@@ -127,15 +171,6 @@
             },
             "fors": {},
             "namespaces": {}
-        },
-        "src/gl-matrix-extensions.js": {
-            "name": "src/gl-matrix-extensions.js",
-            "modules": {},
-            "classes": {
-                "vec2": 1
-            },
-            "fors": {},
-            "namespaces": {}
         }
     },
     "modules": {},
@@ -149,7 +184,7 @@
             "plugin_for": [],
             "extension_for": [],
             "file": "src/collision/Broadphase.js",
-            "line": 195,
+            "line": 464,
             "description": "Base class for broadphase implementations.",
             "is_constructor": 1
         },
@@ -162,7 +197,7 @@
             "plugin_for": [],
             "extension_for": [],
             "file": "src/collision/GridBroadphase.js",
-            "line": 9,
+            "line": 8,
             "description": "Broadphase that uses axis-aligned bins.",
             "is_constructor": 1,
             "extends": "Broadphase",
@@ -208,7 +243,7 @@
             "plugin_for": [],
             "extension_for": [],
             "file": "src/collision/NaiveBroadphase.js",
-            "line": 9,
+            "line": 11,
             "description": "Naive broadphase implementation. Does N^2 tests.",
             "is_constructor": 1,
             "extends": "Broadphase"
@@ -248,7 +283,7 @@
             "plugin_for": [],
             "extension_for": [],
             "file": "src/constraints/ContactEquation.js",
-            "line": 9,
+            "line": 6,
             "description": "Non-penetration constraint equation.",
             "is_constructor": 1,
             "extends": "Equation",
@@ -299,7 +334,8 @@
                     "description": "",
                     "type": "Number"
                 }
-            ]
+            ],
+            "extends": "{Constraint}"
         },
         "Equation": {
             "name": "Equation",
@@ -336,18 +372,50 @@
                 }
             ]
         },
-        "Spring": {
-            "name": "Spring",
-            "shortname": "Spring",
+        "FrictionEquation": {
+            "name": "FrictionEquation",
+            "shortname": "FrictionEquation",
             "classitems": [],
             "plugins": [],
             "extensions": [],
             "plugin_for": [],
             "extension_for": [],
-            "file": "src/objects/Body.js",
-            "line": 7,
-            "description": "A spring, connecting two bodies.",
+            "file": "src/constraints/FrictionEquation.js",
+            "line": 19,
+            "description": "Constrains the slipping in a contact along a tangent",
             "is_constructor": 1,
+            "params": [
+                {
+                    "name": "bi",
+                    "description": "",
+                    "type": "Body"
+                },
+                {
+                    "name": "bj",
+                    "description": "",
+                    "type": "Body"
+                },
+                {
+                    "name": "slipForce",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "extends": "{Equation}"
+        },
+        "PointToPointConstraint": {
+            "name": "PointToPointConstraint",
+            "shortname": "PointToPointConstraint",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/constraints/PointToPointConstraint.js",
+            "line": 7,
+            "description": "Connects two bodies at given offset points",
+            "is_constructor": 1,
+            "author": "schteppe",
             "params": [
                 {
                     "name": "bodyA",
@@ -355,34 +423,51 @@
                     "type": "Body"
                 },
                 {
+                    "name": "pivotA",
+                    "description": "The point relative to the center of mass of bodyA which bodyA is constrained to.",
+                    "type": "Float32Array"
+                },
+                {
                     "name": "bodyB",
-                    "description": "",
+                    "description": "Body that will be constrained in a similar way to the same point as bodyA. We will therefore get sort of a link between bodyA and bodyB. If not specified, bodyA will be constrained to a static point.",
                     "type": "Body"
                 },
                 {
-                    "name": "options",
-                    "description": "",
-                    "type": "Object",
-                    "optional": true,
-                    "props": [
-                        {
-                            "name": "restLength",
-                            "description": "A number > 0. Default: 1",
-                            "type": "Number"
-                        },
-                        {
-                            "name": "stiffness",
-                            "description": "A number >= 0. Default: 100",
-                            "type": "Number"
-                        },
-                        {
-                            "name": "damping",
-                            "description": "A number >= 0. Default: 1",
-                            "type": "Number"
-                        }
-                    ]
+                    "name": "pivotB",
+                    "description": "See pivotA.",
+                    "type": "Float32Array"
+                },
+                {
+                    "name": "maxForce",
+                    "description": "The maximum force that should be applied to constrain the bodies.",
+                    "type": "Number"
                 }
-            ]
+            ],
+            "extends": "{Constraint}"
+        },
+        "mat2": {
+            "name": "mat2",
+            "shortname": "mat2",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/math/mat2.js",
+            "line": 1,
+            "description": "The mat2 object from glMatrix, extended with the functions documented here. See http://glmatrix.net for full doc."
+        },
+        "vec2": {
+            "name": "vec2",
+            "shortname": "vec2",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/math/vec2.js",
+            "line": 1,
+            "description": "The vec2 object from glMatrix, extended with the functions documented here. See http://glmatrix.net for full doc."
         },
         "Body": {
             "name": "Body",
@@ -393,7 +478,7 @@
             "plugin_for": [],
             "extension_for": [],
             "file": "src/objects/Body.js",
-            "line": 58,
+            "line": 5,
             "description": "A physics body.",
             "is_constructor": 1,
             "params": [
@@ -445,6 +530,10 @@
                         }
                     ]
                 }
+            ],
+            "todo": [
+                "Should not take mass as an argument to Body",
+                "but as density to each Shape"
             ]
         },
         "Shape": {
@@ -456,7 +545,7 @@
             "plugin_for": [],
             "extension_for": [],
             "file": "src/objects/Shape.js",
-            "line": 1,
+            "line": 8,
             "description": "Base class for shapes.",
             "is_constructor": 1
         },
@@ -469,10 +558,10 @@
             "plugin_for": [],
             "extension_for": [],
             "file": "src/objects/Shape.js",
-            "line": 11,
+            "line": 33,
             "description": "Particle shape class.",
             "is_constructor": 1,
-            "extends": "Shape"
+            "extends": "{Shape}"
         },
         "Circle": {
             "name": "Circle",
@@ -483,9 +572,9 @@
             "plugin_for": [],
             "extension_for": [],
             "file": "src/objects/Shape.js",
-            "line": 21,
+            "line": 48,
             "description": "Circle shape class.",
-            "extends": "Shape",
+            "extends": "{Shape}",
             "is_constructor": 1,
             "params": [
                 {
@@ -504,9 +593,9 @@
             "plugin_for": [],
             "extension_for": [],
             "file": "src/objects/Shape.js",
-            "line": 39,
-            "description": "Plane shape class. The plane is facing in the Y direction.",
-            "extends": "Shape",
+            "line": 107,
+            "description": "Line shape class. The line shape is along the x direction, and stretches from [-length/2, 0] to [length/2,0].",
+            "extends": "{Shape}",
             "is_constructor": 1
         },
         "Convex": {
@@ -518,16 +607,67 @@
             "plugin_for": [],
             "extension_for": [],
             "file": "src/objects/Shape.js",
-            "line": 49,
+            "line": 85,
             "description": "Convex shape class.",
             "is_constructor": 1,
-            "extends": "Shape",
+            "extends": "{Shape}",
             "params": [
                 {
                     "name": "vertices",
                     "description": "An array of Float32Array vertices that span this shape. Vertices are given in counter-clockwise (CCW) direction.",
                     "type": "Array"
                 }
+            ]
+        },
+        "Spring": {
+            "name": "Spring",
+            "shortname": "Spring",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/objects/Spring.js",
+            "line": 5,
+            "description": "A spring, connecting two bodies.",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "bodyA",
+                    "description": "",
+                    "type": "Body"
+                },
+                {
+                    "name": "bodyB",
+                    "description": "",
+                    "type": "Body"
+                },
+                {
+                    "name": "options",
+                    "description": "",
+                    "type": "Object",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "restLength",
+                            "description": "A number > 0. Default: 1",
+                            "type": "Number"
+                        },
+                        {
+                            "name": "stiffness",
+                            "description": "A number >= 0. Default: 100",
+                            "type": "Number"
+                        },
+                        {
+                            "name": "damping",
+                            "description": "A number >= 0. Default: 1",
+                            "type": "Number"
+                        }
+                    ]
+                }
+            ],
+            "todo": [
+                "Should have anchor points in the bodies"
             ]
         },
         "GSSolver": {
@@ -539,7 +679,7 @@
             "plugin_for": [],
             "extension_for": [],
             "file": "src/solver/GSSolver.js",
-            "line": 9,
+            "line": 8,
             "description": "Iterative Gauss-Seidel constraint equation solver.",
             "is_constructor": 1,
             "extends": "Solver",
@@ -635,7 +775,7 @@
             "plugin_for": [],
             "extension_for": [],
             "file": "src/world/World.js",
-            "line": 24,
+            "line": 29,
             "description": "The dynamics world, where all bodies and constraints lives.",
             "is_constructor": 1,
             "params": [
@@ -664,24 +804,223 @@
                 }
             ],
             "extends": "{EventEmitter}"
-        },
-        "vec2": {
-            "name": "vec2",
-            "shortname": "vec2",
-            "classitems": [],
-            "plugins": [],
-            "extensions": [],
-            "plugin_for": [],
-            "extension_for": [],
-            "file": "src/gl-matrix-extensions.js",
-            "line": 1,
-            "description": "Extensions for the vec2 object"
         }
     },
     "classitems": [
         {
             "file": "src/collision/Broadphase.js",
-            "line": 204,
+            "line": 84,
+            "description": "Nearphase for particle vs plane",
+            "params": [
+                {
+                    "name": "bi",
+                    "description": "The particle body",
+                    "type": "Body"
+                },
+                {
+                    "name": "si",
+                    "description": "Particle shape",
+                    "type": "Shape"
+                },
+                {
+                    "name": "xi",
+                    "description": "World position for the particle",
+                    "type": "Array"
+                },
+                {
+                    "name": "ai",
+                    "description": "World angle for the particle",
+                    "type": "Number"
+                },
+                {
+                    "name": "bj",
+                    "description": "Plane body",
+                    "type": "Body"
+                },
+                {
+                    "name": "sj",
+                    "description": "Plane shape",
+                    "type": "Shape"
+                },
+                {
+                    "name": "xj",
+                    "description": "World position for the plane",
+                    "type": "Array"
+                },
+                {
+                    "name": "aj",
+                    "description": "World angle for the plane",
+                    "type": "Number"
+                },
+                {
+                    "name": "result",
+                    "description": "",
+                    "type": "Array"
+                },
+                {
+                    "name": "oldContacts",
+                    "description": "",
+                    "type": "Array"
+                },
+                {
+                    "name": "doFriction",
+                    "description": "",
+                    "type": "Boolean"
+                },
+                {
+                    "name": "frictionResult",
+                    "description": "",
+                    "type": "Array"
+                },
+                {
+                    "name": "oldFrictionEquations",
+                    "description": "",
+                    "type": "Array"
+                },
+                {
+                    "name": "slipForce",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Boolean"
+            },
+            "class": "Broadphase"
+        },
+        {
+            "file": "src/collision/Broadphase.js",
+            "line": 222,
+            "description": "Check whether a circle and a plane collides. See nearphaseCirclePlane() for param details.",
+            "params": [
+                {
+                    "name": "circleBody",
+                    "description": "",
+                    "type": "Body"
+                },
+                {
+                    "name": "circleShape",
+                    "description": "",
+                    "type": "Circle"
+                },
+                {
+                    "name": "circleOffset",
+                    "description": "",
+                    "type": "Array"
+                },
+                {
+                    "name": "planeBody",
+                    "description": "",
+                    "type": "Body"
+                },
+                {
+                    "name": "planeShape",
+                    "description": "",
+                    "type": "Plane"
+                },
+                {
+                    "name": "planeOffset",
+                    "description": "",
+                    "type": "Array"
+                },
+                {
+                    "name": "planeAngle",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "result",
+                    "description": "The Bodies will be pushed into this array if they collide.",
+                    "type": "Array"
+                }
+            ],
+            "return": {
+                "description": "True if collision.",
+                "type": "Boolean"
+            },
+            "class": "Broadphase"
+        },
+        {
+            "file": "src/collision/Broadphase.js",
+            "line": 260,
+            "description": "Creates ContactEquations and FrictionEquations for a collision.",
+            "params": [
+                {
+                    "name": "circleBody",
+                    "description": "The first body that should be connected to the equations.",
+                    "type": "Body"
+                },
+                {
+                    "name": "circleShape",
+                    "description": "The circle shape participating in the collision.",
+                    "type": "Circle"
+                },
+                {
+                    "name": "circleOffset",
+                    "description": "Extra offset to take into account for the Shape, in addition to the one in circleBody.position. Will *not* be rotated by circleBody.angle (maybe it should, for sake of homogenity?). Set to null if none.",
+                    "type": "Array"
+                },
+                {
+                    "name": "planeBody",
+                    "description": "The second body that should be connected to the equations.",
+                    "type": "Body"
+                },
+                {
+                    "name": "shapeB",
+                    "description": "The Plane shape that is participating",
+                    "type": "Shape"
+                },
+                {
+                    "name": "planeOffset",
+                    "description": "Extra offset for the plane shape.",
+                    "type": "Array"
+                },
+                {
+                    "name": "planeAngle",
+                    "description": "Extra angle to apply to the plane",
+                    "type": "Number"
+                },
+                {
+                    "name": "result",
+                    "description": "Resulting ContactEquations will be pushed into this array",
+                    "type": "Array"
+                },
+                {
+                    "name": "oldContacts",
+                    "description": "Reusable ContactEquations",
+                    "type": "Array"
+                },
+                {
+                    "name": "doFriction",
+                    "description": "Whether to create FrictionEquations",
+                    "type": "Array"
+                },
+                {
+                    "name": "frictionResult",
+                    "description": "Resulting FrictionEquations will be pushed into this array",
+                    "type": "Array"
+                },
+                {
+                    "name": "oldFrictionEquations",
+                    "description": "Reusable FrictionEquation objects",
+                    "type": "Array"
+                },
+                {
+                    "name": "slipForce",
+                    "description": "To be passed to created FrictionEquations",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "True if we created any Equations.",
+                "type": "Boolean"
+            },
+            "class": "Broadphase"
+        },
+        {
+            "file": "src/collision/Broadphase.js",
+            "line": 473,
             "description": "Get all potential intersecting body pairs.",
             "itemtype": "method",
             "name": "getCollisionPairs",
@@ -697,6 +1036,25 @@
                 "type": "Array"
             },
             "class": "Broadphase"
+        },
+        {
+            "file": "src/collision/NaiveBroadphase.js",
+            "line": 27,
+            "description": "Get the colliding pairs",
+            "itemtype": "method",
+            "name": "getCollisionPairs",
+            "params": [
+                {
+                    "name": "world",
+                    "description": "",
+                    "type": "World"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Array"
+            },
+            "class": "NaiveBroadphase"
         },
         {
             "file": "src/constraints/Constraint.js",
@@ -734,53 +1092,238 @@
             "class": "Constraint"
         },
         {
-            "file": "src/objects/Body.js",
-            "line": 22,
-            "description": "Rest length of the spring.",
-            "itemtype": "property",
-            "name": "restLength",
-            "type": "{number}",
-            "class": "Spring"
-        },
-        {
-            "file": "src/objects/Body.js",
-            "line": 29,
-            "description": "Stiffness of the spring.",
-            "itemtype": "property",
-            "name": "stiffness",
-            "type": "{number}",
-            "class": "Spring"
-        },
-        {
-            "file": "src/objects/Body.js",
-            "line": 36,
-            "description": "Damping of the spring.",
-            "itemtype": "property",
-            "name": "damping",
-            "type": "{number}",
-            "class": "Spring"
-        },
-        {
-            "file": "src/objects/Body.js",
+            "file": "src/constraints/DistanceConstraint.js",
             "line": 43,
-            "description": "First connected body.",
+            "description": "Update the constraint equations. Should be done if any of the bodies changed position, before solving.",
+            "itemtype": "method",
+            "name": "update",
+            "class": "DistanceConstraint"
+        },
+        {
+            "file": "src/constraints/Equation.js",
+            "line": 15,
+            "description": "Minimum force to apply when solving",
             "itemtype": "property",
-            "name": "bodyA",
+            "name": "minForce",
+            "type": "{Number}",
+            "class": "Equation"
+        },
+        {
+            "file": "src/constraints/Equation.js",
+            "line": 22,
+            "description": "Max force to apply when solving",
+            "itemtype": "property",
+            "name": "maxForce",
+            "type": "{Number}",
+            "class": "Equation"
+        },
+        {
+            "file": "src/constraints/Equation.js",
+            "line": 29,
+            "description": "First body participating in the constraint",
+            "itemtype": "property",
+            "name": "bi",
             "type": "{Body}",
-            "class": "Spring"
+            "class": "Equation"
+        },
+        {
+            "file": "src/constraints/Equation.js",
+            "line": 36,
+            "description": "Second body participating in the constraint",
+            "itemtype": "property",
+            "name": "bj",
+            "type": "{Body}",
+            "class": "Equation"
+        },
+        {
+            "file": "src/constraints/Equation.js",
+            "line": 52,
+            "description": "Set stiffness parameters",
+            "itemtype": "method",
+            "name": "setSpookParams",
+            "params": [
+                {
+                    "name": "k",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "d",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "class": "Equation"
+        },
+        {
+            "file": "src/constraints/FrictionEquation.js",
+            "line": 40,
+            "description": "Set the slipping condition for the constraint. If the force",
+            "itemtype": "method",
+            "name": "setSlipForce",
+            "params": [
+                {
+                    "name": "slipForce",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "class": "FrictionEquation"
+        },
+        {
+            "file": "src/math/vec2.js",
+            "line": 11,
+            "description": "Get the vector x component",
+            "itemtype": "method",
+            "name": "getX",
+            "static": 1,
+            "params": [
+                {
+                    "name": "a",
+                    "description": "",
+                    "type": "Float32Array"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Number"
+            },
+            "class": "vec2"
+        },
+        {
+            "file": "src/math/vec2.js",
+            "line": 22,
+            "description": "Get the vector y component",
+            "itemtype": "method",
+            "name": "getY",
+            "static": 1,
+            "params": [
+                {
+                    "name": "a",
+                    "description": "",
+                    "type": "Float32Array"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Number"
+            },
+            "class": "vec2"
+        },
+        {
+            "file": "src/math/vec2.js",
+            "line": 33,
+            "description": "Make a cross product and only return the z component",
+            "itemtype": "method",
+            "name": "crossLength",
+            "static": 1,
+            "params": [
+                {
+                    "name": "a",
+                    "description": "",
+                    "type": "Float32Array"
+                },
+                {
+                    "name": "b",
+                    "description": "",
+                    "type": "Float32Array"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Number"
+            },
+            "class": "vec2"
+        },
+        {
+            "file": "src/math/vec2.js",
+            "line": 45,
+            "description": "Cross product between a vector and the Z component of a vector",
+            "itemtype": "method",
+            "name": "crossVZ",
+            "static": 1,
+            "params": [
+                {
+                    "name": "out",
+                    "description": "",
+                    "type": "Float32Array"
+                },
+                {
+                    "name": "vec",
+                    "description": "",
+                    "type": "Float32Array"
+                },
+                {
+                    "name": "zcomp",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Number"
+            },
+            "class": "vec2"
+        },
+        {
+            "file": "src/math/vec2.js",
+            "line": 60,
+            "description": "Cross product between a vector and the Z component of a vector",
+            "itemtype": "method",
+            "name": "crossZV",
+            "static": 1,
+            "params": [
+                {
+                    "name": "out",
+                    "description": "",
+                    "type": "Float32Array"
+                },
+                {
+                    "name": "zcomp",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "vec",
+                    "description": "",
+                    "type": "Float32Array"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Number"
+            },
+            "class": "vec2"
+        },
+        {
+            "file": "src/math/vec2.js",
+            "line": 75,
+            "description": "Rotate a vector by an angle",
+            "itemtype": "method",
+            "name": "rotate",
+            "static": 1,
+            "params": [
+                {
+                    "name": "out",
+                    "description": "",
+                    "type": "Float32Array"
+                },
+                {
+                    "name": "a",
+                    "description": "",
+                    "type": "Float32Array"
+                },
+                {
+                    "name": "angle",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "class": "vec2"
         },
         {
             "file": "src/objects/Body.js",
-            "line": 50,
-            "description": "Second connected body.",
-            "itemtype": "property",
-            "name": "bodyB",
-            "type": "{Body}",
-            "class": "Spring"
-        },
-        {
-            "file": "src/objects/Body.js",
-            "line": 76,
+            "line": 24,
             "description": "The body identifyer",
             "itemtype": "property",
             "name": "id",
@@ -789,16 +1332,34 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 83,
-            "description": "The shape belonging to the body.",
+            "line": 31,
+            "description": "The shapes of the body.",
             "itemtype": "property",
-            "name": "shape",
-            "type": "{Shape}",
+            "name": "shapes",
+            "type": "{Array}",
             "class": "Body"
         },
         {
             "file": "src/objects/Body.js",
-            "line": 90,
+            "line": 38,
+            "description": "The local shape offsets, relative to the body center of mass.",
+            "itemtype": "property",
+            "name": "shapeOffsets",
+            "type": "{Array}",
+            "class": "Body"
+        },
+        {
+            "file": "src/objects/Body.js",
+            "line": 45,
+            "description": "The body-local shape angle transformations.",
+            "itemtype": "property",
+            "name": "shapeAngles",
+            "type": "{Array}",
+            "class": "Body"
+        },
+        {
+            "file": "src/objects/Body.js",
+            "line": 52,
             "description": "The mass of the body.",
             "itemtype": "property",
             "name": "mass",
@@ -807,7 +1368,34 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 100,
+            "line": 59,
+            "description": "The inverse mass of the body.",
+            "itemtype": "property",
+            "name": "invMass",
+            "type": "{number}",
+            "class": "Body"
+        },
+        {
+            "file": "src/objects/Body.js",
+            "line": 66,
+            "description": "The inertia of the body around the Z axis.",
+            "itemtype": "property",
+            "name": "inertia",
+            "type": "{number}",
+            "class": "Body"
+        },
+        {
+            "file": "src/objects/Body.js",
+            "line": 73,
+            "description": "The inverse inertia of the body.",
+            "itemtype": "property",
+            "name": "invInertia",
+            "type": "{number}",
+            "class": "Body"
+        },
+        {
+            "file": "src/objects/Body.js",
+            "line": 82,
             "description": "The position of the body",
             "itemtype": "property",
             "name": "position",
@@ -816,7 +1404,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 108,
+            "line": 90,
             "description": "The velocity of the body",
             "itemtype": "property",
             "name": "velocity",
@@ -825,7 +1413,25 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 119,
+            "line": 98,
+            "description": "Constraint velocity that was added to the body during the last step.",
+            "itemtype": "property",
+            "name": "vlambda",
+            "type": "{Float32Array}",
+            "class": "Body"
+        },
+        {
+            "file": "src/objects/Body.js",
+            "line": 105,
+            "description": "Angular constraint velocity that was added to the body during the last step.",
+            "itemtype": "property",
+            "name": "wlambda",
+            "type": "{Float32Array}",
+            "class": "Body"
+        },
+        {
+            "file": "src/objects/Body.js",
+            "line": 112,
             "description": "The angle of the body",
             "itemtype": "property",
             "name": "angle",
@@ -834,7 +1440,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 126,
+            "line": 119,
             "description": "The angular velocity of the body",
             "itemtype": "property",
             "name": "angularVelocity",
@@ -843,7 +1449,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 133,
+            "line": 126,
             "description": "The force acting on the body",
             "itemtype": "property",
             "name": "force",
@@ -852,7 +1458,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 141,
+            "line": 134,
             "description": "The angular force acting on the body",
             "itemtype": "property",
             "name": "angularForce",
@@ -861,7 +1467,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 148,
+            "line": 141,
             "description": "The type of motion this body has. Should be one of: Body.STATIC, Body.DYNAMIC and Body.KINEMATIC.",
             "itemtype": "property",
             "name": "motionState",
@@ -870,7 +1476,40 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 159,
+            "line": 151,
+            "description": "Add a shape to the body",
+            "itemtype": "method",
+            "name": "addShape",
+            "params": [
+                {
+                    "name": "shape",
+                    "description": "",
+                    "type": "Shape"
+                },
+                {
+                    "name": "offset",
+                    "description": "",
+                    "type": "Array"
+                },
+                {
+                    "name": "angle",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "class": "Body"
+        },
+        {
+            "file": "src/objects/Body.js",
+            "line": 167,
+            "description": "Updates .inertia, .invMass, .invInertia for this Body. Should be called when changing the structure of the Body.",
+            "itemtype": "method",
+            "name": "updateMassProperties",
+            "class": "Body"
+        },
+        {
+            "file": "src/objects/Body.js",
+            "line": 191,
             "description": "Apply force to a world point. This could for example be a point on the RigidBody surface. Applying force this way will add to Body.force and Body.angularForce.",
             "itemtype": "method",
             "name": "applyForce",
@@ -890,7 +1529,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 181,
+            "line": 213,
             "description": "Dynamic body.",
             "itemtype": "property",
             "name": "DYNAMIC",
@@ -900,7 +1539,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 189,
+            "line": 221,
             "description": "Static body.",
             "itemtype": "property",
             "name": "STATIC",
@@ -910,7 +1549,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 197,
+            "line": 229,
             "description": "Kinematic body.",
             "itemtype": "property",
             "name": "KINEMATIC",
@@ -920,7 +1559,26 @@
         },
         {
             "file": "src/objects/Shape.js",
-            "line": 31,
+            "line": 23,
+            "description": "Should return the moment of inertia around the Z axis of the body given the total mass. See <a href=\"http://en.wikipedia.org/wiki/List_of_moments_of_inertia\">Wikipedia's list of moments of inertia</a>.",
+            "itemtype": "method",
+            "name": "computeMomentOfInertia",
+            "params": [
+                {
+                    "name": "mass",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "If the inertia is infinity or if the object simply isn't possible to rotate, return 0.",
+                "type": "Number"
+            },
+            "class": "Shape"
+        },
+        {
+            "file": "src/objects/Shape.js",
+            "line": 58,
             "description": "The radius of the circle.",
             "itemtype": "property",
             "name": "radius",
@@ -929,7 +1587,7 @@
         },
         {
             "file": "src/objects/Shape.js",
-            "line": 60,
+            "line": 95,
             "description": "Vertices defined in the local frame.",
             "itemtype": "property",
             "name": "vertices",
@@ -937,8 +1595,70 @@
             "class": "Convex"
         },
         {
+            "file": "src/objects/Shape.js",
+            "line": 116,
+            "description": "Length of this line",
+            "itemtype": "property",
+            "name": "length",
+            "type": "{Number}",
+            "class": "Plane"
+        },
+        {
+            "file": "src/objects/Spring.js",
+            "line": 22,
+            "description": "Rest length of the spring.",
+            "itemtype": "property",
+            "name": "restLength",
+            "type": "{number}",
+            "class": "Spring"
+        },
+        {
+            "file": "src/objects/Spring.js",
+            "line": 29,
+            "description": "Stiffness of the spring.",
+            "itemtype": "property",
+            "name": "stiffness",
+            "type": "{number}",
+            "class": "Spring"
+        },
+        {
+            "file": "src/objects/Spring.js",
+            "line": 36,
+            "description": "Damping of the spring.",
+            "itemtype": "property",
+            "name": "damping",
+            "type": "{number}",
+            "class": "Spring"
+        },
+        {
+            "file": "src/objects/Spring.js",
+            "line": 43,
+            "description": "First connected body.",
+            "itemtype": "property",
+            "name": "bodyA",
+            "type": "{Body}",
+            "class": "Spring"
+        },
+        {
+            "file": "src/objects/Spring.js",
+            "line": 50,
+            "description": "Second connected body.",
+            "itemtype": "property",
+            "name": "bodyB",
+            "type": "{Body}",
+            "class": "Spring"
+        },
+        {
+            "file": "src/objects/Spring.js",
+            "line": 63,
+            "description": "Apply the spring force to the connected bodies.",
+            "itemtype": "method",
+            "name": "applyForce",
+            "class": "Spring"
+        },
+        {
             "file": "src/solver/GSSolver.js",
-            "line": 42,
+            "line": 43,
             "description": "Set stiffness parameters",
             "itemtype": "method",
             "name": "setSpookParams",
@@ -958,7 +1678,7 @@
         },
         {
             "file": "src/solver/GSSolver.js",
-            "line": 58,
+            "line": 59,
             "description": "Solve the system of equations",
             "itemtype": "method",
             "name": "solve",
@@ -1121,7 +1841,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 40,
+            "line": 45,
             "description": "All springs in the world.",
             "itemtype": "property",
             "name": "springs",
@@ -1130,7 +1850,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 48,
+            "line": 53,
             "description": "All bodies in the world.",
             "itemtype": "property",
             "name": "bodies",
@@ -1139,7 +1859,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 56,
+            "line": 61,
             "description": "The solver used to satisfy constraints and contacts.",
             "itemtype": "property",
             "name": "solver",
@@ -1148,7 +1868,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 64,
+            "line": 69,
             "description": "The contacts in the world that were generated during the last step().",
             "itemtype": "property",
             "name": "contacts",
@@ -1157,7 +1877,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 75,
+            "line": 81,
             "description": "Gravity in the world. This is applied on all bodies in the beginning of each step().",
             "itemtype": "property",
             "name": "",
@@ -1166,7 +1886,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 83,
+            "line": 89,
             "description": "Whether to do timing measurements during the step() or not.",
             "itemtype": "property",
             "name": "doPofiling",
@@ -1175,7 +1895,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 91,
+            "line": 97,
             "description": "How many millisecconds the last step() took. This is updated each step if .doProfiling is set to true.",
             "itemtype": "property",
             "name": "lastStepTime",
@@ -1184,7 +1904,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 99,
+            "line": 105,
             "description": "The broadphase algorithm to use.",
             "itemtype": "property",
             "name": "broadphase",
@@ -1193,7 +1913,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 107,
+            "line": 113,
             "description": "User-added constraints.",
             "itemtype": "property",
             "name": "constraints",
@@ -1202,7 +1922,16 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 134,
+            "line": 121,
+            "description": "Friction between all bodies. Should in the future be replaced by per-body material properties.",
+            "itemtype": "property",
+            "name": "friction",
+            "type": "{Number}",
+            "class": "World"
+        },
+        {
+            "file": "src/world/World.js",
+            "line": 147,
             "description": "Add a constraint to the simulation.",
             "itemtype": "method",
             "name": "addConstraint",
@@ -1217,7 +1946,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 145,
+            "line": 158,
             "description": "Removes a constraint",
             "itemtype": "method",
             "name": "removeConstraint",
@@ -1232,7 +1961,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 165,
+            "line": 182,
             "description": "Step the physics world forward in time.",
             "itemtype": "method",
             "name": "step",
@@ -1252,7 +1981,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 297,
+            "line": 340,
             "description": "Add a spring to the simulation",
             "itemtype": "method",
             "name": "addSpring",
@@ -1267,7 +1996,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 309,
+            "line": 352,
             "description": "Remove a spring",
             "itemtype": "method",
             "name": "removeSpring",
@@ -1282,7 +2011,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 321,
+            "line": 364,
             "description": "Add a body to the simulation",
             "itemtype": "method",
             "name": "addBody",
@@ -1297,7 +2026,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 334,
+            "line": 376,
             "description": "Remove a body from the simulation",
             "itemtype": "method",
             "name": "removeBody",
@@ -1312,7 +2041,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 346,
+            "line": 388,
             "description": "Convert the world to a JSON-serializable Object.",
             "itemtype": "method",
             "name": "toJSON",
@@ -1324,7 +2053,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 380,
+            "line": 493,
             "description": "Load a scene from a serialized state.",
             "itemtype": "method",
             "name": "fromJSON",
@@ -1343,99 +2072,25 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 418,
-            "description": "Resets the World, removes all bodies and constraints.",
+            "line": 591,
+            "description": "Resets the World, removes all bodies, constraints and springs.",
             "itemtype": "method",
             "name": "clear",
             "class": "World"
-        },
-        {
-            "file": "src/gl-matrix-extensions.js",
-            "line": 7,
-            "description": "Get the vector x component",
-            "itemtype": "method",
-            "name": "getX",
-            "params": [
-                {
-                    "name": "a",
-                    "description": "",
-                    "type": "Float32Array"
-                }
-            ],
-            "return": {
-                "description": "",
-                "type": "Number"
-            },
-            "class": "vec2"
-        },
-        {
-            "file": "src/gl-matrix-extensions.js",
-            "line": 17,
-            "description": "Get the vector y component",
-            "itemtype": "method",
-            "name": "getY",
-            "params": [
-                {
-                    "name": "a",
-                    "description": "",
-                    "type": "Float32Array"
-                }
-            ],
-            "return": {
-                "description": "",
-                "type": "Number"
-            },
-            "class": "vec2"
-        },
-        {
-            "file": "src/gl-matrix-extensions.js",
-            "line": 27,
-            "description": "Make a cross product and only return the z component",
-            "itemtype": "method",
-            "name": "crossLength",
-            "params": [
-                {
-                    "name": "a",
-                    "description": "",
-                    "type": "Float32Array"
-                },
-                {
-                    "name": "b",
-                    "description": "",
-                    "type": "Float32Arrat"
-                }
-            ],
-            "return": {
-                "description": "",
-                "type": "Number"
-            },
-            "class": "vec2"
-        },
-        {
-            "file": "src/gl-matrix-extensions.js",
-            "line": 38,
-            "description": "Rotate a vector by an angle",
-            "itemtype": "method",
-            "name": "rotate",
-            "params": [
-                {
-                    "name": "out",
-                    "description": "",
-                    "type": "Float32Array"
-                },
-                {
-                    "name": "a",
-                    "description": "",
-                    "type": "Float32Array"
-                },
-                {
-                    "name": "angle",
-                    "description": "",
-                    "type": "Number"
-                }
-            ],
-            "class": "vec2"
         }
     ],
-    "warnings": []
+    "warnings": [
+        {
+            "message": "Missing item type\nNearphase for particle vs plane",
+            "line": " src/collision/Broadphase.js:84"
+        },
+        {
+            "message": "Missing item type\nCheck whether a circle and a plane collides. See nearphaseCirclePlane() for param details.",
+            "line": " src/collision/Broadphase.js:222"
+        },
+        {
+            "message": "Missing item type\nCreates ContactEquations and FrictionEquations for a collision.",
+            "line": " src/collision/Broadphase.js:260"
+        }
+    ]
 }

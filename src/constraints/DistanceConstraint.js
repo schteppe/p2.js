@@ -42,6 +42,7 @@ DistanceConstraint.prototype = new Constraint();
 
 /**
  * Update the constraint equations. Should be done if any of the bodies changed position, before solving.
+ * @method update
  */
 DistanceConstraint.prototype.update = function(){
     var normal = this.equations[0],

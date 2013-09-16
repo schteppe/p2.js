@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>GridBroadphase - p2.js</title>
+    <title>FrictionEquation - p2.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -126,19 +126,19 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>GridBroadphase Class</h1>
+                        <h1>FrictionEquation Class</h1>
 <div class="box meta">
     
 
     
         <div class="extends">
-            Extends <a href="../classes/Broadphase.html" class="crosslink">Broadphase</a>
+            Extends <a href="../classes/Equation.html" class="crosslink">Equation</a>
         </div>
     
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_collision_GridBroadphase.js.html#l8"><code>src&#x2F;collision&#x2F;GridBroadphase.js:8</code></a>
+            Defined in: <a href="../files/src_constraints_FrictionEquation.js.html#l19"><code>src&#x2F;constraints&#x2F;FrictionEquation.js:19</code></a>
         </div>
     
 
@@ -150,14 +150,14 @@
 
 
 <div class="box intro">
-    <p>Broadphase that uses axis-aligned bins.</p>
+    <p>Constrains the slipping in a contact along a tangent</p>
 </div>
 
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_GridBroadphase" class="method item">
-    <h3 class="name"><code>GridBroadphase</code></h3>
+        <div id="method_FrictionEquation" class="method item">
+    <h3 class="name"><code>FrictionEquation</code></h3>
 
     
         <div class="args">
@@ -165,37 +165,19 @@
             
                 <li class="arg">
                     
-                        <code>xmin</code>
+                        <code>bi</code>
                     
                 </li>
             
                 <li class="arg">
                     
-                        <code>xmax</code>
+                        <code>bj</code>
                     
                 </li>
             
                 <li class="arg">
                     
-                        <code>ymin</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>ymax</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>nx</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>ny</code>
+                        <code>slipForce</code>
                     
                 </li>
             
@@ -228,7 +210,7 @@
             
         
         
-        <a href="../files/src_collision_GridBroadphase.js.html#l8"><code>src&#x2F;collision&#x2F;GridBroadphase.js:8</code></a>
+        <a href="../files/src_constraints_FrictionEquation.js.html#l19"><code>src&#x2F;constraints&#x2F;FrictionEquation.js:19</code></a>
         
         </p>
 
@@ -250,14 +232,14 @@
             
                 <li class="param">
                     
-                        <code class="param-name">xmin</code>
-                        <span class="type">Number</span>
+                        <code class="param-name">bi</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>Lower x bound of the grid</p>
+                         
                     </div>
 
                     
@@ -265,14 +247,14 @@
             
                 <li class="param">
                     
-                        <code class="param-name">xmax</code>
-                        <span class="type">Number</span>
+                        <code class="param-name">bj</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>Upper x bound</p>
+                         
                     </div>
 
                     
@@ -280,59 +262,14 @@
             
                 <li class="param">
                     
-                        <code class="param-name">ymin</code>
+                        <code class="param-name">slipForce</code>
                         <span class="type">Number</span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>Lower y bound</p>
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">ymax</code>
-                        <span class="type">Number</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>Upper y bound</p>
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">nx</code>
-                        <span class="type">Number</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>Number of bins along x axis</p>
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">ny</code>
-                        <span class="type">Number</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>Number of bins along y axis</p>
+                         
                     </div>
 
                     
@@ -372,8 +309,8 @@
 
                     <ul class="index-list methods extends">
                         
-                            <li class="index-item method inherited">
-                                <a href="#method_getCollisionPairs">getCollisionPairs</a>
+                            <li class="index-item method">
+                                <a href="#method_setSlipForce">setSlipForce</a>
 
                                 
                                 
@@ -395,8 +332,8 @@
                 <h2 class="off-left">Methods</h2>
 
                 
-                    <div id="method_getCollisionPairs" class="method item inherited">
-    <h3 class="name"><code>getCollisionPairs</code></h3>
+                    <div id="method_setSlipForce" class="method item">
+    <h3 class="name"><code>setSlipForce</code></h3>
 
     
         <div class="args">
@@ -404,7 +341,7 @@
             
                 <li class="arg">
                     
-                        <code>world</code>
+                        <code>slipForce</code>
                     
                 </li>
             
@@ -412,10 +349,6 @@
         </div>
     
 
-    
-        <span class="returns-inline">
-            <span class="type">Array</span>
-        </span>
     
 
     
@@ -433,12 +366,15 @@
     <div class="meta">
         
             
-                <p>Inherited from
-                <a href="../classes/Broadphase.html#method_getCollisionPairs">Broadphase</a>:
+                
+                <p>
+                
+                Defined in
+                
             
         
         
-        <a href="../files/src_collision_Broadphase.js.html#l473"><code>src&#x2F;collision&#x2F;Broadphase.js:473</code></a>
+        <a href="../files/src_constraints_FrictionEquation.js.html#l40"><code>src&#x2F;constraints&#x2F;FrictionEquation.js:40</code></a>
         
         </p>
 
@@ -449,7 +385,7 @@
     </div>
 
     <div class="description">
-        <p>Get all potential intersecting body pairs.</p>
+        <p>Set the slipping condition for the constraint. If the force</p>
     </div>
 
     
@@ -460,14 +396,14 @@
             
                 <li class="param">
                     
-                        <code class="param-name">world</code>
-                        <span class="type"><a href="../classes/World.html" class="crosslink">World</a></span>
+                        <code class="param-name">slipForce</code>
+                        <span class="type">Number</span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>The world to search in.</p>
+                         
                     </div>
 
                     
@@ -477,19 +413,6 @@
         </div>
     
 
-    
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                
-                    
-                        <span class="type">Array</span>:
-                    
-                    An array of the bodies, ordered in pairs. Example: A result of [a,b,c,d] means that the potential pairs are: (a,b), (c,d).
-                
-            </div>
-        </div>
     
 
     

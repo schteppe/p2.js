@@ -26,6 +26,7 @@ var xi1_world = vec2.fromValues(0,0),
 
 /**
  * Get the colliding pairs
+ * @method getCollisionPairs
  * @param  {World} world
  * @return {Array}
  */

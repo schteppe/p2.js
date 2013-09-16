@@ -62,6 +62,7 @@ var applyForce_r =      vec2.create(),
 
 /**
  * Apply the spring force to the connected bodies.
+ * @method applyForce
  */
 Spring.prototype.applyForce = function(){
     var k = this.stiffness,

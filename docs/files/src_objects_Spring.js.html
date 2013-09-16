@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/collision/GridBroadphase.js - p2.js</title>
+    <title>src/objects/Spring.js - p2.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -126,138 +126,95 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: src/collision/GridBroadphase.js</h1>
+                        <h1 class="file-heading">File: src/objects/Spring.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
-var Circle = require(&#x27;../objects/Shape&#x27;).Circle,
-    Plane = require(&#x27;../objects/Shape&#x27;).Plane,
-    Particle = require(&#x27;../objects/Shape&#x27;).Particle,
-    bp = require(&#x27;../collision/Broadphase&#x27;),
-    Broadphase = bp.Broadphase,
-    vec2 = require(&#x27;../math/vec2&#x27;);
+var vec2 = require(&#x27;../math/vec2&#x27;);
+
+exports.Spring = Spring;
 
 /**
- * Broadphase that uses axis-aligned bins.
- * @class GridBroadphase
+ * A spring, connecting two bodies.
+ *
+ * @class Spring
  * @constructor
- * @extends Broadphase
- * @param {number} xmin Lower x bound of the grid
- * @param {number} xmax Upper x bound
- * @param {number} ymin Lower y bound
- * @param {number} ymax Upper y bound
- * @param {number} nx Number of bins along x axis
- * @param {number} ny Number of bins along y axis
+ * @param {Body} bodyA
+ * @param {Body} bodyB
+ * @param {Object} [options]
+ * @param {number} options.restLength A number &gt; 0. Default: 1
+ * @param {number} options.stiffness A number &gt;= 0. Default: 100
+ * @param {number} options.damping A number &gt;= 0. Default: 1
+ *
+ * @todo Should have anchor points in the bodies
  */
-exports.GridBroadphase = function(xmin,xmax,ymin,ymax,nx,ny){
-    Broadphase.apply(this);
+function Spring(bodyA,bodyB,options){
+    options = options || {};
 
-    nx = nx || 10;
-    ny = ny || 10;
-    var binsizeX = (xmax-xmin) / nx;
-    var binsizeY = (ymax-ymin) / ny;
+    /**
+     * Rest length of the spring.
+     * @property restLength
+     * @type {number}
+     */
+    this.restLength = options.restLength || 1;
 
-    function getBinIndex(x,y){
-        var xi = Math.floor(nx * (x - xmin) / (xmax-xmin));
-        var yi = Math.floor(ny * (y - ymin) / (ymax-ymin));
-        return xi*ny + yi;
-    }
+    /**
+     * Stiffness of the spring.
+     * @property stiffness
+     * @type {number}
+     */
+    this.stiffness = options.stiffness || 100;
 
-    this.getCollisionPairs = function(world){
-        var result = [];
-        var collidingBodies = world.bodies;
-        var Ncolliding = Ncolliding=collidingBodies.length;
+    /**
+     * Damping of the spring.
+     * @property damping
+     * @type {number}
+     */
+    this.damping = options.damping || 1;
 
-        var bins=[], Nbins=nx*ny;
-        for(var i=0; i&lt;Nbins; i++)
-            bins.push([]);
+    /**
+     * First connected body.
+     * @property bodyA
+     * @type {Body}
+     */
+    this.bodyA = bodyA;
 
-        var xmult = nx / (xmax-xmin);
-        var ymult = ny / (ymax-ymin);
-
-        // Put all bodies into bins
-        for(var i=0; i!==Ncolliding; i++){
-            var bi = collidingBodies[i];
-            var si = bi.shape;
-            if (si === undefined) {
-                continue;
-            } else if(si instanceof Circle){
-                // Put in bin
-                // check if overlap with other bins
-                var x = bi.position[0];
-                var y = bi.position[1];
-                var r = si.radius;
-
-                var xi1 = Math.floor(xmult * (x-r - xmin));
-                var yi1 = Math.floor(ymult * (y-r - ymin));
-                var xi2 = Math.floor(xmult * (x+r - xmin));
-                var yi2 = Math.floor(ymult * (y+r - ymin));
-
-                for(var j=xi1; j&lt;=xi2; j++){
-                    for(var k=yi1; k&lt;=yi2; k++){
-                        var xi = j;
-                        var yi = k;
-                        if(xi*(ny-1) + yi &gt;= 0 &amp;&amp; xi*(ny-1) + yi &lt; Nbins)
-                            bins[ xi*(ny-1) + yi ].push(bi);
-                    }
-                }
-            } else if(si instanceof Plane){
-                // Put in all bins for now
-                if(bi.angle == 0){
-                    var y = bi.position[1];
-                    for(var j=0; j!==Nbins &amp;&amp; ymin+binsizeY*(j-1)&lt;y; j++){
-                        for(var k=0; k&lt;nx; k++){
-                            var xi = k;
-                            var yi = Math.floor(ymult * (binsizeY*j - ymin));
-                            bins[ xi*(ny-1) + yi ].push(bi);
-                        }
-                    }
-                } else if(bi.angle == Math.PI*0.5){
-                    var x = bi.position[0];
-                    for(var j=0; j!==Nbins &amp;&amp; xmin+binsizeX*(j-1)&lt;x; j++){
-                        for(var k=0; k&lt;ny; k++){
-                            var yi = k;
-                            var xi = Math.floor(xmult * (binsizeX*j - xmin));
-                            bins[ xi*(ny-1) + yi ].push(bi);
-                        }
-                    }
-                } else {
-                    for(var j=0; j!==Nbins; j++)
-                        bins[j].push(bi);
-                }
-            } else {
-                throw new Error(&quot;Shape not supported in GridBroadphase!&quot;);
-            }
-        }
-
-        // Check each bin
-        for(var i=0; i!==Nbins; i++){
-            var bin = bins[i];
-            for(var j=0, NbodiesInBin=bin.length; j!==NbodiesInBin; j++){
-                var bi = bin[j];
-                var si = bi.shape;
-
-                for(var k=0; k!==j; k++){
-                    var bj = bin[k];
-                    var sj = bj.shape;
-
-                    if(si instanceof Circle){
-                             if(sj instanceof Circle)   bp.checkCircleCircle  (bi,bj,result);
-                        else if(sj instanceof Particle) bp.checkCircleParticle(bi,bj,result);
-                        else if(sj instanceof Plane)    bp.checkCirclePlane   (bi,bj,result);
-                    } else if(si instanceof Particle){
-                             if(sj instanceof Circle)   bp.checkCircleParticle(bj,bi,result);
-                    } else if(si instanceof Plane){
-                             if(sj instanceof Circle)   bp.checkCirclePlane   (bj,bi,result);
-                    }
-                }
-            }
-        }
-        return result;
-    };
+    /**
+     * Second connected body.
+     * @property bodyB
+     * @type {Body}
+     */
+    this.bodyB = bodyB;
 };
-exports.GridBroadphase.prototype = new Broadphase();
 
+var applyForce_r =      vec2.create(),
+    applyForce_r_unit = vec2.create(),
+    applyForce_u =      vec2.create(),
+    applyForce_f =      vec2.create();
+
+/**
+ * Apply the spring force to the connected bodies.
+ * @method applyForce
+ */
+Spring.prototype.applyForce = function(){
+    var k = this.stiffness,
+        d = this.damping,
+        l = this.restLength,
+        bodyA = this.bodyA,
+        bodyB = this.bodyB,
+        r = applyForce_r,
+        r_unit = applyForce_r_unit,
+        u = applyForce_u,
+        f = applyForce_f;
+
+    vec2.sub(r, bodyA.position, bodyB.position);
+    vec2.sub(u, bodyA.velocity, bodyB.velocity);
+    var rlen = vec2.len(r);
+    vec2.normalize(r_unit,r);
+    vec2.scale(f, r_unit, k*(rlen-l) + d*vec2.dot(u,r_unit));
+    vec2.sub( bodyA.force, bodyA.force, f);
+    vec2.add( bodyB.force, bodyB.force, f);
+};
 
     </pre>
 </div>

@@ -57,6 +57,8 @@
             
                 <li><a href="../classes/Equation.html">Equation</a></li>
             
+                <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
+            
                 <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
@@ -65,11 +67,15 @@
             
                 <li><a href="../classes/IslandSolver.html">IslandSolver</a></li>
             
+                <li><a href="../classes/mat2.html">mat2</a></li>
+            
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
                 <li><a href="../classes/Particle.html">Particle</a></li>
             
                 <li><a href="../classes/Plane.html">Plane</a></li>
+            
+                <li><a href="../classes/PointToPointConstraint.html">PointToPointConstraint</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -137,13 +143,59 @@ exports.Equation = Equation;
  */
 function Equation(bi,bj,minForce,maxForce){
     this.id = -1;
+
+    /**
+     * Minimum force to apply when solving
+     * @property minForce
+     * @type {Number}
+     */
     this.minForce = typeof(minForce)==&quot;undefined&quot; ? -1e6 : minForce;
+
+    /**
+     * Max force to apply when solving
+     * @property maxForce
+     * @type {Number}
+     */
     this.maxForce = typeof(maxForce)==&quot;undefined&quot; ? 1e6 : maxForce;
+
+    /**
+     * First body participating in the constraint
+     * @property bi
+     * @type {Body}
+     */
     this.bi = bi;
+
+    /**
+     * Second body participating in the constraint
+     * @property bj
+     * @type {Body}
+     */
     this.bj = bj;
+
+    this.h = 1/60;
+    this.k = 0;
+    this.a = 0;
+    this.b = 0;
+    this.eps = 0;
+    this.setSpookParams(1e6,4);
 };
 Equation.prototype.constructor = Equation;
 
+/**
+ * Set stiffness parameters
+ *
+ * @method setSpookParams
+ * @param  {number} k
+ * @param  {number} d
+ */
+Equation.prototype.setSpookParams = function(k,d){
+    var h=this.h;
+    this.k = k;
+    this.d = d;
+    this.a = 4.0 / (h * (1 + 4 * d));
+    this.b = (4.0 * d) / (1 + 4 * d);
+    this.eps = 4.0 / (h * h * k * (1 + 4 * d));
+};
 
     </pre>
 </div>
