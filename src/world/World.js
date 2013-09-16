@@ -437,35 +437,40 @@ World.prototype.toJSON = function(){
     // Serialize bodies
     for(var i=0; i<this.bodies.length; i++){
         var b = this.bodies[i],
-            s = b.shape,
-            jsonShape = null;
-        if(!s){
-            // No shape
-        } else if(s instanceof Circle){
-            jsonShape = {
-                type : "Circle",
-                radius : s.radius,
-            };
-        } else if(s instanceof Plane){
-            jsonShape = {
-                type : "Plane",
-            };
-        } else if(s instanceof Particle){
-            jsonShape = {
-                type : "Particle",
-            };
-        } else if(s instanceof Line){
-            jsonShape = {
-                type : "Line",
-                length : s.length
-            };
-        } else if(s instanceof Compound){
-            jsonShape = {
-                type : "Compound",
-                // TODO: CHILDREN
-            };
-        } else {
-            throw new Error("Shape type not supported yet!");
+            ss = b.shapes,
+            jsonShapes = [];
+
+        for(var j=0; j<ss.length; j++){
+            var s = ss[j],
+                jsonShape;
+
+            // Check type
+            if(s instanceof Circle){
+                jsonShape = {
+                    type : "Circle",
+                    radius : s.radius,
+                };
+            } else if(s instanceof Plane){
+                jsonShape = {
+                    type : "Plane",
+                };
+            } else if(s instanceof Particle){
+                jsonShape = {
+                    type : "Particle",
+                };
+            } else if(s instanceof Line){
+                jsonShape = {
+                    type : "Line",
+                    length : s.length
+                };
+            } else {
+                throw new Error("Shape type not supported yet!");
+            }
+
+            jsonShape.offset = v2a(b.shapeOffsets[j] || [0,0]);
+            jsonShape.angle = b.shapeAngles[j] || 0;
+
+            jsonShapes.push(jsonShape);
         }
         json.bodies.push({
             mass : b.mass,
@@ -474,7 +479,7 @@ World.prototype.toJSON = function(){
             velocity : v2a(b.velocity),
             angularVelocity : b.angularVelocity,
             force : v2a(b.force),
-            shape : jsonShape,
+            shapes : jsonShapes,
         });
     }
     return json;
@@ -507,9 +512,20 @@ World.prototype.fromJSON = function(json){
             // Load bodies
             for(var i=0; i<json.bodies.length; i++){
                 var jb = json.bodies[i],
-                    js = jb.shape,
-                    shape = null;
-                if(js){
+                    jss = jb.shapes;
+
+                var b = new Body({
+                    mass :              jb.mass,
+                    position :          jb.position,
+                    angle :             jb.angle,
+                    velocity :          jb.velocity,
+                    angularVelocity :   jb.angularVelocity,
+                    force :             jb.force,
+                });
+
+                for(var j=0; j<jss.length; j++){
+                    var shape, js=jss[j];
+
                     switch(js.type){
                         case "Circle":
                             shape = new Circle(js.radius);
@@ -523,23 +539,13 @@ World.prototype.fromJSON = function(json){
                         case "Line":
                             shape = new Line(js.length);
                             break;
-                        case "Compound":
-                            shape = new Compound();
-                            break;
                         default:
                             throw new Error("Shape type not supported: "+js.type);
                             break;
                     }
+                    b.addShape(shape,js.offset,js.angle);
                 }
-                var b = new Body({
-                    mass :              jb.mass,
-                    position :          jb.position,
-                    angle :             jb.angle,
-                    velocity :          jb.velocity,
-                    angularVelocity :   jb.angularVelocity,
-                    force :             jb.force,
-                    shape :             shape,
-                });
+
                 this.addBody(b);
             }
 
