@@ -62,15 +62,14 @@ setInterval(function(){
 ```
 
 ### Supported collision pairs
-|           | Circle | Plane | Rectangle | Compound | Convex  | Particle | Line   |
-| :-------: |:------:|:-----:|:---------:|:--------:|:-------:|:--------:|:------:|
-| Circle    | Yes    | Yes   | (todo)    | (todo)   | (todo)  | Yes      | (todo) |
-| Plane     | -      | -     | (todo)    | (todo)   | (todo)  | Yes      | (todo) |
-| Rectangle | -      | -     | (todo)    | (todo)   | (todo)  | (todo)   | (todo) |
-| Compound  | -      | -     | -         | (todo)   | (todo)  | (todo)   | (todo) |
-| Convex    | -      | -     | -         | -        | (todo)  | (todo)   | (todo) |
-| Particle  | -      | -     | -         | -        | -       | -        | (todo) |
-| Line      | -      | -     | -         | -        | -       | -        | (todo) |
+|           | Circle | Plane | Rectangle | Convex | Particle | Line   |
+| :-------: |:------:|:-----:|:---------:|:------:|:--------:|:------:|
+| Circle    | Yes    | Yes   | (todo)    | (todo) | Yes      | (todo) |
+| Plane     | -      | -     | (todo)    | (todo) | Yes      | (todo) |
+| Rectangle | -      | -     | (todo)    | (todo) | (todo)   | (todo) |
+| Convex    | -      | -     | -         | (todo) | (todo)   | (todo) |
+| Particle  | -      | -     | -         | -      | -        | (todo) |
+| Line      | -      | -     | -         | -      | -        | (todo) |
 
 ### Change log
 ##### Current
@@ -86,6 +85,7 @@ setInterval(function(){
 * Added friction for ```Circle```/```Circle```, ```Circle```/```Plane```, ```Particle```/```Plane``` and  ```Circle```/```Particle```
 * Removed ```mat2``` as it is not needed inside the library for now.
 * Changed ```Shape``` usage. A ```Shape``` is now added to a ```Body``` via ```Body.addShape(shape,offset,angle)```. Thus, ```Compound``` is not needed.
+* Removed ```Compound```.
 * Removed ```Body.shape```, added ```Body.shapes```, ```.shapeOffsets```, ```.shapeAngles```
 
 ##### 0.1
