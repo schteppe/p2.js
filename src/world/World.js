@@ -227,17 +227,17 @@ World.prototype.step = function(dt){
         var doFriction = mu>0;
 
         if(si instanceof Circle){
-                 if(sj instanceof Circle)   bp.nearphaseCircleCircle  (bi,si,null,bj,sj,null,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
-            else if(sj instanceof Particle) bp.nearphaseCircleParticle(bi,si,null,bj,sj,null,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
-            else if(sj instanceof Plane)    bp.nearphaseCirclePlane   (bi,si,null,bj,sj,null,null,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
+                 if(sj instanceof Circle)   bp.nearphaseCircleCircle  (bi,si,null,0,bj,sj,null,0,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
+            else if(sj instanceof Particle) bp.nearphaseCircleParticle(bi,si,null,0,bj,sj,null,0,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
+            else if(sj instanceof Plane)    bp.nearphaseCirclePlane   (bi,si,null,0,bj,sj,null,0,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
 
         } else if(si instanceof Particle){
-                 if(sj instanceof Circle)   bp.nearphaseCircleParticle(bj,sj,null,bi,si,null,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
-            else if(sj instanceof Plane)    bp.nearphaseParticlePlane (bi,si,null,bj,sj,null,null,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
+                 if(sj instanceof Circle)   bp.nearphaseCircleParticle(bj,sj,null,0,bi,si,null,0,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
+            else if(sj instanceof Plane)    bp.nearphaseParticlePlane (bi,si,null,0,bj,sj,null,0,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
 
         } else if(si instanceof Plane){
-                 if(sj instanceof Circle)   bp.nearphaseCirclePlane   (bj,sj,null,bi,si,null,null,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
-            else if(sj instanceof Particle) bp.nearphaseParticlePlane (bj,sj,null,bi,si,null,null,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
+                 if(sj instanceof Circle)   bp.nearphaseCirclePlane   (bj,sj,null,0,bi,si,null,0,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
+            else if(sj instanceof Particle) bp.nearphaseParticlePlane (bj,sj,null,0,bi,si,null,0,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
             else if(sj instanceof Compound) bp.nearphaseCompoundPlane (bj,bi,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
 
         } else if(si instanceof Compound){

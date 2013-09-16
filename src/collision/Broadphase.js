@@ -17,18 +17,20 @@ function checkCircleCircle(c1, offset1, c2, offset2){
 
 // Generate contacts / do nearphase
 exports.nearphaseCircleCircle = nearphaseCircleCircle;
-function nearphaseCircleCircle( bodyA,
-                                shapeA,
-                                offsetA,
-                                bodyB,
-                                shapeB,
-                                offsetB,
+function nearphaseCircleCircle(bi,si,xi,ai, bj,sj,xj,aj,
                                 result,
                                 oldContacts,
                                 doFriction,
                                 frictionResult,
                                 oldFrictionEquations,
                                 slipForce){
+    var bodyA = bi,
+        shapeA = si,
+        offsetA = xi,
+        bodyB = bj,
+        shapeB = sj,
+        offsetB = xj;
+
     var c = oldContacts.length ? oldContacts.pop() : new ContactEquation(bodyA,bodyB);
     c.bi = bodyA;
     c.bj = bodyB;
@@ -99,6 +101,7 @@ function nearphaseCompoundPlane(    compound,
             nearphaseCirclePlane(   compound,
                                     s,
                                     rotatedOffset2,
+                                    0,
                                     plane,
                                     plane.shape,
                                     null, // plane offset
@@ -113,6 +116,7 @@ function nearphaseCompoundPlane(    compound,
             nearphaseParticlePlane( compound,
                                     s,
                                     rotatedOffset2,
+                                    0, // particle angle
                                     plane,
                                     plane.shape,
                                     null, // plane offset
@@ -152,19 +156,21 @@ function checkParticlePlane(particleBody,
 };
 
 exports.nearphaseParticlePlane = nearphaseParticlePlane;
-function nearphaseParticlePlane(particleBody,
-                                particleShape,
-                                particleOffset,
-                                planeBody,
-                                planeShape,
-                                planeOffset,
-                                planeAngle,
+function nearphaseParticlePlane(bi,si,xi,ai, bj,sj,xj,aj,
                                 result,
                                 oldContacts,
                                 doFriction,
                                 frictionResult,
                                 oldFrictionEquations,
                                 slipForce){
+    var particleBody = bi,
+        particleShape = si,
+        particleOffset = xi,
+        planeBody = bj,
+        planeShape = sj,
+        planeOffset = xj,
+        planeAngle = aj;
+
     planeAngle = planeAngle || 0;
 
     var c = oldContacts.length ? oldContacts.pop() : new ContactEquation(planeBody,particleBody);
@@ -233,18 +239,20 @@ function checkCircleParticle(   circleBody,
 };
 
 exports.nearphaseCircleParticle = nearphaseCircleParticle;
-function nearphaseCircleParticle(   circleBody,
-                                    circleShape,
-                                    circleOffset,
-                                    particleBody,
-                                    particleShape,
-                                    particleOffset,
+function nearphaseCircleParticle(   bi,si,xi,ai, bj,sj,xj,aj,
                                     result,
                                     oldContacts,
                                     doFriction,
                                     frictionResult,
                                     oldFrictionEquations,
                                     slipForce){
+    var circleBody = bi,
+        circleShape = si,
+        circleOffset = xi,
+        particleBody = bj,
+        particleShape = sj,
+        particleOffset = xj;
+
     var c = oldContacts.length ? oldContacts.pop() : new ContactEquation(circleBody,particleBody);
     c.bi = circleBody;
     c.bj = particleBody;
@@ -337,19 +345,21 @@ exports.nearphaseCirclePlane = nearphaseCirclePlane;
  * @param  {Number}  slipForce            To be passed to created FrictionEquations
  * @return {Boolean}                      True if we created any Equations.
  */
-function nearphaseCirclePlane(  circleBody,
-                                circleShape,
-                                circleOffset, // Offset from body center, rotated!
-                                planeBody,
-                                shapeB,
-                                planeOffset,
-                                planeAngle,
+function nearphaseCirclePlane(  bi,si,xi,ai, bj,sj,xj,aj,
                                 result,
                                 oldContacts,
                                 doFriction,
                                 frictionResult,
                                 oldFrictionEquations,
                                 slipForce){
+    var circleBody = bi,
+        circleShape = si,
+        circleOffset = xi, // Offset from body center, rotated!
+        planeBody = bj,
+        shapeB = sj,
+        planeOffset = xj,
+        planeAngle = aj;
+
     planeAngle = planeAngle || 0;
 
     // Vector from plane to circle
