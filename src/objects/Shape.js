@@ -112,9 +112,15 @@ Convex.prototype.computeMomentOfInertia = function(mass){
  */
 function Line(length){
     Shape.call(this,Shape.LINE);
+
+    /**
+     * Length of this line
+     * @property length
+     * @type {Number}
+     */
     this.length = length;
 };
 Line.prototype = new Shape();
 Line.prototype.computeMomentOfInertia = function(mass){
-    return 1;
+    return mass * Math.pow(this.length,2) / 12;
 };

@@ -245,6 +245,9 @@ PixiDemo.prototype.addRenderable = function(obj){
                 // TODO angle
                 PixiDemo.drawPlane(sprite, -10*ppu, 10*ppu, 0x000000, lw, lw*10, lw*10);
 
+            } else if(child instanceof Line){
+                PixiDemo.drawLine(sprite, child.length*ppu, 0x000000, lw);
+
             }
         }
         this.sprites.push(sprite);
