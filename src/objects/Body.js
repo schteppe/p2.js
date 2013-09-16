@@ -28,8 +28,25 @@ function Body(options){
      */
     this.id = ++Body._idCounter;
 
+    /**
+     * The shapes of the body.
+     * @property shapes
+     * @type {Array}
+     */
     this.shapes = [];
+
+    /**
+     * The local shape offsets, relative to the body center of mass.
+     * @property shapeOffsets
+     * @type {Array}
+     */
     this.shapeOffsets = [];
+
+    /**
+     * The body-local shape angle transformations.
+     * @property shapeAngles
+     * @type {Array}
+     */
     this.shapeAngles = [];
 
     /**
@@ -67,7 +84,7 @@ function Body(options){
      * @property position
      * @type {Float32Array}
      */
-    this.position = vec2.create();
+    this.position = vec2.fromValues(0,0);
     if(options.position) vec2.copy(this.position, options.position);
 
     /**
@@ -75,10 +92,21 @@ function Body(options){
      * @property velocity
      * @type {Float32Array}
      */
-    this.velocity = vec2.create();
+    this.velocity = vec2.fromValues(0,0);
     if(options.velocity) vec2.copy(this.velocity, options.velocity);
 
+    /**
+     * Constraint velocity that was added to the body during the last step.
+     * @property vlambda
+     * @type {Float32Array}
+     */
     this.vlambda = vec2.fromValues(0,0);
+
+    /**
+     * Angular constraint velocity that was added to the body during the last step.
+     * @property wlambda
+     * @type {Float32Array}
+     */
     this.wlambda = 0;
 
     /**
@@ -122,6 +150,7 @@ Body._idCounter = 0;
 
 /**
  * Add a shape to the body
+ * @method addShape
  * @param  {Shape} shape
  * @param  {Array} offset
  * @param  {Number} angle
@@ -133,30 +162,12 @@ Body.prototype.addShape = function(shape,offset,angle){
     this.updateMassProperties();
 };
 
-/*
-Body.prototype.updateMassProperties = function(){
-    // Mass should already be given
-    var m = this.mass,
-        I = this.inertia,
-        s = this.shape;
-
-    if(s){
-        I = s.computeMomentOfInertia(m);
-    } else {
-        m = 0;
-        I = 0;
-    }
-
-    this.mass = m;
-    this.inertia = I;
-
-    // Inverse mass properties are easy
-    this.invMass = m > 0 ? 1/m : 0;
-    this.invInertia = I>0 ? 1/I : 0;
-};
-*/
-
 var zero = vec2.fromValues(0,0);
+
+/**
+ * Updates .inertia, .invMass, .invInertia for this Body. Should be called when changing the structure of the Body.
+ * @method updateMassProperties
+ */
 Body.prototype.updateMassProperties = function(){
     var shapes = this.shapes,
         N = shapes.length,

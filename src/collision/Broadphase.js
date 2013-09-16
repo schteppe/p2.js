@@ -185,6 +185,9 @@ function nearphaseCircleParticle(   bi,si,xi,ai, bj,sj,xj,aj,
     c.bj = particleBody;
 
     vec2.sub(dist, particleOffset, circleOffset);
+
+    if(vec2.squaredLength(dist) > circleShape.radius) return false;
+
     vec2.copy(c.ni, dist);
     vec2.normalize(c.ni,c.ni);
 
@@ -210,6 +213,8 @@ function nearphaseCircleParticle(   bi,si,xi,ai, bj,sj,xj,aj,
         vec2.rotate(eq.t, c.ni, -Math.PI / 2);
         frictionResult.push(eq);
     }
+
+    return true;
 };
 
 exports.checkCirclePlane = checkCirclePlane;

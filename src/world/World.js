@@ -117,6 +117,13 @@ function World(options){
      */
     this.constraints = [];
 
+    /**
+     * Friction between all bodies. Should in the future be replaced by per-body material properties.
+     * @property friction
+     * @type {Number}
+     */
+    this.friction = 0.1;
+
     // Id counters
     this._constraintIdCounter = 0;
     this._bodyIdCounter = 0;
@@ -224,7 +231,7 @@ World.prototype.step = function(dt){
         if(reducedMass > 0)
             reducedMass = 1/reducedMass;
 
-        var mu = 0.1; // Todo: Should be looked up in a material table
+        var mu = this.friction; // Todo: Should be looked up in a material table
         var mug = mu * glen * reducedMass;
         var doFriction = mu>0;
 

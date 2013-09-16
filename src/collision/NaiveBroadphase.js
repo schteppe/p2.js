@@ -109,40 +109,8 @@ NaiveBroadphase.prototype.getCollisionPairs = function(world){
                         collide = true;
                         result.push(bi1,bj1);
                     }
-
-                    /*
-                    if(s instanceof Circle){
-                        if(checkCirclePlane(compound,s,rotatedOffset,plane,plane.shape,null,null,result)) return;
-                    } else if(s instanceof Particle){
-                        if(checkParticlePlane(compound,s,rotatedOffset,plane,plane.shape,null,null,result)) return;
-                    }
-                    */
                 }
             }
-
-            /*
-            if (sj === undefined) { // No shape. Skip.
-                continue;
-
-            } else if(si instanceof Circle){
-                     if(sj instanceof Circle)   bp.checkCircleCircle  (bi.shape,bi.position,bj.shape,bj.position) && result.push(bi,bj);
-                else if(sj instanceof Particle) bp.checkCircleParticle(bi,bi.shape,null,bj,bj.shape,null,result);
-                else if(sj instanceof Plane)    bp.checkCirclePlane   (bi,bi.shape,null,bj,bj.shape,null,null,result);
-
-            } else if(si instanceof Particle){
-                     if(sj instanceof Circle)   bp.checkCircleParticle(bj,bj.shape,null,bi,bi.shape,null,result);
-                else if(sj instanceof Plane)    bp.checkParticlePlane (bi,si,null,bj,si,null,null,result);
-
-            } else if(si instanceof Plane){
-                     if(sj instanceof Circle)   bp.checkCirclePlane   (bj,bj.shape,null,bi,bi.shape,null,null,result);
-                     if(sj instanceof Compound) bp.checkCompoundPlane (bj,bi,result);
-                else if(sj instanceof Particle) bp.checkParticlePlane (bj,sj,null,bi,si,null,null,result);
-
-            } else if(si instanceof Compound){
-                     if(sj instanceof Plane)   bp.checkCompoundPlane  (bi,bj,result);
-
-            }
-            */
         }
     }
 
