@@ -121,9 +121,9 @@ PixiDemo.drawCircle = function(g,x,y,angle,radius,color,lineWidth){
     g.endFill();
 
     // line from center to edge
-    // Todo should incline it with the angle
     g.moveTo(x,y);
-    g.lineTo(x+radius,y);
+    g.lineTo(   x + radius*Math.cos(-angle),
+                y + radius*Math.sin(-angle) );
 };
 
 PixiDemo.drawSpring = function(g,restLength,color,lineWidth){
@@ -148,7 +148,18 @@ PixiDemo.drawSpring = function(g,restLength,color,lineWidth){
     g.lineTo(restLength/2,0);
 };
 
-
+/**
+ * Draw a finite plane onto a PIXI.Graphics.
+ * @method drawPlane
+ * @param  {Graphics} g
+ * @param  {Number} x0
+ * @param  {Number} x1
+ * @param  {Number} color
+ * @param  {Number} lineWidth
+ * @param  {Number} diagMargin
+ * @param  {Number} diagSize
+ * @todo Should consider an angle
+ */
 PixiDemo.drawPlane = function(g, x0, x1, color, lineWidth, diagMargin, diagSize){
     lineWidth = lineWidth || 1;
     color = typeof(color)=="undefined" ? 0xffffff : color;
