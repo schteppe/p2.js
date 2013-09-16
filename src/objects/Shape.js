@@ -1,6 +1,5 @@
 exports.Shape = Shape;
 exports.Particle = Particle;
-exports.Compound = Compound;
 exports.Circle = Circle;
 exports.Plane = Plane;
 exports.Convex = Convex;
@@ -118,39 +117,4 @@ function Line(length){
 Line.prototype = new Shape();
 Line.prototype.computeMomentOfInertia = function(mass){
     return 1;
-};
-
-/**
- * Compound shape class. Use it if you need several basic shapes in your body.
- * @class Compound
- * @extends {Shape}
- * @constructor
- */
-function Compound(){
-    Shape.call(this);
-    this.children       = [];
-    this.childOffsets   = [];
-    this.childAngles    = [];
-};
-Compound.prototype = new Shape();
-Compound.prototype.computeMomentOfInertia = function(mass){
-    var children = this.children,
-        N = children.length,
-        m = mass / N,
-        I = 0;
-
-    for(var i=0; i<N; i++){
-        var child = children[i],
-            r = vec2.length(this.childOffsets[i]),
-            Icm = child.computeMomentOfInertia(m);
-        I += Icm + m*r*r;
-    }
-
-    return I;
-};
-
-Compound.prototype.addChild = function(shape,offset,angle){
-    this.children.push(shape);
-    this.childOffsets.push(offset);
-    this.childAngles.push(angle);
 };

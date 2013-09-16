@@ -42,11 +42,13 @@ var world = new p2.World({ gravity:[0,-9.82] });
 // Create a circle
 var radius = 1,
     circleShape = new p2.Circle(radius),
-    circleBody = new p2.Body({ mass:5, shape: circleShape, position:[0,10] });
+    circleBody = new p2.Body({ mass:5, position:[0,10] });
+circleBody.addShape(circleShape);
 
 // Create a plane
 var groundShape = new p2.Plane(),
-    groundBody = new p2.Body({ mass:0, shape:groundShape });
+    groundBody = new p2.Body({ mass:0 });
+groundBody.addShape(groundShape);
 
 // Add the bodies to the world
 world.addBody(circleBody);
@@ -83,6 +85,8 @@ setInterval(function(){
 * Added method ```Body.updateMassProperties```
 * Added friction for ```Circle```/```Circle```, ```Circle```/```Plane```, ```Particle```/```Plane``` and  ```Circle```/```Particle```
 * Removed ```mat2``` as it is not needed inside the library for now.
+* Changed ```Shape``` usage. A ```Shape``` is now added to a ```Body``` via ```Body.addShape(shape,offset,angle)```. Thus, ```Compound``` is not needed.
+* Removed ```Body.shape```, added ```Body.shapes```, ```.shapeOffsets```, ```.shapeAngles```
 
 ##### 0.1
 

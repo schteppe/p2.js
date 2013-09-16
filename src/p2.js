@@ -2,7 +2,6 @@
 exports.Body =                  require('./objects/Body')                       .Body;
 exports.Broadphase =            require('./collision/Broadphase')               .Broadphase;
 exports.Circle =                require('./objects/Shape')                      .Circle;
-exports.Compound =              require('./objects/Shape')                      .Compound;
 exports.Constraint =            require('./constraints/Constraint')             .Constraint;
 exports.ContactEquation =       require('./constraints/ContactEquation')        .ContactEquation;
 exports.DistanceConstraint=     require('./constraints/DistanceConstraint')     .DistanceConstraint;
