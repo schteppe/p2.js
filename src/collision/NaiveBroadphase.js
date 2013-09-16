@@ -30,10 +30,37 @@ NaiveBroadphase.prototype.getCollisionPairs = function(world){
     for(var i=0, Ncolliding=collidingBodies.length; i!==Ncolliding; i++){
         var bi = collidingBodies[i];
         var si = bi.shape;
+
         if (si === undefined) continue;
+
         for(var j=0; j!==i; j++){
             var bj = collidingBodies[j];
             var sj = bj.shape;
+
+
+            // Loop over all shapes of body i
+            /*
+            for(var k=0; k<bi.shapes.length; k++){
+                var si = bi.shapes[k],
+                    xi = bi.shapeOffsets[k],
+                    ai = bi.shapeAngles[k];
+
+                // All shapes of body j
+                for(var l=0; l<bi.shapes.length; l++){
+                    var sj = bj.shapes[l],
+                        xj = bj.shapeOffsets[l],
+                        aj = bj.shapeAngles[l];
+
+                    vec2.rotate(rotatedOffset, offset, compound.angle);
+
+                    if(s instanceof Circle){
+                        if(checkCirclePlane(compound,s,rotatedOffset,plane,plane.shape,null,null,result)) return;
+                    } else if(s instanceof Particle){
+                        if(checkParticlePlane(compound,s,rotatedOffset,plane,plane.shape,null,null,result)) return;
+                    }
+                }
+            }
+            */
 
             if (sj === undefined) { // No shape. Skip.
                 continue;

@@ -29,10 +29,16 @@ function Body(options){
 
     /**
      * The shape belonging to the body.
+     * @deprecated Should start using .shapes instead
      * @property shape
      * @type {Shape}
      */
     this.shape = options.shape;
+
+
+    this.shapes = [];
+    this.shapeOffsets = [];
+    this.shapeAngles = [];
 
     /**
      * The mass of the body.
@@ -121,6 +127,18 @@ function Body(options){
 };
 
 Body._idCounter = 0;
+
+/**
+ * Add a shape to the body
+ * @param  {Shape} shape
+ * @param  {Array} offset
+ * @param  {Number} angle
+ */
+Body.prototype.addShape = function(shape,offset,angle){
+    this.shapes      .push(shape);
+    this.shapeOffsets.push(offset);
+    this.shapeAngles .push(angle);
+};
 
 Body.prototype.updateMassProperties = function(){
     // Mass should already be given

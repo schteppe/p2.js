@@ -11,9 +11,15 @@ exports.Line = Line;
  * @class Shape
  * @constructor
  */
-function Shape(){
-
+function Shape(type){
+    this.type = type;
 };
+
+Shape.CIRCLE =      1;
+Shape.PARTICLE =    2;
+Shape.PLANE =       4;
+Shape.CONVEX =      8;
+Shape.LINE =        16;
 
 /**
  * Should return the moment of inertia around the Z axis of the body given the total mass. See <a href="http://en.wikipedia.org/wiki/List_of_moments_of_inertia">Wikipedia's list of moments of inertia</a>.
@@ -32,7 +38,7 @@ Shape.prototype.computeMomentOfInertia = function(mass){
  * @extends {Shape}
  */
 function Particle(){
-    Shape.apply(this);
+    Shape.call(this,Shape.PARTICLE);
 };
 Particle.prototype = new Shape();
 Particle.prototype.computeMomentOfInertia = function(mass){
@@ -48,7 +54,7 @@ Particle.prototype.computeMomentOfInertia = function(mass){
  * @param {number} radius
  */
 function Circle(radius){
-    Shape.apply(this);
+    Shape.call(this,Shape.CIRCLE);
 
     /**
      * The radius of the circle.
@@ -70,7 +76,7 @@ Circle.prototype.computeMomentOfInertia = function(mass){
  * @constructor
  */
 function Plane(){
-    Shape.apply(this);
+    Shape.call(this,Shape.PLANE);
 };
 Plane.prototype = new Shape();
 Plane.prototype.computeMomentOfInertia = function(mass){
@@ -85,7 +91,7 @@ Plane.prototype.computeMomentOfInertia = function(mass){
  * @param {Array} vertices An array of Float32Array vertices that span this shape. Vertices are given in counter-clockwise (CCW) direction.
  */
 function Convex(vertices){
-    Shape.apply(this);
+    Shape.call(this,Shape.CONVEX);
 
     /**
      * Vertices defined in the local frame.
@@ -106,7 +112,7 @@ Convex.prototype.computeMomentOfInertia = function(mass){
  * @constructor
  */
 function Line(length){
-    Shape.apply(this);
+    Shape.call(this,Shape.LINE);
     this.length = length;
 };
 Line.prototype = new Shape();
@@ -121,7 +127,7 @@ Line.prototype.computeMomentOfInertia = function(mass){
  * @constructor
  */
 function Compound(){
-    Shape.apply(this);
+    Shape.call(this);
     this.children       = [];
     this.childOffsets   = [];
     this.childAngles    = [];

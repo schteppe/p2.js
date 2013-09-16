@@ -13,6 +13,8 @@ exports.Spring = Spring;
  * @param {number} options.restLength A number > 0. Default: 1
  * @param {number} options.stiffness A number >= 0. Default: 100
  * @param {number} options.damping A number >= 0. Default: 1
+ *
+ * @todo Should have anchor points in the bodies
  */
 function Spring(bodyA,bodyB,options){
     options = options || {};
