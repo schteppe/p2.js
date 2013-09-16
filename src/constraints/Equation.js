@@ -11,10 +11,33 @@ exports.Equation = Equation;
  */
 function Equation(bi,bj,minForce,maxForce){
     this.id = -1;
+
+    /**
+     * Minimum force to apply when solving
+     * @property minForce
+     * @type {Number}
+     */
     this.minForce = typeof(minForce)=="undefined" ? -1e6 : minForce;
+
+    /**
+     * Max force to apply when solving
+     * @property maxForce
+     * @type {Number}
+     */
     this.maxForce = typeof(maxForce)=="undefined" ? 1e6 : maxForce;
 
+    /**
+     * First body participating in the constraint
+     * @property bi
+     * @type {Body}
+     */
     this.bi = bi;
+
+    /**
+     * Second body participating in the constraint
+     * @property bj
+     * @type {Body}
+     */
     this.bj = bj;
 
     this.h = 1/60;

@@ -18,11 +18,12 @@ var dot = vec2.dot;
 
 /**
  * Constrains the slipping in a contact along a tangent
+ *
  * @class FrictionEquation
- * @author schteppe
- * @param Body bi
- * @param Body bj
- * @param float slipForce should be +-F_friction = +-mu * F_normal = +-mu * m * g
+ * @constructor
+ * @param {Body} bi
+ * @param {Body} bj
+ * @param {Number} slipForce
  * @extends {Equation}
  */
 function FrictionEquation(bi,bj,slipForce){
