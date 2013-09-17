@@ -131,6 +131,16 @@ function Convex(vertices){
     this.vertices = vertices || [];
 };
 Convex.prototype = new Shape();
+
+/**
+ * Compute the mass moment of inertia of the Convex.
+ * @param  {Number} mass
+ * @return {Number}
+ * @todo Triangulate the Convex, compute centroid and inertia of each sub-triangle. Add using parallel axis theorem.
+ * @todo Triangulation: http://polyk.ivank.net/
+ * @todo Centroid: http://easycalculation.com/analytical/learn-centroid.php
+ * @todo Triangle moment: http://answers.yahoo.com/question/index?qid=20080721030038AA3oE1m
+ */
 Convex.prototype.computeMomentOfInertia = function(mass){
     return 1;
 };

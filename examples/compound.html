@@ -59,6 +59,21 @@
         box.addShape(boxShape,[0,-0.5]);
         world.addBody(box);
 
+        // Create convex
+        var verts = [];
+        for(var i=0, N=10; i<N; i++){
+            var a = 2*Math.PI / N * i;
+            verts.push([Math.cos(a),Math.sin(a)]);
+        }
+        var convexShape = new p2.Convex(verts);
+        var convex = new p2.Body({
+            position:[-3,2],
+            mass : 1,
+            angularVelocity : -0.1
+        });
+        convex.addShape(convexShape);
+        world.addBody(convex);
+
         // Create ground
         var planeShape = new p2.Plane();
         var plane = new p2.Body({

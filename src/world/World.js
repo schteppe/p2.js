@@ -4,6 +4,7 @@ var GSSolver = require('../solver/GSSolver').GSSolver,
     Circle = require('../objects/Shape').Circle,
     Rectangle = require('../objects/Shape').Rectangle,
     Compound = require('../objects/Shape').Compound,
+    Convex = require('../objects/Shape').Convex,
     Line = require('../objects/Shape').Line,
     Plane = require('../objects/Shape').Plane,
     Particle = require('../objects/Shape').Particle,
@@ -277,8 +278,12 @@ World.prototype.step = function(dt){
                          if(sj instanceof Circle)   bp.nearphaseCirclePlane   (bj,sj,xj_world,aj_world, bi,si,xi_world,ai_world,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
                     else if(sj instanceof Particle) bp.nearphaseParticlePlane (bj,sj,xj_world,aj_world, bi,si,xi_world,ai_world,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
                     else if(sj instanceof Rectangle)bp.nearphaseConvexPlane   (bj,sj,xj_world,aj_world, bi,si,xi_world,ai_world,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
+                    else if(sj instanceof Convex)   bp.nearphaseConvexPlane   (bj,sj,xj_world,aj_world, bi,si,xi_world,ai_world,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
 
                 } else if(si instanceof Rectangle){
+                         if(sj instanceof Plane)   bp.nearphaseConvexPlane    (bi,si,xi_world,ai_world, bj,sj,xj_world,aj_world,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
+
+                } else if(si instanceof Convex){
                          if(sj instanceof Plane)   bp.nearphaseConvexPlane    (bi,si,xi_world,ai_world, bj,sj,xj_world,aj_world,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
 
                 }
@@ -465,13 +470,9 @@ World.prototype.toJSON = function(){
                     radius : s.radius,
                 };
             } else if(s instanceof Plane){
-                jsonShape = {
-                    type : "Plane",
-                };
+                jsonShape = { type : "Plane", };
             } else if(s instanceof Particle){
-                jsonShape = {
-                    type : "Particle",
-                };
+                jsonShape = { type : "Particle", };
             } else if(s instanceof Line){
                 jsonShape = {   type : "Line",
                                 length : s.length };
@@ -479,6 +480,12 @@ World.prototype.toJSON = function(){
                 jsonShape = {   type : "Rectangle",
                                 width : s.width,
                                 height : s.height };
+            } else if(s instanceof Convex){
+                var verts = [];
+                for(var k=0; k<s.vertices.length; k++)
+                    verts.push(v2a(s.vertices[k]));
+                jsonShape = {   type : "Convex",
+                                verts : verts };
             } else {
                 throw new Error("Shape type not supported yet!");
             }
@@ -548,6 +555,7 @@ World.prototype.fromJSON = function(json){
                         case "Particle":    shape = new Particle();                     break;
                         case "Line":        shape = new Line(js.length);                break;
                         case "Rectangle":   shape = new Rectangle(js.width,js.height);  break;
+                        case "Convex":      shape = new Convex(js.verts);               break;
                         default:
                             throw new Error("Shape type not supported: "+js.type);
                             break;

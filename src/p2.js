@@ -4,6 +4,7 @@ exports.Broadphase =            require('./collision/Broadphase')               
 exports.Circle =                require('./objects/Shape')                      .Circle;
 exports.Constraint =            require('./constraints/Constraint')             .Constraint;
 exports.ContactEquation =       require('./constraints/ContactEquation')        .ContactEquation;
+exports.Convex =                require('./objects/Shape')                      .Convex;
 exports.DistanceConstraint=     require('./constraints/DistanceConstraint')     .DistanceConstraint;
 exports.Equation =              require('./constraints/Equation')               .Equation;
 exports.EventEmitter =          require('./events/EventEmitter')                .EventEmitter;

@@ -187,11 +187,30 @@ PixiDemo.drawLine = function(g, len, color, lineWidth){
     g.lineTo( len/2,0);
 };
 
+// Todo angle
 PixiDemo.drawRectangle = function(g,x,y,angle,w,h,color,lineWidth){
     lineWidth = lineWidth || 1;
     color = typeof(color)=="undefined" ? 0x000000 : color;
     g.lineStyle(lineWidth, color, 1);
     g.drawRect(x-w/2,y-h/2,w,h);
+};
+
+PixiDemo.drawConvex = function(g,verts,color,fillColor,lineWidth){
+    lineWidth = lineWidth || 1;
+    color = typeof(color)=="undefined" ? 0x000000 : color;
+    g.lineStyle(lineWidth, color, 1);
+    g.beginFill(fillColor);
+    for(var i=0; i<verts.length; i++){
+        var v = verts[i],
+            x = v[0],
+            y = v[1];
+        if(i==0)
+            g.moveTo(x,y);
+        else
+            g.lineTo(x,y);
+    }
+    g.lineTo(verts[0][0],verts[0][1]);
+    g.endFill();
 };
 
 var X = vec2.fromValues(1,0);
@@ -264,6 +283,15 @@ PixiDemo.prototype.addRenderable = function(obj){
 
             } else if(child instanceof Line){
                 PixiDemo.drawLine(sprite, child.length*ppu, 0x000000, lw);
+
+            } else if(child instanceof Convex){
+                // Scale verts
+                var verts = [];
+                for(var j=0; j!==child.vertices.length; j++){
+                    var v = child.vertices[j];
+                    verts.push([v[0]*ppu, v[1]*ppu]);
+                }
+                PixiDemo.drawConvex(sprite, verts, 0x000000, 0xFFFFFF, lw);
 
             } else if(child instanceof Rectangle){
                 PixiDemo.drawRectangle(sprite, offset[0]*ppu, offset[1]*ppu, angle, child.width*ppu, child.height*ppu, 0x000000, lw);
