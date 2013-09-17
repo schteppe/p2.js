@@ -98,7 +98,7 @@ NaiveBroadphase.prototype.getCollisionPairs = function(world){
                             if(sj1 instanceof Rectangle){
                                 collide = bp.checkCircleRectangle(si1,xi1_world,sj1,xj1_world);
                             } else {
-                                //console.warn("NaiveBroadphase: circle/convex not implemented yet...");
+                                collide = bp.checkCircleConvex(si1,xi1_world,sj1,xj1_world);
                             }
                             break;
                         }

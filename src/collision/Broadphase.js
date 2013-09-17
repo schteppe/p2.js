@@ -7,8 +7,12 @@ var dist = vec2.create();
 var worldNormal = vec2.create();
 var yAxis = vec2.fromValues(0,1);
 
-exports.checkCircleRectangle = checkCircleRectangle;
+exports.checkCircleConvex = checkCircleConvex;
+function checkCircleConvex(circle, circleOffset, convex, convexOffset){
+    return true; // For now
+};
 
+exports.checkCircleRectangle = checkCircleRectangle;
 // Just uses bounding spheres for now
 function checkCircleRectangle(circle, circleOffset, rectangle, rectangleOffset){
     vec2.sub(dist,circleOffset,rectangleOffset);
@@ -16,8 +20,8 @@ function checkCircleRectangle(circle, circleOffset, rectangle, rectangleOffset){
     var w = rectangle.width,
         h = rectangle.height;
     var D = Math.sqrt(w*w + h*h) / 2;
-
-    return vec2.sqrLen(dist) < (R+D)*(R+D);
+    var result = vec2.sqrLen(dist) < (R+D)*(R+D);
+    return result;
 };
 
 var worldVertex0 = vec2.create();
@@ -50,9 +54,9 @@ function nearphaseCircleConvex( bi,si,xi,ai, bj,sj,xj,aj,
     verts = convexShape.vertices;
 
     // Check all edges first
-    for(var i=0; i<verts.length-1; i++){
+    for(var i=0; i<verts.length; i++){
         var v0 = verts[i],
-            v1 = verts[i+1];
+            v1 = verts[(i+1)%verts.length];
 
         vec2.rotate(worldVertex0, v0, convexAngle);
         vec2.rotate(worldVertex1, v1, convexAngle);
@@ -101,17 +105,8 @@ function nearphaseCircleConvex( bi,si,xi,ai, bj,sj,xj,aj,
                 vec2.add(c.rj, c.rj, convexOffset);
                 vec2.sub(c.rj, c.rj, convexBody.position);
 
-                if(doFriction){
-                    var eq = oldFrictionEquations.length ? oldFrictionEquations.pop() : new FrictionEquation(circleBody,convexBody);
-                    eq.bi = circleBody;
-                    eq.bj = convexBody;
-                    eq.setSlipForce(slipForce);
-                    // Use same ri and rj, but the tangent vector needs to be constructed from the collision normal
-                    vec2.copy(eq.ri, c.ri);
-                    vec2.copy(eq.rj, c.rj);
-                    vec2.rotate(eq.t, c.ni, -Math.PI / 2);
-                    frictionResult.push(eq);
-                }
+                if(doFriction)
+                    addFrictionEquation(circleBody, convexBody, c, slipForce, oldFrictionEquations, frictionResult);
 
                 result.push(c);
 
@@ -147,17 +142,8 @@ function nearphaseCircleConvex( bi,si,xi,ai, bj,sj,xj,aj,
 
             result.push(c);
 
-            if(doFriction){
-                var eq = oldFrictionEquations.length ? oldFrictionEquations.pop() : new FrictionEquation(circleBody,convexBody);
-                eq.bi = circleBody;
-                eq.bj = convexBody;
-                eq.setSlipForce(slipForce);
-                // Use same ri and rj, but the tangent vector needs to be constructed from the collision normal
-                vec2.copy(eq.ri, c.ri);
-                vec2.copy(eq.rj, c.rj);
-                vec2.rotate(eq.t, c.ni, -Math.PI / 2);
-                frictionResult.push(eq);
-            }
+            if(doFriction)
+                addFrictionEquation(circleBody, convexBody, c, slipForce, oldFrictionEquations, frictionResult);
 
             return true;
         }
@@ -165,6 +151,18 @@ function nearphaseCircleConvex( bi,si,xi,ai, bj,sj,xj,aj,
 
     return false;
 };
+
+function addFrictionEquation(bodyA, bodyB, contactEquation, slipForce, oldFrictionEquations, result){
+    var eq = oldFrictionEquations.length ? oldFrictionEquations.pop() : new FrictionEquation(bodyA,bodyB);
+    eq.bi = bodyA;
+    eq.bj = bodyB;
+    eq.setSlipForce(slipForce);
+    // Use same ri and rj, but the tangent vector needs to be constructed from the collision normal
+    vec2.copy(eq.ri, contactEquation.ri);
+    vec2.copy(eq.rj, contactEquation.rj);
+    vec2.rotate(eq.t, contactEquation.ni, -Math.PI / 2);
+    result.push(eq);
+}
 
 exports.checkCircleCircle = checkCircleCircle;
 function checkCircleCircle(c1, offset1, c2, offset2){
@@ -207,17 +205,8 @@ function nearphaseCircleCircle(bi,si,xi,ai, bj,sj,xj,aj,
 
     result.push(c);
 
-    if(doFriction){
-        var eq = oldFrictionEquations.length ? oldFrictionEquations.pop() : new FrictionEquation(bodyA,bodyB);
-        eq.bi = bodyA;
-        eq.bj = bodyB;
-        eq.setSlipForce(slipForce);
-        // Use same ri and rj, but the tangent vector needs to be constructed from the collision normal
-        vec2.copy(eq.ri, c.ri);
-        vec2.copy(eq.rj, c.rj);
-        vec2.rotate(eq.t, c.ni, -Math.PI / 2);
-        frictionResult.push(eq);
-    }
+    if(doFriction)
+        addFrictionEquation(bodyA, bodyB, c, slipForce, oldFrictionEquations, frictionResult);
 };
 
 exports.checkConvexPlane = checkConvexPlane;
@@ -293,18 +282,8 @@ function nearphaseConvexPlane ( bi,si,xi,ai, bj,sj,xj,aj,
 
             result.push(c);
 
-            if(doFriction){
-                var eq = oldFrictionEquations.length ? oldFrictionEquations.pop() : new FrictionEquation(planeBody,convexBody);
-                eq.bi = planeBody;
-                eq.bj = convexBody;
-                eq.setSlipForce(slipForce);
-
-                // Use same ri and rj, but the tangent vector needs to be constructed from the collision normal
-                vec2.copy(eq.ri, c.ri);
-                vec2.copy(eq.rj, c.rj);
-                vec2.rotate(eq.t, c.ni, -Math.PI / 2);
-                frictionResult.push(eq);
-            }
+            if(doFriction)
+                addFrictionEquation(planeBody, convexBody, c, slipForce, oldFrictionEquations, frictionResult);
 
             if(numReported >= 2)
                 break;

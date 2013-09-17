@@ -270,6 +270,7 @@ World.prototype.step = function(dt){
                     else if(sj instanceof Particle) bp.nearphaseCircleParticle(bi,si,xi_world,ai_world, bj,sj,xj_world,aj_world,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
                     else if(sj instanceof Plane)    bp.nearphaseCirclePlane   (bi,si,xi_world,ai_world, bj,sj,xj_world,aj_world,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
                     else if(sj instanceof Rectangle)bp.nearphaseCircleConvex  (bi,si,xi_world,ai_world, bj,sj,xj_world,aj_world,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
+                    else if(sj instanceof Convex)   bp.nearphaseCircleConvex  (bi,si,xi_world,ai_world, bj,sj,xj_world,aj_world,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
 
                 } else if(si instanceof Particle){
                          if(sj instanceof Circle)   bp.nearphaseCircleParticle(bj,sj,xj_world,aj_world, bi,si,xi_world,ai_world,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
@@ -287,7 +288,7 @@ World.prototype.step = function(dt){
 
                 } else if(si instanceof Convex){
                          if(sj instanceof Plane)    bp.nearphaseConvexPlane    (bi,si,xi_world,ai_world, bj,sj,xj_world,aj_world,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
-
+                    else if(sj instanceof Circle)   bp.nearphaseCircleConvex   (bj,sj,xj_world,aj_world, bi,si,xi_world,ai_world,contacts,oldContacts,doFriction,frictionEquations,oldFrictionEquations,mug);
 
                 }
             }
