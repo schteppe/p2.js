@@ -12,6 +12,11 @@ function checkCircleConvex(circle, circleOffset, convex, convexOffset){
     return true; // For now
 };
 
+exports.checkConvexConvex = checkConvexConvex;
+function checkConvexConvex(convex, convexOffset, convex, convexOffset){
+    return true; // For now
+};
+
 exports.checkCircleRectangle = checkCircleRectangle;
 // Just uses bounding spheres for now
 function checkCircleRectangle(circle, circleOffset, rectangle, rectangleOffset){
@@ -281,6 +286,8 @@ function nearphaseConvexPlane ( bi,si,xi,ai, bj,sj,xj,aj,
             vec2.sub( c.ri, c.ri, planeBody.position);
 
             result.push(c);
+
+            // TODO: if we have 2 contacts, we do only need 1 friction equation
 
             if(doFriction)
                 addFrictionEquation(planeBody, convexBody, c, slipForce, oldFrictionEquations, frictionResult);
