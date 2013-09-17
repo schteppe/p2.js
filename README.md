@@ -64,7 +64,7 @@ setInterval(function(){
 ### Supported collision pairs
 |           | Circle | Plane | Rectangle | Convex | Particle | Line   |
 | :-------: |:------:|:-----:|:---------:|:------:|:--------:|:------:|
-| Circle    | Yes    | Yes   | (todo)    | (todo) | Yes      | (todo) |
+| Circle    | Yes    | Yes   | Yes       | Yes    | Yes      | (todo) |
 | Plane     | -      | -     | Yes       | Yes    | Yes      | (todo) |
 | Rectangle | -      | -     | (todo)    | (todo) | (todo)   | (todo) |
 | Convex    | -      | -     | -         | (todo) | (todo)   | (todo) |
@@ -75,14 +75,13 @@ setInterval(function(){
 ##### Current
 * Removed ```World.collidingBodies``` since ```World.bodies``` can be used equivalently.
 * Added property ```DistanceConstraint.distance```
-* Added contact collision response between ```Particle``` and ```Plane```
-* Added contact collision response between ```Circle``` and ```Plane```
+* Added contact response between ```Particle/Plane```, ```Particle/Circle```, ```Circle/Plane```, ```Convex/Plane```, ```Convex/Circle```, ```Rectangle/Circle```, ```Rectangle/Plane```
+* Added friction for most of the contact types
 * Added ```PointToPointConstraint```
 * Added ```Line```
 * Added ```Compound```
 * Added method ```Shape.computeMomentOfInertia```
 * Added method ```Body.updateMassProperties```
-* Added friction for ```Circle```/```Circle```, ```Circle```/```Plane```, ```Particle```/```Plane``` and  ```Circle```/```Particle```
 * Removed ```mat2``` as it is not needed inside the library for now.
 * Changed ```Shape``` usage. A ```Shape``` is now added to a ```Body``` via ```Body.addShape(shape,offset,angle)```. Thus, ```Compound``` is not needed.
 * Removed ```Compound```.
