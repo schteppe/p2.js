@@ -12,6 +12,144 @@ function checkCircleConvex(circle, circleOffset, convex, convexOffset){
     return true; // For now
 };
 
+exports.checkCircleLine = checkCircleLine;
+function checkCircleLine(circle, circleOffset, line, lineOffset, lineAngle){
+
+    // bounding sphere check
+    vec2.sub(dist, lineOffset, circleOffset);
+    var R = circle.radius;
+    var L = line.length;
+
+    return vec2.squaredLength(dist) < Math.pow(L+R,2);
+};
+
+
+var worldVertex0 =   vec2.create(),
+    worldVertex1 =   vec2.create(),
+    worldEdge =      vec2.create(),
+    worldEdgeUnit =  vec2.create(),
+    worldTangent =   vec2.create(),
+    orthoDist =      vec2.create(),
+    centerDist =     vec2.create(),
+    convexToCircle = vec2.create(),
+    lineToCircle =   vec2.create(),
+    projectedPoint = vec2.create();
+exports.nearphaseCircleLine = nearphaseCircleLine;
+function nearphaseCircleLine(   bi,si,xi,ai, bj,sj,xj,aj,
+                                result,
+                                oldContacts,
+                                doFriction,
+                                frictionResult,
+                                oldFrictionEquations,
+                                slipForce){
+    var lineShape = sj,
+        lineAngle = aj,
+        lineBody = bj,
+        lineOffset = xj,
+        circleOffset = xi,
+        circleBody = bi,
+        circleShape = si;
+
+    // Get start and end points
+    vec2.set(worldVertex0, -lineShape.length/2, 0);
+    vec2.set(worldVertex1,  lineShape.length/2, 0);
+
+    vec2.rotate(worldVertex0, worldVertex0, lineAngle);
+    vec2.rotate(worldVertex1, worldVertex1, lineAngle);
+
+    vec2.add(worldVertex0, worldVertex0, lineOffset);
+    vec2.add(worldVertex1, worldVertex1, lineOffset);
+
+    //console.log(worldVertex0[1],worldVertex1[1],vec2.str(lineOffset),vec2.str(worldVertex1)==vec2.str(worldVertex0));
+
+    // Get vector along the line
+    vec2.sub(worldEdge, worldVertex1, worldVertex0);
+    vec2.normalize(worldEdgeUnit, worldEdge);
+
+    // Get tangent to the edge.
+    vec2.rotate(worldTangent, worldEdgeUnit, -Math.PI/2);
+
+    // Check distance from the plane spanned by the edge vs the circle
+    vec2.sub(dist, circleOffset, worldVertex0);
+    var d = vec2.dot(dist, worldTangent);
+    vec2.sub(centerDist, worldVertex0, lineOffset);
+
+    vec2.sub(lineToCircle, circleOffset, lineOffset);
+
+    if(Math.abs(d) < circleShape.radius){
+
+        // Now project the circle onto the edge
+        vec2.scale(orthoDist, worldTangent, d);
+        vec2.sub(projectedPoint, circleOffset, orthoDist);
+
+        // Check if the point is within the edge span
+        var pos =  vec2.dot(worldEdgeUnit, projectedPoint);
+        var pos0 = vec2.dot(worldEdgeUnit, worldVertex0);
+        var pos1 = vec2.dot(worldEdgeUnit, worldVertex1);
+
+        if(pos > pos0 && pos < pos1){
+            // We got contact!
+
+            var c = oldContacts.length ? oldContacts.pop() : new ContactEquation(circleBody,lineBody);
+            c.bi = circleBody;
+            c.bj = lineBody;
+
+            vec2.scale(c.ni, orthoDist, -1);
+            vec2.normalize(c.ni, c.ni);
+
+            vec2.scale( c.ri, c.ni,  circleShape.radius);
+            vec2.add(c.ri, c.ri, circleOffset);
+            vec2.sub(c.ri, c.ri, circleBody.position);
+
+            vec2.sub( c.rj, projectedPoint, lineOffset);
+            vec2.add(c.rj, c.rj, lineOffset);
+            vec2.sub(c.rj, c.rj, lineBody.position);
+
+            if(doFriction)
+                addFrictionEquation(circleBody, lineBody, c, slipForce, oldFrictionEquations, frictionResult);
+
+            result.push(c);
+        }
+    }
+
+    // Add corner
+    var verts = [worldVertex0, worldVertex1];
+
+    for(var i=0; i<verts.length; i++){
+        var v = verts[i];
+
+        vec2.sub(dist, v, circleOffset);
+
+        if(vec2.squaredLength(dist) < circleShape.radius*circleShape.radius){
+
+            var c = oldContacts.length ? oldContacts.pop() : new ContactEquation(circleBody,lineBody);
+            c.bi = circleBody;
+            c.bj = lineBody;
+
+            vec2.copy(c.ni, dist);
+            vec2.normalize(c.ni,c.ni);
+
+            //console.log(vec2.str(c.ni));
+
+            // Vector from circle to contact point is the normal times the circle radius
+            vec2.scale(c.ri, c.ni, circleShape.radius);
+            vec2.add(c.ri, c.ri, circleOffset);
+            vec2.sub(c.ri, c.ri, circleBody.position);
+
+            vec2.sub(c.rj, v, lineOffset);
+            vec2.add(c.rj, c.rj, lineOffset);
+            vec2.sub(c.rj, c.rj, lineBody.position);
+
+            result.push(c);
+
+            if(doFriction)
+                addFrictionEquation(circleBody, lineBody, c, slipForce, oldFrictionEquations, frictionResult);
+        }
+    }
+};
+
+
+
 exports.checkConvexConvex = checkConvexConvex;
 function checkConvexConvex(convex, convexOffset, convex, convexOffset){
     return true; // For now
@@ -29,15 +167,6 @@ function checkCircleRectangle(circle, circleOffset, rectangle, rectangleOffset){
     return result;
 };
 
-var worldVertex0 = vec2.create();
-var worldVertex1 = vec2.create();
-var worldEdge = vec2.create();
-var worldEdgeUnit = vec2.create();
-var worldTangent = vec2.create();
-var orthoDist = vec2.create();
-var centerDist = vec2.create();
-var convexToCircle = vec2.create();
-var projectedPoint = vec2.create();
 exports.nearphaseCircleConvex = nearphaseCircleConvex;
 function nearphaseCircleConvex( bi,si,xi,ai, bj,sj,xj,aj,
                                 result,

@@ -82,18 +82,10 @@ NaiveBroadphase.prototype.getCollisionPairs = function(world){
                     case Shape.CIRCLE:
 
                         switch(sj1.type){
-                        case Shape.CIRCLE:
-                            collide = bp.checkCircleCircle(si1,xi1_world,sj1,xj1_world);
-                            break;
-
-                        case Shape.PLANE:
-                            collide = bp.checkCirclePlane(si1,xi1_world,sj1,xj1_world,aj1_world);
-                            break;
-
-                        case Shape.PARTICLE:
-                            collide = bp.checkCircleParticle(si1,xi1_world,sj1,xj1_world);
-                            break;
-
+                        case Shape.CIRCLE:   collide = bp.checkCircleCircle  (si1,xi1_world,sj1,xj1_world);             break;
+                        case Shape.PLANE:    collide = bp.checkCirclePlane   (si1,xi1_world,sj1,xj1_world,aj1_world);   break;
+                        case Shape.PARTICLE: collide = bp.checkCircleParticle(si1,xi1_world,sj1,xj1_world);             break;
+                        case Shape.LINE:     collide = bp.checkCircleLine    (si1,xi1_world,sj1,xj1_world,aj1_world);   break;
                         case Shape.CONVEX:
                             if(sj1 instanceof Rectangle){
                                 collide = bp.checkCircleRectangle(si1,xi1_world,sj1,xj1_world);
@@ -102,7 +94,6 @@ NaiveBroadphase.prototype.getCollisionPairs = function(world){
                             }
                             break;
                         }
-
                         break;
 
 

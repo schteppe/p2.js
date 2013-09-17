@@ -52,6 +52,7 @@
                 bodyB.addShape(shapeB);
                 world.addBody(bodyB);
                 bodyB.position[1] = dropHeight;
+                bodyB.angle = Math.PI / 2;
             }
             opts.position[0] += dist;
             numAdded++;
