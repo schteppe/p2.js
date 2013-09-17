@@ -61,17 +61,18 @@
 
         // Create convex
         var verts = [];
-        for(var i=0, N=10; i<N; i++){
+        for(var i=0, N=5; i<N; i++){
             var a = 2*Math.PI / N * i;
-            verts.push([Math.cos(a),Math.sin(a)]);
+            verts.push([0.5*Math.cos(a),0.5*Math.sin(a)]);
         }
         var convexShape = new p2.Convex(verts);
         var convex = new p2.Body({
-            position:[-3,2],
+            position:[-4,2],
             mass : 1,
             angularVelocity : -0.1
         });
-        convex.addShape(convexShape);
+        convex.addShape(convexShape,[0, 0.5]);
+        convex.addShape(convexShape,[0,-0.5],Math.PI/4);
         world.addBody(convex);
 
         // Create ground

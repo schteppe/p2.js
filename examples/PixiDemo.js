@@ -301,10 +301,12 @@ PixiDemo.prototype.addRenderable = function(obj){
 
             } else if(child instanceof Convex){
                 // Scale verts
-                var verts = [];
+                var verts = [],
+                    vrot = vec2.create();
                 for(var j=0; j!==child.vertices.length; j++){
                     var v = child.vertices[j];
-                    verts.push([v[0]*ppu, v[1]*ppu]);
+                    vec2.rotate(vrot, v, angle);
+                    verts.push([(vrot[0]+offset[0])*ppu, -(vrot[1]+offset[1])*ppu]);
                 }
                 PixiDemo.drawConvex(sprite, verts, []/*child.triangles*/, 0x000000, 0xFFFFFF, lw);
 
