@@ -6,7 +6,7 @@ JavaScript 2D rigid body physics engine.
 ### Features
 * Rigid body physics
 * Collision detection (no CCD)
-* Constraints (strong forces): Contact, DistanceConstraint, PointToPoint
+* Constraints: Contacts, DistanceConstraint, PointToPoint, friction
 * Springs
 * Body motion states (dynamic, kinematic, static)
 * Various shapes and collisions (see table below)
@@ -65,7 +65,7 @@ setInterval(function(){
 |           | Circle | Plane | Rectangle | Convex | Particle | Line   |
 | :-------: |:------:|:-----:|:---------:|:------:|:--------:|:------:|
 | Circle    | Yes    | Yes   | (todo)    | (todo) | Yes      | (todo) |
-| Plane     | -      | -     | (todo)    | (todo) | Yes      | (todo) |
+| Plane     | -      | -     | Yes       | Yes    | Yes      | (todo) |
 | Rectangle | -      | -     | (todo)    | (todo) | (todo)   | (todo) |
 | Convex    | -      | -     | -         | (todo) | (todo)   | (todo) |
 | Particle  | -      | -     | -         | -      | -        | (todo) |
@@ -87,6 +87,10 @@ setInterval(function(){
 * Changed ```Shape``` usage. A ```Shape``` is now added to a ```Body``` via ```Body.addShape(shape,offset,angle)```. Thus, ```Compound``` is not needed.
 * Removed ```Compound```.
 * Removed ```Body.shape```, added ```Body.shapes```, ```.shapeOffsets```, ```.shapeAngles```
+* Added ```Rectangle```
+* Added method ```Convex.updateTriangles```
+* Added method ```Convex.updateCenterOfMass```
+* Fixed ```Convex.computeMomentOfInertia```, now it should be correct.
 
 ##### 0.1
 

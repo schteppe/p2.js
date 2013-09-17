@@ -7,6 +7,165 @@ var dist = vec2.create();
 var worldNormal = vec2.create();
 var yAxis = vec2.fromValues(0,1);
 
+exports.checkCircleRectangle = checkCircleRectangle;
+
+// Just uses bounding spheres for now
+function checkCircleRectangle(circle, circleOffset, rectangle, rectangleOffset){
+    vec2.sub(dist,circleOffset,rectangleOffset);
+    var R = circle.radius;
+    var w = rectangle.width,
+        h = rectangle.height;
+    var D = Math.sqrt(w*w + h*h) / 2;
+
+    return vec2.sqrLen(dist) < (R+D)*(R+D);
+};
+
+var worldVertex0 = vec2.create();
+var worldVertex1 = vec2.create();
+var worldEdge = vec2.create();
+var worldEdgeUnit = vec2.create();
+var worldTangent = vec2.create();
+var orthoDist = vec2.create();
+var centerDist = vec2.create();
+var convexToCircle = vec2.create();
+var projectedPoint = vec2.create();
+exports.nearphaseCircleConvex = nearphaseCircleConvex;
+function nearphaseCircleConvex( bi,si,xi,ai, bj,sj,xj,aj,
+                                result,
+                                oldContacts,
+                                doFriction,
+                                frictionResult,
+                                oldFrictionEquations,
+                                slipForce){
+    var convexShape = sj,
+        convexAngle = aj,
+        convexBody = bj,
+        convexOffset = xj,
+        circleOffset = xi,
+        circleBody = bi,
+        circleShape = si;
+
+    var numReported = 0;
+
+    verts = convexShape.vertices;
+
+    // Check all edges first
+    for(var i=0; i<verts.length-1; i++){
+        var v0 = verts[i],
+            v1 = verts[i+1];
+
+        vec2.rotate(worldVertex0, v0, convexAngle);
+        vec2.rotate(worldVertex1, v1, convexAngle);
+        vec2.add(worldVertex0, worldVertex0, convexOffset);
+        vec2.add(worldVertex1, worldVertex1, convexOffset);
+        vec2.sub(worldEdge, worldVertex1, worldVertex0);
+
+        vec2.normalize(worldEdgeUnit, worldEdge);
+
+        // Get tangent to the edge. Points out of the Convex
+        vec2.rotate(worldTangent, worldEdgeUnit, -Math.PI/2);
+
+        // Check distance from the plane spanned by the edge vs the circle
+        vec2.sub(dist, circleOffset, worldVertex0);
+        var d = vec2.dot(dist, worldTangent);
+        vec2.sub(centerDist, worldVertex0, convexOffset);
+
+        vec2.sub(convexToCircle, circleOffset, convexOffset);
+
+        if(d < circleShape.radius && vec2.dot(centerDist,convexToCircle) > 0){
+
+            // Now project the circle onto the edge
+            vec2.scale(orthoDist, worldTangent, d);
+            vec2.sub(projectedPoint, circleOffset, orthoDist);
+
+            // Check if the point is within the edge span
+            var pos =  vec2.dot(worldEdgeUnit, projectedPoint);
+            var pos0 = vec2.dot(worldEdgeUnit, worldVertex0);
+            var pos1 = vec2.dot(worldEdgeUnit, worldVertex1);
+
+            if(pos > pos0 && pos < pos1){
+                // We got contact!
+
+                var c = oldContacts.length ? oldContacts.pop() : new ContactEquation(circleBody,convexBody);
+                c.bi = circleBody;
+                c.bj = convexBody;
+
+                vec2.scale(c.ni, orthoDist, -1);
+                vec2.normalize(c.ni, c.ni);
+
+                vec2.scale( c.ri, c.ni,  circleShape.radius);
+                vec2.add(c.ri, c.ri, circleOffset);
+                vec2.sub(c.ri, c.ri, circleBody.position);
+
+                vec2.sub( c.rj, projectedPoint, convexOffset);
+                vec2.add(c.rj, c.rj, convexOffset);
+                vec2.sub(c.rj, c.rj, convexBody.position);
+
+                if(doFriction){
+                    var eq = oldFrictionEquations.length ? oldFrictionEquations.pop() : new FrictionEquation(circleBody,convexBody);
+                    eq.bi = circleBody;
+                    eq.bj = convexBody;
+                    eq.setSlipForce(slipForce);
+                    // Use same ri and rj, but the tangent vector needs to be constructed from the collision normal
+                    vec2.copy(eq.ri, c.ri);
+                    vec2.copy(eq.rj, c.rj);
+                    vec2.rotate(eq.t, c.ni, -Math.PI / 2);
+                    frictionResult.push(eq);
+                }
+
+                result.push(c);
+
+                return true; // We only need one contact
+            }
+        }
+    }
+
+    // Check all vertices
+    for(var i=0; i<verts.length; i++){
+        var localVertex = verts[i];
+        vec2.rotate(worldVertex, localVertex, convexAngle);
+        vec2.add(worldVertex, worldVertex, convexOffset);
+
+        vec2.sub(dist, worldVertex, circleOffset);
+        if(vec2.squaredLength(dist) < circleShape.radius*circleShape.radius){
+
+            var c = oldContacts.length ? oldContacts.pop() : new ContactEquation(circleBody,convexBody);
+            c.bi = circleBody;
+            c.bj = convexBody;
+
+            vec2.copy(c.ni, dist);
+            vec2.normalize(c.ni,c.ni);
+
+            // Vector from circle to contact point is the normal times the circle radius
+            vec2.scale(c.ri, c.ni, circleShape.radius);
+            vec2.add(c.ri, c.ri, circleOffset);
+            vec2.sub(c.ri, c.ri, circleBody.position);
+
+            vec2.sub(c.rj, worldVertex, convexOffset);
+            vec2.add(c.rj, c.rj, convexOffset);
+            vec2.sub(c.rj, c.rj, convexBody.position);
+
+            result.push(c);
+
+            if(doFriction){
+                var eq = oldFrictionEquations.length ? oldFrictionEquations.pop() : new FrictionEquation(circleBody,convexBody);
+                eq.bi = circleBody;
+                eq.bj = convexBody;
+                eq.setSlipForce(slipForce);
+                // Use same ri and rj, but the tangent vector needs to be constructed from the collision normal
+                vec2.copy(eq.ri, c.ri);
+                vec2.copy(eq.rj, c.rj);
+                vec2.rotate(eq.t, c.ni, -Math.PI / 2);
+                frictionResult.push(eq);
+            }
+
+            return true;
+        }
+    }
+
+    return false;
+};
+
 exports.checkCircleCircle = checkCircleCircle;
 function checkCircleCircle(c1, offset1, c2, offset2){
     vec2.sub(dist,offset1,offset2);
@@ -108,8 +267,6 @@ function nearphaseConvexPlane ( bi,si,xi,ai, bj,sj,xj,aj,
 
         vec2.sub(dist, worldVertex, planeOffset);
 
-        //console.log(vec2.str(worldVertex));
-
         if(vec2.dot(dist,worldNormal) < 0){
 
             // Found vertex
@@ -128,20 +285,11 @@ function nearphaseConvexPlane ( bi,si,xi,ai, bj,sj,xj,aj,
 
             // rj is from convex center to contact
             vec2.sub(c.rj, worldVertex, convexBody.position);
-            //vec2.add(c.rj, c.rj, convexBody.position);
-
-            //console.log("rj",vec2.str(c.rj));
-            //console.log("dist",vec2.str(dist));
-
-
 
 
             // ri is from plane center to contact
             vec2.sub( c.ri, worldVertex, dist);
             vec2.sub( c.ri, c.ri, planeBody.position);
-
-            //console.log("rj",vec2.str(c.rj));
-            //console.log("ni",vec2.str(c.ni));
 
             result.push(c);
 

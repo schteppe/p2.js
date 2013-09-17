@@ -93,6 +93,14 @@ NaiveBroadphase.prototype.getCollisionPairs = function(world){
                         case Shape.PARTICLE:
                             collide = bp.checkCircleParticle(si1,xi1_world,sj1,xj1_world);
                             break;
+
+                        case Shape.CONVEX:
+                            if(sj1 instanceof Rectangle){
+                                collide = bp.checkCircleRectangle(si1,xi1_world,sj1,xj1_world);
+                            } else {
+                                //console.warn("NaiveBroadphase: circle/convex not implemented yet...");
+                            }
+                            break;
                         }
 
                         break;
