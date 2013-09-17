@@ -87,5 +87,20 @@ vec2.rotate = function(out,a,angle){
     out[1] = s*a[0] +c*a[1];
 };
 
+/**
+ * Compute centroid of a triangle spanned by vectors a,b,c. See http://easycalculation.com/analytical/learn-centroid.php
+ * @param  {Float32Array} out
+ * @param  {Float32Array} a
+ * @param  {Float32Array} b
+ * @param  {Float32Array} c
+ * @return  {Float32Array} The out object
+ */
+vec2.centroid = function(out, a, b, c){
+    vec2.add(out, a, b);
+    vec2.add(out, out, c);
+    vec2.scale(out, out, 1/3);
+    return out;
+};
+
 // Export everything
 module.exports = vec2;

@@ -1,4 +1,5 @@
-var polyk = require('../math/polyk');
+var polyk = require('../math/polyk')
+,   vec2 = require('../math/vec2')
 
 exports.Shape = Shape;
 exports.Particle = Particle;
@@ -47,36 +48,6 @@ Particle.prototype = new Shape();
 Particle.prototype.computeMomentOfInertia = function(mass){
     return 0; // Can't rotate a particle
 };
-
-/**
- * Rectangle shape class.
- * @class Rectangle
- * @constructor
- * @extends {Convex}
- */
-function Rectangle(w,h){
-    var verts = [   vec2.fromValues(-w/2, -h/2),
-                    vec2.fromValues( w/2, -h/2),
-                    vec2.fromValues( w/2,  h/2),
-                    vec2.fromValues(-w/2,  h/2)];
-    Convex.call(this,verts);
-    this.width = w;
-    this.height = h;
-};
-Rectangle.prototype = new Convex();
-
-/**
- * Compute moment of inertia
- * @method computeMomentOfInertia
- * @param  {Number} mass
- * @return {Number}
- */
-Rectangle.prototype.computeMomentOfInertia = function(mass){
-    var w = this.width,
-        h = this.height;
-    return mass * (h*h + w*w) / 12;
-};
-
 
 /**
  * Circle shape class.
@@ -131,13 +102,104 @@ function Convex(vertices){
      * @type {Array}
      */
     this.vertices = vertices || [];
+
+    /**
+     * The center of mass of the Convex
+     * @property centerOfMass
+     * @type {Float32Array}
+     */
+    this.centerOfMass = vec2.fromValues(0,0);
+
+    /**
+     * Triangulated version of this convex. The structure is Array of 3-Arrays, and each subarray contains 3 integers, referencing the vertices.
+     * @property triangles
+     * @type {Array}
+     */
+    this.triangles = [];
+
+    if(this.vertices.length){
+        this.updateTriangles();
+        this.updateCenterOfMass();
+    }
 };
 Convex.prototype = new Shape();
+
+Convex.prototype.updateTriangles = function(){
+
+    this.triangles.length = 0;
+
+    // Rewrite on polyk notation, array of numbers
+    var polykVerts = [];
+    for(var i=0; i<this.vertices.length; i++){
+        var v = this.vertices[i];
+        polykVerts.push(v[0],v[1]);
+    }
+
+    // Triangulate
+    var triangles = polyk.Triangulate(polykVerts);
+
+    // Loop over all triangles, add their inertia contributions to I
+    for(var i=0; i<triangles.length; i+=3){
+        var id1 = triangles[i],
+            id2 = triangles[i+1],
+            id3 = triangles[i+2];
+
+        // Add to triangles
+        this.triangles.push([id1,id2,id3]);
+    }
+};
+
+var updateCenterOfMass_centroid = vec2.create(),
+    updateCenterOfMass_centroid_times_mass = vec2.create(),
+    updateCenterOfMass_a = vec2.create(),
+    updateCenterOfMass_b = vec2.create(),
+    updateCenterOfMass_c = vec2.create(),
+    updateCenterOfMass_ac = vec2.create(),
+    updateCenterOfMass_ca = vec2.create(),
+    updateCenterOfMass_cb = vec2.create(),
+    updateCenterOfMass_n = vec2.create();
+Convex.prototype.updateCenterOfMass = function(){
+    var triangles = this.triangles,
+        verts = this.vertices,
+        cm = this.centerOfMass,
+        centroid = updateCenterOfMass_centroid,
+        n = updateCenterOfMass_n,
+        a = updateCenterOfMass_a,
+        b = updateCenterOfMass_b,
+        c = updateCenterOfMass_c,
+        ac = updateCenterOfMass_ac,
+        ca = updateCenterOfMass_ca,
+        cb = updateCenterOfMass_cb,
+        centroid_times_mass = updateCenterOfMass_centroid_times_mass;
+
+    vec2.set(cm,0,0);
+
+    for(var i=0; i<triangles.length; i++){
+        var t = triangles[i],
+            a = verts[t[0]],
+            b = verts[t[1]],
+            c = verts[t[2]];
+
+        vec2.centroid(centroid,a,b,c);
+
+        vec2.sub(ca, c, a);
+        vec2.sub(cb, c, b);
+
+        // Get mass for the triangle (density=1 in this case)
+        // http://math.stackexchange.com/questions/80198/area-of-triangle-via-vectors
+        var m = 0.5 * vec2.crossLength(ca,cb);
+
+        // Add to center of mass
+        vec2.scale(centroid_times_mass, centroid, m);
+        vec2.add(cm, cm, centroid_times_mass);
+    }
+};
 
 /**
  * Compute the mass moment of inertia of the Convex.
  * @param  {Number} mass
  * @return {Number}
+ * @todo  should use .triangles
  */
 Convex.prototype.computeMomentOfInertia = function(mass){
 
@@ -165,8 +227,11 @@ Convex.prototype.computeMomentOfInertia = function(mass){
         b = vec2.create(),
         c = vec2.create(),
         centroid = vec2.create(),
-        n = vec2.create();
-        ac = vec2.create();
+        n = vec2.create(),
+        ac = vec2.create(),
+        ca = vec2.create(),
+        cb = vec2.create(),
+        centroid_times_mass = vec2.create();
 
     // Loop over all triangles, add their inertia contributions to I
     for(var i=0; i<triangles.length; i+=3){
@@ -179,18 +244,14 @@ Convex.prototype.computeMomentOfInertia = function(mass){
         vec2.set(b, polykVerts[2*id2], polykVerts[2*id2+1]);
         vec2.set(c, polykVerts[2*id3], polykVerts[2*id3+1]);
 
-        // Compute centroid: http://easycalculation.com/analytical/learn-centroid.php
-        vec2.add(centroid, a, b);
-        vec2.add(centroid, centroid, c);
-        vec2.scale(centroid, centroid, 1/3);
+        vec2.centroid(centroid, a, b, c);
 
-        // Construct normal, orthogonal to (a-b)
-        vec2.sub(n, b, a);
-        var base = vec2.length(n);
-        vec2.rotate(n, n, Math.PI/2);
-        vec2.normalize(n, n);
-        vec2.sub(ac, c, a);
-        var height = Math.abs( vec2.dot(ac, n) );
+        vec2.sub(ca, c, a);
+        vec2.sub(cb, c, b);
+
+        var area_triangle = 0.5 * vec2.crossLength(ca,cb);
+        var base = vec2.length(ca);
+        var height = 2*area_triangle / base; // a=b*h/2 => h=2*a/b
 
         // Get inertia for this triangle: http://answers.yahoo.com/question/index?qid=20080721030038AA3oE1m
         var I_triangle = (base * (Math.pow(height,3))) / 36;
@@ -202,8 +263,41 @@ Convex.prototype.computeMomentOfInertia = function(mass){
         var r2 = vec2.squaredLength(centroid);
         I += I_triangle + m*r2;
     }
+
     return I;
 };
+
+
+/**
+ * Rectangle shape class.
+ * @class Rectangle
+ * @constructor
+ * @extends {Convex}
+ */
+function Rectangle(w,h){
+    var verts = [   vec2.fromValues(-w/2, -h/2),
+                    vec2.fromValues( w/2, -h/2),
+                    vec2.fromValues( w/2,  h/2),
+                    vec2.fromValues(-w/2,  h/2)];
+    Convex.call(this,verts);
+
+    this.width = w;
+    this.height = h;
+};
+Rectangle.prototype = new Convex();
+
+/**
+ * Compute moment of inertia
+ * @method computeMomentOfInertia
+ * @param  {Number} mass
+ * @return {Number}
+ */
+Rectangle.prototype.computeMomentOfInertia = function(mass){
+    var w = this.width,
+        h = this.height;
+    return mass * (h*h + w*w) / 12;
+};
+
 
 /**
  * Line shape class. The line shape is along the x direction, and stretches from [-length/2, 0] to [length/2,0].

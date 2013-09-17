@@ -195,7 +195,7 @@ PixiDemo.drawRectangle = function(g,x,y,angle,w,h,color,lineWidth){
     g.drawRect(x-w/2,y-h/2,w,h);
 };
 
-PixiDemo.drawConvex = function(g,verts,color,fillColor,lineWidth){
+PixiDemo.drawConvex = function(g,verts,triangles,color,fillColor,lineWidth){
     lineWidth = lineWidth || 1;
     color = typeof(color)=="undefined" ? 0x000000 : color;
     g.lineStyle(lineWidth, color, 1);
@@ -211,6 +211,18 @@ PixiDemo.drawConvex = function(g,verts,color,fillColor,lineWidth){
     }
     g.lineTo(verts[0][0],verts[0][1]);
     g.endFill();
+
+    // Draw triangles
+    for(var i=0; i<triangles.length; i++){
+        var t = triangles[i],
+            a = verts[t[0]],
+            b = verts[t[1]],
+            c = verts[t[2]];
+        g.moveTo(a[0],a[1]);
+        g.lineTo(b[0],b[1]);
+        g.lineTo(c[0],c[1]);
+        g.lineTo(a[0],a[1]);
+    }
 };
 
 var X = vec2.fromValues(1,0);
@@ -284,6 +296,9 @@ PixiDemo.prototype.addRenderable = function(obj){
             } else if(child instanceof Line){
                 PixiDemo.drawLine(sprite, child.length*ppu, 0x000000, lw);
 
+            } else if(child instanceof Rectangle){
+                PixiDemo.drawRectangle(sprite, offset[0]*ppu, offset[1]*ppu, angle, child.width*ppu, child.height*ppu, 0x000000, lw);
+
             } else if(child instanceof Convex){
                 // Scale verts
                 var verts = [];
@@ -291,10 +306,7 @@ PixiDemo.prototype.addRenderable = function(obj){
                     var v = child.vertices[j];
                     verts.push([v[0]*ppu, v[1]*ppu]);
                 }
-                PixiDemo.drawConvex(sprite, verts, 0x000000, 0xFFFFFF, lw);
-
-            } else if(child instanceof Rectangle){
-                PixiDemo.drawRectangle(sprite, offset[0]*ppu, offset[1]*ppu, angle, child.width*ppu, child.height*ppu, 0x000000, lw);
+                PixiDemo.drawConvex(sprite, verts, []/*child.triangles*/, 0x000000, 0xFFFFFF, lw);
 
             }
         }
