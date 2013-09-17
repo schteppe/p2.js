@@ -1,3 +1,5 @@
+var polyk = require('../math/polyk');
+
 exports.Shape = Shape;
 exports.Particle = Particle;
 exports.Rectangle = Rectangle;
@@ -136,13 +138,71 @@ Convex.prototype = new Shape();
  * Compute the mass moment of inertia of the Convex.
  * @param  {Number} mass
  * @return {Number}
- * @todo Triangulate the Convex, compute centroid and inertia of each sub-triangle. Add using parallel axis theorem.
- * @todo Triangulation: http://polyk.ivank.net/
- * @todo Centroid: http://easycalculation.com/analytical/learn-centroid.php
- * @todo Triangle moment: http://answers.yahoo.com/question/index?qid=20080721030038AA3oE1m
  */
 Convex.prototype.computeMomentOfInertia = function(mass){
-    return 1;
+
+    // In short: Triangulate the Convex, compute centroid and inertia of
+    // each sub-triangle. Add up to total using parallel axis theorem.
+
+    var I = 0;
+
+    // Rewrite on polyk notation, array of numbers
+    var polykVerts = [];
+    for(var i=0; i<this.vertices.length; i++){
+        var v = this.vertices[i];
+        polykVerts.push(v[0],v[1]);
+    }
+
+    // Triangulate
+    var triangles = polyk.Triangulate(polykVerts);
+
+    // Get total convex area and density
+    var area = polyk.GetArea(polykVerts);
+    var density = mass / area;
+
+    // Temp vectors
+    var a = vec2.create(),
+        b = vec2.create(),
+        c = vec2.create(),
+        centroid = vec2.create(),
+        n = vec2.create();
+        ac = vec2.create();
+
+    // Loop over all triangles, add their inertia contributions to I
+    for(var i=0; i<triangles.length; i+=3){
+        var id1 = triangles[i],
+            id2 = triangles[i+1],
+            id3 = triangles[i+2];
+
+        // a,b,c are triangle corners
+        vec2.set(a, polykVerts[2*id1], polykVerts[2*id1+1]);
+        vec2.set(b, polykVerts[2*id2], polykVerts[2*id2+1]);
+        vec2.set(c, polykVerts[2*id3], polykVerts[2*id3+1]);
+
+        // Compute centroid: http://easycalculation.com/analytical/learn-centroid.php
+        vec2.add(centroid, a, b);
+        vec2.add(centroid, centroid, c);
+        vec2.scale(centroid, centroid, 1/3);
+
+        // Construct normal, orthogonal to (a-b)
+        vec2.sub(n, b, a);
+        var base = vec2.length(n);
+        vec2.rotate(n, n, Math.PI/2);
+        vec2.normalize(n, n);
+        vec2.sub(ac, c, a);
+        var height = Math.abs( vec2.dot(ac, n) );
+
+        // Get inertia for this triangle: http://answers.yahoo.com/question/index?qid=20080721030038AA3oE1m
+        var I_triangle = (base * (Math.pow(height,3))) / 36;
+
+        // Get mass for the triangle
+        var m = base*height/2 * density;
+
+        // Add to total inertia using parallel axis theorem
+        var r2 = vec2.squaredLength(centroid);
+        I += I_triangle + m*r2;
+    }
+    return I;
 };
 
 /**
