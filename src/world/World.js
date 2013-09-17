@@ -126,6 +126,13 @@ function World(options){
      */
     this.friction = 0.1;
 
+    /**
+     * For keeping track of what time step size we used last step
+     * @property lastTimeStep
+     * @type {Number}
+     */
+    this.lastTimeStep = 1/60;
+
     // Id counters
     this._constraintIdCounter = 0;
     this._bodyIdCounter = 0;
@@ -199,6 +206,8 @@ World.prototype.step = function(dt){
         broadphase = this.broadphase,
         constraints = this.constraints,
         t0, t1;
+
+    this.lastTimeStep = dt;
 
     if(doProfiling){
         t0 = now();

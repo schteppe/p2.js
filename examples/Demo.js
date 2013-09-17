@@ -73,6 +73,9 @@ function Demo(world){
                 case 112: // p - pause
                     that.paused = !that.paused;
                     break;
+                case 115: // s - step
+                    that.world.step(that.world.lastTimeStep);
+                    break;
                 case 114: // r - restart
                     that.removeAllVisuals();
                     that.world.fromJSON(that.initialState);

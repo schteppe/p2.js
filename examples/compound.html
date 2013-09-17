@@ -51,9 +51,9 @@
         // Create box
         var boxShape = new p2.Rectangle(1,1);
         var box = new p2.Body({
-            position:[3,1],
+            position:[3,2],
             mass : 1,
-            angularVelocity:0.2
+            angularVelocity : -0.1
         });
         box.addShape(boxShape,[0,0.5]);
         box.addShape(boxShape,[0,-0.5]);

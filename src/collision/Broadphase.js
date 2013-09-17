@@ -76,6 +76,7 @@ function checkConvexPlane(  convexShape,
 
     // Project the plane position
     var planePos = vec2.dot(planeOffset,worldNormal);
+
     return convexSpan[0] < planePos;
 }
 
@@ -452,17 +453,24 @@ function projectConvexOntoAxis(convexShape, convexOffset, convexAngle, worldAxis
         value;
 
     // Convert the axis to local coords of the body
-    vec2.rotate(localAxis, worldAxis, convexAngle);
+    vec2.rotate(localAxis, worldAxis, -convexAngle);
 
-    // Project the position of the body onto the axis - need to add this to the result
-    var offset = vec2.dot(convexOffset, localAxis);
-
-    for(var i=1; i<convexShape.vertices.length; i++){
+    // Get projected position of all vertices
+    for(var i=0; i<convexShape.vertices.length; i++){
         v = convexShape.vertices[i];
         value = vec2.dot(v,localAxis);
         if(max === null || value > max) max = value;
         if(min === null || value < min) min = value;
     }
+
+    if(min > max){
+        var t = min;
+        min = max;
+        max = t;
+    }
+
+    // Project the position of the body onto the axis - need to add this to the result
+    var offset = vec2.dot(convexOffset, worldAxis);
 
     vec2.set( result, min + offset, max + offset);
 };
