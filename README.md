@@ -64,8 +64,8 @@ setInterval(function(){
 ### Supported collision pairs
 |           | Circle | Plane | Rectangle | Convex | Particle | Line   |
 | :-------: |:------:|:-----:|:---------:|:------:|:--------:|:------:|
-| Circle    | Yes    | Yes   | Yes       | Yes    | Yes      | (todo) |
-| Plane     | -      | -     | Yes       | Yes    | Yes      | (todo) |
+| Circle    | Yes    | Yes   | Yes       | Yes    | Yes      | Yes    |
+| Plane     | -      | -     | Yes       | Yes    | Yes      | Yes    |
 | Rectangle | -      | -     | (todo)    | (todo) | (todo)   | (todo) |
 | Convex    | -      | -     | -         | (todo) | (todo)   | (todo) |
 | Particle  | -      | -     | -         | -      | -        | (todo) |
@@ -75,7 +75,7 @@ setInterval(function(){
 ##### Current
 * Removed ```World.collidingBodies``` since ```World.bodies``` can be used equivalently.
 * Added property ```DistanceConstraint.distance```
-* Added contact response between ```Particle/Plane```, ```Particle/Circle```, ```Circle/Plane```, ```Convex/Plane```, ```Convex/Circle```, ```Rectangle/Circle```, ```Rectangle/Plane```
+* Added contact response between a lot of Shape types. Check table above.
 * Added friction for most of the contact types
 * Added ```PointToPointConstraint```
 * Added ```Line```

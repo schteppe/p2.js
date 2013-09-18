@@ -267,6 +267,20 @@ function nearphaseCircleLine(   bi,si,xi,ai, bj,sj,xj,aj,
 };
 
 
+exports.checkRectangleRectangle = checkRectangleRectangle;
+// Just uses bounding spheres for now
+function checkRectangleRectangle(r1, offset1, angle1, r2, offset2, angle2){
+    vec2.sub(dist,offset2,offset1);
+    var w1 = r1.width,
+        h1 = r1.height,
+        D1 = Math.sqrt(w1*w1 + h1*h1) / 2,
+        w2 = r2.width,
+        h2 = r2.height,
+        D2 = Math.sqrt(w2*w2 + h2*h2) / 2;
+    var result = vec2.sqrLen(dist) < (D1 + D2)*(D1 + D2);
+    return result;
+};
+
 
 exports.checkConvexConvex = checkConvexConvex;
 function checkConvexConvex(convex, convexOffset, convex, convexOffset){
@@ -861,62 +875,79 @@ var normal =    vec2.create();
 var span1 =     vec2.create();
 var span2 =     vec2.create();
 exports.findSeparatingAxis = findSeparatingAxis;
-function findSeparatingAxis(c1,c2,sepAxis){
+function findSeparatingAxis(c1,offset1,angle1,c2,offset2,angle2,sepAxis){
 
     var maxDist = null,
-        overlap = false;
+        overlap = false,
+        found = false;
 
     for(var j=0; j<2; j++){
-        var c = j==0 ? c1 : c2;
+        var c = c1,
+            angle = angle1;
+        if(j==1){
+            c = c2;
+            angle = angle2;
+        }
 
-        for(var i=1; i<c1.shape.vertices.length; i++){
-            // Get the edge
-            vec2.subtract(edge, c.shape.vertices[i], c.shape.vertices[i-1]);
+        for(var i=0; i<c.vertices.length; i++){
+            // Get the world edge
+            var worldPoint0 = vec2.create(),
+                worldPoint1 = vec2.create();
+
+            vec2.rotate(worldPoint0, c.vertices[i], angle);
+            vec2.rotate(worldPoint1, c.vertices[(i+1)%c.vertices.length], angle);
+
+            vec2.sub(edge, worldPoint1, worldPoint0);
 
             // Get normal - just rotate 90 degrees since vertices are given in CCW
             vec2.rotate(normal, edge, -Math.PI / 2);
             vec2.normalize(normal,normal);
 
             // Project hulls onto that normal
-            projectConvexOntoAxis(c1,normal,span1);
-            projectConvexOntoAxis(c2,normal,span2);
+            projectConvexOntoAxis(c1,offset1,angle1,normal,span1);
+            projectConvexOntoAxis(c2,offset2,angle2,normal,span2);
 
+            // Order by span position
             var a=span1,
-                b=span2;
+                b=span2,
+                swapped = false;
             if(span1[0] > span2[0]){
                 b=span1;
                 a=span2;
+                swapped = true;
             }
 
             // Get separating distance
-            var dist = b[1] - a[0];
+            var dist = b[0] - a[1];
+            overlap = dist < 0;
             if(maxDist===null || dist > maxDist){
                 vec2.copy(sepAxis, normal);
                 maxDist = dist;
-                overlap = dist > 0;
+                found = overlap;
             }
         }
     }
 
-    return overlap;
+    return found;
 };
 
 // Returns either -1 (failed) or an index of a vertex. This vertex and the next makes the closest edge.
-function getClosestEdge(c,axis){
+function getClosestEdge(c,angle,axis,flip){
 
     // Convert the axis to local coords of the body
-    vec2.rotate(localAxis, axis, c.angle);
+    vec2.rotate(localAxis, axis, angle);
 
     var closestEdge = -1;
-    for(var i=1; i<c.shape.vertices.length; i++){
+    for(var i=0; i<c.vertices.length; i++){
         // Get the edge
-        vec2.subtract(edge, c.shape.vertices[i], c.shape.vertices[i-1]);
+        vec2.subtract(edge, c.vertices[(i+1)%c.vertices.length], c.vertices[i]);
 
         // Get normal - just rotate 90 degrees since vertices are given in CCW
         vec2.rotate(normal, edge, -Math.PI / 2);
         vec2.normalize(normal,normal);
 
         var dot = vec2.dot(normal,axis);
+        if(flip) dot *= -1;
         if(closestEdge == -1 || dot > maxDot){
             closestEdge = i-1;
             maxDot = dot;
@@ -927,30 +958,139 @@ function getClosestEdge(c,axis){
 };
 
 // See http://www.altdevblogaday.com/2011/05/13/contact-generation-between-3d-convex-meshes/
-exports.nearphaseConvexConvex = function(c1,c2,sepAxis){
+var nearphaseConvexConvex_sepAxis = vec2.create();
+var nearphaseConvexConvex_worldEdge = vec2.create();
+var nearphaseConvexConvex_worldPoint0 = vec2.create();
+var nearphaseConvexConvex_worldPoint1 = vec2.create();
+var nearphaseConvexConvex_worldPoint = vec2.create();
+var nearphaseConvexConvex_projected = vec2.create();
+var nearphaseConvexConvex_penetrationVec = vec2.create();
+exports.nearphaseConvexConvex = function(   bi,si,xi,ai, bj,sj,xj,aj,
+                                            result,
+                                            oldContacts,
+                                            doFriction,
+                                            frictionResult,
+                                            oldFrictionEquations,
+                                            slipForce){
+    var sepAxis = nearphaseConvexConvex_sepAxis;
+    var worldPoint = nearphaseConvexConvex_worldPoint;
+    var worldPoint0 = nearphaseConvexConvex_worldPoint0;
+    var worldPoint1 = nearphaseConvexConvex_worldPoint1;
+    var worldEdge = nearphaseConvexConvex_worldEdge;
+    var projected = nearphaseConvexConvex_projected;
+    var penetrationVec = nearphaseConvexConvex_penetrationVec;
+
+    var found = findSeparatingAxis(si,xi,ai,sj,xj,aj,sepAxis);
+    if(!found) return false;
+
     // Find edges with normals closest to the separating axis
-    var closestEdge1 = getClosestEdge(c1,sepAxis);
-    var closestEdge2 = getClosestEdge(c2,sepAxis);
+    var closestEdge1 = getClosestEdge(si,ai,sepAxis,true);
+    var closestEdge2 = getClosestEdge(sj,aj,sepAxis);
 
     if(closestEdge1==-1 || closestEdge2==-1) return false;
 
-    // Get the edges incident to those
-    var edge1_0 = vec2.create(),
-        edge1_1 = vec2.create(),
-        edge1_2 = vec2.create(),
-        edge2_0 = vec2.create(),
-        edge2_1 = vec2.create(),
-        edge2_2 = vec2.create();
+    // Loop over the shapes
+    for(var k=0; k<2; k++){
 
-    // Cases:
-    // 1. No contact
-    // 2. One corner on A is crossing an edge on B
-    // 3. Two corners on A are crossing an edge on B
-    // 4. Two corners on A are crossing an edge on B, two from B are crossing A
-    // 4. Both A and B have a corner inside the other
+        var closestEdgeA = closestEdge1,
+            closestEdgeB = closestEdge2,
+            shapeA =  si, shapeB =  sj,
+            offsetA = xi, offsetB = xj,
+            angleA = ai, angleB = aj,
+            bodyA = bi, bodyB = bj;
 
-    // Check overlaps
+        if(k==1){
+            // Swap!
+            var tmp;
+            tmp = closestEdgeA; closestEdgeA = closestEdgeB; closestEdgeB = tmp;
+            tmp = shapeA; shapeA = shapeB; shapeB = tmp;
+            tmp = offsetA; offsetA = offsetB; offsetB = tmp;
+            tmp = angleA; angleA = angleB; angleB = tmp;
+            tmp = bodyA; bodyA = bodyB; bodyB = tmp;
+        }
 
+        // Loop over points in convex B
+        for(var j=closestEdgeB; j<closestEdgeB+2; j++){
+
+            // Get world point
+            vec2.rotate(worldPoint, shapeB.vertices[(j+shapeB.vertices.length)%shapeB.vertices.length], angleB);
+            vec2.add(worldPoint, worldPoint, offsetB);
+
+            var insideNumEdges = 0;
+
+            // Loop over edges in convex A
+            for(var i=closestEdgeA-1; i<closestEdgeA+2; i++){
+
+                var v0 = shapeA.vertices[(i  +shapeA.vertices.length)%shapeA.vertices.length],
+                    v1 = shapeA.vertices[(i+1+shapeA.vertices.length)%shapeA.vertices.length];
+
+                // Construct the edge
+                vec2.rotate(worldPoint0, v0, angleA);
+                vec2.rotate(worldPoint1, v1, angleA);
+                vec2.add(worldPoint0, worldPoint0, offsetA);
+                vec2.add(worldPoint1, worldPoint1, offsetA);
+
+                vec2.sub(worldEdge, worldPoint1, worldPoint0);
+
+                vec2.rotate(worldNormal, worldEdge, -Math.PI/2); // Normal points out of convex 1
+                vec2.normalize(worldNormal,worldNormal);
+
+                vec2.sub(dist, worldPoint, worldPoint0);
+
+                var d = vec2.dot(worldNormal,dist);
+
+                // Add some offset here?
+                if(d < 0)
+                    insideNumEdges++;
+            }
+
+            if(insideNumEdges == 3){
+
+                // worldPoint was on the "inside" side of each of the 3 checked edges.
+                // Project it to the center edge and use the projection direction as normal
+
+                // Create contact
+                var c = oldContacts.length ? oldContacts.pop() : new ContactEquation(bodyA,bodyB);
+                c.bi = bodyA;
+                c.bj = bodyB;
+
+                // Get center edge from body A
+                var v0 = shapeA.vertices[closestEdgeA],
+                    v1 = shapeA.vertices[closestEdgeA+1];
+
+                // Construct the edge
+                vec2.rotate(worldPoint0, v0, angleA);
+                vec2.rotate(worldPoint1, v1, angleA);
+                vec2.add(worldPoint0, worldPoint0, offsetA);
+                vec2.add(worldPoint1, worldPoint1, offsetA);
+
+                vec2.sub(worldEdge, worldPoint1, worldPoint0);
+
+                vec2.rotate(c.ni, worldEdge, -Math.PI/2); // Normal points out of convex A
+                vec2.normalize(c.ni,c.ni);
+
+
+                vec2.sub(dist, worldPoint, worldPoint0); // From edge point to the penetrating point
+                var d = vec2.dot(c.ni,dist);             // Penetration
+                vec2.scale(penetrationVec, c.ni, d);     // Vector penetration
+
+                vec2.sub(c.ri, worldPoint, offsetA);
+                vec2.sub(c.ri, c.ri, penetrationVec);
+                vec2.add(c.ri, c.ri, offsetA);
+                vec2.sub(c.ri, c.ri, bodyA.position);
+
+                vec2.sub(c.rj, worldPoint, offsetB);
+                vec2.add(c.rj, c.rj, offsetB);
+                vec2.sub(c.rj, c.rj, bodyB.position);
+
+                result.push(c);
+
+                // Todo reduce to 1 friction equation if we have 2 contact points
+                if(doFriction)
+                    addFrictionEquation(bodyA, bodyB, c, slipForce, oldFrictionEquations, frictionResult);
+            }
+        }
+    }
 }
 
 /**

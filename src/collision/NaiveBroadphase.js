@@ -119,10 +119,14 @@ NaiveBroadphase.prototype.getCollisionPairs = function(world){
 
                     case Shape.CONVEX:
 
-                        switch(sj1.type){
-                        case Shape.CONVEX:
-                            collide = bp.checkConvexConvex(sj1,xj1_world,aj1_world, si1,xi1_world,ai1_world);
-                            break;
+                        if(si1 instanceof Rectangle && sj1 instanceof Rectangle){
+                            collide = bp.checkRectangleRectangle(sj1,xj1_world,aj1_world, si1,xi1_world,ai1_world);
+                        } else {
+                            switch(sj1.type){
+                            case Shape.CONVEX:
+                                collide = bp.checkConvexConvex(sj1,xj1_world,aj1_world, si1,xi1_world,ai1_world);
+                                break;
+                            }
                         }
                         break;
                     }

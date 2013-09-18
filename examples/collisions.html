@@ -13,13 +13,16 @@
     <script>
 
         var size = 0.3,
-            dropHeight = 1.2,
-            dist = size * 1.5;
+            dropHeight = 2.2,
+            dist = size * 2;
 
         var world = new p2.World({
             doProfiling:true,
             gravity : [0,-10],
         });
+
+        world.solver.iterations = 20;
+        world.solver.setSpookParams(1e4,4);
 
         var verts = [];
         for(var i=0, N=5; i<N; i++){
@@ -36,7 +39,7 @@
 
         var opts = {
             mass: 1,
-            position: [0,0],
+            position: [0,1],
         };
 
         var numAdded = 0;
@@ -85,7 +88,7 @@
         // Create ground
         var planeShape = new p2.Plane();
         var plane = new p2.Body({
-            position:[0,-1],
+            position:[0,0],
         });
         plane.addShape(planeShape);
         world.addBody(plane);
