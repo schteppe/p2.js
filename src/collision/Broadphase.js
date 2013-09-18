@@ -24,8 +24,124 @@ function checkCircleLine(circle, circleOffset, line, lineOffset, lineAngle){
 };
 
 
+exports.checkPlaneLine = checkPlaneLine;
+function checkPlaneLine(plane, planeOffset, planeAngle, line, lineOffset, lineAngle){
+
+    // bounding sphere check
+    vec2.sub(dist, lineOffset, planeOffset);
+    vec2.rotate(worldNormal, yAxis, planeAngle);
+    var L = line.length;
+
+    return vec2.dot(dist, worldNormal) < L;
+};
+
+
+
+var nearphasePlaneLine_worldVertex0 =   vec2.create(),
+    nearphasePlaneLine_worldVertex1 =   vec2.create(),
+    nearphasePlaneLine_worldVertex01 =   vec2.create(),
+    nearphasePlaneLine_worldVertex11 =   vec2.create(),
+    nearphasePlaneLine_worldEdge =      vec2.create(),
+    nearphasePlaneLine_worldEdgeUnit =  vec2.create(),
+    nearphasePlaneLine_worldTangent =   vec2.create(),
+    nearphasePlaneLine_orthoDist =      vec2.create(),
+    nearphasePlaneLine_centerDist =     vec2.create(),
+    nearphasePlaneLine_convexToCircle = vec2.create(),
+    nearphasePlaneLine_lineToCircle =   vec2.create(),
+    nearphasePlaneLine_projectedPoint = vec2.create();
+exports.nearphasePlaneLine = nearphasePlaneLine;
+function nearphasePlaneLine(   bi,si,xi,ai, bj,sj,xj,aj,
+                                result,
+                                oldContacts,
+                                doFriction,
+                                frictionResult,
+                                oldFrictionEquations,
+                                slipForce){
+    var lineShape = sj,
+        lineAngle = aj,
+        lineBody = bj,
+        lineOffset = xj,
+        planeOffset = xi,
+        planeAngle = ai,
+        planeBody = bi,
+        planeShape = si;
+
+    var worldVertex0 = nearphasePlaneLine_worldVertex0,
+        worldVertex1 = nearphasePlaneLine_worldVertex1,
+        worldVertex01 = nearphasePlaneLine_worldVertex01,
+        worldVertex11 = nearphasePlaneLine_worldVertex11,
+        worldEdge = nearphasePlaneLine_worldEdge,
+        worldEdgeUnit = nearphasePlaneLine_worldEdgeUnit;
+
+    // Get start and end points
+    vec2.set(worldVertex0, -lineShape.length/2, 0);
+    vec2.set(worldVertex1,  lineShape.length/2, 0);
+
+    // Not sure why we have to use worldVertex*1 here, but it won't work otherwise. Tired.
+    vec2.rotate(worldVertex01, worldVertex0, lineAngle);
+    vec2.rotate(worldVertex11, worldVertex1, lineAngle);
+
+    vec2.add(worldVertex01, worldVertex01, lineOffset);
+    vec2.add(worldVertex11, worldVertex11, lineOffset);
+
+    vec2.copy(worldVertex0,worldVertex01);
+    vec2.copy(worldVertex1,worldVertex11);
+
+    // Get vector along the line
+    vec2.sub(worldEdge, worldVertex1, worldVertex0);
+    vec2.normalize(worldEdgeUnit, worldEdge);
+
+    // Get tangent to the edge.
+    vec2.rotate(worldTangent, worldEdgeUnit, -Math.PI/2);
+
+    vec2.rotate(worldNormal, yAxis, planeAngle);
+
+    // Check line ends
+    var verts = [worldVertex0, worldVertex1];
+    for(var i=0; i<verts.length; i++){
+        var v = verts[i];
+
+        vec2.sub(dist, v, planeOffset);
+
+        var d = vec2.dot(dist,worldNormal);
+
+        if(d < 0){
+
+            var c = oldContacts.length ? oldContacts.pop() : new ContactEquation(planeBody,lineBody);
+            c.bi = planeBody;
+            c.bj = lineBody;
+
+            vec2.copy(c.ni, worldNormal);
+            vec2.normalize(c.ni,c.ni);
+
+            // distance vector along plane normal
+            vec2.scale(dist, worldNormal, d);
+
+            // Vector from plane center to contact
+            vec2.sub(c.ri, v, dist);
+            vec2.sub(c.ri, c.ri, planeBody.position);
+
+            // From line center to contact
+            vec2.sub(c.rj, v,    lineOffset);
+            vec2.add(c.rj, c.rj, lineOffset);
+            vec2.sub(c.rj, c.rj, lineBody.position);
+
+            result.push(c);
+
+            // TODO : only need one friction equation if both points touch
+            if(doFriction)
+                addFrictionEquation(planeBody, lineBody, c, slipForce, oldFrictionEquations, frictionResult);
+        }
+    }
+};
+
+
+
+
 var worldVertex0 =   vec2.create(),
     worldVertex1 =   vec2.create(),
+    worldVertex01 =   vec2.create(),
+    worldVertex11 =   vec2.create(),
     worldEdge =      vec2.create(),
     worldEdgeUnit =  vec2.create(),
     worldTangent =   vec2.create(),
@@ -54,13 +170,15 @@ function nearphaseCircleLine(   bi,si,xi,ai, bj,sj,xj,aj,
     vec2.set(worldVertex0, -lineShape.length/2, 0);
     vec2.set(worldVertex1,  lineShape.length/2, 0);
 
-    vec2.rotate(worldVertex0, worldVertex0, lineAngle);
-    vec2.rotate(worldVertex1, worldVertex1, lineAngle);
+    // Not sure why we have to use worldVertex*1 here, but it won't work otherwise. Tired.
+    vec2.rotate(worldVertex01, worldVertex0, lineAngle);
+    vec2.rotate(worldVertex11, worldVertex1, lineAngle);
 
-    vec2.add(worldVertex0, worldVertex0, lineOffset);
-    vec2.add(worldVertex1, worldVertex1, lineOffset);
+    vec2.add(worldVertex01, worldVertex01, lineOffset);
+    vec2.add(worldVertex11, worldVertex11, lineOffset);
 
-    //console.log(worldVertex0[1],worldVertex1[1],vec2.str(lineOffset),vec2.str(worldVertex1)==vec2.str(worldVertex0));
+    vec2.copy(worldVertex0,worldVertex01);
+    vec2.copy(worldVertex1,worldVertex11);
 
     // Get vector along the line
     vec2.sub(worldEdge, worldVertex1, worldVertex0);

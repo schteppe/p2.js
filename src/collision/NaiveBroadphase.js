@@ -111,6 +111,9 @@ NaiveBroadphase.prototype.getCollisionPairs = function(world){
                         case Shape.CONVEX:
                             collide = bp.checkConvexPlane(sj1,xj1_world,aj1_world, si1,xi1_world,ai1_world);
                             break;
+                        case Shape.LINE:
+                            collide = bp.checkPlaneLine(si1,xi1_world,ai1_world, sj1,xj1_world,aj1_world);
+                            break;
                         }
                         break;
 
