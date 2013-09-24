@@ -708,8 +708,8 @@ Nearphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj ){
     }
 
     // Find edges with normals closest to the separating axis
-    var closestEdge1 = Nearphase.getClosestEdge(si,ai,sepAxis,true);
-    var closestEdge2 = Nearphase.getClosestEdge(sj,aj,sepAxis);
+    var closestEdge1 = Nearphase.getClosestEdge(si,ai,sepAxis,true), // Flipped axis
+        closestEdge2 = Nearphase.getClosestEdge(sj,aj,sepAxis);
 
     if(closestEdge1==-1 || closestEdge2==-1) return false;
 
@@ -806,8 +806,8 @@ Nearphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj ){
                 this.contactEquations.push(c);
 
                 // Todo reduce to 1 friction equation if we have 2 contact points
-                /*if(this.enableFriction)
-                    this.frictionEquations.push(this.createFrictionFromContact(c));*/
+                if(this.enableFriction)
+                    this.frictionEquations.push(this.createFrictionFromContact(c));
             }
         }
     }

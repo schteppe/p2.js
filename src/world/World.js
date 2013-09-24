@@ -289,7 +289,7 @@ World.prototype.step = function(dt){
                 } else if(si instanceof Convex){
                          if(sj instanceof Plane)    np.convexPlane    (bi,si,xi_world,ai_world, bj,sj,xj_world,aj_world);
                     else if(sj instanceof Circle)   np.circleConvex   (bj,sj,xj_world,aj_world, bi,si,xi_world,ai_world);
-                    else if(sj instanceof Convex)   np.convexConvex   (bj,sj,xj_world,aj_world, bi,si,xi_world,ai_world);
+                    else if(sj instanceof Convex)   np.convexConvex   (bi,si,xi_world,ai_world, bj,sj,xj_world,aj_world);
 
                 } else if(si instanceof Line){
                          if(sj instanceof Circle)   np.circleLine     (bj,sj,xj_world,aj_world, bi,si,xi_world,ai_world);
