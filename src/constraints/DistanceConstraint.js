@@ -1,8 +1,8 @@
-var Constraint = require('./Constraint').Constraint
-,   ContactEquation = require('./ContactEquation').ContactEquation
+var Constraint = require('./Constraint')
+,   ContactEquation = require('./ContactEquation')
 ,   vec2 = require('../math/vec2')
 
-exports.DistanceConstraint = DistanceConstraint;
+module.exports = DistanceConstraint;
 
 /**
  * Constraint that tries to keep the distance between two bodies constant.

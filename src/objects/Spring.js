@@ -1,6 +1,6 @@
 var vec2 = require('../math/vec2');
 
-exports.Spring = Spring;
+module.exports = Spring;
 
 /**
  * A spring, connecting two bodies.

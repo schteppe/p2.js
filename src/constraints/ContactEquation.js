@@ -1,7 +1,7 @@
-var Equation = require("./Equation").Equation,
+var Equation = require("./Equation"),
     vec2 = require('../math/vec2');
 
-exports.ContactEquation = ContactEquation;
+module.exports = ContactEquation;
 
 /**
  * Non-penetration constraint equation.

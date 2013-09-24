@@ -1,7 +1,7 @@
 var vec2 = require('../math/vec2'),
-    Solver = require('./Solver').Solver;
+    Solver = require('./Solver');
 
-exports.GSSolver = GSSolver;
+module.exports = GSSolver;
 
 var ARRAY_TYPE = Float32Array || Array;
 

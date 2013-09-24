@@ -1,6 +1,6 @@
 var vec2 = require('../math/vec2');
 
-exports.Body = Body;
+module.exports = Body;
 
 /**
  * A physics body.

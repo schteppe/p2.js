@@ -1,23 +1,22 @@
-var GSSolver = require('../solver/GSSolver').GSSolver
+var GSSolver = require('../solver/GSSolver')
 ,    NaiveBroadphase = require('../collision/NaiveBroadphase')
 ,    vec2 = require('../math/vec2')
-,    Circle = require('../objects/Shape').Circle
-,    Rectangle = require('../objects/Shape').Rectangle
-,    Compound = require('../objects/Shape').Compound
-,    Convex = require('../objects/Shape').Convex
-,    Line = require('../objects/Shape').Line
-,    Plane = require('../objects/Shape').Plane
-,    Particle = require('../objects/Shape').Particle
-,    EventEmitter = require('../events/EventEmitter').EventEmitter
-,    Body = require('../objects/Body').Body
-,    Spring = require('../objects/Spring').Spring
-,    DistanceConstraint = require('../constraints/DistanceConstraint').DistanceConstraint
-,    PointToPointConstraint = require('../constraints/PointToPointConstraint').PointToPointConstraint
+,    Circle = require('../shapes/Circle')
+,    Rectangle = require('../shapes/Rectangle')
+,    Convex = require('../shapes/Convex')
+,    Line = require('../shapes/Line')
+,    Plane = require('../shapes/Plane')
+,    Particle = require('../shapes/Particle')
+,    EventEmitter = require('../events/EventEmitter')
+,    Body = require('../objects/Body')
+,    Spring = require('../objects/Spring')
+,    DistanceConstraint = require('../constraints/DistanceConstraint')
+,    PointToPointConstraint = require('../constraints/PointToPointConstraint')
 ,    pkg = require('../../package.json')
 ,    Broadphase = require('../collision/Broadphase')
 ,    Nearphase = require('../collision/Nearphase')
 
-exports.World = World;
+module.exports = World;
 
 function now(){
     if(performance.now)

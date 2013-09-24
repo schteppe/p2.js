@@ -1,6 +1,6 @@
 var vec2 = require('../math/vec2')
-,   ContactEquation = require('../constraints/ContactEquation').ContactEquation
-,   FrictionEquation = require('../constraints/FrictionEquation').FrictionEquation
+,   ContactEquation = require('../constraints/ContactEquation')
+,   FrictionEquation = require('../constraints/FrictionEquation')
 
 module.exports = Nearphase;
 

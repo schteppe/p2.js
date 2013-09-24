@@ -1,7 +1,7 @@
 var vec2 = require('../math/vec2')
-,   Equation = require('./Equation').Equation
+,   Equation = require('./Equation')
 
-exports.FrictionEquation = FrictionEquation;
+module.exports = FrictionEquation;
 
 // 3D cross product from glmatrix, until we get this to work...
 function cross(out, a, b) {
