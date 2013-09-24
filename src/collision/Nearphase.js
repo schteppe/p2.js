@@ -701,6 +701,12 @@ Nearphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj ){
     var found = Nearphase.findSeparatingAxis(si,xi,ai,sj,xj,aj,sepAxis);
     if(!found) return false;
 
+    // Make sure the separating axis is directed from shape i to shape j
+    vec2.sub(dist,xj,xi);
+    if(vec2.dot(sepAxis,dist) > 0){
+        vec2.scale(sepAxis,sepAxis,-1);
+    }
+
     // Find edges with normals closest to the separating axis
     var closestEdge1 = Nearphase.getClosestEdge(si,ai,sepAxis,true);
     var closestEdge2 = Nearphase.getClosestEdge(sj,aj,sepAxis);
@@ -727,7 +733,7 @@ Nearphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj ){
             tmp = bodyA;        bodyA = bodyB;                  bodyB = tmp;
         }
 
-        // Loop over points in convex B
+        // Loop over 2 points in convex B
         for(var j=closestEdgeB; j<closestEdgeB+2; j++){
 
             // Get world point
@@ -736,7 +742,7 @@ Nearphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj ){
 
             var insideNumEdges = 0;
 
-            // Loop over edges in convex A
+            // Loop over the 3 closest edges in convex A
             for(var i=closestEdgeA-1; i<closestEdgeA+2; i++){
 
                 var v0 = shapeA.vertices[(i  +shapeA.vertices.length)%shapeA.vertices.length],
@@ -757,7 +763,6 @@ Nearphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj ){
 
                 var d = vec2.dot(worldNormal,dist);
 
-                // Add some offset here?
                 if(d < 0)
                     insideNumEdges++;
             }
@@ -771,7 +776,7 @@ Nearphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj ){
                 var c = this.createContactEquation(bodyA,bodyB);
 
                 // Get center edge from body A
-                var v0 = shapeA.vertices[closestEdgeA],
+                var v0 = shapeA.vertices[(closestEdgeA)   % shapeA.vertices.length],
                     v1 = shapeA.vertices[(closestEdgeA+1) % shapeA.vertices.length];
 
                 // Construct the edge
@@ -784,7 +789,6 @@ Nearphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj ){
 
                 vec2.rotate(c.ni, worldEdge, -Math.PI/2); // Normal points out of convex A
                 vec2.normalize(c.ni,c.ni);
-
 
                 vec2.sub(dist, worldPoint, worldPoint0); // From edge point to the penetrating point
                 var d = vec2.dot(c.ni,dist);             // Penetration
@@ -802,8 +806,8 @@ Nearphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj ){
                 this.contactEquations.push(c);
 
                 // Todo reduce to 1 friction equation if we have 2 contact points
-                if(this.enableFriction)
-                    this.frictionEquations.push(this.createFrictionFromContact(c));
+                /*if(this.enableFriction)
+                    this.frictionEquations.push(this.createFrictionFromContact(c));*/
             }
         }
     }
