@@ -537,7 +537,7 @@ World.prototype.fromJSON = function(json){
         case pkg.version:
 
             // Set gravity
-            vec2.copy(world.gravity, json.gravity);
+            vec2.copy(this.gravity, json.gravity);
 
             // Load bodies
             for(var i=0; i<json.bodies.length; i++){

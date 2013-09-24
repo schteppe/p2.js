@@ -1,6 +1,6 @@
-var World = require("../../src/world/World").World
-,   Body = require("../../src/objects/Body").Body
-,   vec2 = require("gl-matrix").vec2
+var World = require("../src/world/World")
+,   Body = require("../src/objects/Body")
+,   vec2 = require("../src/math/vec2")
 
 var world;
 
