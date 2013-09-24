@@ -65,16 +65,36 @@ exports.projectConvexOntoAxis = {
 
 exports.findSeparatingAxis = function(test){
     var axis = vec2.create();
-    Nearphase.findSeparatingAxis(circle,[0,0],0,circle,[0,1],0,axis);
+    Nearphase.findSeparatingAxis(circle,[0,0],0,circle,[0,1+eps],0,axis);
 
     // Check length
     var l = vec2.length(axis);
-    test.ok(l>0.99);
-    test.ok(l<1.01);
+    test.ok(l > 1-eps);
+    test.ok(l < 1+eps);
 
     // Check direction - should be quite near up/down direction
     var d = vec2.dot(axis, [0,1]);
-    test.ok(Math.abs(d) > 0.8);
+    test.ok(Math.abs(d) > 1-eps);
+
+
+
+    // Check what happens if there is overlap
+    Nearphase.findSeparatingAxis(circle,[0,0],0,circle,[0,0.5],0,axis);
+
+    // Check direction - should still be quite near up/down direction
+    var d = vec2.dot(axis, [0,1]);
+    test.ok(Math.abs(d) > 1-eps);
+
+
+
+    // Check what happens if there is diagonal overlap
+    Nearphase.findSeparatingAxis(circle,[0,0],0,circle,[0.5,0.5],0,axis);
+
+    // Check direction
+    var d = vec2.dot(axis, vec2.normalize([1,1],[1,1]));
+    test.ok(Math.abs(d) > 1-eps);
+
+
 
     test.done();
 };
