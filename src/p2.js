@@ -1,6 +1,6 @@
 // Export p2 classes
 exports.Body =                  require('./objects/Body')                       .Body;
-exports.Broadphase =            require('./collision/Broadphase')               .Broadphase;
+exports.Broadphase =            require('./collision/Broadphase');
 exports.Circle =                require('./objects/Shape')                      .Circle;
 exports.Constraint =            require('./constraints/Constraint')             .Constraint;
 exports.ContactEquation =       require('./constraints/ContactEquation')        .ContactEquation;
@@ -9,12 +9,12 @@ exports.DistanceConstraint=     require('./constraints/DistanceConstraint')     
 exports.Equation =              require('./constraints/Equation')               .Equation;
 exports.EventEmitter =          require('./events/EventEmitter')                .EventEmitter;
 exports.FrictionEquation =      require('./constraints/FrictionEquation')       .FrictionEquation;
-exports.GridBroadphase =        require('./collision/GridBroadphase')           .GridBroadphase;
+exports.GridBroadphase =        require('./collision/GridBroadphase');
 exports.GSSolver =              require('./solver/GSSolver')                    .GSSolver;
 exports.Island =                require('./solver/IslandSolver')                .Island;
 exports.IslandSolver =          require('./solver/IslandSolver')                .IslandSolver;
 exports.Line =                  require('./objects/Shape')                      .Line;
-exports.NaiveBroadphase =       require('./collision/NaiveBroadphase')          .NaiveBroadphase;
+exports.NaiveBroadphase =       require('./collision/NaiveBroadphase');
 exports.Particle =              require('./objects/Shape')                      .Particle;
 exports.Plane =                 require('./objects/Shape')                      .Plane;
 exports.PointToPointConstraint= require('./constraints/PointToPointConstraint') .PointToPointConstraint;

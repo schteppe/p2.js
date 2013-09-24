@@ -1,9 +1,10 @@
 var Circle = require('../objects/Shape').Circle,
     Plane = require('../objects/Shape').Plane,
     Particle = require('../objects/Shape').Particle,
-    bp = require('../collision/Broadphase'),
-    Broadphase = bp.Broadphase,
+    Broadphase = require('../collision/Broadphase'),
     vec2 = require('../math/vec2');
+
+module.exports = GridBroadphase;
 
 /**
  * Broadphase that uses axis-aligned bins.
@@ -17,7 +18,7 @@ var Circle = require('../objects/Shape').Circle,
  * @param {number} nx Number of bins along x axis
  * @param {number} ny Number of bins along y axis
  */
-exports.GridBroadphase = function(xmin,xmax,ymin,ymax,nx,ny){
+function GridBroadphase(xmin,xmax,ymin,ymax,nx,ny){
     Broadphase.apply(this);
 
     nx = nx || 10;
@@ -124,5 +125,5 @@ exports.GridBroadphase = function(xmin,xmax,ymin,ymax,nx,ny){
         return result;
     };
 };
-exports.GridBroadphase.prototype = new Broadphase();
+GridBroadphase.prototype = new Broadphase();
 
