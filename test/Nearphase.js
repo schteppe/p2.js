@@ -98,3 +98,15 @@ exports.findSeparatingAxis = function(test){
 
     test.done();
 };
+
+exports.getClosestEdge = function(test){
+    var i = Nearphase.getClosestEdge(circle, 0, [1,0]);
+
+    // Should be first or last edge
+    test.ok(i != -1);
+
+    // Last edge is given by i == vs.length-2 since it is spanned by vs.length-2 to vs.length-1
+    test.ok(i==0 || i % (circle.vertices.length-2) == 0);
+
+    test.done();
+}

@@ -772,7 +772,7 @@ Nearphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj ){
 
                 // Get center edge from body A
                 var v0 = shapeA.vertices[closestEdgeA],
-                    v1 = shapeA.vertices[closestEdgeA+1];
+                    v1 = shapeA.vertices[(closestEdgeA+1) % shapeA.vertices.length];
 
                 // Construct the edge
                 vec2.rotate(worldPoint0, v0, angleA);
@@ -936,7 +936,7 @@ Nearphase.getClosestEdge = function(c,angle,axis,flip){
     var closestEdge = -1;
     for(var i=0; i<c.vertices.length; i++){
         // Get the edge
-        vec2.subtract(edge, c.vertices[(i+1)%c.vertices.length], c.vertices[i]);
+        vec2.subtract(edge, c.vertices[(i+1)%(c.vertices.length)], c.vertices[i%(c.vertices.length)]);
 
         // Get normal - just rotate 90 degrees since vertices are given in CCW
         vec2.rotate(normal, edge, -Math.PI / 2);
@@ -945,7 +945,7 @@ Nearphase.getClosestEdge = function(c,angle,axis,flip){
         var dot = vec2.dot(normal,axis);
         if(flip) dot *= -1;
         if(closestEdge == -1 || dot > maxDot){
-            closestEdge = i-1;
+            closestEdge = i % c.vertices.length;
             maxDot = dot;
         }
     }
