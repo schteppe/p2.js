@@ -80,12 +80,10 @@ setInterval(function(){
 * Added friction for most of the contact types
 * Added ```PointToPointConstraint```
 * Added ```Line```
-* Added ```Compound```
 * Added method ```Shape.computeMomentOfInertia```
 * Added method ```Body.updateMassProperties```
 * Removed ```mat2``` as it is not needed inside the library for now.
-* Changed ```Shape``` usage. A ```Shape``` is now added to a ```Body``` via ```Body.addShape(shape,offset,angle)```. Thus, ```Compound``` is not needed.
-* Removed ```Compound```.
+* Changed ```Shape``` usage. A ```Shape``` is now added to a ```Body``` via ```Body.addShape(shape,offset,angle)```.
 * Removed ```Body.shape```, added ```Body.shapes```, ```.shapeOffsets```, ```.shapeAngles```
 * Added ```Rectangle```
 * Added method ```Convex.updateTriangles```
