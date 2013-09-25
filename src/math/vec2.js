@@ -89,6 +89,18 @@ vec2.rotate = function(out,a,angle){
     out[1] = s*x +c*y;
 };
 
+vec2.toLocalFrame = function(out, worldPoint, framePosition, frameAngle){
+    vec2.copy(out, worldPoint);
+    vec2.sub(out, out, framePosition);
+    vec2.rotate(out, out, -frameAngle);
+};
+
+vec2.toGlobalFrame = function(out, localPoint, framePosition, frameAngle){
+    vec2.copy(out, localPoint);
+    vec2.rotate(out, out, frameAngle);
+    vec2.add(out, out, framePosition);
+};
+
 /**
  * Compute centroid of a triangle spanned by vectors a,b,c. See http://easycalculation.com/analytical/learn-centroid.php
  * @method centroid
