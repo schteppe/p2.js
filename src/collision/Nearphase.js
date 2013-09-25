@@ -460,6 +460,108 @@ Nearphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj){
     return false;
 };
 
+
+
+/**
+ * Particle/convex nearphase
+ * @method particleConvex
+ * @param  {Body} bi
+ * @param  {Particle} si
+ * @param  {Array} xi
+ * @param  {Number} ai
+ * @param  {Body} bj
+ * @param  {Convex} sj
+ * @param  {Array} xj
+ * @param  {Number} aj
+ */
+Nearphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj){
+    var convexShape = sj,
+        convexAngle = aj,
+        convexBody = bj,
+        convexOffset = xj,
+        particleOffset = xi,
+        particleBody = bi,
+        particleShape = si;
+
+    var worldVertex0 = tmp1,
+        worldVertex1 = tmp2,
+        worldEdge = tmp3,
+        worldEdgeUnit = tmp4,
+        worldTangent = tmp5,
+        centerDist = tmp6,
+        convexToparticle = tmp7,
+        orthoDist = tmp8,
+        projectedPoint = tmp9,
+        dist = tmp10,
+        worldVertex = tmp11;
+
+    var numReported = 0;
+
+    verts = convexShape.vertices;
+
+    // Check all edges first
+    for(var i=0; i<verts.length; i++){
+        var v0 = verts[i],
+            v1 = verts[(i+1)%verts.length];
+
+        vec2.rotate(worldVertex0, v0, convexAngle);
+        vec2.rotate(worldVertex1, v1, convexAngle);
+        vec2.add(worldVertex0, worldVertex0, convexOffset);
+        vec2.add(worldVertex1, worldVertex1, convexOffset);
+        vec2.sub(worldEdge, worldVertex1, worldVertex0);
+
+        vec2.normalize(worldEdgeUnit, worldEdge);
+
+        // Get tangent to the edge. Points out of the Convex
+        vec2.rotate(worldTangent, worldEdgeUnit, -Math.PI/2);
+
+        // Check distance from the plane spanned by the edge vs the particle
+        vec2.sub(dist, particleOffset, worldVertex0);
+        var d = vec2.dot(dist, worldTangent);
+        vec2.sub(centerDist, worldVertex0, convexOffset);
+
+        vec2.sub(convexToparticle, particleOffset, convexOffset);
+
+        if(d < 0 && vec2.dot(centerDist,convexToparticle) > 0){
+
+            // Now project the particle onto the edge
+            vec2.scale(orthoDist, worldTangent, d);
+            vec2.sub(projectedPoint, particleOffset, orthoDist);
+
+            // Check if the point is within the edge span
+            var pos =  vec2.dot(worldEdgeUnit, projectedPoint);
+            var pos0 = vec2.dot(worldEdgeUnit, worldVertex0);
+            var pos1 = vec2.dot(worldEdgeUnit, worldVertex1);
+
+            if(pos > pos0 && pos < pos1){
+                // We got contact!
+
+                var c = this.createContactEquation(particleBody,convexBody);
+
+                vec2.copy(c.ni, orthoDist);
+                vec2.normalize(c.ni, c.ni);
+
+                vec2.set(c.ri,  0, 0);
+                vec2.add(c.ri, c.ri, particleOffset);
+                vec2.sub(c.ri, c.ri, particleBody.position);
+
+                vec2.sub(c.rj, projectedPoint, convexOffset);
+                vec2.add(c.rj, c.rj, convexOffset);
+                vec2.sub(c.rj, c.rj, convexBody.position);
+
+                this.contactEquations.push(c);
+
+                if(this.enableFriction)
+                    this.frictionEquations.push( this.createFrictionFromContact(c) );
+
+                return true;
+            }
+        }
+    }
+
+    return false;
+};
+
 /**
  * Circle/circle nearphase
  * @method circleCircle

@@ -234,6 +234,28 @@ Broadphase.circleParticle = function(  circleShape,
 };
 
 /**
+ * Rectangle/Particle intersection test
+ * @method rectangleParticle
+ * @static
+ * @param  {Rectangle} rectangleShape
+ * @param  {Array} rectangleOffset
+ * @param  {Particle} particleShape
+ * @param  {Array} particleOffset
+ * @return {Boolean}
+ */
+Broadphase.rectangleParticle = function(rectangleShape,
+                                        rectangleOffset,
+                                        particleShape,
+                                        particleOffset ){
+    vec2.sub(dist,particleOffset,rectangleOffset);
+    var w = rectangle.width,
+        h = rectangle.height;
+    var D = Math.sqrt(w*w + h*h) / 2;
+    var result = vec2.sqrLen(dist) < D*D;
+    return result;
+};
+
+/**
  * Check whether a circle and a plane collides. See nearphaseCirclePlane() for param details.
  * @method circlePlane
  * @static

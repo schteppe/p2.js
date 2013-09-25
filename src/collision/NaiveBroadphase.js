@@ -101,6 +101,10 @@ NaiveBroadphase.prototype.getCollisionPairs = function(world){
                         case Shape.PLANE:
                             collide = Broadphase.particlePlane(si1,xi1_world,sj1,xj1_world,aj1_world);
                             break;
+                        case Shape.CONVEX:
+                            if(sj1 instanceof Rectangle)
+                                collide = Broadphase.rectangleParticle(sj1,xj1_world,si1,xi1_world);
+                            break;
                         }
                         break;
 
