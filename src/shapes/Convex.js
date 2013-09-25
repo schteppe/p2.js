@@ -39,6 +39,14 @@ function Convex(vertices){
         this.updateTriangles();
         this.updateCenterOfMass();
     }
+
+    /**
+     * The bounding radius of the convex
+     * @property boundingRadius
+     * @type {Number}
+     */
+    this.boundingRadius = 0;
+    this.updateBoundingRadius();
 };
 Convex.prototype = new Shape();
 
@@ -184,4 +192,18 @@ Convex.prototype.computeMomentOfInertia = function(mass){
     }
 
     return I;
+};
+
+/**
+ * Updates the .boundingRadius property
+ * @method updateBoundingRadius
+ */
+Convex.prototype.updateBoundingRadius = function(){
+    var verts = this.vertices,
+        r2 = 0;
+    for(var i=0; i<verts.length; i++){
+        var l2 = vec2.squaredLength(verts[i]);
+        if(l2 > r2) r2 = l2;
+    }
+    this.boundingRadius = Math.sqrt(r2);
 };
