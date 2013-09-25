@@ -723,7 +723,7 @@ Nearphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj ){
             angleA = ai, angleB = aj,
             bodyA = bi, bodyB = bj;
 
-        if(k==1){
+        if(k==0){
             // Swap!
             var tmp;
             tmp = closestEdgeA; closestEdgeA = closestEdgeB;    closestEdgeB = tmp;
@@ -737,7 +737,8 @@ Nearphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj ){
         for(var j=closestEdgeB; j<closestEdgeB+2; j++){
 
             // Get world point
-            vec2.rotate(worldPoint, shapeB.vertices[(j+shapeB.vertices.length)%shapeB.vertices.length], angleB);
+            var v = shapeB.vertices[(j+shapeB.vertices.length)%shapeB.vertices.length];
+            vec2.rotate(worldPoint, v, angleB);
             vec2.add(worldPoint, worldPoint, offsetB);
 
             var insideNumEdges = 0;
@@ -763,8 +764,9 @@ Nearphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj ){
 
                 var d = vec2.dot(worldNormal,dist);
 
-                if(d < 0)
+                if(d < 0){
                     insideNumEdges++;
+                }
             }
 
             if(insideNumEdges == 3){
@@ -793,6 +795,7 @@ Nearphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj ){
                 vec2.sub(dist, worldPoint, worldPoint0); // From edge point to the penetrating point
                 var d = vec2.dot(c.ni,dist);             // Penetration
                 vec2.scale(penetrationVec, c.ni, d);     // Vector penetration
+
 
                 vec2.sub(c.ri, worldPoint, offsetA);
                 vec2.sub(c.ri, c.ri, penetrationVec);
@@ -935,7 +938,10 @@ Nearphase.getClosestEdge = function(c,angle,axis,flip){
         normal = gce_tmp3;
 
     // Convert the axis to local coords of the body
-    vec2.rotate(localAxis, axis, angle);
+    vec2.rotate(localAxis, axis, -angle);
+    if(flip){
+        vec2.scale(localAxis,localAxis,-1);
+    }
 
     var closestEdge = -1;
     for(var i=0; i<c.vertices.length; i++){
@@ -946,8 +952,7 @@ Nearphase.getClosestEdge = function(c,angle,axis,flip){
         vec2.rotate(normal, edge, -Math.PI / 2);
         vec2.normalize(normal,normal);
 
-        var dot = vec2.dot(normal,axis);
-        if(flip) dot *= -1;
+        var dot = vec2.dot(normal,localAxis);
         if(closestEdge == -1 || dot > maxDot){
             closestEdge = i % c.vertices.length;
             maxDot = dot;
