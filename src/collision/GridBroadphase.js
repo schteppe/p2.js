@@ -1,8 +1,8 @@
-var Circle = require('../objects/Shape').Circle,
-    Plane = require('../objects/Shape').Plane,
-    Particle = require('../objects/Shape').Particle,
-    Broadphase = require('../collision/Broadphase'),
-    vec2 = require('../math/vec2');
+var Circle = require('../shapes/Circle')
+,   Plane = require('../shapes/Plane')
+,   Particle = require('../shapes/Particle')
+,   Broadphase = require('../collision/Broadphase')
+,   vec2 = require('../math/vec2')
 
 module.exports = GridBroadphase;
 
