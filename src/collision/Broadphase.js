@@ -29,7 +29,7 @@ var yAxis = vec2.fromValues(0,1);
 
 /**
  * Check whether a circle and a convex intersects
- * @method checkCircleConvex
+ * @method circleConvex
  * @static
  * @param  {Circle}     circle
  * @param  {Array}      circleOffset
@@ -37,13 +37,13 @@ var yAxis = vec2.fromValues(0,1);
  * @param  {Array}      convexOffset
  * @return {Boolean}                    Whether they intersect
  */
-Broadphase.checkCircleConvex = function(circle, circleOffset, convex, convexOffset){
+Broadphase.circleConvex = function(circle, circleOffset, convex, convexOffset){
     return true; // For now
 };
 
 /**
- * checkCircleLine
- * @method checkCircleLine
+ * circleLine
+ * @method circleLine
  * @static
  * @param  {Circle}     circle
  * @param  {Array}      circleOffset
@@ -52,7 +52,7 @@ Broadphase.checkCircleConvex = function(circle, circleOffset, convex, convexOffs
  * @param  {Number}     lineAngle
  * @return {Boolean}
  */
-Broadphase.checkCircleLine = function(circle, circleOffset, line, lineOffset, lineAngle){
+Broadphase.circleLine = function(circle, circleOffset, line, lineOffset, lineAngle){
     // bounding sphere check
     vec2.sub(dist, lineOffset, circleOffset);
     var R = circle.radius;
@@ -63,7 +63,7 @@ Broadphase.checkCircleLine = function(circle, circleOffset, line, lineOffset, li
 
 /**
  * Plane/line intersection test
- * @method checkPlaneLine
+ * @method planeLine
  * @static
  * @param  {Plane}  plane
  * @param  {Array}  planeOffset
@@ -73,7 +73,7 @@ Broadphase.checkCircleLine = function(circle, circleOffset, line, lineOffset, li
  * @param  {Number} lineAngle
  * @return {Boolean}
  */
-Broadphase.checkPlaneLine = function(plane, planeOffset, planeAngle, line, lineOffset, lineAngle){
+Broadphase.planeLine = function(plane, planeOffset, planeAngle, line, lineOffset, lineAngle){
     // bounding sphere check
     vec2.sub(dist, lineOffset, planeOffset);
     vec2.rotate(worldNormal, yAxis, planeAngle);
@@ -83,7 +83,7 @@ Broadphase.checkPlaneLine = function(plane, planeOffset, planeAngle, line, lineO
 
 /**
  * Rectangle/rectangle intersection test
- * @method checkRectangleRectangle
+ * @method rectangleRectangle
  * @static
  * @param  {Rectangle} r1
  * @param  {Array} offset1
@@ -93,7 +93,7 @@ Broadphase.checkPlaneLine = function(plane, planeOffset, planeAngle, line, lineO
  * @param  {Number} angle2
  * @return {Boolean}
  */
-Broadphase.checkRectangleRectangle = function(r1, offset1, angle1, r2, offset2, angle2){
+Broadphase.rectangleRectangle = function(r1, offset1, angle1, r2, offset2, angle2){
     vec2.sub(dist,offset2,offset1);
     var w1 = r1.width,
         h1 = r1.height,
@@ -107,7 +107,7 @@ Broadphase.checkRectangleRectangle = function(r1, offset1, angle1, r2, offset2, 
 
 /**
  * Convex/convex intersection test
- * @method checkConvexConvex
+ * @method convexConvex
  * @static
  * @param  {Convex} convex
  * @param  {Array}  convexOffset
@@ -115,13 +115,13 @@ Broadphase.checkRectangleRectangle = function(r1, offset1, angle1, r2, offset2, 
  * @param  {Array}  convexOffset
  * @return {Boolean}
  */
-Broadphase.checkConvexConvex = function(convex, convexOffset, convex, convexOffset){
+Broadphase.convexConvex = function(convex, convexOffset, convex, convexOffset){
     return true; // For now
 };
 
 /**
  * Circle/rectangle intersection test
- * @method checkCircleRectangle
+ * @method circleRectangle
  * @static
  * @param  {Circle} circle
  * @param  {Array} circleOffset
@@ -129,7 +129,7 @@ Broadphase.checkConvexConvex = function(convex, convexOffset, convex, convexOffs
  * @param  {Array} rectangleOffset
  * @return {Boolean}
  */
-Broadphase.checkCircleRectangle = function(circle, circleOffset, rectangle, rectangleOffset){
+Broadphase.circleRectangle = function(circle, circleOffset, rectangle, rectangleOffset){
     vec2.sub(dist,circleOffset,rectangleOffset);
     var R = circle.radius;
     var w = rectangle.width,
@@ -141,7 +141,7 @@ Broadphase.checkCircleRectangle = function(circle, circleOffset, rectangle, rect
 
 /**
  * Circle/Circle intersection test
- * @method checkCircleCircle
+ * @method circleCircle
  * @static
  * @param  {Circle} c1
  * @param  {Array}  offset1
@@ -149,18 +149,18 @@ Broadphase.checkCircleRectangle = function(circle, circleOffset, rectangle, rect
  * @param  {Array}  offset2
  * @return {Boolean}
  */
-Broadphase.checkCircleCircle = function(c1, offset1, c2, offset2){
+Broadphase.circleCircle = function(c1, offset1, c2, offset2){
     vec2.sub(dist,offset1,offset2);
     var R1 = c1.radius;
     var R2 = c2.radius;
     return vec2.sqrLen(dist) < (R1+R2)*(R1+R2);
 };
 
-var checkConvexPlane_convexSpan = vec2.create();
+var convexPlane_convexSpan = vec2.create();
 
 /**
  * Convex/Plane
- * @method checkConvexPlane
+ * @method convexPlane
  * @static
  * @param  {Convex} convexShape
  * @param  {Array}  convexOffset
@@ -170,13 +170,13 @@ var checkConvexPlane_convexSpan = vec2.create();
  * @param  {Number} planeAngle
  * @return {Boolean}
  */
-Broadphase.checkConvexPlane = function( convexShape,
+Broadphase.convexPlane = function( convexShape,
                                         convexOffset,
                                         convexAngle,
                                         planeShape,
                                         planeOffset,
                                         planeAngle){
-    var convexSpan = checkConvexPlane_convexSpan;
+    var convexSpan = convexPlane_convexSpan;
 
     vec2.rotate(worldNormal, yAxis, planeAngle);
     Nearphase.projectConvexOntoAxis(convexShape, convexOffset, convexAngle, worldNormal, convexSpan);
@@ -189,7 +189,7 @@ Broadphase.checkConvexPlane = function( convexShape,
 
 /**
  * Particle/Plane intersection test
- * @method checkParticlePlane
+ * @method particlePlane
  * @static
  * @param  {Particle} particleShape
  * @param  {Array} particleOffset
@@ -198,7 +198,7 @@ Broadphase.checkConvexPlane = function( convexShape,
  * @param  {Number} planeAngle
  * @return {Boolean}
  */
-Broadphase.checkParticlePlane = function(   particleShape,
+Broadphase.particlePlane = function(   particleShape,
                                             particleOffset,
                                             planeShape,
                                             planeOffset,
@@ -216,7 +216,7 @@ Broadphase.checkParticlePlane = function(   particleShape,
 
 /**
  * Circle/Particle intersection test
- * @method checkCircleParticle
+ * @method circleParticle
  * @static
  * @param  {Circle} circleShape
  * @param  {Array} circleOffset
@@ -224,7 +224,7 @@ Broadphase.checkParticlePlane = function(   particleShape,
  * @param  {Array} particleOffset
  * @return {Boolean}
  */
-Broadphase.checkCircleParticle = function(  circleShape,
+Broadphase.circleParticle = function(  circleShape,
                                             circleOffset,
                                             particleShape,
                                             particleOffset ){
@@ -235,7 +235,7 @@ Broadphase.checkCircleParticle = function(  circleShape,
 
 /**
  * Check whether a circle and a plane collides. See nearphaseCirclePlane() for param details.
- * @method checkCirclePlane
+ * @method circlePlane
  * @static
  * @param  {Circle}  circleShape
  * @param  {Array}   circleOffset
@@ -244,7 +244,7 @@ Broadphase.checkCircleParticle = function(  circleShape,
  * @param  {Number}  planeAngle
  * @return {Boolean} True if collision.
  */
-Broadphase.checkCirclePlane = function( circleShape,
+Broadphase.circlePlane = function( circleShape,
                                         circleOffset, // Rotated offset!
                                         planeShape,
                                         planeOffset,

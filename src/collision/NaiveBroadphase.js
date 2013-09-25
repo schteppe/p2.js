@@ -81,15 +81,15 @@ NaiveBroadphase.prototype.getCollisionPairs = function(world){
                     case Shape.CIRCLE:
 
                         switch(sj1.type){
-                        case Shape.CIRCLE:   collide = Broadphase.checkCircleCircle  (si1,xi1_world,sj1,xj1_world);             break;
-                        case Shape.PLANE:    collide = Broadphase.checkCirclePlane   (si1,xi1_world,sj1,xj1_world,aj1_world);   break;
-                        case Shape.PARTICLE: collide = Broadphase.checkCircleParticle(si1,xi1_world,sj1,xj1_world);             break;
-                        case Shape.LINE:     collide = Broadphase.checkCircleLine    (si1,xi1_world,sj1,xj1_world,aj1_world);   break;
+                        case Shape.CIRCLE:   collide = Broadphase.circleCircle  (si1,xi1_world,sj1,xj1_world);             break;
+                        case Shape.PLANE:    collide = Broadphase.circlePlane   (si1,xi1_world,sj1,xj1_world,aj1_world);   break;
+                        case Shape.PARTICLE: collide = Broadphase.circleParticle(si1,xi1_world,sj1,xj1_world);             break;
+                        case Shape.LINE:     collide = Broadphase.circleLine    (si1,xi1_world,sj1,xj1_world,aj1_world);   break;
                         case Shape.CONVEX:
                             if(sj1 instanceof Rectangle){
-                                collide = Broadphase.checkCircleRectangle(si1,xi1_world,sj1,xj1_world);
+                                collide = Broadphase.circleRectangle(si1,xi1_world,sj1,xj1_world);
                             } else {
-                                collide = Broadphase.checkCircleConvex(si1,xi1_world,sj1,xj1_world);
+                                collide = Broadphase.circleConvex(si1,xi1_world,sj1,xj1_world);
                             }
                             break;
                         }
@@ -99,7 +99,7 @@ NaiveBroadphase.prototype.getCollisionPairs = function(world){
                     case Shape.PARTICLE:
                         switch(sj1.type){
                         case Shape.PLANE:
-                            collide = Broadphase.checkParticlePlane(si1,xi1_world,sj1,xj1_world,aj1_world);
+                            collide = Broadphase.particlePlane(si1,xi1_world,sj1,xj1_world,aj1_world);
                             break;
                         }
                         break;
@@ -108,10 +108,10 @@ NaiveBroadphase.prototype.getCollisionPairs = function(world){
 
                         switch(sj1.type){
                         case Shape.CONVEX:
-                            collide = Broadphase.checkConvexPlane(sj1,xj1_world,aj1_world, si1,xi1_world,ai1_world);
+                            collide = Broadphase.convexPlane(sj1,xj1_world,aj1_world, si1,xi1_world,ai1_world);
                             break;
                         case Shape.LINE:
-                            collide = Broadphase.checkPlaneLine(si1,xi1_world,ai1_world, sj1,xj1_world,aj1_world);
+                            collide = Broadphase.planeLine(si1,xi1_world,ai1_world, sj1,xj1_world,aj1_world);
                             break;
                         }
                         break;
@@ -119,11 +119,11 @@ NaiveBroadphase.prototype.getCollisionPairs = function(world){
                     case Shape.CONVEX:
 
                         if(si1 instanceof Rectangle && sj1 instanceof Rectangle){
-                            collide = Broadphase.checkRectangleRectangle(sj1,xj1_world,aj1_world, si1,xi1_world,ai1_world);
+                            collide = Broadphase.rectangleRectangle(sj1,xj1_world,aj1_world, si1,xi1_world,ai1_world);
                         } else {
                             switch(sj1.type){
                             case Shape.CONVEX:
-                                collide = Broadphase.checkConvexConvex(sj1,xj1_world,aj1_world, si1,xi1_world,ai1_world);
+                                collide = Broadphase.convexConvex(sj1,xj1_world,aj1_world, si1,xi1_world,ai1_world);
                                 break;
                             }
                         }
