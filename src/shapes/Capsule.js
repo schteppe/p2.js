@@ -26,5 +26,9 @@ Capsule.prototype = new Shape();
  * @todo
  */
 Capsule.prototype.computeMomentOfInertia = function(mass){
-    return 1;
+    // Approximate with rectangle
+    var r = this.radius,
+        w = this.length + r, // 2*r is too much, 0 is too little
+        h = r*2;
+    return mass * (h*h + w*w) / 12;
 };

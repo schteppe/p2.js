@@ -65,7 +65,7 @@ setInterval(function(){
 |           | Circle | Plane | Rectangle | Convex | Particle | Line   | Capsule |
 | :-------: |:------:|:-----:|:---------:|:------:|:--------:|:------:|:-------:|
 | Circle    | Yes    | Yes   | Yes       | Yes    | Yes      | Yes    | (todo)  |
-| Plane     | -      | -     | Yes       | Yes    | Yes      | Yes    | (todo)  |
+| Plane     | -      | -     | Yes       | Yes    | Yes      | Yes    | Yes     |
 | Rectangle | -      | -     | Yes       | Yes    | Yes      | (todo) | (todo)  |
 | Convex    | -      | -     | -         | Yes    | Yes      | (todo) | (todo)  |
 | Particle  | -      | -     | -         | -      | -        | -      | (todo)  |

@@ -457,11 +457,8 @@ Nearphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj){
             return true;
         }
     }
-
     return false;
 };
-
-
 
 /**
  * Particle/convex nearphase
@@ -777,18 +774,21 @@ Nearphase.prototype.circleParticle = function(   bi,si,xi,ai, bj,sj,xj,aj ){
 
 var capsulePlane_tmpCircle = new Circle(1),
     capsulePlane_tmp1 = vec2.create(),
-    capsulePlane_tmp2 = vec2.create();
+    capsulePlane_tmp2 = vec2.create(),
+    capsulePlane_tmp3 = vec2.create();
 Nearphase.prototype.capsulePlane = function( bi,si,xi,ai, bj,sj,xj,aj ){
     var end1 = capsulePlane_tmp1,
         end2 = capsulePlane_tmp2,
-        circle = capsulePlane_tmpCircle;
+        circle = capsulePlane_tmpCircle,
+        dst = capsulePlane_tmp3;
 
-    // Create new vectors
+    // Compute world end positions
     vec2.set(end1, -si.length/2, 0);
-    vec2.set(end2,  si.length/2, 0);
     vec2.rotate(end1,end1,ai);
-    vec2.rotate(end2,end2,ai);
     vec2.add(end1,end1,xi);
+
+    vec2.set(end2,  si.length/2, 0);
+    vec2.rotate(end2,end2,ai);
     vec2.add(end2,end2,xi);
 
     circle.radius = si.radius;
@@ -842,13 +842,13 @@ Nearphase.prototype.circlePlane = function(   bi,si,xi,ai, bj,sj,xj,aj ){
     vec2.copy(contact.ni, worldNormal);
 
     // rj is the vector from circle center to the contact point
-    vec2.scale( contact.rj, contact.ni, -circleShape.radius);
+    vec2.scale(contact.rj, contact.ni, -circleShape.radius);
     vec2.add(contact.rj, contact.rj, circleOffset);
     vec2.sub(contact.rj, contact.rj, circleBody.position);
 
     // ri is the distance from plane center to contact.
     vec2.scale(temp, contact.ni, d);
-    vec2.sub( contact.ri, planeToCircle, temp ); // Subtract normal distance vector from the distance vector
+    vec2.sub(contact.ri, planeToCircle, temp ); // Subtract normal distance vector from the distance vector
     vec2.add(contact.ri, contact.ri, planeOffset);
     vec2.sub(contact.ri, contact.ri, planeBody.position);
 

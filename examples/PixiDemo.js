@@ -186,7 +186,7 @@ PixiDemo.drawLine = function(g, len, color, lineWidth){
     g.lineTo( len/2,0);
 };
 
-PixiDemo.drawCapsule = function(g, x, y, angle, len, radius, color, lineWidth){
+PixiDemo.drawCapsule = function(g, x, y, angle, len, radius, color, fillColor, lineWidth){
     lineWidth = lineWidth || 1;
     color = typeof(color)=="undefined" ? 0x000000 : color;
     g.lineStyle(lineWidth, color, 1);
@@ -197,8 +197,22 @@ PixiDemo.drawCapsule = function(g, x, y, angle, len, radius, color, lineWidth){
     g.drawCircle(-len/2*c + x, -len/2*s + y, radius);
     g.drawCircle( len/2*c + x,  len/2*s + y, radius);
 
+    // Draw rectangle
+    g.lineStyle(lineWidth, color, 0);
+    g.beginFill(fillColor);
+    g.moveTo(-len/2*c + radius*s + x, -len/2*s + radius*c + y);
+    g.lineTo( len/2*c + radius*s + x,  len/2*s + radius*c + y);
+    g.lineTo( len/2*c - radius*s + x,  len/2*s - radius*c + y);
+    g.lineTo(-len/2*c - radius*s + x, -len/2*s - radius*c + y);
+    g.endFill();
+
     // Draw lines in between
-    // (todo)
+    g.lineStyle(lineWidth, color, 1);
+    g.moveTo(-len/2*c + radius*s + x, -len/2*s + radius*c + y);
+    g.lineTo( len/2*c + radius*s + x,  len/2*s + radius*c + y);
+    g.moveTo(-len/2*c - radius*s + x, -len/2*s - radius*c + y);
+    g.lineTo( len/2*c - radius*s + x,  len/2*s - radius*c + y);
+
 };
 
 // Todo angle
@@ -314,7 +328,7 @@ PixiDemo.prototype.addRenderable = function(obj){
                 PixiDemo.drawRectangle(sprite, offset[0]*ppu, offset[1]*ppu, angle, child.width*ppu, child.height*ppu, 0x000000, lw);
 
             } else if(child instanceof Capsule){
-                PixiDemo.drawCapsule(sprite, offset[0]*ppu, offset[1]*ppu, angle, child.length*ppu, child.radius*ppu, 0x000000, lw);
+                PixiDemo.drawCapsule(sprite, offset[0]*ppu, offset[1]*ppu, angle, child.length*ppu, child.radius*ppu, 0x000000, 0xFFFFFF,lw);
 
             } else if(child instanceof Convex){
                 // Scale verts
