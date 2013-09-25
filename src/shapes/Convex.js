@@ -115,6 +115,7 @@ Convex.prototype.updateCenterOfMass = function(){
 
 /**
  * Compute the mass moment of inertia of the Convex.
+ * @method conputeMomentOfInertia
  * @param  {Number} mass
  * @return {Number}
  * @todo  should use .triangles

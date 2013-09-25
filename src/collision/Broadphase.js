@@ -14,7 +14,6 @@ function Broadphase(){
 
 /**
  * Get all potential intersecting body pairs.
- *
  * @method getCollisionPairs
  * @param  {World} world The world to search in.
  * @return {Array} An array of the bodies, ordered in pairs. Example: A result of [a,b,c,d] means that the potential pairs are: (a,b), (c,d).
@@ -28,10 +27,31 @@ var dist = vec2.create();
 var worldNormal = vec2.create();
 var yAxis = vec2.fromValues(0,1);
 
+/**
+ * Check whether a circle and a convex intersects
+ * @method checkCircleConvex
+ * @static
+ * @param  {Circle}     circle
+ * @param  {Array}      circleOffset
+ * @param  {Convex}     convex
+ * @param  {Array}      convexOffset
+ * @return {Boolean}                    Whether they intersect
+ */
 Broadphase.checkCircleConvex = function(circle, circleOffset, convex, convexOffset){
     return true; // For now
 };
 
+/**
+ * checkCircleLine
+ * @method checkCircleLine
+ * @static
+ * @param  {Circle}     circle
+ * @param  {Array}      circleOffset
+ * @param  {Line}       line
+ * @param  {Array}      lineOffset
+ * @param  {Number}     lineAngle
+ * @return {Boolean}
+ */
 Broadphase.checkCircleLine = function(circle, circleOffset, line, lineOffset, lineAngle){
     // bounding sphere check
     vec2.sub(dist, lineOffset, circleOffset);
@@ -41,6 +61,18 @@ Broadphase.checkCircleLine = function(circle, circleOffset, line, lineOffset, li
     return vec2.squaredLength(dist) < Math.pow(L+R,2);
 };
 
+/**
+ * Plane/line intersection test
+ * @method checkPlaneLine
+ * @static
+ * @param  {Plane}  plane
+ * @param  {Array}  planeOffset
+ * @param  {Number} planeAngle
+ * @param  {Line}   line
+ * @param  {Array}  lineOffset
+ * @param  {Number} lineAngle
+ * @return {Boolean}
+ */
 Broadphase.checkPlaneLine = function(plane, planeOffset, planeAngle, line, lineOffset, lineAngle){
     // bounding sphere check
     vec2.sub(dist, lineOffset, planeOffset);
@@ -49,6 +81,18 @@ Broadphase.checkPlaneLine = function(plane, planeOffset, planeAngle, line, lineO
     return vec2.dot(dist, worldNormal) < L;
 };
 
+/**
+ * Rectangle/rectangle intersection test
+ * @method checkRectangleRectangle
+ * @static
+ * @param  {Rectangle} r1
+ * @param  {Array} offset1
+ * @param  {Number} angle1
+ * @param  {Rectangle} r2
+ * @param  {Array} offset2
+ * @param  {Number} angle2
+ * @return {Boolean}
+ */
 Broadphase.checkRectangleRectangle = function(r1, offset1, angle1, r2, offset2, angle2){
     vec2.sub(dist,offset2,offset1);
     var w1 = r1.width,
@@ -61,11 +105,30 @@ Broadphase.checkRectangleRectangle = function(r1, offset1, angle1, r2, offset2, 
     return result;
 };
 
-
+/**
+ * Convex/convex intersection test
+ * @method checkConvexConvex
+ * @static
+ * @param  {Convex} convex
+ * @param  {Array}  convexOffset
+ * @param  {Convex} convex
+ * @param  {Array}  convexOffset
+ * @return {Boolean}
+ */
 Broadphase.checkConvexConvex = function(convex, convexOffset, convex, convexOffset){
     return true; // For now
 };
 
+/**
+ * Circle/rectangle intersection test
+ * @method checkCircleRectangle
+ * @static
+ * @param  {Circle} circle
+ * @param  {Array} circleOffset
+ * @param  {Rectangle} rectangle
+ * @param  {Array} rectangleOffset
+ * @return {Boolean}
+ */
 Broadphase.checkCircleRectangle = function(circle, circleOffset, rectangle, rectangleOffset){
     vec2.sub(dist,circleOffset,rectangleOffset);
     var R = circle.radius;
@@ -76,7 +139,16 @@ Broadphase.checkCircleRectangle = function(circle, circleOffset, rectangle, rect
     return result;
 };
 
-
+/**
+ * Circle/Circle intersection test
+ * @method checkCircleCircle
+ * @static
+ * @param  {Circle} c1
+ * @param  {Array}  offset1
+ * @param  {Circle} c2
+ * @param  {Array}  offset2
+ * @return {Boolean}
+ */
 Broadphase.checkCircleCircle = function(c1, offset1, c2, offset2){
     vec2.sub(dist,offset1,offset2);
     var R1 = c1.radius;
@@ -84,8 +156,20 @@ Broadphase.checkCircleCircle = function(c1, offset1, c2, offset2){
     return vec2.sqrLen(dist) < (R1+R2)*(R1+R2);
 };
 
-
 var checkConvexPlane_convexSpan = vec2.create();
+
+/**
+ * Convex/Plane
+ * @method checkConvexPlane
+ * @static
+ * @param  {Convex} convexShape
+ * @param  {Array}  convexOffset
+ * @param  {Number} convexAngle
+ * @param  {Plane}  planeShape
+ * @param  {Array}  planeOffset
+ * @param  {Number} planeAngle
+ * @return {Boolean}
+ */
 Broadphase.checkConvexPlane = function( convexShape,
                                         convexOffset,
                                         convexAngle,
@@ -103,6 +187,17 @@ Broadphase.checkConvexPlane = function( convexShape,
     return convexSpan[0] < planePos;
 };
 
+/**
+ * Particle/Plane intersection test
+ * @method checkParticlePlane
+ * @static
+ * @param  {Particle} particleShape
+ * @param  {Array} particleOffset
+ * @param  {Plane} planeShape
+ * @param  {Array} planeOffset
+ * @param  {Number} planeAngle
+ * @return {Boolean}
+ */
 Broadphase.checkParticlePlane = function(   particleShape,
                                             particleOffset,
                                             planeShape,
@@ -119,6 +214,16 @@ Broadphase.checkParticlePlane = function(   particleShape,
     return false;
 };
 
+/**
+ * Circle/Particle intersection test
+ * @method checkCircleParticle
+ * @static
+ * @param  {Circle} circleShape
+ * @param  {Array} circleOffset
+ * @param  {Particle} particleShape
+ * @param  {Array} particleOffset
+ * @return {Boolean}
+ */
 Broadphase.checkCircleParticle = function(  circleShape,
                                             circleOffset,
                                             particleShape,
@@ -130,22 +235,20 @@ Broadphase.checkCircleParticle = function(  circleShape,
 
 /**
  * Check whether a circle and a plane collides. See nearphaseCirclePlane() for param details.
- * @param  {Body}    circleBody
+ * @method checkCirclePlane
+ * @static
  * @param  {Circle}  circleShape
  * @param  {Array}   circleOffset
- * @param  {Body}    planeBody
  * @param  {Plane}   planeShape
  * @param  {Array}   planeOffset
  * @param  {Number}  planeAngle
- * @param  {Array}   result         The Bodies will be pushed into this array if they collide.
  * @return {Boolean} True if collision.
  */
-Broadphase.checkCirclePlane = function(  circleShape,
-                            circleOffset, // Rotated offset!
-                            planeShape,
-                            planeOffset,
-                            planeAngle ){
-
+Broadphase.checkCirclePlane = function( circleShape,
+                                        circleOffset, // Rotated offset!
+                                        planeShape,
+                                        planeOffset,
+                                        planeAngle ){
     planeAngle = planeAngle || 0;
 
     // Compute distance vector between plane center and circle center
@@ -157,7 +260,6 @@ Broadphase.checkCirclePlane = function(  circleShape,
         //result.push(circleBody, planeBody);
         return true;
     }
-
     return false;
 };
 

@@ -40,6 +40,7 @@ function Nearphase(){
 
 /**
  * Throws away the old equatons and gets ready to create new
+ * @method reset
  */
 Nearphase.prototype.reset = function(){
     if(this.reuseObjects){
@@ -58,6 +59,7 @@ Nearphase.prototype.reset = function(){
 
 /**
  * Creates a ContactEquation, either by reusing an existing object or creating a new one.
+ * @method createContactEquation
  * @param  {Body} bodyA
  * @param  {Body} bodyB
  * @return {ContactEquation}
@@ -71,6 +73,7 @@ Nearphase.prototype.createContactEquation = function(bodyA,bodyB){
 
 /**
  * Creates a FrictionEquation, either by reusing an existing object or creating a new one.
+ * @method createFrictionEquation
  * @param  {Body} bodyA
  * @param  {Body} bodyB
  * @return {FrictionEquation}
@@ -85,6 +88,7 @@ Nearphase.prototype.createFrictionEquation = function(bodyA,bodyB){
 
 /**
  * Creates a FrictionEquation given the data in the ContactEquation. Uses same offset vectors ri and rj, but the tangent vector will be constructed from the collision normal.
+ * @method createFrictionFromContact
  * @param  {ContactEquation} contactEquation
  * @return {FrictionEquation}
  */
@@ -96,6 +100,18 @@ Nearphase.prototype.createFrictionFromContact = function(c){
     return eq;
 }
 
+/**
+ * Plane/line nearphase
+ * @method planeLine
+ * @param  {Body} bi
+ * @param  {Plane} si
+ * @param  {Array} xi
+ * @param  {Number} ai
+ * @param  {Body} bj
+ * @param  {Line} sj
+ * @param  {Array} xj
+ * @param  {Number} aj
+ */
 Nearphase.prototype.planeLine = function(bi,si,xi,ai, bj,sj,xj,aj){
     var lineShape = sj,
         lineAngle = aj,
@@ -177,6 +193,18 @@ Nearphase.prototype.planeLine = function(bi,si,xi,ai, bj,sj,xj,aj){
     }
 };
 
+/**
+ * Circle/line nearphase
+ * @method circleLine
+ * @param  {Body} bi
+ * @param  {Circle} si
+ * @param  {Array} xi
+ * @param  {Number} ai
+ * @param  {Body} bj
+ * @param  {Line} sj
+ * @param  {Array} xj
+ * @param  {Number} aj
+ */
 Nearphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj){
     var lineShape = sj,
         lineAngle = aj,
@@ -298,6 +326,18 @@ Nearphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj){
     }
 };
 
+/**
+ * Circle/convex nearphase
+ * @method circleConvex
+ * @param  {Body} bi
+ * @param  {Circle} si
+ * @param  {Array} xi
+ * @param  {Number} ai
+ * @param  {Body} bj
+ * @param  {Convex} sj
+ * @param  {Array} xj
+ * @param  {Number} aj
+ */
 Nearphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj){
     var convexShape = sj,
         convexAngle = aj,
@@ -420,6 +460,18 @@ Nearphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj){
     return false;
 };
 
+/**
+ * Circle/circle nearphase
+ * @method circleCircle
+ * @param  {Body} bi
+ * @param  {Circle} si
+ * @param  {Array} xi
+ * @param  {Number} ai
+ * @param  {Body} bj
+ * @param  {Circle} sj
+ * @param  {Array} xj
+ * @param  {Number} aj
+ */
 Nearphase.prototype.circleCircle = function(  bi,si,xi,ai, bj,sj,xj,aj){
     var bodyA = bi,
         shapeA = si,
@@ -448,6 +500,18 @@ Nearphase.prototype.circleCircle = function(  bi,si,xi,ai, bj,sj,xj,aj){
     }
 };
 
+/**
+ * Convex/Plane nearphase
+ * @method convexPlane
+ * @param  {Body} bi
+ * @param  {Convex} si
+ * @param  {Array} xi
+ * @param  {Number} ai
+ * @param  {Body} bj
+ * @param  {Plane} sj
+ * @param  {Array} xj
+ * @param  {Number} aj
+ */
 Nearphase.prototype.convexPlane = function( bi,si,xi,ai, bj,sj,xj,aj ){
     var convexBody = bi,
         convexOffset = xi,
@@ -506,28 +570,20 @@ Nearphase.prototype.convexPlane = function( bi,si,xi,ai, bj,sj,xj,aj ){
                 break;
         }
     }
-
     return numReported > 0;
 };
 
-
 /**
  * Nearphase for particle vs plane
+ * @method particlePlane
  * @param  {Body}       bi The particle body
- * @param  {Shape}      si Particle shape
+ * @param  {Particle}   si Particle shape
  * @param  {Array}      xi World position for the particle
  * @param  {Number}     ai World angle for the particle
  * @param  {Body}       bj Plane body
- * @param  {Shape}      sj Plane shape
+ * @param  {Plane}      sj Plane shape
  * @param  {Array}      xj World position for the plane
  * @param  {Number}     aj World angle for the plane
- * @param  {Array}      result
- * @param  {Array}      oldContacts
- * @param  {Boolean}    doFriction
- * @param  {Array}      frictionResult
- * @param  {Array}      oldFrictionEquations
- * @param  {Number}     slipForce
- * @return {Boolean}
  */
 Nearphase.prototype.particlePlane = function( bi,si,xi,ai, bj,sj,xj,aj ){
     var particleBody = bi,
@@ -565,11 +621,21 @@ Nearphase.prototype.particlePlane = function( bi,si,xi,ai, bj,sj,xj,aj ){
     if(this.enableFriction){
         this.frictionEquations.push(this.createFrictionFromContact(c));
     }
-
     return true;
 };
 
-
+/**
+ * Circle/Particle nearphase
+ * @method circleParticle
+ * @param  {Body} bi
+ * @param  {Circle} si
+ * @param  {Array} xi
+ * @param  {Number} ai
+ * @param  {Body} bj
+ * @param  {Particle} sj
+ * @param  {Array} xj
+ * @param  {Number} aj
+ */
 Nearphase.prototype.circleParticle = function(   bi,si,xi,ai, bj,sj,xj,aj ){
     var circleBody = bi,
         circleShape = si,
@@ -608,20 +674,14 @@ Nearphase.prototype.circleParticle = function(   bi,si,xi,ai, bj,sj,xj,aj ){
 
 /**
  * Creates ContactEquations and FrictionEquations for a collision.
- * @param  {Body}    circleBody           The first body that should be connected to the equations.
- * @param  {Circle}  circleShape          The circle shape participating in the collision.
- * @param  {Array}   circleOffset         Extra offset to take into account for the Shape, in addition to the one in circleBody.position. Will *not* be rotated by circleBody.angle (maybe it should, for sake of homogenity?). Set to null if none.
- * @param  {Body}    planeBody            The second body that should be connected to the equations.
- * @param  {Shape}   shapeB               The Plane shape that is participating
- * @param  {Array}   planeOffset          Extra offset for the plane shape.
- * @param  {Number}  planeAngle           Extra angle to apply to the plane
- * @param  {Array}   result               Resulting ContactEquations will be pushed into this array
- * @param  {Array}   oldContacts          Reusable ContactEquations
- * @param  {Array}   doFriction           Whether to create FrictionEquations
- * @param  {Array}   frictionResult       Resulting FrictionEquations will be pushed into this array
- * @param  {Array}   oldFrictionEquations Reusable FrictionEquation objects
- * @param  {Number}  slipForce            To be passed to created FrictionEquations
- * @return {Boolean}                      True if we created any Equations.
+ * @method circlePlane
+ * @param  {Body}    bi     The first body that should be connected to the equations.
+ * @param  {Circle}  si     The circle shape participating in the collision.
+ * @param  {Array}   xi     Extra offset to take into account for the Shape, in addition to the one in circleBody.position. Will *not* be rotated by circleBody.angle (maybe it should, for sake of homogenity?). Set to null if none.
+ * @param  {Body}    bj     The second body that should be connected to the equations.
+ * @param  {Plane}   sj     The Plane shape that is participating
+ * @param  {Array}   xj     Extra offset for the plane shape.
+ * @param  {Number}  aj     Extra angle to apply to the plane
  */
 Nearphase.prototype.circlePlane = function(   bi,si,xi,ai, bj,sj,xj,aj ){
     var circleBody = bi,
@@ -678,6 +738,7 @@ Nearphase.prototype.circlePlane = function(   bi,si,xi,ai, bj,sj,xj,aj ){
 
 /**
  * Convex/convex nearphase.See <a href="http://www.altdevblogaday.com/2011/05/13/contact-generation-between-3d-convex-meshes/">this article</a> for more info.
+ * @method convexConvex
  * @param  {Body} bi
  * @param  {Convex} si
  * @param  {Array} xi
@@ -819,6 +880,16 @@ Nearphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj ){
 // .projectConvex is called by other functions, need local tmp vectors
 var pcoa_tmp1 = vec2.fromValues(0,0);
 
+/**
+ * Project a Convex onto a world-oriented axis
+ * @method projectConvexOntoAxis
+ * @static
+ * @param  {Convex} convexShape
+ * @param  {Array} convexOffset
+ * @param  {Number} convexAngle
+ * @param  {Array} worldAxis
+ * @param  {Array} result
+ */
 Nearphase.projectConvexOntoAxis = function(convexShape, convexOffset, convexAngle, worldAxis, result){
     var max=null,
         min=null,
@@ -857,6 +928,19 @@ var fsa_tmp1 = vec2.fromValues(0,0)
 ,   fsa_tmp5 = vec2.fromValues(0,0)
 ,   fsa_tmp6 = vec2.fromValues(0,0)
 
+/**
+ * Find a separating axis between the shapes, that maximizes the separating distance between them.
+ * @method findSeparatingAxis
+ * @static
+ * @param  {Convex}     c1
+ * @param  {Array}      offset1
+ * @param  {Number}     angle1
+ * @param  {Convex}     c2
+ * @param  {Array}      offset2
+ * @param  {Number}     angle2
+ * @param  {Array}      sepAxis     The resulting axis
+ * @return {Boolean}                Whether the axis could be found.
+ */
 Nearphase.findSeparatingAxis = function(c1,offset1,angle1,c2,offset2,angle2,sepAxis){
     var maxDist = null,
         overlap = false,
@@ -924,12 +1008,14 @@ var gce_tmp1 = vec2.fromValues(0,0)
 ,   gce_tmp3 = vec2.fromValues(0,0)
 
 /**
- * Returns either -1 (failed) or an index of a vertex. This vertex and the next makes the closest edge.
- * @param  {Convex} c
- * @param  {Number} angle
- * @param  {Array} axis
- * @param  {Boolean} flip
- * @return {Number}
+ * Get the edge that has a normal closest to an axis.
+ * @method getClosestEdge
+ * @static
+ * @param  {Convex}     c
+ * @param  {Number}     angle
+ * @param  {Array}      axis
+ * @param  {Boolean}    flip
+ * @return {Number}             Index of the edge that is closest. This index and the next spans the resulting edge. Returns -1 if failed.
  */
 Nearphase.getClosestEdge = function(c,angle,axis,flip){
 
