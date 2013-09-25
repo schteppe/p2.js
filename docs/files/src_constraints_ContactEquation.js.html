@@ -71,11 +71,15 @@
             
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
+                <li><a href="../classes/Nearphase.html">Nearphase</a></li>
+            
                 <li><a href="../classes/Particle.html">Particle</a></li>
             
                 <li><a href="../classes/Plane.html">Plane</a></li>
             
                 <li><a href="../classes/PointToPointConstraint.html">PointToPointConstraint</a></li>
+            
+                <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -130,10 +134,10 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
-var Equation = require(&quot;./Equation&quot;).Equation,
+var Equation = require(&quot;./Equation&quot;),
     vec2 = require(&#x27;../math/vec2&#x27;);
 
-exports.ContactEquation = ContactEquation;
+module.exports = ContactEquation;
 
 /**
  * Non-penetration constraint equation.

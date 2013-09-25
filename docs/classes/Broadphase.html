@@ -71,11 +71,15 @@
             
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
+                <li><a href="../classes/Nearphase.html">Nearphase</a></li>
+            
                 <li><a href="../classes/Particle.html">Particle</a></li>
             
                 <li><a href="../classes/Plane.html">Plane</a></li>
             
                 <li><a href="../classes/PointToPointConstraint.html">PointToPointConstraint</a></li>
+            
+                <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -134,7 +138,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_collision_Broadphase.js.html#l464"><code>src&#x2F;collision&#x2F;Broadphase.js:464</code></a>
+            Defined in: <a href="../files/src_collision_Broadphase.js.html#l6"><code>src&#x2F;collision&#x2F;Broadphase.js:6</code></a>
         </div>
     
 
@@ -147,6 +151,7 @@
 
 <div class="box intro">
     <p>Base class for broadphase implementations.</p>
+
 </div>
 
 
@@ -184,7 +189,7 @@
             
         
         
-        <a href="../files/src_collision_Broadphase.js.html#l464"><code>src&#x2F;collision&#x2F;Broadphase.js:464</code></a>
+        <a href="../files/src_collision_Broadphase.js.html#l6"><code>src&#x2F;collision&#x2F;Broadphase.js:6</code></a>
         
         </p>
 
@@ -231,6 +236,105 @@
                     <ul class="index-list methods">
                         
                             <li class="index-item method">
+                                <a href="#method_checkCircleCircle">checkCircleCircle</a>
+
+                                
+                                    <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_checkCircleConvex">checkCircleConvex</a>
+
+                                
+                                    <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_checkCircleLine">checkCircleLine</a>
+
+                                
+                                    <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_checkCircleParticle">checkCircleParticle</a>
+
+                                
+                                    <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_checkCirclePlane">checkCirclePlane</a>
+
+                                
+                                    <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_checkCircleRectangle">checkCircleRectangle</a>
+
+                                
+                                    <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_checkConvexConvex">checkConvexConvex</a>
+
+                                
+                                    <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_checkConvexPlane">checkConvexPlane</a>
+
+                                
+                                    <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_checkParticlePlane">checkParticlePlane</a>
+
+                                
+                                    <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_checkPlaneLine">checkPlaneLine</a>
+
+                                
+                                    <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_checkRectangleRectangle">checkRectangleRectangle</a>
+
+                                
+                                    <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
                                 <a href="#method_getCollisionPairs">getCollisionPairs</a>
 
                                 
@@ -251,6 +355,2058 @@
         
             <div id="methods" class="api-class-tabpanel">
                 <h2 class="off-left">Methods</h2>
+
+                
+                    <div id="method_checkCircleCircle" class="method item">
+    <h3 class="name"><code>checkCircleCircle</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>c1</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>offset1</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>c2</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>offset2</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Boolean</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_collision_Broadphase.js.html#l142"><code>src&#x2F;collision&#x2F;Broadphase.js:142</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Circle/Circle intersection test</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">c1</code>
+                        <span class="type"><a href="../classes/Circle.html" class="crosslink">Circle</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">offset1</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">c2</code>
+                        <span class="type"><a href="../classes/Circle.html" class="crosslink">Circle</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">offset2</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Boolean</span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_checkCircleConvex" class="method item">
+    <h3 class="name"><code>checkCircleConvex</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>circle</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>circleOffset</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>convex</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>convexOffset</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Boolean</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_collision_Broadphase.js.html#l30"><code>src&#x2F;collision&#x2F;Broadphase.js:30</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Check whether a circle and a convex intersects</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">circle</code>
+                        <span class="type"><a href="../classes/Circle.html" class="crosslink">Circle</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">circleOffset</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">convex</code>
+                        <span class="type"><a href="../classes/Convex.html" class="crosslink">Convex</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">convexOffset</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Boolean</span>:
+                    
+                    <p>Whether they intersect</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_checkCircleLine" class="method item">
+    <h3 class="name"><code>checkCircleLine</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>circle</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>circleOffset</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>line</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>lineOffset</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>lineAngle</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Boolean</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_collision_Broadphase.js.html#l44"><code>src&#x2F;collision&#x2F;Broadphase.js:44</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>checkCircleLine</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">circle</code>
+                        <span class="type"><a href="../classes/Circle.html" class="crosslink">Circle</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">circleOffset</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">line</code>
+                        <span class="type">Line</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">lineOffset</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">lineAngle</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Boolean</span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_checkCircleParticle" class="method item">
+    <h3 class="name"><code>checkCircleParticle</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>circleShape</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>circleOffset</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>particleShape</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>particleOffset</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Boolean</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_collision_Broadphase.js.html#l217"><code>src&#x2F;collision&#x2F;Broadphase.js:217</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Circle/Particle intersection test</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">circleShape</code>
+                        <span class="type"><a href="../classes/Circle.html" class="crosslink">Circle</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">circleOffset</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">particleShape</code>
+                        <span class="type"><a href="../classes/Particle.html" class="crosslink">Particle</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">particleOffset</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Boolean</span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_checkCirclePlane" class="method item">
+    <h3 class="name"><code>checkCirclePlane</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>circleShape</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>circleOffset</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>planeShape</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>planeOffset</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>planeAngle</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Boolean</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_collision_Broadphase.js.html#l236"><code>src&#x2F;collision&#x2F;Broadphase.js:236</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Check whether a circle and a plane collides. See nearphaseCirclePlane() for param details.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">circleShape</code>
+                        <span class="type"><a href="../classes/Circle.html" class="crosslink">Circle</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">circleOffset</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">planeShape</code>
+                        <span class="type"><a href="../classes/Plane.html" class="crosslink">Plane</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">planeOffset</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">planeAngle</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Boolean</span>:
+                    
+                    <p>True if collision.</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_checkCircleRectangle" class="method item">
+    <h3 class="name"><code>checkCircleRectangle</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>circle</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>circleOffset</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>rectangle</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>rectangleOffset</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Boolean</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_collision_Broadphase.js.html#l122"><code>src&#x2F;collision&#x2F;Broadphase.js:122</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Circle/rectangle intersection test</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">circle</code>
+                        <span class="type"><a href="../classes/Circle.html" class="crosslink">Circle</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">circleOffset</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">rectangle</code>
+                        <span class="type"><a href="../classes/Rectangle.html" class="crosslink">Rectangle</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">rectangleOffset</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Boolean</span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_checkConvexConvex" class="method item">
+    <h3 class="name"><code>checkConvexConvex</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>convex</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>convexOffset</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>convex</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>convexOffset</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Boolean</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_collision_Broadphase.js.html#l108"><code>src&#x2F;collision&#x2F;Broadphase.js:108</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Convex/convex intersection test</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">convex</code>
+                        <span class="type"><a href="../classes/Convex.html" class="crosslink">Convex</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">convexOffset</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">convex</code>
+                        <span class="type"><a href="../classes/Convex.html" class="crosslink">Convex</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">convexOffset</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Boolean</span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_checkConvexPlane" class="method item">
+    <h3 class="name"><code>checkConvexPlane</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>convexShape</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>convexOffset</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>convexAngle</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>planeShape</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>planeOffset</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>planeAngle</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Boolean</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_collision_Broadphase.js.html#l161"><code>src&#x2F;collision&#x2F;Broadphase.js:161</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Convex/Plane</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">convexShape</code>
+                        <span class="type"><a href="../classes/Convex.html" class="crosslink">Convex</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">convexOffset</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">convexAngle</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">planeShape</code>
+                        <span class="type"><a href="../classes/Plane.html" class="crosslink">Plane</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">planeOffset</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">planeAngle</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Boolean</span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_checkParticlePlane" class="method item">
+    <h3 class="name"><code>checkParticlePlane</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>particleShape</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>particleOffset</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>planeShape</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>planeOffset</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>planeAngle</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Boolean</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_collision_Broadphase.js.html#l190"><code>src&#x2F;collision&#x2F;Broadphase.js:190</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Particle/Plane intersection test</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">particleShape</code>
+                        <span class="type"><a href="../classes/Particle.html" class="crosslink">Particle</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">particleOffset</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">planeShape</code>
+                        <span class="type"><a href="../classes/Plane.html" class="crosslink">Plane</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">planeOffset</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">planeAngle</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Boolean</span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_checkPlaneLine" class="method item">
+    <h3 class="name"><code>checkPlaneLine</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>plane</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>planeOffset</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>planeAngle</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>line</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>lineOffset</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>lineAngle</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Boolean</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_collision_Broadphase.js.html#l64"><code>src&#x2F;collision&#x2F;Broadphase.js:64</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Plane/line intersection test</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">plane</code>
+                        <span class="type"><a href="../classes/Plane.html" class="crosslink">Plane</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">planeOffset</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">planeAngle</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">line</code>
+                        <span class="type">Line</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">lineOffset</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">lineAngle</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Boolean</span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_checkRectangleRectangle" class="method item">
+    <h3 class="name"><code>checkRectangleRectangle</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>r1</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>offset1</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>angle1</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>r2</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>offset2</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>angle2</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Boolean</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_collision_Broadphase.js.html#l84"><code>src&#x2F;collision&#x2F;Broadphase.js:84</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Rectangle/rectangle intersection test</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">r1</code>
+                        <span class="type"><a href="../classes/Rectangle.html" class="crosslink">Rectangle</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">offset1</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">angle1</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">r2</code>
+                        <span class="type"><a href="../classes/Rectangle.html" class="crosslink">Rectangle</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">offset2</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">angle2</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Boolean</span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
 
                 
                     <div id="method_getCollisionPairs" class="method item">
@@ -299,7 +2455,7 @@
             
         
         
-        <a href="../files/src_collision_Broadphase.js.html#l473"><code>src&#x2F;collision&#x2F;Broadphase.js:473</code></a>
+        <a href="../files/src_collision_Broadphase.js.html#l15"><code>src&#x2F;collision&#x2F;Broadphase.js:15</code></a>
         
         </p>
 
@@ -311,6 +2467,7 @@
 
     <div class="description">
         <p>Get all potential intersecting body pairs.</p>
+
     </div>
 
     
@@ -329,6 +2486,7 @@
 
                     <div class="param-description">
                         <p>The world to search in.</p>
+
                     </div>
 
                     
@@ -347,7 +2505,8 @@
                     
                         <span class="type">Array</span>:
                     
-                    An array of the bodies, ordered in pairs. Example: A result of [a,b,c,d] means that the potential pairs are: (a,b), (c,d).
+                    <p>An array of the bodies, ordered in pairs. Example: A result of [a,b,c,d] means that the potential pairs are: (a,b), (c,d).</p>
+
                 
             </div>
         </div>

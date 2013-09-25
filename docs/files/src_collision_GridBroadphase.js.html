@@ -71,11 +71,15 @@
             
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
+                <li><a href="../classes/Nearphase.html">Nearphase</a></li>
+            
                 <li><a href="../classes/Particle.html">Particle</a></li>
             
                 <li><a href="../classes/Plane.html">Plane</a></li>
             
                 <li><a href="../classes/PointToPointConstraint.html">PointToPointConstraint</a></li>
+            
+                <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -130,12 +134,13 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
-var Circle = require(&#x27;../objects/Shape&#x27;).Circle,
-    Plane = require(&#x27;../objects/Shape&#x27;).Plane,
-    Particle = require(&#x27;../objects/Shape&#x27;).Particle,
-    bp = require(&#x27;../collision/Broadphase&#x27;),
-    Broadphase = bp.Broadphase,
-    vec2 = require(&#x27;../math/vec2&#x27;);
+var Circle = require(&#x27;../shapes/Circle&#x27;)
+,   Plane = require(&#x27;../shapes/Plane&#x27;)
+,   Particle = require(&#x27;../shapes/Particle&#x27;)
+,   Broadphase = require(&#x27;../collision/Broadphase&#x27;)
+,   vec2 = require(&#x27;../math/vec2&#x27;)
+
+module.exports = GridBroadphase;
 
 /**
  * Broadphase that uses axis-aligned bins.
@@ -149,7 +154,7 @@ var Circle = require(&#x27;../objects/Shape&#x27;).Circle,
  * @param {number} nx Number of bins along x axis
  * @param {number} ny Number of bins along y axis
  */
-exports.GridBroadphase = function(xmin,xmax,ymin,ymax,nx,ny){
+function GridBroadphase(xmin,xmax,ymin,ymax,nx,ny){
     Broadphase.apply(this);
 
     nx = nx || 10;
@@ -256,7 +261,7 @@ exports.GridBroadphase = function(xmin,xmax,ymin,ymax,nx,ny){
         return result;
     };
 };
-exports.GridBroadphase.prototype = new Broadphase();
+GridBroadphase.prototype = new Broadphase();
 
 
     </pre>

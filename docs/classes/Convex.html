@@ -71,11 +71,15 @@
             
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
+                <li><a href="../classes/Nearphase.html">Nearphase</a></li>
+            
                 <li><a href="../classes/Particle.html">Particle</a></li>
             
                 <li><a href="../classes/Plane.html">Plane</a></li>
             
                 <li><a href="../classes/PointToPointConstraint.html">PointToPointConstraint</a></li>
+            
+                <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -138,7 +142,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_objects_Shape.js.html#l85"><code>src&#x2F;objects&#x2F;Shape.js:85</code></a>
+            Defined in: <a href="../files/src_shapes_Convex.js.html#l7"><code>src&#x2F;shapes&#x2F;Convex.js:7</code></a>
         </div>
     
 
@@ -151,6 +155,7 @@
 
 <div class="box intro">
     <p>Convex shape class.</p>
+
 </div>
 
 
@@ -198,7 +203,7 @@
             
         
         
-        <a href="../files/src_objects_Shape.js.html#l85"><code>src&#x2F;objects&#x2F;Shape.js:85</code></a>
+        <a href="../files/src_shapes_Convex.js.html#l7"><code>src&#x2F;shapes&#x2F;Convex.js:7</code></a>
         
         </p>
 
@@ -228,6 +233,7 @@
 
                     <div class="param-description">
                         <p>An array of Float32Array vertices that span this shape. Vertices are given in counter-clockwise (CCW) direction.</p>
+
                     </div>
 
                     
@@ -250,6 +256,8 @@
         <li class="api-class-tab index"><a href="#index">Index</a></li>
 
         
+            <li class="api-class-tab methods"><a href="#methods">Methods</a></li>
+        
         
             <li class="api-class-tab properties"><a href="#properties">Properties</a></li>
         
@@ -262,12 +270,41 @@
             <h2 class="off-left">Item Index</h2>
 
             
+                <div class="index-section methods">
+                    <h3>Methods</h3>
+
+                    <ul class="index-list methods extends">
+                        
+                            <li class="index-item method">
+                                <a href="#method_conputeMomentOfInertia">conputeMomentOfInertia</a>
+
+                                
+                                
+                            </li>
+                        
+                    </ul>
+                </div>
+            
 
             
                 <div class="index-section properties">
                     <h3>Properties</h3>
 
                     <ul class="index-list properties extends">
+                        
+                            <li class="index-item property">
+                                <a href="#property_centerOfMass">centerOfMass</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_triangles">triangles</a>
+
+                                
+                                
+                            </li>
                         
                             <li class="index-item property">
                                 <a href="#property_vertices">vertices</a>
@@ -286,10 +323,210 @@
         </div>
 
         
+            <div id="methods" class="api-class-tabpanel">
+                <h2 class="off-left">Methods</h2>
+
+                
+                    <div id="method_conputeMomentOfInertia" class="method item">
+    <h3 class="name"><code>conputeMomentOfInertia</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>mass</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Number</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_shapes_Convex.js.html#l116"><code>src&#x2F;shapes&#x2F;Convex.js:116</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Compute the mass moment of inertia of the Convex.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">mass</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Number</span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+            </div>
+        
 
         
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
+
+                
+                    <div id="property_centerOfMass" class="property item">
+    <h3 class="name"><code>centerOfMass</code></h3>
+    <span class="type">Float32Array</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_shapes_Convex.js.html#l24"><code>src&#x2F;shapes&#x2F;Convex.js:24</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The center of mass of the Convex</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_triangles" class="property item">
+    <h3 class="name"><code>triangles</code></h3>
+    <span class="type">Array</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_shapes_Convex.js.html#l31"><code>src&#x2F;shapes&#x2F;Convex.js:31</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Triangulated version of this convex. The structure is Array of 3-Arrays, and each subarray contains 3 integers, referencing the vertices.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
 
                 
                     <div id="property_vertices" class="property item">
@@ -315,7 +552,7 @@
             
         
         
-        <a href="../files/src_objects_Shape.js.html#l95"><code>src&#x2F;objects&#x2F;Shape.js:95</code></a>
+        <a href="../files/src_shapes_Convex.js.html#l17"><code>src&#x2F;shapes&#x2F;Convex.js:17</code></a>
         
         </p>
 
@@ -326,6 +563,7 @@
 
     <div class="description">
         <p>Vertices defined in the local frame.</p>
+
     </div>
 
     

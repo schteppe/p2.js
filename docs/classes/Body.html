@@ -71,11 +71,15 @@
             
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
+                <li><a href="../classes/Nearphase.html">Nearphase</a></li>
+            
                 <li><a href="../classes/Particle.html">Particle</a></li>
             
                 <li><a href="../classes/Plane.html">Plane</a></li>
             
                 <li><a href="../classes/PointToPointConstraint.html">PointToPointConstraint</a></li>
+            
+                <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -147,6 +151,7 @@
 
 <div class="box intro">
     <p>A physics body.</p>
+
 </div>
 
 
@@ -238,6 +243,7 @@
 
                                 <div class="param-description">
                                     <p>Used for collision detection. If absent the body will not collide.</p>
+
                                 </div>
 
                                 
@@ -250,7 +256,8 @@
                                 
 
                                 <div class="param-description">
-                                    <p>A number >= 0. If zero, the body becomes static. Defaults to static [0].</p>
+                                    <p>A number &gt;= 0. If zero, the body becomes static. Defaults to static [0].</p>
+
                                 </div>
 
                                 
@@ -631,6 +638,7 @@
 
     <div class="description">
         <p>Add a shape to the body</p>
+
     </div>
 
     
@@ -754,6 +762,7 @@
 
     <div class="description">
         <p>Apply force to a world point. This could for example be a point on the RigidBody surface. Applying force this way will add to Body.force and Body.angularForce.</p>
+
     </div>
 
     
@@ -772,6 +781,7 @@
 
                     <div class="param-description">
                         <p>The force to add.</p>
+
                     </div>
 
                     
@@ -787,6 +797,7 @@
 
                     <div class="param-description">
                         <p>A world point to apply the force on.</p>
+
                     </div>
 
                     
@@ -846,6 +857,7 @@
 
     <div class="description">
         <p>Updates .inertia, .invMass, .invInertia for this Body. Should be called when changing the structure of the Body.</p>
+
     </div>
 
     
@@ -898,6 +910,7 @@
 
     <div class="description">
         <p>The angle of the body</p>
+
     </div>
 
     
@@ -942,6 +955,7 @@
 
     <div class="description">
         <p>The angular force acting on the body</p>
+
     </div>
 
     
@@ -986,6 +1000,7 @@
 
     <div class="description">
         <p>The angular velocity of the body</p>
+
     </div>
 
     
@@ -1032,6 +1047,7 @@
 
     <div class="description">
         <p>Dynamic body.</p>
+
     </div>
 
     
@@ -1076,6 +1092,7 @@
 
     <div class="description">
         <p>The force acting on the body</p>
+
     </div>
 
     
@@ -1120,6 +1137,7 @@
 
     <div class="description">
         <p>The body identifyer</p>
+
     </div>
 
     
@@ -1164,6 +1182,7 @@
 
     <div class="description">
         <p>The inertia of the body around the Z axis.</p>
+
     </div>
 
     
@@ -1208,6 +1227,7 @@
 
     <div class="description">
         <p>The inverse inertia of the body.</p>
+
     </div>
 
     
@@ -1252,6 +1272,7 @@
 
     <div class="description">
         <p>The inverse mass of the body.</p>
+
     </div>
 
     
@@ -1298,6 +1319,7 @@
 
     <div class="description">
         <p>Kinematic body.</p>
+
     </div>
 
     
@@ -1342,6 +1364,7 @@
 
     <div class="description">
         <p>The mass of the body.</p>
+
     </div>
 
     
@@ -1386,6 +1409,7 @@
 
     <div class="description">
         <p>The type of motion this body has. Should be one of: Body.STATIC, Body.DYNAMIC and Body.KINEMATIC.</p>
+
     </div>
 
     
@@ -1430,6 +1454,7 @@
 
     <div class="description">
         <p>The position of the body</p>
+
     </div>
 
     
@@ -1474,6 +1499,7 @@
 
     <div class="description">
         <p>The body-local shape angle transformations.</p>
+
     </div>
 
     
@@ -1518,6 +1544,7 @@
 
     <div class="description">
         <p>The local shape offsets, relative to the body center of mass.</p>
+
     </div>
 
     
@@ -1562,6 +1589,7 @@
 
     <div class="description">
         <p>The shapes of the body.</p>
+
     </div>
 
     
@@ -1608,6 +1636,7 @@
 
     <div class="description">
         <p>Static body.</p>
+
     </div>
 
     
@@ -1652,6 +1681,7 @@
 
     <div class="description">
         <p>The velocity of the body</p>
+
     </div>
 
     
@@ -1696,6 +1726,7 @@
 
     <div class="description">
         <p>Constraint velocity that was added to the body during the last step.</p>
+
     </div>
 
     
@@ -1740,6 +1771,7 @@
 
     <div class="description">
         <p>Angular constraint velocity that was added to the body during the last step.</p>
+
     </div>
 
     
