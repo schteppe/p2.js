@@ -66,8 +66,8 @@ setInterval(function(){
 | :-------: |:------:|:-----:|:---------:|:------:|:--------:|:------:|
 | Circle    | Yes    | Yes   | Yes       | Yes    | Yes      | Yes    |
 | Plane     | -      | -     | Yes       | Yes    | Yes      | Yes    |
-| Rectangle | -      | -     | (todo)    | (todo) | (todo)   | (todo) |
-| Convex    | -      | -     | -         | (todo) | (todo)   | (todo) |
+| Rectangle | -      | -     | Yes       | Yes    | (todo)   | (todo) |
+| Convex    | -      | -     | -         | Yes    | (todo)   | (todo) |
 | Particle  | -      | -     | -         | -      | -        | (todo) |
 | Line      | -      | -     | -         | -      | -        | (todo) |
 
@@ -90,6 +90,9 @@ setInterval(function(){
 * Added method ```Convex.updateTriangles```
 * Added method ```Convex.updateCenterOfMass```
 * Fixed ```Convex.computeMomentOfInertia```, now it should be correct.
+* Updated the Node.js API so that each class is required using the pattern ```var ClassName = require('./ClassName')``` instead of ```var ClassName = require('./ClassName').ClassName```
+* Added ```Nearphase``` class
+* Removed ```World.contacts``` and ```.frictionEquations``` in favor of ```World.nearphase.contactEquations``` and ```World.nearphase.frictionEquations```
 
 ##### 0.1
 
