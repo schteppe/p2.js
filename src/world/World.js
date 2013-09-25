@@ -283,6 +283,7 @@ World.prototype.step = function(dt){
                     else if(sj instanceof Rectangle)np.convexPlane   (bj,sj,xj_world,aj_world, bi,si,xi_world,ai_world);
                     else if(sj instanceof Convex)   np.convexPlane   (bj,sj,xj_world,aj_world, bi,si,xi_world,ai_world);
                     else if(sj instanceof Line)     np.planeLine     (bi,si,xi_world,ai_world, bj,sj,xj_world,aj_world);
+                    else if(sj instanceof Capsule)  np.capsulePlane  (bj,sj,xj_world,aj_world, bi,si,xi_world,ai_world);
 
                 } else if(si instanceof Rectangle){
                          if(sj instanceof Plane)    np.convexPlane    (bi,si,xi_world,ai_world, bj,sj,xj_world,aj_world);
@@ -299,6 +300,9 @@ World.prototype.step = function(dt){
                 } else if(si instanceof Line){
                          if(sj instanceof Circle)   np.circleLine     (bj,sj,xj_world,aj_world, bi,si,xi_world,ai_world);
                     else if(sj instanceof Plane)    np.planeLine      (bj,sj,xj_world,aj_world, bi,si,xi_world,ai_world);
+
+                } else if(si instanceof Capsule){
+                         if(sj instanceof Plane)    np.capsulePlane   (bi,si,xi_world,ai_world, bj,sj,xj_world,aj_world);
 
                 }
             }

@@ -119,6 +119,9 @@ NaiveBroadphase.prototype.getCollisionPairs = function(world){
                         case Shape.LINE:
                             collide = Broadphase.planeLine(si1,xi1_world,ai1_world, sj1,xj1_world,aj1_world);
                             break;
+                        case Shape.CAPSULE:
+                            collide = Broadphase.capsulePlane(sj1,xj1_world,aj1_world, si1,xi1_world,ai1_world);
+                            break;
                         }
                         break;
 

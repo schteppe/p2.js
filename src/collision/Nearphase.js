@@ -1,6 +1,7 @@
 var vec2 = require('../math/vec2')
 ,   ContactEquation = require('../constraints/ContactEquation')
 ,   FrictionEquation = require('../constraints/FrictionEquation')
+,   Circle = require('../shapes/Circle')
 
 module.exports = Nearphase;
 
@@ -772,6 +773,29 @@ Nearphase.prototype.circleParticle = function(   bi,si,xi,ai, bj,sj,xj,aj ){
     }
 
     return true;
+};
+
+var capsulePlane_tmpCircle = new Circle(1),
+    capsulePlane_tmp1 = vec2.create(),
+    capsulePlane_tmp2 = vec2.create();
+Nearphase.prototype.capsulePlane = function( bi,si,xi,ai, bj,sj,xj,aj ){
+    var end1 = capsulePlane_tmp1,
+        end2 = capsulePlane_tmp2,
+        circle = capsulePlane_tmpCircle;
+
+    // Create new vectors
+    vec2.set(end1, -si.length/2, 0);
+    vec2.set(end2,  si.length/2, 0);
+    vec2.rotate(end1,end1,ai);
+    vec2.rotate(end2,end2,ai);
+    vec2.add(end1,end1,xi);
+    vec2.add(end2,end2,xi);
+
+    circle.radius = si.radius;
+
+    // Do nearphase as two circles
+    this.circlePlane(bi,circle,end1,0, bj,sj,xj,aj);
+    this.circlePlane(bi,circle,end2,0, bj,sj,xj,aj);
 };
 
 /**

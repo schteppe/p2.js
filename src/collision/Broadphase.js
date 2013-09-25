@@ -42,6 +42,20 @@ Broadphase.circleConvex = function(circle, circleOffset, convex, convexOffset){
 };
 
 /**
+ * Capsule/plane intersection test
+ * @method capsulePlane
+ * @static
+ * @param  {Capsule}    capsule
+ * @param  {Array}      circleOffset
+ * @param  {Plane}      plane
+ * @param  {Array}      convexOffset
+ * @return {Boolean}                    Whether they intersect
+ */
+Broadphase.capsulePlane = function(capsule, capsuleOffset, capsuleAngle, plane, planeOffset, planeAngle){
+    return true; // For now
+};
+
+/**
  * circleLine
  * @method circleLine
  * @static
