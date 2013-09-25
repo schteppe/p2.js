@@ -2,6 +2,7 @@
 module.exports = {
     Body :                  require('./objects/Body'),
     Broadphase :            require('./collision/Broadphase'),
+    Capsule :               require('./shapes/Capsule'),
     Circle :                require('./shapes/Circle'),
     Constraint :            require('./constraints/Constraint'),
     ContactEquation :       require('./constraints/ContactEquation'),

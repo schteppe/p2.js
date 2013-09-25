@@ -248,8 +248,8 @@ Broadphase.rectangleParticle = function(rectangleShape,
                                         particleShape,
                                         particleOffset ){
     vec2.sub(dist,particleOffset,rectangleOffset);
-    var w = rectangle.width,
-        h = rectangle.height;
+    var w = rectangleShape.width,
+        h = rectangleShape.height;
     var D = Math.sqrt(w*w + h*h) / 2;
     var result = vec2.sqrLen(dist) < D*D;
     return result;

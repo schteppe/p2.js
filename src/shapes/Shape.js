@@ -15,6 +15,7 @@ Shape.PLANE =       4;
 Shape.CONVEX =      8;
 Shape.LINE =        16;
 Shape.RECTANGLE =   32;
+Shape.CAPSULE =     64;
 
 /**
  * Should return the moment of inertia around the Z axis of the body given the total mass. See <a href="http://en.wikipedia.org/wiki/List_of_moments_of_inertia">Wikipedia's list of moments of inertia</a>.
