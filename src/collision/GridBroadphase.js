@@ -24,12 +24,33 @@ function GridBroadphase(xmin,xmax,ymin,ymax,nx,ny){
 
     nx = nx || 10;
     ny = ny || 10;
-    var binsizeX = (xmax-xmin) / nx;
-    var binsizeY = (ymax-ymin) / ny;
+
+    this.binsizeX = (xmax-xmin) / nx;
+    this.binsizeY = (ymax-ymin) / ny;
+    this.nx = nx;
+    this.ny = ny;
+    this.xmin = xmin;
+    this.ymin = ymin;
+    this.xmax = xmax;
+    this.ymax = ymax;
 };
 GridBroadphase.prototype = new Broadphase();
 
-GridBroadphase.getBinIndex = function(x,y,xmin,ymin,xmax,ymax,nx,ny){
+/**
+ * Get a bin index given a world coordinate
+ * @method getBinIndex
+ * @param  {Number} x
+ * @param  {Number} y
+ * @return {Number} Integer index
+ */
+GridBroadphase.prototype.getBinIndex = function(x,y){
+    var nx = this.nx,
+        ny = this.ny,
+        xmin = this.xmin,
+        ymin = this.ymin,
+        xmax = this.xmax,
+        ymax = this.ymax;
+
     var xi = Math.floor(nx * (x - xmin) / (xmax-xmin));
     var yi = Math.floor(ny * (y - ymin) / (ymax-ymin));
     return xi*ny + yi;
@@ -42,9 +63,11 @@ GridBroadphase.getBinIndex = function(x,y,xmin,ymin,xmax,ymax,nx,ny){
  * @return {Array}
  */
 GridBroadphase.prototype.getCollisionPairs = function(world){
-    var result = [];
-    var collidingBodies = world.bodies;
-    var Ncolliding = Ncolliding=collidingBodies.length;
+    var result = [],
+        collidingBodies = world.bodies,
+        Ncolliding = Ncolliding=collidingBodies.length,
+        binsizeX = this.binsizeX,
+        binsizeY = this.binsizeY;
 
     var bins=[], Nbins=nx*ny;
     for(var i=0; i<Nbins; i++)
