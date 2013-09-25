@@ -176,7 +176,6 @@ PixiDemo.drawPlane = function(g, x0, x1, color, lineWidth, diagMargin, diagSize)
     }
 };
 
-
 PixiDemo.drawLine = function(g, len, color, lineWidth){
     lineWidth = lineWidth || 1;
     color = typeof(color)=="undefined" ? 0x000000 : color;
@@ -185,6 +184,21 @@ PixiDemo.drawLine = function(g, len, color, lineWidth){
     // Draw the actual plane
     g.moveTo(-len/2,0);
     g.lineTo( len/2,0);
+};
+
+PixiDemo.drawCapsule = function(g, x, y, angle, len, radius, color, lineWidth){
+    lineWidth = lineWidth || 1;
+    color = typeof(color)=="undefined" ? 0x000000 : color;
+    g.lineStyle(lineWidth, color, 1);
+
+    // Draw circles at ends
+    var c = Math.cos(angle);
+    var s = Math.sin(angle);
+    g.drawCircle(-len/2*c + x, -len/2*s + y, radius);
+    g.drawCircle( len/2*c + x,  len/2*s + y, radius);
+
+    // Draw lines in between
+    // (todo)
 };
 
 // Todo angle
@@ -298,6 +312,9 @@ PixiDemo.prototype.addRenderable = function(obj){
 
             } else if(child instanceof Rectangle){
                 PixiDemo.drawRectangle(sprite, offset[0]*ppu, offset[1]*ppu, angle, child.width*ppu, child.height*ppu, 0x000000, lw);
+
+            } else if(child instanceof Capsule){
+                PixiDemo.drawCapsule(sprite, offset[0]*ppu, offset[1]*ppu, angle, child.length*ppu, child.radius*ppu, 0x000000, lw);
 
             } else if(child instanceof Convex){
                 // Scale verts

@@ -6,6 +6,7 @@ var GSSolver = require('../solver/GSSolver')
 ,    Convex = require('../shapes/Convex')
 ,    Line = require('../shapes/Line')
 ,    Plane = require('../shapes/Plane')
+,    Capsule = require('../shapes/Capsule')
 ,    Particle = require('../shapes/Particle')
 ,    EventEmitter = require('../events/EventEmitter')
 ,    Body = require('../objects/Body')
@@ -497,6 +498,10 @@ World.prototype.toJSON = function(){
                     verts.push(v2a(s.vertices[k]));
                 jsonShape = {   type : "Convex",
                                 verts : verts };
+            } else if(s instanceof Capsule){
+                jsonShape = {   type : "Capsule",
+                                length : s.length,
+                                radius : s.radius };
             } else {
                 throw new Error("Shape type not supported yet!");
             }
@@ -567,6 +572,7 @@ World.prototype.fromJSON = function(json){
                         case "Line":        shape = new Line(js.length);                break;
                         case "Rectangle":   shape = new Rectangle(js.width,js.height);  break;
                         case "Convex":      shape = new Convex(js.verts);               break;
+                        case "Capsule":     shape = new Capsule(js.length, js.radius);  break;
                         default:
                             throw new Error("Shape type not supported: "+js.type);
                             break;
