@@ -94,6 +94,7 @@ setInterval(function(){
 * Updated the Node.js API so that each class is required using the pattern ```var ClassName = require('./ClassName')``` instead of ```var ClassName = require('./ClassName').ClassName```
 * Added ```Nearphase``` class
 * Removed ```World.contacts``` and ```.frictionEquations``` in favor of ```World.nearphase.contactEquations``` and ```World.nearphase.frictionEquations```
+* Added ```Capsule``` class
 
 ##### 0.1
 
