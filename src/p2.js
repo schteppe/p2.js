@@ -26,4 +26,5 @@ module.exports = {
     Spring :                require('./objects/Spring'),
     World :                 require('./world/World'),
     vec2 :                  require('./math/vec2'),
+    version :               require('../package.json').version,
 }
