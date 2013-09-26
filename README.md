@@ -73,7 +73,7 @@ setInterval(function(){
 | Capsule   | -      | -     | -         | -      | -        | -      | (todo)  |
 
 ### Change log
-##### Current
+##### Current development version (0.2)
 * Removed ```World.collidingBodies``` since ```World.bodies``` can be used equivalently.
 * Added property ```DistanceConstraint.distance```
 * Added contact response between a lot of Shape types. Check table above.
@@ -93,6 +93,9 @@ setInterval(function(){
 * Added ```Nearphase``` class
 * Removed ```World.contacts``` and ```.frictionEquations``` in favor of ```World.nearphase.contactEquations``` and ```World.nearphase.frictionEquations```
 * Added ```Capsule``` class
+* Added ```Spring``` properties ```.localAnchorA```, ```.localAnchorB```.
+* Added ```Spring``` methods ```.getWorldAnchorA```, ```.setWorldAnchorA``` and the corresponding for B.
+* Added ```p2.version``` for browser.
 
 ##### 0.1
 
