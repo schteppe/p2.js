@@ -26,7 +26,7 @@ function Spring(bodyA,bodyB,options){
      * @property restLength
      * @type {number}
      */
-    this.restLength = options.restLength || 1;
+    this.restLength = typeof(options.restLength)=="number" ? options.restLength : 1;
 
     /**
      * Stiffness of the spring.
@@ -76,32 +76,40 @@ function Spring(bodyA,bodyB,options){
     if(options.worldAnchorB) this.setWorldAnchorB(options.worldAnchorB);
 };
 
+/**
+ * Set the anchor point on body A, using world coordinates.
+ * @method setWorldAnchorA
+ * @param {Array} worldAnchorA
+ */
 Spring.prototype.setWorldAnchorA = function(worldAnchorA){
-    Spring._setWorldAnchorBase(this.localAnchorA, worldAnchorA, this.bodyA);
+    this.bodyA.toLocalFrame(this.localAnchorA, worldAnchorA);
 };
 
+/**
+ * Set the anchor point on body B, using world coordinates.
+ * @method setWorldAnchorB
+ * @param {Array} worldAnchorB
+ */
 Spring.prototype.setWorldAnchorB = function(worldAnchorB){
-    Spring._setWorldAnchorBase(this.localAnchorB, worldAnchorB, this.bodyB);
+    this.bodyB.toLocalFrame(this.localAnchorB, worldAnchorB);
 };
 
+/**
+ * Get the anchor point on body A, in world coordinates.
+ * @method getWorldAnchorA
+ * @param {Array} result The vector to store the result in.
+ */
 Spring.prototype.getWorldAnchorA = function(result){
-    Spring._getWorldAnchorBase(this.localAnchorA, this.bodyA, result);
+    this.bodyA.toWorldFrame(result, this.localAnchorA);
 };
 
+/**
+ * Get the anchor point on body B, in world coordinates.
+ * @method getWorldAnchorB
+ * @param {Array} result The vector to store the result in.
+ */
 Spring.prototype.getWorldAnchorB = function(result){
-    Spring._getWorldAnchorBase(this.localAnchorB, this.bodyB, result);
-};
-
-Spring._setWorldAnchorBase = function(targetLocalAnchor, worldAnchor, body){
-    vec2.copy(targetLocalAnchor, worldAnchor);
-    vec2.sub(targetLocalAnchor, targetLocalAnchor, body.position);
-    vec2.rotate(targetLocalAnchor, targetLocalAnchor, -body.angle);
-};
-
-Spring._getWorldAnchorBase = function(localAnchor, body, result){
-    vec2.copy(result, localAnchor);
-    vec2.rotate(result, result, body.angle);
-    vec2.add(result, result, body.position);
+    this.bodyB.toWorldFrame(result, this.localAnchorB);
 };
 
 var applyForce_r =              vec2.create(),
@@ -109,7 +117,10 @@ var applyForce_r =              vec2.create(),
     applyForce_u =              vec2.create(),
     applyForce_f =              vec2.create(),
     applyForce_worldAnchorA =   vec2.create(),
-    applyForce_worldAnchorB =   vec2.create();
+    applyForce_worldAnchorB =   vec2.create(),
+    applyForce_ri =             vec2.create(),
+    applyForce_rj =             vec2.create(),
+    applyForce_tmp =            vec2.create();
 
 /**
  * Apply the spring force to the connected bodies.
@@ -124,27 +135,47 @@ Spring.prototype.applyForce = function(){
         r = applyForce_r,
         r_unit = applyForce_r_unit,
         u = applyForce_u,
-        f = applyForce_f;
+        f = applyForce_f,
+        tmp = applyForce_tmp;
 
-/*
     var worldAnchorA = applyForce_worldAnchorA,
-        worldAnchorB = applyForce_worldAnchorB;
+        worldAnchorB = applyForce_worldAnchorB,
+        ri = applyForce_ri,
+        rj = applyForce_rj;
 
-    this.getWorldAnchorA();
-    */
+    // Get world anchors
+    this.getWorldAnchorA(worldAnchorA);
+    this.getWorldAnchorB(worldAnchorB);
+
+    // Get offset points
+    vec2.sub(ri, worldAnchorA, bodyA.position);
+    vec2.sub(rj, worldAnchorB, bodyB.position);
 
     // Compute distance vector between world anchor points
-    vec2.sub(r, bodyA.position, bodyB.position);
+    vec2.sub(r, worldAnchorB, worldAnchorA);
     var rlen = vec2.len(r);
     vec2.normalize(r_unit,r);
 
-    // Compute relative velocity
-    vec2.sub(u, bodyA.velocity, bodyB.velocity);
+    //console.log(rlen)
+    //console.log("A",vec2.str(worldAnchorA),"B",vec2.str(worldAnchorB))
 
-    // F = - k * ( x - L ) - D * ( v )
-    vec2.scale(f, r_unit, k*(rlen-l) + d*vec2.dot(u,r_unit));
+    // Compute relative velocity of the anchor points, u
+    vec2.sub(u, bodyB.velocity, bodyA.velocity);
+    vec2.crossZV(tmp, bodyB.angularVelocity, rj);
+    vec2.add(u, u, tmp);
+    vec2.crossZV(tmp, bodyA.angularVelocity, ri);
+    vec2.sub(u, u, tmp);
 
-    // Apply forces to bodies
+    // F = - k * ( x - L ) - D * ( u )
+    vec2.scale(f, r_unit, -k*(rlen-l) - d*vec2.dot(u,r_unit));
+
+    // Add forces to bodies
     vec2.sub( bodyA.force, bodyA.force, f);
     vec2.add( bodyB.force, bodyB.force, f);
+
+    // Angular force
+    var ri_x_f = vec2.crossLength(ri, f);
+    var rj_x_f = vec2.crossLength(rj, f);
+    bodyA.angularForce -= ri_x_f;
+    bodyB.angularForce -= rj_x_f;
 };

@@ -115,6 +115,22 @@
         circle.addShape(circleShape);
         world.addBody(circle);
 
+        // Create capsule
+        var capsuleShape = new p2.Capsule(1,0.25);
+        var capsuleBody = new p2.Body({
+            mass: 1,
+            position : [4,1]
+        });
+        capsuleBody.addShape(capsuleShape);
+        world.addBody(capsuleBody);
+        var s = new p2.Spring(capsuleBody, plane, {
+            restLength : 1,
+            stiffness : 10,
+            localAnchorA : [-capsuleShape.length/2,0],
+            worldAnchorB : [4-capsuleShape.length/2,2],
+        });
+        world.addSpring(s);
+
         var demo = new PixiDemo(world,{
             lineWidth : 1
         });

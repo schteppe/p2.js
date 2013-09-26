@@ -211,6 +211,26 @@ Body.prototype.applyForce = function(force,worldPoint){
 };
 
 /**
+ * Transform a world point to local body frame.
+ * @method toLocalFrame
+ * @param  {Array} out          The vector to store the result in
+ * @param  {Array} worldPoint   The input world vector
+ */
+Body.prototype.toLocalFrame = function(out, worldPoint){
+    vec2.toLocalFrame(out, worldPoint, this.position, this.angle);
+};
+
+/**
+ * Transform a local point to world frame.
+ * @method toWorldFrame
+ * @param  {Array} out          The vector to store the result in
+ * @param  {Array} localPoint   The input local vector
+ */
+Body.prototype.toWorldFrame = function(out, localPoint){
+    vec2.toGlobalFrame(out, localPoint, this.position, this.angle);
+};
+
+/**
  * Dynamic body.
  * @property DYNAMIC
  * @type {Number}
