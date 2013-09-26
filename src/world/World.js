@@ -427,7 +427,7 @@ World.prototype.removeBody = function(body){
  */
 World.prototype.toJSON = function(){
     var json = {
-        p2 : pkg.version,
+        p2 : pkg.version.split(".").slice(0,2).join("."), // "X.Y"
         bodies : [],
         springs : [],
         solver : {},
@@ -445,6 +445,8 @@ World.prototype.toJSON = function(){
             stiffness : s.stiffness,
             damping : s.damping,
             restLength : s.restLength,
+            localAnchorA : v2a(s.localAnchorA),
+            localAnchorB : v2a(s.localAnchorB),
         });
     }
 
@@ -547,7 +549,7 @@ World.prototype.fromJSON = function(json){
 
     switch(json.p2){
 
-        case pkg.version:
+        case "0.1":
 
             // Set gravity
             vec2.copy(this.gravity, json.gravity);
@@ -594,6 +596,8 @@ World.prototype.fromJSON = function(json){
                     stiffness : js.stiffness,
                     damping : js.damping,
                     restLength : js.restLength,
+                    localAnchorA : js.localAnchorA,
+                    localAnchorB : js.localAnchorB,
                 });
                 this.addSpring(s);
             }
