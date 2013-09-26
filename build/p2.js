@@ -27,6 +27,7 @@ return (function(e,t,n){function i(n,s){if(!t[n]){if(!e[n]){var o=typeof require
 module.exports = {
     Body :                  require('./objects/Body'),
     Broadphase :            require('./collision/Broadphase'),
+    Capsule :               require('./shapes/Capsule'),
     Circle :                require('./shapes/Circle'),
     Constraint :            require('./constraints/Constraint'),
     ContactEquation :       require('./constraints/ContactEquation'),
@@ -50,9 +51,54 @@ module.exports = {
     Spring :                require('./objects/Spring'),
     World :                 require('./world/World'),
     vec2 :                  require('./math/vec2'),
+    version :               require('../package.json').version,
 }
 
-},{"./objects/Body":2,"./collision/Broadphase":3,"./shapes/Circle":4,"./constraints/Constraint":5,"./constraints/ContactEquation":6,"./shapes/Convex":7,"./constraints/DistanceConstraint":8,"./constraints/Equation":9,"./events/EventEmitter":10,"./constraints/FrictionEquation":11,"./collision/GridBroadphase":12,"./solver/GSSolver":13,"./solver/IslandSolver":14,"./shapes/Line":15,"./collision/NaiveBroadphase":16,"./shapes/Particle":17,"./shapes/Plane":18,"./constraints/PointToPointConstraint":19,"./shapes/Rectangle":20,"./shapes/Shape":21,"./solver/Solver":22,"./objects/Spring":23,"./world/World":24,"./math/vec2":25}],5:[function(require,module,exports){
+},{"../package.json":2,"./objects/Body":3,"./collision/Broadphase":4,"./shapes/Capsule":5,"./shapes/Circle":6,"./constraints/Constraint":7,"./constraints/ContactEquation":8,"./shapes/Convex":9,"./constraints/DistanceConstraint":10,"./constraints/Equation":11,"./events/EventEmitter":12,"./constraints/FrictionEquation":13,"./collision/GridBroadphase":14,"./solver/GSSolver":15,"./solver/IslandSolver":16,"./shapes/Line":17,"./collision/NaiveBroadphase":18,"./shapes/Particle":19,"./shapes/Plane":20,"./constraints/PointToPointConstraint":21,"./shapes/Rectangle":22,"./shapes/Shape":23,"./solver/Solver":24,"./objects/Spring":25,"./world/World":26,"./math/vec2":27}],2:[function(require,module,exports){
+module.exports={
+    "name": "p2",
+    "version": "0.1.0",
+    "description": "A JavaScript 2D physics engine.",
+    "author": "Stefan Hedman <schteppe@gmail.com> (http://steffe.se)",
+    "keywords": [
+        "p2.js",
+        "p2",
+        "physics",
+        "engine",
+        "2d"
+    ],
+    "main": "./build/p2.js",
+    "engines": {
+        "node": "*"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/schteppe/p2.js.git"
+    },
+    "bugs": {
+        "url": "https://github.com/schteppe/p2.js/issues"
+    },
+    "licenses" : [
+        {
+            "type" : "MIT"
+        }
+    ],
+    "devDependencies" : {
+        "jshint"    : "latest",
+        "nodeunit"  : "latest",
+        "grunt": "~0.4.0",
+        "grunt-contrib-jshint": "~0.1.1",
+        "grunt-contrib-nodeunit": "~0.1.2",
+        "grunt-contrib-concat": "~0.1.3",
+        "grunt-contrib-uglify": "*",
+        "grunt-browserify":"*",
+        "gl-matrix":"2.0.0"
+    },
+    "dependencies" : {
+    }
+}
+
+},{}],7:[function(require,module,exports){
 module.exports = Constraint;
 
 /**
@@ -96,7 +142,7 @@ function Constraint(bodyA,bodyB){
     throw new Error("method update() not implmemented in this Constraint subclass!");
 };*/
 
-},{}],9:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 module.exports = Equation;
 
 /**
@@ -164,7 +210,7 @@ Equation.prototype.setSpookParams = function(k,d){
     this.eps = 4.0 / (h * h * k * (1 + 4 * d));
 };
 
-},{}],10:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 var EventEmitter = function () {}
 
 module.exports = EventEmitter;
@@ -212,7 +258,7 @@ EventEmitter.prototype = {
     }
 };
 
-},{}],21:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 module.exports = Shape;
 
 /**
@@ -230,6 +276,7 @@ Shape.PLANE =       4;
 Shape.CONVEX =      8;
 Shape.LINE =        16;
 Shape.RECTANGLE =   32;
+Shape.CAPSULE =     64;
 
 /**
  * Should return the moment of inertia around the Z axis of the body given the total mass. See <a href="http://en.wikipedia.org/wiki/List_of_moments_of_inertia">Wikipedia's list of moments of inertia</a>.
@@ -241,7 +288,7 @@ Shape.prototype.computeMomentOfInertia = function(mass){
     throw new Error("Shape.computeMomentOfInertia is not implemented in this Shape...");
 };
 
-},{}],22:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 module.exports = Solver;
 
 /**
@@ -296,7 +343,7 @@ Solver.prototype.removeAllEquations = function(){
 };
 
 
-},{}],2:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 var vec2 = require('../math/vec2');
 
 module.exports = Body;
@@ -510,6 +557,26 @@ Body.prototype.applyForce = function(force,worldPoint){
 };
 
 /**
+ * Transform a world point to local body frame.
+ * @method toLocalFrame
+ * @param  {Array} out          The vector to store the result in
+ * @param  {Array} worldPoint   The input world vector
+ */
+Body.prototype.toLocalFrame = function(out, worldPoint){
+    vec2.toLocalFrame(out, worldPoint, this.position, this.angle);
+};
+
+/**
+ * Transform a local point to world frame.
+ * @method toWorldFrame
+ * @param  {Array} out          The vector to store the result in
+ * @param  {Array} localPoint   The input local vector
+ */
+Body.prototype.toWorldFrame = function(out, localPoint){
+    vec2.toGlobalFrame(out, localPoint, this.position, this.angle);
+};
+
+/**
  * Dynamic body.
  * @property DYNAMIC
  * @type {Number}
@@ -533,7 +600,7 @@ Body.STATIC = 2;
  */
 Body.KINEMATIC = 4;
 
-},{"../math/vec2":25}],3:[function(require,module,exports){
+},{"../math/vec2":27}],4:[function(require,module,exports){
 var vec2 = require('../math/vec2')
 ,   Nearphase = require('./Nearphase')
 
@@ -565,7 +632,7 @@ var yAxis = vec2.fromValues(0,1);
 
 /**
  * Check whether a circle and a convex intersects
- * @method checkCircleConvex
+ * @method circleConvex
  * @static
  * @param  {Circle}     circle
  * @param  {Array}      circleOffset
@@ -573,13 +640,27 @@ var yAxis = vec2.fromValues(0,1);
  * @param  {Array}      convexOffset
  * @return {Boolean}                    Whether they intersect
  */
-Broadphase.checkCircleConvex = function(circle, circleOffset, convex, convexOffset){
+Broadphase.circleConvex = function(circle, circleOffset, convex, convexOffset){
     return true; // For now
 };
 
 /**
- * checkCircleLine
- * @method checkCircleLine
+ * Capsule/plane intersection test
+ * @method capsulePlane
+ * @static
+ * @param  {Capsule}    capsule
+ * @param  {Array}      circleOffset
+ * @param  {Plane}      plane
+ * @param  {Array}      convexOffset
+ * @return {Boolean}                    Whether they intersect
+ */
+Broadphase.capsulePlane = function(capsule, capsuleOffset, capsuleAngle, plane, planeOffset, planeAngle){
+    return true; // For now
+};
+
+/**
+ * circleLine
+ * @method circleLine
  * @static
  * @param  {Circle}     circle
  * @param  {Array}      circleOffset
@@ -588,7 +669,7 @@ Broadphase.checkCircleConvex = function(circle, circleOffset, convex, convexOffs
  * @param  {Number}     lineAngle
  * @return {Boolean}
  */
-Broadphase.checkCircleLine = function(circle, circleOffset, line, lineOffset, lineAngle){
+Broadphase.circleLine = function(circle, circleOffset, line, lineOffset, lineAngle){
     // bounding sphere check
     vec2.sub(dist, lineOffset, circleOffset);
     var R = circle.radius;
@@ -599,7 +680,7 @@ Broadphase.checkCircleLine = function(circle, circleOffset, line, lineOffset, li
 
 /**
  * Plane/line intersection test
- * @method checkPlaneLine
+ * @method planeLine
  * @static
  * @param  {Plane}  plane
  * @param  {Array}  planeOffset
@@ -609,7 +690,7 @@ Broadphase.checkCircleLine = function(circle, circleOffset, line, lineOffset, li
  * @param  {Number} lineAngle
  * @return {Boolean}
  */
-Broadphase.checkPlaneLine = function(plane, planeOffset, planeAngle, line, lineOffset, lineAngle){
+Broadphase.planeLine = function(plane, planeOffset, planeAngle, line, lineOffset, lineAngle){
     // bounding sphere check
     vec2.sub(dist, lineOffset, planeOffset);
     vec2.rotate(worldNormal, yAxis, planeAngle);
@@ -619,7 +700,7 @@ Broadphase.checkPlaneLine = function(plane, planeOffset, planeAngle, line, lineO
 
 /**
  * Rectangle/rectangle intersection test
- * @method checkRectangleRectangle
+ * @method rectangleRectangle
  * @static
  * @param  {Rectangle} r1
  * @param  {Array} offset1
@@ -629,7 +710,7 @@ Broadphase.checkPlaneLine = function(plane, planeOffset, planeAngle, line, lineO
  * @param  {Number} angle2
  * @return {Boolean}
  */
-Broadphase.checkRectangleRectangle = function(r1, offset1, angle1, r2, offset2, angle2){
+Broadphase.rectangleRectangle = function(r1, offset1, angle1, r2, offset2, angle2){
     vec2.sub(dist,offset2,offset1);
     var w1 = r1.width,
         h1 = r1.height,
@@ -643,7 +724,7 @@ Broadphase.checkRectangleRectangle = function(r1, offset1, angle1, r2, offset2, 
 
 /**
  * Convex/convex intersection test
- * @method checkConvexConvex
+ * @method convexConvex
  * @static
  * @param  {Convex} convex
  * @param  {Array}  convexOffset
@@ -651,13 +732,13 @@ Broadphase.checkRectangleRectangle = function(r1, offset1, angle1, r2, offset2, 
  * @param  {Array}  convexOffset
  * @return {Boolean}
  */
-Broadphase.checkConvexConvex = function(convex, convexOffset, convex, convexOffset){
+Broadphase.convexConvex = function(convex, convexOffset, convex, convexOffset){
     return true; // For now
 };
 
 /**
  * Circle/rectangle intersection test
- * @method checkCircleRectangle
+ * @method circleRectangle
  * @static
  * @param  {Circle} circle
  * @param  {Array} circleOffset
@@ -665,7 +746,7 @@ Broadphase.checkConvexConvex = function(convex, convexOffset, convex, convexOffs
  * @param  {Array} rectangleOffset
  * @return {Boolean}
  */
-Broadphase.checkCircleRectangle = function(circle, circleOffset, rectangle, rectangleOffset){
+Broadphase.circleRectangle = function(circle, circleOffset, rectangle, rectangleOffset){
     vec2.sub(dist,circleOffset,rectangleOffset);
     var R = circle.radius;
     var w = rectangle.width,
@@ -677,7 +758,7 @@ Broadphase.checkCircleRectangle = function(circle, circleOffset, rectangle, rect
 
 /**
  * Circle/Circle intersection test
- * @method checkCircleCircle
+ * @method circleCircle
  * @static
  * @param  {Circle} c1
  * @param  {Array}  offset1
@@ -685,18 +766,18 @@ Broadphase.checkCircleRectangle = function(circle, circleOffset, rectangle, rect
  * @param  {Array}  offset2
  * @return {Boolean}
  */
-Broadphase.checkCircleCircle = function(c1, offset1, c2, offset2){
+Broadphase.circleCircle = function(c1, offset1, c2, offset2){
     vec2.sub(dist,offset1,offset2);
     var R1 = c1.radius;
     var R2 = c2.radius;
     return vec2.sqrLen(dist) < (R1+R2)*(R1+R2);
 };
 
-var checkConvexPlane_convexSpan = vec2.create();
+var convexPlane_convexSpan = vec2.create();
 
 /**
  * Convex/Plane
- * @method checkConvexPlane
+ * @method convexPlane
  * @static
  * @param  {Convex} convexShape
  * @param  {Array}  convexOffset
@@ -706,13 +787,13 @@ var checkConvexPlane_convexSpan = vec2.create();
  * @param  {Number} planeAngle
  * @return {Boolean}
  */
-Broadphase.checkConvexPlane = function( convexShape,
+Broadphase.convexPlane = function( convexShape,
                                         convexOffset,
                                         convexAngle,
                                         planeShape,
                                         planeOffset,
                                         planeAngle){
-    var convexSpan = checkConvexPlane_convexSpan;
+    var convexSpan = convexPlane_convexSpan;
 
     vec2.rotate(worldNormal, yAxis, planeAngle);
     Nearphase.projectConvexOntoAxis(convexShape, convexOffset, convexAngle, worldNormal, convexSpan);
@@ -725,7 +806,7 @@ Broadphase.checkConvexPlane = function( convexShape,
 
 /**
  * Particle/Plane intersection test
- * @method checkParticlePlane
+ * @method particlePlane
  * @static
  * @param  {Particle} particleShape
  * @param  {Array} particleOffset
@@ -734,7 +815,7 @@ Broadphase.checkConvexPlane = function( convexShape,
  * @param  {Number} planeAngle
  * @return {Boolean}
  */
-Broadphase.checkParticlePlane = function(   particleShape,
+Broadphase.particlePlane = function(   particleShape,
                                             particleOffset,
                                             planeShape,
                                             planeOffset,
@@ -752,7 +833,7 @@ Broadphase.checkParticlePlane = function(   particleShape,
 
 /**
  * Circle/Particle intersection test
- * @method checkCircleParticle
+ * @method circleParticle
  * @static
  * @param  {Circle} circleShape
  * @param  {Array} circleOffset
@@ -760,7 +841,7 @@ Broadphase.checkParticlePlane = function(   particleShape,
  * @param  {Array} particleOffset
  * @return {Boolean}
  */
-Broadphase.checkCircleParticle = function(  circleShape,
+Broadphase.circleParticle = function(  circleShape,
                                             circleOffset,
                                             particleShape,
                                             particleOffset ){
@@ -770,8 +851,50 @@ Broadphase.checkCircleParticle = function(  circleShape,
 };
 
 /**
+ * Rectangle/Particle intersection test
+ * @method rectangleParticle
+ * @static
+ * @param  {Rectangle} rectangleShape
+ * @param  {Array} rectangleOffset
+ * @param  {Particle} particleShape
+ * @param  {Array} particleOffset
+ * @return {Boolean}
+ */
+Broadphase.rectangleParticle = function(rectangleShape,
+                                        rectangleOffset,
+                                        particleShape,
+                                        particleOffset ){
+    vec2.sub(dist,particleOffset,rectangleOffset);
+    var w = rectangleShape.width,
+        h = rectangleShape.height;
+    var D = Math.sqrt(w*w + h*h) / 2;
+    var result = vec2.sqrLen(dist) < D*D;
+    return result;
+};
+
+/**
+ * Convex/Particle intersection test
+ * @method convexParticle
+ * @static
+ * @param  {convex}     convexShape
+ * @param  {Array}      convexOffset
+ * @param  {Particle}   particleShape
+ * @param  {Array}      particleOffset
+ * @return {Boolean}
+ */
+Broadphase.convexParticle = function(   convexShape,
+                                        convexOffset,
+                                        particleShape,
+                                        particleOffset ){
+    vec2.sub(dist,particleOffset,convexOffset);
+    var D = convexShape.boundingRadius;
+    var result = vec2.sqrLen(dist) < D*D;
+    return result;
+};
+
+/**
  * Check whether a circle and a plane collides. See nearphaseCirclePlane() for param details.
- * @method checkCirclePlane
+ * @method circlePlane
  * @static
  * @param  {Circle}  circleShape
  * @param  {Array}   circleOffset
@@ -780,7 +903,7 @@ Broadphase.checkCircleParticle = function(  circleShape,
  * @param  {Number}  planeAngle
  * @return {Boolean} True if collision.
  */
-Broadphase.checkCirclePlane = function( circleShape,
+Broadphase.circlePlane = function( circleShape,
                                         circleOffset, // Rotated offset!
                                         planeShape,
                                         planeOffset,
@@ -801,7 +924,43 @@ Broadphase.checkCirclePlane = function( circleShape,
 
 
 
-},{"../math/vec2":25,"./Nearphase":26}],4:[function(require,module,exports){
+},{"../math/vec2":27,"./Nearphase":28}],5:[function(require,module,exports){
+var Shape = require('./Shape')
+,   vec2 = require('../math/vec2')
+
+module.exports = Capsule;
+
+/**
+ * Capsule shape class.
+ * @class Capsule
+ * @constructor
+ * @extends {Shape}
+ * @param {Number} length The distance between the end points
+ * @param {Number} radius Radius of the capsule
+ */
+function Capsule(length,radius){
+    Shape.call(this,Shape.CAPSULE);
+    this.length = length || 1;
+    this.radius = radius || 1;
+};
+Capsule.prototype = new Shape();
+
+/**
+ * Compute the mass moment of inertia of the Capsule.
+ * @method conputeMomentOfInertia
+ * @param  {Number} mass
+ * @return {Number}
+ * @todo
+ */
+Capsule.prototype.computeMomentOfInertia = function(mass){
+    // Approximate with rectangle
+    var r = this.radius,
+        w = this.length + r, // 2*r is too much, 0 is too little
+        h = r*2;
+    return mass * (h*h + w*w) / 12;
+};
+
+},{"./Shape":23,"../math/vec2":27}],6:[function(require,module,exports){
 var Shape = require('./Shape');
 
 module.exports = Circle;
@@ -829,7 +988,7 @@ Circle.prototype.computeMomentOfInertia = function(mass){
     return mass * r * r / 2;
 };
 
-},{"./Shape":21}],6:[function(require,module,exports){
+},{"./Shape":23}],8:[function(require,module,exports){
 var Equation = require("./Equation"),
     vec2 = require('../math/vec2');
 
@@ -960,7 +1119,7 @@ ContactEquation.prototype.addToWlambda = function(deltalambda){
 };
 
 
-},{"./Equation":9,"../math/vec2":25}],7:[function(require,module,exports){
+},{"./Equation":11,"../math/vec2":27}],9:[function(require,module,exports){
 var Shape = require('./Shape')
 ,   vec2 = require('../math/vec2')
 ,   polyk = require('../math/polyk')
@@ -1002,6 +1161,14 @@ function Convex(vertices){
         this.updateTriangles();
         this.updateCenterOfMass();
     }
+
+    /**
+     * The bounding radius of the convex
+     * @property boundingRadius
+     * @type {Number}
+     */
+    this.boundingRadius = 0;
+    this.updateBoundingRadius();
 };
 Convex.prototype = new Shape();
 
@@ -1149,7 +1316,21 @@ Convex.prototype.computeMomentOfInertia = function(mass){
     return I;
 };
 
-},{"./Shape":21,"../math/vec2":25,"../math/polyk":27}],8:[function(require,module,exports){
+/**
+ * Updates the .boundingRadius property
+ * @method updateBoundingRadius
+ */
+Convex.prototype.updateBoundingRadius = function(){
+    var verts = this.vertices,
+        r2 = 0;
+    for(var i=0; i<verts.length; i++){
+        var l2 = vec2.squaredLength(verts[i]);
+        if(l2 > r2) r2 = l2;
+    }
+    this.boundingRadius = Math.sqrt(r2);
+};
+
+},{"./Shape":23,"../math/vec2":27,"../math/polyk":29}],10:[function(require,module,exports){
 var Constraint = require('./Constraint')
 ,   ContactEquation = require('./ContactEquation')
 ,   vec2 = require('../math/vec2')
@@ -1208,7 +1389,7 @@ DistanceConstraint.prototype.update = function(){
     vec2.scale(normal.rj, normal.ni, -distance*0.5);
 };
 
-},{"./Constraint":5,"./ContactEquation":6,"../math/vec2":25}],11:[function(require,module,exports){
+},{"./Constraint":7,"./ContactEquation":8,"../math/vec2":27}],13:[function(require,module,exports){
 var vec2 = require('../math/vec2')
 ,   Equation = require('./Equation')
 
@@ -1346,7 +1527,7 @@ FrictionEquation.prototype.addToWlambda = function(deltalambda){
     bj.wlambda += bj.invInertia * rjxt * deltalambda;
 };
 
-},{"../math/vec2":25,"./Equation":9}],12:[function(require,module,exports){
+},{"../math/vec2":27,"./Equation":11}],14:[function(require,module,exports){
 var Circle = require('../shapes/Circle')
 ,   Plane = require('../shapes/Plane')
 ,   Particle = require('../shapes/Particle')
@@ -1366,118 +1547,148 @@ module.exports = GridBroadphase;
  * @param {number} ymax Upper y bound
  * @param {number} nx Number of bins along x axis
  * @param {number} ny Number of bins along y axis
+ * @todo test
  */
 function GridBroadphase(xmin,xmax,ymin,ymax,nx,ny){
     Broadphase.apply(this);
 
     nx = nx || 10;
     ny = ny || 10;
-    var binsizeX = (xmax-xmin) / nx;
-    var binsizeY = (ymax-ymin) / ny;
 
-    function getBinIndex(x,y){
-        var xi = Math.floor(nx * (x - xmin) / (xmax-xmin));
-        var yi = Math.floor(ny * (y - ymin) / (ymax-ymin));
-        return xi*ny + yi;
-    }
-
-    this.getCollisionPairs = function(world){
-        var result = [];
-        var collidingBodies = world.bodies;
-        var Ncolliding = Ncolliding=collidingBodies.length;
-
-        var bins=[], Nbins=nx*ny;
-        for(var i=0; i<Nbins; i++)
-            bins.push([]);
-
-        var xmult = nx / (xmax-xmin);
-        var ymult = ny / (ymax-ymin);
-
-        // Put all bodies into bins
-        for(var i=0; i!==Ncolliding; i++){
-            var bi = collidingBodies[i];
-            var si = bi.shape;
-            if (si === undefined) {
-                continue;
-            } else if(si instanceof Circle){
-                // Put in bin
-                // check if overlap with other bins
-                var x = bi.position[0];
-                var y = bi.position[1];
-                var r = si.radius;
-
-                var xi1 = Math.floor(xmult * (x-r - xmin));
-                var yi1 = Math.floor(ymult * (y-r - ymin));
-                var xi2 = Math.floor(xmult * (x+r - xmin));
-                var yi2 = Math.floor(ymult * (y+r - ymin));
-
-                for(var j=xi1; j<=xi2; j++){
-                    for(var k=yi1; k<=yi2; k++){
-                        var xi = j;
-                        var yi = k;
-                        if(xi*(ny-1) + yi >= 0 && xi*(ny-1) + yi < Nbins)
-                            bins[ xi*(ny-1) + yi ].push(bi);
-                    }
-                }
-            } else if(si instanceof Plane){
-                // Put in all bins for now
-                if(bi.angle == 0){
-                    var y = bi.position[1];
-                    for(var j=0; j!==Nbins && ymin+binsizeY*(j-1)<y; j++){
-                        for(var k=0; k<nx; k++){
-                            var xi = k;
-                            var yi = Math.floor(ymult * (binsizeY*j - ymin));
-                            bins[ xi*(ny-1) + yi ].push(bi);
-                        }
-                    }
-                } else if(bi.angle == Math.PI*0.5){
-                    var x = bi.position[0];
-                    for(var j=0; j!==Nbins && xmin+binsizeX*(j-1)<x; j++){
-                        for(var k=0; k<ny; k++){
-                            var yi = k;
-                            var xi = Math.floor(xmult * (binsizeX*j - xmin));
-                            bins[ xi*(ny-1) + yi ].push(bi);
-                        }
-                    }
-                } else {
-                    for(var j=0; j!==Nbins; j++)
-                        bins[j].push(bi);
-                }
-            } else {
-                throw new Error("Shape not supported in GridBroadphase!");
-            }
-        }
-
-        // Check each bin
-        for(var i=0; i!==Nbins; i++){
-            var bin = bins[i];
-            for(var j=0, NbodiesInBin=bin.length; j!==NbodiesInBin; j++){
-                var bi = bin[j];
-                var si = bi.shape;
-
-                for(var k=0; k!==j; k++){
-                    var bj = bin[k];
-                    var sj = bj.shape;
-
-                    if(si instanceof Circle){
-                             if(sj instanceof Circle)   bp.checkCircleCircle  (bi,bj,result);
-                        else if(sj instanceof Particle) bp.checkCircleParticle(bi,bj,result);
-                        else if(sj instanceof Plane)    bp.checkCirclePlane   (bi,bj,result);
-                    } else if(si instanceof Particle){
-                             if(sj instanceof Circle)   bp.checkCircleParticle(bj,bi,result);
-                    } else if(si instanceof Plane){
-                             if(sj instanceof Circle)   bp.checkCirclePlane   (bj,bi,result);
-                    }
-                }
-            }
-        }
-        return result;
-    };
+    this.binsizeX = (xmax-xmin) / nx;
+    this.binsizeY = (ymax-ymin) / ny;
+    this.nx = nx;
+    this.ny = ny;
+    this.xmin = xmin;
+    this.ymin = ymin;
+    this.xmax = xmax;
+    this.ymax = ymax;
 };
 GridBroadphase.prototype = new Broadphase();
 
+/**
+ * Get a bin index given a world coordinate
+ * @method getBinIndex
+ * @param  {Number} x
+ * @param  {Number} y
+ * @return {Number} Integer index
+ */
+GridBroadphase.prototype.getBinIndex = function(x,y){
+    var nx = this.nx,
+        ny = this.ny,
+        xmin = this.xmin,
+        ymin = this.ymin,
+        xmax = this.xmax,
+        ymax = this.ymax;
 
-},{"../shapes/Circle":4,"../shapes/Plane":18,"../shapes/Particle":17,"../collision/Broadphase":3,"../math/vec2":25}],13:[function(require,module,exports){
+    var xi = Math.floor(nx * (x - xmin) / (xmax-xmin));
+    var yi = Math.floor(ny * (y - ymin) / (ymax-ymin));
+    return xi*ny + yi;
+}
+
+/**
+ * Get collision pairs.
+ * @method getCollisionPairs
+ * @param  {World} world
+ * @return {Array}
+ */
+GridBroadphase.prototype.getCollisionPairs = function(world){
+    var result = [],
+        collidingBodies = world.bodies,
+        Ncolliding = Ncolliding=collidingBodies.length,
+        binsizeX = this.binsizeX,
+        binsizeY = this.binsizeY;
+
+    var bins=[], Nbins=nx*ny;
+    for(var i=0; i<Nbins; i++)
+        bins.push([]);
+
+    var xmult = nx / (xmax-xmin);
+    var ymult = ny / (ymax-ymin);
+
+    // Put all bodies into bins
+    for(var i=0; i!==Ncolliding; i++){
+        var bi = collidingBodies[i];
+        var si = bi.shape;
+        if (si === undefined) {
+            continue;
+        } else if(si instanceof Circle){
+            // Put in bin
+            // check if overlap with other bins
+            var x = bi.position[0];
+            var y = bi.position[1];
+            var r = si.radius;
+
+            var xi1 = Math.floor(xmult * (x-r - xmin));
+            var yi1 = Math.floor(ymult * (y-r - ymin));
+            var xi2 = Math.floor(xmult * (x+r - xmin));
+            var yi2 = Math.floor(ymult * (y+r - ymin));
+
+            for(var j=xi1; j<=xi2; j++){
+                for(var k=yi1; k<=yi2; k++){
+                    var xi = j;
+                    var yi = k;
+                    if(xi*(ny-1) + yi >= 0 && xi*(ny-1) + yi < Nbins)
+                        bins[ xi*(ny-1) + yi ].push(bi);
+                }
+            }
+        } else if(si instanceof Plane){
+            // Put in all bins for now
+            if(bi.angle == 0){
+                var y = bi.position[1];
+                for(var j=0; j!==Nbins && ymin+binsizeY*(j-1)<y; j++){
+                    for(var k=0; k<nx; k++){
+                        var xi = k;
+                        var yi = Math.floor(ymult * (binsizeY*j - ymin));
+                        bins[ xi*(ny-1) + yi ].push(bi);
+                    }
+                }
+            } else if(bi.angle == Math.PI*0.5){
+                var x = bi.position[0];
+                for(var j=0; j!==Nbins && xmin+binsizeX*(j-1)<x; j++){
+                    for(var k=0; k<ny; k++){
+                        var yi = k;
+                        var xi = Math.floor(xmult * (binsizeX*j - xmin));
+                        bins[ xi*(ny-1) + yi ].push(bi);
+                    }
+                }
+            } else {
+                for(var j=0; j!==Nbins; j++)
+                    bins[j].push(bi);
+            }
+        } else {
+            throw new Error("Shape not supported in GridBroadphase!");
+        }
+    }
+
+    // Check each bin
+    for(var i=0; i!==Nbins; i++){
+        var bin = bins[i];
+
+        for(var j=0, NbodiesInBin=bin.length; j!==NbodiesInBin; j++){
+            var bi = bin[j];
+            var si = bi.shape;
+
+            for(var k=0; k!==j; k++){
+                var bj = bin[k];
+                var sj = bj.shape;
+
+                if(si instanceof Circle){
+                         if(sj instanceof Circle)   c=Broadphase.circleCircle  (bi,bj);
+                    else if(sj instanceof Particle) c=Broadphase.circleParticle(bi,bj);
+                    else if(sj instanceof Plane)    c=Broadphase.circlePlane   (bi,bj);
+                } else if(si instanceof Particle){
+                         if(sj instanceof Circle)   c=Broadphase.circleParticle(bj,bi);
+                } else if(si instanceof Plane){
+                         if(sj instanceof Circle)   c=Broadphase.circlePlane   (bj,bi);
+                }
+            }
+        }
+    }
+    return result;
+};
+
+},{"../shapes/Circle":6,"../shapes/Plane":20,"../shapes/Particle":19,"../collision/Broadphase":4,"../math/vec2":27}],15:[function(require,module,exports){
 var vec2 = require('../math/vec2'),
     Solver = require('./Solver');
 
@@ -1636,7 +1847,7 @@ GSSolver.prototype.solve = function(dt,world){
 };
 
 
-},{"../math/vec2":25,"./Solver":22}],14:[function(require,module,exports){
+},{"../math/vec2":27,"./Solver":24}],16:[function(require,module,exports){
 var Solver = require('./Solver')
 ,   vec2 = require('../math/vec2')
 ,   Island = require('../solver/Island')
@@ -1797,7 +2008,7 @@ IslandSolver.prototype.solve = function(dt,world){
     }
 };
 
-},{"./Solver":22,"../math/vec2":25,"../solver/Island":28,"../objects/Body":2}],15:[function(require,module,exports){
+},{"./Solver":24,"../math/vec2":27,"../solver/Island":30,"../objects/Body":3}],17:[function(require,module,exports){
 var Shape = require('./Shape');
 
 module.exports = Line;
@@ -1823,7 +2034,26 @@ Line.prototype.computeMomentOfInertia = function(mass){
     return mass * Math.pow(this.length,2) / 12;
 };
 
-},{"./Shape":21}],16:[function(require,module,exports){
+},{"./Shape":23}],19:[function(require,module,exports){
+var Shape = require('./Shape');
+
+module.exports = Particle;
+
+/**
+ * Particle shape class.
+ * @class Particle
+ * @constructor
+ * @extends {Shape}
+ */
+function Particle(){
+    Shape.call(this,Shape.PARTICLE);
+};
+Particle.prototype = new Shape();
+Particle.prototype.computeMomentOfInertia = function(mass){
+    return 0; // Can't rotate a particle
+};
+
+},{"./Shape":23}],18:[function(require,module,exports){
 var Circle = require('../shapes/Circle')
 ,   Plane = require('../shapes/Plane')
 ,   Shape = require('../shapes/Shape')
@@ -1907,15 +2137,15 @@ NaiveBroadphase.prototype.getCollisionPairs = function(world){
                     case Shape.CIRCLE:
 
                         switch(sj1.type){
-                        case Shape.CIRCLE:   collide = Broadphase.checkCircleCircle  (si1,xi1_world,sj1,xj1_world);             break;
-                        case Shape.PLANE:    collide = Broadphase.checkCirclePlane   (si1,xi1_world,sj1,xj1_world,aj1_world);   break;
-                        case Shape.PARTICLE: collide = Broadphase.checkCircleParticle(si1,xi1_world,sj1,xj1_world);             break;
-                        case Shape.LINE:     collide = Broadphase.checkCircleLine    (si1,xi1_world,sj1,xj1_world,aj1_world);   break;
+                        case Shape.CIRCLE:   collide = Broadphase.circleCircle  (si1,xi1_world,sj1,xj1_world);             break;
+                        case Shape.PLANE:    collide = Broadphase.circlePlane   (si1,xi1_world,sj1,xj1_world,aj1_world);   break;
+                        case Shape.PARTICLE: collide = Broadphase.circleParticle(si1,xi1_world,sj1,xj1_world);             break;
+                        case Shape.LINE:     collide = Broadphase.circleLine    (si1,xi1_world,sj1,xj1_world,aj1_world);   break;
                         case Shape.CONVEX:
                             if(sj1 instanceof Rectangle){
-                                collide = Broadphase.checkCircleRectangle(si1,xi1_world,sj1,xj1_world);
+                                collide = Broadphase.circleRectangle(si1,xi1_world,sj1,xj1_world);
                             } else {
-                                collide = Broadphase.checkCircleConvex(si1,xi1_world,sj1,xj1_world);
+                                collide = Broadphase.circleConvex(si1,xi1_world,sj1,xj1_world);
                             }
                             break;
                         }
@@ -1925,7 +2155,13 @@ NaiveBroadphase.prototype.getCollisionPairs = function(world){
                     case Shape.PARTICLE:
                         switch(sj1.type){
                         case Shape.PLANE:
-                            collide = Broadphase.checkParticlePlane(si1,xi1_world,sj1,xj1_world,aj1_world);
+                            collide = Broadphase.particlePlane(si1,xi1_world,sj1,xj1_world,aj1_world);
+                            break;
+                        case Shape.CONVEX:
+                            if(sj1 instanceof Rectangle)
+                                collide = Broadphase.rectangleParticle(sj1,xj1_world,si1,xi1_world);
+                            else
+                                collide = Broadphase.convexParticle(sj1,xj1_world,si1,xi1_world);
                             break;
                         }
                         break;
@@ -1934,10 +2170,13 @@ NaiveBroadphase.prototype.getCollisionPairs = function(world){
 
                         switch(sj1.type){
                         case Shape.CONVEX:
-                            collide = Broadphase.checkConvexPlane(sj1,xj1_world,aj1_world, si1,xi1_world,ai1_world);
+                            collide = Broadphase.convexPlane(sj1,xj1_world,aj1_world, si1,xi1_world,ai1_world);
                             break;
                         case Shape.LINE:
-                            collide = Broadphase.checkPlaneLine(si1,xi1_world,ai1_world, sj1,xj1_world,aj1_world);
+                            collide = Broadphase.planeLine(si1,xi1_world,ai1_world, sj1,xj1_world,aj1_world);
+                            break;
+                        case Shape.CAPSULE:
+                            collide = Broadphase.capsulePlane(sj1,xj1_world,aj1_world, si1,xi1_world,ai1_world);
                             break;
                         }
                         break;
@@ -1945,11 +2184,11 @@ NaiveBroadphase.prototype.getCollisionPairs = function(world){
                     case Shape.CONVEX:
 
                         if(si1 instanceof Rectangle && sj1 instanceof Rectangle){
-                            collide = Broadphase.checkRectangleRectangle(sj1,xj1_world,aj1_world, si1,xi1_world,ai1_world);
+                            collide = Broadphase.rectangleRectangle(sj1,xj1_world,aj1_world, si1,xi1_world,ai1_world);
                         } else {
                             switch(sj1.type){
                             case Shape.CONVEX:
-                                collide = Broadphase.checkConvexConvex(sj1,xj1_world,aj1_world, si1,xi1_world,ai1_world);
+                                collide = Broadphase.convexConvex(sj1,xj1_world,aj1_world, si1,xi1_world,ai1_world);
                                 break;
                             }
                         }
@@ -1968,26 +2207,7 @@ NaiveBroadphase.prototype.getCollisionPairs = function(world){
     return result;
 };
 
-},{"../shapes/Circle":4,"../shapes/Plane":18,"../shapes/Shape":21,"../shapes/Particle":17,"../collision/Broadphase":3,"../math/vec2":25}],17:[function(require,module,exports){
-var Shape = require('./Shape');
-
-module.exports = Particle;
-
-/**
- * Particle shape class.
- * @class Particle
- * @constructor
- * @extends {Shape}
- */
-function Particle(){
-    Shape.call(this,Shape.PARTICLE);
-};
-Particle.prototype = new Shape();
-Particle.prototype.computeMomentOfInertia = function(mass){
-    return 0; // Can't rotate a particle
-};
-
-},{"./Shape":21}],18:[function(require,module,exports){
+},{"../shapes/Circle":6,"../shapes/Plane":20,"../shapes/Shape":23,"../shapes/Particle":19,"../collision/Broadphase":4,"../math/vec2":27}],20:[function(require,module,exports){
 var Shape = require('./Shape');
 
 module.exports = Plane;
@@ -2006,7 +2226,7 @@ Plane.prototype.computeMomentOfInertia = function(mass){
     return 0; // Plane is infinite. The inertia should therefore be infinty but by convention we set 0 here
 };
 
-},{"./Shape":21}],19:[function(require,module,exports){
+},{"./Shape":23}],21:[function(require,module,exports){
 var Constraint = require('./Constraint')
 ,   ContactEquation = require('./ContactEquation')
 ,   vec2 = require('../math/vec2')
@@ -2066,7 +2286,7 @@ PointToPointConstraint.prototype.update = function(){
     vec2.copy(tangent.rj, normal.rj);
 };
 
-},{"./ContactEquation":6,"../math/vec2":25,"./Constraint":5}],20:[function(require,module,exports){
+},{"./Constraint":7,"./ContactEquation":8,"../math/vec2":27}],22:[function(require,module,exports){
 var vec2 = require('../math/vec2')
 ,   Shape = require('./Shape')
 ,   Convex = require('./Convex')
@@ -2103,7 +2323,7 @@ Rectangle.prototype.computeMomentOfInertia = function(mass){
     return mass * (h*h + w*w) / 12;
 };
 
-},{"../math/vec2":25,"./Shape":21,"./Convex":7}],23:[function(require,module,exports){
+},{"../math/vec2":27,"./Shape":23,"./Convex":9}],25:[function(require,module,exports){
 var vec2 = require('../math/vec2');
 
 module.exports = Spring;
@@ -2116,11 +2336,13 @@ module.exports = Spring;
  * @param {Body} bodyA
  * @param {Body} bodyB
  * @param {Object} [options]
- * @param {number} options.restLength A number > 0. Default: 1
- * @param {number} options.stiffness A number >= 0. Default: 100
- * @param {number} options.damping A number >= 0. Default: 1
- *
- * @todo Should have anchor points in the bodies
+ * @param {number} options.restLength   A number > 0. Default: 1
+ * @param {number} options.stiffness    A number >= 0. Default: 100
+ * @param {number} options.damping      A number >= 0. Default: 1
+ * @param {Array}  options.worldAnchorA Where to hook the spring to body A, in world coordinates.
+ * @param {Array}  options.worldAnchorB
+ * @param {Array}  options.localAnchorA Where to hook the spring to body A, in local body coordinates.
+ * @param {Array}  options.localAnchorB
  */
 function Spring(bodyA,bodyB,options){
     options = options || {};
@@ -2130,7 +2352,7 @@ function Spring(bodyA,bodyB,options){
      * @property restLength
      * @type {number}
      */
-    this.restLength = options.restLength || 1;
+    this.restLength = typeof(options.restLength)=="number" ? options.restLength : 1;
 
     /**
      * Stiffness of the spring.
@@ -2159,12 +2381,72 @@ function Spring(bodyA,bodyB,options){
      * @type {Body}
      */
     this.bodyB = bodyB;
+
+    /**
+     * Anchor for bodyA in local bodyA coordinates.
+     * @property localAnchorA
+     * @type {Array}
+     */
+    this.localAnchorA = vec2.fromValues(0,0);
+
+    /**
+     * Anchor for bodyB in local bodyB coordinates.
+     * @property localAnchorB
+     * @type {Array}
+     */
+    this.localAnchorB = vec2.fromValues(0,0);
+
+    if(options.localAnchorA) vec2.copy(this.localAnchorA, options.localAnchorA);
+    if(options.localAnchorB) vec2.copy(this.localAnchorB, options.localAnchorB);
+    if(options.worldAnchorA) this.setWorldAnchorA(options.worldAnchorA);
+    if(options.worldAnchorB) this.setWorldAnchorB(options.worldAnchorB);
 };
 
-var applyForce_r =      vec2.create(),
-    applyForce_r_unit = vec2.create(),
-    applyForce_u =      vec2.create(),
-    applyForce_f =      vec2.create();
+/**
+ * Set the anchor point on body A, using world coordinates.
+ * @method setWorldAnchorA
+ * @param {Array} worldAnchorA
+ */
+Spring.prototype.setWorldAnchorA = function(worldAnchorA){
+    this.bodyA.toLocalFrame(this.localAnchorA, worldAnchorA);
+};
+
+/**
+ * Set the anchor point on body B, using world coordinates.
+ * @method setWorldAnchorB
+ * @param {Array} worldAnchorB
+ */
+Spring.prototype.setWorldAnchorB = function(worldAnchorB){
+    this.bodyB.toLocalFrame(this.localAnchorB, worldAnchorB);
+};
+
+/**
+ * Get the anchor point on body A, in world coordinates.
+ * @method getWorldAnchorA
+ * @param {Array} result The vector to store the result in.
+ */
+Spring.prototype.getWorldAnchorA = function(result){
+    this.bodyA.toWorldFrame(result, this.localAnchorA);
+};
+
+/**
+ * Get the anchor point on body B, in world coordinates.
+ * @method getWorldAnchorB
+ * @param {Array} result The vector to store the result in.
+ */
+Spring.prototype.getWorldAnchorB = function(result){
+    this.bodyB.toWorldFrame(result, this.localAnchorB);
+};
+
+var applyForce_r =              vec2.create(),
+    applyForce_r_unit =         vec2.create(),
+    applyForce_u =              vec2.create(),
+    applyForce_f =              vec2.create(),
+    applyForce_worldAnchorA =   vec2.create(),
+    applyForce_worldAnchorB =   vec2.create(),
+    applyForce_ri =             vec2.create(),
+    applyForce_rj =             vec2.create(),
+    applyForce_tmp =            vec2.create();
 
 /**
  * Apply the spring force to the connected bodies.
@@ -2179,18 +2461,52 @@ Spring.prototype.applyForce = function(){
         r = applyForce_r,
         r_unit = applyForce_r_unit,
         u = applyForce_u,
-        f = applyForce_f;
+        f = applyForce_f,
+        tmp = applyForce_tmp;
 
-    vec2.sub(r, bodyA.position, bodyB.position);
-    vec2.sub(u, bodyA.velocity, bodyB.velocity);
+    var worldAnchorA = applyForce_worldAnchorA,
+        worldAnchorB = applyForce_worldAnchorB,
+        ri = applyForce_ri,
+        rj = applyForce_rj;
+
+    // Get world anchors
+    this.getWorldAnchorA(worldAnchorA);
+    this.getWorldAnchorB(worldAnchorB);
+
+    // Get offset points
+    vec2.sub(ri, worldAnchorA, bodyA.position);
+    vec2.sub(rj, worldAnchorB, bodyB.position);
+
+    // Compute distance vector between world anchor points
+    vec2.sub(r, worldAnchorB, worldAnchorA);
     var rlen = vec2.len(r);
     vec2.normalize(r_unit,r);
-    vec2.scale(f, r_unit, k*(rlen-l) + d*vec2.dot(u,r_unit));
+
+    //console.log(rlen)
+    //console.log("A",vec2.str(worldAnchorA),"B",vec2.str(worldAnchorB))
+
+    // Compute relative velocity of the anchor points, u
+    vec2.sub(u, bodyB.velocity, bodyA.velocity);
+    vec2.crossZV(tmp, bodyB.angularVelocity, rj);
+    vec2.add(u, u, tmp);
+    vec2.crossZV(tmp, bodyA.angularVelocity, ri);
+    vec2.sub(u, u, tmp);
+
+    // F = - k * ( x - L ) - D * ( u )
+    vec2.scale(f, r_unit, -k*(rlen-l) - d*vec2.dot(u,r_unit));
+
+    // Add forces to bodies
     vec2.sub( bodyA.force, bodyA.force, f);
     vec2.add( bodyB.force, bodyB.force, f);
+
+    // Angular force
+    var ri_x_f = vec2.crossLength(ri, f);
+    var rj_x_f = vec2.crossLength(rj, f);
+    bodyA.angularForce -= ri_x_f;
+    bodyB.angularForce -= rj_x_f;
 };
 
-},{"../math/vec2":25}],24:[function(require,module,exports){
+},{"../math/vec2":27}],26:[function(require,module,exports){
 var GSSolver = require('../solver/GSSolver')
 ,    NaiveBroadphase = require('../collision/NaiveBroadphase')
 ,    vec2 = require('../math/vec2')
@@ -2199,6 +2515,7 @@ var GSSolver = require('../solver/GSSolver')
 ,    Convex = require('../shapes/Convex')
 ,    Line = require('../shapes/Line')
 ,    Plane = require('../shapes/Plane')
+,    Capsule = require('../shapes/Capsule')
 ,    Particle = require('../shapes/Particle')
 ,    EventEmitter = require('../events/EventEmitter')
 ,    Body = require('../objects/Body')
@@ -2466,6 +2783,8 @@ World.prototype.step = function(dt){
                 } else if(si instanceof Particle){
                          if(sj instanceof Circle)   np.circleParticle(bj,sj,xj_world,aj_world, bi,si,xi_world,ai_world);
                     else if(sj instanceof Plane)    np.particlePlane (bi,si,xi_world,ai_world, bj,sj,xj_world,aj_world);
+                    else if(sj instanceof Rectangle)np.particleConvex(bi,si,xi_world,ai_world, bj,sj,xj_world,aj_world);
+                    else if(sj instanceof Convex)   np.particleConvex(bi,si,xi_world,ai_world, bj,sj,xj_world,aj_world);
 
                 } else if(si instanceof Plane){
                          if(sj instanceof Circle)   np.circlePlane   (bj,sj,xj_world,aj_world, bi,si,xi_world,ai_world);
@@ -2473,20 +2792,26 @@ World.prototype.step = function(dt){
                     else if(sj instanceof Rectangle)np.convexPlane   (bj,sj,xj_world,aj_world, bi,si,xi_world,ai_world);
                     else if(sj instanceof Convex)   np.convexPlane   (bj,sj,xj_world,aj_world, bi,si,xi_world,ai_world);
                     else if(sj instanceof Line)     np.planeLine     (bi,si,xi_world,ai_world, bj,sj,xj_world,aj_world);
+                    else if(sj instanceof Capsule)  np.capsulePlane  (bj,sj,xj_world,aj_world, bi,si,xi_world,ai_world);
 
                 } else if(si instanceof Rectangle){
                          if(sj instanceof Plane)    np.convexPlane    (bi,si,xi_world,ai_world, bj,sj,xj_world,aj_world);
                     else if(sj instanceof Circle)   np.circleConvex   (bj,sj,xj_world,aj_world, bi,si,xi_world,ai_world);
                     else if(sj instanceof Rectangle)np.convexConvex   (bj,sj,xj_world,aj_world, bi,si,xi_world,ai_world);
+                    else if(sj instanceof Particle) np.particleConvex (bj,sj,xj_world,aj_world, bi,si,xi_world,ai_world);
 
                 } else if(si instanceof Convex){
                          if(sj instanceof Plane)    np.convexPlane    (bi,si,xi_world,ai_world, bj,sj,xj_world,aj_world);
                     else if(sj instanceof Circle)   np.circleConvex   (bj,sj,xj_world,aj_world, bi,si,xi_world,ai_world);
                     else if(sj instanceof Convex)   np.convexConvex   (bi,si,xi_world,ai_world, bj,sj,xj_world,aj_world);
+                    else if(sj instanceof Particle) np.particleConvex (bj,sj,xj_world,aj_world, bi,si,xi_world,ai_world);
 
                 } else if(si instanceof Line){
                          if(sj instanceof Circle)   np.circleLine     (bj,sj,xj_world,aj_world, bi,si,xi_world,ai_world);
                     else if(sj instanceof Plane)    np.planeLine      (bj,sj,xj_world,aj_world, bi,si,xi_world,ai_world);
+
+                } else if(si instanceof Capsule){
+                         if(sj instanceof Plane)    np.capsulePlane   (bi,si,xi_world,ai_world, bj,sj,xj_world,aj_world);
 
                 }
             }
@@ -2611,7 +2936,7 @@ World.prototype.removeBody = function(body){
  */
 World.prototype.toJSON = function(){
     var json = {
-        p2 : pkg.version,
+        p2 : pkg.version.split(".").slice(0,2).join("."), // "X.Y"
         bodies : [],
         springs : [],
         solver : {},
@@ -2629,6 +2954,8 @@ World.prototype.toJSON = function(){
             stiffness : s.stiffness,
             damping : s.damping,
             restLength : s.restLength,
+            localAnchorA : v2a(s.localAnchorA),
+            localAnchorB : v2a(s.localAnchorB),
         });
     }
 
@@ -2686,6 +3013,10 @@ World.prototype.toJSON = function(){
                     verts.push(v2a(s.vertices[k]));
                 jsonShape = {   type : "Convex",
                                 verts : verts };
+            } else if(s instanceof Capsule){
+                jsonShape = {   type : "Capsule",
+                                length : s.length,
+                                radius : s.radius };
             } else {
                 throw new Error("Shape type not supported yet!");
             }
@@ -2727,7 +3058,7 @@ World.prototype.fromJSON = function(json){
 
     switch(json.p2){
 
-        case pkg.version:
+        case "0.1":
 
             // Set gravity
             vec2.copy(this.gravity, json.gravity);
@@ -2756,6 +3087,7 @@ World.prototype.fromJSON = function(json){
                         case "Line":        shape = new Line(js.length);                break;
                         case "Rectangle":   shape = new Rectangle(js.width,js.height);  break;
                         case "Convex":      shape = new Convex(js.verts);               break;
+                        case "Capsule":     shape = new Capsule(js.length, js.radius);  break;
                         default:
                             throw new Error("Shape type not supported: "+js.type);
                             break;
@@ -2773,6 +3105,8 @@ World.prototype.fromJSON = function(json){
                     stiffness : js.stiffness,
                     damping : js.damping,
                     restLength : js.restLength,
+                    localAnchorA : js.localAnchorA,
+                    localAnchorB : js.localAnchorB,
                 });
                 this.addSpring(s);
             }
@@ -2830,7 +3164,7 @@ World.prototype.clear = function(){
     }
 };
 
-},{"../../package.json":29,"../solver/GSSolver":13,"../collision/NaiveBroadphase":16,"../math/vec2":25,"../shapes/Circle":4,"../shapes/Convex":7,"../shapes/Rectangle":20,"../shapes/Line":15,"../shapes/Plane":18,"../shapes/Particle":17,"../events/EventEmitter":10,"../objects/Body":2,"../objects/Spring":23,"../constraints/DistanceConstraint":8,"../constraints/PointToPointConstraint":19,"../collision/Broadphase":3,"../collision/Nearphase":26}],25:[function(require,module,exports){
+},{"../../package.json":2,"../solver/GSSolver":15,"../collision/NaiveBroadphase":18,"../math/vec2":27,"../shapes/Circle":6,"../shapes/Rectangle":22,"../shapes/Convex":9,"../shapes/Line":17,"../shapes/Plane":20,"../shapes/Capsule":5,"../shapes/Particle":19,"../events/EventEmitter":12,"../objects/Body":3,"../objects/Spring":25,"../constraints/DistanceConstraint":10,"../constraints/PointToPointConstraint":21,"../collision/Broadphase":4,"../collision/Nearphase":28}],27:[function(require,module,exports){
 /**
  * The vec2 object from glMatrix, extended with the functions documented here. See http://glmatrix.net for full doc.
  * @class vec2
@@ -2915,9 +3249,23 @@ vec2.crossZV = function(out, zcomp, vec){
  */
 vec2.rotate = function(out,a,angle){
     var c = Math.cos(angle),
-        s = Math.sin(angle);
-    out[0] = c*a[0] -s*a[1];
-    out[1] = s*a[0] +c*a[1];
+        s = Math.sin(angle),
+        x = a[0],
+        y = a[1];
+    out[0] = c*x -s*y;
+    out[1] = s*x +c*y;
+};
+
+vec2.toLocalFrame = function(out, worldPoint, framePosition, frameAngle){
+    vec2.copy(out, worldPoint);
+    vec2.sub(out, out, framePosition);
+    vec2.rotate(out, out, -frameAngle);
+};
+
+vec2.toGlobalFrame = function(out, localPoint, framePosition, frameAngle){
+    vec2.copy(out, localPoint);
+    vec2.rotate(out, out, frameAngle);
+    vec2.add(out, out, framePosition);
 };
 
 /**
@@ -2940,51 +3288,7 @@ vec2.centroid = function(out, a, b, c){
 // Export everything
 module.exports = vec2;
 
-},{"../../node_modules/gl-matrix/src/gl-matrix/vec2":30}],29:[function(require,module,exports){
-module.exports={
-    "name": "p2",
-    "version": "0.1.0",
-    "description": "A JavaScript 2D physics engine.",
-    "author": "Stefan Hedman <schteppe@gmail.com> (http://steffe.se)",
-    "keywords": [
-        "p2.js",
-        "p2",
-        "physics",
-        "engine",
-        "2d"
-    ],
-    "main": "./build/p2.js",
-    "engines": {
-        "node": "*"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/schteppe/p2.js.git"
-    },
-    "bugs": {
-        "url": "https://github.com/schteppe/p2.js/issues"
-    },
-    "licenses" : [
-        {
-            "type" : "MIT"
-        }
-    ],
-    "devDependencies" : {
-        "jshint"    : "latest",
-        "nodeunit"  : "latest",
-        "grunt": "~0.4.0",
-        "grunt-contrib-jshint": "~0.1.1",
-        "grunt-contrib-nodeunit": "~0.1.2",
-        "grunt-contrib-concat": "~0.1.3",
-        "grunt-contrib-uglify": "*",
-        "grunt-browserify":"*",
-        "gl-matrix":"2.0.0"
-    },
-    "dependencies" : {
-    }
-}
-
-},{}],27:[function(require,module,exports){
+},{"../../node_modules/gl-matrix/src/gl-matrix/vec2":31}],29:[function(require,module,exports){
 
     /*
         PolyK library
@@ -3462,7 +3766,7 @@ module.exports={
 
 module.exports = PolyK;
 
-},{}],28:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 module.exports = Island;
 
 /**
@@ -3545,7 +3849,7 @@ Island.prototype.solve = function(dt,solver){
     solver.solve(dt,{bodies:bodies});
 };
 
-},{}],30:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 /* Copyright (c) 2012, Brandon Jones, Colin MacKenzie IV. All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -3979,10 +4283,11 @@ if(typeof(exports) !== 'undefined') {
     exports.vec2 = vec2;
 }
 
-},{}],26:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 var vec2 = require('../math/vec2')
 ,   ContactEquation = require('../constraints/ContactEquation')
 ,   FrictionEquation = require('../constraints/FrictionEquation')
+,   Circle = require('../shapes/Circle')
 
 module.exports = Nearphase;
 
@@ -4438,6 +4743,105 @@ Nearphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj){
             return true;
         }
     }
+    return false;
+};
+
+/**
+ * Particle/convex nearphase
+ * @method particleConvex
+ * @param  {Body} bi
+ * @param  {Particle} si
+ * @param  {Array} xi
+ * @param  {Number} ai
+ * @param  {Body} bj
+ * @param  {Convex} sj
+ * @param  {Array} xj
+ * @param  {Number} aj
+ */
+Nearphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj){
+    var convexShape = sj,
+        convexAngle = aj,
+        convexBody = bj,
+        convexOffset = xj,
+        particleOffset = xi,
+        particleBody = bi,
+        particleShape = si;
+
+    var worldVertex0 = tmp1,
+        worldVertex1 = tmp2,
+        worldEdge = tmp3,
+        worldEdgeUnit = tmp4,
+        worldTangent = tmp5,
+        centerDist = tmp6,
+        convexToparticle = tmp7,
+        orthoDist = tmp8,
+        projectedPoint = tmp9,
+        dist = tmp10,
+        worldVertex = tmp11;
+
+    var numReported = 0;
+
+    verts = convexShape.vertices;
+
+    // Check all edges first
+    for(var i=0; i<verts.length; i++){
+        var v0 = verts[i],
+            v1 = verts[(i+1)%verts.length];
+
+        vec2.rotate(worldVertex0, v0, convexAngle);
+        vec2.rotate(worldVertex1, v1, convexAngle);
+        vec2.add(worldVertex0, worldVertex0, convexOffset);
+        vec2.add(worldVertex1, worldVertex1, convexOffset);
+        vec2.sub(worldEdge, worldVertex1, worldVertex0);
+
+        vec2.normalize(worldEdgeUnit, worldEdge);
+
+        // Get tangent to the edge. Points out of the Convex
+        vec2.rotate(worldTangent, worldEdgeUnit, -Math.PI/2);
+
+        // Check distance from the plane spanned by the edge vs the particle
+        vec2.sub(dist, particleOffset, worldVertex0);
+        var d = vec2.dot(dist, worldTangent);
+        vec2.sub(centerDist, worldVertex0, convexOffset);
+
+        vec2.sub(convexToparticle, particleOffset, convexOffset);
+
+        if(d < 0 && vec2.dot(centerDist,convexToparticle) > 0){
+
+            // Now project the particle onto the edge
+            vec2.scale(orthoDist, worldTangent, d);
+            vec2.sub(projectedPoint, particleOffset, orthoDist);
+
+            // Check if the point is within the edge span
+            var pos =  vec2.dot(worldEdgeUnit, projectedPoint);
+            var pos0 = vec2.dot(worldEdgeUnit, worldVertex0);
+            var pos1 = vec2.dot(worldEdgeUnit, worldVertex1);
+
+            if(pos > pos0 && pos < pos1){
+                // We got contact!
+
+                var c = this.createContactEquation(particleBody,convexBody);
+
+                vec2.copy(c.ni, orthoDist);
+                vec2.normalize(c.ni, c.ni);
+
+                vec2.set(c.ri,  0, 0);
+                vec2.add(c.ri, c.ri, particleOffset);
+                vec2.sub(c.ri, c.ri, particleBody.position);
+
+                vec2.sub(c.rj, projectedPoint, convexOffset);
+                vec2.add(c.rj, c.rj, convexOffset);
+                vec2.sub(c.rj, c.rj, convexBody.position);
+
+                this.contactEquations.push(c);
+
+                if(this.enableFriction)
+                    this.frictionEquations.push( this.createFrictionFromContact(c) );
+
+                return true;
+            }
+        }
+    }
 
     return false;
 };
@@ -4654,6 +5058,32 @@ Nearphase.prototype.circleParticle = function(   bi,si,xi,ai, bj,sj,xj,aj ){
     return true;
 };
 
+var capsulePlane_tmpCircle = new Circle(1),
+    capsulePlane_tmp1 = vec2.create(),
+    capsulePlane_tmp2 = vec2.create(),
+    capsulePlane_tmp3 = vec2.create();
+Nearphase.prototype.capsulePlane = function( bi,si,xi,ai, bj,sj,xj,aj ){
+    var end1 = capsulePlane_tmp1,
+        end2 = capsulePlane_tmp2,
+        circle = capsulePlane_tmpCircle,
+        dst = capsulePlane_tmp3;
+
+    // Compute world end positions
+    vec2.set(end1, -si.length/2, 0);
+    vec2.rotate(end1,end1,ai);
+    vec2.add(end1,end1,xi);
+
+    vec2.set(end2,  si.length/2, 0);
+    vec2.rotate(end2,end2,ai);
+    vec2.add(end2,end2,xi);
+
+    circle.radius = si.radius;
+
+    // Do nearphase as two circles
+    this.circlePlane(bi,circle,end1,0, bj,sj,xj,aj);
+    this.circlePlane(bi,circle,end2,0, bj,sj,xj,aj);
+};
+
 /**
  * Creates ContactEquations and FrictionEquations for a collision.
  * @method circlePlane
@@ -4698,13 +5128,13 @@ Nearphase.prototype.circlePlane = function(   bi,si,xi,ai, bj,sj,xj,aj ){
     vec2.copy(contact.ni, worldNormal);
 
     // rj is the vector from circle center to the contact point
-    vec2.scale( contact.rj, contact.ni, -circleShape.radius);
+    vec2.scale(contact.rj, contact.ni, -circleShape.radius);
     vec2.add(contact.rj, contact.rj, circleOffset);
     vec2.sub(contact.rj, contact.rj, circleBody.position);
 
     // ri is the distance from plane center to contact.
     vec2.scale(temp, contact.ni, d);
-    vec2.sub( contact.ri, planeToCircle, temp ); // Subtract normal distance vector from the distance vector
+    vec2.sub(contact.ri, planeToCircle, temp ); // Subtract normal distance vector from the distance vector
     vec2.add(contact.ri, contact.ri, planeOffset);
     vec2.sub(contact.ri, contact.ri, planeBody.position);
 
@@ -5031,6 +5461,6 @@ Nearphase.getClosestEdge = function(c,angle,axis,flip){
 };
 
 
-},{"../math/vec2":25,"../constraints/ContactEquation":6,"../constraints/FrictionEquation":11}]},{},[1])(1)
+},{"../math/vec2":27,"../constraints/ContactEquation":8,"../constraints/FrictionEquation":13,"../shapes/Circle":6}]},{},[1])(1)
 });
 ;
