@@ -654,3 +654,9 @@ World.prototype.clear = function(){
         this.removeSpring(springs[i]);
     }
 };
+
+World.prototype.clone = function(){
+    var world = new World();
+    world.fromJSON(this.toJSON());
+    return world;
+};
