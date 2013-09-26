@@ -45,6 +45,8 @@
             
                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
             
+                <li><a href="../classes/Capsule.html">Capsule</a></li>
+            
                 <li><a href="../classes/Circle.html">Circle</a></li>
             
                 <li><a href="../classes/Constraint.html">Constraint</a></li>
@@ -137,6 +139,7 @@
 var vec2 = require(&#x27;../math/vec2&#x27;)
 ,   ContactEquation = require(&#x27;../constraints/ContactEquation&#x27;)
 ,   FrictionEquation = require(&#x27;../constraints/FrictionEquation&#x27;)
+,   Circle = require(&#x27;../shapes/Circle&#x27;)
 
 module.exports = Nearphase;
 
@@ -592,6 +595,105 @@ Nearphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj){
             return true;
         }
     }
+    return false;
+};
+
+/**
+ * Particle/convex nearphase
+ * @method particleConvex
+ * @param  {Body} bi
+ * @param  {Particle} si
+ * @param  {Array} xi
+ * @param  {Number} ai
+ * @param  {Body} bj
+ * @param  {Convex} sj
+ * @param  {Array} xj
+ * @param  {Number} aj
+ */
+Nearphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj){
+    var convexShape = sj,
+        convexAngle = aj,
+        convexBody = bj,
+        convexOffset = xj,
+        particleOffset = xi,
+        particleBody = bi,
+        particleShape = si;
+
+    var worldVertex0 = tmp1,
+        worldVertex1 = tmp2,
+        worldEdge = tmp3,
+        worldEdgeUnit = tmp4,
+        worldTangent = tmp5,
+        centerDist = tmp6,
+        convexToparticle = tmp7,
+        orthoDist = tmp8,
+        projectedPoint = tmp9,
+        dist = tmp10,
+        worldVertex = tmp11;
+
+    var numReported = 0;
+
+    verts = convexShape.vertices;
+
+    // Check all edges first
+    for(var i=0; i&lt;verts.length; i++){
+        var v0 = verts[i],
+            v1 = verts[(i+1)%verts.length];
+
+        vec2.rotate(worldVertex0, v0, convexAngle);
+        vec2.rotate(worldVertex1, v1, convexAngle);
+        vec2.add(worldVertex0, worldVertex0, convexOffset);
+        vec2.add(worldVertex1, worldVertex1, convexOffset);
+        vec2.sub(worldEdge, worldVertex1, worldVertex0);
+
+        vec2.normalize(worldEdgeUnit, worldEdge);
+
+        // Get tangent to the edge. Points out of the Convex
+        vec2.rotate(worldTangent, worldEdgeUnit, -Math.PI/2);
+
+        // Check distance from the plane spanned by the edge vs the particle
+        vec2.sub(dist, particleOffset, worldVertex0);
+        var d = vec2.dot(dist, worldTangent);
+        vec2.sub(centerDist, worldVertex0, convexOffset);
+
+        vec2.sub(convexToparticle, particleOffset, convexOffset);
+
+        if(d &lt; 0 &amp;&amp; vec2.dot(centerDist,convexToparticle) &gt; 0){
+
+            // Now project the particle onto the edge
+            vec2.scale(orthoDist, worldTangent, d);
+            vec2.sub(projectedPoint, particleOffset, orthoDist);
+
+            // Check if the point is within the edge span
+            var pos =  vec2.dot(worldEdgeUnit, projectedPoint);
+            var pos0 = vec2.dot(worldEdgeUnit, worldVertex0);
+            var pos1 = vec2.dot(worldEdgeUnit, worldVertex1);
+
+            if(pos &gt; pos0 &amp;&amp; pos &lt; pos1){
+                // We got contact!
+
+                var c = this.createContactEquation(particleBody,convexBody);
+
+                vec2.copy(c.ni, orthoDist);
+                vec2.normalize(c.ni, c.ni);
+
+                vec2.set(c.ri,  0, 0);
+                vec2.add(c.ri, c.ri, particleOffset);
+                vec2.sub(c.ri, c.ri, particleBody.position);
+
+                vec2.sub(c.rj, projectedPoint, convexOffset);
+                vec2.add(c.rj, c.rj, convexOffset);
+                vec2.sub(c.rj, c.rj, convexBody.position);
+
+                this.contactEquations.push(c);
+
+                if(this.enableFriction)
+                    this.frictionEquations.push( this.createFrictionFromContact(c) );
+
+                return true;
+            }
+        }
+    }
 
     return false;
 };
@@ -808,6 +910,32 @@ Nearphase.prototype.circleParticle = function(   bi,si,xi,ai, bj,sj,xj,aj ){
     return true;
 };
 
+var capsulePlane_tmpCircle = new Circle(1),
+    capsulePlane_tmp1 = vec2.create(),
+    capsulePlane_tmp2 = vec2.create(),
+    capsulePlane_tmp3 = vec2.create();
+Nearphase.prototype.capsulePlane = function( bi,si,xi,ai, bj,sj,xj,aj ){
+    var end1 = capsulePlane_tmp1,
+        end2 = capsulePlane_tmp2,
+        circle = capsulePlane_tmpCircle,
+        dst = capsulePlane_tmp3;
+
+    // Compute world end positions
+    vec2.set(end1, -si.length/2, 0);
+    vec2.rotate(end1,end1,ai);
+    vec2.add(end1,end1,xi);
+
+    vec2.set(end2,  si.length/2, 0);
+    vec2.rotate(end2,end2,ai);
+    vec2.add(end2,end2,xi);
+
+    circle.radius = si.radius;
+
+    // Do nearphase as two circles
+    this.circlePlane(bi,circle,end1,0, bj,sj,xj,aj);
+    this.circlePlane(bi,circle,end2,0, bj,sj,xj,aj);
+};
+
 /**
  * Creates ContactEquations and FrictionEquations for a collision.
  * @method circlePlane
@@ -852,13 +980,13 @@ Nearphase.prototype.circlePlane = function(   bi,si,xi,ai, bj,sj,xj,aj ){
     vec2.copy(contact.ni, worldNormal);
 
     // rj is the vector from circle center to the contact point
-    vec2.scale( contact.rj, contact.ni, -circleShape.radius);
+    vec2.scale(contact.rj, contact.ni, -circleShape.radius);
     vec2.add(contact.rj, contact.rj, circleOffset);
     vec2.sub(contact.rj, contact.rj, circleBody.position);
 
     // ri is the distance from plane center to contact.
     vec2.scale(temp, contact.ni, d);
-    vec2.sub( contact.ri, planeToCircle, temp ); // Subtract normal distance vector from the distance vector
+    vec2.sub(contact.ri, planeToCircle, temp ); // Subtract normal distance vector from the distance vector
     vec2.add(contact.ri, contact.ri, planeOffset);
     vec2.sub(contact.ri, contact.ri, planeBody.position);
 

@@ -45,6 +45,8 @@
             
                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
             
+                <li><a href="../classes/Capsule.html">Capsule</a></li>
+            
                 <li><a href="../classes/Circle.html">Circle</a></li>
             
                 <li><a href="../classes/Constraint.html">Constraint</a></li>
@@ -236,7 +238,7 @@
                     <ul class="index-list methods">
                         
                             <li class="index-item method">
-                                <a href="#method_checkCircleCircle">checkCircleCircle</a>
+                                <a href="#method_capsulePlane">capsulePlane</a>
 
                                 
                                     <span class="flag static">static</span>
@@ -245,7 +247,7 @@
                             </li>
                         
                             <li class="index-item method">
-                                <a href="#method_checkCircleConvex">checkCircleConvex</a>
+                                <a href="#method_circleCircle">circleCircle</a>
 
                                 
                                     <span class="flag static">static</span>
@@ -254,7 +256,7 @@
                             </li>
                         
                             <li class="index-item method">
-                                <a href="#method_checkCircleLine">checkCircleLine</a>
+                                <a href="#method_circleConvex">circleConvex</a>
 
                                 
                                     <span class="flag static">static</span>
@@ -263,7 +265,7 @@
                             </li>
                         
                             <li class="index-item method">
-                                <a href="#method_checkCircleParticle">checkCircleParticle</a>
+                                <a href="#method_circleLine">circleLine</a>
 
                                 
                                     <span class="flag static">static</span>
@@ -272,7 +274,7 @@
                             </li>
                         
                             <li class="index-item method">
-                                <a href="#method_checkCirclePlane">checkCirclePlane</a>
+                                <a href="#method_circleParticle">circleParticle</a>
 
                                 
                                     <span class="flag static">static</span>
@@ -281,7 +283,7 @@
                             </li>
                         
                             <li class="index-item method">
-                                <a href="#method_checkCircleRectangle">checkCircleRectangle</a>
+                                <a href="#method_circlePlane">circlePlane</a>
 
                                 
                                     <span class="flag static">static</span>
@@ -290,7 +292,7 @@
                             </li>
                         
                             <li class="index-item method">
-                                <a href="#method_checkConvexConvex">checkConvexConvex</a>
+                                <a href="#method_circleRectangle">circleRectangle</a>
 
                                 
                                     <span class="flag static">static</span>
@@ -299,7 +301,7 @@
                             </li>
                         
                             <li class="index-item method">
-                                <a href="#method_checkConvexPlane">checkConvexPlane</a>
+                                <a href="#method_convexConvex">convexConvex</a>
 
                                 
                                     <span class="flag static">static</span>
@@ -308,7 +310,7 @@
                             </li>
                         
                             <li class="index-item method">
-                                <a href="#method_checkParticlePlane">checkParticlePlane</a>
+                                <a href="#method_convexParticle">convexParticle</a>
 
                                 
                                     <span class="flag static">static</span>
@@ -317,16 +319,7 @@
                             </li>
                         
                             <li class="index-item method">
-                                <a href="#method_checkPlaneLine">checkPlaneLine</a>
-
-                                
-                                    <span class="flag static">static</span>
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method">
-                                <a href="#method_checkRectangleRectangle">checkRectangleRectangle</a>
+                                <a href="#method_convexPlane">convexPlane</a>
 
                                 
                                     <span class="flag static">static</span>
@@ -337,6 +330,42 @@
                             <li class="index-item method">
                                 <a href="#method_getCollisionPairs">getCollisionPairs</a>
 
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_particlePlane">particlePlane</a>
+
+                                
+                                    <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_planeLine">planeLine</a>
+
+                                
+                                    <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_rectangleParticle">rectangleParticle</a>
+
+                                
+                                    <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_rectangleRectangle">rectangleRectangle</a>
+
+                                
+                                    <span class="flag static">static</span>
                                 
                                 
                             </li>
@@ -357,8 +386,179 @@
                 <h2 class="off-left">Methods</h2>
 
                 
-                    <div id="method_checkCircleCircle" class="method item">
-    <h3 class="name"><code>checkCircleCircle</code></h3>
+                    <div id="method_capsulePlane" class="method item">
+    <h3 class="name"><code>capsulePlane</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>capsule</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>circleOffset</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>plane</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>convexOffset</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Boolean</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_collision_Broadphase.js.html#l44"><code>src&#x2F;collision&#x2F;Broadphase.js:44</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Capsule/plane intersection test</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">capsule</code>
+                        <span class="type"><a href="../classes/Capsule.html" class="crosslink">Capsule</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">circleOffset</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">plane</code>
+                        <span class="type"><a href="../classes/Plane.html" class="crosslink">Plane</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">convexOffset</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Boolean</span>:
+                    
+                    <p>Whether they intersect</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_circleCircle" class="method item">
+    <h3 class="name"><code>circleCircle</code></h3>
 
     
         <div class="args">
@@ -423,7 +623,7 @@
             
         
         
-        <a href="../files/src_collision_Broadphase.js.html#l142"><code>src&#x2F;collision&#x2F;Broadphase.js:142</code></a>
+        <a href="../files/src_collision_Broadphase.js.html#l156"><code>src&#x2F;collision&#x2F;Broadphase.js:156</code></a>
         
         </p>
 
@@ -526,8 +726,8 @@
 </div>
 
                 
-                    <div id="method_checkCircleConvex" class="method item">
-    <h3 class="name"><code>checkCircleConvex</code></h3>
+                    <div id="method_circleConvex" class="method item">
+    <h3 class="name"><code>circleConvex</code></h3>
 
     
         <div class="args">
@@ -697,8 +897,8 @@
 </div>
 
                 
-                    <div id="method_checkCircleLine" class="method item">
-    <h3 class="name"><code>checkCircleLine</code></h3>
+                    <div id="method_circleLine" class="method item">
+    <h3 class="name"><code>circleLine</code></h3>
 
     
         <div class="args">
@@ -769,7 +969,7 @@
             
         
         
-        <a href="../files/src_collision_Broadphase.js.html#l44"><code>src&#x2F;collision&#x2F;Broadphase.js:44</code></a>
+        <a href="../files/src_collision_Broadphase.js.html#l58"><code>src&#x2F;collision&#x2F;Broadphase.js:58</code></a>
         
         </p>
 
@@ -780,7 +980,7 @@
     </div>
 
     <div class="description">
-        <p>checkCircleLine</p>
+        <p>circleLine</p>
 
     </div>
 
@@ -887,8 +1087,8 @@
 </div>
 
                 
-                    <div id="method_checkCircleParticle" class="method item">
-    <h3 class="name"><code>checkCircleParticle</code></h3>
+                    <div id="method_circleParticle" class="method item">
+    <h3 class="name"><code>circleParticle</code></h3>
 
     
         <div class="args">
@@ -953,7 +1153,7 @@
             
         
         
-        <a href="../files/src_collision_Broadphase.js.html#l217"><code>src&#x2F;collision&#x2F;Broadphase.js:217</code></a>
+        <a href="../files/src_collision_Broadphase.js.html#l231"><code>src&#x2F;collision&#x2F;Broadphase.js:231</code></a>
         
         </p>
 
@@ -1056,8 +1256,8 @@
 </div>
 
                 
-                    <div id="method_checkCirclePlane" class="method item">
-    <h3 class="name"><code>checkCirclePlane</code></h3>
+                    <div id="method_circlePlane" class="method item">
+    <h3 class="name"><code>circlePlane</code></h3>
 
     
         <div class="args">
@@ -1128,7 +1328,7 @@
             
         
         
-        <a href="../files/src_collision_Broadphase.js.html#l236"><code>src&#x2F;collision&#x2F;Broadphase.js:236</code></a>
+        <a href="../files/src_collision_Broadphase.js.html#l292"><code>src&#x2F;collision&#x2F;Broadphase.js:292</code></a>
         
         </p>
 
@@ -1248,8 +1448,8 @@
 </div>
 
                 
-                    <div id="method_checkCircleRectangle" class="method item">
-    <h3 class="name"><code>checkCircleRectangle</code></h3>
+                    <div id="method_circleRectangle" class="method item">
+    <h3 class="name"><code>circleRectangle</code></h3>
 
     
         <div class="args">
@@ -1314,7 +1514,7 @@
             
         
         
-        <a href="../files/src_collision_Broadphase.js.html#l122"><code>src&#x2F;collision&#x2F;Broadphase.js:122</code></a>
+        <a href="../files/src_collision_Broadphase.js.html#l136"><code>src&#x2F;collision&#x2F;Broadphase.js:136</code></a>
         
         </p>
 
@@ -1417,8 +1617,8 @@
 </div>
 
                 
-                    <div id="method_checkConvexConvex" class="method item">
-    <h3 class="name"><code>checkConvexConvex</code></h3>
+                    <div id="method_convexConvex" class="method item">
+    <h3 class="name"><code>convexConvex</code></h3>
 
     
         <div class="args">
@@ -1483,7 +1683,7 @@
             
         
         
-        <a href="../files/src_collision_Broadphase.js.html#l108"><code>src&#x2F;collision&#x2F;Broadphase.js:108</code></a>
+        <a href="../files/src_collision_Broadphase.js.html#l122"><code>src&#x2F;collision&#x2F;Broadphase.js:122</code></a>
         
         </p>
 
@@ -1586,8 +1786,177 @@
 </div>
 
                 
-                    <div id="method_checkConvexPlane" class="method item">
-    <h3 class="name"><code>checkConvexPlane</code></h3>
+                    <div id="method_convexParticle" class="method item">
+    <h3 class="name"><code>convexParticle</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>convexShape</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>convexOffset</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>particleShape</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>particleOffset</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Boolean</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_collision_Broadphase.js.html#l272"><code>src&#x2F;collision&#x2F;Broadphase.js:272</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Convex/Particle intersection test</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">convexShape</code>
+                        <span class="type"><a href="../classes/Convex.html" class="crosslink">Convex</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">convexOffset</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">particleShape</code>
+                        <span class="type"><a href="../classes/Particle.html" class="crosslink">Particle</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">particleOffset</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Boolean</span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_convexPlane" class="method item">
+    <h3 class="name"><code>convexPlane</code></h3>
 
     
         <div class="args">
@@ -1664,7 +2033,7 @@
             
         
         
-        <a href="../files/src_collision_Broadphase.js.html#l161"><code>src&#x2F;collision&#x2F;Broadphase.js:161</code></a>
+        <a href="../files/src_collision_Broadphase.js.html#l175"><code>src&#x2F;collision&#x2F;Broadphase.js:175</code></a>
         
         </p>
 
@@ -1797,8 +2166,115 @@
 </div>
 
                 
-                    <div id="method_checkParticlePlane" class="method item">
-    <h3 class="name"><code>checkParticlePlane</code></h3>
+                    <div id="method_getCollisionPairs" class="method item">
+    <h3 class="name"><code>getCollisionPairs</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>world</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Array</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_collision_Broadphase.js.html#l15"><code>src&#x2F;collision&#x2F;Broadphase.js:15</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Get all potential intersecting body pairs.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">world</code>
+                        <span class="type"><a href="../classes/World.html" class="crosslink">World</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The world to search in.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Array</span>:
+                    
+                    <p>An array of the bodies, ordered in pairs. Example: A result of [a,b,c,d] means that the potential pairs are: (a,b), (c,d).</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_particlePlane" class="method item">
+    <h3 class="name"><code>particlePlane</code></h3>
 
     
         <div class="args">
@@ -1869,7 +2345,7 @@
             
         
         
-        <a href="../files/src_collision_Broadphase.js.html#l190"><code>src&#x2F;collision&#x2F;Broadphase.js:190</code></a>
+        <a href="../files/src_collision_Broadphase.js.html#l204"><code>src&#x2F;collision&#x2F;Broadphase.js:204</code></a>
         
         </p>
 
@@ -1987,8 +2463,8 @@
 </div>
 
                 
-                    <div id="method_checkPlaneLine" class="method item">
-    <h3 class="name"><code>checkPlaneLine</code></h3>
+                    <div id="method_planeLine" class="method item">
+    <h3 class="name"><code>planeLine</code></h3>
 
     
         <div class="args">
@@ -2065,7 +2541,7 @@
             
         
         
-        <a href="../files/src_collision_Broadphase.js.html#l64"><code>src&#x2F;collision&#x2F;Broadphase.js:64</code></a>
+        <a href="../files/src_collision_Broadphase.js.html#l78"><code>src&#x2F;collision&#x2F;Broadphase.js:78</code></a>
         
         </p>
 
@@ -2198,8 +2674,177 @@
 </div>
 
                 
-                    <div id="method_checkRectangleRectangle" class="method item">
-    <h3 class="name"><code>checkRectangleRectangle</code></h3>
+                    <div id="method_rectangleParticle" class="method item">
+    <h3 class="name"><code>rectangleParticle</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>rectangleShape</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>rectangleOffset</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>particleShape</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>particleOffset</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Boolean</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_collision_Broadphase.js.html#l250"><code>src&#x2F;collision&#x2F;Broadphase.js:250</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Rectangle/Particle intersection test</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">rectangleShape</code>
+                        <span class="type"><a href="../classes/Rectangle.html" class="crosslink">Rectangle</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">rectangleOffset</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">particleShape</code>
+                        <span class="type"><a href="../classes/Particle.html" class="crosslink">Particle</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">particleOffset</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Boolean</span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_rectangleRectangle" class="method item">
+    <h3 class="name"><code>rectangleRectangle</code></h3>
 
     
         <div class="args">
@@ -2276,7 +2921,7 @@
             
         
         
-        <a href="../files/src_collision_Broadphase.js.html#l84"><code>src&#x2F;collision&#x2F;Broadphase.js:84</code></a>
+        <a href="../files/src_collision_Broadphase.js.html#l98"><code>src&#x2F;collision&#x2F;Broadphase.js:98</code></a>
         
         </p>
 
@@ -2400,113 +3045,6 @@
                     
                         <span class="type">Boolean</span>:
                     
-                
-            </div>
-        </div>
-    
-
-    
-</div>
-
-                
-                    <div id="method_getCollisionPairs" class="method item">
-    <h3 class="name"><code>getCollisionPairs</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>world</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-        <span class="returns-inline">
-            <span class="type">Array</span>
-        </span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_collision_Broadphase.js.html#l15"><code>src&#x2F;collision&#x2F;Broadphase.js:15</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Get all potential intersecting body pairs.</p>
-
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">world</code>
-                        <span class="type"><a href="../classes/World.html" class="crosslink">World</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>The world to search in.</p>
-
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                
-                    
-                        <span class="type">Array</span>:
-                    
-                    <p>An array of the bodies, ordered in pairs. Example: A result of [a,b,c,d] means that the potential pairs are: (a,b), (c,d).</p>
-
                 
             </div>
         </div>

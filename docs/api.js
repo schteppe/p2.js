@@ -3,6 +3,7 @@ YUI.add("yuidoc-meta", function(Y) {
     "classes": [
         "Body",
         "Broadphase",
+        "Capsule",
         "Circle",
         "Constraint",
         "ContactEquation",

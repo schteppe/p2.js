@@ -45,6 +45,8 @@
             
                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
             
+                <li><a href="../classes/Capsule.html">Capsule</a></li>
+            
                 <li><a href="../classes/Circle.html">Circle</a></li>
             
                 <li><a href="../classes/Constraint.html">Constraint</a></li>
@@ -146,11 +148,13 @@ module.exports = Spring;
  * @param {Body} bodyA
  * @param {Body} bodyB
  * @param {Object} [options]
- * @param {number} options.restLength A number &gt; 0. Default: 1
- * @param {number} options.stiffness A number &gt;= 0. Default: 100
- * @param {number} options.damping A number &gt;= 0. Default: 1
- *
- * @todo Should have anchor points in the bodies
+ * @param {number} options.restLength   A number &gt; 0. Default: 1
+ * @param {number} options.stiffness    A number &gt;= 0. Default: 100
+ * @param {number} options.damping      A number &gt;= 0. Default: 1
+ * @param {Array}  options.worldAnchorA Where to hook the spring to body A, in world coordinates.
+ * @param {Array}  options.worldAnchorB
+ * @param {Array}  options.localAnchorA Where to hook the spring to body A, in local body coordinates.
+ * @param {Array}  options.localAnchorB
  */
 function Spring(bodyA,bodyB,options){
     options = options || {};
@@ -160,7 +164,7 @@ function Spring(bodyA,bodyB,options){
      * @property restLength
      * @type {number}
      */
-    this.restLength = options.restLength || 1;
+    this.restLength = typeof(options.restLength)==&quot;number&quot; ? options.restLength : 1;
 
     /**
      * Stiffness of the spring.
@@ -189,12 +193,72 @@ function Spring(bodyA,bodyB,options){
      * @type {Body}
      */
     this.bodyB = bodyB;
+
+    /**
+     * Anchor for bodyA in local bodyA coordinates.
+     * @property localAnchorA
+     * @type {Array}
+     */
+    this.localAnchorA = vec2.fromValues(0,0);
+
+    /**
+     * Anchor for bodyB in local bodyB coordinates.
+     * @property localAnchorB
+     * @type {Array}
+     */
+    this.localAnchorB = vec2.fromValues(0,0);
+
+    if(options.localAnchorA) vec2.copy(this.localAnchorA, options.localAnchorA);
+    if(options.localAnchorB) vec2.copy(this.localAnchorB, options.localAnchorB);
+    if(options.worldAnchorA) this.setWorldAnchorA(options.worldAnchorA);
+    if(options.worldAnchorB) this.setWorldAnchorB(options.worldAnchorB);
 };
 
-var applyForce_r =      vec2.create(),
-    applyForce_r_unit = vec2.create(),
-    applyForce_u =      vec2.create(),
-    applyForce_f =      vec2.create();
+/**
+ * Set the anchor point on body A, using world coordinates.
+ * @method setWorldAnchorA
+ * @param {Array} worldAnchorA
+ */
+Spring.prototype.setWorldAnchorA = function(worldAnchorA){
+    this.bodyA.toLocalFrame(this.localAnchorA, worldAnchorA);
+};
+
+/**
+ * Set the anchor point on body B, using world coordinates.
+ * @method setWorldAnchorB
+ * @param {Array} worldAnchorB
+ */
+Spring.prototype.setWorldAnchorB = function(worldAnchorB){
+    this.bodyB.toLocalFrame(this.localAnchorB, worldAnchorB);
+};
+
+/**
+ * Get the anchor point on body A, in world coordinates.
+ * @method getWorldAnchorA
+ * @param {Array} result The vector to store the result in.
+ */
+Spring.prototype.getWorldAnchorA = function(result){
+    this.bodyA.toWorldFrame(result, this.localAnchorA);
+};
+
+/**
+ * Get the anchor point on body B, in world coordinates.
+ * @method getWorldAnchorB
+ * @param {Array} result The vector to store the result in.
+ */
+Spring.prototype.getWorldAnchorB = function(result){
+    this.bodyB.toWorldFrame(result, this.localAnchorB);
+};
+
+var applyForce_r =              vec2.create(),
+    applyForce_r_unit =         vec2.create(),
+    applyForce_u =              vec2.create(),
+    applyForce_f =              vec2.create(),
+    applyForce_worldAnchorA =   vec2.create(),
+    applyForce_worldAnchorB =   vec2.create(),
+    applyForce_ri =             vec2.create(),
+    applyForce_rj =             vec2.create(),
+    applyForce_tmp =            vec2.create();
 
 /**
  * Apply the spring force to the connected bodies.
@@ -209,15 +273,49 @@ Spring.prototype.applyForce = function(){
         r = applyForce_r,
         r_unit = applyForce_r_unit,
         u = applyForce_u,
-        f = applyForce_f;
+        f = applyForce_f,
+        tmp = applyForce_tmp;
 
-    vec2.sub(r, bodyA.position, bodyB.position);
-    vec2.sub(u, bodyA.velocity, bodyB.velocity);
+    var worldAnchorA = applyForce_worldAnchorA,
+        worldAnchorB = applyForce_worldAnchorB,
+        ri = applyForce_ri,
+        rj = applyForce_rj;
+
+    // Get world anchors
+    this.getWorldAnchorA(worldAnchorA);
+    this.getWorldAnchorB(worldAnchorB);
+
+    // Get offset points
+    vec2.sub(ri, worldAnchorA, bodyA.position);
+    vec2.sub(rj, worldAnchorB, bodyB.position);
+
+    // Compute distance vector between world anchor points
+    vec2.sub(r, worldAnchorB, worldAnchorA);
     var rlen = vec2.len(r);
     vec2.normalize(r_unit,r);
-    vec2.scale(f, r_unit, k*(rlen-l) + d*vec2.dot(u,r_unit));
+
+    //console.log(rlen)
+    //console.log(&quot;A&quot;,vec2.str(worldAnchorA),&quot;B&quot;,vec2.str(worldAnchorB))
+
+    // Compute relative velocity of the anchor points, u
+    vec2.sub(u, bodyB.velocity, bodyA.velocity);
+    vec2.crossZV(tmp, bodyB.angularVelocity, rj);
+    vec2.add(u, u, tmp);
+    vec2.crossZV(tmp, bodyA.angularVelocity, ri);
+    vec2.sub(u, u, tmp);
+
+    // F = - k * ( x - L ) - D * ( u )
+    vec2.scale(f, r_unit, -k*(rlen-l) - d*vec2.dot(u,r_unit));
+
+    // Add forces to bodies
     vec2.sub( bodyA.force, bodyA.force, f);
     vec2.add( bodyB.force, bodyB.force, f);
+
+    // Angular force
+    var ri_x_f = vec2.crossLength(ri, f);
+    var rj_x_f = vec2.crossLength(rj, f);
+    bodyA.angularForce -= ri_x_f;
+    bodyB.angularForce -= rj_x_f;
 };
 
     </pre>
