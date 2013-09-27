@@ -15,10 +15,11 @@ function Rectangle(w,h){
                     vec2.fromValues( w/2, -h/2),
                     vec2.fromValues( w/2,  h/2),
                     vec2.fromValues(-w/2,  h/2)];
-    Convex.call(this,verts);
 
     this.width = w;
     this.height = h;
+
+    Convex.call(this,verts);
 };
 Rectangle.prototype = new Convex();
 
@@ -33,3 +34,10 @@ Rectangle.prototype.computeMomentOfInertia = function(mass){
         h = this.height;
     return mass * (h*h + w*w) / 12;
 };
+
+Rectangle.prototype.updateBoundingRadius = function(){
+    var w = this.width,
+        h = this.height;
+    this.boundingRadius = Math.sqrt(w*w + h*h) / 2;
+};
+

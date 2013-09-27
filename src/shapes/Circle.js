@@ -10,7 +10,6 @@ module.exports = Circle;
  * @param {number} radius
  */
 function Circle(radius){
-    Shape.call(this,Shape.CIRCLE);
 
     /**
      * The radius of the circle.
@@ -18,9 +17,15 @@ function Circle(radius){
      * @type {number}
      */
     this.radius = radius || 1;
+
+    Shape.call(this,Shape.CIRCLE);
 };
 Circle.prototype = new Shape();
 Circle.prototype.computeMomentOfInertia = function(mass){
     var r = this.radius;
     return mass * r * r / 2;
+};
+
+Circle.prototype.updateBoundingRadius = function(){
+    this.boundingRadius = this.radius;
 };

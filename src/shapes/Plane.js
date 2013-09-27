@@ -15,3 +15,8 @@ Plane.prototype = new Shape();
 Plane.prototype.computeMomentOfInertia = function(mass){
     return 0; // Plane is infinite. The inertia should therefore be infinty but by convention we set 0 here
 };
+
+Plane.prototype.updateBoundingRadius = function(){
+    this.boundingRadius = 0;
+};
+

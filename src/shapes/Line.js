@@ -9,7 +9,6 @@ module.exports = Line;
  * @constructor
  */
 function Line(length){
-    Shape.call(this,Shape.LINE);
 
     /**
      * Length of this line
@@ -17,8 +16,15 @@ function Line(length){
      * @type {Number}
      */
     this.length = length;
+
+    Shape.call(this,Shape.LINE);
 };
 Line.prototype = new Shape();
 Line.prototype.computeMomentOfInertia = function(mass){
     return mass * Math.pow(this.length,2) / 12;
 };
+
+Line.prototype.updateBoundingRadius = function(){
+    this.boundingRadius = this.length;
+};
+

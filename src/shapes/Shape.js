@@ -7,6 +7,8 @@ module.exports = Shape;
  */
 function Shape(type){
     this.type = type;
+    this.boundingRadius = 0;
+    if(type) this.updateBoundingRadius();
 };
 
 Shape.CIRCLE =      1;
@@ -25,4 +27,8 @@ Shape.CAPSULE =     64;
  */
 Shape.prototype.computeMomentOfInertia = function(mass){
     throw new Error("Shape.computeMomentOfInertia is not implemented in this Shape...");
+};
+
+Shape.prototype.updateBoundingRadius = function(){
+    throw new Error("Shape.updateBoundingRadius is not implemented in this Shape...");
 };

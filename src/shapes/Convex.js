@@ -12,7 +12,6 @@ module.exports = Convex;
  * @param {Array} vertices An array of Float32Array vertices that span this shape. Vertices are given in counter-clockwise (CCW) direction.
  */
 function Convex(vertices){
-    Shape.call(this,Shape.CONVEX);
 
     /**
      * Vertices defined in the local frame.
@@ -47,6 +46,8 @@ function Convex(vertices){
      */
     this.boundingRadius = 0;
     this.updateBoundingRadius();
+
+    Shape.call(this,Shape.CONVEX);
 };
 Convex.prototype = new Shape();
 
@@ -207,3 +208,16 @@ Convex.prototype.updateBoundingRadius = function(){
     }
     this.boundingRadius = Math.sqrt(r2);
 };
+
+Convex.prototype.updateBoundingRadius = function(){
+    var verts = this.vertices,
+        r2 = 0;
+
+    for(var i=0; i!==verts.length; i++){
+        var l2 = vec2.squaredLength(verts[i]);
+        if(l2 > r2) r2 = l2;
+    }
+
+    this.boundingRadius = Math.sqrt(r2);
+};
+
