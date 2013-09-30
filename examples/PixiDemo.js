@@ -130,6 +130,9 @@ PixiDemo.drawSpring = function(g,restLength,color,lineWidth){
     lineWidth = lineWidth || 1;
     color = typeof(color)=="undefined" ? 0xffffff : color;
     g.lineStyle(lineWidth, color, 1);
+    if(restLength < lineWidth*10){
+        restLength = lineWidth*10;
+    }
     var M = 12;
     var dx = restLength/M;
     g.moveTo(-restLength/2,0);
@@ -176,7 +179,6 @@ PixiDemo.drawPlane = function(g, x0, x1, color, lineWidth, diagMargin, diagSize)
     }
 };
 
-
 PixiDemo.drawLine = function(g, len, color, lineWidth){
     lineWidth = lineWidth || 1;
     color = typeof(color)=="undefined" ? 0x000000 : color;
@@ -185,6 +187,35 @@ PixiDemo.drawLine = function(g, len, color, lineWidth){
     // Draw the actual plane
     g.moveTo(-len/2,0);
     g.lineTo( len/2,0);
+};
+
+PixiDemo.drawCapsule = function(g, x, y, angle, len, radius, color, fillColor, lineWidth){
+    lineWidth = lineWidth || 1;
+    color = typeof(color)=="undefined" ? 0x000000 : color;
+    g.lineStyle(lineWidth, color, 1);
+
+    // Draw circles at ends
+    var c = Math.cos(angle);
+    var s = Math.sin(angle);
+    g.drawCircle(-len/2*c + x, -len/2*s + y, radius);
+    g.drawCircle( len/2*c + x,  len/2*s + y, radius);
+
+    // Draw rectangle
+    g.lineStyle(lineWidth, color, 0);
+    g.beginFill(fillColor);
+    g.moveTo(-len/2*c + radius*s + x, -len/2*s + radius*c + y);
+    g.lineTo( len/2*c + radius*s + x,  len/2*s + radius*c + y);
+    g.lineTo( len/2*c - radius*s + x,  len/2*s - radius*c + y);
+    g.lineTo(-len/2*c - radius*s + x, -len/2*s - radius*c + y);
+    g.endFill();
+
+    // Draw lines in between
+    g.lineStyle(lineWidth, color, 1);
+    g.moveTo(-len/2*c + radius*s + x, -len/2*s + radius*c + y);
+    g.lineTo( len/2*c + radius*s + x,  len/2*s + radius*c + y);
+    g.moveTo(-len/2*c - radius*s + x, -len/2*s - radius*c + y);
+    g.lineTo( len/2*c - radius*s + x,  len/2*s - radius*c + y);
+
 };
 
 // Todo angle
@@ -225,8 +256,10 @@ PixiDemo.drawConvex = function(g,verts,triangles,color,fillColor,lineWidth){
     }
 };
 
-var X = vec2.fromValues(1,0);
-var distVec = vec2.fromValues(0,0);
+var X = vec2.fromValues(1,0),
+    distVec = vec2.fromValues(0,0),
+    worldAnchorA = vec2.fromValues(0,0),
+    worldAnchorB = vec2.fromValues(0,0);
 PixiDemo.prototype.render = function(){
     var w = this.renderer.width,
         h = this.renderer.height,
@@ -249,18 +282,34 @@ PixiDemo.prototype.render = function(){
             sprite = springSprites[i],
             bA = s.bodyA,
             bB = s.bodyB;
+        s.getWorldAnchorA(worldAnchorA);
+        s.getWorldAnchorB(worldAnchorB);
+
         sprite.scale.y = 1;
-        if(bA.position[1] < bB.position[1]){
-            var tmp = bA;
-            bA = bB;
-            bB = tmp;
+        if(worldAnchorA[1] < worldAnchorB[1]){
+            var tmp = worldAnchorA;
+            worldAnchorA = worldAnchorB;
+            worldAnchorB = tmp;
             sprite.scale.y = -1;
         }
-        sprite.position.x = ( (     bA.position[0] * pixelsPerLengthUnit ) + (     bB.position[0] * pixelsPerLengthUnit ) ) / 2;
-        sprite.position.y = ( ( h - bA.position[1] * pixelsPerLengthUnit ) + ( h - bB.position[1] * pixelsPerLengthUnit ) ) / 2;
-        distVec[0] = (     bA.position[0] * pixelsPerLengthUnit ) - (     bB.position[0] * pixelsPerLengthUnit );
-        distVec[1] = ( h - bA.position[1] * pixelsPerLengthUnit ) - ( h - bB.position[1] * pixelsPerLengthUnit );
+
+        var sxA = (     worldAnchorA[0] * pixelsPerLengthUnit ),
+            syA = ( h - worldAnchorA[1] * pixelsPerLengthUnit ),
+            sxB = (     worldAnchorB[0] * pixelsPerLengthUnit ),
+            syB = ( h - worldAnchorB[1] * pixelsPerLengthUnit );
+
+        // Spring position is the mean point between the anchors
+        sprite.position.x = ( sxA + sxB ) / 2;
+        sprite.position.y = ( syA + syB ) / 2;
+
+        // Compute distance vector between anchors, in screen coords
+        distVec[0] = sxA - sxB;
+        distVec[1] = syA - syB;
+
+        // Compute angle
         sprite.rotation = -Math.acos( vec2.dot(X, distVec) / vec2.length(distVec) );
+
+        // And scale
         sprite.scale.x = vec2.length(distVec) / (s.restLength * pixelsPerLengthUnit);
     }
 
@@ -298,6 +347,9 @@ PixiDemo.prototype.addRenderable = function(obj){
 
             } else if(child instanceof Rectangle){
                 PixiDemo.drawRectangle(sprite, offset[0]*ppu, offset[1]*ppu, angle, child.width*ppu, child.height*ppu, 0x000000, lw);
+
+            } else if(child instanceof Capsule){
+                PixiDemo.drawCapsule(sprite, offset[0]*ppu, offset[1]*ppu, angle, child.length*ppu, child.radius*ppu, 0x000000, 0xFFFFFF,lw);
 
             } else if(child instanceof Convex){
                 // Scale verts

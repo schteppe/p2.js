@@ -45,6 +45,8 @@
             
                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
             
+                <li><a href="../classes/Capsule.html">Capsule</a></li>
+            
                 <li><a href="../classes/Circle.html">Circle</a></li>
             
                 <li><a href="../classes/Constraint.html">Constraint</a></li>
@@ -71,11 +73,15 @@
             
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
+                <li><a href="../classes/Nearphase.html">Nearphase</a></li>
+            
                 <li><a href="../classes/Particle.html">Particle</a></li>
             
                 <li><a href="../classes/Plane.html">Plane</a></li>
             
                 <li><a href="../classes/PointToPointConstraint.html">PointToPointConstraint</a></li>
+            
+                <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -138,7 +144,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_collision_GridBroadphase.js.html#l8"><code>src&#x2F;collision&#x2F;GridBroadphase.js:8</code></a>
+            Defined in: <a href="../files/src_collision_GridBroadphase.js.html#l9"><code>src&#x2F;collision&#x2F;GridBroadphase.js:9</code></a>
         </div>
     
 
@@ -151,6 +157,7 @@
 
 <div class="box intro">
     <p>Broadphase that uses axis-aligned bins.</p>
+
 </div>
 
 
@@ -228,7 +235,7 @@
             
         
         
-        <a href="../files/src_collision_GridBroadphase.js.html#l8"><code>src&#x2F;collision&#x2F;GridBroadphase.js:8</code></a>
+        <a href="../files/src_collision_GridBroadphase.js.html#l9"><code>src&#x2F;collision&#x2F;GridBroadphase.js:9</code></a>
         
         </p>
 
@@ -258,6 +265,7 @@
 
                     <div class="param-description">
                         <p>Lower x bound of the grid</p>
+
                     </div>
 
                     
@@ -273,6 +281,7 @@
 
                     <div class="param-description">
                         <p>Upper x bound</p>
+
                     </div>
 
                     
@@ -288,6 +297,7 @@
 
                     <div class="param-description">
                         <p>Lower y bound</p>
+
                     </div>
 
                     
@@ -303,6 +313,7 @@
 
                     <div class="param-description">
                         <p>Upper y bound</p>
+
                     </div>
 
                     
@@ -318,6 +329,7 @@
 
                     <div class="param-description">
                         <p>Number of bins along x axis</p>
+
                     </div>
 
                     
@@ -333,6 +345,7 @@
 
                     <div class="param-description">
                         <p>Number of bins along y axis</p>
+
                     </div>
 
                     
@@ -372,6 +385,13 @@
 
                     <ul class="index-list methods extends">
                         
+                            <li class="index-item method">
+                                <a href="#method_getBinIndex">getBinIndex</a>
+
+                                
+                                
+                            </li>
+                        
                             <li class="index-item method inherited">
                                 <a href="#method_getCollisionPairs">getCollisionPairs</a>
 
@@ -395,7 +415,134 @@
                 <h2 class="off-left">Methods</h2>
 
                 
-                    <div id="method_getCollisionPairs" class="method item inherited">
+                    <div id="method_getBinIndex" class="method item">
+    <h3 class="name"><code>getBinIndex</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>x</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>y</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Number</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_collision_GridBroadphase.js.html#l39"><code>src&#x2F;collision&#x2F;GridBroadphase.js:39</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Get a bin index given a world coordinate</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">x</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">y</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Number</span>:
+                    
+                    <p>Integer index</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_getCollisionPairs" class="method item">
     <h3 class="name"><code>getCollisionPairs</code></h3>
 
     
@@ -432,13 +579,16 @@
 
     <div class="meta">
         
+            <p>Inherited from
+            <a href="../classes/Broadphase.html#method_getCollisionPairs">
+                Broadphase
+            </a>
             
-                <p>Inherited from
-                <a href="../classes/Broadphase.html#method_getCollisionPairs">Broadphase</a>:
+            but overwritten in
             
         
         
-        <a href="../files/src_collision_Broadphase.js.html#l473"><code>src&#x2F;collision&#x2F;Broadphase.js:473</code></a>
+        <a href="../files/src_collision_GridBroadphase.js.html#l59"><code>src&#x2F;collision&#x2F;GridBroadphase.js:59</code></a>
         
         </p>
 
@@ -449,7 +599,8 @@
     </div>
 
     <div class="description">
-        <p>Get all potential intersecting body pairs.</p>
+        <p>Get collision pairs.</p>
+
     </div>
 
     
@@ -467,7 +618,7 @@
                     
 
                     <div class="param-description">
-                        <p>The world to search in.</p>
+                         
                     </div>
 
                     
@@ -486,7 +637,6 @@
                     
                         <span class="type">Array</span>:
                     
-                    An array of the bodies, ordered in pairs. Example: A result of [a,b,c,d] means that the potential pairs are: (a,b), (c,d).
                 
             </div>
         </div>

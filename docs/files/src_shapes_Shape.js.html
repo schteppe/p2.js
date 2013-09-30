@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/objects/Shape.js - p2.js</title>
+    <title>src/shapes/Shape.js - p2.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -45,6 +45,8 @@
             
                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
             
+                <li><a href="../classes/Capsule.html">Capsule</a></li>
+            
                 <li><a href="../classes/Circle.html">Circle</a></li>
             
                 <li><a href="../classes/Constraint.html">Constraint</a></li>
@@ -71,11 +73,15 @@
             
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
+                <li><a href="../classes/Nearphase.html">Nearphase</a></li>
+            
                 <li><a href="../classes/Particle.html">Particle</a></li>
             
                 <li><a href="../classes/Plane.html">Plane</a></li>
             
                 <li><a href="../classes/PointToPointConstraint.html">PointToPointConstraint</a></li>
+            
+                <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -126,16 +132,11 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: src/objects/Shape.js</h1>
+                        <h1 class="file-heading">File: src/shapes/Shape.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
-exports.Shape = Shape;
-exports.Particle = Particle;
-exports.Circle = Circle;
-exports.Plane = Plane;
-exports.Convex = Convex;
-exports.Line = Line;
+module.exports = Shape;
 
 /**
  * Base class for shapes.
@@ -151,6 +152,8 @@ Shape.PARTICLE =    2;
 Shape.PLANE =       4;
 Shape.CONVEX =      8;
 Shape.LINE =        16;
+Shape.RECTANGLE =   32;
+Shape.CAPSULE =     64;
 
 /**
  * Should return the moment of inertia around the Z axis of the body given the total mass. See &lt;a href=&quot;http://en.wikipedia.org/wiki/List_of_moments_of_inertia&quot;&gt;Wikipedia&#x27;s list of moments of inertia&lt;/a&gt;.
@@ -160,101 +163,6 @@ Shape.LINE =        16;
  */
 Shape.prototype.computeMomentOfInertia = function(mass){
     throw new Error(&quot;Shape.computeMomentOfInertia is not implemented in this Shape...&quot;);
-};
-
-/**
- * Particle shape class.
- * @class Particle
- * @constructor
- * @extends {Shape}
- */
-function Particle(){
-    Shape.call(this,Shape.PARTICLE);
-};
-Particle.prototype = new Shape();
-Particle.prototype.computeMomentOfInertia = function(mass){
-    return 0; // Can&#x27;t rotate a particle
-};
-
-
-/**
- * Circle shape class.
- * @class Circle
- * @extends {Shape}
- * @constructor
- * @param {number} radius
- */
-function Circle(radius){
-    Shape.call(this,Shape.CIRCLE);
-
-    /**
-     * The radius of the circle.
-     * @property radius
-     * @type {number}
-     */
-    this.radius = radius || 1;
-};
-Circle.prototype = new Shape();
-Circle.prototype.computeMomentOfInertia = function(mass){
-    var r = this.radius;
-    return mass * r * r / 2;
-};
-
-/**
- * Plane shape class. The plane is facing in the Y direction.
- * @class Plane
- * @extends {Shape}
- * @constructor
- */
-function Plane(){
-    Shape.call(this,Shape.PLANE);
-};
-Plane.prototype = new Shape();
-Plane.prototype.computeMomentOfInertia = function(mass){
-    return 0; // Plane is infinite. The inertia should therefore be infinty but by convention we set 0 here
-};
-
-/**
- * Convex shape class.
- * @class Convex
- * @constructor
- * @extends {Shape}
- * @param {Array} vertices An array of Float32Array vertices that span this shape. Vertices are given in counter-clockwise (CCW) direction.
- */
-function Convex(vertices){
-    Shape.call(this,Shape.CONVEX);
-
-    /**
-     * Vertices defined in the local frame.
-     * @property vertices
-     * @type {Array}
-     */
-    this.vertices = vertices;
-};
-Convex.prototype = new Shape();
-Convex.prototype.computeMomentOfInertia = function(mass){
-    return 1;
-};
-
-/**
- * Line shape class. The line shape is along the x direction, and stretches from [-length/2, 0] to [length/2,0].
- * @class Plane
- * @extends {Shape}
- * @constructor
- */
-function Line(length){
-    Shape.call(this,Shape.LINE);
-
-    /**
-     * Length of this line
-     * @property length
-     * @type {Number}
-     */
-    this.length = length;
-};
-Line.prototype = new Shape();
-Line.prototype.computeMomentOfInertia = function(mass){
-    return mass * Math.pow(this.length,2) / 12;
 };
 
     </pre>

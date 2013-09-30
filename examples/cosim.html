@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>p2.js</title>
+    <script src="../build/p2.js"></script>
+    <script src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
+    <script src="pixi.js"></script>
+    <script src="Demo.js"></script>
+    <script src="PixiDemo.js"></script>
+    <link href="demo.css" rel="stylesheet"/>
+</head>
+<body>
+    <script>
+
+        var vec2 = p2.vec2;
+
+        var world = new p2.World({
+            doProfiling : true,
+            gravity : [0,-1]
+        });
+
+        world.solver.setSpookParams(1e10,0.1);
+
+        var bodies = [];
+        var N=5,
+            dt = 1/60,
+            k=1000,
+            d=10,
+            l=0.35,
+            m=1;
+
+        // Create particles
+        var particleShape = new p2.Particle();
+        for(var i=0; i<2*N; i++){
+            var p = new p2.Body({
+                mass: i==2*N-1 ? 0 : m,
+                position : [0, (i-N/2)*l*1.05]
+            });
+
+            // Move the rest so one particle position is the same as one other
+            if(i>=N)
+                p.position[1] -= l*1.05;
+
+            p.addShape(particleShape);
+            bodies.push(p);
+            world.addBody(p);
+        }
+
+        // Springs
+        for(var i=0; i<2*N-1; i++){
+            var bodyA = bodies[i],
+                bodyB = bodies[i+1],
+                spring = new p2.Spring(bodyA,bodyB, {
+                    stiffness: k,
+                    restLength: l,
+                    damping : d
+                });
+            if(i!=N-1)
+                world.addSpring(spring);
+        }
+
+        var demo = new PixiDemo(world);
+
+        var a = world.solver.a,
+            b = world.solver.b,
+            G1 =  -1,
+            G2 =   1,
+            f_lambda1 =  vec2.fromValues(0, 0),
+            f_lambda2 =  vec2.fromValues(0, 0),
+            dot = vec2.dot,
+            epsilon = world.solver.eps;
+
+        function update(){
+            if(!demo.paused){
+
+                var i1 = N-1,
+                    i2 = N,
+                    b1 = world.bodies[i1],
+                    b2 = world.bodies[i2],
+                    im1 = getInverseInertia(world,i1,1,G1),
+                    im2 = getInverseInertia(world,i2,1,G2),
+                    x1 = b1.position[1],
+                    x2 = b2.position[1],
+                    v1 = b1.velocity[1],
+                    v2 = b2.velocity[1],
+                    fext = world.gravity[1];
+
+                var lambda =  ( - a*( G1*x1 + G2*x2 ) - b*( G1*v1 + G2*v2 ) ) / ( G1*im1 + G2*im2 + epsilon );
+
+                b1.force[1] += G1 * lambda;
+                b2.force[1] += G2 * lambda;
+
+                /*
+                vec2.scale(f_lambda1, G1, lambda);
+                vec2.scale(f_lambda2, G2, lambda);
+
+                //console.log("f1",vec2.str(f_lambda1),"f2",vec2.str(f_lambda2))
+
+                vec2.add(b1.force, b1.force, f_lambda1);
+                vec2.add(b2.force, b2.force, f_lambda2);
+                */
+
+                world.step(dt);
+            }
+            requestAnimationFrame(update);
+        }
+        requestAnimationFrame(update);
+
+        function getInverseInertia(world,bodyIndex,dir,G){
+            // Get inertia
+            var copy = world.clone(),
+                p = copy.bodies[bodyIndex],
+                v0 = p.velocity[dir];
+            p.force[dir] -= G; // Add unit force
+            copy.step(dt);
+            var dv1 = (p.velocity[dir] - v0);
+
+            // Get inertia in opposite
+            copy = world.clone();
+            p = copy.bodies[bodyIndex];
+            v0 = p.velocity[dir];
+            p.force[dir] += G; // Add unit force
+            copy.step(dt);
+            var dv2 = (p.velocity[dir] - v0);
+
+            // dv is approximately acceleration.
+            // f = m*a <=> 1/m = a/f
+
+            return (dv2-dv1)/dt/2;
+        }
+
+    </script>
+</bodyBody>
+</html>

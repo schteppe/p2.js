@@ -1,4 +1,4 @@
-exports.Solver = Solver;
+module.exports = Solver;
 
 /**
  * Base class for constraint solvers.

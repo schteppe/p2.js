@@ -1,6 +1,6 @@
 var EventEmitter = function () {}
 
-exports.EventEmitter = EventEmitter;
+module.exports = EventEmitter;
 
 EventEmitter.prototype = {
     constructor: EventEmitter,

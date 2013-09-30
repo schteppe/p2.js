@@ -45,6 +45,8 @@
             
                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
             
+                <li><a href="../classes/Capsule.html">Capsule</a></li>
+            
                 <li><a href="../classes/Circle.html">Circle</a></li>
             
                 <li><a href="../classes/Constraint.html">Constraint</a></li>
@@ -71,11 +73,15 @@
             
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
+                <li><a href="../classes/Nearphase.html">Nearphase</a></li>
+            
                 <li><a href="../classes/Particle.html">Particle</a></li>
             
                 <li><a href="../classes/Plane.html">Plane</a></li>
             
                 <li><a href="../classes/PointToPointConstraint.html">PointToPointConstraint</a></li>
+            
+                <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -130,15 +136,14 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
-var Circle = require(&#x27;../objects/Shape&#x27;).Circle,
-    Plane = require(&#x27;../objects/Shape&#x27;).Plane,
-    Shape = require(&#x27;../objects/Shape&#x27;).Shape,
-    Particle = require(&#x27;../objects/Shape&#x27;).Particle,
-    bp = require(&#x27;../collision/Broadphase&#x27;),
-    Broadphase = bp.Broadphase,
-    vec2 = require(&#x27;../math/vec2&#x27;);
+var Circle = require(&#x27;../shapes/Circle&#x27;)
+,   Plane = require(&#x27;../shapes/Plane&#x27;)
+,   Shape = require(&#x27;../shapes/Shape&#x27;)
+,   Particle = require(&#x27;../shapes/Particle&#x27;)
+,   Broadphase = require(&#x27;../collision/Broadphase&#x27;)
+,   vec2 = require(&#x27;../math/vec2&#x27;)
 
-exports.NaiveBroadphase = NaiveBroadphase;
+module.exports = NaiveBroadphase;
 
 /**
  * Naive broadphase implementation. Does N^2 tests.
@@ -214,28 +219,62 @@ NaiveBroadphase.prototype.getCollisionPairs = function(world){
                     case Shape.CIRCLE:
 
                         switch(sj1.type){
-                        case Shape.CIRCLE:
-                            collide = bp.checkCircleCircle(si1,xi1_world,sj1,xj1_world);
-                            break;
-
-                        case Shape.PLANE:
-                            collide = bp.checkCirclePlane(si1,xi1_world,sj1,xj1_world,aj1_world);
-                            break;
-
-                        case Shape.PARTICLE:
-                            collide = bp.checkCircleParticle(si1,xi1_world,sj1,xj1_world);
+                        case Shape.CIRCLE:   collide = Broadphase.circleCircle  (si1,xi1_world,sj1,xj1_world);             break;
+                        case Shape.PLANE:    collide = Broadphase.circlePlane   (si1,xi1_world,sj1,xj1_world,aj1_world);   break;
+                        case Shape.PARTICLE: collide = Broadphase.circleParticle(si1,xi1_world,sj1,xj1_world);             break;
+                        case Shape.LINE:     collide = Broadphase.circleLine    (si1,xi1_world,sj1,xj1_world,aj1_world);   break;
+                        case Shape.CONVEX:
+                            if(sj1 instanceof Rectangle){
+                                collide = Broadphase.circleRectangle(si1,xi1_world,sj1,xj1_world);
+                            } else {
+                                collide = Broadphase.circleConvex(si1,xi1_world,sj1,xj1_world);
+                            }
                             break;
                         }
-
                         break;
 
 
                     case Shape.PARTICLE:
                         switch(sj1.type){
                         case Shape.PLANE:
-                            collide = bp.checkParticlePlane(si1,xi1_world,sj1,xj1_world,aj1_world);
+                            collide = Broadphase.particlePlane(si1,xi1_world,sj1,xj1_world,aj1_world);
+                            break;
+                        case Shape.CONVEX:
+                            if(sj1 instanceof Rectangle)
+                                collide = Broadphase.rectangleParticle(sj1,xj1_world,si1,xi1_world);
+                            else
+                                collide = Broadphase.convexParticle(sj1,xj1_world,si1,xi1_world);
                             break;
                         }
+                        break;
+
+                    case Shape.PLANE:
+
+                        switch(sj1.type){
+                        case Shape.CONVEX:
+                            collide = Broadphase.convexPlane(sj1,xj1_world,aj1_world, si1,xi1_world,ai1_world);
+                            break;
+                        case Shape.LINE:
+                            collide = Broadphase.planeLine(si1,xi1_world,ai1_world, sj1,xj1_world,aj1_world);
+                            break;
+                        case Shape.CAPSULE:
+                            collide = Broadphase.capsulePlane(sj1,xj1_world,aj1_world, si1,xi1_world,ai1_world);
+                            break;
+                        }
+                        break;
+
+                    case Shape.CONVEX:
+
+                        if(si1 instanceof Rectangle &amp;&amp; sj1 instanceof Rectangle){
+                            collide = Broadphase.rectangleRectangle(sj1,xj1_world,aj1_world, si1,xi1_world,ai1_world);
+                        } else {
+                            switch(sj1.type){
+                            case Shape.CONVEX:
+                                collide = Broadphase.convexConvex(sj1,xj1_world,aj1_world, si1,xi1_world,ai1_world);
+                                break;
+                            }
+                        }
+                        break;
                     }
 
                     if(collide){

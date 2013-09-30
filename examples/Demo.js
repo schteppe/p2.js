@@ -2,6 +2,7 @@ var vec2 =      p2.vec2
 ,   Spring =    p2.Spring
 ,   Body =      p2.Body
 ,   Circle =    p2.Circle
+,   Capsule =   p2.Capsule
 ,   Convex =    p2.Convex
 ,   Compound =  p2.Compound
 ,   Plane =     p2.Plane
@@ -104,7 +105,7 @@ Demo.prototype.updateStats = function(){
         this.stats_Nsummed = 0;
     }
     this.stats_stepdiv.innerHTML = "Physics step: "+(Math.round(this.stats_average*100)/100)+"ms";
-    this.stats_contactsdiv.innerHTML = "Contacts: "+this.world.contacts.length;
+    this.stats_contactsdiv.innerHTML = "Contacts: "+this.world.nearphase.contactEquations.length;
 };
 
 /**

@@ -1,8 +1,8 @@
-var Constraint = require('./Constraint').Constraint
-,   ContactEquation = require('./ContactEquation').ContactEquation
+var Constraint = require('./Constraint')
+,   ContactEquation = require('./ContactEquation')
 ,   vec2 = require('../math/vec2')
 
-exports.PrismaticConstraint = PrismaticConstraint;
+module.exports = PrismaticConstraint;
 
 /**
  * Constraint that only allows translation along a line between the bodies, no rotation

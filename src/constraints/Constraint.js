@@ -1,4 +1,4 @@
-exports.Constraint = Constraint;
+module.exports = Constraint;
 
 /**
  * Base constraint class.

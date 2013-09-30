@@ -82,13 +82,29 @@ vec2.crossZV = function(out, zcomp, vec){
  */
 vec2.rotate = function(out,a,angle){
     var c = Math.cos(angle),
-        s = Math.sin(angle);
-    out[0] = c*a[0] -s*a[1];
-    out[1] = s*a[0] +c*a[1];
+        s = Math.sin(angle),
+        x = a[0],
+        y = a[1];
+    out[0] = c*x -s*y;
+    out[1] = s*x +c*y;
+};
+
+vec2.toLocalFrame = function(out, worldPoint, framePosition, frameAngle){
+    vec2.copy(out, worldPoint);
+    vec2.sub(out, out, framePosition);
+    vec2.rotate(out, out, -frameAngle);
+};
+
+vec2.toGlobalFrame = function(out, localPoint, framePosition, frameAngle){
+    vec2.copy(out, localPoint);
+    vec2.rotate(out, out, frameAngle);
+    vec2.add(out, out, framePosition);
 };
 
 /**
  * Compute centroid of a triangle spanned by vectors a,b,c. See http://easycalculation.com/analytical/learn-centroid.php
+ * @method centroid
+ * @static
  * @param  {Float32Array} out
  * @param  {Float32Array} a
  * @param  {Float32Array} b

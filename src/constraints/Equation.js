@@ -1,4 +1,4 @@
-exports.Equation = Equation;
+module.exports = Equation;
 
 /**
  * Base class for constraint equations.

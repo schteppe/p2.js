@@ -1,29 +1,31 @@
 // Export p2 classes
-exports.Body =                  require('./objects/Body')                       .Body;
-exports.Broadphase =            require('./collision/Broadphase')               .Broadphase;
-exports.Circle =                require('./objects/Shape')                      .Circle;
-exports.Constraint =            require('./constraints/Constraint')             .Constraint;
-exports.ContactEquation =       require('./constraints/ContactEquation')        .ContactEquation;
-exports.Convex =                require('./objects/Shape')                      .Convex;
-exports.DistanceConstraint=     require('./constraints/DistanceConstraint')     .DistanceConstraint;
-exports.Equation =              require('./constraints/Equation')               .Equation;
-exports.EventEmitter =          require('./events/EventEmitter')                .EventEmitter;
-exports.FrictionEquation =      require('./constraints/FrictionEquation')       .FrictionEquation;
-exports.GridBroadphase =        require('./collision/GridBroadphase')           .GridBroadphase;
-exports.GSSolver =              require('./solver/GSSolver')                    .GSSolver;
-exports.Island =                require('./solver/IslandSolver')                .Island;
-exports.IslandSolver =          require('./solver/IslandSolver')                .IslandSolver;
-exports.Line =                  require('./objects/Shape')                      .Line;
-exports.NaiveBroadphase =       require('./collision/NaiveBroadphase')          .NaiveBroadphase;
-exports.Particle =              require('./objects/Shape')                      .Particle;
-exports.Plane =                 require('./objects/Shape')                      .Plane;
-exports.PointToPointConstraint= require('./constraints/PointToPointConstraint') .PointToPointConstraint;
-exports.PrismaticConstraint =   require('./constraints/PrismaticConstraint')    .PrismaticConstraint;
-exports.Rectangle =             require('./objects/Shape')                      .Rectangle;
-exports.Shape =                 require('./objects/Shape')                      .Shape;
-exports.Solver =                require('./solver/Solver')                      .Solver;
-exports.Spring =                require('./objects/Spring')                     .Spring;
-exports.World =                 require('./world/World')                        .World;
-
-// Export the gl-matrix stuff we already use internally. Why shouldn't we? It's already in the bundle.
-exports.vec2 = require('./math/vec2');
+module.exports = {
+    Body :                  require('./objects/Body'),
+    Broadphase :            require('./collision/Broadphase'),
+    Capsule :               require('./shapes/Capsule'),
+    Circle :                require('./shapes/Circle'),
+    Constraint :            require('./constraints/Constraint'),
+    ContactEquation :       require('./constraints/ContactEquation'),
+    Convex :                require('./shapes/Convex'),
+    DistanceConstraint :    require('./constraints/DistanceConstraint'),
+    Equation :              require('./constraints/Equation'),
+    EventEmitter :          require('./events/EventEmitter'),
+    FrictionEquation :      require('./constraints/FrictionEquation'),
+    GridBroadphase :        require('./collision/GridBroadphase'),
+    GSSolver :              require('./solver/GSSolver'),
+    Island :                require('./solver/IslandSolver'),
+    IslandSolver :          require('./solver/IslandSolver'),
+    Line :                  require('./shapes/Line'),
+    NaiveBroadphase :       require('./collision/NaiveBroadphase'),
+    Particle :              require('./shapes/Particle'),
+    Plane :                 require('./shapes/Plane'),
+    PointToPointConstraint :require('./constraints/PointToPointConstraint'),
+    PrismaticConstraint :   require('./constraints/PrismaticConstraint'),
+    Rectangle :             require('./shapes/Rectangle'),
+    Shape :                 require('./shapes/Shape'),
+    Solver :                require('./solver/Solver'),
+    Spring :                require('./objects/Spring'),
+    World :                 require('./world/World'),
+    vec2 :                  require('./math/vec2'),
+    version :               require('../package.json').version,
+};

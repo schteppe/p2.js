@@ -62,34 +62,40 @@ setInterval(function(){
 ```
 
 ### Supported collision pairs
-|           | Circle | Plane | Rectangle | Convex | Particle | Line   |
-| :-------: |:------:|:-----:|:---------:|:------:|:--------:|:------:|
-| Circle    | Yes    | Yes   | Yes       | Yes    | Yes      | Yes    |
-| Plane     | -      | -     | Yes       | Yes    | Yes      | Yes    |
-| Rectangle | -      | -     | (todo)    | (todo) | (todo)   | (todo) |
-| Convex    | -      | -     | -         | (todo) | (todo)   | (todo) |
-| Particle  | -      | -     | -         | -      | -        | (todo) |
-| Line      | -      | -     | -         | -      | -        | (todo) |
+|           | Circle | Plane | Rectangle | Convex | Particle | Line   | Capsule |
+| :-------: |:------:|:-----:|:---------:|:------:|:--------:|:------:|:-------:|
+| Circle    | Yes    | Yes   | Yes       | Yes    | Yes      | Yes    | (todo)  |
+| Plane     | -      | -     | Yes       | Yes    | Yes      | Yes    | Yes     |
+| Rectangle | -      | -     | Yes       | Yes    | Yes      | (todo) | (todo)  |
+| Convex    | -      | -     | -         | Yes    | Yes      | (todo) | (todo)  |
+| Particle  | -      | -     | -         | -      | -        | -      | (todo)  |
+| Line      | -      | -     | -         | -      | -        | (todo) | (todo)  |
+| Capsule   | -      | -     | -         | -      | -        | -      | (todo)  |
 
 ### Change log
-##### Current
+##### Current development version (0.2)
 * Removed ```World.collidingBodies``` since ```World.bodies``` can be used equivalently.
 * Added property ```DistanceConstraint.distance```
 * Added contact response between a lot of Shape types. Check table above.
 * Added friction for most of the contact types
 * Added ```PointToPointConstraint```
 * Added ```Line```
-* Added ```Compound```
 * Added method ```Shape.computeMomentOfInertia```
 * Added method ```Body.updateMassProperties```
 * Removed ```mat2``` as it is not needed inside the library for now.
-* Changed ```Shape``` usage. A ```Shape``` is now added to a ```Body``` via ```Body.addShape(shape,offset,angle)```. Thus, ```Compound``` is not needed.
-* Removed ```Compound```.
+* Changed ```Shape``` usage. A ```Shape``` is now added to a ```Body``` via ```Body.addShape(shape,offset,angle)```.
 * Removed ```Body.shape```, added ```Body.shapes```, ```.shapeOffsets```, ```.shapeAngles```
 * Added ```Rectangle```
 * Added method ```Convex.updateTriangles```
 * Added method ```Convex.updateCenterOfMass```
 * Fixed ```Convex.computeMomentOfInertia```, now it should be correct.
+* Updated the Node.js API so that each class is required using the pattern ```var ClassName = require('./ClassName')``` instead of ```var ClassName = require('./ClassName').ClassName```
+* Added ```Nearphase``` class
+* Removed ```World.contacts``` and ```.frictionEquations``` in favor of ```World.nearphase.contactEquations``` and ```World.nearphase.frictionEquations```
+* Added ```Capsule``` class
+* Added ```Spring``` properties ```.localAnchorA```, ```.localAnchorB```.
+* Added ```Spring``` methods ```.getWorldAnchorA```, ```.setWorldAnchorA``` and the corresponding for B.
+* Added ```p2.version``` for browser.
 
 ##### 0.1
 
