@@ -96,6 +96,7 @@ setInterval(function(){
 * Added ```Spring``` properties ```.localAnchorA```, ```.localAnchorB```.
 * Added ```Spring``` methods ```.getWorldAnchorA```, ```.setWorldAnchorA``` and the corresponding for B.
 * Added ```p2.version``` for browser.
+* Added ```PrismaticConstraint```.
 
 ##### 0.1
 
