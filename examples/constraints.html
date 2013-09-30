@@ -23,7 +23,7 @@
         // Add a line
         var line = new p2.Body({
             mass: 1,
-            position: [0,-0.5],
+            position: [-1.5,-0.5],
             angle: Math.PI / 2,
             angularVelocity : 10
         });
@@ -34,7 +34,7 @@
         var groundBody = new p2.Body();
         world.addBody(groundBody);
 
-        world.addConstraint( new p2.PointToPointConstraint(line, [0.5,0], groundBody, [0,0]) );
+        world.addConstraint( new p2.PointToPointConstraint(line, [0.5,0], groundBody, [-1.5,0]) );
 
         // Create circle rope
         var shape = new p2.Circle(r);
@@ -75,6 +75,25 @@
         var pivotA = [0,2];
         var pivotB = [0,-2];
         var c = new p2.PointToPointConstraint(bodyA, pivotA, bodyB, pivotB);
+        world.addConstraint(c);
+
+
+
+        // Create PrismaticConstraint
+        var bodyA = new p2.Body({
+            mass: 1,
+            position: [-3,-0.5],
+            angularVelocity: 10
+        });
+        bodyA.addShape(new p2.Circle(0.5));
+        world.addBody(bodyA);
+        var bodyB = new p2.Body({
+            mass: 0,
+            position: [-5,0.1-0.5],
+        });
+        bodyB.addShape(new p2.Circle(0.5));
+        world.addBody(bodyB);
+        var c = new p2.PrismaticConstraint(bodyA, bodyB);
         world.addConstraint(c);
 
         var demo = new PixiDemo(world);

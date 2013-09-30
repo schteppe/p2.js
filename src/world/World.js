@@ -13,6 +13,7 @@ var GSSolver = require('../solver/GSSolver').GSSolver,
     Spring = require('../objects/Spring').Spring,
     DistanceConstraint = require('../constraints/DistanceConstraint').DistanceConstraint,
     PointToPointConstraint = require('../constraints/PointToPointConstraint').PointToPointConstraint,
+    PrismaticConstraint = require('../constraints/PrismaticConstraint').PrismaticConstraint,
     bp = require('../collision/Broadphase'),
     pkg = require('../../package.json'),
     Broadphase = bp.Broadphase;
@@ -459,8 +460,15 @@ World.prototype.toJSON = function(){
             jc.pivotA = v2a(c.pivotA);
             jc.pivotB = v2a(c.pivotB);
             jc.maxForce = c.maxForce;
-        } else
-            throw new Error("Constraint not supported yet!");
+        } else if(c instanceof PrismaticConstraint){
+            jc.type = "PrismaticConstraint";
+            jc.localAxisA = v2a(c.localAxisA);
+            jc.localAxisB = v2a(c.localAxisB);
+            jc.maxForce = c.maxForce;
+        } else {
+            console.error("Constraint not supported yet!");
+            continue;
+        }
 
         json.constraints.push(jc);
     }
@@ -599,6 +607,13 @@ World.prototype.fromJSON = function(json){
                         break;
                     case "PointToPointConstraint":
                         c = new PointToPointConstraint(this.bodies[jc.bodyA], jc.pivotA, this.bodies[jc.bodyB], jc.pivotB, jc.maxForce);
+                        break;
+                    case "PrismaticConstraint":
+                        c = new PrismaticConstraint(this.bodies[jc.bodyA], this.bodies[jc.bodyB], {
+                            maxForce : jc.maxForce,
+                            localAxisA : jc.localAxisA,
+                            localAxisB : jc.localAxisB,
+                        });
                         break;
                     default:
                         throw new Error("Constraint type not recognized: "+jc.type);

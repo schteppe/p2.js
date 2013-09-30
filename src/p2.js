@@ -18,6 +18,7 @@ exports.NaiveBroadphase =       require('./collision/NaiveBroadphase')          
 exports.Particle =              require('./objects/Shape')                      .Particle;
 exports.Plane =                 require('./objects/Shape')                      .Plane;
 exports.PointToPointConstraint= require('./constraints/PointToPointConstraint') .PointToPointConstraint;
+exports.PrismaticConstraint =   require('./constraints/PrismaticConstraint')    .PrismaticConstraint;
 exports.Rectangle =             require('./objects/Shape')                      .Rectangle;
 exports.Shape =                 require('./objects/Shape')                      .Shape;
 exports.Solver =                require('./solver/Solver')                      .Solver;
