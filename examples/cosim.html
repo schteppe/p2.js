@@ -19,7 +19,7 @@
             gravity : [0,-10],
         });
 
-        world.solver.setSpookParams(1e10,0.1);
+        world.solver.setSpookParams(1e22,0.0);
 
         var bodies = [];
         var N=5,
@@ -61,14 +61,19 @@
 
         var demo = new PixiDemo(world);
 
-        var a = world.solver.a,
-            b = world.solver.b,
-            G1 =  -1,
-            G2 =   1,
-            f_lambda1 =  vec2.fromValues(0, 0),
-            f_lambda2 =  vec2.fromValues(0, 0),
+        var a = 1/dt/dt,//world.solver.a,
+            b = 1/dt,//world.solver.b,
+            d = 0.2,
+            G1v = vec2.create(),
+            G2v = vec2.create(),
+            im1v =  vec2.fromValues(0, 0),
+            im2v =  vec2.fromValues(0, 0),
+            v1tv =  vec2.fromValues(0, 0),
+            v2tv =  vec2.fromValues(0, 0),
+            tmp =  vec2.fromValues(0, 0),
             dot = vec2.dot,
-            epsilon = world.solver.eps;
+            k = 1e10,
+            epsilon = 4/(dt*dt*k*(1+4*d));
 
         function update(){
             if(!demo.paused){
@@ -77,34 +82,32 @@
                     i2 = N,
                     b1 = world.bodies[i1],
                     b2 = world.bodies[i2],
-                    x1 = b1.position[1],
-                    x2 = b2.position[1],
-                    v1 = b1.velocity[1],
-                    v2 = b2.velocity[1],
-                    fext = world.gravity[1];
+                    x1v = b1.position,
+                    x2v = b2.position,
+                    v1v = b1.velocity,
+                    v2v = b2.velocity;
 
-                G1 = -(x2 - x1) / Math.abs(x2 - x1);
-                if(isNaN(G1)){
-                    G1 = 1;
-                }
-                G2 = -G1;
+                vec2.sub(G1v, x1v, x2v);
+                vec2.normalize(G1v,G1v);
+                if(vec2.length(G1v) == 0) vec2.set(G1v,0,1);
+                vec2.scale(G2v, G1v, -1);
 
-                var im1 = getInverseInertia(world,i1,1,G1),
-                    im2 = getInverseInertia(world,i2,1,G2);
+                var im1 = getInverseInertia(world,i1,G1v,im1v),
+                    im2 = getInverseInertia(world,i2,G2v,im2v);
 
                 // Get external force contribution by stepping without master constraints
                 var copy = world.clone();
                 copy.step(dt);
-                var x1t = x1;
-                    x2t = x2;
-                    v1t = copy.bodies[i1].velocity[1] - v1,
-                    v2t = copy.bodies[i2].velocity[1] - v2;
-                var hGiMf = ( G1*v1t + G2*v2t ) * dt;
 
-                var lambda =  ( - a*( G1*x1 + G2*x2 ) + b*( G1*v1 + G2*v2 ) + hGiMf) / ( G1*im1 + G2*im2 + epsilon ) / dt;
+                vec2.sub(v1tv, copy.bodies[i1].velocity, v1v);
+                vec2.sub(v2tv, copy.bodies[i2].velocity, v2v);
 
-                b1.force[1] += G1*lambda;
-                b2.force[1] += G2*lambda;
+                var GiMf = ( dot(G1v,v1tv) + dot(G2v,v2tv) );
+
+                var lambda =  ( - (4/dt/dt/(1+4*d))*( dot(G1v,x1v) + dot(G2v,x2v) ) + (1/(1+4*d)-1)/dt*( dot(G1v,v1v) + dot(G2v,v2v)) + GiMf) / ( dot(G1v,im1v) + dot(G2v,im2v) + epsilon );
+
+                vec2.add(b1.force, b1.force, vec2.scale(tmp,G1v,lambda));
+                vec2.add(b2.force, b2.force, vec2.scale(tmp,G2v,lambda));
 
                 world.step(dt);
             }
@@ -113,27 +116,26 @@
         }
         requestAnimationFrame(update);
 
-        function getInverseInertia(world,bodyIndex,dir,G){
+        var getInverseInertia_dv = vec2.create();
+        function getInverseInertia(world,bodyIndex,Gv,out){
 
             // Get inertia when stepping without external force
             copy = world.clone();
             p = copy.bodies[bodyIndex];
-            v0 = p.velocity[dir];
             copy.step(dt);
-            var v0 = p.velocity[dir];
+            var v0v = p.velocity;
 
             // Get inertia in opposite
             copy = world.clone();
             p = copy.bodies[bodyIndex];
-            //v0 = p.velocity[dir];
-            p.force[dir] += G; // Add unit force
+            vec2.add(p.force,p.force,Gv); // Add unit force
             copy.step(dt);
-            var dv = (p.velocity[dir] - v0);
 
             // dv is approximately acceleration.
             // f = m*a <=> 1/m = a/f
+            vec2.sub(getInverseInertia_dv, p.velocity, v0v);
+            vec2.scale(out, getInverseInertia_dv, 1/dt);
 
-            return dv/dt;
         }
 
     </script>
