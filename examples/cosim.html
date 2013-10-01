@@ -16,7 +16,7 @@
 
         var world = new p2.World({
             doProfiling : true,
-            gravity : [0,-10],
+            gravity : [0,-50],
         });
 
         world.solver.setSpookParams(1e22,0.0);
@@ -72,8 +72,8 @@
             v2tv =  vec2.fromValues(0, 0),
             tmp =  vec2.fromValues(0, 0),
             dot = vec2.dot,
-            k = 1e10,
-            epsilon = 4/(dt*dt*k*(1+4*d));
+            compliance = 0,
+            epsilon = 4*compliance/(dt*dt*(1+4*d));
 
         function update(){
             if(!demo.paused){
@@ -102,7 +102,7 @@
                 vec2.sub(v1tv, copy.bodies[i1].velocity, v1);
                 vec2.sub(v2tv, copy.bodies[i2].velocity, v2);
 
-                var GiMf = ( dot(G1,v1tv) + dot(G2,v2tv) );
+                var GiMf = -( dot(G1,v1tv) + dot(G2,v2tv) ) / dt;
 
                 var lambda =  ( - (4/dt/dt/(1+4*d))*( dot(G1,x1) + dot(G2,x2) ) + (1/(1+4*d)-1)/dt*( dot(G1,v1) + dot(G2,v2)) + GiMf) / ( dot(G1,im1) + dot(G2,im2) + epsilon );
 
