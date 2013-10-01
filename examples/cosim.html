@@ -64,10 +64,10 @@
         var a = 1/dt/dt,//world.solver.a,
             b = 1/dt,//world.solver.b,
             d = 0.2,
-            G1v = vec2.create(),
-            G2v = vec2.create(),
-            im1v =  vec2.fromValues(0, 0),
-            im2v =  vec2.fromValues(0, 0),
+            G1 = vec2.create(),
+            G2 = vec2.create(),
+            im1 =  vec2.fromValues(0, 0),
+            im2 =  vec2.fromValues(0, 0),
             v1tv =  vec2.fromValues(0, 0),
             v2tv =  vec2.fromValues(0, 0),
             tmp =  vec2.fromValues(0, 0),
@@ -82,32 +82,32 @@
                     i2 = N,
                     b1 = world.bodies[i1],
                     b2 = world.bodies[i2],
-                    x1v = b1.position,
-                    x2v = b2.position,
-                    v1v = b1.velocity,
-                    v2v = b2.velocity;
+                    x1 = b1.position,
+                    x2 = b2.position,
+                    v1 = b1.velocity,
+                    v2 = b2.velocity;
 
-                vec2.sub(G1v, x1v, x2v);
-                vec2.normalize(G1v,G1v);
-                if(vec2.length(G1v) == 0) vec2.set(G1v,0,1);
-                vec2.scale(G2v, G1v, -1);
+                vec2.sub(G1, x1, x2);
+                vec2.normalize(G1,G1);
+                if(vec2.length(G1) == 0) vec2.set(G1,0,1);
+                vec2.scale(G2, G1, -1);
 
-                var im1 = getInverseInertia(world,i1,G1v,im1v),
-                    im2 = getInverseInertia(world,i2,G2v,im2v);
+                getInverseInertia(world,i1,G1,im1);
+                getInverseInertia(world,i2,G2,im2);
 
                 // Get external force contribution by stepping without master constraints
                 var copy = world.clone();
                 copy.step(dt);
 
-                vec2.sub(v1tv, copy.bodies[i1].velocity, v1v);
-                vec2.sub(v2tv, copy.bodies[i2].velocity, v2v);
+                vec2.sub(v1tv, copy.bodies[i1].velocity, v1);
+                vec2.sub(v2tv, copy.bodies[i2].velocity, v2);
 
-                var GiMf = ( dot(G1v,v1tv) + dot(G2v,v2tv) );
+                var GiMf = ( dot(G1,v1tv) + dot(G2,v2tv) );
 
-                var lambda =  ( - (4/dt/dt/(1+4*d))*( dot(G1v,x1v) + dot(G2v,x2v) ) + (1/(1+4*d)-1)/dt*( dot(G1v,v1v) + dot(G2v,v2v)) + GiMf) / ( dot(G1v,im1v) + dot(G2v,im2v) + epsilon );
+                var lambda =  ( - (4/dt/dt/(1+4*d))*( dot(G1,x1) + dot(G2,x2) ) + (1/(1+4*d)-1)/dt*( dot(G1,v1) + dot(G2,v2)) + GiMf) / ( dot(G1,im1) + dot(G2,im2) + epsilon );
 
-                vec2.add(b1.force, b1.force, vec2.scale(tmp,G1v,lambda));
-                vec2.add(b2.force, b2.force, vec2.scale(tmp,G2v,lambda));
+                vec2.add(b1.force, b1.force, vec2.scale(tmp,G1,lambda));
+                vec2.add(b2.force, b2.force, vec2.scale(tmp,G2,lambda));
 
                 world.step(dt);
             }
