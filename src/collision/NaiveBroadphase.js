@@ -53,6 +53,10 @@ NaiveBroadphase.prototype.getCollisionPairs = function(world){
                         xj = bj.shapeOffsets[l] || zero,
                         aj = bj.shapeAngles[l] || 0;
 
+                    // Check collision bit masks
+                    if(!((si.collisionGroup & sj.collisionMask) !== 0 && (sj.collisionGroup & si.collisionMask) !== 0))
+                        continue;
+
                     // Swap - makes the later switch() stuff easier
                     var bi1 = bi,
                         bj1 = bj,

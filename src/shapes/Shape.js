@@ -8,6 +8,24 @@ module.exports = Shape;
 function Shape(type){
     this.type = type;
     this.boundingRadius = 0;
+
+    /**
+     * Collision group that this shape belongs to (bit mask). See <a href="http://www.aurelienribon.com/blog/2011/07/box2d-tutorial-collision-filtering/">this tutorial</a>.
+     * @property collisionGroup
+     * @type {Number}
+     * @example
+     *     if(shapeA.collisionGroup & shapeB.collisionMask)!=0 && (shapeB.collisionGroup & shapeA.collisionMask)!=0){
+     *         // The shapes will collide
+     *     }
+     */
+    this.collisionGroup = 1;
+
+    /**
+     * Collision mask of this shape.
+     * @property collisionMask
+     * @type {Number}
+     */
+    this.collisionMask =  1;
     if(type) this.updateBoundingRadius();
 };
 

@@ -97,6 +97,7 @@ setInterval(function(){
 * Added ```Spring``` methods ```.getWorldAnchorA```, ```.setWorldAnchorA``` and the corresponding for B.
 * Added ```p2.version``` for browser.
 * Added ```PrismaticConstraint```.
+* Added properties ```.collisionGroup``` and ```.collisionMask``` to ```Shape```. This enables collision filtering.
 
 ##### 0.1
 
