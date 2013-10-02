@@ -522,6 +522,8 @@ World.prototype.toJSON = function(){
 
             jsonShape.offset = v2a(b.shapeOffsets[j] || [0,0]);
             jsonShape.angle = b.shapeAngles[j] || 0;
+            jsonShape.collisionGroup = s.collisionGroup;
+            jsonShape.collisionMask = s.collisionMask;
 
             jsonShapes.push(jsonShape);
         }
@@ -591,6 +593,8 @@ World.prototype.fromJSON = function(json){
                             throw new Error("Shape type not supported: "+js.type);
                             break;
                     }
+                    shape.collisionMask = js.collisionMask;
+                    shape.collisionGroup = js.collisionGroup;
                     b.addShape(shape,js.offset,js.angle);
                 }
 
