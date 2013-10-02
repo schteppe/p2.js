@@ -1,3 +1,6 @@
+var Plane = require("../shapes/Plane");
+var Broadphase = require("../collision/Broadphase");
+
 module.exports = {
     QuadTree : QuadTree,
     Node : Node,
@@ -69,6 +72,54 @@ QuadTree.prototype.retrieve = function(item){
     return out;
 }
 
+QuadTree.prototype.getCollisionPairs = function(world){
+
+    var result = [];
+
+    // Add all bodies
+    this.insert(world.bodies);
+
+    /*
+    console.log("bodies",world.bodies.length);
+    console.log("maxDepth",this.root.maxDepth,"maxChildren",this.root.maxChildren);
+    */
+
+    for(var i=0; i!==world.bodies.length; i++){
+        var b = world.bodies[i],
+            items = this.retrieve(b);
+
+        //console.log("items",items.length);
+
+        // Check results
+        for(var j=0, len=items.length; j!==len; j++){
+            var item = items[j];
+
+            if(b === item) continue; // Do not add self
+
+            // Check if they were already added
+            var found = false;
+            for(var k=0, numAdded=result.length; k<numAdded; k+=2){
+                var r1 = result[k],
+                    r2 = result[k+1];
+                if( (r1==item && r2==b) || (r2==item && r1==b) ){
+                    found = true;
+                    break;
+                }
+            }
+            if(!found && Broadphase.bodiesCollide(b,item)){
+                result.push(b,item);
+            }
+        }
+    }
+
+    //console.log("results",result.length);
+
+    // Clear until next
+    this.clear();
+
+    return result;
+};
+
 function Node(bounds, depth, maxDepth, maxChildren){
     this.bounds = bounds;
     this.children = [];
@@ -136,8 +187,12 @@ Node.prototype.retrieve = function(item){
 
 Node.prototype.findIndex = function(item){
     var b = this.bounds;
-    var left = (item.x > b.x + b.width / 2)? false : true;
-    var top = (item.y > b.y + b.height / 2)? false : true;
+    var left = (item.position[0]-item.boundingRadius > b.x + b.width  / 2) ? false : true;
+    var top =  (item.position[1]-item.boundingRadius > b.y + b.height / 2) ? false : true;
+
+    if(item instanceof Plane){
+        left = top = false; // Will overlap the left/top boundary since it is infinite
+    }
 
     //top left
     var index = Node.TOP_LEFT;
@@ -164,8 +219,8 @@ Node.prototype.subdivide = function(){
     var by = this.bounds.y;
 
     //floor the values
-    var b_w_h = (this.bounds.width / 2)|0;
-    var b_h_h = (this.bounds.height / 2)|0;
+    var b_w_h = (this.bounds.width / 2);
+    var b_h_h = (this.bounds.height / 2);
     var bx_b_w_h = bx + b_w_h;
     var by_b_h_h = by + b_h_h;
 
@@ -236,16 +291,22 @@ BoundsNode.prototype.stuckChildren = null;
 BoundsNode.prototype.out = [];
 
 BoundsNode.prototype.insert = function(item){
-    if(this.nodes.length)
-    {
+    if(this.nodes.length){
         var index = this.findIndex(item);
         var node = this.nodes[index];
 
+        /*
+        console.log("radius:",item.boundingRadius);
+        console.log("item x:",item.position[0] - item.boundingRadius,"x range:",node.bounds.x,node.bounds.x+node.bounds.width);
+        console.log("item y:",item.position[1] - item.boundingRadius,"y range:",node.bounds.y,node.bounds.y+node.bounds.height);
+        */
+
         //todo: make _bounds bounds
-        if(item.x >= node.bounds.x &&
-            item.x + item.width <= node.bounds.x + node.bounds.width &&
-            item.y >= node.bounds.y &&
-            item.y + item.height <= node.bounds.y + node.bounds.height){
+        if( !(item instanceof Plane) && // Plane is infinite.. Make it a "stuck" child
+            item.position[0] - item.boundingRadius >= node.bounds.x &&
+            item.position[0] + item.boundingRadius <= node.bounds.x + node.bounds.width &&
+            item.position[1] - item.boundingRadius >= node.bounds.y &&
+            item.position[1] + item.boundingRadius <= node.bounds.y + node.bounds.height){
             this.nodes[index].insert(item);
         } else {
             this.stuckChildren.push(item);
@@ -258,11 +319,10 @@ BoundsNode.prototype.insert = function(item){
 
     var len = this.children.length;
 
-    if(!(this.depth >= this.maxDepth) &&
-        len > this.maxChildren){
+    if(this.depth < this.maxDepth && len > this.maxChildren){
         this.subdivide();
 
-        for(var i = 0; i < len; i++){
+        for(var i=0; i<len; i++){
             this.insert(this.children[i]);
         }
 
@@ -277,10 +337,9 @@ BoundsNode.prototype.getChildren = function(){
 BoundsNode.prototype.retrieve = function(item){
     var out = this.out;
     out.length = 0;
-    if(this.nodes.length)
-    {
-        var index = this.findIndex(item);
 
+    if(this.nodes.length){
+        var index = this.findIndex(item);
         out.push.apply(out, this.nodes[index].retrieve(item));
     }
 

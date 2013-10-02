@@ -26,6 +26,7 @@ module.exports = {
     Solver :                require('./solver/Solver'),
     Spring :                require('./objects/Spring'),
     World :                 require('./world/World'),
+    QuadTree :              require('./collision/QuadTree').QuadTree,
     vec2 :                  require('./math/vec2'),
     version :               require('../package.json').version,
 };

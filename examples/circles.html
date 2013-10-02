@@ -12,14 +12,31 @@
 <body>
     <script>
 
+        var disturb = true, l = 20, N=15, M=15, r = 0.07, d=2.2;
+
+        var xmin=(-N/2 * r*d),
+            xmax=( N/2 * r*d),
+            ymin=(-M/2 * r*d),
+            ymax=( M/2 * r*d);
+
+        /*
+        var margin = 10*r*d;
+        var bounds = {
+            x : xmin - margin,
+            y : ymin - margin,
+            width :  xmax - xmin + 2*margin,
+            height : ymax - ymin + 2*margin,
+        };
+        */
+
         var world = new p2.World({
             doProfiling:true,
             gravity : [0,-10],
+            //broadphase : new p2.QuadTree(bounds,false,2,4),
         });
         world.solver.setSpookParams(1e5,3);
         world.solver.iterations = 100;
 
-        var disturb = true, l = 20, N=15, M=15, r = 0.07, d=2.2;
 
         // Create circle bodies
         var shape = new p2.Circle(r);
@@ -36,8 +53,6 @@
             }
         }
 
-        var xmin=(-N/2 * r*d), xmax=(N/2 * r*d);
-        var ymin=(-M/2 * r*d), ymax=(M/2 * r*d);
 
         // Create ground
         var planeShape = new p2.Plane();

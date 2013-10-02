@@ -25,6 +25,6 @@ Line.prototype.computeMomentOfInertia = function(mass){
 };
 
 Line.prototype.updateBoundingRadius = function(){
-    this.boundingRadius = this.length;
+    this.boundingRadius = this.length/2;
 };
 

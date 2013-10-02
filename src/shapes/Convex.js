@@ -202,16 +202,6 @@ Convex.prototype.computeMomentOfInertia = function(mass){
 Convex.prototype.updateBoundingRadius = function(){
     var verts = this.vertices,
         r2 = 0;
-    for(var i=0; i<verts.length; i++){
-        var l2 = vec2.squaredLength(verts[i]);
-        if(l2 > r2) r2 = l2;
-    }
-    this.boundingRadius = Math.sqrt(r2);
-};
-
-Convex.prototype.updateBoundingRadius = function(){
-    var verts = this.vertices,
-        r2 = 0;
 
     for(var i=0; i!==verts.length; i++){
         var l2 = vec2.squaredLength(verts[i]);
