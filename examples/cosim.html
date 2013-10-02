@@ -4,6 +4,7 @@
     <title>p2.js</title>
     <script src="../build/p2.js"></script>
     <script src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
+    <script src="../node_modules/gl-matrix/dist/gl-matrix.js"></script>
     <script src="pixi.js"></script>
     <script src="Demo.js"></script>
     <script src="PixiDemo.js"></script>
@@ -12,11 +13,9 @@
 <body>
     <script>
 
-        var vec2 = p2.vec2;
-
         var world = new p2.World({
             doProfiling : true,
-            gravity : [0,-50],
+            gravity : [0,0],
         });
 
         world.solver.setSpookParams(1e22,0.0);
@@ -61,15 +60,28 @@
 
         var demo = new PixiDemo(world);
 
-        var a = 1/dt/dt,//world.solver.a,
-            b = 1/dt,//world.solver.b,
-            d = 0.2,
-            G1 = vec2.create(),
-            G2 = vec2.create(),
-            im1 =  vec2.fromValues(0, 0),
-            im2 =  vec2.fromValues(0, 0),
-            v1tv =  vec2.fromValues(0, 0),
-            v2tv =  vec2.fromValues(0, 0),
+        var a = 1/dt/dt,
+            b = 1/dt,
+            d = 0,
+            mg = vec2.fromValues(m*(10), m*(-10)),
+            G1x = vec2.fromValues( 1, 0),
+            G2x = vec2.fromValues(-1, 0),
+            G1y = vec2.fromValues( 0, 1),
+            G2y = vec2.fromValues( 0,-1),
+            im1x =  vec2.fromValues(0, 0),
+            im2x =  vec2.fromValues(0, 0),
+            im1y =  vec2.fromValues(0, 0),
+            im2y =  vec2.fromValues(0, 0),
+            im1mx =  mat2.create(),
+            im2mx =  mat2.create(),
+            im1my =  mat2.create(),
+            im2my =  mat2.create(),
+            v1t =  vec2.fromValues(0, 0),
+            v2t =  vec2.fromValues(0, 0),
+            x1t =  vec2.fromValues(0, 0),
+            x2t =  vec2.fromValues(0, 0),
+            fhMinv1 =  vec2.fromValues(0, 0),
+            fhMinv2 =  vec2.fromValues(0, 0),
             tmp =  vec2.fromValues(0, 0),
             dot = vec2.dot,
             compliance = 0,
@@ -87,27 +99,36 @@
                     v1 = b1.velocity,
                     v2 = b2.velocity;
 
-                vec2.sub(G1, x1, x2);
-                vec2.normalize(G1,G1);
-                if(vec2.length(G1) == 0) vec2.set(G1,0,1);
-                vec2.scale(G2, G1, -1);
+                getInverseInertia(world,i1,G1x,im1x,im1mx);
+                getInverseInertia(world,i2,G2x,im2x,im2mx);
+                getInverseInertia(world,i1,G1y,im1y,im1my);
+                getInverseInertia(world,i2,G2y,im2y,im2my);
 
-                getInverseInertia(world,i1,G1,im1);
-                getInverseInertia(world,i2,G2,im2);
-
-                // Get external force contribution by stepping without master constraints
+                // Do step without Master constraints: xt = inv(A) * f
                 var copy = world.clone();
                 copy.step(dt);
+                vec2.copy(v1t, copy.bodies[i1].velocity);
+                vec2.copy(v2t, copy.bodies[i2].velocity);
+                vec2.copy(x1t, copy.bodies[i1].position);
+                vec2.copy(x2t, copy.bodies[i2].position);
 
-                vec2.sub(v1tv, copy.bodies[i1].velocity, v1);
-                vec2.sub(v2tv, copy.bodies[i2].velocity, v2);
+                // Solve for Master constraint lagrange multipliers
+                var a = 1/dt/dt;
+                var b = 0;
+                var lambda_x =  ( - a*( dot(G1x,x1t) + dot(G2x,x2t) ) + b*( dot(G1x,v1t) + dot(G2x,v2t))) / ( dot(G1x,im1x) + dot(G2x,im2x) + epsilon );
+                var lambda_y =  ( - a*( dot(G1y,x1t) + dot(G2y,x2t) ) + b*( dot(G1y,v1t) + dot(G2y,v2t))) / ( dot(G1y,im1y) + dot(G2y,im2y) + epsilon );
 
-                var GiMf = -( dot(G1,v1tv) + dot(G2,v2tv) ) / dt;
+                // Add Master constraint forces
+                vec2.add(b1.force, b1.force, vec2.scale(tmp,G1x,lambda_x));
+                vec2.add(b2.force, b2.force, vec2.scale(tmp,G2x,lambda_x));
+                vec2.add(b1.force, b1.force, vec2.scale(tmp,G1y,lambda_y));
+                vec2.add(b2.force, b2.force, vec2.scale(tmp,G2y,lambda_y));
 
-                var lambda =  ( - (4/dt/dt/(1+4*d))*( dot(G1,x1) + dot(G2,x2) ) + (1/(1+4*d)-1)/dt*( dot(G1,v1) + dot(G2,v2)) + GiMf) / ( dot(G1,im1) + dot(G2,im2) + epsilon );
-
-                vec2.add(b1.force, b1.force, vec2.scale(tmp,G1,lambda));
-                vec2.add(b2.force, b2.force, vec2.scale(tmp,G2,lambda));
+                // Add gravity
+                for(var i=0; i<world.bodies.length; i++){
+                    var b = world.bodies[i];
+                    vec2.add(b.force, b.force, mg);
+                }
 
                 world.step(dt);
             }
@@ -117,7 +138,7 @@
         requestAnimationFrame(update);
 
         var getInverseInertia_dv = vec2.create();
-        function getInverseInertia(world,bodyIndex,Gv,out){
+        function getInverseInertia(world,bodyIndex,Gv,out,outMat){
 
             // Get inertia when stepping without external force
             copy = world.clone();
@@ -136,6 +157,8 @@
             vec2.sub(getInverseInertia_dv, p.velocity, v0v);
             vec2.scale(out, getInverseInertia_dv, 1/dt);
 
+            outMat[0] = out[0];
+            outMat[3] = out[1];
         }
 
     </script>
