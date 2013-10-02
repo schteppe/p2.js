@@ -18,7 +18,8 @@
             gravity : [0,0],
         });
 
-        world.solver.setSpookParams(1e22,0.0);
+        // Set constraint solver parameters
+        world.solver.setSpookParams(1e4,4);
 
         var bodies = [];
         var N=5,
@@ -26,10 +27,16 @@
             k=1000,
             d=10,
             l=0.35,
-            m=1;
+            m=1,
+            useCircles = true,
+            useConstraints = true,
+            useCorrectMasses = false;
 
         // Create particles
-        var particleShape = new p2.Particle();
+        var shape = useCircles ? new Circle(0.1) : new p2.Particle();
+        shape.collisionGroup = 0;
+        shape.collisionMask = 0;
+
         for(var i=0; i<2*N; i++){
             var p = new p2.Body({
                 mass: i==2*N-1 ? 0 : m,
@@ -40,22 +47,30 @@
             if(i>=N)
                 p.position[1] -= l*1.05;
 
-            p.addShape(particleShape);
+            p.addShape(shape);
             bodies.push(p);
             world.addBody(p);
         }
 
         // Springs
-        for(var i=0; i<2*N-1; i++){
+        for(var i=2*N-1-1; i>=0; i--){
             var bodyA = bodies[i],
-                bodyB = bodies[i+1],
-                spring = new p2.Spring(bodyA,bodyB, {
-                    stiffness: k,
-                    restLength: l,
-                    damping : d
-                });
-            if(i!=N-1)
-                world.addSpring(spring);
+                bodyB = bodies[i+1];
+
+            if(i!=N-1){
+                if(useConstraints){
+                    var dist = Math.abs(bodyA.position[1]-bodyB.position[1]);
+                    var c = new p2.DistanceConstraint(bodyA,bodyB,dist);
+                    world.addConstraint(c);
+                } else {
+                    var spring = new p2.Spring(bodyA,bodyB, {
+                        stiffness: k,
+                        restLength: l,
+                        damping : d
+                    });
+                    world.addSpring(spring);
+                }
+            }
         }
 
         var demo = new PixiDemo(world);
@@ -115,8 +130,12 @@
                 // Solve for Master constraint lagrange multipliers
                 var a = 1/dt/dt;
                 var b = 0;
-                var lambda_x =  ( - a*( dot(G1x,x1t) + dot(G2x,x2t) ) + b*( dot(G1x,v1t) + dot(G2x,v2t))) / ( dot(G1x,im1x) + dot(G2x,im2x) + epsilon );
-                var lambda_y =  ( - a*( dot(G1y,x1t) + dot(G2y,x2t) ) + b*( dot(G1y,v1t) + dot(G2y,v2t))) / ( dot(G1y,im1y) + dot(G2y,im2y) + epsilon );
+                var massTermX = dot(G1x,im1x) + dot(G2x,im2x);
+                var massTermY = dot(G1y,im1y) + dot(G2y,im2y);
+                if(useCorrectMasses)
+                    massTermX = massTermY = 2;
+                var lambda_x =  ( - a*( dot(G1x,x1t) + dot(G2x,x2t) ) + b*( dot(G1x,v1t) + dot(G2x,v2t))) / ( massTermX + epsilon );
+                var lambda_y =  ( - a*( dot(G1y,x1t) + dot(G2y,x2t) ) + b*( dot(G1y,v1t) + dot(G2y,v2t))) / ( massTermY + epsilon );
 
                 // Add Master constraint forces
                 vec2.add(b1.force, b1.force, vec2.scale(tmp,G1x,lambda_x));
