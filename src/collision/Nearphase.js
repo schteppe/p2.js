@@ -479,9 +479,8 @@ Nearphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
         convexOffset = xj,
         particleOffset = xi,
         particleBody = bi,
-        particleShape = si;
-
-    var worldVertex0 = tmp1,
+        particleShape = si,
+        worldVertex0 = tmp1,
         worldVertex1 = tmp2,
         worldEdge = tmp3,
         worldEdgeUnit = tmp4,
@@ -491,7 +490,11 @@ Nearphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
         orthoDist = tmp8,
         projectedPoint = tmp9,
         dist = tmp10,
-        worldVertex = tmp11;
+        worldVertex = tmp11,
+        closestEdge = -1,
+        closestEdgeDistance = null,
+        closestEdgeOrthoDist = tmp12,
+        closestEdgeProjectedPoint = tmp13;
 
     var numReported = 0;
 
@@ -535,31 +538,40 @@ Nearphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
 
             if(pos > pos0 && pos < pos1){
                 // We got contact!
-
                 if(justTest) return true;
 
-                var c = this.createContactEquation(particleBody,convexBody);
-
-                vec2.copy(c.ni, orthoDist);
-                vec2.normalize(c.ni, c.ni);
-
-                vec2.set(c.ri,  0, 0);
-                vec2.add(c.ri, c.ri, particleOffset);
-                vec2.sub(c.ri, c.ri, particleBody.position);
-
-                vec2.sub(c.rj, projectedPoint, convexOffset);
-                vec2.add(c.rj, c.rj, convexOffset);
-                vec2.sub(c.rj, c.rj, convexBody.position);
-
-                this.contactEquations.push(c);
-
-                if(this.enableFriction)
-                    this.frictionEquations.push( this.createFrictionFromContact(c) );
-
-                return true;
+                if(closestEdgeDistance === null || d*d<closestEdgeDistance*closestEdgeDistance){
+                    closestEdgeDistance = d;
+                    closestEdge = i;
+                    vec2.copy(closestEdgeOrthoDist, orthoDist);
+                    vec2.copy(closestEdgeProjectedPoint, projectedPoint);
+                }
             }
         }
     }
+
+    if(closestEdge != -1){
+        var c = this.createContactEquation(particleBody,convexBody);
+
+        vec2.copy(c.ni, closestEdgeOrthoDist);
+        vec2.normalize(c.ni, c.ni);
+
+        vec2.set(c.ri,  0, 0);
+        vec2.add(c.ri, c.ri, particleOffset);
+        vec2.sub(c.ri, c.ri, particleBody.position);
+
+        vec2.sub(c.rj, closestEdgeProjectedPoint, convexOffset);
+        vec2.add(c.rj, c.rj, convexOffset);
+        vec2.sub(c.rj, c.rj, convexBody.position);
+
+        this.contactEquations.push(c);
+
+        if(this.enableFriction)
+            this.frictionEquations.push( this.createFrictionFromContact(c) );
+
+        return true;
+    }
+
 
     return false;
 };
