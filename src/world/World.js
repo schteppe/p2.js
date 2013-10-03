@@ -203,7 +203,12 @@ World.prototype.step = function(dt){
         broadphase = this.broadphase,
         np = this.nearphase,
         constraints = this.constraints,
-        t0, t1;
+        t0, t1,
+        fhMinv = step_fhMinv,
+        velodt = step_velodt,
+        scale = vec2.scale,
+        add = vec2.add,
+        rotate = vec2.rotate;
 
     this.lastTimeStep = dt;
 
@@ -214,7 +219,7 @@ World.prototype.step = function(dt){
     // add gravity to bodies
     for(var i=0; i!==Nbodies; i++){
         var fi = bodies[i].force;
-        vec2.add(fi,fi,g);
+        add(fi,fi,g);
     }
 
     // Add spring forces
@@ -256,10 +261,10 @@ World.prototype.step = function(dt){
                 if(!((si.collisionGroup & sj.collisionMask) !== 0 && (sj.collisionGroup & si.collisionMask) !== 0))
                     continue;
 
-                vec2.rotate(xi_world, xi, bi.angle);
-                vec2.rotate(xj_world, xj, bj.angle);
-                vec2.add(xi_world, xi_world, bi.position);
-                vec2.add(xj_world, xj_world, bj.position);
+                rotate(xi_world, xi, bi.angle);
+                rotate(xj_world, xj, bj.angle);
+                add(xi_world, xi_world, bi.position);
+                add(xj_world, xj_world, bj.position);
                 var ai_world = ai + bi.angle;
                 var aj_world = aj + bj.angle;
 
@@ -337,9 +342,6 @@ World.prototype.step = function(dt){
     solver.removeAllEquations();
 
     // Step forward
-    var fhMinv = step_fhMinv;
-    var velodt = step_velodt;
-
     for(var i=0; i!==Nbodies; i++){
         var body = bodies[i];
 
@@ -354,10 +356,10 @@ World.prototype.step = function(dt){
             body.angle += body.angularVelocity * dt;
 
             // Linear step
-            vec2.scale(fhMinv,f,dt*minv);
-            vec2.add(velo,fhMinv,velo);
-            vec2.scale(velodt,velo,dt);
-            vec2.add(pos,pos,velodt);
+            scale(fhMinv,f,dt*minv);
+            add(velo,fhMinv,velo);
+            scale(velodt,velo,dt);
+            add(pos,pos,velodt);
         }
     }
 
