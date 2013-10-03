@@ -1,5 +1,7 @@
 var World = require("../src/world/World")
 ,   Body = require("../src/objects/Body")
+,   Circle = require("../src/shapes/Circle")
+,   Convex = require("../src/shapes/Convex")
 ,   vec2 = require("../src/math/vec2")
 
 var world;
@@ -40,3 +42,23 @@ exports.toJSON = function(test){
     test.deepEqual( b.angularVelocity, av );
     test.done();
 };
+
+exports.hitTest = function(test){
+    var b = new Body();
+    world.addBody(b);
+    test.equal(world.hitTest([0,0],[b]) , false, "Should miss bodies without shapes");
+
+    b.addShape(new Circle(1));
+    test.equal(world.hitTest([0,0],[b]) , true, "Should hit Circle");
+    test.equal(world.hitTest([1.1,0],[b]) , false, "Should miss Circle");
+
+    b = new Body();
+    b.addShape(new Convex([ [-1,-1],
+                            [ 1,-1],
+                            [ 1, 1],
+                            [-1, 1]]));
+    test.equal(world.hitTest([0,0],  [b]) , true,  "Should hit Convex");
+    test.equal(world.hitTest([1.1,0],[b]) , false, "Should miss Convex");
+
+    test.done();
+}

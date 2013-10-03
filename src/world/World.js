@@ -174,14 +174,13 @@ World.prototype.removeConstraint = function(c){
     }
 };
 
-var step_r = vec2.create();
-var step_runit = vec2.create();
-var step_u = vec2.create();
-var step_f = vec2.create();
-var step_fhMinv = vec2.create();
-var step_velodt = vec2.create();
-
-var xi_world = vec2.fromValues(0,0),
+var step_r = vec2.create(),
+    step_runit = vec2.create(),
+    step_u = vec2.create(),
+    step_f = vec2.create(),
+    step_fhMinv = vec2.create(),
+    step_velodt = vec2.create(),
+    xi_world = vec2.fromValues(0,0),
     xj_world = vec2.fromValues(0,0),
     zero = vec2.fromValues(0,0);
 
@@ -674,8 +673,49 @@ World.prototype.clear = function(){
     }
 };
 
+/**
+ * Get a copy of this World instance
+ * @method clone
+ * @return {World}
+ */
 World.prototype.clone = function(){
     var world = new World();
     world.fromJSON(this.toJSON());
     return world;
+};
+
+var hitTest_tmp1 = vec2.create(),
+    hitTest_zero = vec2.fromValues(0,0);
+World.prototype.hitTest = function(worldPoint,bodies){
+    // Create a dummy particle body with a particle shape to test against the bodies
+    var pb = new Body({ position:worldPoint }),
+        ps = new Particle(),
+        px = worldPoint,
+        pa = 0,
+        x = hitTest_tmp1,
+        zero = hitTest_zero;
+    pb.addShape(ps);
+
+    var n = this.nearphase;
+
+    // Check bodies
+    for(var i=0, N=bodies.length; i!==N; i++){
+        var b = bodies[i];
+        for(var j=0, NS=b.shapes.length; j!==NS; j++){
+            var s = b.shapes[j],
+                offset = b.shapeOffsets[j] || zero,
+                angle = b.shapeAngles[j] || 0.0;
+
+            // Get shape world position + angle
+            vec2.rotate(x, offset, b.angle);
+            vec2.add(x, x, b.position);
+            var a = angle + b.angle;
+
+                 if(s instanceof Circle) return n.circleParticle(b,s,x,a,     pb,ps,px,pa, true);
+            else if(s instanceof Convex) return n.particleConvex(pb,ps,px,pa, b,s,x,a,     true);
+            else if(s instanceof Plane)  return n.particlePlane (pb,ps,px,pa, b,s,x,a,     true);
+        }
+    }
+
+    return false;
 };

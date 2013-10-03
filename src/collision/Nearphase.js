@@ -472,7 +472,7 @@ Nearphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj){
  * @param  {Array} xj
  * @param  {Number} aj
  */
-Nearphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj){
+Nearphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTest ){
     var convexShape = sj,
         convexAngle = aj,
         convexBody = bj,
@@ -502,25 +502,27 @@ Nearphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj){
         var v0 = verts[i],
             v1 = verts[(i+1)%verts.length];
 
+        // Transform vertices to world
         vec2.rotate(worldVertex0, v0, convexAngle);
         vec2.rotate(worldVertex1, v1, convexAngle);
         vec2.add(worldVertex0, worldVertex0, convexOffset);
         vec2.add(worldVertex1, worldVertex1, convexOffset);
-        vec2.sub(worldEdge, worldVertex1, worldVertex0);
 
+        // Get world edge
+        vec2.sub(worldEdge, worldVertex1, worldVertex0);
         vec2.normalize(worldEdgeUnit, worldEdge);
 
         // Get tangent to the edge. Points out of the Convex
         vec2.rotate(worldTangent, worldEdgeUnit, -Math.PI/2);
 
-        // Check distance from the plane spanned by the edge vs the particle
+        // Check distance from the infinite line (spanned by the edge) to the particle
         vec2.sub(dist, particleOffset, worldVertex0);
         var d = vec2.dot(dist, worldTangent);
         vec2.sub(centerDist, worldVertex0, convexOffset);
 
         vec2.sub(convexToparticle, particleOffset, convexOffset);
 
-        if(d < 0 && vec2.dot(centerDist,convexToparticle) > 0){
+        if(d < 0 && vec2.dot(centerDist,convexToparticle) >= 0){
 
             // Now project the particle onto the edge
             vec2.scale(orthoDist, worldTangent, d);
@@ -533,6 +535,8 @@ Nearphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj){
 
             if(pos > pos0 && pos < pos1){
                 // We got contact!
+
+                if(justTest) return true;
 
                 var c = this.createContactEquation(particleBody,convexBody);
 
@@ -685,7 +689,7 @@ Nearphase.prototype.convexPlane = function( bi,si,xi,ai, bj,sj,xj,aj ){
  * @param  {Array}      xj World position for the plane
  * @param  {Number}     aj World angle for the plane
  */
-Nearphase.prototype.particlePlane = function( bi,si,xi,ai, bj,sj,xj,aj ){
+Nearphase.prototype.particlePlane = function( bi,si,xi,ai, bj,sj,xj,aj, justTest ){
     var particleBody = bi,
         particleShape = si,
         particleOffset = xi,
@@ -694,18 +698,22 @@ Nearphase.prototype.particlePlane = function( bi,si,xi,ai, bj,sj,xj,aj ){
         planeOffset = xj,
         planeAngle = aj;
 
-    var dist = tmp1;
+    var dist = tmp1,
+        worldNormal = tmp2;
 
     planeAngle = planeAngle || 0;
 
-    var c = this.createContactEquation(planeBody,particleBody);
-
     vec2.sub(dist, particleOffset, planeOffset);
-    vec2.rotate(c.ni, yAxis, planeAngle);
-    var d = vec2.dot(dist, c.ni);
+    vec2.rotate(worldNormal, yAxis, planeAngle);
+
+    var d = vec2.dot(dist, worldNormal);
 
     if(d > 0) return false;
+    if(justTest) return true;
 
+    var c = this.createContactEquation(planeBody,particleBody);
+
+    vec2.copy(c.ni, worldNormal);
     vec2.scale( dist, c.ni, d );
     // dist is now the distance vector in the normal direction
 
@@ -736,22 +744,20 @@ Nearphase.prototype.particlePlane = function( bi,si,xi,ai, bj,sj,xj,aj ){
  * @param  {Array} xj
  * @param  {Number} aj
  */
-Nearphase.prototype.circleParticle = function(   bi,si,xi,ai, bj,sj,xj,aj ){
+Nearphase.prototype.circleParticle = function(   bi,si,xi,ai, bj,sj,xj,aj, justTest ){
     var circleBody = bi,
         circleShape = si,
         circleOffset = xi,
         particleBody = bj,
         particleShape = sj,
-        particleOffset = xj;
-
-    var dist = tmp1;
-
-    var c = this.createContactEquation(circleBody,particleBody);
+        particleOffset = xj,
+        dist = tmp1;
 
     vec2.sub(dist, particleOffset, circleOffset);
+    if(vec2.squaredLength(dist) > circleShape.radius*circleShape.radius) return false;
+    if(justTest) return true;
 
-    if(vec2.squaredLength(dist) > circleShape.radius) return false;
-
+    var c = this.createContactEquation(circleBody,particleBody);
     vec2.copy(c.ni, dist);
     vec2.normalize(c.ni,c.ni);
 
