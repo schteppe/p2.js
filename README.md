@@ -99,6 +99,10 @@ setInterval(function(){
 * Added ```PrismaticConstraint```.
 * Added properties ```.collisionGroup``` and ```.collisionMask``` to ```Shape```. This enables collision filtering.
 * Added method ```World.hitTest```.
+* Renamed equation properties ```.k``` and ```.d``` of ```Equation``` and ```GSSolver``` to ```.stiffness``` and ```.relaxation```, respectively. Removed properties ```.a```, ```.b```, ```.eps``` from both and instead compute them on the fly in the solver.
+* Added property ```GSSolver.useGlobalEquationParameters``` so that it is possible to turn on and off per-equation solver settings (```.stiffness``` and ```.relaxation```).
+* Removed ```Broadphase.<shapeTypeA><shapeTypeB>``` since they are not used in any broadphase implementation any more.
+* Added experimental ```QuadTree``` broadphase.
 
 ##### 0.1
 
