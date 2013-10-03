@@ -22,21 +22,22 @@ function GSSolver(options){
     Solver.call(this);
     options = options || {};
     this.iterations = options.iterations || 10;
-    this.h = options.timeStep || 1.0/60.0;
-    this.k = options.stiffness || 1e7;
-    this.d = options.relaxation || 6;
-    this.a = 0.0;
-    this.b = 0.0;
-    this.eps = 0.0;
     this.tolerance = options.tolerance || 0;
-    this.setSpookParams(this.k, this.d);
     this.debug = options.debug || false;
     this.arrayStep = 30;
     this.lambda = new ARRAY_TYPE(this.arrayStep);
     this.Bs =     new ARRAY_TYPE(this.arrayStep);
     this.invCs =  new ARRAY_TYPE(this.arrayStep);
 
-    this.setSpookParams(1e6,4);
+    /**
+     * Whether to use .stiffness and .relaxation parameters from the Solver instead of each Equation individually.
+     * @type {Boolean}
+     * @property useGlobalEquationParameters
+     */
+    this.useGlobalEquationParameters = true;
+
+    this.stiffness = 1e6;
+    this.relaxation = 4;
 };
 GSSolver.prototype = new Solver();
 
@@ -46,14 +47,11 @@ GSSolver.prototype = new Solver();
  * @method setSpookParams
  * @param  {number} k
  * @param  {number} d
+ * @deprecated
  */
 GSSolver.prototype.setSpookParams = function(k,d){
-    var h=this.h;
-    this.k = k;
-    this.d = d;
-    this.a = 4.0 / (h * (1 + 4 * d));
-    this.b = (4.0 * d) / (1 + 4 * d);
-    this.eps = 4.0 / (h * h * k * (1 + 4 * d));
+    this.stiffness = k;
+    this.relaxation = d;
 };
 
 /**
@@ -63,19 +61,22 @@ GSSolver.prototype.setSpookParams = function(k,d){
  * @param  {World}   world    World to solve
  */
 GSSolver.prototype.solve = function(dt,world){
-    var d = this.d,
-        ks = this.k,
-        iter = 0,
+    var iter = 0,
         maxIter = this.iterations,
         tolSquared = this.tolerance*this.tolerance,
-        a = this.a,
-        b = this.b,
-        eps = this.eps,
         equations = this.equations,
         Neq = equations.length,
         bodies = world.bodies,
         Nbodies = world.bodies.length,
-        h = dt;
+        h = dt,
+        d = this.relaxation,
+        k = this.stiffness,
+        eps = 4.0 / (h * h * k * (1 + 4 * d)),
+        a = 4.0 / (h * (1 + 4 * d)),
+        b = (4.0 * d) / (1 + 4 * d),
+        useGlobalParams = this.useGlobalEquationParameters,
+        add = vec2.add,
+        set = vec2.set;
 
     // Things that does not change during iteration can be computed once
     if(this.lambda.length < Neq){
@@ -83,16 +84,24 @@ GSSolver.prototype.solve = function(dt,world){
         this.Bs =     new ARRAY_TYPE(Neq + this.arrayStep);
         this.invCs =  new ARRAY_TYPE(Neq + this.arrayStep);
     }
-    var invCs = this.invCs;
-    var Bs = this.Bs;
-    var lambda = this.lambda;
-
-    // Create array for lambdas
+    var invCs = this.invCs,
+        Bs = this.Bs,
+        lambda = this.lambda;
     for(var i=0; i!==Neq; i++){
         var c = equations[i];
         lambda[i] = 0.0;
-        Bs[i] = c.computeB(a,b,h);
-        invCs[i] = 1.0 / c.computeC(eps);
+
+        var _a = a,
+            _b = b,
+            _eps = eps;
+        if(!useGlobalParams){
+            if(h !== c.h) c.updateSpookParams(h);
+            _a = c.a;
+            _b = c.b;
+            _eps = c.eps;
+        }
+        Bs[i] = c.computeB(_a,_b,h);
+        invCs[i] = 1.0 / c.computeC(_eps);
     }
 
     var q, B, c, invC, deltalambda, deltalambdaTot, GWlambda, lambdaj;
@@ -103,7 +112,7 @@ GSSolver.prototype.solve = function(dt,world){
         // Reset vlambda
         for(i=0; i!==Nbodies; i++){
             var b=bodies[i], vlambda=b.vlambda;
-            vec2.set(vlambda,0,0);
+            set(vlambda,0,0);
             b.wlambda = 0;
         }
 
@@ -117,6 +126,8 @@ GSSolver.prototype.solve = function(dt,world){
 
                 c = equations[j];
 
+                var _eps = useGlobalParams ? eps : c.eps;
+
                 // Compute iteration
                 maxForce = c.maxForce;
                 minForce = c.minForce;
@@ -124,8 +135,8 @@ GSSolver.prototype.solve = function(dt,world){
                 B = Bs[j];
                 invC = invCs[j];
                 lambdaj = lambda[j];
-                GWlambda = c.computeGWlambda(eps);
-                deltalambda = invC * ( B - GWlambda - eps * lambdaj );
+                GWlambda = c.computeGWlambda(_eps);
+                deltalambda = invC * ( B - GWlambda - _eps * lambdaj );
 
                 // Clamp if we are not within the min/max interval
                 lambdaj_plus_deltalambda = lambdaj + deltalambda;
@@ -148,7 +159,7 @@ GSSolver.prototype.solve = function(dt,world){
         // Add result to velocity
         for(i=0; i!==Nbodies; i++){
             var b=bodies[i], v=b.velocity;
-            vec2.add( v, v, b.vlambda);
+            add( v, v, b.vlambda);
             b.angularVelocity += b.wlambda;
         }
     }

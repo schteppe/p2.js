@@ -10,7 +10,6 @@ module.exports = Equation;
  * @param {number} maxForce Maximum force to apply. Default: 1e6
  */
 function Equation(bi,bj,minForce,maxForce){
-    this.id = -1;
 
     /**
      * Minimum force to apply when solving
@@ -40,27 +39,39 @@ function Equation(bi,bj,minForce,maxForce){
      */
     this.bj = bj;
 
-    this.h = 1/60;
-    this.k = 0;
+    /**
+     * The stiffness of this equation. Typically chosen to a large number (~1e7), but can be chosen somewhat freely to get a stable simulation.
+     * @property stiffness
+     * @type {Number}
+     */
+    this.stiffness = 1e6;
+
+    /**
+     * The number of time steps needed to stabilize the constraint equation. Typically between 3 and 5 time steps.
+     * @property relaxation
+     * @type {Number}
+     */
+    this.relaxation = 4;
+
     this.a = 0;
     this.b = 0;
     this.eps = 0;
-    this.setSpookParams(1e6,4);
+    this.h = 0;
+    this.updateSpookParams(1/60);
 };
 Equation.prototype.constructor = Equation;
 
 /**
- * Set stiffness parameters
- *
- * @method setSpookParams
- * @param  {number} k
- * @param  {number} d
+ * Update SPOOK parameters .a, .b and .eps according to the given time step. See equations 9, 10 and 11 in the <a href="http://www8.cs.umu.se/kurser/5DV058/VT09/lectures/spooknotes.pdf">SPOOK notes</a>.
+ * @method updateSpookParams
+ * @param  {number} timeStep
  */
-Equation.prototype.setSpookParams = function(k,d){
-    var h=this.h;
-    this.k = k;
-    this.d = d;
+Equation.prototype.updateSpookParams = function(timeStep){
+    var k = this.stiffness,
+        d = this.relaxation,
+        h = timeStep;
     this.a = 4.0 / (h * (1 + 4 * d));
     this.b = (4.0 * d) / (1 + 4 * d);
     this.eps = 4.0 / (h * h * k * (1 + 4 * d));
+    this.h = timeStep;
 };
