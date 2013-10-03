@@ -17,6 +17,6 @@ Plane.prototype.computeMomentOfInertia = function(mass){
 };
 
 Plane.prototype.updateBoundingRadius = function(){
-    this.boundingRadius = 0;
+    this.boundingRadius = Number.MAX_VALUE;
 };
 

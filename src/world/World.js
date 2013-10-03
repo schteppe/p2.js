@@ -253,6 +253,9 @@ World.prototype.step = function(dt){
                     xj = bj.shapeOffsets[l] || zero,
                     aj = bj.shapeAngles[l] || 0;
 
+                if(!((si.collisionGroup & sj.collisionMask) !== 0 && (sj.collisionGroup & si.collisionMask) !== 0))
+                    continue;
+
                 vec2.rotate(xi_world, xi, bi.angle);
                 vec2.rotate(xj_world, xj, bj.angle);
                 vec2.add(xi_world, xi_world, bi.position);

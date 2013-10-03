@@ -274,7 +274,7 @@ Node.prototype.clear = function(){
 }
 
 
-/******************** BoundsQuadTree ****************/
+// BoundsQuadTree
 
 function BoundsNode(bounds, depth, maxChildren, maxDepth){
     Node.call(this, bounds, depth, maxChildren, maxDepth);
