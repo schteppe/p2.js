@@ -696,7 +696,8 @@ World.prototype.hitTest = function(worldPoint,bodies){
         zero = hitTest_zero;
     pb.addShape(ps);
 
-    var n = this.nearphase;
+    var n = this.nearphase,
+        result = [];
 
     // Check bodies
     for(var i=0, N=bodies.length; i!==N; i++){
@@ -711,11 +712,14 @@ World.prototype.hitTest = function(worldPoint,bodies){
             vec2.add(x, x, b.position);
             var a = angle + b.angle;
 
-                 if(s instanceof Circle) return n.circleParticle(b,s,x,a,     pb,ps,px,pa, true);
-            else if(s instanceof Convex) return n.particleConvex(pb,ps,px,pa, b,s,x,a,     true);
-            else if(s instanceof Plane)  return n.particlePlane (pb,ps,px,pa, b,s,x,a,     true);
+            if( (s instanceof Circle && n.circleParticle(b,s,x,a,     pb,ps,px,pa, true)) ||
+                (s instanceof Convex && n.particleConvex(pb,ps,px,pa, b,s,x,a,     true)) ||
+                (s instanceof Plane  && n.particlePlane (pb,ps,px,pa, b,s,x,a,     true))
+                ){
+                result.push(b);
+            }
         }
     }
 
-    return false;
+    return result;
 };

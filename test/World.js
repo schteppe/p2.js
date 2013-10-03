@@ -46,19 +46,19 @@ exports.toJSON = function(test){
 exports.hitTest = function(test){
     var b = new Body();
     world.addBody(b);
-    test.equal(world.hitTest([0,0],[b]) , false, "Should miss bodies without shapes");
+    test.deepEqual(world.hitTest([0,0],[b]) , [], "Should miss bodies without shapes");
 
     b.addShape(new Circle(1));
-    test.equal(world.hitTest([0,0],[b]) , true, "Should hit Circle");
-    test.equal(world.hitTest([1.1,0],[b]) , false, "Should miss Circle");
+    test.deepEqual(world.hitTest([0,0],[b]) , [b], "Should hit Circle");
+    test.deepEqual(world.hitTest([1.1,0],[b]) , [], "Should miss Circle");
 
     b = new Body();
     b.addShape(new Convex([ [-1,-1],
                             [ 1,-1],
                             [ 1, 1],
                             [-1, 1]]));
-    test.equal(world.hitTest([0,0],  [b]) , true,  "Should hit Convex");
-    test.equal(world.hitTest([1.1,0],[b]) , false, "Should miss Convex");
+    test.deepEqual(world.hitTest([0,0],  [b]) , [b],  "Should hit Convex");
+    test.deepEqual(world.hitTest([1.1,0],[b]) , [], "Should miss Convex");
 
     test.done();
 }

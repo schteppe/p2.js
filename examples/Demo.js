@@ -9,7 +9,8 @@ var vec2 =      p2.vec2
 ,   Rectangle=  p2.Rectangle
 ,   Particle =  p2.Particle
 ,   Line =      p2.Line
-,   EventDispatcher = p2.EventDispatcher
+,   EventEmitter = p2.EventEmitter
+,   PointToPointConstraint = p2.PointToPointConstraint
 
 // shim layer with setTimeout fallback
 var requestAnimationFrame =     window.requestAnimationFrame       ||
@@ -21,6 +22,10 @@ var requestAnimationFrame =     window.requestAnimationFrame       ||
                                     window.setTimeout(callback, 1000 / 60);
                                 };
 
+function DemoStates(){};
+DemoStates.DEFAULT =  1;
+DemoStates.PANNING =  2;
+DemoStates.DRAGGING = 3;
 
 /**
  * Base class for rendering of a scene.
@@ -29,15 +34,22 @@ var requestAnimationFrame =     window.requestAnimationFrame       ||
  * @param {World} world
  */
 function Demo(world){
+    EventEmitter.call(this);
+
     var that = this;
 
     this.world = world;
     this.initialState = world.toJSON();
 
+    this.state = DemoStates.DEFAULT;
+
     this.bodies=[];
     this.springs=[];
     this.paused = false;
     this.timeStep = 1/60;
+
+    this.mouseConstraint = null;
+    this.nullBody = new Body();
 
     this.stats_sum = 0;
     this.stats_N = 100;
@@ -71,14 +83,14 @@ function Demo(world){
 
     document.addEventListener('keypress',function(e){
         if(e.keyCode){
-            switch(e.keyCode){
-                case 112: // p - pause
+            switch(String.fromCharCode(e.keyCode)){
+                case "p": // pause
                     that.paused = !that.paused;
                     break;
-                case 115: // s - step
+                case "s": // step
                     that.world.step(that.world.lastTimeStep);
                     break;
-                case 114: // r - restart
+                case "r": // restart
                     that.removeAllVisuals();
                     that.world.fromJSON(that.initialState);
                     break;
@@ -92,6 +104,55 @@ function Demo(world){
     for(var i=0; i<world.springs.length; i++)
         this.addVisual(world.springs[i]);
 }
+Demo.prototype = new EventEmitter();
+
+/**
+ * Should be called by subclasses whenever there's a mousedown event
+ */
+Demo.prototype.handleMouseDown = function(physicsPosition){
+    switch(this.state){
+        case DemoStates.DEFAULT:
+            var result = this.world.hitTest(physicsPosition,world.bodies);
+            if(result.length > 0){
+                var b = result[0]; // The grabbed body
+                this.state = DemoStates.DRAGGING;
+                // Add mouse joint to the body
+                var localPoint = vec2.create();
+                b.toLocalFrame(localPoint,physicsPosition);
+                this.world.addBody(this.nullBody);
+                this.mouseConstraint = new PointToPointConstraint(  this.nullBody, physicsPosition,
+                                                                    b,             localPoint);
+                this.world.addConstraint(this.mouseConstraint);
+            } else {
+                this.state = DemoStates.PANNING;
+            }
+            break;
+    }
+};
+
+/**
+ * Should be called by subclasses whenever there's a mousedown event
+ */
+Demo.prototype.handleMouseMove = function(physicsPosition){
+};
+
+/**
+ * Should be called by subclasses whenever there's a mouseup event
+ */
+Demo.prototype.handleMouseUp = function(physicsPosition){
+    switch(this.state){
+        case DemoStates.DEFAULT:
+            break;
+        case DemoStates.DRAGGING:
+            // Drop constraint
+            this.world.removeConstraint(this.mouseConstraint);
+            this.mouseConstraint = null;
+            this.world.removeBody(this.nullBody);
+        case DemoStates.PANNING:
+            this.state = DemoStates.DEFAULT;
+            break;
+    }
+};
 
 /**
  * Update stats

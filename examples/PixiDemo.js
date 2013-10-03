@@ -36,9 +36,18 @@ function PixiDemo(world,options){
 };
 PixiDemo.prototype = Object.create(Demo.prototype);
 
+PixiDemo.prototype.stagePositionToPhysics = function(out,stagePosition){
+    var x = stagePosition[0]/this.pixelsPerLengthUnit,
+        y = (this.renderer.height - stagePosition[1])/this.pixelsPerLengthUnit;
+    vec2.set(out, x, y);
+    return out;
+};
+
 /**
  * Initialize the renderer and stage
  */
+var init_stagePosition = vec2.create(),
+    init_physicsPosition = vec2.create();
 PixiDemo.prototype.init = function(){
     var w = this.w,
         h = this.h,
@@ -66,19 +75,34 @@ PixiDemo.prototype.init = function(){
         down = true;
         lastMoveX = e.global.x;
         lastMoveY = e.global.y;
+
+        var pos = e.getLocalPosition(stage);
+        vec2.set(init_stagePosition, pos.x, pos.y);
+        that.stagePositionToPhysics(init_physicsPosition, init_stagePosition);
+        that.handleMouseDown(init_physicsPosition);
     };
     container.mousemove = function(e){
-        if(down){
+        if(down && that.state == DemoStates.PANNING){
             stage.position.x = e.global.x-lastX+startX;
             stage.position.y = e.global.y-lastY+startY;
         }
         lastMoveX = e.global.x;
         lastMoveY = e.global.y;
+
+        var pos = e.getLocalPosition(stage);
+        vec2.set(init_stagePosition, pos.x, pos.y);
+        that.stagePositionToPhysics(init_physicsPosition, init_stagePosition);
+        that.handleMouseMove(init_physicsPosition);
     };
     container.mouseup = function(e){
         down = false;
         lastMoveX = e.global.x;
         lastMoveY = e.global.y;
+
+        var pos = e.getLocalPosition(stage);
+        vec2.set(init_stagePosition, pos.x, pos.y);
+        that.stagePositionToPhysics(init_physicsPosition, init_stagePosition);
+        that.handleMouseUp(init_physicsPosition);
     };
 
     $(window).bind('mousewheel', function(e){
