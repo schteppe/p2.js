@@ -1,4 +1,7 @@
 var vec2 = require('../math/vec2')
+,   sub = vec2.sub
+,   add = vec2.add
+,   dot = vec2.dot
 ,   ContactEquation = require('../constraints/ContactEquation')
 ,   FrictionEquation = require('../constraints/FrictionEquation')
 ,   Circle = require('../shapes/Circle')
@@ -141,14 +144,14 @@ Nearphase.prototype.planeLine = function(bi,si,xi,ai, bj,sj,xj,aj){
     vec2.rotate(worldVertex01, worldVertex0, lineAngle);
     vec2.rotate(worldVertex11, worldVertex1, lineAngle);
 
-    vec2.add(worldVertex01, worldVertex01, lineOffset);
-    vec2.add(worldVertex11, worldVertex11, lineOffset);
+    add(worldVertex01, worldVertex01, lineOffset);
+    add(worldVertex11, worldVertex11, lineOffset);
 
     vec2.copy(worldVertex0,worldVertex01);
     vec2.copy(worldVertex1,worldVertex11);
 
     // Get vector along the line
-    vec2.sub(worldEdge, worldVertex1, worldVertex0);
+    sub(worldEdge, worldVertex1, worldVertex0);
     vec2.normalize(worldEdgeUnit, worldEdge);
 
     // Get tangent to the edge.
@@ -161,9 +164,9 @@ Nearphase.prototype.planeLine = function(bi,si,xi,ai, bj,sj,xj,aj){
     for(var i=0; i<verts.length; i++){
         var v = verts[i];
 
-        vec2.sub(dist, v, planeOffset);
+        sub(dist, v, planeOffset);
 
-        var d = vec2.dot(dist,worldNormal);
+        var d = dot(dist,worldNormal);
 
         if(d < 0){
 
@@ -176,13 +179,13 @@ Nearphase.prototype.planeLine = function(bi,si,xi,ai, bj,sj,xj,aj){
             vec2.scale(dist, worldNormal, d);
 
             // Vector from plane center to contact
-            vec2.sub(c.ri, v, dist);
-            vec2.sub(c.ri, c.ri, planeBody.position);
+            sub(c.ri, v, dist);
+            sub(c.ri, c.ri, planeBody.position);
 
             // From line center to contact
-            vec2.sub(c.rj, v,    lineOffset);
-            vec2.add(c.rj, c.rj, lineOffset);
-            vec2.sub(c.rj, c.rj, lineBody.position);
+            sub(c.rj, v,    lineOffset);
+            add(c.rj, c.rj, lineOffset);
+            sub(c.rj, c.rj, lineBody.position);
 
             this.contactEquations.push(c);
 
@@ -237,36 +240,36 @@ Nearphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj){
     vec2.rotate(worldVertex01, worldVertex0, lineAngle);
     vec2.rotate(worldVertex11, worldVertex1, lineAngle);
 
-    vec2.add(worldVertex01, worldVertex01, lineOffset);
-    vec2.add(worldVertex11, worldVertex11, lineOffset);
+    add(worldVertex01, worldVertex01, lineOffset);
+    add(worldVertex11, worldVertex11, lineOffset);
 
     vec2.copy(worldVertex0,worldVertex01);
     vec2.copy(worldVertex1,worldVertex11);
 
     // Get vector along the line
-    vec2.sub(worldEdge, worldVertex1, worldVertex0);
+    sub(worldEdge, worldVertex1, worldVertex0);
     vec2.normalize(worldEdgeUnit, worldEdge);
 
     // Get tangent to the edge.
     vec2.rotate(worldTangent, worldEdgeUnit, -Math.PI/2);
 
     // Check distance from the plane spanned by the edge vs the circle
-    vec2.sub(dist, circleOffset, worldVertex0);
-    var d = vec2.dot(dist, worldTangent);
-    vec2.sub(centerDist, worldVertex0, lineOffset);
+    sub(dist, circleOffset, worldVertex0);
+    var d = dot(dist, worldTangent);
+    sub(centerDist, worldVertex0, lineOffset);
 
-    vec2.sub(lineToCircle, circleOffset, lineOffset);
+    sub(lineToCircle, circleOffset, lineOffset);
 
     if(Math.abs(d) < circleShape.radius){
 
         // Now project the circle onto the edge
         vec2.scale(orthoDist, worldTangent, d);
-        vec2.sub(projectedPoint, circleOffset, orthoDist);
+        sub(projectedPoint, circleOffset, orthoDist);
 
         // Check if the point is within the edge span
-        var pos =  vec2.dot(worldEdgeUnit, projectedPoint);
-        var pos0 = vec2.dot(worldEdgeUnit, worldVertex0);
-        var pos1 = vec2.dot(worldEdgeUnit, worldVertex1);
+        var pos =  dot(worldEdgeUnit, projectedPoint);
+        var pos0 = dot(worldEdgeUnit, worldVertex0);
+        var pos1 = dot(worldEdgeUnit, worldVertex1);
 
         if(pos > pos0 && pos < pos1){
             // We got contact!
@@ -277,12 +280,12 @@ Nearphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj){
             vec2.normalize(c.ni, c.ni);
 
             vec2.scale( c.ri, c.ni,  circleShape.radius);
-            vec2.add(c.ri, c.ri, circleOffset);
-            vec2.sub(c.ri, c.ri, circleBody.position);
+            add(c.ri, c.ri, circleOffset);
+            sub(c.ri, c.ri, circleBody.position);
 
-            vec2.sub( c.rj, projectedPoint, lineOffset);
-            vec2.add(c.rj, c.rj, lineOffset);
-            vec2.sub(c.rj, c.rj, lineBody.position);
+            sub( c.rj, projectedPoint, lineOffset);
+            add(c.rj, c.rj, lineOffset);
+            sub(c.rj, c.rj, lineBody.position);
 
             this.contactEquations.push(c);
 
@@ -298,7 +301,7 @@ Nearphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj){
     for(var i=0; i<verts.length; i++){
         var v = verts[i];
 
-        vec2.sub(dist, v, circleOffset);
+        sub(dist, v, circleOffset);
 
         if(vec2.squaredLength(dist) < circleShape.radius*circleShape.radius){
 
@@ -311,12 +314,12 @@ Nearphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj){
 
             // Vector from circle to contact point is the normal times the circle radius
             vec2.scale(c.ri, c.ni, circleShape.radius);
-            vec2.add(c.ri, c.ri, circleOffset);
-            vec2.sub(c.ri, c.ri, circleBody.position);
+            add(c.ri, c.ri, circleOffset);
+            sub(c.ri, c.ri, circleBody.position);
 
-            vec2.sub(c.rj, v, lineOffset);
-            vec2.add(c.rj, c.rj, lineOffset);
-            vec2.sub(c.rj, c.rj, lineBody.position);
+            sub(c.rj, v, lineOffset);
+            add(c.rj, c.rj, lineOffset);
+            sub(c.rj, c.rj, lineBody.position);
 
             this.contactEquations.push(c);
 
@@ -371,9 +374,9 @@ Nearphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj){
 
         vec2.rotate(worldVertex0, v0, convexAngle);
         vec2.rotate(worldVertex1, v1, convexAngle);
-        vec2.add(worldVertex0, worldVertex0, convexOffset);
-        vec2.add(worldVertex1, worldVertex1, convexOffset);
-        vec2.sub(worldEdge, worldVertex1, worldVertex0);
+        add(worldVertex0, worldVertex0, convexOffset);
+        add(worldVertex1, worldVertex1, convexOffset);
+        sub(worldEdge, worldVertex1, worldVertex0);
 
         vec2.normalize(worldEdgeUnit, worldEdge);
 
@@ -381,22 +384,22 @@ Nearphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj){
         vec2.rotate(worldTangent, worldEdgeUnit, -Math.PI/2);
 
         // Check distance from the plane spanned by the edge vs the circle
-        vec2.sub(dist, circleOffset, worldVertex0);
-        var d = vec2.dot(dist, worldTangent);
-        vec2.sub(centerDist, worldVertex0, convexOffset);
+        sub(dist, circleOffset, worldVertex0);
+        var d = dot(dist, worldTangent);
+        sub(centerDist, worldVertex0, convexOffset);
 
-        vec2.sub(convexToCircle, circleOffset, convexOffset);
+        sub(convexToCircle, circleOffset, convexOffset);
 
-        if(d < circleShape.radius && vec2.dot(centerDist,convexToCircle) > 0){
+        if(d < circleShape.radius && dot(centerDist,convexToCircle) > 0){
 
             // Now project the circle onto the edge
             vec2.scale(orthoDist, worldTangent, d);
-            vec2.sub(projectedPoint, circleOffset, orthoDist);
+            sub(projectedPoint, circleOffset, orthoDist);
 
             // Check if the point is within the edge span
-            var pos =  vec2.dot(worldEdgeUnit, projectedPoint);
-            var pos0 = vec2.dot(worldEdgeUnit, worldVertex0);
-            var pos1 = vec2.dot(worldEdgeUnit, worldVertex1);
+            var pos =  dot(worldEdgeUnit, projectedPoint);
+            var pos0 = dot(worldEdgeUnit, worldVertex0);
+            var pos1 = dot(worldEdgeUnit, worldVertex1);
 
             if(pos > pos0 && pos < pos1){
                 // We got contact!
@@ -407,12 +410,12 @@ Nearphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj){
                 vec2.normalize(c.ni, c.ni);
 
                 vec2.scale( c.ri, c.ni,  circleShape.radius);
-                vec2.add(c.ri, c.ri, circleOffset);
-                vec2.sub(c.ri, c.ri, circleBody.position);
+                add(c.ri, c.ri, circleOffset);
+                sub(c.ri, c.ri, circleBody.position);
 
-                vec2.sub( c.rj, projectedPoint, convexOffset);
-                vec2.add(c.rj, c.rj, convexOffset);
-                vec2.sub(c.rj, c.rj, convexBody.position);
+                sub( c.rj, projectedPoint, convexOffset);
+                add(c.rj, c.rj, convexOffset);
+                sub(c.rj, c.rj, convexBody.position);
 
                 this.contactEquations.push(c);
 
@@ -429,9 +432,9 @@ Nearphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj){
     for(var i=0; i<verts.length; i++){
         var localVertex = verts[i];
         vec2.rotate(worldVertex, localVertex, convexAngle);
-        vec2.add(worldVertex, worldVertex, convexOffset);
+        add(worldVertex, worldVertex, convexOffset);
 
-        vec2.sub(dist, worldVertex, circleOffset);
+        sub(dist, worldVertex, circleOffset);
         if(vec2.squaredLength(dist) < circleShape.radius*circleShape.radius){
 
             var c = this.createContactEquation(circleBody,convexBody);
@@ -441,12 +444,12 @@ Nearphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj){
 
             // Vector from circle to contact point is the normal times the circle radius
             vec2.scale(c.ri, c.ni, circleShape.radius);
-            vec2.add(c.ri, c.ri, circleOffset);
-            vec2.sub(c.ri, c.ri, circleBody.position);
+            add(c.ri, c.ri, circleOffset);
+            sub(c.ri, c.ri, circleBody.position);
 
-            vec2.sub(c.rj, worldVertex, convexOffset);
-            vec2.add(c.rj, c.rj, convexOffset);
-            vec2.sub(c.rj, c.rj, convexBody.position);
+            sub(c.rj, worldVertex, convexOffset);
+            add(c.rj, c.rj, convexOffset);
+            sub(c.rj, c.rj, convexBody.position);
 
             this.contactEquations.push(c);
 
@@ -508,33 +511,33 @@ Nearphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
         // Transform vertices to world
         vec2.rotate(worldVertex0, v0, convexAngle);
         vec2.rotate(worldVertex1, v1, convexAngle);
-        vec2.add(worldVertex0, worldVertex0, convexOffset);
-        vec2.add(worldVertex1, worldVertex1, convexOffset);
+        add(worldVertex0, worldVertex0, convexOffset);
+        add(worldVertex1, worldVertex1, convexOffset);
 
         // Get world edge
-        vec2.sub(worldEdge, worldVertex1, worldVertex0);
+        sub(worldEdge, worldVertex1, worldVertex0);
         vec2.normalize(worldEdgeUnit, worldEdge);
 
         // Get tangent to the edge. Points out of the Convex
         vec2.rotate(worldTangent, worldEdgeUnit, -Math.PI/2);
 
         // Check distance from the infinite line (spanned by the edge) to the particle
-        vec2.sub(dist, particleOffset, worldVertex0);
-        var d = vec2.dot(dist, worldTangent);
-        vec2.sub(centerDist, worldVertex0, convexOffset);
+        sub(dist, particleOffset, worldVertex0);
+        var d = dot(dist, worldTangent);
+        sub(centerDist, worldVertex0, convexOffset);
 
-        vec2.sub(convexToparticle, particleOffset, convexOffset);
+        sub(convexToparticle, particleOffset, convexOffset);
 
-        if(d < 0 && vec2.dot(centerDist,convexToparticle) >= 0){
+        if(d < 0 && dot(centerDist,convexToparticle) >= 0){
 
             // Now project the particle onto the edge
             vec2.scale(orthoDist, worldTangent, d);
-            vec2.sub(projectedPoint, particleOffset, orthoDist);
+            sub(projectedPoint, particleOffset, orthoDist);
 
             // Check if the point is within the edge span
-            var pos =  vec2.dot(worldEdgeUnit, projectedPoint);
-            var pos0 = vec2.dot(worldEdgeUnit, worldVertex0);
-            var pos1 = vec2.dot(worldEdgeUnit, worldVertex1);
+            var pos =  dot(worldEdgeUnit, projectedPoint);
+            var pos0 = dot(worldEdgeUnit, worldVertex0);
+            var pos1 = dot(worldEdgeUnit, worldVertex1);
 
             if(pos > pos0 && pos < pos1){
                 // We got contact!
@@ -557,12 +560,12 @@ Nearphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
         vec2.normalize(c.ni, c.ni);
 
         vec2.set(c.ri,  0, 0);
-        vec2.add(c.ri, c.ri, particleOffset);
-        vec2.sub(c.ri, c.ri, particleBody.position);
+        add(c.ri, c.ri, particleOffset);
+        sub(c.ri, c.ri, particleBody.position);
 
-        vec2.sub(c.rj, closestEdgeProjectedPoint, convexOffset);
-        vec2.add(c.rj, c.rj, convexOffset);
-        vec2.sub(c.rj, c.rj, convexBody.position);
+        sub(c.rj, closestEdgeProjectedPoint, convexOffset);
+        add(c.rj, c.rj, convexOffset);
+        sub(c.rj, c.rj, convexBody.position);
 
         this.contactEquations.push(c);
 
@@ -597,17 +600,17 @@ Nearphase.prototype.circleCircle = function(  bi,si,xi,ai, bj,sj,xj,aj){
         offsetB = xj;
 
     var c = this.createContactEquation(bodyA,bodyB);
-    vec2.sub(c.ni, offsetB, offsetA);
+    sub(c.ni, offsetB, offsetA);
     vec2.normalize(c.ni,c.ni);
 
     vec2.scale( c.ri, c.ni,  shapeA.radius);
     vec2.scale( c.rj, c.ni, -shapeB.radius);
 
-    vec2.add(c.ri, c.ri, offsetA);
-    vec2.sub(c.ri, c.ri, bodyA.position);
+    add(c.ri, c.ri, offsetA);
+    sub(c.ri, c.ri, bodyA.position);
 
-    vec2.add(c.rj, c.rj, offsetB);
-    vec2.sub(c.rj, c.rj, bodyB.position);
+    add(c.rj, c.rj, offsetB);
+    sub(c.rj, c.rj, bodyB.position);
 
     this.contactEquations.push(c);
 
@@ -648,31 +651,31 @@ Nearphase.prototype.convexPlane = function( bi,si,xi,ai, bj,sj,xj,aj ){
     for(var i=0; i<si.vertices.length; i++){
         var v = si.vertices[i];
         vec2.rotate(worldVertex, v, convexAngle);
-        vec2.add(worldVertex, worldVertex, convexOffset);
+        add(worldVertex, worldVertex, convexOffset);
 
-        vec2.sub(dist, worldVertex, planeOffset);
+        sub(dist, worldVertex, planeOffset);
 
-        if(vec2.dot(dist,worldNormal) < 0){
+        if(dot(dist,worldNormal) < 0){
 
             // Found vertex
             numReported++;
 
             var c = this.createContactEquation(planeBody,convexBody);
 
-            vec2.sub(dist, worldVertex, planeOffset);
+            sub(dist, worldVertex, planeOffset);
 
             vec2.copy(c.ni, worldNormal);
 
-            var d = vec2.dot(dist, c.ni);
+            var d = dot(dist, c.ni);
             vec2.scale(dist, c.ni, d);
 
             // rj is from convex center to contact
-            vec2.sub(c.rj, worldVertex, convexBody.position);
+            sub(c.rj, worldVertex, convexBody.position);
 
 
             // ri is from plane center to contact
-            vec2.sub( c.ri, worldVertex, dist);
-            vec2.sub( c.ri, c.ri, planeBody.position);
+            sub( c.ri, worldVertex, dist);
+            sub( c.ri, c.ri, planeBody.position);
 
             this.contactEquations.push(c);
 
@@ -715,10 +718,10 @@ Nearphase.prototype.particlePlane = function( bi,si,xi,ai, bj,sj,xj,aj, justTest
 
     planeAngle = planeAngle || 0;
 
-    vec2.sub(dist, particleOffset, planeOffset);
+    sub(dist, particleOffset, planeOffset);
     vec2.rotate(worldNormal, yAxis, planeAngle);
 
-    var d = vec2.dot(dist, worldNormal);
+    var d = dot(dist, worldNormal);
 
     if(d > 0) return false;
     if(justTest) return true;
@@ -730,11 +733,11 @@ Nearphase.prototype.particlePlane = function( bi,si,xi,ai, bj,sj,xj,aj, justTest
     // dist is now the distance vector in the normal direction
 
     // ri is the particle position projected down onto the plane, from the plane center
-    vec2.sub( c.ri, particleOffset, dist);
-    vec2.sub( c.ri, c.ri, planeBody.position);
+    sub( c.ri, particleOffset, dist);
+    sub( c.ri, c.ri, planeBody.position);
 
     // rj is from the body center to the particle center
-    vec2.sub( c.rj, particleOffset, particleBody.position );
+    sub( c.rj, particleOffset, particleBody.position );
 
     this.contactEquations.push(c);
 
@@ -765,7 +768,7 @@ Nearphase.prototype.circleParticle = function(   bi,si,xi,ai, bj,sj,xj,aj, justT
         particleOffset = xj,
         dist = tmp1;
 
-    vec2.sub(dist, particleOffset, circleOffset);
+    sub(dist, particleOffset, circleOffset);
     if(vec2.squaredLength(dist) > circleShape.radius*circleShape.radius) return false;
     if(justTest) return true;
 
@@ -775,11 +778,11 @@ Nearphase.prototype.circleParticle = function(   bi,si,xi,ai, bj,sj,xj,aj, justT
 
     // Vector from circle to contact point is the normal times the circle radius
     vec2.scale(c.ri, c.ni, circleShape.radius);
-    vec2.add(c.ri, c.ri, circleOffset);
-    vec2.sub(c.ri, c.ri, circleBody.position);
+    add(c.ri, c.ri, circleOffset);
+    sub(c.ri, c.ri, circleBody.position);
 
     // Vector from particle center to contact point is zero
-    vec2.sub(c.rj, particleOffset, particleBody.position);
+    sub(c.rj, particleOffset, particleBody.position);
 
     this.contactEquations.push(c);
 
@@ -803,11 +806,11 @@ Nearphase.prototype.capsulePlane = function( bi,si,xi,ai, bj,sj,xj,aj ){
     // Compute world end positions
     vec2.set(end1, -si.length/2, 0);
     vec2.rotate(end1,end1,ai);
-    vec2.add(end1,end1,xi);
+    add(end1,end1,xi);
 
     vec2.set(end2,  si.length/2, 0);
     vec2.rotate(end2,end2,ai);
-    vec2.add(end2,end2,xi);
+    add(end2,end2,xi);
 
     circle.radius = si.radius;
 
@@ -843,13 +846,13 @@ Nearphase.prototype.circlePlane = function(   bi,si,xi,ai, bj,sj,xj,aj ){
         worldNormal = tmp2,
         temp = tmp3;
 
-    vec2.sub(planeToCircle, circleOffset, planeOffset);
+    sub(planeToCircle, circleOffset, planeOffset);
 
     // World plane normal
     vec2.rotate(worldNormal, yAxis, planeAngle);
 
     // Normal direction distance
-    var d = vec2.dot(worldNormal, planeToCircle);
+    var d = dot(worldNormal, planeToCircle);
 
     if(d > circleShape.radius) return false; // No overlap. Abort.
 
@@ -861,14 +864,14 @@ Nearphase.prototype.circlePlane = function(   bi,si,xi,ai, bj,sj,xj,aj ){
 
     // rj is the vector from circle center to the contact point
     vec2.scale(contact.rj, contact.ni, -circleShape.radius);
-    vec2.add(contact.rj, contact.rj, circleOffset);
-    vec2.sub(contact.rj, contact.rj, circleBody.position);
+    add(contact.rj, contact.rj, circleOffset);
+    sub(contact.rj, contact.rj, circleBody.position);
 
     // ri is the distance from plane center to contact.
     vec2.scale(temp, contact.ni, d);
-    vec2.sub(contact.ri, planeToCircle, temp ); // Subtract normal distance vector from the distance vector
-    vec2.add(contact.ri, contact.ri, planeOffset);
-    vec2.sub(contact.ri, contact.ri, planeBody.position);
+    sub(contact.ri, planeToCircle, temp ); // Subtract normal distance vector from the distance vector
+    add(contact.ri, contact.ri, planeOffset);
+    sub(contact.ri, contact.ri, planeBody.position);
 
     this.contactEquations.push(contact);
 
@@ -907,8 +910,8 @@ Nearphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj ){
     if(!found) return false;
 
     // Make sure the separating axis is directed from shape i to shape j
-    vec2.sub(dist,xj,xi);
-    if(vec2.dot(sepAxis,dist) > 0){
+    sub(dist,xj,xi);
+    if(dot(sepAxis,dist) > 0){
         vec2.scale(sepAxis,sepAxis,-1);
     }
 
@@ -944,7 +947,7 @@ Nearphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj ){
             // Get world point
             var v = shapeB.vertices[(j+shapeB.vertices.length)%shapeB.vertices.length];
             vec2.rotate(worldPoint, v, angleB);
-            vec2.add(worldPoint, worldPoint, offsetB);
+            add(worldPoint, worldPoint, offsetB);
 
             var insideNumEdges = 0;
 
@@ -957,17 +960,17 @@ Nearphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj ){
                 // Construct the edge
                 vec2.rotate(worldPoint0, v0, angleA);
                 vec2.rotate(worldPoint1, v1, angleA);
-                vec2.add(worldPoint0, worldPoint0, offsetA);
-                vec2.add(worldPoint1, worldPoint1, offsetA);
+                add(worldPoint0, worldPoint0, offsetA);
+                add(worldPoint1, worldPoint1, offsetA);
 
-                vec2.sub(worldEdge, worldPoint1, worldPoint0);
+                sub(worldEdge, worldPoint1, worldPoint0);
 
                 vec2.rotate(worldNormal, worldEdge, -Math.PI/2); // Normal points out of convex 1
                 vec2.normalize(worldNormal,worldNormal);
 
-                vec2.sub(dist, worldPoint, worldPoint0);
+                sub(dist, worldPoint, worldPoint0);
 
-                var d = vec2.dot(worldNormal,dist);
+                var d = dot(worldNormal,dist);
 
                 if(d < 0){
                     insideNumEdges++;
@@ -989,27 +992,27 @@ Nearphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj ){
                 // Construct the edge
                 vec2.rotate(worldPoint0, v0, angleA);
                 vec2.rotate(worldPoint1, v1, angleA);
-                vec2.add(worldPoint0, worldPoint0, offsetA);
-                vec2.add(worldPoint1, worldPoint1, offsetA);
+                add(worldPoint0, worldPoint0, offsetA);
+                add(worldPoint1, worldPoint1, offsetA);
 
-                vec2.sub(worldEdge, worldPoint1, worldPoint0);
+                sub(worldEdge, worldPoint1, worldPoint0);
 
                 vec2.rotate(c.ni, worldEdge, -Math.PI/2); // Normal points out of convex A
                 vec2.normalize(c.ni,c.ni);
 
-                vec2.sub(dist, worldPoint, worldPoint0); // From edge point to the penetrating point
-                var d = vec2.dot(c.ni,dist);             // Penetration
+                sub(dist, worldPoint, worldPoint0); // From edge point to the penetrating point
+                var d = dot(c.ni,dist);             // Penetration
                 vec2.scale(penetrationVec, c.ni, d);     // Vector penetration
 
 
-                vec2.sub(c.ri, worldPoint, offsetA);
-                vec2.sub(c.ri, c.ri, penetrationVec);
-                vec2.add(c.ri, c.ri, offsetA);
-                vec2.sub(c.ri, c.ri, bodyA.position);
+                sub(c.ri, worldPoint, offsetA);
+                sub(c.ri, c.ri, penetrationVec);
+                add(c.ri, c.ri, offsetA);
+                sub(c.ri, c.ri, bodyA.position);
 
-                vec2.sub(c.rj, worldPoint, offsetB);
-                vec2.add(c.rj, c.rj, offsetB);
-                vec2.sub(c.rj, c.rj, bodyB.position);
+                sub(c.rj, worldPoint, offsetB);
+                add(c.rj, c.rj, offsetB);
+                sub(c.rj, c.rj, bodyB.position);
 
                 this.contactEquations.push(c);
 
@@ -1047,7 +1050,7 @@ Nearphase.projectConvexOntoAxis = function(convexShape, convexOffset, convexAngl
     // Get projected position of all vertices
     for(var i=0; i<convexShape.vertices.length; i++){
         v = convexShape.vertices[i];
-        value = vec2.dot(v,localAxis);
+        value = dot(v,localAxis);
         if(max === null || value > max) max = value;
         if(min === null || value < min) min = value;
     }
@@ -1059,7 +1062,7 @@ Nearphase.projectConvexOntoAxis = function(convexShape, convexOffset, convexAngl
     }
 
     // Project the position of the body onto the axis - need to add this to the result
-    var offset = vec2.dot(convexOffset, worldAxis);
+    var offset = dot(convexOffset, worldAxis);
 
     vec2.set( result, min + offset, max + offset);
 };
@@ -1109,7 +1112,7 @@ Nearphase.findSeparatingAxis = function(c1,offset1,angle1,c2,offset2,angle2,sepA
             vec2.rotate(worldPoint0, c.vertices[i], angle);
             vec2.rotate(worldPoint1, c.vertices[(i+1)%c.vertices.length], angle);
 
-            vec2.sub(edge, worldPoint1, worldPoint0);
+            sub(edge, worldPoint1, worldPoint0);
 
             // Get normal - just rotate 90 degrees since vertices are given in CCW
             vec2.rotate(normal, edge, -Math.PI / 2);
@@ -1162,7 +1165,6 @@ var gce_tmp1 = vec2.fromValues(0,0)
  * @return {Number}             Index of the edge that is closest. This index and the next spans the resulting edge. Returns -1 if failed.
  */
 Nearphase.getClosestEdge = function(c,angle,axis,flip){
-
     var localAxis = gce_tmp1,
         edge = gce_tmp2,
         normal = gce_tmp3;
@@ -1176,16 +1178,16 @@ Nearphase.getClosestEdge = function(c,angle,axis,flip){
     var closestEdge = -1;
     for(var i=0; i<c.vertices.length; i++){
         // Get the edge
-        vec2.subtract(edge, c.vertices[(i+1)%(c.vertices.length)], c.vertices[i%(c.vertices.length)]);
+        sub(edge, c.vertices[(i+1)%(c.vertices.length)], c.vertices[i%(c.vertices.length)]);
 
         // Get normal - just rotate 90 degrees since vertices are given in CCW
         vec2.rotate(normal, edge, -Math.PI / 2);
         vec2.normalize(normal,normal);
 
-        var dot = vec2.dot(normal,localAxis);
-        if(closestEdge == -1 || dot > maxDot){
+        var d = dot(normal,localAxis);
+        if(closestEdge == -1 || d > maxDot){
             closestEdge = i % c.vertices.length;
-            maxDot = dot;
+            maxDot = d;
         }
     }
 
