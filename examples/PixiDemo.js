@@ -33,6 +33,7 @@ function PixiDemo(world,options){
     this.springSprites = [];
 
     Demo.call(this,world);
+    this.pickPrecision = 20 / settings.pixelsPerLengthUnit;
 };
 PixiDemo.prototype = Object.create(Demo.prototype);
 

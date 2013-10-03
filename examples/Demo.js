@@ -50,6 +50,7 @@ function Demo(world){
 
     this.mouseConstraint = null;
     this.nullBody = new Body();
+    this.pickPrecision = 5;
 
     this.stats_sum = 0;
     this.stats_N = 100;
@@ -112,7 +113,7 @@ Demo.prototype = new EventEmitter();
 Demo.prototype.handleMouseDown = function(physicsPosition){
     switch(this.state){
         case DemoStates.DEFAULT:
-            var result = this.world.hitTest(physicsPosition,world.bodies);
+            var result = this.world.hitTest(physicsPosition,world.bodies,this.pickPrecision);
             if(result.length > 0){
                 var b = result[0]; // The grabbed body
                 this.state = DemoStates.DRAGGING;

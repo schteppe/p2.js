@@ -685,15 +685,19 @@ World.prototype.clone = function(){
 };
 
 var hitTest_tmp1 = vec2.create(),
-    hitTest_zero = vec2.fromValues(0,0);
-World.prototype.hitTest = function(worldPoint,bodies){
+    hitTest_zero = vec2.fromValues(0,0),
+    hitTest_tmp2 = vec2.fromValues(0,0);
+World.prototype.hitTest = function(worldPoint,bodies,precision){
+    precision = precision || 0;
+
     // Create a dummy particle body with a particle shape to test against the bodies
     var pb = new Body({ position:worldPoint }),
         ps = new Particle(),
         px = worldPoint,
         pa = 0,
         x = hitTest_tmp1,
-        zero = hitTest_zero;
+        zero = hitTest_zero,
+        tmp = hitTest_tmp2;
     pb.addShape(ps);
 
     var n = this.nearphase,
@@ -712,9 +716,10 @@ World.prototype.hitTest = function(worldPoint,bodies){
             vec2.add(x, x, b.position);
             var a = angle + b.angle;
 
-            if( (s instanceof Circle && n.circleParticle(b,s,x,a,     pb,ps,px,pa, true)) ||
-                (s instanceof Convex && n.particleConvex(pb,ps,px,pa, b,s,x,a,     true)) ||
-                (s instanceof Plane  && n.particlePlane (pb,ps,px,pa, b,s,x,a,     true))
+            if( (s instanceof Circle    && n.circleParticle(b,s,x,a,     pb,ps,px,pa, true)) ||
+                (s instanceof Convex    && n.particleConvex(pb,ps,px,pa, b,s,x,a,     true)) ||
+                (s instanceof Plane     && n.particlePlane (pb,ps,px,pa, b,s,x,a,     true)) ||
+                (s instanceof Particle  && vec2.squaredLength(vec2.sub(tmp,x,worldPoint)) < precision*precision)
                 ){
                 result.push(b);
             }
