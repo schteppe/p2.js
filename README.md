@@ -98,6 +98,7 @@ setInterval(function(){
 * Added ```p2.version``` for browser.
 * Added ```PrismaticConstraint```.
 * Added properties ```.collisionGroup``` and ```.collisionMask``` to ```Shape```. This enables collision filtering.
+* Added method ```World.hitTest```.
 
 ##### 0.1
 

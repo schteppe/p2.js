@@ -687,6 +687,15 @@ World.prototype.clone = function(){
 var hitTest_tmp1 = vec2.create(),
     hitTest_zero = vec2.fromValues(0,0),
     hitTest_tmp2 = vec2.fromValues(0,0);
+
+/**
+ * Test if a world point overlaps bodies
+ * @method hitTest
+ * @param  {Array}  worldPoint  Point to use for intersection tests
+ * @param  {Array}  bodies      A list of objects to check for intersection
+ * @param  {Number} precision   Used for matching against particles and lines. Adds some margin to these infinitesimal objects.
+ * @return {Array}              Array of bodies that overlap the point
+ */
 World.prototype.hitTest = function(worldPoint,bodies,precision){
     precision = precision || 0;
 
