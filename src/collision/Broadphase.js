@@ -28,6 +28,13 @@ var dist = vec2.create();
 var worldNormal = vec2.create();
 var yAxis = vec2.fromValues(0,1);
 
+Broadphase.boundingRadiusCheck = function(bodyA, bodyB){
+    vec2.sub(dist, bodyA.position, bodyB.position);
+    var d2 = vec2.squaredLength(dist),
+        r = bodyA.boundingRadius + bodyB.boundingRadius;
+    return d2 <= r*r;
+};
+
 /**
  * Check whether a circle and a convex intersects
  * @method circleConvex

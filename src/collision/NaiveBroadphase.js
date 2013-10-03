@@ -136,7 +136,7 @@ NaiveBroadphase.prototype.getCollisionPairs = function(world){
                         } else {
                             switch(sj1.type){
                             case Shape.CONVEX:
-                                collide = Broadphase.convexConvex(sj1,xj1_world,aj1_world, si1,xi1_world,ai1_world);
+                                collide = Broadphase.boundingRadiusCheck(bj1,bi1);
                                 break;
                             }
                         }
