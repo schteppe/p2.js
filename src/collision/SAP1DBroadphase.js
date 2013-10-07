@@ -13,12 +13,13 @@ module.exports = SAP1DBroadphase;
  * @class SAP1DBroadphase
  * @constructor
  * @extends Broadphase
+ * @param {World} world
  */
 function SAP1DBroadphase(world){
     Broadphase.apply(this);
     var axisList = this.axisList = world.bodies.slice(0);
     this.world = world;
-    this.sortFunction = SAP1DBroadphase.sortAxisListX;
+    this.axisIndex = 0;
 
     world.on("addBody",function(e){
         axisList.push(e.body);
@@ -34,6 +35,10 @@ SAP1DBroadphase.sortAxisListX = function(bodyA,bodyB){
     return (bodyA.position[0]-bodyA.boundingRadius) - (bodyB.position[0]-bodyB.boundingRadius);
 };
 
+SAP1DBroadphase.sortAxisListY = function(bodyA,bodyB){
+    return (bodyA.position[1]-bodyA.boundingRadius) - (bodyB.position[1]-bodyB.boundingRadius);
+};
+
 /**
  * Get the colliding pairs
  * @method getCollisionPairs
@@ -42,10 +47,11 @@ SAP1DBroadphase.sortAxisListX = function(bodyA,bodyB){
  */
 SAP1DBroadphase.prototype.getCollisionPairs = function(world){
     var bodies = this.axisList,
-        result = [];
+        result = [],
+        axisIndex = this.axisIndex;
 
     // Sort the list
-    bodies.sort(this.sortFunction);
+    bodies.sort(axisIndex === 0 ? SAP1DBroadphase.sortAxisListX : SAP1DBroadphase.sortAxisListY );
 
     // Look through the list
     for(var i=0, N=bodies.length; i!==N; i++){
@@ -53,10 +59,10 @@ SAP1DBroadphase.prototype.getCollisionPairs = function(world){
 
         for(var j=i+1; j<N; j++){
             var bj = bodies[j],
-                boundA1 = bi.position[0]-bi.boundingRadius,
-                boundA2 = bi.position[0]+bi.boundingRadius,
-                boundB1 = bj.position[0]-bj.boundingRadius,
-                boundB2 = bj.position[0]+bj.boundingRadius;
+                boundA1 = bi.position[axisIndex]-bi.boundingRadius,
+                boundA2 = bi.position[axisIndex]+bi.boundingRadius,
+                boundB1 = bj.position[axisIndex]-bj.boundingRadius,
+                boundB2 = bj.position[axisIndex]+bj.boundingRadius;
 
             // Abort if we got gap til the next body
             if( boundB1 > boundA2 ){
