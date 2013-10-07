@@ -591,13 +591,22 @@ Nearphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
  * @param  {Array} xj
  * @param  {Number} aj
  */
-Nearphase.prototype.circleCircle = function(  bi,si,xi,ai, bj,sj,xj,aj){
+Nearphase.prototype.circleCircle = function(  bi,si,xi,ai, bj,sj,xj,aj, justTest){
     var bodyA = bi,
         shapeA = si,
         offsetA = xi,
         bodyB = bj,
         shapeB = sj,
-        offsetB = xj;
+        offsetB = xj,
+        dist = tmp1;
+
+    sub(dist,xi,xj);
+    var r = si.radius + sj.radius;
+    if(vec2.squaredLength(dist) > r*r){
+        return false;
+    }
+
+    if(justTest) return true;
 
     var c = this.createContactEquation(bodyA,bodyB);
     sub(c.ni, offsetB, offsetA);
@@ -617,6 +626,7 @@ Nearphase.prototype.circleCircle = function(  bi,si,xi,ai, bj,sj,xj,aj){
     if(this.enableFriction){
         this.frictionEquations.push(this.createFrictionFromContact(c));
     }
+    return true;
 };
 
 /**
