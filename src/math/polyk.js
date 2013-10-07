@@ -35,7 +35,7 @@
 
         O(n^2)
     */
-
+    /*
     PolyK.IsSimple = function(p)
     {
         var n = p.length>>1;
@@ -78,7 +78,7 @@
         if(!PolyK._convex(p[l+2], p[l+3], p[0  ], p[1  ], p[2], p[3])) return false;
         return true;
     }
-
+    */
     PolyK.GetArea = function(p)
     {
         if(p.length <6) return 0;
@@ -89,7 +89,7 @@
         sum += (p[0]-p[l]) * (p[l+1]+p[1]);
         return - sum * 0.5;
     }
-
+    /*
     PolyK.GetAABB = function(p)
     {
         var minx = Infinity;
@@ -105,7 +105,7 @@
         }
         return {x:minx, y:miny, width:maxx-minx, height:maxy-miny};
     }
-
+    */
 
     PolyK.Triangulate = function(p)
     {
@@ -150,7 +150,7 @@
         tgs.push(avl[0], avl[1], avl[2]);
         return tgs;
     }
-
+    /*
     PolyK.ContainsPoint = function(p, px, py)
     {
         var n = p.length>>1;
@@ -372,7 +372,7 @@
             if(ps[ind].flag) return ind;
         }
     }
-
+    */
     PolyK._PointInTriangle = function(px, py, ax, ay, bx, by, cx, cy)
     {
         var v0x = cx-ax;
@@ -395,7 +395,7 @@
         // Check if point is in triangle
         return (u >= 0) && (v >= 0) && (u + v < 1);
     }
-
+    /*
     PolyK._RayLineIntersection = function(a1, a2, b1, b2, c)
     {
         var dax = (a1.x-a2.x), dbx = (b1.x-b2.x);
@@ -447,12 +447,12 @@
         return true;
         return false;
     }
-
+    */
     PolyK._convex = function(ax, ay, bx, by, cx, cy)
     {
         return (ay-by)*(cx-bx) + (bx-ax)*(cy-by) >= 0;
     }
-
+    /*
     PolyK._P = function(x,y)
     {
         this.x = x;
@@ -472,5 +472,6 @@
 
     PolyK._tp = [];
     for(var i=0; i<10; i++) PolyK._tp.push(new PolyK._P(0,0));
+        */
 
 module.exports = PolyK;
