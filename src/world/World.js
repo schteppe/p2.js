@@ -118,11 +118,11 @@ function World(options){
     this.constraints = [];
 
     /**
-     * Friction between all bodies. Should in the future be replaced by per-body material properties.
-     * @property friction
+     * Friction between colliding bodies. This value is used if no matching ContactMaterial is found for the body pair.
+     * @property defaultFriction
      * @type {Number}
      */
-    this.friction = 0.1;
+    this.defaultFriction = 0.1;
 
     /**
      * For keeping track of what time step size we used last step
@@ -242,7 +242,7 @@ World.prototype.step = function(dt){
         if(reducedMass > 0)
             reducedMass = 1/reducedMass;
 
-        var mu = this.friction; // Todo: Should be looked up in a material table
+        var mu = this.defaultFriction; // Todo: Should be looked up in a material table
         var mug = mu * glen * reducedMass;
         var doFriction = mu>0;
 

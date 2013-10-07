@@ -17,7 +17,7 @@ module.exports = NaiveBroadphase;
 function NaiveBroadphase(){
     Broadphase.apply(this);
 };
-NaiveBroadphase.prototype = new Object(Broadphase.prototype);
+NaiveBroadphase.prototype = new Broadphase();
 
 /**
  * Get the colliding pairs

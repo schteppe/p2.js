@@ -22,6 +22,7 @@ module.exports = {
     PointToPointConstraint :require('./constraints/PointToPointConstraint'),
     PrismaticConstraint :   require('./constraints/PrismaticConstraint'),
     Rectangle :             require('./shapes/Rectangle'),
+    SAP1DBroadphase :       require('./collision/SAP1DBroadphase'),
     Shape :                 require('./shapes/Shape'),
     Solver :                require('./solver/Solver'),
     Spring :                require('./objects/Spring'),
