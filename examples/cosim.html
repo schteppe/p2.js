@@ -30,6 +30,7 @@
             m=1,
             useCircles = true,
             useConstraints = true,
+            useGravity = true,
             useCorrectMasses = false;
 
         // Create particles
@@ -78,8 +79,8 @@
         var a = 1/dt/dt,
             b = 1/dt,
             d = 0,
-            mg = vec2.fromValues(m*(10), m*(-10)),
-            G1x = vec2.fromValues( 1, 0),
+            mg = vec2.fromValues(m*(0), m*(-10)),
+            G1x = vec2.fromValues( 1, 0), // Use two constraints - one for x and one for y.
             G2x = vec2.fromValues(-1, 0),
             G1y = vec2.fromValues( 0, 1),
             G2y = vec2.fromValues( 0,-1),
@@ -114,6 +115,20 @@
                     v1 = b1.velocity,
                     v2 = b2.velocity;
 
+                vec2.sub(G1x, x2, x1);
+                vec2.sub(G2x, x1, x2);
+                vec2.sub(G1y, x2, x1);
+                vec2.sub(G2y, x1, x2);
+                G1x[1] = G2x[1] = G1y[0] = G2y[0] = 0;
+                if(G1x[0] == 0) G1x[0] =  1;
+                if(G2x[0] == 0) G2x[0] = -1;
+                if(G1y[1] == 0) G1y[1] =  1;
+                if(G2y[1] == 0) G2y[1] = -1;
+                vec2.normalize(G1x,G1x);
+                vec2.normalize(G1y,G1y);
+                vec2.normalize(G2x,G2x);
+                vec2.normalize(G2y,G2y);
+
                 getInverseInertia(world,i1,G1x,im1x,im1mx);
                 getInverseInertia(world,i2,G2x,im2x,im2mx);
                 getInverseInertia(world,i1,G1y,im1y,im1my);
@@ -128,14 +143,17 @@
                 vec2.copy(x2t, copy.bodies[i2].position);
 
                 // Solve for Master constraint lagrange multipliers
-                var a = 1/dt/dt;
-                var b = 0;
-                var massTermX = dot(G1x,im1x) + dot(G2x,im2x);
-                var massTermY = dot(G1y,im1y) + dot(G2y,im2y);
+                var a = 1/dt/dt,
+                    b = 0,
+                    massTermX = dot(G1x,im1x) + dot(G2x,im2x), // G2 * inv(M11) * G2 ???
+                    massTermY = dot(G1y,im1y) + dot(G2y,im2y);
+
+                // Cheat with the masses
                 if(useCorrectMasses)
                     massTermX = massTermY = 2;
-                var lambda_x =  ( - a*( dot(G1x,x1t) + dot(G2x,x2t) ) + b*( dot(G1x,v1t) + dot(G2x,v2t))) / ( massTermX + epsilon );
-                var lambda_y =  ( - a*( dot(G1y,x1t) + dot(G2y,x2t) ) + b*( dot(G1y,v1t) + dot(G2y,v2t))) / ( massTermY + epsilon );
+
+                var lambda_x =  ( - a*( dot(G1x,x1t) + dot(G2x,x2t) ) + b*( dot(G1x,v1t) + dot(G2x,v2t))) / ( massTermX + epsilon ),
+                    lambda_y =  ( - a*( dot(G1y,x1t) + dot(G2y,x2t) ) + b*( dot(G1y,v1t) + dot(G2y,v2t))) / ( massTermY + epsilon );
 
                 // Add Master constraint forces
                 vec2.add(b1.force, b1.force, vec2.scale(tmp,G1x,lambda_x));
@@ -144,7 +162,7 @@
                 vec2.add(b2.force, b2.force, vec2.scale(tmp,G2y,lambda_y));
 
                 // Add gravity
-                for(var i=0; i<world.bodies.length; i++){
+                for(var i=0; useGravity && i<world.bodies.length; i++){
                     var b = world.bodies[i];
                     vec2.add(b.force, b.force, mg);
                 }
@@ -156,25 +174,27 @@
         }
         requestAnimationFrame(update);
 
-        var getInverseInertia_dv = vec2.create();
+        var getInverseInertia_dv = vec2.create(); // temp
         function getInverseInertia(world,bodyIndex,Gv,out,outMat){
 
-            // Get inertia when stepping without external force
-            copy = world.clone();
-            p = copy.bodies[bodyIndex];
-            copy.step(dt);
-            var v0v = p.velocity;
+            var dv = getInverseInertia_dv;
 
-            // Get inertia in opposite
+            // Get inertia when stepping without external force
+            var copy = world.clone(),
+                b = copy.bodies[bodyIndex];
+            copy.step(dt);
+            var v0v = b.velocity;
+
+            // Get inertia
             copy = world.clone();
-            p = copy.bodies[bodyIndex];
-            vec2.add(p.force,p.force,Gv); // Add unit force
+            b = copy.bodies[bodyIndex];
+            vec2.add(b.force,b.force,Gv); // Add unit force
             copy.step(dt);
 
             // dv is approximately acceleration.
             // f = m*a <=> 1/m = a/f
-            vec2.sub(getInverseInertia_dv, p.velocity, v0v);
-            vec2.scale(out, getInverseInertia_dv, 1/dt);
+            vec2.sub(dv, b.velocity, v0v);
+            vec2.scale(out, dv, 1/dt);
 
             outMat[0] = out[0];
             outMat[3] = out[1];
