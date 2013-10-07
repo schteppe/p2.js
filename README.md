@@ -103,6 +103,8 @@ setInterval(function(){
 * Added property ```GSSolver.useGlobalEquationParameters``` so that it is possible to turn on and off per-equation solver settings (```.stiffness``` and ```.relaxation```).
 * Removed ```Broadphase.<shapeTypeA><shapeTypeB>``` since they are not used in any broadphase implementation any more.
 * Added experimental ```QuadTree``` broadphase.
+* Added ```SAP1DBroadphase```
+* Renamed ```World.friction``` to ```World.defaultFriction```
 
 ##### 0.1
 
