@@ -28,6 +28,9 @@
             d=10,
             l=0.35,
             m=1,
+            springCouplingStiffness = 1e3,
+            springCouplingDamping = 10,
+            useSpringCoupling = false,
             useCircles = true,
             useConstraints = true,
             useGravity = true,
@@ -88,10 +91,6 @@
             im2x =  vec2.fromValues(0, 0),
             im1y =  vec2.fromValues(0, 0),
             im2y =  vec2.fromValues(0, 0),
-            im1mx =  mat2.create(),
-            im2mx =  mat2.create(),
-            im1my =  mat2.create(),
-            im2my =  mat2.create(),
             v1t =  vec2.fromValues(0, 0),
             v2t =  vec2.fromValues(0, 0),
             x1t =  vec2.fromValues(0, 0),
@@ -100,7 +99,7 @@
             fhMinv2 =  vec2.fromValues(0, 0),
             tmp =  vec2.fromValues(0, 0),
             dot = vec2.dot,
-            compliance = 0,
+            compliance = 1e-20,
             epsilon = 4*compliance/(dt*dt*(1+4*d));
 
         function update(){
@@ -129,10 +128,13 @@
                 vec2.normalize(G2x,G2x);
                 vec2.normalize(G2y,G2y);
 
-                getInverseInertia(world,i1,G1x,im1x,im1mx);
-                getInverseInertia(world,i2,G2x,im2x,im2mx);
-                getInverseInertia(world,i1,G1y,im1y,im1my);
-                getInverseInertia(world,i2,G2y,im2y,im2my);
+                // To get inertia in x constraint
+                getInverseInertia(world,i1,G1x,im1x);
+                getInverseInertia(world,i2,G2x,im2x);
+
+                // To get inertia in y constraint
+                getInverseInertia(world,i1,G1y,im1y);
+                getInverseInertia(world,i2,G2y,im2y);
 
                 // Do step without Master constraints: xt = inv(A) * f
                 var copy = world.clone();
@@ -143,8 +145,11 @@
                 vec2.copy(x2t, copy.bodies[i2].position);
 
                 // Solve for Master constraint lagrange multipliers
-                var a = 1/dt/dt,
-                    b = 0,
+                var d = 4,
+                    a = 4/dt/dt/(1+4*d),//1/dt/dt,
+                    b = -4*d/dt/(1+4*d), // 0
+                    b_2 = (-1 + 1/(1 + 4*d))/dt,
+                    epsilon = 4*compliance/(dt*dt*(1+4*d)),
                     massTermX = dot(G1x,im1x) + dot(G2x,im2x), // G2 * inv(M11) * G2 ???
                     massTermY = dot(G1y,im1y) + dot(G2y,im2y);
 
@@ -155,11 +160,20 @@
                 var lambda_x =  ( - a*( dot(G1x,x1t) + dot(G2x,x2t) ) + b*( dot(G1x,v1t) + dot(G2x,v2t))) / ( massTermX + epsilon ),
                     lambda_y =  ( - a*( dot(G1y,x1t) + dot(G2y,x2t) ) + b*( dot(G1y,v1t) + dot(G2y,v2t))) / ( massTermY + epsilon );
 
-                // Add Master constraint forces
-                vec2.add(b1.force, b1.force, vec2.scale(tmp,G1x,lambda_x));
-                vec2.add(b2.force, b2.force, vec2.scale(tmp,G2x,lambda_x));
-                vec2.add(b1.force, b1.force, vec2.scale(tmp,G1y,lambda_y));
-                vec2.add(b2.force, b2.force, vec2.scale(tmp,G2y,lambda_y));
+                if(useSpringCoupling){
+                    var s = new p2.Spring(b1,b2,{
+                        restLength : 0,
+                        stiffness : springCouplingStiffness,
+                        damping : springCouplingDamping,
+                    });
+                    s.applyForce();
+                } else {
+                    // Add Master constraint forces
+                    vec2.add(b1.force, b1.force, vec2.scale(tmp,G1x,lambda_x));
+                    vec2.add(b2.force, b2.force, vec2.scale(tmp,G2x,lambda_x));
+                    vec2.add(b1.force, b1.force, vec2.scale(tmp,G1y,lambda_y));
+                    vec2.add(b2.force, b2.force, vec2.scale(tmp,G2y,lambda_y));
+                }
 
                 // Add gravity
                 for(var i=0; useGravity && i<world.bodies.length; i++){
@@ -175,7 +189,7 @@
         requestAnimationFrame(update);
 
         var getInverseInertia_dv = vec2.create(); // temp
-        function getInverseInertia(world,bodyIndex,Gv,out,outMat){
+        function getInverseInertia(world,bodyIndex,Gv,out){
 
             var dv = getInverseInertia_dv;
 
@@ -194,10 +208,7 @@
             // dv is approximately acceleration.
             // f = m*a <=> 1/m = a/f
             vec2.sub(dv, b.velocity, v0v);
-            vec2.scale(out, dv, 1/dt);
-
-            outMat[0] = out[0];
-            outMat[3] = out[1];
+            vec2.scale(out, dv, 2/dt);
         }
 
     </script>
