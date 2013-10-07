@@ -347,7 +347,7 @@ World.prototype.step = function(dt){
         var body = bodies[i];
 
         if(body.mass>0){
-            var minv = 1.0 / body.mass,
+            var minv = body.invMass,
                 f = body.force,
                 pos = body.position,
                 velo = body.velocity;
@@ -544,6 +544,7 @@ World.prototype.toJSON = function(){
             shapes : jsonShapes,
         });
     }
+
     return json;
 
     function v2a(v){
