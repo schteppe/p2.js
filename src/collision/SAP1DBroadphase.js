@@ -31,10 +31,24 @@ function SAP1DBroadphase(world){
 };
 SAP1DBroadphase.prototype = new Broadphase();
 
+/**
+ * Function for sorting bodies along the X axis. To be passed to array.sort()
+ * @method sortAxisListX
+ * @param  {Body} bodyA
+ * @param  {Body} bodyB
+ * @return {Number}
+ */
 SAP1DBroadphase.sortAxisListX = function(bodyA,bodyB){
     return (bodyA.position[0]-bodyA.boundingRadius) - (bodyB.position[0]-bodyB.boundingRadius);
 };
 
+/**
+ * Function for sorting bodies along the Y axis. To be passed to array.sort()
+ * @method sortAxisListY
+ * @param  {Body} bodyA
+ * @param  {Body} bodyB
+ * @return {Number}
+ */
 SAP1DBroadphase.sortAxisListY = function(bodyA,bodyB){
     return (bodyA.position[1]-bodyA.boundingRadius) - (bodyB.position[1]-bodyB.boundingRadius);
 };
