@@ -17,17 +17,37 @@ module.exports = SAP1DBroadphase;
  */
 function SAP1DBroadphase(world){
     Broadphase.apply(this);
-    var axisList = this.axisList = world.bodies.slice(0);
+
+    /**
+     * List of bodies currently in the broadphase.
+     * @property axisList
+     * @type {Array}
+     */
+    this.axisList = world.bodies.slice(0);
+
+    /**
+     * The world to search in.
+     * @property world
+     * @type {World}
+     */
     this.world = world;
+
+    /**
+     * Axis to sort the bodies along. Set to 0 for x axis, and 1 for y axis. For best performance, choose an axis that the bodies are spread out more on.
+     * @property axisIndex
+     * @type {Number}
+     */
     this.axisIndex = 0;
 
+    // Add listeners to update the list of bodies.
+    var axisList = this.axisList;
     world.on("addBody",function(e){
         axisList.push(e.body);
     }).on("removeBody",function(e){
         var idx = axisList.indexOf(e.body);
         if(idx !== -1)
             axisList.splice(idx,1);
-    })
+    });
 };
 SAP1DBroadphase.prototype = new Broadphase();
 
