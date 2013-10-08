@@ -32,7 +32,7 @@
             springCouplingDamping = 10,
             useSpringCoupling = false,
             useCircles = true,
-            useConstraints = true,
+            useConstraints = false,
             useGravity = true,
             useCorrectMasses = false;
 
@@ -79,10 +79,7 @@
 
         var demo = new PixiDemo(world);
 
-        var a = 1/dt/dt,
-            b = 1/dt,
-            d = 0,
-            mg = vec2.fromValues(m*(0), m*(-10)),
+        var mg = vec2.fromValues(m*(0), m*(-10)),
             G1x = vec2.fromValues( 1, 0), // Use two constraints - one for x and one for y.
             G2x = vec2.fromValues(-1, 0),
             G1y = vec2.fromValues( 0, 1),
@@ -99,7 +96,7 @@
             fhMinv2 =  vec2.fromValues(0, 0),
             tmp =  vec2.fromValues(0, 0),
             dot = vec2.dot,
-            compliance = 1e-20,
+            compliance = 0,
             epsilon = 4*compliance/(dt*dt*(1+4*d));
 
         function update(){
@@ -138,6 +135,7 @@
 
                 // Do step without Master constraints: xt = inv(A) * f
                 var copy = world.clone();
+                copy.solver.useZeroRHS = true;
                 copy.step(dt);
                 vec2.copy(v1t, copy.bodies[i1].velocity);
                 vec2.copy(v2t, copy.bodies[i2].velocity);
@@ -145,10 +143,9 @@
                 vec2.copy(x2t, copy.bodies[i2].position);
 
                 // Solve for Master constraint lagrange multipliers
-                var d = 4,
-                    a = 4/dt/dt/(1+4*d),//1/dt/dt,
-                    b = -4*d/dt/(1+4*d), // 0
-                    b_2 = (-1 + 1/(1 + 4*d))/dt,
+                var d = 0.5,
+                    a = 4/(1+4*d),//1/dt/dt,
+                    b = 4*d/(1+4*d), // 0
                     epsilon = 4*compliance/(dt*dt*(1+4*d)),
                     massTermX = dot(G1x,im1x) + dot(G2x,im2x), // G2 * inv(M11) * G2 ???
                     massTermY = dot(G1y,im1y) + dot(G2y,im2y);
@@ -157,8 +154,8 @@
                 if(useCorrectMasses)
                     massTermX = massTermY = 2;
 
-                var lambda_x =  ( - a*( dot(G1x,x1t) + dot(G2x,x2t) ) + b*( dot(G1x,v1t) + dot(G2x,v2t))) / ( massTermX + epsilon ),
-                    lambda_y =  ( - a*( dot(G1y,x1t) + dot(G2y,x2t) ) + b*( dot(G1y,v1t) + dot(G2y,v2t))) / ( massTermY + epsilon );
+                var lambda_x =  ( - a*( dot(G1x,x1t) + dot(G2x,x2t) )/dt/dt - b*( dot(G1x,v1t) + dot(G2x,v2t))/dt ) / ( massTermX + epsilon ),
+                    lambda_y =  ( - a*( dot(G1y,x1t) + dot(G2y,x2t) )/dt/dt - b*( dot(G1y,v1t) + dot(G2y,v2t))/dt ) / ( massTermY + epsilon );
 
                 if(useSpringCoupling){
                     var s = new p2.Spring(b1,b2,{
@@ -176,7 +173,7 @@
                 }
 
                 // Add gravity
-                for(var i=0; useGravity && i<world.bodies.length; i++){
+                for(var i=0; useGravity && i!==world.bodies.length; i++){
                     var b = world.bodies[i];
                     vec2.add(b.force, b.force, mg);
                 }
@@ -196,6 +193,8 @@
             // Get inertia when stepping without external force
             var copy = world.clone(),
                 b = copy.bodies[bodyIndex];
+            copy.solver.useZeroRHS = true;
+            copy.applySpringForces = false;
             copy.step(dt);
             var v0v = b.velocity;
 
@@ -203,6 +202,8 @@
             copy = world.clone();
             b = copy.bodies[bodyIndex];
             vec2.add(b.force,b.force,Gv); // Add unit force
+            copy.solver.useZeroRHS = true;
+            copy.applySpringForces = false;
             copy.step(dt);
 
             // dv is approximately acceleration.

@@ -36,8 +36,26 @@ function GSSolver(options){
      */
     this.useGlobalEquationParameters = true;
 
+    /**
+     * Global equation stiffness.
+     * @property stiffness
+     * @type {Number}
+     */
     this.stiffness = 1e6;
+
+    /**
+     * Global equation relaxation.
+     * @property relaxation
+     * @type {Number}
+     */
     this.relaxation = 4;
+
+    /**
+     * Set to true to set all right hand side terms to zero when solving. Can be handy for a few applications.
+     * @property useZeroRHS
+     * @type {Boolean}
+     */
+    this.useZeroRHS = false;
 };
 GSSolver.prototype = new Solver();
 
@@ -76,7 +94,8 @@ GSSolver.prototype.solve = function(dt,world){
         b = (4.0 * d) / (1 + 4 * d),
         useGlobalParams = this.useGlobalEquationParameters,
         add = vec2.add,
-        set = vec2.set;
+        set = vec2.set,
+        useZeroRHS = this.useZeroRHS;
 
     // Things that does not change during iteration can be computed once
     if(this.lambda.length < Neq){
@@ -136,6 +155,9 @@ GSSolver.prototype.solve = function(dt,world){
                 invC = invCs[j];
                 lambdaj = lambda[j];
                 GWlambda = c.computeGWlambda(_eps);
+
+                if(useZeroRHS) B = 0;
+
                 deltalambda = invC * ( B - GWlambda - _eps * lambdaj );
 
                 // Clamp if we are not within the min/max interval

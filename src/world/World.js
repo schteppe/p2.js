@@ -131,6 +131,13 @@ function World(options){
      */
     this.lastTimeStep = 1/60;
 
+    /**
+     * Enable to automatically apply spring forces each step.
+     * @property applySpringForces
+     * @type {Boolean}
+     */
+    this.applySpringForces = true;
+
     // Id counters
     this._constraintIdCounter = 0;
     this._bodyIdCounter = 0;
@@ -223,9 +230,11 @@ World.prototype.step = function(dt){
     }
 
     // Add spring forces
-    for(var i=0; i!==Nsprings; i++){
-        var s = springs[i];
-        s.applyForce();
+    if(this.applySpringForces){
+        for(var i=0; i!==Nsprings; i++){
+            var s = springs[i];
+            s.applyForce();
+        }
     }
 
     // Broadphase
