@@ -1,5 +1,6 @@
 var Constraint = require('./Constraint')
 ,   ContactEquation = require('./ContactEquation')
+,   RotationalVelocityEquation = require('./RotationalVelocityEquation')
 ,   vec2 = require('../math/vec2')
 
 module.exports = PointToPointConstraint;
@@ -15,6 +16,7 @@ module.exports = PointToPointConstraint;
  * @param {Float32Array}    pivotB See pivotA.
  * @param {Number}          maxForce The maximum force that should be applied to constrain the bodies.
  * @extends {Constraint}
+ * @todo Ability to specify world points
  */
 function PointToPointConstraint(bodyA, pivotA, bodyB, pivotB, maxForce){
     Constraint.call(this,bodyA,bodyB);
@@ -35,6 +37,9 @@ function PointToPointConstraint(bodyA, pivotA, bodyB, pivotB, maxForce){
 
     tangent.minForce = normal.minForce = -maxForce;
     tangent.maxForce = normal.maxForce =  maxForce;
+
+    this.motorEquation = null;
+    this.motorVelocity = 1; // rad/s
 }
 PointToPointConstraint.prototype = new Constraint();
 
@@ -55,4 +60,17 @@ PointToPointConstraint.prototype.update = function(){
     vec2.rotate(tangent.ni, normal.ni, Math.PI / 2);
     vec2.copy(tangent.ri, normal.ri);
     vec2.copy(tangent.rj, normal.rj);
+};
+
+PointToPointConstraint.prototype.enableMotor = function(){
+    if(this.motorEquation) return;
+    this.motorEquation = new RotationalVelocityEquation(this.bodyA,this.bodyB);
+    this.equations.push(this.motorEquation);
+};
+
+PointToPointConstraint.prototype.disableMotor = function(){
+    if(!this.motorEquation) return;
+    var i = this.equations.indexOf(this.motorEquation);
+    this.motorEquation = null;
+    this.equations.splice(i,1);
 };

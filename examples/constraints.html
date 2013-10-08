@@ -78,7 +78,6 @@
         world.addConstraint(c);
 
 
-
         // Create PrismaticConstraint
         var bodyA = new p2.Body({
             mass: 1,
@@ -95,6 +94,7 @@
         world.addBody(bodyB);
         var c = new p2.PrismaticConstraint(bodyA, bodyB);
         world.addConstraint(c);
+
 
         var demo = new PixiDemo(world);
 
