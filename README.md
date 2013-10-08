@@ -105,6 +105,8 @@ setInterval(function(){
 * Added experimental ```QuadTree``` broadphase.
 * Added ```SAP1DBroadphase```
 * Renamed ```World.friction``` to ```World.defaultFriction```
+* Added class ```RotationalVelocityEquation```
+* Added methods ```.enableMotor```, ```.disableMotor```, ```.setMotorSpeed``` to ```PointToPointConstraint```
 
 ##### 0.1
 
