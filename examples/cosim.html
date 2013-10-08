@@ -5,10 +5,10 @@
     <script src="../build/p2.js"></script>
     <script src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
     <script src="../node_modules/gl-matrix/dist/gl-matrix.js"></script>
-    <script src="pixi.js"></script>
-    <script src="Demo.js"></script>
-    <script src="PixiDemo.js"></script>
-    <link href="demo.css" rel="stylesheet"/>
+    <script src="js/pixi.js"></script>
+    <script src="js/Demo.js"></script>
+    <script src="js/PixiDemo.js"></script>
+    <link href="css/demo.css" rel="stylesheet"/>
 </head>
 <body>
     <script>
@@ -19,20 +19,24 @@
         });
 
         // Set constraint solver parameters
-        world.solver.setSpookParams(1e4,4);
+        world.solver.setSpookParams(1e10,2);
 
         var bodies = [];
-        var N=5,
-            dt = 1/60,
-            k=1000,
-            d=10,
-            l=0.35,
-            m=1,
-            springCouplingStiffness = 1e3,
-            springCouplingDamping = 10,
-            useSpringCoupling = false,
+        var N = 5,                          // Number of bodies
+            dt = 1/60,                      // Time step
+            k=1000,                         // Stiffness of springs
+            d=10,                           // Damping of springs
+            l=0.35,                         // Length between particles
+            m=1,                            // Mass of each particle
+            useConstraints = true,         // Use constraints in between partcles
+            useSpringCoupling = false,      // Use springs for coupling
+            springCouplingStiffness = 1e3,  // Spring stiffness in coupling
+            springCouplingDamping = 10,     // Spring damping in coupling
+
+            compliance = 0,                 // Spook parameter in coupling
+            relaxation = 0.5,               // Spook parameter in coupling
+
             useCircles = true,
-            useConstraints = false,
             useGravity = true,
             useCorrectMasses = false;
 
@@ -95,9 +99,7 @@
             fhMinv1 =  vec2.fromValues(0, 0),
             fhMinv2 =  vec2.fromValues(0, 0),
             tmp =  vec2.fromValues(0, 0),
-            dot = vec2.dot,
-            compliance = 0,
-            epsilon = 4*compliance/(dt*dt*(1+4*d));
+            dot = vec2.dot;
 
         function update(){
             if(!demo.paused){
@@ -110,20 +112,6 @@
                     x2 = b2.position,
                     v1 = b1.velocity,
                     v2 = b2.velocity;
-
-                vec2.sub(G1x, x2, x1);
-                vec2.sub(G2x, x1, x2);
-                vec2.sub(G1y, x2, x1);
-                vec2.sub(G2y, x1, x2);
-                G1x[1] = G2x[1] = G1y[0] = G2y[0] = 0;
-                if(G1x[0] == 0) G1x[0] =  1;
-                if(G2x[0] == 0) G2x[0] = -1;
-                if(G1y[1] == 0) G1y[1] =  1;
-                if(G2y[1] == 0) G2y[1] = -1;
-                vec2.normalize(G1x,G1x);
-                vec2.normalize(G1y,G1y);
-                vec2.normalize(G2x,G2x);
-                vec2.normalize(G2y,G2y);
 
                 // To get inertia in x constraint
                 getInverseInertia(world,i1,G1x,im1x);
@@ -143,11 +131,11 @@
                 vec2.copy(x2t, copy.bodies[i2].position);
 
                 // Solve for Master constraint lagrange multipliers
-                var d = 0.5,
+                var d = relaxation,
                     a = 4/(1+4*d),//1/dt/dt,
                     b = 4*d/(1+4*d), // 0
                     epsilon = 4*compliance/(dt*dt*(1+4*d)),
-                    massTermX = dot(G1x,im1x) + dot(G2x,im2x), // G2 * inv(M11) * G2 ???
+                    massTermX = dot(G1x,im1x) + dot(G2x,im2x), // G * inv(M) * G
                     massTermY = dot(G1y,im1y) + dot(G2y,im2y);
 
                 // Cheat with the masses
