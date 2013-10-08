@@ -325,49 +325,51 @@ World.prototype.step = function(dt){
                 np.enableFriction = mu > 0;
                 np.slipForce = mug;
                 if(si instanceof Circle){
-                         if(sj instanceof Circle)   np.circleCircle  (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-                    else if(sj instanceof Particle) np.circleParticle(bi,si,xiw,aiw, bj,sj,xjw,ajw);
-                    else if(sj instanceof Plane)    np.circlePlane   (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-                    else if(sj instanceof Rectangle)np.circleConvex  (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-                    else if(sj instanceof Convex)   np.circleConvex  (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-                    else if(sj instanceof Line)     np.circleLine    (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-                    else if(sj instanceof Capsule)  np.circleCapsule (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+                         if(sj instanceof Circle)       np.circleCircle  (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+                    else if(sj instanceof Particle)     np.circleParticle(bi,si,xiw,aiw, bj,sj,xjw,ajw);
+                    else if(sj instanceof Plane)        np.circlePlane   (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+                    else if(sj instanceof Rectangle)    np.circleConvex  (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+                    else if(sj instanceof Convex)       np.circleConvex  (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+                    else if(sj instanceof Line)         np.circleLine    (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+                    else if(sj instanceof Capsule)      np.circleCapsule (bi,si,xiw,aiw, bj,sj,xjw,ajw);
 
                 } else if(si instanceof Particle){
-                         if(sj instanceof Circle)   np.circleParticle(bj,sj,xjw,ajw, bi,si,xiw,aiw);
-                    else if(sj instanceof Plane)    np.particlePlane (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-                    else if(sj instanceof Rectangle)np.particleConvex(bi,si,xiw,aiw, bj,sj,xjw,ajw);
-                    else if(sj instanceof Convex)   np.particleConvex(bi,si,xiw,aiw, bj,sj,xjw,ajw);
+                         if(sj instanceof Circle)       np.circleParticle   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+                    else if(sj instanceof Plane)        np.particlePlane    (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+                    else if(sj instanceof Rectangle)    np.particleConvex   (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+                    else if(sj instanceof Convex)       np.particleConvex   (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+                    else if(sj instanceof Capsule)      np.particleCapsule  (bi,si,xiw,aiw, bj,sj,xjw,ajw);
 
                 } else if(si instanceof Plane){
-                         if(sj instanceof Circle)   np.circlePlane   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-                    else if(sj instanceof Particle) np.particlePlane (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-                    else if(sj instanceof Rectangle)np.convexPlane   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-                    else if(sj instanceof Convex)   np.convexPlane   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-                    else if(sj instanceof Line)     np.planeLine     (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-                    else if(sj instanceof Capsule)  np.capsulePlane  (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+                         if(sj instanceof Circle)       np.circlePlane   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+                    else if(sj instanceof Particle)     np.particlePlane (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+                    else if(sj instanceof Rectangle)    np.convexPlane   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+                    else if(sj instanceof Convex)       np.convexPlane   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+                    else if(sj instanceof Line)         np.planeLine     (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+                    else if(sj instanceof Capsule)      np.capsulePlane  (bj,sj,xjw,ajw, bi,si,xiw,aiw);
 
                 } else if(si instanceof Rectangle){
-                         if(sj instanceof Plane)    np.convexPlane    (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-                    else if(sj instanceof Circle)   np.circleConvex   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-                    else if(sj instanceof Rectangle)np.convexConvex   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-                    else if(sj instanceof Convex)   np.convexConvex   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-                    else if(sj instanceof Particle) np.particleConvex (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+                         if(sj instanceof Plane)        np.convexPlane    (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+                    else if(sj instanceof Circle)       np.circleConvex   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+                    else if(sj instanceof Rectangle)    np.convexConvex   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+                    else if(sj instanceof Convex)       np.convexConvex   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+                    else if(sj instanceof Particle)     np.particleConvex (bj,sj,xjw,ajw, bi,si,xiw,aiw);
 
                 } else if(si instanceof Convex){
-                         if(sj instanceof Plane)    np.convexPlane    (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-                    else if(sj instanceof Circle)   np.circleConvex   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-                    else if(sj instanceof Rectangle)np.convexConvex   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-                    else if(sj instanceof Convex)   np.convexConvex   (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-                    else if(sj instanceof Particle) np.particleConvex (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+                         if(sj instanceof Plane)        np.convexPlane    (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+                    else if(sj instanceof Circle)       np.circleConvex   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+                    else if(sj instanceof Rectangle)    np.convexConvex   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+                    else if(sj instanceof Convex)       np.convexConvex   (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+                    else if(sj instanceof Particle)     np.particleConvex (bj,sj,xjw,ajw, bi,si,xiw,aiw);
 
                 } else if(si instanceof Line){
-                         if(sj instanceof Circle)   np.circleLine     (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-                    else if(sj instanceof Plane)    np.planeLine      (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+                         if(sj instanceof Circle)       np.circleLine     (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+                    else if(sj instanceof Plane)        np.planeLine      (bj,sj,xjw,ajw, bi,si,xiw,aiw);
 
                 } else if(si instanceof Capsule){
-                         if(sj instanceof Plane)    np.capsulePlane   (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-                         if(sj instanceof Circle)   np.circleCapsule  (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+                         if(sj instanceof Plane)        np.capsulePlane   (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+                         if(sj instanceof Circle)       np.circleCapsule  (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+                         if(sj instanceof Particle)     np.particleCapsule(bj,sj,xjw,ajw, bi,si,xiw,aiw);
 
                 }
             }
@@ -788,9 +790,10 @@ World.prototype.hitTest = function(worldPoint,bodies,precision){
             vec2.add(x, x, b.position);
             var a = angle + b.angle;
 
-            if( (s instanceof Circle    && n.circleParticle(b,s,x,a,     pb,ps,px,pa, true)) ||
-                (s instanceof Convex    && n.particleConvex(pb,ps,px,pa, b,s,x,a,     true)) ||
-                (s instanceof Plane     && n.particlePlane (pb,ps,px,pa, b,s,x,a,     true)) ||
+            if( (s instanceof Circle    && n.circleParticle  (b,s,x,a,     pb,ps,px,pa, true)) ||
+                (s instanceof Convex    && n.particleConvex  (pb,ps,px,pa, b,s,x,a,     true)) ||
+                (s instanceof Plane     && n.particlePlane   (pb,ps,px,pa, b,s,x,a,     true)) ||
+                (s instanceof Capsule   && n.particleCapsule (pb,ps,px,pa, b,s,x,a,     true)) ||
                 (s instanceof Particle  && vec2.squaredLength(vec2.sub(tmp,x,worldPoint)) < precision*precision)
                 ){
                 result.push(b);

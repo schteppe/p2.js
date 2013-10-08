@@ -197,6 +197,10 @@ Nearphase.prototype.planeLine = function(bi,si,xi,ai, bj,sj,xj,aj){
     }
 };
 
+Nearphase.prototype.particleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTest){
+    return this.circleLine(bi,si,xi,ai, bj,sj,xj,aj, justTest, sj.radius, 0);
+};
+
 /**
  * Circle/line nearphase
  * @method circleLine
@@ -208,8 +212,11 @@ Nearphase.prototype.planeLine = function(bi,si,xi,ai, bj,sj,xj,aj){
  * @param  {Line} sj
  * @param  {Array} xj
  * @param  {Number} aj
+ * @param {Boolean} justTest If set to true, this function will return the result (intersection or not) without adding equations.
+ * @param {Number} lineRadius Radius to add to the line. Can be used to test Capsules.
+ * @param {Number} circleRadius If set, this value overrides the circle shape radius.
  */
-Nearphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj, justTest, lineRadius){
+Nearphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj, justTest, lineRadius, circleRadius){
     var lineShape = sj,
         lineAngle = aj,
         lineBody = bj,
@@ -219,9 +226,10 @@ Nearphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj, justTest, li
         circleShape = si,
 
         lineRadius = lineRadius || 0,
+        circleRadius = typeof(circleRadius)!="undefined" ? circleRadius : circleShape.radius,
 
         orthoDist = tmp1,
-        convexToCircle = tmp2,
+        lineToCircleOrthoUnit = tmp2,
         projectedPoint = tmp3,
         centerDist = tmp4,
         worldTangent = tmp5,
@@ -258,18 +266,22 @@ Nearphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj, justTest, li
 
     // Check distance from the plane spanned by the edge vs the circle
     sub(dist, circleOffset, worldVertex0);
-    var d = dot(dist, worldTangent);
+    var d = dot(dist, worldTangent); // Distance from center of line to circle center
     sub(centerDist, worldVertex0, lineOffset);
 
     sub(lineToCircle, circleOffset, lineOffset);
 
-    if(Math.abs(d) < circleShape.radius+lineRadius){
-        if(d < 0)   d += lineRadius;
-        else        d -= lineRadius;
+    if(Math.abs(d) < circleRadius+lineRadius){
 
         // Now project the circle onto the edge
         vec2.scale(orthoDist, worldTangent, d);
         sub(projectedPoint, circleOffset, orthoDist);
+
+        // Add the missing line radius
+        vec2.scale(lineToCircleOrthoUnit, worldTangent, dot(worldTangent, lineToCircle));
+        vec2.normalize(lineToCircleOrthoUnit,lineToCircleOrthoUnit);
+        vec2.scale(lineToCircleOrthoUnit, lineToCircleOrthoUnit, lineRadius);
+        add(projectedPoint,projectedPoint,lineToCircleOrthoUnit);
 
         // Check if the point is within the edge span
         var pos =  dot(worldEdgeUnit, projectedPoint);
@@ -286,7 +298,7 @@ Nearphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj, justTest, li
             vec2.scale(c.ni, orthoDist, -1);
             vec2.normalize(c.ni, c.ni);
 
-            vec2.scale( c.ri, c.ni,  circleShape.radius);
+            vec2.scale( c.ri, c.ni,  circleRadius);
             add(c.ri, c.ri, circleOffset);
             sub(c.ri, c.ri, circleBody.position);
 
@@ -312,7 +324,7 @@ Nearphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj, justTest, li
 
         sub(dist, v, circleOffset);
 
-        if(vec2.squaredLength(dist) < (circleShape.radius+lineRadius)*(circleShape.radius+lineRadius)){
+        if(vec2.squaredLength(dist) < (circleRadius+lineRadius)*(circleRadius+lineRadius)){
 
             if(justTest) return true;
 
@@ -322,7 +334,7 @@ Nearphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj, justTest, li
             vec2.normalize(c.ni,c.ni);
 
             // Vector from circle to contact point is the normal times the circle radius
-            vec2.scale(c.ri, c.ni, circleShape.radius);
+            vec2.scale(c.ri, c.ni, circleRadius);
             add(c.ri, c.ri, circleOffset);
             sub(c.ri, c.ri, circleBody.position);
 
