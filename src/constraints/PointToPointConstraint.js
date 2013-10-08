@@ -62,12 +62,20 @@ PointToPointConstraint.prototype.update = function(){
     vec2.copy(tangent.rj, normal.rj);
 };
 
+/**
+ * Enable the rotational motor
+ * @method enableMotor
+ */
 PointToPointConstraint.prototype.enableMotor = function(){
     if(this.motorEquation) return;
     this.motorEquation = new RotationalVelocityEquation(this.bodyA,this.bodyB);
     this.equations.push(this.motorEquation);
 };
 
+/**
+ * Disable the rotational motor
+ * @method disableMotor
+ */
 PointToPointConstraint.prototype.disableMotor = function(){
     if(!this.motorEquation) return;
     var i = this.equations.indexOf(this.motorEquation);
@@ -75,6 +83,11 @@ PointToPointConstraint.prototype.disableMotor = function(){
     this.equations.splice(i,1);
 };
 
+/**
+ * Set the speed of the rotational constraint motor
+ * @method setMotorSpeed
+ * @param  {Number} speed
+ */
 PointToPointConstraint.prototype.setMotorSpeed = function(speed){
     if(!this.motorEquation) return;
     var i = this.equations.indexOf(this.motorEquation);
