@@ -74,3 +74,9 @@ PointToPointConstraint.prototype.disableMotor = function(){
     this.motorEquation = null;
     this.equations.splice(i,1);
 };
+
+PointToPointConstraint.prototype.setMotorSpeed = function(speed){
+    if(!this.motorEquation) return;
+    var i = this.equations.indexOf(this.motorEquation);
+    this.equations[i].relativeVelocity = speed;
+};
