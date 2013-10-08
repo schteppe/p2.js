@@ -63,7 +63,7 @@ module.exports = {
 },{"../package.json":2,"./objects/Body":3,"./collision/Broadphase":4,"./shapes/Capsule":5,"./shapes/Circle":6,"./constraints/Constraint":7,"./constraints/ContactEquation":8,"./material/ContactMaterial":9,"./shapes/Convex":10,"./constraints/DistanceConstraint":11,"./constraints/Equation":12,"./events/EventEmitter":13,"./constraints/FrictionEquation":14,"./collision/GridBroadphase":15,"./solver/GSSolver":16,"./solver/IslandSolver":17,"./shapes/Line":18,"./material/Material":19,"./collision/NaiveBroadphase":20,"./shapes/Particle":21,"./shapes/Plane":22,"./constraints/PointToPointConstraint":23,"./constraints/PrismaticConstraint":24,"./shapes/Rectangle":25,"./constraints/RotationalVelocityEquation":26,"./collision/SAP1DBroadphase":27,"./shapes/Shape":28,"./solver/Solver":29,"./objects/Spring":30,"./world/World":31,"./collision/QuadTree":32,"./math/vec2":33}],2:[function(require,module,exports){
 module.exports={
     "name": "p2",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "description": "A JavaScript 2D physics engine.",
     "author": "Stefan Hedman <schteppe@gmail.com> (http://steffe.se)",
     "keywords": [
@@ -496,52 +496,7 @@ Solver.prototype.removeAllEquations = function(){
 };
 
 
-},{}],4:[function(require,module,exports){
-var vec2 = require('../math/vec2')
-,   Nearphase = require('./Nearphase')
-,   Shape = require('./../shapes/Shape')
-
-module.exports = Broadphase;
-
-/**
- * Base class for broadphase implementations.
- * @class Broadphase
- * @constructor
- */
-function Broadphase(){
-
-};
-
-/**
- * Get all potential intersecting body pairs.
- * @method getCollisionPairs
- * @param  {World} world The world to search in.
- * @return {Array} An array of the bodies, ordered in pairs. Example: A result of [a,b,c,d] means that the potential pairs are: (a,b), (c,d).
- */
-Broadphase.prototype.getCollisionPairs = function(world){
-    throw new Error("getCollisionPairs must be implemented in a subclass!");
-};
-
-// Temp things
-var dist = vec2.create(),
-    worldNormal = vec2.create(),
-    yAxis = vec2.fromValues(0,1);
-
-/**
- * Check whether the bounding radius of two bodies overlap.
- * @method  boundingRadiusCheck
- * @param  {Body} bodyA
- * @param  {Body} bodyB
- * @return {Boolean}
- */
-Broadphase.boundingRadiusCheck = function(bodyA, bodyB){
-    vec2.sub(dist, bodyA.position, bodyB.position);
-    var d2 = vec2.squaredLength(dist),
-        r = bodyA.boundingRadius + bodyB.boundingRadius;
-    return d2 <= r*r;
-};
-
-},{"../math/vec2":33,"./Nearphase":34,"./../shapes/Shape":28}],3:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 var vec2 = require('../math/vec2');
 
 module.exports = Body;
@@ -823,7 +778,52 @@ Body.STATIC = 2;
  */
 Body.KINEMATIC = 4;
 
-},{"../math/vec2":33}],5:[function(require,module,exports){
+},{"../math/vec2":33}],4:[function(require,module,exports){
+var vec2 = require('../math/vec2')
+,   Nearphase = require('./Nearphase')
+,   Shape = require('./../shapes/Shape')
+
+module.exports = Broadphase;
+
+/**
+ * Base class for broadphase implementations.
+ * @class Broadphase
+ * @constructor
+ */
+function Broadphase(){
+
+};
+
+/**
+ * Get all potential intersecting body pairs.
+ * @method getCollisionPairs
+ * @param  {World} world The world to search in.
+ * @return {Array} An array of the bodies, ordered in pairs. Example: A result of [a,b,c,d] means that the potential pairs are: (a,b), (c,d).
+ */
+Broadphase.prototype.getCollisionPairs = function(world){
+    throw new Error("getCollisionPairs must be implemented in a subclass!");
+};
+
+// Temp things
+var dist = vec2.create(),
+    worldNormal = vec2.create(),
+    yAxis = vec2.fromValues(0,1);
+
+/**
+ * Check whether the bounding radius of two bodies overlap.
+ * @method  boundingRadiusCheck
+ * @param  {Body} bodyA
+ * @param  {Body} bodyB
+ * @return {Boolean}
+ */
+Broadphase.boundingRadiusCheck = function(bodyA, bodyB){
+    vec2.sub(dist, bodyA.position, bodyB.position);
+    var d2 = vec2.squaredLength(dist),
+        r = bodyA.boundingRadius + bodyB.boundingRadius;
+    return d2 <= r*r;
+};
+
+},{"../math/vec2":33,"./Nearphase":34,"./../shapes/Shape":28}],5:[function(require,module,exports){
 var Shape = require('./Shape')
 ,   vec2 = require('../math/vec2')
 
@@ -3321,7 +3321,7 @@ World.prototype.fromJSON = function(json){
 
     switch(json.p2){
 
-        case "0.1":
+        case "0.2":
 
             // Set gravity
             vec2.copy(this.gravity, json.gravity);

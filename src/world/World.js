@@ -623,7 +623,7 @@ World.prototype.fromJSON = function(json){
 
     switch(json.p2){
 
-        case "0.1":
+        case "0.2":
 
             // Set gravity
             vec2.copy(this.gravity, json.gravity);
