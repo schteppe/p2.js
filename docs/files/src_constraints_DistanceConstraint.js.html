@@ -53,6 +53,8 @@
             
                 <li><a href="../classes/ContactEquation.html">ContactEquation</a></li>
             
+                <li><a href="../classes/ContactMaterial.html">ContactMaterial</a></li>
+            
                 <li><a href="../classes/Convex.html">Convex</a></li>
             
                 <li><a href="../classes/DistanceConstraint.html">DistanceConstraint</a></li>
@@ -71,6 +73,8 @@
             
                 <li><a href="../classes/mat2.html">mat2</a></li>
             
+                <li><a href="../classes/Material.html">Material</a></li>
+            
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
                 <li><a href="../classes/Nearphase.html">Nearphase</a></li>
@@ -81,7 +85,15 @@
             
                 <li><a href="../classes/PointToPointConstraint.html">PointToPointConstraint</a></li>
             
+                <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
+            
+                <li><a href="../classes/QuadTree.html">QuadTree</a></li>
+            
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
+            
+                <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
+            
+                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -163,19 +175,14 @@ function DistanceConstraint(bodyA,bodyB,distance,maxForce){
         maxForce = 1e6;
     }
 
-    // Equations to be fed to the solver
-    var eqs = this.equations = [
-        new ContactEquation(bodyA,bodyB), // Just in the normal direction
-    ];
+    var normal = new ContactEquation(bodyA,bodyB); // Just in the normal direction
 
-    var normal = eqs[0];
+    this.equations = [ normal ];
 
     // Make the contact constraint bilateral
     normal.minForce = -maxForce;
     normal.maxForce =  maxForce;
-
 }
-
 DistanceConstraint.prototype = new Constraint();
 
 /**
@@ -188,7 +195,7 @@ DistanceConstraint.prototype.update = function(){
         bodyB = this.bodyB,
         distance = this.distance;
 
-    vec2.subtract(normal.ni, bodyB.position, bodyA.position);
+    vec2.sub(normal.ni, bodyB.position, bodyA.position);
     vec2.normalize(normal.ni,normal.ni);
     vec2.scale(normal.ri, normal.ni,  distance*0.5);
     vec2.scale(normal.rj, normal.ni, -distance*0.5);

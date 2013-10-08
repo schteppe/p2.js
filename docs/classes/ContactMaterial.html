@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Constraint - p2.js</title>
+    <title>ContactMaterial - p2.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -144,7 +144,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>Constraint Class</h1>
+                        <h1>ContactMaterial Class</h1>
 <div class="box meta">
     
 
@@ -152,7 +152,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_constraints_Constraint.js.html#l3"><code>src&#x2F;constraints&#x2F;Constraint.js:3</code></a>
+            Defined in: <a href="../files/src_material_ContactMaterial.js.html#l5"><code>src&#x2F;material&#x2F;ContactMaterial.js:5</code></a>
         </div>
     
 
@@ -164,15 +164,15 @@
 
 
 <div class="box intro">
-    <p>Base constraint class.</p>
+    <p>Defines a physics material.</p>
 
 </div>
 
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_Constraint" class="method item">
-    <h3 class="name"><code>Constraint</code></h3>
+        <div id="method_ContactMaterial" class="method item">
+    <h3 class="name"><code>ContactMaterial</code></h3>
 
     
         <div class="args">
@@ -180,13 +180,19 @@
             
                 <li class="arg">
                     
-                        <code>bodyA</code>
+                        <code>materialA</code>
                     
                 </li>
             
                 <li class="arg">
                     
-                        <code>bodyB</code>
+                        <code>materialB</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code class="optional">[options]</code>
                     
                 </li>
             
@@ -219,7 +225,7 @@
             
         
         
-        <a href="../files/src_constraints_Constraint.js.html#l3"><code>src&#x2F;constraints&#x2F;Constraint.js:3</code></a>
+        <a href="../files/src_material_ContactMaterial.js.html#l5"><code>src&#x2F;material&#x2F;ContactMaterial.js:5</code></a>
         
         </p>
 
@@ -241,8 +247,8 @@
             
                 <li class="param">
                     
-                        <code class="param-name">bodyA</code>
-                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                        <code class="param-name">materialA</code>
+                        <span class="type"><a href="../classes/Material.html" class="crosslink">Material</a></span>
                     
 
                     
@@ -256,8 +262,8 @@
             
                 <li class="param">
                     
-                        <code class="param-name">bodyB</code>
-                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                        <code class="param-name">materialB</code>
+                        <span class="type"><a href="../classes/Material.html" class="crosslink">Material</a></span>
                     
 
                     
@@ -266,6 +272,52 @@
                          
                     </div>
 
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name optional">[options]</code>
+                        <span class="type">Object</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                        <ul class="params-list">
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name">friction</code>
+                                    <span class="type">Number</span>
+                                
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name">restitution</code>
+                                    <span class="type">Number</span>
+                                
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                                
+                            </li>
+                            
+                        </ul>
                     
                 </li>
             
@@ -286,8 +338,6 @@
         <li class="api-class-tab index"><a href="#index">Index</a></li>
 
         
-            <li class="api-class-tab methods"><a href="#methods">Methods</a></li>
-        
         
             <li class="api-class-tab properties"><a href="#properties">Properties</a></li>
         
@@ -300,21 +350,6 @@
             <h2 class="off-left">Item Index</h2>
 
             
-                <div class="index-section methods">
-                    <h3>Methods</h3>
-
-                    <ul class="index-list methods">
-                        
-                            <li class="index-item method">
-                                <a href="#method_update">update</a>
-
-                                
-                                
-                            </li>
-                        
-                    </ul>
-                </div>
-            
 
             
                 <div class="index-section properties">
@@ -323,21 +358,63 @@
                     <ul class="index-list properties">
                         
                             <li class="index-item property">
-                                <a href="#property_bodyA">bodyA</a>
+                                <a href="#property_friction">friction</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item property">
-                                <a href="#property_bodyB">bodyB</a>
+                                <a href="#property_frictionRelaxation">frictionRelaxation</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item property">
-                                <a href="#property_equations">equations</a>
+                                <a href="#property_frictionStiffness">frictionStiffness</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_id">id</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_materialA">materialA</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_materialB">materialB</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_relaxation">relaxation</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_restitution">restitution</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_stiffness">stiffness</a>
 
                                 
                                 
@@ -353,76 +430,15 @@
         </div>
 
         
-            <div id="methods" class="api-class-tabpanel">
-                <h2 class="off-left">Methods</h2>
-
-                
-                    <div id="method_update" class="method item">
-    <h3 class="name"><code>update</code></h3>
-
-    
-        <span class="paren">()</span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_constraints_Constraint.js.html#l36"><code>src&#x2F;constraints&#x2F;Constraint.js:36</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>To be implemented by subclasses. Should update the internal constraint parameters.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-            </div>
-        
 
         
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
                 
-                    <div id="property_bodyA" class="property item">
-    <h3 class="name"><code>bodyA</code></h3>
-    <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    <div id="property_friction" class="property item">
+    <h3 class="name"><code>friction</code></h3>
+    <span class="type">Number</span>
 
     
 
@@ -443,7 +459,7 @@
             
         
         
-        <a href="../files/src_constraints_Constraint.js.html#l21"><code>src&#x2F;constraints&#x2F;Constraint.js:21</code></a>
+        <a href="../files/src_material_ContactMaterial.js.html#l40"><code>src&#x2F;material&#x2F;ContactMaterial.js:40</code></a>
         
         </p>
 
@@ -453,7 +469,7 @@
     </div>
 
     <div class="description">
-        <p>First body participating in the constraint.</p>
+        <p>Friction to use in the contact of these two materials</p>
 
     </div>
 
@@ -465,9 +481,9 @@
 </div>
 
                 
-                    <div id="property_bodyB" class="property item">
-    <h3 class="name"><code>bodyB</code></h3>
-    <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    <div id="property_frictionRelaxation" class="property item">
+    <h3 class="name"><code>frictionRelaxation</code></h3>
+    <span class="type">Number</span>
 
     
 
@@ -488,7 +504,7 @@
             
         
         
-        <a href="../files/src_constraints_Constraint.js.html#l28"><code>src&#x2F;constraints&#x2F;Constraint.js:28</code></a>
+        <a href="../files/src_material_ContactMaterial.js.html#l75"><code>src&#x2F;material&#x2F;ContactMaterial.js:75</code></a>
         
         </p>
 
@@ -498,7 +514,7 @@
     </div>
 
     <div class="description">
-        <p>Second body participating in the constraint.</p>
+        <p>Relaxation of the resulting FrictionEquation that this ContactMaterial generate</p>
 
     </div>
 
@@ -510,9 +526,9 @@
 </div>
 
                 
-                    <div id="property_equations" class="property item">
-    <h3 class="name"><code>equations</code></h3>
-    <span class="type">Array</span>
+                    <div id="property_frictionStiffness" class="property item">
+    <h3 class="name"><code>frictionStiffness</code></h3>
+    <span class="type">Number</span>
 
     
 
@@ -533,7 +549,7 @@
             
         
         
-        <a href="../files/src_constraints_Constraint.js.html#l14"><code>src&#x2F;constraints&#x2F;Constraint.js:14</code></a>
+        <a href="../files/src_material_ContactMaterial.js.html#l68"><code>src&#x2F;material&#x2F;ContactMaterial.js:68</code></a>
         
         </p>
 
@@ -543,7 +559,277 @@
     </div>
 
     <div class="description">
-        <p>Equations to be solved in this constraint</p>
+        <p>Stiffness of the resulting FrictionEquation that this ContactMaterial generate</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_id" class="property item">
+    <h3 class="name"><code>id</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_material_ContactMaterial.js.html#l19"><code>src&#x2F;material&#x2F;ContactMaterial.js:19</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The contact material identifier</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_materialA" class="property item">
+    <h3 class="name"><code>materialA</code></h3>
+    <span class="type"><a href="../classes/Material.html" class="crosslink">Material</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_material_ContactMaterial.js.html#l26"><code>src&#x2F;material&#x2F;ContactMaterial.js:26</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>First material participating in the contact material</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_materialB" class="property item">
+    <h3 class="name"><code>materialB</code></h3>
+    <span class="type"><a href="../classes/Material.html" class="crosslink">Material</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_material_ContactMaterial.js.html#l33"><code>src&#x2F;material&#x2F;ContactMaterial.js:33</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Second material participating in the contact material</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_relaxation" class="property item">
+    <h3 class="name"><code>relaxation</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_material_ContactMaterial.js.html#l61"><code>src&#x2F;material&#x2F;ContactMaterial.js:61</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Relaxation of the resulting ContactEquation that this ContactMaterial generate</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_restitution" class="property item">
+    <h3 class="name"><code>restitution</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_material_ContactMaterial.js.html#l47"><code>src&#x2F;material&#x2F;ContactMaterial.js:47</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Restitution to use in the contact of these two materials</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_stiffness" class="property item">
+    <h3 class="name"><code>stiffness</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_material_ContactMaterial.js.html#l54"><code>src&#x2F;material&#x2F;ContactMaterial.js:54</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Stiffness of the resulting ContactEquation that this ContactMaterial generate</p>
 
     </div>
 

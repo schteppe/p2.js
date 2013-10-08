@@ -53,6 +53,8 @@
             
                 <li><a href="../classes/ContactEquation.html">ContactEquation</a></li>
             
+                <li><a href="../classes/ContactMaterial.html">ContactMaterial</a></li>
+            
                 <li><a href="../classes/Convex.html">Convex</a></li>
             
                 <li><a href="../classes/DistanceConstraint.html">DistanceConstraint</a></li>
@@ -71,6 +73,8 @@
             
                 <li><a href="../classes/mat2.html">mat2</a></li>
             
+                <li><a href="../classes/Material.html">Material</a></li>
+            
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
                 <li><a href="../classes/Nearphase.html">Nearphase</a></li>
@@ -81,7 +85,15 @@
             
                 <li><a href="../classes/PointToPointConstraint.html">PointToPointConstraint</a></li>
             
+                <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
+            
+                <li><a href="../classes/QuadTree.html">QuadTree</a></li>
+            
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
+            
+                <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
+            
+                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -139,6 +151,8 @@
 var vec2 = require(&#x27;../math/vec2&#x27;);
 
 module.exports = Body;
+
+var zero = vec2.fromValues(0,0);
 
 /**
  * A physics body.
@@ -282,9 +296,33 @@ function Body(options){
      * @type {number}
      */
     this.motionState = this.mass == 0 ? Body.STATIC : Body.DYNAMIC;
+
+    /**
+     * Bounding box max point, in world coordinates.
+     * @property aabbMin
+     * @type {Array}
+     */
+    this.boundingRadius = 0;
 };
 
 Body._idCounter = 0;
+
+Body.prototype.updateBoundingRadius = function(){
+    var shapes = this.shapes,
+        shapeOffsets = this.shapeOffsets,
+        N = shapes.length,
+        radius = 0;
+
+    for(var i=0; i!==N; i++){
+        var shape = shapes[i],
+            offset = vec2.length(shapeOffsets[i] || zero),
+            r = shape.boundingRadius;
+        if(offset + r &gt; radius)
+            radius = offset + r;
+    }
+
+    this.boundingRadius = radius;
+};
 
 /**
  * Add a shape to the body
@@ -298,9 +336,8 @@ Body.prototype.addShape = function(shape,offset,angle){
     this.shapeOffsets.push(offset);
     this.shapeAngles .push(angle);
     this.updateMassProperties();
+    this.updateBoundingRadius();
 };
-
-var zero = vec2.fromValues(0,0);
 
 /**
  * Updates .inertia, .invMass, .invInertia for this Body. Should be called when changing the structure of the Body.

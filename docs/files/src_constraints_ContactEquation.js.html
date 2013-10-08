@@ -53,6 +53,8 @@
             
                 <li><a href="../classes/ContactEquation.html">ContactEquation</a></li>
             
+                <li><a href="../classes/ContactMaterial.html">ContactMaterial</a></li>
+            
                 <li><a href="../classes/Convex.html">Convex</a></li>
             
                 <li><a href="../classes/DistanceConstraint.html">DistanceConstraint</a></li>
@@ -71,6 +73,8 @@
             
                 <li><a href="../classes/mat2.html">mat2</a></li>
             
+                <li><a href="../classes/Material.html">Material</a></li>
+            
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
                 <li><a href="../classes/Nearphase.html">Nearphase</a></li>
@@ -81,7 +85,15 @@
             
                 <li><a href="../classes/PointToPointConstraint.html">PointToPointConstraint</a></li>
             
+                <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
+            
+                <li><a href="../classes/QuadTree.html">QuadTree</a></li>
+            
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
+            
+                <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
+            
+                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -137,7 +149,8 @@
 <div class="file">
     <pre class="code prettyprint linenums">
 var Equation = require(&quot;./Equation&quot;),
-    vec2 = require(&#x27;../math/vec2&#x27;);
+    vec2 = require(&#x27;../math/vec2&#x27;),
+    mat2 = require(&#x27;../math/mat2&#x27;);
 
 module.exports = ContactEquation;
 
@@ -215,13 +228,26 @@ ContactEquation.prototype.computeB = function(a,b,h){
 };
 
 // Compute C = GMG+eps in the SPOOK equation
+var computeC_tmp1 = vec2.create(),
+    tmpMat1 = mat2.create(),
+    tmpMat2 = mat2.create();
 ContactEquation.prototype.computeC = function(eps){
-    var bi = this.bi;
-    var bj = this.bj;
-    var rixn = this.rixn;
-    var rjxn = this.rjxn;
+    var bi = this.bi,
+        bj = this.bj,
+        n = this.ni,
+        rixn = this.rixn,
+        rjxn = this.rjxn,
+        tmp = computeC_tmp1,
+        imMat1 = tmpMat1,
+        imMat2 = tmpMat2;
 
-    var C = bi.invMass + bj.invMass + eps;
+    mat2.identity(imMat1);
+    mat2.identity(imMat2);
+    imMat1[0] = imMat1[3] = bi.invMass;
+    imMat2[0] = imMat2[3] = bj.invMass;
+
+    var C = vec2.dot(n,vec2.transformMat2(tmp,n,imMat1)) + vec2.dot(n,vec2.transformMat2(tmp,n,imMat2)) + eps;
+    //var C = bi.invMass + bj.invMass + eps;
 
     C += bi.invInertia * rixn * rixn;
     C += bj.invInertia * rjxn * rjxn;
@@ -251,13 +277,22 @@ ContactEquation.prototype.addToWlambda = function(deltalambda){
         rixn = this.rixn,
         rjxn = this.rjxn,
         n = this.ni,
-        temp = addToWlambda_temp;
+        temp = addToWlambda_temp,
+        imMat1 = tmpMat1,
+        imMat2 = tmpMat2;
+
+    mat2.identity(imMat1);
+    mat2.identity(imMat2);
+    imMat1[0] = imMat1[3] = bi.invMass;
+    imMat2[0] = imMat2[3] = bj.invMass;
 
     // Add to linear velocity
-    vec2.scale(temp,n,-bi.invMass*deltalambda);
+    //vec2.scale(temp,n,-bi.invMass*deltalambda);
+    vec2.scale(temp,vec2.transformMat2(temp,n,imMat1),-deltalambda);
     vec2.add( bi.vlambda,bi.vlambda, temp );
 
-    vec2.scale(temp,n,bj.invMass*deltalambda);
+    //vec2.scale(temp,n,bj.invMass*deltalambda);
+    vec2.scale(temp,vec2.transformMat2(temp,n,imMat2),deltalambda);
     vec2.add( bj.vlambda,bj.vlambda, temp);
 
     // Add to angular velocity

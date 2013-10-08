@@ -53,6 +53,8 @@
             
                 <li><a href="../classes/ContactEquation.html">ContactEquation</a></li>
             
+                <li><a href="../classes/ContactMaterial.html">ContactMaterial</a></li>
+            
                 <li><a href="../classes/Convex.html">Convex</a></li>
             
                 <li><a href="../classes/DistanceConstraint.html">DistanceConstraint</a></li>
@@ -71,6 +73,8 @@
             
                 <li><a href="../classes/mat2.html">mat2</a></li>
             
+                <li><a href="../classes/Material.html">Material</a></li>
+            
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
                 <li><a href="../classes/Nearphase.html">Nearphase</a></li>
@@ -81,7 +85,15 @@
             
                 <li><a href="../classes/PointToPointConstraint.html">PointToPointConstraint</a></li>
             
+                <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
+            
+                <li><a href="../classes/QuadTree.html">QuadTree</a></li>
+            
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
+            
+                <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
+            
+                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -151,6 +163,7 @@ var GSSolver = require(&#x27;../solver/GSSolver&#x27;)
 ,    Spring = require(&#x27;../objects/Spring&#x27;)
 ,    DistanceConstraint = require(&#x27;../constraints/DistanceConstraint&#x27;)
 ,    PointToPointConstraint = require(&#x27;../constraints/PointToPointConstraint&#x27;)
+,    PrismaticConstraint = require(&#x27;../constraints/PrismaticConstraint&#x27;)
 ,    pkg = require(&#x27;../../package.json&#x27;)
 ,    Broadphase = require(&#x27;../collision/Broadphase&#x27;)
 ,    Nearphase = require(&#x27;../collision/Nearphase&#x27;)
@@ -255,11 +268,11 @@ function World(options){
     this.constraints = [];
 
     /**
-     * Friction between all bodies. Should in the future be replaced by per-body material properties.
-     * @property friction
+     * Friction between colliding bodies. This value is used if no matching ContactMaterial is found for the body pair.
+     * @property defaultFriction
      * @type {Number}
      */
-    this.friction = 0.1;
+    this.defaultFriction = 0.1;
 
     /**
      * For keeping track of what time step size we used last step
@@ -267,6 +280,20 @@ function World(options){
      * @type {Number}
      */
     this.lastTimeStep = 1/60;
+
+    /**
+     * Enable to automatically apply spring forces each step.
+     * @property applySpringForces
+     * @type {Boolean}
+     */
+    this.applySpringForces = true;
+
+    /**
+     * The ContactMaterials added to the World.
+     * @property contactMaterials
+     * @type {Array}
+     */
+    this.contactMaterials = [];
 
     // Id counters
     this._constraintIdCounter = 0;
@@ -299,6 +326,34 @@ World.prototype.addConstraint = function(c){
 };
 
 /**
+ * Add a ContactMaterial to the simulation.
+ * @method addContactMaterial
+ * @param {ContactMaterial} contactMaterial
+ */
+World.prototype.addContactMaterial = function(contactMaterial){
+    this.contactMaterials.push(contactMaterial);
+};
+
+/**
+ * Get a contact material given two materials
+ * @method getContactMaterial
+ * @param {Material} materialA
+ * @param {Material} materialB
+ * @return {ContactMaterial} The matching ContactMaterial, or false on fail.
+ * @todo Use faster hash map to lookup from material id&#x27;s
+ */
+World.prototype.getContactMaterial = function(materialA,materialB){
+    var cmats = this.contactMaterials;
+    for(var i=0, N=cmats.length; i!==N; i++){
+        var cm = cmats[i];
+        if( (cm.materialA === materialA) &amp;&amp; (cm.materialB === materialB) ||
+            (cm.materialA === materialB) &amp;&amp; (cm.materialB === materialA) )
+            return cm;
+    }
+    return false;
+};
+
+/**
  * Removes a constraint
  *
  * @method removeConstraint
@@ -311,15 +366,14 @@ World.prototype.removeConstraint = function(c){
     }
 };
 
-var step_r = vec2.create();
-var step_runit = vec2.create();
-var step_u = vec2.create();
-var step_f = vec2.create();
-var step_fhMinv = vec2.create();
-var step_velodt = vec2.create();
-
-var xi_world = vec2.fromValues(0,0),
-    xj_world = vec2.fromValues(0,0),
+var step_r = vec2.create(),
+    step_runit = vec2.create(),
+    step_u = vec2.create(),
+    step_f = vec2.create(),
+    step_fhMinv = vec2.create(),
+    step_velodt = vec2.create(),
+    xiw = vec2.fromValues(0,0),
+    xjw = vec2.fromValues(0,0),
     zero = vec2.fromValues(0,0);
 
 /**
@@ -341,7 +395,12 @@ World.prototype.step = function(dt){
         broadphase = this.broadphase,
         np = this.nearphase,
         constraints = this.constraints,
-        t0, t1;
+        t0, t1,
+        fhMinv = step_fhMinv,
+        velodt = step_velodt,
+        scale = vec2.scale,
+        add = vec2.add,
+        rotate = vec2.rotate;
 
     this.lastTimeStep = dt;
 
@@ -352,13 +411,15 @@ World.prototype.step = function(dt){
     // add gravity to bodies
     for(var i=0; i!==Nbodies; i++){
         var fi = bodies[i].force;
-        vec2.add(fi,fi,g);
+        add(fi,fi,g);
     }
 
     // Add spring forces
-    for(var i=0; i!==Nsprings; i++){
-        var s = springs[i];
-        s.applyForce();
+    if(this.applySpringForces){
+        for(var i=0; i!==Nsprings; i++){
+            var s = springs[i];
+            s.applyForce();
+        }
     }
 
     // Broadphase
@@ -370,14 +431,6 @@ World.prototype.step = function(dt){
     for(var i=0, Nresults=result.length; i!==Nresults; i+=2){
         var bi = result[i],
             bj = result[i+1];
-
-        var reducedMass = (bi.invMass + bj.invMass);
-        if(reducedMass &gt; 0)
-            reducedMass = 1/reducedMass;
-
-        var mu = this.friction; // Todo: Should be looked up in a material table
-        var mug = mu * glen * reducedMass;
-        var doFriction = mu&gt;0;
 
         // Loop over all shapes of body i
         for(var k=0; k&lt;bi.shapes.length; k++){
@@ -391,56 +444,82 @@ World.prototype.step = function(dt){
                     xj = bj.shapeOffsets[l] || zero,
                     aj = bj.shapeAngles[l] || 0;
 
-                vec2.rotate(xi_world, xi, bi.angle);
-                vec2.rotate(xj_world, xj, bj.angle);
-                vec2.add(xi_world, xi_world, bi.position);
-                vec2.add(xj_world, xj_world, bj.position);
-                var ai_world = ai + bi.angle;
-                var aj_world = aj + bj.angle;
+                if(!((si.collisionGroup &amp; sj.collisionMask) !== 0 &amp;&amp; (sj.collisionGroup &amp; si.collisionMask) !== 0))
+                    continue;
 
-                // Try new nearphase
+                var reducedMass = (bi.invMass + bj.invMass);
+                if(reducedMass &gt; 0)
+                    reducedMass = 1/reducedMass;
+
+                var mu = this.defaultFriction;
+
+                if(si.material &amp;&amp; sj.material){
+                    var cm = this.getContactMaterial(si.material,sj.material);
+                    if(cm){
+                        mu = cm.friction;
+                    }
+                }
+
+                var mug = mu * glen * reducedMass,
+                    doFriction = mu &gt; 0;
+
+                // Get world position and angle of each shape
+                rotate(xiw, xi, bi.angle);
+                rotate(xjw, xj, bj.angle);
+                add(xiw, xiw, bi.position);
+                add(xjw, xjw, bj.position);
+                var aiw = ai + bi.angle;
+                var ajw = aj + bj.angle;
+
+                // Run nearphase
                 np.enableFriction = mu &gt; 0;
                 np.slipForce = mug;
                 if(si instanceof Circle){
-                         if(sj instanceof Circle)   np.circleCircle  (bi,si,xi_world,ai_world, bj,sj,xj_world,aj_world);
-                    else if(sj instanceof Particle) np.circleParticle(bi,si,xi_world,ai_world, bj,sj,xj_world,aj_world);
-                    else if(sj instanceof Plane)    np.circlePlane   (bi,si,xi_world,ai_world, bj,sj,xj_world,aj_world);
-                    else if(sj instanceof Rectangle)np.circleConvex  (bi,si,xi_world,ai_world, bj,sj,xj_world,aj_world);
-                    else if(sj instanceof Convex)   np.circleConvex  (bi,si,xi_world,ai_world, bj,sj,xj_world,aj_world);
-                    else if(sj instanceof Line)     np.circleLine    (bi,si,xi_world,ai_world, bj,sj,xj_world,aj_world);
+                         if(sj instanceof Circle)       np.circleCircle  (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+                    else if(sj instanceof Particle)     np.circleParticle(bi,si,xiw,aiw, bj,sj,xjw,ajw);
+                    else if(sj instanceof Plane)        np.circlePlane   (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+                    else if(sj instanceof Rectangle)    np.circleConvex  (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+                    else if(sj instanceof Convex)       np.circleConvex  (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+                    else if(sj instanceof Line)         np.circleLine    (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+                    else if(sj instanceof Capsule)      np.circleCapsule (bi,si,xiw,aiw, bj,sj,xjw,ajw);
 
                 } else if(si instanceof Particle){
-                         if(sj instanceof Circle)   np.circleParticle(bj,sj,xj_world,aj_world, bi,si,xi_world,ai_world);
-                    else if(sj instanceof Plane)    np.particlePlane (bi,si,xi_world,ai_world, bj,sj,xj_world,aj_world);
-                    else if(sj instanceof Rectangle)np.particleConvex(bi,si,xi_world,ai_world, bj,sj,xj_world,aj_world);
-                    else if(sj instanceof Convex)   np.particleConvex(bi,si,xi_world,ai_world, bj,sj,xj_world,aj_world);
+                         if(sj instanceof Circle)       np.circleParticle   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+                    else if(sj instanceof Plane)        np.particlePlane    (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+                    else if(sj instanceof Rectangle)    np.particleConvex   (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+                    else if(sj instanceof Convex)       np.particleConvex   (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+                    else if(sj instanceof Capsule)      np.particleCapsule  (bi,si,xiw,aiw, bj,sj,xjw,ajw);
 
                 } else if(si instanceof Plane){
-                         if(sj instanceof Circle)   np.circlePlane   (bj,sj,xj_world,aj_world, bi,si,xi_world,ai_world);
-                    else if(sj instanceof Particle) np.particlePlane (bj,sj,xj_world,aj_world, bi,si,xi_world,ai_world);
-                    else if(sj instanceof Rectangle)np.convexPlane   (bj,sj,xj_world,aj_world, bi,si,xi_world,ai_world);
-                    else if(sj instanceof Convex)   np.convexPlane   (bj,sj,xj_world,aj_world, bi,si,xi_world,ai_world);
-                    else if(sj instanceof Line)     np.planeLine     (bi,si,xi_world,ai_world, bj,sj,xj_world,aj_world);
-                    else if(sj instanceof Capsule)  np.capsulePlane  (bj,sj,xj_world,aj_world, bi,si,xi_world,ai_world);
+                         if(sj instanceof Circle)       np.circlePlane   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+                    else if(sj instanceof Particle)     np.particlePlane (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+                    else if(sj instanceof Rectangle)    np.convexPlane   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+                    else if(sj instanceof Convex)       np.convexPlane   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+                    else if(sj instanceof Line)         np.planeLine     (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+                    else if(sj instanceof Capsule)      np.capsulePlane  (bj,sj,xjw,ajw, bi,si,xiw,aiw);
 
                 } else if(si instanceof Rectangle){
-                         if(sj instanceof Plane)    np.convexPlane    (bi,si,xi_world,ai_world, bj,sj,xj_world,aj_world);
-                    else if(sj instanceof Circle)   np.circleConvex   (bj,sj,xj_world,aj_world, bi,si,xi_world,ai_world);
-                    else if(sj instanceof Rectangle)np.convexConvex   (bj,sj,xj_world,aj_world, bi,si,xi_world,ai_world);
-                    else if(sj instanceof Particle) np.particleConvex (bj,sj,xj_world,aj_world, bi,si,xi_world,ai_world);
+                         if(sj instanceof Plane)        np.convexPlane    (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+                    else if(sj instanceof Circle)       np.circleConvex   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+                    else if(sj instanceof Rectangle)    np.convexConvex   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+                    else if(sj instanceof Convex)       np.convexConvex   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+                    else if(sj instanceof Particle)     np.particleConvex (bj,sj,xjw,ajw, bi,si,xiw,aiw);
 
                 } else if(si instanceof Convex){
-                         if(sj instanceof Plane)    np.convexPlane    (bi,si,xi_world,ai_world, bj,sj,xj_world,aj_world);
-                    else if(sj instanceof Circle)   np.circleConvex   (bj,sj,xj_world,aj_world, bi,si,xi_world,ai_world);
-                    else if(sj instanceof Convex)   np.convexConvex   (bi,si,xi_world,ai_world, bj,sj,xj_world,aj_world);
-                    else if(sj instanceof Particle) np.particleConvex (bj,sj,xj_world,aj_world, bi,si,xi_world,ai_world);
+                         if(sj instanceof Plane)        np.convexPlane    (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+                    else if(sj instanceof Circle)       np.circleConvex   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+                    else if(sj instanceof Rectangle)    np.convexConvex   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+                    else if(sj instanceof Convex)       np.convexConvex   (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+                    else if(sj instanceof Particle)     np.particleConvex (bj,sj,xjw,ajw, bi,si,xiw,aiw);
 
                 } else if(si instanceof Line){
-                         if(sj instanceof Circle)   np.circleLine     (bj,sj,xj_world,aj_world, bi,si,xi_world,ai_world);
-                    else if(sj instanceof Plane)    np.planeLine      (bj,sj,xj_world,aj_world, bi,si,xi_world,ai_world);
+                         if(sj instanceof Circle)       np.circleLine     (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+                    else if(sj instanceof Plane)        np.planeLine      (bj,sj,xjw,ajw, bi,si,xiw,aiw);
 
                 } else if(si instanceof Capsule){
-                         if(sj instanceof Plane)    np.capsulePlane   (bi,si,xi_world,ai_world, bj,sj,xj_world,aj_world);
+                         if(sj instanceof Plane)        np.capsulePlane   (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+                         if(sj instanceof Circle)       np.circleCapsule  (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+                         if(sj instanceof Particle)     np.particleCapsule(bj,sj,xjw,ajw, bi,si,xiw,aiw);
 
                 }
             }
@@ -470,14 +549,11 @@ World.prototype.step = function(dt){
     solver.removeAllEquations();
 
     // Step forward
-    var fhMinv = step_fhMinv;
-    var velodt = step_velodt;
-
     for(var i=0; i!==Nbodies; i++){
         var body = bodies[i];
 
         if(body.mass&gt;0){
-            var minv = 1.0 / body.mass,
+            var minv = body.invMass,
                 f = body.force,
                 pos = body.position,
                 velo = body.velocity;
@@ -487,10 +563,10 @@ World.prototype.step = function(dt){
             body.angle += body.angularVelocity * dt;
 
             // Linear step
-            vec2.scale(fhMinv,f,dt*minv);
-            vec2.add(velo,fhMinv,velo);
-            vec2.scale(velodt,velo,dt);
-            vec2.add(pos,pos,velodt);
+            scale(fhMinv,f,dt*minv);
+            add(velo,fhMinv,velo);
+            scale(velodt,velo,dt);
+            add(pos,pos,velodt);
         }
     }
 
@@ -603,8 +679,15 @@ World.prototype.toJSON = function(){
             jc.pivotA = v2a(c.pivotA);
             jc.pivotB = v2a(c.pivotB);
             jc.maxForce = c.maxForce;
-        } else
-            throw new Error(&quot;Constraint not supported yet!&quot;);
+        } else if(c instanceof PrismaticConstraint){
+            jc.type = &quot;PrismaticConstraint&quot;;
+            jc.localAxisA = v2a(c.localAxisA);
+            jc.localAxisB = v2a(c.localAxisB);
+            jc.maxForce = c.maxForce;
+        } else {
+            console.error(&quot;Constraint not supported yet!&quot;);
+            continue;
+        }
 
         json.constraints.push(jc);
     }
@@ -652,6 +735,8 @@ World.prototype.toJSON = function(){
 
             jsonShape.offset = v2a(b.shapeOffsets[j] || [0,0]);
             jsonShape.angle = b.shapeAngles[j] || 0;
+            jsonShape.collisionGroup = s.collisionGroup;
+            jsonShape.collisionMask = s.collisionMask;
 
             jsonShapes.push(jsonShape);
         }
@@ -665,6 +750,7 @@ World.prototype.toJSON = function(){
             shapes : jsonShapes,
         });
     }
+
     return json;
 
     function v2a(v){
@@ -721,6 +807,8 @@ World.prototype.fromJSON = function(json){
                             throw new Error(&quot;Shape type not supported: &quot;+js.type);
                             break;
                     }
+                    shape.collisionMask = js.collisionMask;
+                    shape.collisionGroup = js.collisionGroup;
                     b.addShape(shape,js.offset,js.angle);
                 }
 
@@ -750,6 +838,13 @@ World.prototype.fromJSON = function(json){
                         break;
                     case &quot;PointToPointConstraint&quot;:
                         c = new PointToPointConstraint(this.bodies[jc.bodyA], jc.pivotA, this.bodies[jc.bodyB], jc.pivotB, jc.maxForce);
+                        break;
+                    case &quot;PrismaticConstraint&quot;:
+                        c = new PrismaticConstraint(this.bodies[jc.bodyA], this.bodies[jc.bodyB], {
+                            maxForce : jc.maxForce,
+                            localAxisA : jc.localAxisA,
+                            localAxisB : jc.localAxisB,
+                        });
                         break;
                     default:
                         throw new Error(&quot;Constraint type not recognized: &quot;+jc.type);
@@ -791,6 +886,72 @@ World.prototype.clear = function(){
     for(var i=springs.length-1; i&gt;=0; i--){
         this.removeSpring(springs[i]);
     }
+};
+
+/**
+ * Get a copy of this World instance
+ * @method clone
+ * @return {World}
+ */
+World.prototype.clone = function(){
+    var world = new World();
+    world.fromJSON(this.toJSON());
+    return world;
+};
+
+var hitTest_tmp1 = vec2.create(),
+    hitTest_zero = vec2.fromValues(0,0),
+    hitTest_tmp2 = vec2.fromValues(0,0);
+
+/**
+ * Test if a world point overlaps bodies
+ * @method hitTest
+ * @param  {Array}  worldPoint  Point to use for intersection tests
+ * @param  {Array}  bodies      A list of objects to check for intersection
+ * @param  {Number} precision   Used for matching against particles and lines. Adds some margin to these infinitesimal objects.
+ * @return {Array}              Array of bodies that overlap the point
+ */
+World.prototype.hitTest = function(worldPoint,bodies,precision){
+    precision = precision || 0;
+
+    // Create a dummy particle body with a particle shape to test against the bodies
+    var pb = new Body({ position:worldPoint }),
+        ps = new Particle(),
+        px = worldPoint,
+        pa = 0,
+        x = hitTest_tmp1,
+        zero = hitTest_zero,
+        tmp = hitTest_tmp2;
+    pb.addShape(ps);
+
+    var n = this.nearphase,
+        result = [];
+
+    // Check bodies
+    for(var i=0, N=bodies.length; i!==N; i++){
+        var b = bodies[i];
+        for(var j=0, NS=b.shapes.length; j!==NS; j++){
+            var s = b.shapes[j],
+                offset = b.shapeOffsets[j] || zero,
+                angle = b.shapeAngles[j] || 0.0;
+
+            // Get shape world position + angle
+            vec2.rotate(x, offset, b.angle);
+            vec2.add(x, x, b.position);
+            var a = angle + b.angle;
+
+            if( (s instanceof Circle    &amp;&amp; n.circleParticle  (b,s,x,a,     pb,ps,px,pa, true)) ||
+                (s instanceof Convex    &amp;&amp; n.particleConvex  (pb,ps,px,pa, b,s,x,a,     true)) ||
+                (s instanceof Plane     &amp;&amp; n.particlePlane   (pb,ps,px,pa, b,s,x,a,     true)) ||
+                (s instanceof Capsule   &amp;&amp; n.particleCapsule (pb,ps,px,pa, b,s,x,a,     true)) ||
+                (s instanceof Particle  &amp;&amp; vec2.squaredLength(vec2.sub(tmp,x,worldPoint)) &lt; precision*precision)
+                ){
+                result.push(b);
+            }
+        }
+    }
+
+    return result;
 };
 
     </pre>

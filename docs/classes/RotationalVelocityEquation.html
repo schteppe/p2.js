@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Constraint - p2.js</title>
+    <title>RotationalVelocityEquation - p2.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -144,15 +144,19 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>Constraint Class</h1>
+                        <h1>RotationalVelocityEquation Class</h1>
 <div class="box meta">
     
 
     
+        <div class="extends">
+            Extends <a href="../classes/Equation.html" class="crosslink">Equation</a>
+        </div>
+    
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_constraints_Constraint.js.html#l3"><code>src&#x2F;constraints&#x2F;Constraint.js:3</code></a>
+            Defined in: <a href="../files/src_constraints_RotationalVelocityEquation.js.html#l6"><code>src&#x2F;constraints&#x2F;RotationalVelocityEquation.js:6</code></a>
         </div>
     
 
@@ -164,15 +168,15 @@
 
 
 <div class="box intro">
-    <p>Base constraint class.</p>
+    <p>Syncs rotational velocity of two bodies, or sets a relative velocity (motor).</p>
 
 </div>
 
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_Constraint" class="method item">
-    <h3 class="name"><code>Constraint</code></h3>
+        <div id="method_RotationalVelocityEquation" class="method item">
+    <h3 class="name"><code>RotationalVelocityEquation</code></h3>
 
     
         <div class="args">
@@ -180,13 +184,13 @@
             
                 <li class="arg">
                     
-                        <code>bodyA</code>
+                        <code>bi</code>
                     
                 </li>
             
                 <li class="arg">
                     
-                        <code>bodyB</code>
+                        <code>bj</code>
                     
                 </li>
             
@@ -219,7 +223,7 @@
             
         
         
-        <a href="../files/src_constraints_Constraint.js.html#l3"><code>src&#x2F;constraints&#x2F;Constraint.js:3</code></a>
+        <a href="../files/src_constraints_RotationalVelocityEquation.js.html#l6"><code>src&#x2F;constraints&#x2F;RotationalVelocityEquation.js:6</code></a>
         
         </p>
 
@@ -241,7 +245,7 @@
             
                 <li class="param">
                     
-                        <code class="param-name">bodyA</code>
+                        <code class="param-name">bi</code>
                         <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
                     
 
@@ -256,7 +260,7 @@
             
                 <li class="param">
                     
-                        <code class="param-name">bodyB</code>
+                        <code class="param-name">bj</code>
                         <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
                     
 
@@ -303,10 +307,10 @@
                 <div class="index-section methods">
                     <h3>Methods</h3>
 
-                    <ul class="index-list methods">
+                    <ul class="index-list methods extends">
                         
-                            <li class="index-item method">
-                                <a href="#method_update">update</a>
+                            <li class="index-item method inherited">
+                                <a href="#method_updateSpookParams">updateSpookParams</a>
 
                                 
                                 
@@ -320,24 +324,45 @@
                 <div class="index-section properties">
                     <h3>Properties</h3>
 
-                    <ul class="index-list properties">
+                    <ul class="index-list properties extends">
                         
-                            <li class="index-item property">
-                                <a href="#property_bodyA">bodyA</a>
+                            <li class="index-item property inherited">
+                                <a href="#property_bi">bi</a>
 
                                 
                                 
                             </li>
                         
-                            <li class="index-item property">
-                                <a href="#property_bodyB">bodyB</a>
+                            <li class="index-item property inherited">
+                                <a href="#property_bj">bj</a>
 
                                 
                                 
                             </li>
                         
-                            <li class="index-item property">
-                                <a href="#property_equations">equations</a>
+                            <li class="index-item property inherited">
+                                <a href="#property_maxForce">maxForce</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_minForce">minForce</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_relaxation">relaxation</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_stiffness">stiffness</a>
 
                                 
                                 
@@ -357,11 +382,21 @@
                 <h2 class="off-left">Methods</h2>
 
                 
-                    <div id="method_update" class="method item">
-    <h3 class="name"><code>update</code></h3>
+                    <div id="method_updateSpookParams" class="method item inherited">
+    <h3 class="name"><code>updateSpookParams</code></h3>
 
     
-        <span class="paren">()</span>
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>timeStep</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
     
 
     
@@ -381,15 +416,12 @@
     <div class="meta">
         
             
-                
-                <p>
-                
-                Defined in
-                
+                <p>Inherited from
+                <a href="../classes/Equation.html#method_updateSpookParams">Equation</a>:
             
         
         
-        <a href="../files/src_constraints_Constraint.js.html#l36"><code>src&#x2F;constraints&#x2F;Constraint.js:36</code></a>
+        <a href="../files/src_constraints_Equation.js.html#l64"><code>src&#x2F;constraints&#x2F;Equation.js:64</code></a>
         
         </p>
 
@@ -400,10 +432,33 @@
     </div>
 
     <div class="description">
-        <p>To be implemented by subclasses. Should update the internal constraint parameters.</p>
+        <p>Update SPOOK parameters .a, .b and .eps according to the given time step. See equations 9, 10 and 11 in the <a href="http://www8.cs.umu.se/kurser/5DV058/VT09/lectures/spooknotes.pdf">SPOOK notes</a>.</p>
 
     </div>
 
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">timeStep</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
     
 
     
@@ -420,8 +475,8 @@
                 <h2 class="off-left">Properties</h2>
 
                 
-                    <div id="property_bodyA" class="property item">
-    <h3 class="name"><code>bodyA</code></h3>
+                    <div id="property_bi" class="property item inherited">
+    <h3 class="name"><code>bi</code></h3>
     <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
 
     
@@ -435,15 +490,12 @@
     <div class="meta">
         
             
-                
-                <p>
-                
-                Defined in
-                
+                <p>Inherited from
+                <a href="../classes/Equation.html#property_bi">Equation</a>:
             
         
         
-        <a href="../files/src_constraints_Constraint.js.html#l21"><code>src&#x2F;constraints&#x2F;Constraint.js:21</code></a>
+        <a href="../files/src_constraints_Equation.js.html#l28"><code>src&#x2F;constraints&#x2F;Equation.js:28</code></a>
         
         </p>
 
@@ -453,7 +505,7 @@
     </div>
 
     <div class="description">
-        <p>First body participating in the constraint.</p>
+        <p>First body participating in the constraint</p>
 
     </div>
 
@@ -465,8 +517,8 @@
 </div>
 
                 
-                    <div id="property_bodyB" class="property item">
-    <h3 class="name"><code>bodyB</code></h3>
+                    <div id="property_bj" class="property item inherited">
+    <h3 class="name"><code>bj</code></h3>
     <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
 
     
@@ -480,15 +532,12 @@
     <div class="meta">
         
             
-                
-                <p>
-                
-                Defined in
-                
+                <p>Inherited from
+                <a href="../classes/Equation.html#property_bj">Equation</a>:
             
         
         
-        <a href="../files/src_constraints_Constraint.js.html#l28"><code>src&#x2F;constraints&#x2F;Constraint.js:28</code></a>
+        <a href="../files/src_constraints_Equation.js.html#l35"><code>src&#x2F;constraints&#x2F;Equation.js:35</code></a>
         
         </p>
 
@@ -498,7 +547,7 @@
     </div>
 
     <div class="description">
-        <p>Second body participating in the constraint.</p>
+        <p>Second body participating in the constraint</p>
 
     </div>
 
@@ -510,9 +559,9 @@
 </div>
 
                 
-                    <div id="property_equations" class="property item">
-    <h3 class="name"><code>equations</code></h3>
-    <span class="type">Array</span>
+                    <div id="property_maxForce" class="property item inherited">
+    <h3 class="name"><code>maxForce</code></h3>
+    <span class="type">Number</span>
 
     
 
@@ -525,15 +574,12 @@
     <div class="meta">
         
             
-                
-                <p>
-                
-                Defined in
-                
+                <p>Inherited from
+                <a href="../classes/Equation.html#property_maxForce">Equation</a>:
             
         
         
-        <a href="../files/src_constraints_Constraint.js.html#l14"><code>src&#x2F;constraints&#x2F;Constraint.js:14</code></a>
+        <a href="../files/src_constraints_Equation.js.html#l21"><code>src&#x2F;constraints&#x2F;Equation.js:21</code></a>
         
         </p>
 
@@ -543,7 +589,133 @@
     </div>
 
     <div class="description">
-        <p>Equations to be solved in this constraint</p>
+        <p>Max force to apply when solving</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_minForce" class="property item inherited">
+    <h3 class="name"><code>minForce</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Equation.html#property_minForce">Equation</a>:
+            
+        
+        
+        <a href="../files/src_constraints_Equation.js.html#l14"><code>src&#x2F;constraints&#x2F;Equation.js:14</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Minimum force to apply when solving</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_relaxation" class="property item inherited">
+    <h3 class="name"><code>relaxation</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Equation.html#property_relaxation">Equation</a>:
+            
+        
+        
+        <a href="../files/src_constraints_Equation.js.html#l49"><code>src&#x2F;constraints&#x2F;Equation.js:49</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The number of time steps needed to stabilize the constraint equation. Typically between 3 and 5 time steps.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_stiffness" class="property item inherited">
+    <h3 class="name"><code>stiffness</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Equation.html#property_stiffness">Equation</a>:
+            
+        
+        
+        <a href="../files/src_constraints_Equation.js.html#l42"><code>src&#x2F;constraints&#x2F;Equation.js:42</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The stiffness of this equation. Typically chosen to a large number (~1e7), but can be chosen somewhat freely to get a stable simulation.</p>
 
     </div>
 

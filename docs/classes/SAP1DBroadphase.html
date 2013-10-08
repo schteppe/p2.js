@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>IslandSolver - p2.js</title>
+    <title>SAP1DBroadphase - p2.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -144,19 +144,19 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>IslandSolver Class</h1>
+                        <h1>SAP1DBroadphase Class</h1>
 <div class="box meta">
     
 
     
         <div class="extends">
-            Extends <a href="../classes/Solver.html" class="crosslink">Solver</a>
+            Extends <a href="../classes/Broadphase.html" class="crosslink">Broadphase</a>
         </div>
     
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_solver_IslandSolver.js.html#l9"><code>src&#x2F;solver&#x2F;IslandSolver.js:9</code></a>
+            Defined in: <a href="../files/src_collision_SAP1DBroadphase.js.html#l10"><code>src&#x2F;collision&#x2F;SAP1DBroadphase.js:10</code></a>
         </div>
     
 
@@ -168,15 +168,15 @@
 
 
 <div class="box intro">
-    <p>Splits the system of bodies and equations into independent islands</p>
+    <p>Sweep and prune broadphase along one axis.</p>
 
 </div>
 
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_IslandSolver" class="method item">
-    <h3 class="name"><code>IslandSolver</code></h3>
+        <div id="method_SAP1DBroadphase" class="method item">
+    <h3 class="name"><code>SAP1DBroadphase</code></h3>
 
     
         <div class="args">
@@ -184,7 +184,7 @@
             
                 <li class="arg">
                     
-                        <code>subsolver</code>
+                        <code>world</code>
                     
                 </li>
             
@@ -217,7 +217,7 @@
             
         
         
-        <a href="../files/src_solver_IslandSolver.js.html#l9"><code>src&#x2F;solver&#x2F;IslandSolver.js:9</code></a>
+        <a href="../files/src_collision_SAP1DBroadphase.js.html#l10"><code>src&#x2F;collision&#x2F;SAP1DBroadphase.js:10</code></a>
         
         </p>
 
@@ -239,8 +239,8 @@
             
                 <li class="param">
                     
-                        <code class="param-name">subsolver</code>
-                        <span class="type"><a href="../classes/Solver.html" class="crosslink">Solver</a></span>
+                        <code class="param-name">world</code>
+                        <span class="type"><a href="../classes/World.html" class="crosslink">World</a></span>
                     
 
                     
@@ -289,28 +289,28 @@
                     <ul class="index-list methods extends">
                         
                             <li class="index-item method inherited">
-                                <a href="#method_addEquation">addEquation</a>
+                                <a href="#method_boundingRadiusCheck">boundingRadiusCheck</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item method inherited">
-                                <a href="#method_removeAllEquations">removeAllEquations</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method inherited">
-                                <a href="#method_removeEquation">removeEquation</a>
+                                <a href="#method_getCollisionPairs">getCollisionPairs</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item method">
-                                <a href="#method_solve">solve</a>
+                                <a href="#method_sortAxisListX">sortAxisListX</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_sortAxisListY">sortAxisListY</a>
 
                                 
                                 
@@ -326,22 +326,22 @@
 
                     <ul class="index-list properties extends">
                         
-                            <li class="index-item property inherited">
-                                <a href="#property_equations">equations</a>
+                            <li class="index-item property">
+                                <a href="#property_axisIndex">axisIndex</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item property">
-                                <a href="#property_numIslands">numIslands</a>
+                                <a href="#property_axisList">axisList</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item property">
-                                <a href="#property_subsolver">subsolver</a>
+                                <a href="#property_world">world</a>
 
                                 
                                 
@@ -361,8 +361,8 @@
                 <h2 class="off-left">Methods</h2>
 
                 
-                    <div id="method_addEquation" class="method item inherited">
-    <h3 class="name"><code>addEquation</code></h3>
+                    <div id="method_boundingRadiusCheck" class="method item inherited">
+    <h3 class="name"><code>boundingRadiusCheck</code></h3>
 
     
         <div class="args">
@@ -370,7 +370,13 @@
             
                 <li class="arg">
                     
-                        <code>eq</code>
+                        <code>bodyA</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>bodyB</code>
                     
                 </li>
             
@@ -378,6 +384,10 @@
         </div>
     
 
+    
+        <span class="returns-inline">
+            <span class="type">Boolean</span>
+        </span>
     
 
     
@@ -396,11 +406,11 @@
         
             
                 <p>Inherited from
-                <a href="../classes/Solver.html#method_addEquation">Solver</a>:
+                <a href="../classes/Broadphase.html#method_boundingRadiusCheck">Broadphase</a>:
             
         
         
-        <a href="../files/src_solver_Solver.js.html#l23"><code>src&#x2F;solver&#x2F;Solver.js:23</code></a>
+        <a href="../files/src_collision_Broadphase.js.html#l31"><code>src&#x2F;collision&#x2F;Broadphase.js:31</code></a>
         
         </p>
 
@@ -411,7 +421,7 @@
     </div>
 
     <div class="description">
-        <p>Add an equation to be solved.</p>
+        <p>Check whether the bounding radius of two bodies overlap.</p>
 
     </div>
 
@@ -423,8 +433,23 @@
             
                 <li class="param">
                     
-                        <code class="param-name">eq</code>
-                        <span class="type"><a href="../classes/Equation.html" class="crosslink">Equation</a></span>
+                        <code class="param-name">bodyA</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">bodyB</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
                     
 
                     
@@ -441,160 +466,29 @@
     
 
     
+        <div class="returns">
+            <h4>Returns:</h4>
 
-    
-</div>
-
+            <div class="returns-description">
                 
-                    <div id="method_removeAllEquations" class="method item inherited">
-    <h3 class="name"><code>removeAllEquations</code></h3>
-
-    
-        <span class="paren">()</span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/Solver.html#method_removeAllEquations">Solver</a>:
-            
-        
-        
-        <a href="../files/src_solver_Solver.js.html#l45"><code>src&#x2F;solver&#x2F;Solver.js:45</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Remove all currently added equations.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
+                    
+                        <span class="type">Boolean</span>:
+                    
                 
-                    <div id="method_removeEquation" class="method item inherited">
-    <h3 class="name"><code>removeEquation</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>eq</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
+            </div>
         </div>
     
 
     
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/Solver.html#method_removeEquation">Solver</a>:
-            
-        
-        
-        <a href="../files/src_solver_Solver.js.html#l33"><code>src&#x2F;solver&#x2F;Solver.js:33</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Remove an equation.</p>
-
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">eq</code>
-                        <span class="type"><a href="../classes/Equation.html" class="crosslink">Equation</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
 </div>
 
                 
-                    <div id="method_solve" class="method item">
-    <h3 class="name"><code>solve</code></h3>
+                    <div id="method_getCollisionPairs" class="method item">
+    <h3 class="name"><code>getCollisionPairs</code></h3>
 
     
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>dt</code>
-                    
-                </li>
             
                 <li class="arg">
                     
@@ -607,6 +501,10 @@
     
 
     
+        <span class="returns-inline">
+            <span class="type">Array</span>
+        </span>
+    
 
     
 
@@ -622,16 +520,16 @@
 
     <div class="meta">
         
+            <p>Inherited from
+            <a href="../classes/Broadphase.html#method_getCollisionPairs">
+                Broadphase
+            </a>
             
-                
-                <p>
-                
-                Defined in
-                
+            but overwritten in
             
         
         
-        <a href="../files/src_solver_IslandSolver.js.html#l68"><code>src&#x2F;solver&#x2F;IslandSolver.js:68</code></a>
+        <a href="../files/src_collision_SAP1DBroadphase.js.html#l76"><code>src&#x2F;collision&#x2F;SAP1DBroadphase.js:76</code></a>
         
         </p>
 
@@ -642,7 +540,7 @@
     </div>
 
     <div class="description">
-        <p>Solves the full system.</p>
+        <p>Get the colliding pairs</p>
 
     </div>
 
@@ -651,21 +549,6 @@
             <h4>Parameters:</h4>
 
             <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">dt</code>
-                        <span class="type">Number</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
             
                 <li class="param">
                     
@@ -687,6 +570,268 @@
     
 
     
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Array</span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_sortAxisListX" class="method item">
+    <h3 class="name"><code>sortAxisListX</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>bodyA</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>bodyB</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Number</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_collision_SAP1DBroadphase.js.html#l54"><code>src&#x2F;collision&#x2F;SAP1DBroadphase.js:54</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Function for sorting bodies along the X axis. To be passed to array.sort()</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">bodyA</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">bodyB</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Number</span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_sortAxisListY" class="method item">
+    <h3 class="name"><code>sortAxisListY</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>bodyA</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>bodyB</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Number</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_collision_SAP1DBroadphase.js.html#l65"><code>src&#x2F;collision&#x2F;SAP1DBroadphase.js:65</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Function for sorting bodies along the Y axis. To be passed to array.sort()</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">bodyA</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">bodyB</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Number</span>:
+                    
+                
+            </div>
+        </div>
+    
 
     
 </div>
@@ -700,50 +845,8 @@
                 <h2 class="off-left">Properties</h2>
 
                 
-                    <div id="property_equations" class="property item inherited">
-    <h3 class="name"><code>equations</code></h3>
-    <span class="type">Array</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/Solver.html#property_equations">Solver</a>:
-            
-        
-        
-        <a href="../files/src_solver_Solver.js.html#l10"><code>src&#x2F;solver&#x2F;Solver.js:10</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Current equations in the solver.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_numIslands" class="property item">
-    <h3 class="name"><code>numIslands</code></h3>
+                    <div id="property_axisIndex" class="property item">
+    <h3 class="name"><code>axisIndex</code></h3>
     <span class="type">Number</span>
 
     
@@ -765,7 +868,7 @@
             
         
         
-        <a href="../files/src_solver_IslandSolver.js.html#l28"><code>src&#x2F;solver&#x2F;IslandSolver.js:28</code></a>
+        <a href="../files/src_collision_SAP1DBroadphase.js.html#l35"><code>src&#x2F;collision&#x2F;SAP1DBroadphase.js:35</code></a>
         
         </p>
 
@@ -775,7 +878,7 @@
     </div>
 
     <div class="description">
-        <p>Number of islands</p>
+        <p>Axis to sort the bodies along. Set to 0 for x axis, and 1 for y axis. For best performance, choose an axis that the bodies are spread out more on.</p>
 
     </div>
 
@@ -787,9 +890,9 @@
 </div>
 
                 
-                    <div id="property_subsolver" class="property item">
-    <h3 class="name"><code>subsolver</code></h3>
-    <span class="type"><a href="../classes/Solver.html" class="crosslink">Solver</a></span>
+                    <div id="property_axisList" class="property item">
+    <h3 class="name"><code>axisList</code></h3>
+    <span class="type">Array</span>
 
     
 
@@ -810,7 +913,7 @@
             
         
         
-        <a href="../files/src_solver_IslandSolver.js.html#l21"><code>src&#x2F;solver&#x2F;IslandSolver.js:21</code></a>
+        <a href="../files/src_collision_SAP1DBroadphase.js.html#l21"><code>src&#x2F;collision&#x2F;SAP1DBroadphase.js:21</code></a>
         
         </p>
 
@@ -820,7 +923,52 @@
     </div>
 
     <div class="description">
-        <p>The solver used in the workers.</p>
+        <p>List of bodies currently in the broadphase.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_world" class="property item">
+    <h3 class="name"><code>world</code></h3>
+    <span class="type"><a href="../classes/World.html" class="crosslink">World</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_collision_SAP1DBroadphase.js.html#l28"><code>src&#x2F;collision&#x2F;SAP1DBroadphase.js:28</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The world to search in.</p>
 
     </div>
 

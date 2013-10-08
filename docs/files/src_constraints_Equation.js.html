@@ -53,6 +53,8 @@
             
                 <li><a href="../classes/ContactEquation.html">ContactEquation</a></li>
             
+                <li><a href="../classes/ContactMaterial.html">ContactMaterial</a></li>
+            
                 <li><a href="../classes/Convex.html">Convex</a></li>
             
                 <li><a href="../classes/DistanceConstraint.html">DistanceConstraint</a></li>
@@ -71,6 +73,8 @@
             
                 <li><a href="../classes/mat2.html">mat2</a></li>
             
+                <li><a href="../classes/Material.html">Material</a></li>
+            
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
                 <li><a href="../classes/Nearphase.html">Nearphase</a></li>
@@ -81,7 +85,15 @@
             
                 <li><a href="../classes/PointToPointConstraint.html">PointToPointConstraint</a></li>
             
+                <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
+            
+                <li><a href="../classes/QuadTree.html">QuadTree</a></li>
+            
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
+            
+                <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
+            
+                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -148,7 +160,6 @@ module.exports = Equation;
  * @param {number} maxForce Maximum force to apply. Default: 1e6
  */
 function Equation(bi,bj,minForce,maxForce){
-    this.id = -1;
 
     /**
      * Minimum force to apply when solving
@@ -178,29 +189,41 @@ function Equation(bi,bj,minForce,maxForce){
      */
     this.bj = bj;
 
-    this.h = 1/60;
-    this.k = 0;
+    /**
+     * The stiffness of this equation. Typically chosen to a large number (~1e7), but can be chosen somewhat freely to get a stable simulation.
+     * @property stiffness
+     * @type {Number}
+     */
+    this.stiffness = 1e6;
+
+    /**
+     * The number of time steps needed to stabilize the constraint equation. Typically between 3 and 5 time steps.
+     * @property relaxation
+     * @type {Number}
+     */
+    this.relaxation = 4;
+
     this.a = 0;
     this.b = 0;
     this.eps = 0;
-    this.setSpookParams(1e6,4);
+    this.h = 0;
+    this.updateSpookParams(1/60);
 };
 Equation.prototype.constructor = Equation;
 
 /**
- * Set stiffness parameters
- *
- * @method setSpookParams
- * @param  {number} k
- * @param  {number} d
+ * Update SPOOK parameters .a, .b and .eps according to the given time step. See equations 9, 10 and 11 in the &lt;a href=&quot;http://www8.cs.umu.se/kurser/5DV058/VT09/lectures/spooknotes.pdf&quot;&gt;SPOOK notes&lt;/a&gt;.
+ * @method updateSpookParams
+ * @param  {number} timeStep
  */
-Equation.prototype.setSpookParams = function(k,d){
-    var h=this.h;
-    this.k = k;
-    this.d = d;
+Equation.prototype.updateSpookParams = function(timeStep){
+    var k = this.stiffness,
+        d = this.relaxation,
+        h = timeStep;
     this.a = 4.0 / (h * (1 + 4 * d));
     this.b = (4.0 * d) / (1 + 4 * d);
     this.eps = 4.0 / (h * h * k * (1 + 4 * d));
+    this.h = timeStep;
 };
 
     </pre>

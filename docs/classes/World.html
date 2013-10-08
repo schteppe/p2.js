@@ -53,6 +53,8 @@
             
                 <li><a href="../classes/ContactEquation.html">ContactEquation</a></li>
             
+                <li><a href="../classes/ContactMaterial.html">ContactMaterial</a></li>
+            
                 <li><a href="../classes/Convex.html">Convex</a></li>
             
                 <li><a href="../classes/DistanceConstraint.html">DistanceConstraint</a></li>
@@ -71,6 +73,8 @@
             
                 <li><a href="../classes/mat2.html">mat2</a></li>
             
+                <li><a href="../classes/Material.html">Material</a></li>
+            
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
                 <li><a href="../classes/Nearphase.html">Nearphase</a></li>
@@ -81,7 +85,15 @@
             
                 <li><a href="../classes/PointToPointConstraint.html">PointToPointConstraint</a></li>
             
+                <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
+            
+                <li><a href="../classes/QuadTree.html">QuadTree</a></li>
+            
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
+            
+                <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
+            
+                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -144,7 +156,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_world_World.js.html#l31"><code>src&#x2F;world&#x2F;World.js:31</code></a>
+            Defined in: <a href="../files/src_world_World.js.html#l32"><code>src&#x2F;world&#x2F;World.js:32</code></a>
         </div>
     
 
@@ -205,7 +217,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l31"><code>src&#x2F;world&#x2F;World.js:31</code></a>
+        <a href="../files/src_world_World.js.html#l32"><code>src&#x2F;world&#x2F;World.js:32</code></a>
         
         </p>
 
@@ -338,6 +350,13 @@
                             </li>
                         
                             <li class="index-item method">
+                                <a href="#method_addContactMaterial">addContactMaterial</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
                                 <a href="#method_addSpring">addSpring</a>
 
                                 
@@ -352,7 +371,28 @@
                             </li>
                         
                             <li class="index-item method">
+                                <a href="#method_clone">clone</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
                                 <a href="#method_fromJSON">fromJSON</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_getContactMaterial">getContactMaterial</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_hitTest">hitTest</a>
 
                                 
                                 
@@ -404,6 +444,13 @@
                     <ul class="index-list properties extends">
                         
                             <li class="index-item property">
+                                <a href="#property_applySpringForces">applySpringForces</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
                                 <a href="#property_bodies">bodies</a>
 
                                 
@@ -425,14 +472,21 @@
                             </li>
                         
                             <li class="index-item property">
-                                <a href="#property_doPofiling">doPofiling</a>
+                                <a href="#property_contactMaterials">contactMaterials</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item property">
-                                <a href="#property_friction">friction</a>
+                                <a href="#property_defaultFriction">defaultFriction</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_doPofiling">doPofiling</a>
 
                                 
                                 
@@ -536,7 +590,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l398"><code>src&#x2F;world&#x2F;World.js:398</code></a>
+        <a href="../files/src_world_World.js.html#l462"><code>src&#x2F;world&#x2F;World.js:462</code></a>
         
         </p>
 
@@ -624,7 +678,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l152"><code>src&#x2F;world&#x2F;World.js:152</code></a>
+        <a href="../files/src_world_World.js.html#l167"><code>src&#x2F;world&#x2F;World.js:167</code></a>
         
         </p>
 
@@ -649,6 +703,94 @@
                     
                         <code class="param-name">c</code>
                         <span class="type"><a href="../classes/Constraint.html" class="crosslink">Constraint</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_addContactMaterial" class="method item">
+    <h3 class="name"><code>addContactMaterial</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>contactMaterial</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_World.js.html#l178"><code>src&#x2F;world&#x2F;World.js:178</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Add a ContactMaterial to the simulation.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">contactMaterial</code>
+                        <span class="type"><a href="../classes/ContactMaterial.html" class="crosslink">ContactMaterial</a></span>
                     
 
                     
@@ -712,7 +854,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l374"><code>src&#x2F;world&#x2F;World.js:374</code></a>
+        <a href="../files/src_world_World.js.html#l438"><code>src&#x2F;world&#x2F;World.js:438</code></a>
         
         </p>
 
@@ -790,7 +932,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l632"><code>src&#x2F;world&#x2F;World.js:632</code></a>
+        <a href="../files/src_world_World.js.html#l715"><code>src&#x2F;world&#x2F;World.js:715</code></a>
         
         </p>
 
@@ -807,6 +949,77 @@
 
     
 
+    
+
+    
+</div>
+
+                
+                    <div id="method_clone" class="method item">
+    <h3 class="name"><code>clone</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/World.html" class="crosslink">World</a></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_World.js.html#l741"><code>src&#x2F;world&#x2F;World.js:741</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Get a copy of this World instance</p>
+
+    </div>
+
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/World.html" class="crosslink">World</a></span>:
+                    
+                
+            </div>
+        </div>
     
 
     
@@ -859,7 +1072,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l537"><code>src&#x2F;world&#x2F;World.js:537</code></a>
+        <a href="../files/src_world_World.js.html#l611"><code>src&#x2F;world&#x2F;World.js:611</code></a>
         
         </p>
 
@@ -919,6 +1132,284 @@
 </div>
 
                 
+                    <div id="method_getContactMaterial" class="method item">
+    <h3 class="name"><code>getContactMaterial</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>materialA</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>materialB</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/ContactMaterial.html" class="crosslink">ContactMaterial</a></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_World.js.html#l187"><code>src&#x2F;world&#x2F;World.js:187</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Get a contact material given two materials</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">materialA</code>
+                        <span class="type"><a href="../classes/Material.html" class="crosslink">Material</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">materialB</code>
+                        <span class="type"><a href="../classes/Material.html" class="crosslink">Material</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/ContactMaterial.html" class="crosslink">ContactMaterial</a></span>:
+                    
+                    <p>The matching ContactMaterial, or false on fail.</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_hitTest" class="method item">
+    <h3 class="name"><code>hitTest</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>worldPoint</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>bodies</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>precision</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Array</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_World.js.html#l756"><code>src&#x2F;world&#x2F;World.js:756</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Test if a world point overlaps bodies</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">worldPoint</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>Point to use for intersection tests</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">bodies</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>A list of objects to check for intersection</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">precision</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>Used for matching against particles and lines. Adds some margin to these infinitesimal objects.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Array</span>:
+                    
+                    <p>Array of bodies that overlap the point</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
                     <div id="method_removeBody" class="method item">
     <h3 class="name"><code>removeBody</code></h3>
 
@@ -961,7 +1452,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l410"><code>src&#x2F;world&#x2F;World.js:410</code></a>
+        <a href="../files/src_world_World.js.html#l474"><code>src&#x2F;world&#x2F;World.js:474</code></a>
         
         </p>
 
@@ -1049,7 +1540,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l163"><code>src&#x2F;world&#x2F;World.js:163</code></a>
+        <a href="../files/src_world_World.js.html#l206"><code>src&#x2F;world&#x2F;World.js:206</code></a>
         
         </p>
 
@@ -1137,7 +1628,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l386"><code>src&#x2F;world&#x2F;World.js:386</code></a>
+        <a href="../files/src_world_World.js.html#l450"><code>src&#x2F;world&#x2F;World.js:450</code></a>
         
         </p>
 
@@ -1231,7 +1722,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l187"><code>src&#x2F;world&#x2F;World.js:187</code></a>
+        <a href="../files/src_world_World.js.html#l229"><code>src&#x2F;world&#x2F;World.js:229</code></a>
         
         </p>
 
@@ -1330,7 +1821,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l422"><code>src&#x2F;world&#x2F;World.js:422</code></a>
+        <a href="../files/src_world_World.js.html#l486"><code>src&#x2F;world&#x2F;World.js:486</code></a>
         
         </p>
 
@@ -1373,6 +1864,51 @@
                 <h2 class="off-left">Properties</h2>
 
                 
+                    <div id="property_applySpringForces" class="property item">
+    <h3 class="name"><code>applySpringForces</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_World.js.html#l134"><code>src&#x2F;world&#x2F;World.js:134</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Enable to automatically apply spring forces each step.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
                     <div id="property_bodies" class="property item">
     <h3 class="name"><code>bodies</code></h3>
     <span class="type">Array</span>
@@ -1396,7 +1932,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l55"><code>src&#x2F;world&#x2F;World.js:55</code></a>
+        <a href="../files/src_world_World.js.html#l56"><code>src&#x2F;world&#x2F;World.js:56</code></a>
         
         </p>
 
@@ -1441,7 +1977,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l103"><code>src&#x2F;world&#x2F;World.js:103</code></a>
+        <a href="../files/src_world_World.js.html#l104"><code>src&#x2F;world&#x2F;World.js:104</code></a>
         
         </p>
 
@@ -1486,7 +2022,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l111"><code>src&#x2F;world&#x2F;World.js:111</code></a>
+        <a href="../files/src_world_World.js.html#l112"><code>src&#x2F;world&#x2F;World.js:112</code></a>
         
         </p>
 
@@ -1497,6 +2033,96 @@
 
     <div class="description">
         <p>User-added constraints.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_contactMaterials" class="property item">
+    <h3 class="name"><code>contactMaterials</code></h3>
+    <span class="type">Array</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_World.js.html#l141"><code>src&#x2F;world&#x2F;World.js:141</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The ContactMaterials added to the World.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_defaultFriction" class="property item">
+    <h3 class="name"><code>defaultFriction</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_World.js.html#l120"><code>src&#x2F;world&#x2F;World.js:120</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Friction between colliding bodies. This value is used if no matching ContactMaterial is found for the body pair.</p>
 
     </div>
 
@@ -1531,7 +2157,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l87"><code>src&#x2F;world&#x2F;World.js:87</code></a>
+        <a href="../files/src_world_World.js.html#l88"><code>src&#x2F;world&#x2F;World.js:88</code></a>
         
         </p>
 
@@ -1542,51 +2168,6 @@
 
     <div class="description">
         <p>Whether to do timing measurements during the step() or not.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_friction" class="property item">
-    <h3 class="name"><code>friction</code></h3>
-    <span class="type">Number</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_world_World.js.html#l119"><code>src&#x2F;world&#x2F;World.js:119</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Friction between all bodies. Should in the future be replaced by per-body material properties.</p>
 
     </div>
 
@@ -1621,7 +2202,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l95"><code>src&#x2F;world&#x2F;World.js:95</code></a>
+        <a href="../files/src_world_World.js.html#l96"><code>src&#x2F;world&#x2F;World.js:96</code></a>
         
         </p>
 
@@ -1666,7 +2247,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l79"><code>src&#x2F;world&#x2F;World.js:79</code></a>
+        <a href="../files/src_world_World.js.html#l80"><code>src&#x2F;world&#x2F;World.js:80</code></a>
         
         </p>
 
@@ -1711,7 +2292,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l126"><code>src&#x2F;world&#x2F;World.js:126</code></a>
+        <a href="../files/src_world_World.js.html#l127"><code>src&#x2F;world&#x2F;World.js:127</code></a>
         
         </p>
 
@@ -1756,7 +2337,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l71"><code>src&#x2F;world&#x2F;World.js:71</code></a>
+        <a href="../files/src_world_World.js.html#l72"><code>src&#x2F;world&#x2F;World.js:72</code></a>
         
         </p>
 
@@ -1801,7 +2382,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l63"><code>src&#x2F;world&#x2F;World.js:63</code></a>
+        <a href="../files/src_world_World.js.html#l64"><code>src&#x2F;world&#x2F;World.js:64</code></a>
         
         </p>
 
@@ -1846,7 +2427,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l47"><code>src&#x2F;world&#x2F;World.js:47</code></a>
+        <a href="../files/src_world_World.js.html#l48"><code>src&#x2F;world&#x2F;World.js:48</code></a>
         
         </p>
 

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Particle - p2.js</title>
+    <title>src/material/ContactMaterial.js - p2.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -144,124 +144,93 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>Particle Class</h1>
-<div class="box meta">
-    
+                        <h1 class="file-heading">File: src/material/ContactMaterial.js</h1>
 
-    
-        <div class="extends">
-            Extends <a href="../classes/Shape.html" class="crosslink">Shape</a>
-        </div>
-    
+<div class="file">
+    <pre class="code prettyprint linenums">
+module.exports = ContactMaterial;
 
-    
-        <div class="foundat">
-            Defined in: <a href="../files/src_shapes_Particle.js.html#l5"><code>src&#x2F;shapes&#x2F;Particle.js:5</code></a>
-        </div>
-    
+var idCounter = 0;
 
-    
+/**
+ * Defines a physics material.
+ * @class ContactMaterial
+ * @constructor
+ * @param {Material} materialA
+ * @param {Material} materialB
+ * @param {Object}   [options]
+ * @param {Number}   options.friction
+ * @param {Number}   options.restitution
+ * @author schteppe
+ */
+function ContactMaterial(materialA, materialB, options){
+    options = options || {};
 
-    
-</div>
+    /**
+     * The contact material identifier
+     * @property id
+     * @type {Number}
+     */
+    this.id = idCounter++;
 
+    /**
+     * First material participating in the contact material
+     * @property materialA
+     * @type {Material}
+     */
+    this.materialA = materialA;
 
+    /**
+     * Second material participating in the contact material
+     * @property materialB
+     * @type {Material}
+     */
+    this.materialB = materialB;
 
-<div class="box intro">
-    <p>Particle shape class.</p>
+    /**
+     * Friction to use in the contact of these two materials
+     * @property friction
+     * @type {Number}
+     */
+    this.friction    =  typeof(options.friction)    !== &quot;undefined&quot; ?   Number(options.friction)    : 0.3;
 
-</div>
+    /**
+     * Restitution to use in the contact of these two materials
+     * @property restitution
+     * @type {Number}
+     */
+    this.restitution =  typeof(options.restitution) !== &quot;undefined&quot; ?   Number(options.restitution) : 0.3;
 
+    /**
+     * Stiffness of the resulting ContactEquation that this ContactMaterial generate
+     * @property stiffness
+     * @type {Number}
+     */
+    this.stiffness =            typeof(options.stiffness)           !== &quot;undefined&quot; ?   Number(options.stiffness)   : 1e7;
 
-    <div class="constructor">
-        <h2>Constructor</h2>
-        <div id="method_Particle" class="method item">
-    <h3 class="name"><code>Particle</code></h3>
+    /**
+     * Relaxation of the resulting ContactEquation that this ContactMaterial generate
+     * @property relaxation
+     * @type {Number}
+     */
+    this.relaxation =           typeof(options.relaxation)          !== &quot;undefined&quot; ?   Number(options.relaxation)  : 3;
 
-    
-        <span class="paren">()</span>
-    
+    /**
+     * Stiffness of the resulting FrictionEquation that this ContactMaterial generate
+     * @property frictionStiffness
+     * @type {Number}
+     */
+    this.frictionStiffness =    typeof(options.frictionStiffness)   !== &quot;undefined&quot; ?   Number(options.frictionStiffness)   : 1e7;
 
-    
+    /**
+     * Relaxation of the resulting FrictionEquation that this ContactMaterial generate
+     * @property frictionRelaxation
+     * @type {Number}
+     */
+    this.frictionRelaxation =   typeof(options.frictionRelaxation)  !== &quot;undefined&quot; ?   Number(options.frictionRelaxation)  : 3;
+};
 
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_shapes_Particle.js.html#l5"><code>src&#x2F;shapes&#x2F;Particle.js:5</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-    </div>
-
-
-<div id="classdocs" class="tabview">
-    <ul class="api-class-tabs">
-        <li class="api-class-tab index"><a href="#index">Index</a></li>
-
-        
-        
-        
-        
-    </ul>
-
-    <div>
-        <div id="index" class="api-class-tabpanel index">
-            <h2 class="off-left">Item Index</h2>
-
-            
-
-            
-
-            
-
-            
-        </div>
-
-        
-
-        
-
-        
-
-        
-    </div>
+    </pre>
 </div>
 
                     </div>

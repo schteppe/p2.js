@@ -53,6 +53,8 @@
             
                 <li><a href="../classes/ContactEquation.html">ContactEquation</a></li>
             
+                <li><a href="../classes/ContactMaterial.html">ContactMaterial</a></li>
+            
                 <li><a href="../classes/Convex.html">Convex</a></li>
             
                 <li><a href="../classes/DistanceConstraint.html">DistanceConstraint</a></li>
@@ -71,6 +73,8 @@
             
                 <li><a href="../classes/mat2.html">mat2</a></li>
             
+                <li><a href="../classes/Material.html">Material</a></li>
+            
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
                 <li><a href="../classes/Nearphase.html">Nearphase</a></li>
@@ -81,7 +85,15 @@
             
                 <li><a href="../classes/PointToPointConstraint.html">PointToPointConstraint</a></li>
             
+                <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
+            
+                <li><a href="../classes/QuadTree.html">QuadTree</a></li>
+            
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
+            
+                <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
+            
+                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -138,6 +150,7 @@
     <pre class="code prettyprint linenums">
 var Constraint = require(&#x27;./Constraint&#x27;)
 ,   ContactEquation = require(&#x27;./ContactEquation&#x27;)
+,   RotationalVelocityEquation = require(&#x27;./RotationalVelocityEquation&#x27;)
 ,   vec2 = require(&#x27;../math/vec2&#x27;)
 
 module.exports = PointToPointConstraint;
@@ -153,6 +166,7 @@ module.exports = PointToPointConstraint;
  * @param {Float32Array}    pivotB See pivotA.
  * @param {Number}          maxForce The maximum force that should be applied to constrain the bodies.
  * @extends {Constraint}
+ * @todo Ability to specify world points
  */
 function PointToPointConstraint(bodyA, pivotA, bodyB, pivotB, maxForce){
     Constraint.call(this,bodyA,bodyB);
@@ -173,6 +187,9 @@ function PointToPointConstraint(bodyA, pivotA, bodyB, pivotB, maxForce){
 
     tangent.minForce = normal.minForce = -maxForce;
     tangent.maxForce = normal.maxForce =  maxForce;
+
+    this.motorEquation = null;
+    this.motorVelocity = 1; // rad/s
 }
 PointToPointConstraint.prototype = new Constraint();
 
@@ -193,6 +210,38 @@ PointToPointConstraint.prototype.update = function(){
     vec2.rotate(tangent.ni, normal.ni, Math.PI / 2);
     vec2.copy(tangent.ri, normal.ri);
     vec2.copy(tangent.rj, normal.rj);
+};
+
+/**
+ * Enable the rotational motor
+ * @method enableMotor
+ */
+PointToPointConstraint.prototype.enableMotor = function(){
+    if(this.motorEquation) return;
+    this.motorEquation = new RotationalVelocityEquation(this.bodyA,this.bodyB);
+    this.equations.push(this.motorEquation);
+};
+
+/**
+ * Disable the rotational motor
+ * @method disableMotor
+ */
+PointToPointConstraint.prototype.disableMotor = function(){
+    if(!this.motorEquation) return;
+    var i = this.equations.indexOf(this.motorEquation);
+    this.motorEquation = null;
+    this.equations.splice(i,1);
+};
+
+/**
+ * Set the speed of the rotational constraint motor
+ * @method setMotorSpeed
+ * @param  {Number} speed
+ */
+PointToPointConstraint.prototype.setMotorSpeed = function(speed){
+    if(!this.motorEquation) return;
+    var i = this.equations.indexOf(this.motorEquation);
+    this.equations[i].relativeVelocity = speed;
 };
 
     </pre>

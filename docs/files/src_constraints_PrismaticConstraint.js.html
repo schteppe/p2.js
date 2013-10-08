@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Particle - p2.js</title>
+    <title>src/constraints/PrismaticConstraint.js - p2.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -144,124 +144,95 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>Particle Class</h1>
-<div class="box meta">
-    
+                        <h1 class="file-heading">File: src/constraints/PrismaticConstraint.js</h1>
 
-    
-        <div class="extends">
-            Extends <a href="../classes/Shape.html" class="crosslink">Shape</a>
-        </div>
-    
+<div class="file">
+    <pre class="code prettyprint linenums">
+var Constraint = require(&#x27;./Constraint&#x27;)
+,   ContactEquation = require(&#x27;./ContactEquation&#x27;)
+,   vec2 = require(&#x27;../math/vec2&#x27;)
 
-    
-        <div class="foundat">
-            Defined in: <a href="../files/src_shapes_Particle.js.html#l5"><code>src&#x2F;shapes&#x2F;Particle.js:5</code></a>
-        </div>
-    
+module.exports = PrismaticConstraint;
 
-    
+/**
+ * Constraint that only allows translation along a line between the bodies, no rotation
+ *
+ * @class PrismaticConstraint
+ * @constructor
+ * @author schteppe
+ * @param {Body}    bodyA
+ * @param {Body}    bodyB
+ * @param {Object}  options
+ * @param {Number}  options.maxForce
+ * @param {Array}   options.worldAxis
+ * @param {Array}   options.localAxisA
+ * @param {Array}   options.localAxisB
+ * @extends {Constraint}
+ */
+function PrismaticConstraint(bodyA,bodyB,options){
+    options = options || {};
+    Constraint.call(this,bodyA,bodyB);
 
-    
-</div>
+    var maxForce = this.maxForce = typeof(options.maxForce)===&quot;undefined&quot; ? options.maxForce : 1e6;
 
+    // Equations to be fed to the solver
+    var eqs = this.equations = [
+        new ContactEquation(bodyA,bodyB), // Tangent for bodyA
+        new ContactEquation(bodyB,bodyA), // Tangent for bodyB
+    ];
 
+    var tangentA = eqs[0],
+        tangentB = eqs[1];
 
-<div class="box intro">
-    <p>Particle shape class.</p>
+    tangentA.minForce = tangentB.minForce = -maxForce;
+    tangentA.maxForce = tangentB.maxForce =  maxForce;
 
-</div>
+    var worldAxis = vec2.create();
+    if(options.worldAxis){
+        vec2.copy(worldAxis, options.worldAxis);
+    } else {
+        vec2.sub(worldAxis, bodyB.position, bodyA.position);
+    }
+    vec2.normalize(worldAxis,worldAxis);
 
+    // Axis that is local in each body
+    this.localAxisA = vec2.create();
+    this.localAxisB = vec2.create();
+    if(options.localAxisA) vec2.copy(this.localAxisA, options.localAxisA);
+    else                   vec2.rotate(this.localAxisA, worldAxis, -bodyA.angle);
 
-    <div class="constructor">
-        <h2>Constructor</h2>
-        <div id="method_Particle" class="method item">
-    <h3 class="name"><code>Particle</code></h3>
+    if(options.localAxisB)  vec2.copy(this.localAxisB, options.localAxisB);
+    else                    vec2.rotate(this.localAxisB, worldAxis, -bodyB.angle);
+}
 
-    
-        <span class="paren">()</span>
-    
+PrismaticConstraint.prototype = new Constraint();
 
-    
+/**
+ * Update the constraint equations. Should be done if any of the bodies changed position, before solving.
+ * @method update
+ */
+PrismaticConstraint.prototype.update = function(){
+    var tangentA = this.equations[0],
+        tangentB = this.equations[1],
+        bodyA = this.bodyA,
+        bodyB = this.bodyB;
 
-    
+    // Get tangent directions
+    vec2.rotate(tangentA.ni, this.localAxisA, bodyA.angle - Math.PI/2);
+    vec2.rotate(tangentB.ni, this.localAxisB, bodyB.angle + Math.PI/2);
 
-    
+    // Get distance vector
+    var dist = vec2.create();
+    vec2.sub(dist, bodyB.position, bodyA.position);
+    vec2.scale(tangentA.ri, tangentA.ni, -vec2.dot(tangentA.ni, dist));
+    vec2.scale(tangentB.ri, tangentB.ni,  vec2.dot(tangentB.ni, dist));
+    vec2.add(tangentA.rj, tangentA.ri, dist);
+    vec2.sub(tangentB.rj, tangentB.ri, dist);
+    vec2.set(tangentA.ri, 0, 0);
+    vec2.set(tangentB.ri, 0, 0);
+};
 
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_shapes_Particle.js.html#l5"><code>src&#x2F;shapes&#x2F;Particle.js:5</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-    </div>
-
-
-<div id="classdocs" class="tabview">
-    <ul class="api-class-tabs">
-        <li class="api-class-tab index"><a href="#index">Index</a></li>
-
-        
-        
-        
-        
-    </ul>
-
-    <div>
-        <div id="index" class="api-class-tabpanel index">
-            <h2 class="off-left">Item Index</h2>
-
-            
-
-            
-
-            
-
-            
-        </div>
-
-        
-
-        
-
-        
-
-        
-    </div>
+    </pre>
 </div>
 
                     </div>

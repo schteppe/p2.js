@@ -53,6 +53,8 @@
             
                 <li><a href="../classes/ContactEquation.html">ContactEquation</a></li>
             
+                <li><a href="../classes/ContactMaterial.html">ContactMaterial</a></li>
+            
                 <li><a href="../classes/Convex.html">Convex</a></li>
             
                 <li><a href="../classes/DistanceConstraint.html">DistanceConstraint</a></li>
@@ -71,6 +73,8 @@
             
                 <li><a href="../classes/mat2.html">mat2</a></li>
             
+                <li><a href="../classes/Material.html">Material</a></li>
+            
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
                 <li><a href="../classes/Nearphase.html">Nearphase</a></li>
@@ -81,7 +85,15 @@
             
                 <li><a href="../classes/PointToPointConstraint.html">PointToPointConstraint</a></li>
             
+                <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
+            
+                <li><a href="../classes/QuadTree.html">QuadTree</a></li>
+            
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
+            
+                <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
+            
+                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -150,7 +162,6 @@ module.exports = Convex;
  * @param {Array} vertices An array of Float32Array vertices that span this shape. Vertices are given in counter-clockwise (CCW) direction.
  */
 function Convex(vertices){
-    Shape.call(this,Shape.CONVEX);
 
     /**
      * Vertices defined in the local frame.
@@ -185,6 +196,8 @@ function Convex(vertices){
      */
     this.boundingRadius = 0;
     this.updateBoundingRadius();
+
+    Shape.call(this,Shape.CONVEX);
 };
 Convex.prototype = new Shape();
 
@@ -339,12 +352,15 @@ Convex.prototype.computeMomentOfInertia = function(mass){
 Convex.prototype.updateBoundingRadius = function(){
     var verts = this.vertices,
         r2 = 0;
-    for(var i=0; i&lt;verts.length; i++){
+
+    for(var i=0; i!==verts.length; i++){
         var l2 = vec2.squaredLength(verts[i]);
         if(l2 &gt; r2) r2 = l2;
     }
+
     this.boundingRadius = Math.sqrt(r2);
 };
+
 
     </pre>
 </div>

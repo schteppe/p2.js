@@ -53,6 +53,8 @@
             
                 <li><a href="../classes/ContactEquation.html">ContactEquation</a></li>
             
+                <li><a href="../classes/ContactMaterial.html">ContactMaterial</a></li>
+            
                 <li><a href="../classes/Convex.html">Convex</a></li>
             
                 <li><a href="../classes/DistanceConstraint.html">DistanceConstraint</a></li>
@@ -71,6 +73,8 @@
             
                 <li><a href="../classes/mat2.html">mat2</a></li>
             
+                <li><a href="../classes/Material.html">Material</a></li>
+            
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
                 <li><a href="../classes/Nearphase.html">Nearphase</a></li>
@@ -81,7 +85,15 @@
             
                 <li><a href="../classes/PointToPointConstraint.html">PointToPointConstraint</a></li>
             
+                <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
+            
+                <li><a href="../classes/QuadTree.html">QuadTree</a></li>
+            
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
+            
+                <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
+            
+                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -145,6 +157,33 @@ module.exports = Shape;
  */
 function Shape(type){
     this.type = type;
+    this.boundingRadius = 0;
+
+    /**
+     * Collision group that this shape belongs to (bit mask). See &lt;a href=&quot;http://www.aurelienribon.com/blog/2011/07/box2d-tutorial-collision-filtering/&quot;&gt;this tutorial&lt;/a&gt;.
+     * @property collisionGroup
+     * @type {Number}
+     * @example
+     *     if(shapeA.collisionGroup &amp; shapeB.collisionMask)!=0 &amp;&amp; (shapeB.collisionGroup &amp; shapeA.collisionMask)!=0){
+     *         // The shapes will collide
+     *     }
+     */
+    this.collisionGroup = 1;
+
+    /**
+     * Collision mask of this shape.
+     * @property collisionMask
+     * @type {Number}
+     */
+    this.collisionMask =  1;
+    if(type) this.updateBoundingRadius();
+
+    /**
+     * Material to use in collisions for this Shape
+     * @property material
+     * @type {Material} Either a Material instance or null.
+     */
+    this.material = null;
 };
 
 Shape.CIRCLE =      1;
@@ -163,6 +202,10 @@ Shape.CAPSULE =     64;
  */
 Shape.prototype.computeMomentOfInertia = function(mass){
     throw new Error(&quot;Shape.computeMomentOfInertia is not implemented in this Shape...&quot;);
+};
+
+Shape.prototype.updateBoundingRadius = function(){
+    throw new Error(&quot;Shape.updateBoundingRadius is not implemented in this Shape...&quot;);
 };
 
     </pre>

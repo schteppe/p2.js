@@ -53,6 +53,8 @@
             
                 <li><a href="../classes/ContactEquation.html">ContactEquation</a></li>
             
+                <li><a href="../classes/ContactMaterial.html">ContactMaterial</a></li>
+            
                 <li><a href="../classes/Convex.html">Convex</a></li>
             
                 <li><a href="../classes/DistanceConstraint.html">DistanceConstraint</a></li>
@@ -71,6 +73,8 @@
             
                 <li><a href="../classes/mat2.html">mat2</a></li>
             
+                <li><a href="../classes/Material.html">Material</a></li>
+            
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
                 <li><a href="../classes/Nearphase.html">Nearphase</a></li>
@@ -81,7 +85,15 @@
             
                 <li><a href="../classes/PointToPointConstraint.html">PointToPointConstraint</a></li>
             
+                <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
+            
+                <li><a href="../classes/QuadTree.html">QuadTree</a></li>
+            
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
+            
+                <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
+            
+                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -150,9 +162,10 @@ module.exports = Capsule;
  * @param {Number} radius Radius of the capsule
  */
 function Capsule(length,radius){
-    Shape.call(this,Shape.CAPSULE);
     this.length = length || 1;
     this.radius = radius || 1;
+
+    Shape.call(this,Shape.CAPSULE);
 };
 Capsule.prototype = new Shape();
 
@@ -169,6 +182,10 @@ Capsule.prototype.computeMomentOfInertia = function(mass){
         w = this.length + r, // 2*r is too much, 0 is too little
         h = r*2;
     return mass * (h*h + w*w) / 12;
+};
+
+Capsule.prototype.updateBoundingRadius = function(){
+    this.boundingRadius = this.radius + this.length/2;
 };
 
     </pre>
