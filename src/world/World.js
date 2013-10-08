@@ -138,6 +138,13 @@ function World(options){
      */
     this.applySpringForces = true;
 
+    /**
+     * The ContactMaterials added to the World.
+     * @property contactMaterials
+     * @type {Array}
+     */
+    this.contactMaterials = [];
+
     // Id counters
     this._constraintIdCounter = 0;
     this._bodyIdCounter = 0;
@@ -166,6 +173,34 @@ World.prototype = new Object(EventEmitter.prototype);
 World.prototype.addConstraint = function(c){
     this.constraints.push(c);
     c.id = this._constraintIdCounter++;
+};
+
+/**
+ * Add a ContactMaterial to the simulation.
+ * @method addContactMaterial
+ * @param {ContactMaterial} contactMaterial
+ */
+World.prototype.addContactMaterial = function(contactMaterial){
+    this.contactMaterials.push(contactMaterial);
+};
+
+/**
+ * Get a contact material given two materials
+ * @method getContactMaterial
+ * @param {Material} materialA
+ * @param {Material} materialB
+ * @return {ContactMaterial} The matching ContactMaterial, or false on fail.
+ * @todo Use faster hash map to lookup from material id's
+ */
+World.prototype.getContactMaterial = function(materialA,materialB){
+    var cmats = this.contactMaterials;
+    for(var i=0, N=cmats.length; i!==N; i++){
+        var cm = cmats[i];
+        if( (cm.materialA === materialA) && (cm.materialB === materialB) ||
+            (cm.materialA === materialB) && (cm.materialB === materialA) )
+            return cm;
+    }
+    return false;
 };
 
 /**
@@ -247,14 +282,6 @@ World.prototype.step = function(dt){
         var bi = result[i],
             bj = result[i+1];
 
-        var reducedMass = (bi.invMass + bj.invMass);
-        if(reducedMass > 0)
-            reducedMass = 1/reducedMass;
-
-        var mu = this.defaultFriction; // Todo: Should be looked up in a material table
-        var mug = mu * glen * reducedMass;
-        var doFriction = mu>0;
-
         // Loop over all shapes of body i
         for(var k=0; k<bi.shapes.length; k++){
             var si = bi.shapes[k],
@@ -269,6 +296,22 @@ World.prototype.step = function(dt){
 
                 if(!((si.collisionGroup & sj.collisionMask) !== 0 && (sj.collisionGroup & si.collisionMask) !== 0))
                     continue;
+
+                var reducedMass = (bi.invMass + bj.invMass);
+                if(reducedMass > 0)
+                    reducedMass = 1/reducedMass;
+
+                var mu = this.defaultFriction;
+
+                if(si.material && sj.material){
+                    var cm = this.getContactMaterial(si.material,sj.material);
+                    if(cm){
+                        mu = cm.friction;
+                    }
+                }
+
+                var mug = mu * glen * reducedMass,
+                    doFriction = mu > 0;
 
                 // Get world position and angle of each shape
                 rotate(xiw, xi, bi.angle);

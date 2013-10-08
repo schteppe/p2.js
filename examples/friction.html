@@ -17,7 +17,8 @@
             gravity : [0,-10],
         });
 
-        var shape = new p2.Circle(1);
+        var shape = new p2.Circle(0.5);
+        shape.material = new p2.Material();
         var p = new p2.Body({
             mass: 1,
             position: [0, 1.5],
@@ -25,13 +26,34 @@
         p.addShape(shape);
         world.addBody(p);
 
+        var slipperyShape = new p2.Circle(0.5);
+        slipperyShape.material = new p2.Material();
+        var p = new p2.Body({
+            mass: 1,
+            position: [-1.5, 1.5],
+        });
+        p.addShape(slipperyShape);
+        world.addBody(p);
+
         // Create ground
         var planeShape = new p2.Plane();
+        planeShape.material = new p2.Material();
         var plane = new p2.Body({
-            angle:Math.PI/4,
+            angle:Math.PI/16,
         });
         plane.addShape(planeShape);
         world.addBody(plane);
+
+        // Create ContactMaterial
+        var cm = new p2.ContactMaterial(planeShape.material, shape.material, {
+            friction : 0.1,
+        });
+        world.addContactMaterial(cm);
+
+        var slipperyContactMaterial = new p2.ContactMaterial(planeShape.material, slipperyShape.material, {
+            friction : 0.0,
+        });
+        world.addContactMaterial(slipperyContactMaterial);
 
         var demo = new PixiDemo(world);
 

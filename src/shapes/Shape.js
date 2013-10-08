@@ -27,6 +27,13 @@ function Shape(type){
      */
     this.collisionMask =  1;
     if(type) this.updateBoundingRadius();
+
+    /**
+     * Material to use in collisions for this Shape
+     * @property material
+     * @type {Material} Either a Material instance or null.
+     */
+    this.material = null;
 };
 
 Shape.CIRCLE =      1;
