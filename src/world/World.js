@@ -331,6 +331,7 @@ World.prototype.step = function(dt){
                     else if(sj instanceof Rectangle)np.circleConvex  (bi,si,xiw,aiw, bj,sj,xjw,ajw);
                     else if(sj instanceof Convex)   np.circleConvex  (bi,si,xiw,aiw, bj,sj,xjw,ajw);
                     else if(sj instanceof Line)     np.circleLine    (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+                    else if(sj instanceof Capsule)  np.circleCapsule (bi,si,xiw,aiw, bj,sj,xjw,ajw);
 
                 } else if(si instanceof Particle){
                          if(sj instanceof Circle)   np.circleParticle(bj,sj,xjw,ajw, bi,si,xiw,aiw);
@@ -366,6 +367,7 @@ World.prototype.step = function(dt){
 
                 } else if(si instanceof Capsule){
                          if(sj instanceof Plane)    np.capsulePlane   (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+                         if(sj instanceof Circle)   np.circleCapsule  (bj,sj,xjw,ajw, bi,si,xiw,aiw);
 
                 }
             }

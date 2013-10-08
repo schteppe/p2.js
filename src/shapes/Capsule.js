@@ -35,5 +35,5 @@ Capsule.prototype.computeMomentOfInertia = function(mass){
 };
 
 Capsule.prototype.updateBoundingRadius = function(){
-    this.boundingRadius = this.radius + this.length;
+    this.boundingRadius = this.radius + this.length/2;
 };

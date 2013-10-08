@@ -84,6 +84,7 @@
         add(particle,line);
         add(line,line);
         add(capsule);
+        add(circle,capsule);
 
         for(var i=0; i<world.bodies.length; i++){
             world.bodies[i].position[0] -= (numAdded-1)*dist / 2;

@@ -209,7 +209,7 @@ Nearphase.prototype.planeLine = function(bi,si,xi,ai, bj,sj,xj,aj){
  * @param  {Array} xj
  * @param  {Number} aj
  */
-Nearphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj){
+Nearphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj, justTest, lineRadius){
     var lineShape = sj,
         lineAngle = aj,
         lineBody = bj,
@@ -217,6 +217,8 @@ Nearphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj){
         circleOffset = xi,
         circleBody = bi,
         circleShape = si,
+
+        lineRadius = lineRadius || 0,
 
         orthoDist = tmp1,
         convexToCircle = tmp2,
@@ -230,7 +232,8 @@ Nearphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj){
         worldVertex01 = tmp10,
         worldVertex11 = tmp11,
         dist = tmp12,
-        lineToCircle = tmp13;
+        lineToCircle = tmp13,
+        lineEndToLineRadius = tmp14;
 
     // Get start and end points
     vec2.set(worldVertex0, -lineShape.length/2, 0);
@@ -260,7 +263,9 @@ Nearphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj){
 
     sub(lineToCircle, circleOffset, lineOffset);
 
-    if(Math.abs(d) < circleShape.radius){
+    if(Math.abs(d) < circleShape.radius+lineRadius){
+        if(d < 0)   d += lineRadius;
+        else        d -= lineRadius;
 
         // Now project the circle onto the edge
         vec2.scale(orthoDist, worldTangent, d);
@@ -274,6 +279,8 @@ Nearphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj){
         if(pos > pos0 && pos < pos1){
             // We got contact!
 
+            if(justTest) return true;
+
             var c = this.createContactEquation(circleBody,lineBody);
 
             vec2.scale(c.ni, orthoDist, -1);
@@ -283,7 +290,7 @@ Nearphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj){
             add(c.ri, c.ri, circleOffset);
             sub(c.ri, c.ri, circleBody.position);
 
-            sub( c.rj, projectedPoint, lineOffset);
+            sub(c.rj, projectedPoint, lineOffset);
             add(c.rj, c.rj, lineOffset);
             sub(c.rj, c.rj, lineBody.position);
 
@@ -292,6 +299,8 @@ Nearphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj){
             if(this.enableFriction){
                 this.frictionEquations.push(this.createFrictionFromContact(c));
             }
+
+            return true;
         }
     }
 
@@ -303,14 +312,14 @@ Nearphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj){
 
         sub(dist, v, circleOffset);
 
-        if(vec2.squaredLength(dist) < circleShape.radius*circleShape.radius){
+        if(vec2.squaredLength(dist) < (circleShape.radius+lineRadius)*(circleShape.radius+lineRadius)){
+
+            if(justTest) return true;
 
             var c = this.createContactEquation(circleBody,lineBody);
 
             vec2.copy(c.ni, dist);
             vec2.normalize(c.ni,c.ni);
-
-            //console.log(vec2.str(c.ni));
 
             // Vector from circle to contact point is the normal times the circle radius
             vec2.scale(c.ri, c.ni, circleShape.radius);
@@ -318,6 +327,8 @@ Nearphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj){
             sub(c.ri, c.ri, circleBody.position);
 
             sub(c.rj, v, lineOffset);
+            vec2.scale(lineEndToLineRadius, c.ni, -lineRadius);
+            add(c.rj, c.rj, lineEndToLineRadius);
             add(c.rj, c.rj, lineOffset);
             sub(c.rj, c.rj, lineBody.position);
 
@@ -326,8 +337,28 @@ Nearphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj){
             if(this.enableFriction){
                 this.frictionEquations.push(this.createFrictionFromContact(c));
             }
+
+            return true;
         }
     }
+
+    return false;
+};
+
+/**
+ * Circle/capsule nearphase
+ * @method circleCapsule
+ * @param  {Body}   bi
+ * @param  {Circle} si
+ * @param  {Array}  xi
+ * @param  {Number} ai
+ * @param  {Body}   bj
+ * @param  {Line}   sj
+ * @param  {Array}  xj
+ * @param  {Number} aj
+ */
+Nearphase.prototype.circleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTest){
+    return this.circleLine(bi,si,xi,ai, bj,sj,xj,aj, justTest, sj.radius);
 };
 
 /**
