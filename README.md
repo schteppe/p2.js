@@ -18,6 +18,7 @@ Download either [p2.js](build/p2.js) or the minified [p2.min.js](build/p2.min.js
 <script src="p2.js" type="text/javascript"></script>
 ```
 ##### Node.js
+Until the code gets somewhat more stable, use the git url to install:
 ```
 npm install git://github.com/schteppe/p2.js
 ```
