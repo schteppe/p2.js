@@ -12,11 +12,13 @@
 <body>
     <script>
 
+        // Create a world
         var world = new p2.World({
             doProfiling:true,
             gravity : [0,-10],
         });
 
+        // Create a circle
         var shape = new p2.Circle(0.5);
         shape.material = new p2.Material();
         var p = new p2.Body({
@@ -26,6 +28,7 @@
         p.addShape(shape);
         world.addBody(p);
 
+        // Create a slippery circle
         var slipperyShape = new p2.Circle(0.5);
         slipperyShape.material = new p2.Material();
         var p = new p2.Body({
@@ -44,12 +47,14 @@
         plane.addShape(planeShape);
         world.addBody(plane);
 
-        // Create ContactMaterial
+        // When the materials of the plane and the first circle meet, they should yield
+        // a contact friction of 0.3. We tell p2 this by creating a ContactMaterial.
         var cm = new p2.ContactMaterial(planeShape.material, shape.material, {
-            friction : 0.1,
+            friction : 0.3,
         });
         world.addContactMaterial(cm);
 
+        // When the plane and the slippery circle meet, the friction should be 0 (slippery). Add a new ContactMaterial.
         var slipperyContactMaterial = new p2.ContactMaterial(planeShape.material, slipperyShape.material, {
             friction : 0.0,
         });
