@@ -4,12 +4,17 @@ p2.js
 JavaScript 2D rigid body physics engine.
 
 ### Features
+* Written in pure JavaScript
+* For Node.js and browser
+* Detailed documentation
 * Rigid body physics
 * Collision detection (no CCD)
-* Constraints: Contacts, DistanceConstraint, PointToPoint, friction
+* Contacts, friction
+* Stiff constraints: Distance, PointToPoint, Prismatic
+* Motors
 * Springs
-* Body motion states (dynamic, kinematic, static)
-* Various shapes and collisions (see table below)
+* Dynamic, kinematic, static bodies
+* Many supported shapes (see table below)
 
 ### Install
 ##### Browser
@@ -69,12 +74,14 @@ setInterval(function(){
 | Plane     | -      | -     | Yes       | Yes    | Yes      | Yes    | Yes     |
 | Rectangle | -      | -     | Yes       | Yes    | Yes      | (todo) | (todo)  |
 | Convex    | -      | -     | -         | Yes    | Yes      | (todo) | (todo)  |
-| Particle  | -      | -     | -         | -      | -        | -      | Yes  |
+| Particle  | -      | -     | -         | -      | -        | -      | Yes     |
 | Line      | -      | -     | -         | -      | -        | (todo) | (todo)  |
 | Capsule   | -      | -     | -         | -      | -        | -      | (todo)  |
 
 ### Change log
-##### Current development version (0.2)
+##### Current development version (0.3)
+
+##### 0.2
 * Removed ```World.collidingBodies``` since ```World.bodies``` can be used equivalently.
 * Added property ```DistanceConstraint.distance```
 * Added contact response between a lot of Shape types. Check table above.
