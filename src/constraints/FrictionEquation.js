@@ -1,4 +1,5 @@
-var vec2 = require('../math/vec2')
+var mat2 = require('../math/mat2')
+,   vec2 = require('../math/vec2')
 ,   Equation = require('./Equation')
 
 module.exports = FrictionEquation;
@@ -88,14 +89,30 @@ FrictionEquation.prototype.computeB = function(a,b,h){
 //
 // = t*iM1*t + (ri x t)*iI1*(ri x t) + t*iM2*t + (rj x t)*iI2*(rj x t)
 //
+var computeC_tmp1 = vec2.create(),
+    tmpMat1 = mat2.create(),
+    tmpMat2 = mat2.create();
 FrictionEquation.prototype.computeC = function(eps){
     var bi = this.bi,
         bj = this.bj,
         rixt = this.rixt,
         rjxt = this.rjxt,
-        C;
+        t = this.t,
+        C = 0.0,
+        tmp = computeC_tmp1,
+        imMat1 = tmpMat1,
+        imMat2 = tmpMat2,
+        dot = vec2.dot;
 
-    C = bi.invMass + bj.invMass + eps;
+    mat2.identity(imMat1);
+    mat2.identity(imMat2);
+
+    imMat1[0] = imMat1[3] = bi.invMass;
+    imMat2[0] = imMat2[3] = bj.invMass;
+
+    C = dot(t,vec2.transformMat2(tmp,t,imMat1)) + dot(t,vec2.transformMat2(tmp,t,imMat2)) + eps;
+
+    //C = bi.invMass + bj.invMass + eps;
 
     C += bi.invInertia * rixt * rixt;
     C += bj.invInertia * rjxt * rjxt;
@@ -104,16 +121,12 @@ FrictionEquation.prototype.computeC = function(eps){
 };
 
 FrictionEquation.prototype.computeGWlambda = function(){
-    var bi = this.bi;
-    var bj = this.bj;
-    var GWlambda = 0.0;
+    var bi = this.bi,
+        bj = this.bj,
+        t = this.t,
+        dot = vec2.dot;
 
-    GWlambda -= vec2.dot(this.t, bi.vlambda);
-    GWlambda -= bi.wlambda * this.rixt;
-    GWlambda += vec2.dot(this.t, bj.vlambda);
-    GWlambda += bj.wlambda * this.rjxt;
-
-    return GWlambda;
+    return dot(t, bj.vlambda) + bj.wlambda * this.rjxt - bi.wlambda * this.rixt - dot(t, bi.vlambda);
 };
 
 var FrictionEquation_addToWlambda_tmp = vec2.create();
@@ -123,12 +136,21 @@ FrictionEquation.prototype.addToWlambda = function(deltalambda){
         rixt = this.rixt,
         rjxt = this.rjxt,
         t = this.t,
-        tmp = FrictionEquation_addToWlambda_tmp;
+        tmp = FrictionEquation_addToWlambda_tmp,
+        imMat1 = tmpMat1,
+        imMat2 = tmpMat2;
 
-    vec2.scale(tmp, t, -bi.invMass * deltalambda);  //t.mult(invMassi * deltalambda, tmp);
+    mat2.identity(imMat1);
+    mat2.identity(imMat2);
+    imMat1[0] = imMat1[3] = bi.invMass;
+    imMat2[0] = imMat2[3] = bj.invMass;
+
+    vec2.scale(tmp,vec2.transformMat2(tmp,t,imMat1),-deltalambda);
+    //vec2.scale(tmp, t, -bi.invMass * deltalambda);  //t.mult(invMassi * deltalambda, tmp);
     vec2.add(bi.vlambda, bi.vlambda, tmp);          //bi.vlambda.vsub(tmp,bi.vlambda);
 
-    vec2.scale(tmp, t, bj.invMass * deltalambda);   //t.mult(invMassj * deltalambda, tmp);
+    vec2.scale(tmp,vec2.transformMat2(tmp,t,imMat2),deltalambda);
+    //vec2.scale(tmp, t, bj.invMass * deltalambda);   //t.mult(invMassj * deltalambda, tmp);
     vec2.add(bj.vlambda, bj.vlambda, tmp);          //bj.vlambda.vadd(tmp,bj.vlambda);
 
     bi.wlambda -= bi.invInertia * rixt * deltalambda;

@@ -104,20 +104,14 @@ ContactEquation.prototype.computeC = function(eps){
 
     return C;
 };
-var computeGWlambda_ulambda = vec2.create();
+
 ContactEquation.prototype.computeGWlambda = function(){
-    var bi = this.bi;
-    var bj = this.bj;
-    var ulambda = computeGWlambda_ulambda;
+    var bi = this.bi,
+        bj = this.bj,
+        n = this.ni,
+        dot = vec2.dot;
 
-    var GWlambda = 0.0;
-
-    GWlambda -= vec2.dot(this.ni, bi.vlambda);
-    GWlambda -= bi.wlambda * this.rixn;
-    GWlambda += vec2.dot(this.ni, bj.vlambda);
-    GWlambda += bj.wlambda * this.rjxn;
-
-    return GWlambda;
+    return dot(n, bj.vlambda) + bj.wlambda * this.rjxn - dot(n, bi.vlambda) - bi.wlambda * this.rixn;
 };
 
 var addToWlambda_temp = vec2.create();
