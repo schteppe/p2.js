@@ -106,7 +106,7 @@ QuadTree.prototype.getCollisionPairs = function(world){
                     break;
                 }
             }
-            if(!found && Broadphase.bodiesCollide(b,item)){
+            if(!found && Broadphase.boundingRadiusCheck(b,item)){
                 result.push(b,item);
             }
         }
