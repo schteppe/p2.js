@@ -139,6 +139,13 @@ function World(options){
     this.applySpringForces = true;
 
     /**
+     * Enable/disable constraint solving in each step.
+     * @property solveConstraints
+     * @type {Boolean}
+     */
+    this.solveConstraints = true;
+
+    /**
      * The ContactMaterials added to the World.
      * @property contactMaterials
      * @type {Array}
@@ -394,7 +401,9 @@ World.prototype.step = function(dt){
             solver.addEquation(eq);
         }
     }
-    solver.solve(dt,this);
+
+    if(this.solveConstraints)
+        solver.solve(dt,this);
 
     solver.removeAllEquations();
 
