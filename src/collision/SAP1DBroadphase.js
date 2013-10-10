@@ -83,7 +83,7 @@ SAP1DBroadphase.prototype.getCollisionPairs = function(world){
     var bodies = this.axisList,
         result = this.result,
         axisIndex = this.axisIndex,
-        i,j,bi,bj;
+        i,j;
 
     result.length = 0;
 
@@ -92,14 +92,18 @@ SAP1DBroadphase.prototype.getCollisionPairs = function(world){
 
     // Look through the list
     for(i=0, N=bodies.length; i!==N; i++){
-        bi = bodies[i];
+        var bi = bodies[i],
+            biPos = bi.position[axisIndex],
+            ri = bi.boundingRadius;
 
         for(j=i+1; j<N; j++){
-            bj = bodies[j];
-            var boundA1 = bi.position[axisIndex]-bi.boundingRadius,
-                boundA2 = bi.position[axisIndex]+bi.boundingRadius,
-                boundB1 = bj.position[axisIndex]-bj.boundingRadius,
-                boundB2 = bj.position[axisIndex]+bj.boundingRadius;
+            var bj = bodies[j],
+                bjPos = bj.position[axisIndex],
+                rj = bj.boundingRadius,
+                boundA1 = biPos-ri,
+                boundA2 = biPos+ri,
+                boundB1 = bjPos-rj,
+                boundB2 = bjPos+rj;
 
             // Abort if we got gap til the next body
             if( boundB1 > boundA2 ){
