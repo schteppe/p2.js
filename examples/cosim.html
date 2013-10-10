@@ -28,8 +28,11 @@
             d=10,                           // Damping of springs
             l=0.35,                         // Length between particles
             m=1,                            // Mass of each particle
-            useConstraints = true,          // Use constraints in between partcles
-            useSpringCoupling = false,       // Use springs for coupling
+
+            useConstraints1 = true,         // Use constraints in between partcles in system 1
+            useConstraints2 = true,         // Use constraints in between partcles in system 2
+
+            useSpringCoupling = false,      // Use springs for coupling
             springCouplingStiffness = 1e3,  // Spring stiffness in coupling
             springCouplingDamping = 10,     // Spring damping in coupling
 
@@ -66,7 +69,7 @@
                 bodyB = bodies[i+1];
 
             if(i!=N-1){
-                if(useConstraints){
+                if((useConstraints2 && i<N-1) || (useConstraints1 && i>N-1)){
                     var dist = Math.abs(bodyA.position[1]-bodyB.position[1]);
                     var c = new p2.DistanceConstraint(bodyA,bodyB,dist);
                     world.addConstraint(c);
@@ -97,6 +100,10 @@
             v2t =  vec2.fromValues(0, 0),
             x1t =  vec2.fromValues(0, 0),
             x2t =  vec2.fromValues(0, 0),
+            v1tc =  vec2.fromValues(0, 0),
+            v2tc =  vec2.fromValues(0, 0),
+            x1tc =  vec2.fromValues(0, 0),
+            x2tc =  vec2.fromValues(0, 0),
             fhiM1 =  vec2.fromValues(0, 0), // Gravity terms
             fhiM2 =  vec2.fromValues(0, 0),
             tmp =  vec2.fromValues(0, 0),
@@ -124,25 +131,17 @@
 
                 // Do step without Master constraints: xt = inv(A) * f
                 var copy = world.clone();
-                copy.solver.useZeroRHS = false;
+                copy.solver.useZeroRHS = true;
                 copy.step(dt);
                 vec2.copy(v1t, copy.bodies[i1].velocity);
                 vec2.copy(v2t, copy.bodies[i2].velocity);
                 vec2.copy(x1t, copy.bodies[i1].position);
                 vec2.copy(x2t, copy.bodies[i2].position);
 
-                // Do step without constraints but with gravity, so we can compensate for gravity
-                var copy2 = world.clone();
-                if(useGravity) vec2.copy(copy2.gravity,mg);
-                copy2.solveConstraints = true;
-                copy2.step(dt);
-                vec2.sub(fhiM1,copy2.bodies[i1].velocity,v1);
-                vec2.sub(fhiM2,copy2.bodies[i2].velocity,v2);
-
                 // Solve for Master constraint lagrange multipliers
                 var d = relaxation,
-                    a = 4/(1+4*d),//1/dt/dt,
-                    b = 4*d/(1+4*d), // 0
+                    a = 4/(1+4*d),
+                    b = 4*d/(1+4*d),
                     epsilon = 4*compliance/(dt*dt*(1+4*d)),
                     massTermX = dot(G1x,im1x) + dot(G2x,im2x), // G * inv(M) * G
                     massTermY = dot(G1y,im1y) + dot(G2y,im2y);
@@ -151,11 +150,8 @@
                 if(useCorrectMasses)
                     massTermX = massTermY = 2;
 
-                var gravityTermX = (dot(fhiM1,G1x) + dot(fhiM2,G2x))/dt,
-                    gravityTermY = (dot(fhiM1,G1y) + dot(fhiM2,G2y))/dt;
-
-                var lambda_x = ( -b*( dot(G1x,v1t) + dot(G2x,v2t))/dt - a*( dot(G1x,x1t) + dot(G2x,x2t) )/dt/dt) / massTermX;// ( - a*( dot(G1x,x1t) + dot(G2x,x2t) )/dt/dt - b*( dot(G1x,v1t) + dot(G2x,v2t))/dt + gravityTermX ) / ( massTermX + epsilon ),
-                    lambda_y = ( -b*( dot(G1y,v1t) + dot(G2y,v2t))/dt - a*( dot(G1y,x1t) + dot(G2y,x2t) )/dt/dt) / massTermY;// ( - a*( dot(G1y,x1t) + dot(G2y,x2t) )/dt/dt - b*( dot(G1y,v1t) + dot(G2y,v2t))/dt + gravityTermY ) / ( massTermY + epsilon );
+                var lambda_x = ( -b*( dot(G1x,v1t) + dot(G2x,v2t))/dt - a*( dot(G1x,x1t) + dot(G2x,x2t) )/dt/dt) / ( massTermX + epsilon );
+                    lambda_y = ( -b*( dot(G1y,v1t) + dot(G2y,v2t))/dt - a*( dot(G1y,x1t) + dot(G2y,x2t) )/dt/dt) / ( massTermY + epsilon );
 
                 if(useSpringCoupling){
                     var s = new p2.Spring(b1,b2,{
