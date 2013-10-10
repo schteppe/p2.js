@@ -4,7 +4,7 @@ module.exports = Line;
 
 /**
  * Line shape class. The line shape is along the x direction, and stretches from [-length/2, 0] to [length/2,0].
- * @class Plane
+ * @class Line
  * @extends {Shape}
  * @constructor
  */

@@ -11,13 +11,13 @@ var zero = vec2.fromValues(0,0);
  * @class Body
  * @constructor
  * @param {Object}              [options]
- * @param {Number}              options.mass    A number >= 0. If zero, the body becomes static. Defaults to static [0].
- * @param {Float32Array|Array}  options.position
- * @param {Float32Array|Array}  options.velocity
- * @param {Number}              options.angle
- * @param {Number}              options.angularVelocity
- * @param {Float32Array|Array}  options.force
- * @param {Number}              options.angularForce
+ * @param {Number}              [options.mass=0]    A number >= 0. If zero, the .motionState will be set to Body.STATIC.
+ * @param {Float32Array|Array}  [options.position]
+ * @param {Float32Array|Array}  [options.velocity]
+ * @param {Number}              [options.angle=0]
+ * @param {Number}              [options.angularVelocity=0]
+ * @param {Float32Array|Array}  [options.force]
+ * @param {Number}              [options.angularForce=0]
  *
  * @todo Should not take mass as argument to Body, but as density to each Shape
  */
@@ -151,13 +151,28 @@ function Body(options){
      *
      * @property motionState
      * @type {number}
+     *
+     * @example
+     *     // This body will move and interact with other bodies
+     *     var dynamicBody = new Body();
+     *     dynamicBody.motionState = Body.DYNAMIC;
+     *
+     * @example
+     *     // This body will not move at all
+     *     var staticBody = new Body();
+     *     staticBody.motionState = Body.STATIC;
+     *
+     * @example
+     *     // This body will only move if you change its velocity
+     *     var kinematicBody = new Body();
+     *     kinematicBody.motionState = Body.KINEMATIC;
      */
     this.motionState = this.mass == 0 ? Body.STATIC : Body.DYNAMIC;
 
     /**
-     * Bounding box max point, in world coordinates.
-     * @property aabbMin
-     * @type {Array}
+     * Bounding circle radius
+     * @property boundingRadius
+     * @type {Number}
      */
     this.boundingRadius = 0;
 };
@@ -195,6 +210,19 @@ Body.prototype.updateBoundingRadius = function(){
  * @param  {Shape}              shape
  * @param  {Float32Array|Array} [offset] Local body offset of the shape.
  * @param  {Number}             [angle]  Local body angle.
+ *
+ * @example
+ *     var body = new Body(),
+ *         shape = new Circle();
+ *
+ *     // Add the shape to the body, positioned in the center
+ *     body.addShape(shape);
+ *
+ *     // Add another shape to the body, positioned 1 unit length from the body center of mass along the local x-axis.
+ *     body.addShape(shape,[1,0]);
+ *
+ *     // Add another shape to the body, positioned 1 unit length from the body center of mass along the local y-axis, and rotated 90 degrees CCW.
+ *     body.addShape(shape,[0,1],Math.PI/2);
  */
 Body.prototype.addShape = function(shape,offset,angle){
     this.shapes      .push(shape);
@@ -209,6 +237,10 @@ Body.prototype.addShape = function(shape,offset,angle){
  * changing the structure or mass of the Body.
  *
  * @method updateMassProperties
+ *
+ * @example
+ *     body.mass += 1;
+ *     body.updateMassProperties();
  */
 Body.prototype.updateMassProperties = function(){
     var shapes = this.shapes,

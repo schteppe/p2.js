@@ -238,7 +238,10 @@ var step_r = vec2.create(),
  *
  * @method step
  * @param {Number} dt The time step size to use.
- * @param {Function} callback Called when done.
+ *
+ * @example
+ *     var world = new World();
+ *     world.step(0.01);
  */
 World.prototype.step = function(dt){
     var that = this,
@@ -466,6 +469,12 @@ World.prototype.removeSpring = function(s){
  *
  * @method addBody
  * @param {Body} body
+ *
+ * @example
+ *     var world = new World(),
+ *         body = new Body();
+ *     world.addBody(body);
+ *
  */
 World.prototype.addBody = function(body){
     this.bodies.push(body);
