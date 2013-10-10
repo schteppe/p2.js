@@ -2,6 +2,7 @@ var vec2 = require('../math/vec2')
 ,   sub = vec2.sub
 ,   add = vec2.add
 ,   dot = vec2.dot
+,   Utils = require('../utils/Utils')
 ,   ContactEquation = require('../constraints/ContactEquation')
 ,   FrictionEquation = require('../constraints/FrictionEquation')
 ,   Circle = require('../shapes/Circle')
@@ -52,9 +53,8 @@ Nearphase.prototype.reset = function(){
             fe = this.frictionEquations,
             rfe = this.reusableFrictionEquations,
             rce = this.reusableContactEquations;
-        for(var i=0, N=ce.length; i!==N; i++) rce.push(ce[i]);
-        for(var i=0, N=fe.length; i!==N; i++) rfe.push(fe[i]);
-
+        Utils.appendArray(rce,ce);
+        Utils.appendArray(rfe,fe);
     }
 
     // Reset
