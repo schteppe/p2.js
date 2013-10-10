@@ -1152,15 +1152,15 @@ Nearphase.findSeparatingAxis = function(c1,offset1,angle1,c2,offset2,angle2,sepA
         span1 = fsa_tmp5,
         span2 = fsa_tmp6;
 
-    for(var j=0; j<2; j++){
+    for(var j=0; j!==2; j++){
         var c = c1,
             angle = angle1;
-        if(j==1){
+        if(j===1){
             c = c2;
             angle = angle2;
         }
 
-        for(var i=0; i<c.vertices.length; i++){
+        for(var i=0; i!==c.vertices.length; i++){
             // Get the world edge
             vec2.rotate(worldPoint0, c.vertices[i], angle);
             vec2.rotate(worldPoint1, c.vertices[(i+1)%c.vertices.length], angle);
@@ -1185,11 +1185,9 @@ Nearphase.findSeparatingAxis = function(c1,offset1,angle1,c2,offset2,angle2,sepA
                 swapped = true;
             }
 
-
             // Get separating distance
             var dist = b[0] - a[1];
             overlap = dist < 0;
-
 
             if(maxDist===null || dist > maxDist){
                 vec2.copy(sepAxis, normal);
@@ -1228,18 +1226,20 @@ Nearphase.getClosestEdge = function(c,angle,axis,flip){
         vec2.scale(localAxis,localAxis,-1);
     }
 
-    var closestEdge = -1;
-    for(var i=0; i<c.vertices.length; i++){
+    var closestEdge = -1,
+        N = c.vertices.length,
+        halfPi = Math.PI / 2;
+    for(var i=0; i!==N; i++){
         // Get the edge
-        sub(edge, c.vertices[(i+1)%(c.vertices.length)], c.vertices[i%(c.vertices.length)]);
+        sub(edge, c.vertices[(i+1)%N], c.vertices[i%N]);
 
         // Get normal - just rotate 90 degrees since vertices are given in CCW
-        vec2.rotate(normal, edge, -Math.PI / 2);
+        vec2.rotate(normal, edge, -halfPi);
         vec2.normalize(normal,normal);
 
         var d = dot(normal,localAxis);
         if(closestEdge == -1 || d > maxDot){
-            closestEdge = i % c.vertices.length;
+            closestEdge = i % N;
             maxDot = d;
         }
     }
