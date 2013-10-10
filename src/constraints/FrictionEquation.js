@@ -29,9 +29,28 @@ var dot = vec2.dot;
  */
 function FrictionEquation(bi,bj,slipForce){
     Equation.call(this,bi,bj,-slipForce,slipForce);
-    this.ri = vec2.create(); // Vector from center of body i to the contact point
-    this.rj = vec2.create(); // Vector from center of body j to the contact point
-    this.t = vec2.create();  // Tangent vector so that
+
+    /**
+     * Relative vector from center of body i to the contact point, in world coords.
+     * @property ri
+     * @type {Float32Array}
+     */
+    this.ri = vec2.create();
+
+    /**
+     * Relative vector from center of body j to the contact point, in world coords.
+     * @property rj
+     * @type {Float32Array}
+     */
+    this.rj = vec2.create();
+
+    /**
+     * Tangent vector that the friction force will act along, in world coords.
+     * @property t
+     * @type {Float32Array}
+     */
+    this.t = vec2.create();
+
     this.rixt = 0;
     this.rjxt = 0;
 };
@@ -39,7 +58,8 @@ FrictionEquation.prototype = new Equation();
 FrictionEquation.prototype.constructor = FrictionEquation;
 
 /**
- * Set the slipping condition for the constraint. If the force
+ * Set the slipping condition for the constraint. The friction force cannot be
+ * larger than this value.
  * @method setSlipForce
  * @param  {Number} slipForce
  */
