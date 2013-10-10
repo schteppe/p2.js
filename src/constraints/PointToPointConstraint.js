@@ -39,7 +39,6 @@ function PointToPointConstraint(bodyA, pivotA, bodyB, pivotB, maxForce){
     tangent.maxForce = normal.maxForce =  maxForce;
 
     this.motorEquation = null;
-    this.motorVelocity = 1; // rad/s
 }
 PointToPointConstraint.prototype = new Constraint();
 
