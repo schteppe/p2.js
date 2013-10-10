@@ -11,6 +11,8 @@ var GSSolver = require('../solver/GSSolver')
 ,    EventEmitter = require('../events/EventEmitter')
 ,    Body = require('../objects/Body')
 ,    Spring = require('../objects/Spring')
+,    Material = require('../material/Material')
+,    ContactMaterial = require('../material/ContactMaterial')
 ,    DistanceConstraint = require('../constraints/DistanceConstraint')
 ,    PointToPointConstraint = require('../constraints/PointToPointConstraint')
 ,    PrismaticConstraint = require('../constraints/PrismaticConstraint')
@@ -162,6 +164,10 @@ function World(options){
     };
     this.addBodyEvent = {
         type : "addBody",
+        body : null
+    };
+    this.removeBodyEvent = {
+        type : "removeBody",
         body : null
     };
     this.addSpringEvent = {
@@ -490,8 +496,11 @@ World.prototype.addBody = function(body){
  */
 World.prototype.removeBody = function(body){
     var idx = this.bodies.indexOf(body);
-    if(idx!==-1)
+    if(idx!==-1){
         this.bodies.splice(idx,1);
+        this.removeBodyEvent.body = body;
+        this.emit(this.removeBodyEvent);
+    }
 };
 
 /**
@@ -509,6 +518,7 @@ World.prototype.toJSON = function(){
         gravity : v2a(this.gravity),
         broadphase : {},
         constraints : [],
+        contactMaterials : [],
     };
 
     // Serialize springs
@@ -594,10 +604,13 @@ World.prototype.toJSON = function(){
                 throw new Error("Shape type not supported yet!");
             }
 
-            jsonShape.offset = v2a(b.shapeOffsets[j] || [0,0]);
-            jsonShape.angle = b.shapeAngles[j] || 0;
+            jsonShape.offset = v2a(b.shapeOffsets[j]);
+            jsonShape.angle = b.shapeAngles[j];
             jsonShape.collisionGroup = s.collisionGroup;
             jsonShape.collisionMask = s.collisionMask;
+            jsonShape.material = s.material && {
+                id : s.material.id,
+            };
 
             jsonShapes.push(jsonShape);
         }
@@ -612,9 +625,26 @@ World.prototype.toJSON = function(){
         });
     }
 
+    // Serialize contactmaterials
+    for(var i=0; i<this.contactMaterials.length; i++){
+        var cm = this.contactMaterials[i];
+        json.contactMaterials.push({
+            id : cm.id,
+            materialA :             cm.materialA.id, // Note: Reference by id!
+            materialB :             cm.materialB.id,
+            friction :              cm.friction,
+            restitution :           cm.restitution,
+            stiffness :             cm.stiffness,
+            relaxation :            cm.relaxation,
+            frictionStiffness :     cm.frictionStiffness,
+            frictionRelaxation :    cm.frictionRelaxation,
+        });
+    }
+
     return json;
 
     function v2a(v){
+        if(!v) return v;
         return [v[0],v[1]];
     }
 };
@@ -640,6 +670,7 @@ World.prototype.fromJSON = function(json){
             vec2.copy(this.gravity, json.gravity);
 
             // Load bodies
+            var id2material = {};
             for(var i=0; i<json.bodies.length; i++){
                 var jb = json.bodies[i],
                     jss = jb.shapes;
@@ -670,6 +701,12 @@ World.prototype.fromJSON = function(json){
                     }
                     shape.collisionMask = js.collisionMask;
                     shape.collisionGroup = js.collisionGroup;
+                    shape.material = js.material;
+                    if(shape.material){
+                        shape.material = new Material();
+                        shape.material.id = js.material.id;
+                        id2material[shape.material.id+""] = shape.material;
+                    }
                     b.addShape(shape,js.offset,js.angle);
                 }
 
@@ -687,6 +724,21 @@ World.prototype.fromJSON = function(json){
                     localAnchorB : js.localAnchorB,
                 });
                 this.addSpring(s);
+            }
+
+            // Load contact materials
+            for(var i=0; i<json.contactMaterials.length; i++){
+                var jm = json.contactMaterials[i];
+                var cm = new ContactMaterial(id2material[jm.materialA+""], id2material[jm.materialB+""], {
+                    friction :              jm.friction,
+                    restitution :           jm.restitution,
+                    stiffness :             jm.stiffness,
+                    relaxation :            jm.relaxation,
+                    frictionStiffness :     jm.frictionStiffness,
+                    frictionRelaxation :    jm.frictionRelaxation,
+                });
+                cm.id = jm.id;
+                this.addContactMaterial(cm);
             }
 
             // Load constraints

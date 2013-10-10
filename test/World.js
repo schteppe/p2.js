@@ -1,7 +1,14 @@
 var World = require("../src/world/World")
 ,   Body = require("../src/objects/Body")
+,   Particle = require("../src/shapes/Particle")
 ,   Circle = require("../src/shapes/Circle")
+,   Rectangle = require("../src/shapes/Rectangle")
 ,   Convex = require("../src/shapes/Convex")
+,   Line = require("../src/shapes/Line")
+,   Capsule = require("../src/shapes/Capsule")
+,   Plane = require("../src/shapes/Plane")
+,   Material = require("../src/material/Material")
+,   ContactMaterial = require("../src/material/ContactMaterial")
 ,   vec2 = require("../src/math/vec2")
 
 var world;
@@ -12,20 +19,52 @@ exports.setUp = function(callback){
 };
 
 exports.toJSON = function(test){
-    var x = vec2.fromValues(1,2),
-        v = vec2.fromValues(3,4),
-        f = vec2.fromValues(5,6),
-        m = 5,
-        a = 2,
-        av = 6;
-    world.addBody(new Body({
-        position:x,
-        velocity:v,
-        mass:m,
-        angle:a,
-        angularVelocity:av,
-        force:f,
-    }));
+    var size = 1,
+        shapes = [
+            new Particle(),
+            new Circle(size/2),
+            new Rectangle(size,size),
+            new Convex([]),
+            new Line(size),
+            new Capsule(size*2,size/4),
+            new Plane(),
+        ];
+
+    var r = Math.random,
+        lastMaterial;
+    for(var i=0; i<shapes.length; i++){
+        var b = new Body({
+                position : [r(),r()],
+                velocity:[r(),r()],
+                force : [r(),r()],
+                mass : r(),
+                angle : r(),
+                angularVelocity : r(),
+            }),
+            s = shapes[i];
+
+        b.addShape(s);
+
+        // Add material or not?
+        if(r() > 0.5){
+            s.material = new Material();
+            lastMaterial = s.material;
+        }
+
+        world.addBody(b);
+    }
+
+    if(lastMaterial){
+        var cm = new ContactMaterial(lastMaterial,lastMaterial,{
+            friction :              r(),
+            restitution :           r(),
+            stiffness :             r(),
+            relaxation :            r(),
+            frictionStiffness :     r(),
+            frictionRelaxation :    r(),
+        });
+        world.addContactMaterial(cm);
+    }
 
     // JSON roundtrip
     var world2 = new World();
@@ -35,8 +74,17 @@ exports.toJSON = function(test){
     // The only thing that should differ between the two worlds are the id's of
     // things. Therefore, we must set them to the same
     for(var i=0; i<world.bodies.length; i++){
-        world.bodies[i].id = world2.bodies[i].id;
+        var b1 = world.bodies[i],
+            b2 = world2.bodies[i];
+        b1.id = b2.id;
+        for(var j=0; j<b1.shapes.length; j++){
+            var s1 = b1.shapes[j],
+                s2 = b2.shapes[j];
+            if(s1.material)
+                s1.material.id = s2.material.id;
+        }
     }
+
     test.deepEqual(world,world2,"World should be the same after a JSON roundtrip");
 
     test.done();
