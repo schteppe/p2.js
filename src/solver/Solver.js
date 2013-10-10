@@ -60,6 +60,6 @@ Solver.prototype.removeEquation = function(eq){
  * @method removeAllEquations
  */
 Solver.prototype.removeAllEquations = function(){
-    this.equations = [];
+    this.equations.length=0;
 };
 
