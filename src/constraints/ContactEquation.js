@@ -15,17 +15,12 @@ module.exports = ContactEquation;
  */
 function ContactEquation(bi,bj){
     Equation.call(this,bi,bj,0,1e6);
-    this.penetration = 0.0;
     this.ri = vec2.create();
     this.penetrationVec = vec2.create();
     this.rj = vec2.create();
     this.ni = vec2.create();
-    this.rixn = vec2.create();
-    this.rjxn = vec2.create();
-    this.rixw = vec2.create();
-    this.rjxw = vec2.create();
-    this.relVel = vec2.create();
-    this.relForce = vec2.create();
+    this.rixn = 0;
+    this.rjxn = 0;
 };
 ContactEquation.prototype = new Equation();
 ContactEquation.prototype.constructor = ContactEquation;
@@ -47,9 +42,7 @@ ContactEquation.prototype.computeB = function(a,b,h){
         fj = bj.force,
         tauj = bj.angularForce;
 
-    var relVel = this.relVel,
-        relForce = this.relForce,
-        penetrationVec = this.penetrationVec,
+    var penetrationVec = this.penetrationVec,
         invMassi = bi.invMass,
         invMassj = bj.invMass,
         invIi = bi.invInertia,
@@ -57,11 +50,10 @@ ContactEquation.prototype.computeB = function(a,b,h){
         n = this.ni;
 
     // Caluclate cross products
-    var rixn = this.rixn = vec2.crossLength(ri,n);
-    var rjxn = this.rjxn = vec2.crossLength(rj,n);
+    this.rixn = vec2.crossLength(ri,n);
+    this.rjxn = vec2.crossLength(rj,n);
 
     // Calculate q = xj+rj -(xi+ri) i.e. the penetration vector
-    vec2.set(penetrationVec,0,0);
     vec2.add(penetrationVec,xj,rj);
     vec2.sub(penetrationVec,penetrationVec,xi);
     vec2.sub(penetrationVec,penetrationVec,ri);
@@ -69,8 +61,8 @@ ContactEquation.prototype.computeB = function(a,b,h){
     var Gq = vec2.dot(n,penetrationVec);
 
     // Compute iteration
-    var GW = vec2.dot(vj,n) - vec2.dot(vi,n) + wj * rjxn - wi * rixn;
-    var GiMf = vec2.dot(fj,n)*invMassj - vec2.dot(fi,n)*invMassi + invIj*tauj*rjxn - invIi*taui*rixn;
+    var GW = vec2.dot(vj,n) - vec2.dot(vi,n) + wj * this.rjxn - wi * this.rixn;
+    var GiMf = vec2.dot(fj,n)*invMassj - vec2.dot(fi,n)*invMassi + invIj*tauj*this.rjxn - invIi*taui*this.rixn;
 
     var B = - Gq * a - GW * b - h*GiMf;
 
@@ -99,8 +91,8 @@ ContactEquation.prototype.computeC = function(eps){
     var C = vec2.dot(n,vec2.transformMat2(tmp,n,imMat1)) + vec2.dot(n,vec2.transformMat2(tmp,n,imMat2)) + eps;
     //var C = bi.invMass + bj.invMass + eps;
 
-    C += bi.invInertia * rixn * rixn;
-    C += bj.invInertia * rjxn * rjxn;
+    C += bi.invInertia * this.rixn * this.rixn;
+    C += bj.invInertia * this.rjxn * this.rjxn;
 
     return C;
 };
@@ -118,8 +110,6 @@ var addToWlambda_temp = vec2.create();
 ContactEquation.prototype.addToWlambda = function(deltalambda){
     var bi = this.bi,
         bj = this.bj,
-        rixn = this.rixn,
-        rjxn = this.rjxn,
         n = this.ni,
         temp = addToWlambda_temp,
         imMat1 = tmpMat1,
@@ -140,7 +130,7 @@ ContactEquation.prototype.addToWlambda = function(deltalambda){
     vec2.add( bj.vlambda,bj.vlambda, temp);
 
     // Add to angular velocity
-    bi.wlambda -= bi.invInertia * rixn * deltalambda;
-    bj.wlambda += bj.invInertia * rjxn * deltalambda;
+    bi.wlambda -= bi.invInertia * this.rixn * deltalambda;
+    bj.wlambda += bj.invInertia * this.rjxn * deltalambda;
 };
 

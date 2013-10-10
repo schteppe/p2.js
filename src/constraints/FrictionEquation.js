@@ -70,6 +70,9 @@ FrictionEquation.prototype.setSlipForce = function(slipForce){
 
 var rixtVec = [0,0,0];
 var rjxtVec = [0,0,0];
+var ri3 = [0,0,0];
+var rj3 = [0,0,0];
+var t3 = [0,0,0];
 FrictionEquation.prototype.computeB = function(a,b,h){
     var a = this.a,
         b = this.b,
@@ -77,21 +80,24 @@ FrictionEquation.prototype.computeB = function(a,b,h){
         bj = this.bj,
         ri = this.ri,
         rj = this.rj,
-        rixt = this.rixt,
-        rjxt = this.rjxt,
         t = this.t;
 
     // Caluclate cross products
-    cross(rixtVec, [ri[0], ri[1], 0], [t[0], t[1], 0]);//ri.cross(t,rixt);
-    cross(rjxtVec, [rj[0], rj[1], 0], [t[0], t[1], 0]);//rj.cross(t,rjxt);
-    var rixt = this.rixt = rixtVec[2];
-    var rjxt = this.rjxt = rjxtVec[2];
+    ri3[0] = ri[0];
+    ri3[1] = ri[1];
+    rj3[0] = rj[0];
+    rj3[1] = rj[1];
+    t3[0] = t[0];
+    t3[1] = t[1];
+    cross(rixtVec, ri3, t3);//ri.cross(t,rixt);
+    cross(rjxtVec, rj3, t3);//rj.cross(t,rjxt);
+    this.rixt = rixtVec[2];
+    this.rjxt = rjxtVec[2];
 
-    var Gq = 0; // we do only want to constrain motion
-    var GW = -dot(bi.velocity,t) + dot(bj.velocity,t) - rixt*bi.angularVelocity + rjxt*bj.angularVelocity; // eq. 40
-    var GiMf = -dot(bi.force,t)*bi.invMass +dot(bj.force,t)*bj.invMass -rixt*bi.invInertia*bi.angularForce + rjxt*bj.invInertia*bj.angularForce;
+    var GW = -dot(bi.velocity,t) + dot(bj.velocity,t) - this.rixt*bi.angularVelocity + this.rjxt*bj.angularVelocity; // eq. 40
+    var GiMf = -dot(bi.force,t)*bi.invMass +dot(bj.force,t)*bj.invMass -this.rixt*bi.invInertia*bi.angularForce + this.rjxt*bj.invInertia*bj.angularForce;
 
-    var B = - Gq * a - GW * b - h*GiMf;
+    var B = /* - Gq * a  */ - GW * b - h*GiMf;
 
     return B;
 };
@@ -115,8 +121,6 @@ var computeC_tmp1 = vec2.create(),
 FrictionEquation.prototype.computeC = function(eps){
     var bi = this.bi,
         bj = this.bj,
-        rixt = this.rixt,
-        rjxt = this.rjxt,
         t = this.t,
         C = 0.0,
         tmp = computeC_tmp1,
@@ -134,8 +138,8 @@ FrictionEquation.prototype.computeC = function(eps){
 
     //C = bi.invMass + bj.invMass + eps;
 
-    C += bi.invInertia * rixt * rixt;
-    C += bj.invInertia * rjxt * rjxt;
+    C += bi.invInertia * this.rixt * this.rixt;
+    C += bj.invInertia * this.rjxt * this.rjxt;
 
     return C;
 };
@@ -153,8 +157,6 @@ var FrictionEquation_addToWlambda_tmp = vec2.create();
 FrictionEquation.prototype.addToWlambda = function(deltalambda){
     var bi = this.bi,
         bj = this.bj,
-        rixt = this.rixt,
-        rjxt = this.rjxt,
         t = this.t,
         tmp = FrictionEquation_addToWlambda_tmp,
         imMat1 = tmpMat1,
@@ -173,6 +175,6 @@ FrictionEquation.prototype.addToWlambda = function(deltalambda){
     //vec2.scale(tmp, t, bj.invMass * deltalambda);   //t.mult(invMassj * deltalambda, tmp);
     vec2.add(bj.vlambda, bj.vlambda, tmp);          //bj.vlambda.vadd(tmp,bj.vlambda);
 
-    bi.wlambda -= bi.invInertia * rixt * deltalambda;
-    bj.wlambda += bj.invInertia * rjxt * deltalambda;
+    bi.wlambda -= bi.invInertia * this.rixt * deltalambda;
+    bj.wlambda += bj.invInertia * this.rjxt * deltalambda;
 };
