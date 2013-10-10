@@ -80,6 +80,9 @@ setInterval(function(){
 
 ### Change log
 ##### Current development version (0.3)
+* Added ```Utils```
+* The returned array by ```Broadphase.prototype.getCollisionPairs``` is now reused in between calls.
+* Added method ```.addEquations``` to ```Solver``` to faster add an array of ```Equation```s.
 
 ##### 0.2
 * Removed ```World.collidingBodies``` since ```World.bodies``` can be used equivalently.
