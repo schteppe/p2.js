@@ -290,13 +290,13 @@ World.prototype.step = function(dt){
             bj = result[i+1];
 
         // Loop over all shapes of body i
-        for(var k=0; k<bi.shapes.length; k++){
+        for(var k=0; k!==bi.shapes.length; k++){
             var si = bi.shapes[k],
                 xi = bi.shapeOffsets[k] || zero,
                 ai = bi.shapeAngles[k] || 0;
 
             // All shapes of body j
-            for(var l=0; l<bj.shapes.length; l++){
+            for(var l=0; l!==bj.shapes.length; l++){
                 var sj = bj.shapes[l],
                     xj = bj.shapeOffsets[l] || zero,
                     aj = bj.shapeAngles[l] || 0;
