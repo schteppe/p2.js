@@ -29,6 +29,7 @@ module.exports = {
     Shape :                         require('./shapes/Shape'),
     Solver :                        require('./solver/Solver'),
     Spring :                        require('./objects/Spring'),
+    Utils :                         require('./utils/Utils'),
     World :                         require('./world/World'),
     QuadTree :                      require('./collision/QuadTree').QuadTree,
     vec2 :                          require('./math/vec2'),

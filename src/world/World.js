@@ -384,22 +384,15 @@ World.prototype.step = function(dt){
     }
 
     // Add contact equations to solver
-    for(var i=0, Ncontacts=np.contactEquations.length; i!==Ncontacts; i++){
-        solver.addEquation(np.contactEquations[i]);
-    }
-    for(var i=0, Nfriction=np.frictionEquations.length; i!==Nfriction; i++){
-        solver.addEquation(np.frictionEquations[i]);
-    }
+    solver.addEquations(np.contactEquations);
+    solver.addEquations(np.frictionEquations);
 
     // Add user-defined constraint equations
     var Nconstraints = constraints.length;
     for(i=0; i!==Nconstraints; i++){
         var c = constraints[i];
         c.update();
-        for(var j=0, Neq=c.equations.length; j!==Neq; j++){
-            var eq = c.equations[j];
-            solver.addEquation(eq);
-        }
+        solver.addEquations(c.equations);
     }
 
     if(this.solveConstraints)

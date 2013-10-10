@@ -1,3 +1,5 @@
+var Utils = require('../utils/Utils');
+
 module.exports = Solver;
 
 /**
@@ -28,6 +30,16 @@ Solver.prototype.solve = function(dt,world){
  */
 Solver.prototype.addEquation = function(eq){
     this.equations.push(eq);
+};
+
+/**
+ * Add equations. Same as .addEquation, but this time the argument is an array of Equations
+ *
+ * @method addEquations
+ * @param {Array} eqs
+ */
+Solver.prototype.addEquations = function(eqs){
+    Utils.appendArray(this.equations,eqs);
 };
 
 /**
