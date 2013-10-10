@@ -177,5 +177,5 @@ Spring.prototype.applyForce = function(){
     var ri_x_f = vec2.crossLength(ri, f);
     var rj_x_f = vec2.crossLength(rj, f);
     bodyA.angularForce -= ri_x_f;
-    bodyB.angularForce -= rj_x_f;
+    bodyB.angularForce += rj_x_f;
 };

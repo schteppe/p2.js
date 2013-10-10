@@ -115,6 +115,31 @@
         circle.addShape(circleShape);
         world.addBody(circle);
 
+
+        // Create connected boxes
+        var boxShape = new p2.Rectangle(radius*0.5,radius);
+        var box1 = new p2.Body({
+            mass : 1,
+            position : [-3, (M/2)*l*1.05 + radius],
+        });
+        var box2 = new p2.Body({
+            mass : 1,
+            position : [-4, (M/2)*l*1.05 + radius],
+            angularVelocity : -2
+        });
+        box1.addShape(boxShape);
+        box2.addShape(boxShape);
+        world.addBody(box1);
+        world.addBody(box2);
+        var s = new p2.Spring(box1, box2, {
+            restLength : 1,
+            stiffness : 10,
+            localAnchorA : [0,0.5],
+            localAnchorB : [0,0.5],
+        });
+        world.addSpring(s);
+
+
         // Create capsule
         var capsuleShape = new p2.Capsule(1,0.25);
         var capsuleBody = new p2.Body({
