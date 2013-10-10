@@ -24,7 +24,7 @@
             gravity : [0,-10],
         });
         world.solver.setSpookParams(1e5,3);
-        world.solver.iterations = 100;
+        world.solver.iterations = 50;
 
         // Use a Sweep And Prune (SAP) broadphase
         world.broadphase = new p2.SAP1DBroadphase(world);
