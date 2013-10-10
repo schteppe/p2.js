@@ -81,19 +81,22 @@ SAP1DBroadphase.sortAxisListY = function(bodyA,bodyB){
  */
 SAP1DBroadphase.prototype.getCollisionPairs = function(world){
     var bodies = this.axisList,
-        result = [],
-        axisIndex = this.axisIndex;
+        result = this.result,
+        axisIndex = this.axisIndex,
+        i,j,bi,bj;
+
+    result.length = 0;
 
     // Sort the list
     bodies.sort(axisIndex === 0 ? SAP1DBroadphase.sortAxisListX : SAP1DBroadphase.sortAxisListY );
 
     // Look through the list
-    for(var i=0, N=bodies.length; i!==N; i++){
-        var bi = bodies[i];
+    for(i=0, N=bodies.length; i!==N; i++){
+        bi = bodies[i];
 
-        for(var j=i+1; j<N; j++){
-            var bj = bodies[j],
-                boundA1 = bi.position[axisIndex]-bi.boundingRadius,
+        for(j=i+1; j<N; j++){
+            bj = bodies[j];
+            var boundA1 = bi.position[axisIndex]-bi.boundingRadius,
                 boundA2 = bi.position[axisIndex]+bi.boundingRadius,
                 boundB1 = bj.position[axisIndex]-bj.boundingRadius,
                 boundB2 = bj.position[axisIndex]+bj.boundingRadius;

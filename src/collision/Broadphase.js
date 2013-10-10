@@ -10,7 +10,7 @@ module.exports = Broadphase;
  * @constructor
  */
 function Broadphase(){
-
+    this.result = [];
 };
 
 /**

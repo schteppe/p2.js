@@ -26,14 +26,17 @@ NaiveBroadphase.prototype = new Broadphase();
  * @return {Array}
  */
 NaiveBroadphase.prototype.getCollisionPairs = function(world){
-    var bodies = world.bodies;
-    var result = [];
+    var bodies = world.bodies,
+        result = this.result,
+        i, j, bi, bj;
 
-    for(var i=0, Ncolliding=bodies.length; i!==Ncolliding; i++){
-        var bi = bodies[i];
+    result.length = 0;
 
-        for(var j=0; j<i; j++){
-            var bj = bodies[j];
+    for(i=0, Ncolliding=bodies.length; i!==Ncolliding; i++){
+        bi = bodies[i];
+
+        for(j=0; j<i; j++){
+            bj = bodies[j];
 
             if(Broadphase.boundingRadiusCheck(bi,bj))
                 result.push(bi,bj);
