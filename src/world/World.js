@@ -185,7 +185,6 @@ World.prototype = new Object(EventEmitter.prototype);
  */
 World.prototype.addConstraint = function(c){
     this.constraints.push(c);
-    c.id = this._constraintIdCounter++;
 };
 
 /**
@@ -545,6 +544,7 @@ World.prototype.toJSON = function(){
         if(c instanceof DistanceConstraint){
             jc.type = "DistanceConstraint";
             jc.distance = c.distance;
+            jc.maxForce = c.getMaxForce();
         } else if(c instanceof PointToPointConstraint){
             jc.type = "PointToPointConstraint";
             jc.pivotA = v2a(c.pivotA);
@@ -615,6 +615,7 @@ World.prototype.toJSON = function(){
             jsonShapes.push(jsonShape);
         }
         json.bodies.push({
+            id : b.id,
             mass : b.mass,
             angle : b.angle,
             position : v2a(b.position),
@@ -683,6 +684,7 @@ World.prototype.fromJSON = function(json){
                     angularVelocity :   jb.angularVelocity,
                     force :             jb.force,
                 });
+                b.id = jb.id;
 
                 for(var j=0; j<jss.length; j++){
                     var shape, js=jss[j];
@@ -747,7 +749,7 @@ World.prototype.fromJSON = function(json){
                     c;
                 switch(jc.type){
                     case "DistanceConstraint":
-                        c = new DistanceConstraint(this.bodies[jc.bodyA], this.bodies[jc.bodyB], jc.distance);
+                        c = new DistanceConstraint(this.bodies[jc.bodyA], this.bodies[jc.bodyB], jc.distance, jc.maxForce);
                         break;
                     case "PointToPointConstraint":
                         c = new PointToPointConstraint(this.bodies[jc.bodyA], jc.pivotA, this.bodies[jc.bodyB], jc.pivotB, jc.maxForce);

@@ -9,6 +9,7 @@ var World = require("../src/world/World")
 ,   Plane = require("../src/shapes/Plane")
 ,   Material = require("../src/material/Material")
 ,   ContactMaterial = require("../src/material/ContactMaterial")
+,   DistanceConstraint = require("../src/constraints/DistanceConstraint")
 ,   vec2 = require("../src/math/vec2")
 
 var world;
@@ -46,7 +47,7 @@ exports.toJSON = function(test){
         b.addShape(s);
 
         // Add material or not?
-        if(r() > 0.5){
+        if(i==0){
             s.material = new Material();
             lastMaterial = s.material;
         }
@@ -54,6 +55,7 @@ exports.toJSON = function(test){
         world.addBody(b);
     }
 
+    // Create contact material
     if(lastMaterial){
         var cm = new ContactMaterial(lastMaterial,lastMaterial,{
             friction :              r(),
@@ -65,6 +67,9 @@ exports.toJSON = function(test){
         });
         world.addContactMaterial(cm);
     }
+
+    // Add constraints
+    world.addConstraint(new DistanceConstraint(world.bodies[0],world.bodies[1],r(),r()));
 
     // JSON roundtrip
     var world2 = new World();
@@ -85,7 +90,7 @@ exports.toJSON = function(test){
         }
     }
 
-    test.deepEqual(world,world2,"World should be the same after a JSON roundtrip");
+    test.deepEqual(world.constraints[0],world2.constraints[0],"World should be the same after a JSON roundtrip");
 
     test.done();
 };

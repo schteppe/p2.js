@@ -30,8 +30,7 @@ function DistanceConstraint(bodyA,bodyB,distance,maxForce){
     this.equations = [ normal ];
 
     // Make the contact constraint bilateral
-    normal.minForce = -maxForce;
-    normal.maxForce =  maxForce;
+    this.setMaxForce(maxForce);
 }
 DistanceConstraint.prototype = new Constraint();
 
@@ -49,4 +48,15 @@ DistanceConstraint.prototype.update = function(){
     vec2.normalize(normal.ni,normal.ni);
     vec2.scale(normal.ri, normal.ni,  distance*0.5);
     vec2.scale(normal.rj, normal.ni, -distance*0.5);
+};
+
+DistanceConstraint.prototype.setMaxForce = function(f){
+    var normal = this.equations[0];
+    normal.minForce = -f;
+    normal.maxForce =  f;
+};
+
+DistanceConstraint.prototype.getMaxForce = function(f){
+    var normal = this.equations[0];
+    return normal.maxForce;
 };
