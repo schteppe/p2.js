@@ -32,14 +32,13 @@ exports.toJSON = function(test){
     var json = world.toJSON();
     world2.fromJSON(json);
 
-    test.equal( world2.bodies.length , 1 );
-    var b = world2.bodies[0];
-    test.deepEqual( b.position, x );
-    test.deepEqual( b.velocity, v );
-    test.deepEqual( b.force, f );
-    test.deepEqual( b.mass, m );
-    test.deepEqual( b.angle, a );
-    test.deepEqual( b.angularVelocity, av );
+    // The only thing that should differ between the two worlds are the id's of
+    // things. Therefore, we must set them to the same
+    for(var i=0; i<world.bodies.length; i++){
+        world.bodies[i].id = world2.bodies[i].id;
+    }
+    test.deepEqual(world,world2,"World should be the same after a JSON roundtrip");
+
     test.done();
 };
 
