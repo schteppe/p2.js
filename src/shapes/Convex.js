@@ -85,6 +85,11 @@ var updateCenterOfMass_centroid = vec2.create(),
     updateCenterOfMass_ca = vec2.create(),
     updateCenterOfMass_cb = vec2.create(),
     updateCenterOfMass_n = vec2.create();
+
+/**
+ * Update the .centerOfMass property.
+ * @method updateCenterOfMass
+ */
 Convex.prototype.updateCenterOfMass = function(){
     var triangles = this.triangles,
         verts = this.vertices,
@@ -100,8 +105,9 @@ Convex.prototype.updateCenterOfMass = function(){
         centroid_times_mass = updateCenterOfMass_centroid_times_mass;
 
     vec2.set(cm,0,0);
+    var totalArea = 0;
 
-    for(var i=0; i<triangles.length; i++){
+    for(var i=0; i!==triangles.length; i++){
         var t = triangles[i],
             a = verts[t[0]],
             b = verts[t[1]],
@@ -115,11 +121,14 @@ Convex.prototype.updateCenterOfMass = function(){
         // Get mass for the triangle (density=1 in this case)
         // http://math.stackexchange.com/questions/80198/area-of-triangle-via-vectors
         var m = 0.5 * vec2.crossLength(ca,cb);
+        totalArea += m;
 
         // Add to center of mass
         vec2.scale(centroid_times_mass, centroid, m);
         vec2.add(cm, cm, centroid_times_mass);
     }
+
+    vec2.scale(cm,cm,1/totalArea);
 };
 
 /**
