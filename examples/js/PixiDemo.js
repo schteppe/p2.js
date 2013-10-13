@@ -281,6 +281,32 @@ PixiDemo.drawConvex = function(g,verts,triangles,color,fillColor,lineWidth){
     }
 };
 
+PixiDemo.drawPath = function(g,path,color,fillColor,lineWidth){
+    lineWidth = lineWidth || 1;
+    color = typeof(color)=="undefined" ? 0x000000 : color;
+    g.lineStyle(lineWidth, color, 1);
+    //g.beginFill(0x000000);
+    var lastx = null,
+        lasty = null;
+    for(var i=0; i<path.length; i++){
+        var v = path[i],
+            x = v[0],
+            y = v[1];
+        if(x !== lastx || y !== lasty){
+            if(i==0)
+                g.moveTo(x,y);
+            else
+                g.lineTo(x,y);
+            lastx = x;
+            lasty = y;
+        }
+    }
+    // Draw back to first
+    if(path.length > 0)
+        g.lineTo(path[0][0],path[0][1]);
+    //g.endFill();
+};
+
 var X = vec2.fromValues(1,0),
     distVec = vec2.fromValues(0,0),
     worldAnchorA = vec2.fromValues(0,0),
@@ -350,43 +376,53 @@ PixiDemo.prototype.addRenderable = function(obj){
     if(obj instanceof Body && obj.shapes.length){
 
         var sprite = new PIXI.Graphics();
-        for(var i=0; i<obj.shapes.length; i++){
-            var child = obj.shapes[i],
-                offset = obj.shapeOffsets[i],
-                angle = obj.shapeAngles[i];
-            offset = offset || zero;
-            angle = angle || 0;
+        if(obj.concavePath){
+            var path = [],
+                vrot = vec2.create();
+            for(var j=0; j!==obj.concavePath.length; j++){
+                var v = obj.concavePath[j];
+                path.push([v[0]*ppu, -v[1]*ppu]);
+            }
+            PixiDemo.drawPath(sprite, path, 0x000000, 0xFFFFFF, lw);
+        } else {
+            for(var i=0; i<obj.shapes.length; i++){
+                var child = obj.shapes[i],
+                    offset = obj.shapeOffsets[i],
+                    angle = obj.shapeAngles[i];
+                offset = offset || zero;
+                angle = angle || 0;
 
-            if(child instanceof Circle){
-                PixiDemo.drawCircle(sprite,offset[0]*ppu,offset[1]*ppu,angle,child.radius*ppu,0xFFFFFF,lw);
+                if(child instanceof Circle){
+                    PixiDemo.drawCircle(sprite,offset[0]*ppu,offset[1]*ppu,angle,child.radius*ppu,0xFFFFFF,lw);
 
-            } else if(child instanceof Particle){
-                PixiDemo.drawCircle(sprite,offset[0]*ppu,offset[1]*ppu,angle,2*lw,0x000000,0);
+                } else if(child instanceof Particle){
+                    PixiDemo.drawCircle(sprite,offset[0]*ppu,offset[1]*ppu,angle,2*lw,0x000000,0);
 
-            } else if(child instanceof Plane){
-                // TODO use shape angle
-                PixiDemo.drawPlane(sprite, -10*ppu, 10*ppu, 0x000000, lw, lw*10, lw*10);
+                } else if(child instanceof Plane){
+                    // TODO use shape angle
+                    PixiDemo.drawPlane(sprite, -10*ppu, 10*ppu, 0x000000, lw, lw*10, lw*10);
 
-            } else if(child instanceof Line){
-                PixiDemo.drawLine(sprite, child.length*ppu, 0x000000, lw);
+                } else if(child instanceof Line){
+                    PixiDemo.drawLine(sprite, child.length*ppu, 0x000000, lw);
 
-            } else if(child instanceof Rectangle){
-                PixiDemo.drawRectangle(sprite, offset[0]*ppu, offset[1]*ppu, angle, child.width*ppu, child.height*ppu, 0x000000, lw);
+                } else if(child instanceof Rectangle){
+                    PixiDemo.drawRectangle(sprite, offset[0]*ppu, offset[1]*ppu, angle, child.width*ppu, child.height*ppu, 0x000000, lw);
 
-            } else if(child instanceof Capsule){
-                PixiDemo.drawCapsule(sprite, offset[0]*ppu, offset[1]*ppu, angle, child.length*ppu, child.radius*ppu, 0x000000, 0xFFFFFF,lw);
+                } else if(child instanceof Capsule){
+                    PixiDemo.drawCapsule(sprite, offset[0]*ppu, offset[1]*ppu, angle, child.length*ppu, child.radius*ppu, 0x000000, 0xFFFFFF,lw);
 
-            } else if(child instanceof Convex){
-                // Scale verts
-                var verts = [],
-                    vrot = vec2.create();
-                for(var j=0; j!==child.vertices.length; j++){
-                    var v = child.vertices[j];
-                    vec2.rotate(vrot, v, angle);
-                    verts.push([(vrot[0]+offset[0])*ppu, -(vrot[1]+offset[1])*ppu]);
+                } else if(child instanceof Convex){
+                    // Scale verts
+                    var verts = [],
+                        vrot = vec2.create();
+                    for(var j=0; j!==child.vertices.length; j++){
+                        var v = child.vertices[j];
+                        vec2.rotate(vrot, v, angle);
+                        verts.push([(vrot[0]+offset[0])*ppu, -(vrot[1]+offset[1])*ppu]);
+                    }
+                    PixiDemo.drawConvex(sprite, verts, []/*child.triangles*/, 0x000000, 0xFFFFFF, lw);
+
                 }
-                PixiDemo.drawConvex(sprite, verts, []/*child.triangles*/, 0x000000, 0xFFFFFF, lw);
-
             }
         }
         this.sprites.push(sprite);

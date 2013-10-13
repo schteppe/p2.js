@@ -26,6 +26,8 @@ function DemoStates(){};
 DemoStates.DEFAULT =  1;
 DemoStates.PANNING =  2;
 DemoStates.DRAGGING = 3;
+DemoStates.DRAWPOLYGON = 4;
+DemoStates.DRAWINGPOLYGON  = 5;
 
 /**
  * Base class for rendering of a scene.
@@ -51,6 +53,8 @@ function Demo(world){
     this.mouseConstraint = null;
     this.nullBody = new Body();
     this.pickPrecision = 5;
+
+    this.drawPoints = [];
 
     this.stats_sum = 0;
     this.stats_N = 100;
@@ -95,6 +99,15 @@ function Demo(world){
                     that.removeAllVisuals();
                     that.world.fromJSON(that.initialState);
                     break;
+                case "d": // toggle draw mode
+                    if(that.state == DemoStates.DRAWPOLYGON){
+                        console.log("default mode")
+                        that.state = DemoStates.DEFAULT;
+                    } else {
+                        console.log("draw poly mode")
+                        that.state = DemoStates.DRAWPOLYGON;
+                    }
+                    break;
             }
         }
     });
@@ -112,6 +125,7 @@ Demo.prototype = new EventEmitter();
  */
 Demo.prototype.handleMouseDown = function(physicsPosition){
     switch(this.state){
+
         case DemoStates.DEFAULT:
             var result = this.world.hitTest(physicsPosition,world.bodies,this.pickPrecision);
             if(result.length > 0){
@@ -128,6 +142,15 @@ Demo.prototype.handleMouseDown = function(physicsPosition){
                 this.state = DemoStates.PANNING;
             }
             break;
+
+        case DemoStates.DRAWPOLYGON:
+            // Start drawing a polygon
+            this.state = DemoStates.DRAWINGPOLYGON;
+            this.drawPoints.length = 0;
+            var copy = vec2.create();
+            vec2.copy(copy,physicsPosition);
+            this.drawPoints.push(copy);
+            break;
     }
 };
 
@@ -135,6 +158,18 @@ Demo.prototype.handleMouseDown = function(physicsPosition){
  * Should be called by subclasses whenever there's a mousedown event
  */
 Demo.prototype.handleMouseMove = function(physicsPosition){
+    var sampling = 0.3;
+    switch(this.state){
+        case DemoStates.DRAWINGPOLYGON:
+            // drawing a polygon - add new point
+            var sqdist = vec2.dist(physicsPosition,this.drawPoints[this.drawPoints.length-1]);
+            if(sqdist > sampling*sampling){
+                var copy = vec2.create();
+                vec2.copy(copy,physicsPosition);
+                this.drawPoints.push(copy);
+            }
+            break;
+    }
 };
 
 /**
@@ -151,6 +186,20 @@ Demo.prototype.handleMouseUp = function(physicsPosition){
             this.world.removeBody(this.nullBody);
         case DemoStates.PANNING:
             this.state = DemoStates.DEFAULT;
+            break;
+        case DemoStates.DRAWINGPOLYGON:
+            // End this drawing state
+            this.state = DemoStates.DRAWPOLYGON;
+            if(this.drawPoints.length > 3){
+                // Create polygon
+                var b = new Body({ mass : 1 });
+                if(b.fromConcavePath(this.drawPoints,{
+                    removeCollinearPoints : 0.01,
+                })){
+                    this.world.addBody(b);
+                }
+                this.drawPoints.length = 0;
+            }
             break;
     }
 };
