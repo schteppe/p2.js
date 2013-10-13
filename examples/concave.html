@@ -21,7 +21,7 @@
 
         // Create ground
         var planeShape = new p2.Plane();
-        var plane = new p2.Body();
+        var plane = new p2.Body({ position: [0,-2]});
         plane.addShape(planeShape);
         world.addBody(plane);
 
@@ -41,6 +41,7 @@
         world.addBody(concaveBody);
 
         var demo = new PixiDemo(world);
+        demo.state = DemoStates.DRAWPOLYGON;
 
         function update(){
             if(!demo.paused)
