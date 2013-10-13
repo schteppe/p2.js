@@ -12,8 +12,8 @@
 <body>
     <script>
 
-        var size = 0.25,
-            dropHeight = 2.2,
+        var size = 0.23,
+            dropHeight = size*2,
             dist = size * 2;
 
         var world = new p2.World({
@@ -21,7 +21,7 @@
             gravity : [0,-10],
         });
 
-        //world.broadphase = new p2.SAP1DBroadphase(world);
+        world.broadphase = new p2.SAP1DBroadphase(world);
 
         world.solver.iterations = 20;
         world.solver.setSpookParams(1e4,4);
