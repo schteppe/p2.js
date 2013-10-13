@@ -17,10 +17,11 @@ exports.updateCenterOfMass = function(test){
     test.equal(c.centerOfMass[0],0);
     test.equal(c.centerOfMass[1],0);
 
-    // translate all points
+    // rotate and translate all points
     var offset = vec2.fromValues(1,1);
-    for(var i=0; i<c.vertices.length; i++){
+    for(var i=0; i!==c.vertices.length; i++){
         var v = c.vertices[i];
+        vec2.rotate(v,v,Math.PI/4);
         vec2.add(v,v,offset);
     }
 
