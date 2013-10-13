@@ -146,7 +146,7 @@ Demo.prototype.handleMouseDown = function(physicsPosition){
         case DemoStates.DRAWPOLYGON:
             // Start drawing a polygon
             this.state = DemoStates.DRAWINGPOLYGON;
-            this.drawPoints.length = 0;
+            this.drawPoints = [];
             var copy = vec2.create();
             vec2.copy(copy,physicsPosition);
             this.drawPoints.push(copy);
@@ -177,16 +177,20 @@ Demo.prototype.handleMouseMove = function(physicsPosition){
  */
 Demo.prototype.handleMouseUp = function(physicsPosition){
     switch(this.state){
+
         case DemoStates.DEFAULT:
             break;
+
         case DemoStates.DRAGGING:
             // Drop constraint
             this.world.removeConstraint(this.mouseConstraint);
             this.mouseConstraint = null;
             this.world.removeBody(this.nullBody);
+
         case DemoStates.PANNING:
             this.state = DemoStates.DEFAULT;
             break;
+
         case DemoStates.DRAWINGPOLYGON:
             // End this drawing state
             this.state = DemoStates.DRAWPOLYGON;
@@ -198,8 +202,8 @@ Demo.prototype.handleMouseUp = function(physicsPosition){
                 })){
                     this.world.addBody(b);
                 }
-                this.drawPoints.length = 0;
             }
+            this.drawPoints = [];
             break;
     }
 };
