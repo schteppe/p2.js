@@ -385,14 +385,15 @@ Nearphase.prototype.circleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTest)
  * @param  {Array} xj
  * @param  {Number} aj
  */
-Nearphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj){
+Nearphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTest, circleRadius){
     var convexShape = sj,
         convexAngle = aj,
         convexBody = bj,
         convexOffset = xj,
         circleOffset = xi,
         circleBody = bi,
-        circleShape = si;
+        circleShape = si,
+        circleRadius = typeof(circleRadius)=="number" ? circleRadius : circleShape.radius;
 
     var worldVertex0 = tmp1,
         worldVertex1 = tmp2,
@@ -404,7 +405,12 @@ Nearphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj){
         orthoDist = tmp8,
         projectedPoint = tmp9,
         dist = tmp10,
-        worldVertex = tmp11;
+        worldVertex = tmp11,
+
+        closestEdge = -1,
+        closestEdgeDistance = null,
+        closestEdgeOrthoDist = tmp12,
+        closestEdgeProjectedPoint = tmp13;
 
     var numReported = 0;
 
@@ -433,7 +439,7 @@ Nearphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj){
 
         sub(convexToCircle, circleOffset, convexOffset);
 
-        if(d < circleShape.radius && dot(centerDist,convexToCircle) > 0){
+        if(d < circleRadius && dot(centerDist,convexToCircle) > 0){
 
             // Now project the circle onto the edge
             vec2.scale(orthoDist, worldTangent, d);
@@ -447,23 +453,70 @@ Nearphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj){
             if(pos > pos0 && pos < pos1){
                 // We got contact!
 
+                if(justTest) return true;
+
+                if(closestEdgeDistance === null || d*d<closestEdgeDistance*closestEdgeDistance){
+                    closestEdgeDistance = d;
+                    closestEdge = i;
+                    vec2.copy(closestEdgeOrthoDist, orthoDist);
+                    vec2.copy(closestEdgeProjectedPoint, projectedPoint);
+                }
+            }
+        }
+    }
+
+    if(closestEdge != -1){
+        var c = this.createContactEquation(circleBody,convexBody);
+
+        vec2.scale(c.ni, closestEdgeOrthoDist, -1);
+        vec2.normalize(c.ni, c.ni);
+
+        vec2.scale(c.ri,  c.ni, circleRadius);
+        add(c.ri, c.ri, circleOffset);
+        sub(c.ri, c.ri, circleBody.position);
+
+        sub(c.rj, closestEdgeProjectedPoint, convexOffset);
+        add(c.rj, c.rj, convexOffset);
+        sub(c.rj, c.rj, convexBody.position);
+
+        this.contactEquations.push(c);
+
+        if(this.enableFriction)
+            this.frictionEquations.push( this.createFrictionFromContact(c) );
+
+        return true;
+    }
+
+    // Check all vertices
+    if(circleRadius > 0){
+        for(var i=0; i<verts.length; i++){
+            var localVertex = verts[i];
+            vec2.rotate(worldVertex, localVertex, convexAngle);
+            add(worldVertex, worldVertex, convexOffset);
+
+            sub(dist, worldVertex, circleOffset);
+            if(vec2.squaredLength(dist) < circleRadius*circleRadius){
+
+                if(justTest) return true;
+
                 var c = this.createContactEquation(circleBody,convexBody);
 
-                vec2.scale(c.ni, orthoDist, -1);
-                vec2.normalize(c.ni, c.ni);
+                vec2.copy(c.ni, dist);
+                vec2.normalize(c.ni,c.ni);
 
-                vec2.scale( c.ri, c.ni,  circleShape.radius);
+                // Vector from circle to contact point is the normal times the circle radius
+                vec2.scale(c.ri, c.ni, circleRadius);
                 add(c.ri, c.ri, circleOffset);
                 sub(c.ri, c.ri, circleBody.position);
 
-                sub( c.rj, projectedPoint, convexOffset);
+                sub(c.rj, worldVertex, convexOffset);
                 add(c.rj, c.rj, convexOffset);
                 sub(c.rj, c.rj, convexBody.position);
 
                 this.contactEquations.push(c);
 
                 if(this.enableFriction){
-                    this.frictionEquations.push( this.createFrictionFromContact(c) );
+                    this.frictionEquations.push(this.createFrictionFromContact(c));
                 }
 
                 return true;
@@ -471,38 +524,6 @@ Nearphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj){
         }
     }
 
-    // Check all vertices
-    for(var i=0; i<verts.length; i++){
-        var localVertex = verts[i];
-        vec2.rotate(worldVertex, localVertex, convexAngle);
-        add(worldVertex, worldVertex, convexOffset);
-
-        sub(dist, worldVertex, circleOffset);
-        if(vec2.squaredLength(dist) < circleShape.radius*circleShape.radius){
-
-            var c = this.createContactEquation(circleBody,convexBody);
-
-            vec2.copy(c.ni, dist);
-            vec2.normalize(c.ni,c.ni);
-
-            // Vector from circle to contact point is the normal times the circle radius
-            vec2.scale(c.ri, c.ni, circleShape.radius);
-            add(c.ri, c.ri, circleOffset);
-            sub(c.ri, c.ri, circleBody.position);
-
-            sub(c.rj, worldVertex, convexOffset);
-            add(c.rj, c.rj, convexOffset);
-            sub(c.rj, c.rj, convexBody.position);
-
-            this.contactEquations.push(c);
-
-            if(this.enableFriction){
-                this.frictionEquations.push(this.createFrictionFromContact(c));
-            }
-
-            return true;
-        }
-    }
     return false;
 };
 
@@ -547,6 +568,7 @@ Nearphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
     verts = convexShape.vertices;
 
     // Check all edges first
+    var lastd = null;
     for(var i=0; i<verts.length; i++){
         var v0 = verts[i],
             v1 = verts[(i+1)%verts.length];
@@ -568,6 +590,10 @@ Nearphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
         sub(dist, particleOffset, worldVertex0);
         var d = dot(dist, worldTangent);
         sub(centerDist, worldVertex0, convexOffset);
+
+        if(lastd===null) lastd = d;
+
+        if(d*lastd < 0) return false;
 
         sub(convexToparticle, particleOffset, convexOffset);
 
@@ -602,10 +628,12 @@ Nearphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
         vec2.copy(c.ni, closestEdgeOrthoDist);
         vec2.normalize(c.ni, c.ni);
 
+        // Particle has no extent to the contact point
         vec2.set(c.ri,  0, 0);
         add(c.ri, c.ri, particleOffset);
         sub(c.ri, c.ri, particleBody.position);
 
+        // From convex center to point
         sub(c.rj, closestEdgeProjectedPoint, convexOffset);
         add(c.rj, c.rj, convexOffset);
         sub(c.rj, c.rj, convexBody.position);
