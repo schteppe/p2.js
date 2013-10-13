@@ -27,8 +27,8 @@ exports.updateCenterOfMass = function(test){
 
     c.updateCenterOfMass();
 
-    test.equal(c.centerOfMass[0], offset[0]);
-    test.equal(c.centerOfMass[1], offset[1]);
+    test.ok(Math.abs(c.centerOfMass[0]-offset[0]) < 0.01);
+    test.ok(Math.abs(c.centerOfMass[1]-offset[1]) < 0.01);
 
     test.done();
 };
