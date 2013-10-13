@@ -1,4 +1,6 @@
-var vec2 = require('../math/vec2');
+var vec2 = require('../math/vec2')
+,   decomp = require('poly-decomp')
+,   Convex = require('../shapes/Convex')
 
 module.exports = Body;
 
@@ -225,11 +227,35 @@ Body.prototype.updateBoundingRadius = function(){
  *     body.addShape(shape,[0,1],Math.PI/2);
  */
 Body.prototype.addShape = function(shape,offset,angle){
+
+    // Copy the offset vector
+    if(offset){
+        offset = vec2.fromValues(offset[0],offset[1]);
+    }
+
     this.shapes      .push(shape);
     this.shapeOffsets.push(offset);
     this.shapeAngles .push(angle);
     this.updateMassProperties();
     this.updateBoundingRadius();
+};
+
+/**
+ * Remove a shape
+ * @method removeShape
+ * @param  {Shape}  shape
+ * @return {Boolean}       True if the shape was found and removed, else false.
+ */
+Body.prototype.removeShape = function(shape){
+    var idx = this.shapes.indexOf(shape);
+
+    if(idx != -1){
+        this.shapes.splice(idx,1);
+        this.shapeOffsets.splice(idx,1);
+        this.shapeAngles.splice(idx,1);
+        return true;
+    } else
+        return false;
 };
 
 /**
@@ -303,6 +329,103 @@ Body.prototype.toLocalFrame = function(out, worldPoint){
  */
 Body.prototype.toWorldFrame = function(out, localPoint){
     vec2.toGlobalFrame(out, localPoint, this.position, this.angle);
+};
+
+/**
+ * Reads a concave shape path, and assembles convex shapes from that and puts them at proper offset points.
+ * @param {Array} path An array of 2d vectors, e.g. [[0,0],[0,1],...] that resembles a convex shape. The shape must be simple and without holes.
+ * @param {Object} [options]
+ * @param {Boolean} [options.optimalDecomp=false]   Set to true if you need optimal decomposition. Warning: very slow for polygons with more than 10 vertices.
+ * @param {Boolean} [options.skipSimpleCheck=false] Set to true if you already know that the path is not intersecting itself.
+ * @return {Boolean} True on success, else false.
+ */
+Body.prototype.fromConcavePath = function(path,options){
+    options = options || {};
+
+    // Remove all shapes
+    for(var i=this.shapes.length; i>=0; --i)
+        this.removeShape(this.shapes[i]);
+
+    var p = new decomp.Polygon();
+    p.vertices = path;
+
+    // Check if any line segment intersects the path itself
+    if(!options.skipSimpleCheck && !p.isSimple()) return false;
+
+    // Make it counter-clockwise
+    p.makeCCW();
+
+    // Slow or fast decomp?
+    var convexes;
+    if(options.optimalDecomp)   convexes = p.decomp();
+    else                        convexes = p.quickDecomp();
+
+    var cm = vec2.create();
+
+    // Add convexes
+    for(var i=0; i!==convexes.length; i++){
+        // Create convex
+        var c = new Convex(convexes[i].vertices);
+
+        // Move all vertices so its center of mass is in the local center of the convex
+        for(var j=0; j!==c.vertices.length; j++){
+            var v = c.vertices[j];
+            vec2.sub(v,v,c.centerOfMass);
+        }
+
+        vec2.scale(cm,c.centerOfMass,1);
+        c.updateTriangles();
+        c.updateCenterOfMass();
+        c.updateBoundingRadius();
+
+        // Add the shape
+        this.addShape(c,cm);
+    }
+
+    this.adjustCenterOfMass();
+
+    return true;
+};
+
+var adjustCenterOfMass_tmp1 = vec2.fromValues(0,0),
+    adjustCenterOfMass_tmp2 = vec2.fromValues(0,0),
+    adjustCenterOfMass_tmp3 = vec2.fromValues(0,0),
+    adjustCenterOfMass_tmp4 = vec2.fromValues(0,0);
+
+/**
+ * Moves the shape offsets so their center of mass becomes the body center of mass.
+ */
+Body.prototype.adjustCenterOfMass = function(){
+    var zero =              adjustCenterOfMass_tmp1,
+        offset_times_area = adjustCenterOfMass_tmp2,
+        sum =               adjustCenterOfMass_tmp3,
+        cm =                adjustCenterOfMass_tmp4,
+        totalArea =         0;
+    vec2.set(sum,0,0);
+    vec2.set(zero,0,0);
+
+    for(var i=0; i!==this.shapes.length; i++){
+        var s = this.shapes[i],
+            offset = this.shapeOffsets[i] || zero;
+        vec2.scale(offset_times_area,offset,s.area);
+        vec2.add(sum,sum,offset_times_area);
+        totalArea += s.area;
+    }
+
+    vec2.scale(cm,sum,1/totalArea);
+
+    // Now move all shapes
+    for(var i=0; i!==this.shapes.length; i++){
+        var s = this.shapes[i],
+            offset = this.shapeOffsets[i];
+
+        // Offset may be undefined. Fix that.
+        if(!offset){
+            offset = this.shapeOffsets[i] = vec2.create();
+        }
+
+        vec2.sub(offset,offset,cm);
+    }
 };
 
 /**

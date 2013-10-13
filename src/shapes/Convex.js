@@ -1,6 +1,7 @@
 var Shape = require('./Shape')
 ,   vec2 = require('../math/vec2')
 ,   polyk = require('../math/polyk')
+,   decomp = require('poly-decomp')
 
 module.exports = Convex;
 
@@ -19,6 +20,13 @@ function Convex(vertices){
      * @type {Array}
      */
     this.vertices = vertices || [];
+
+    // Copy the verts
+    for(var i=0; i<this.vertices.length; i++){
+        var v = vec2.fromValues();
+        vec2.copy(v,this.vertices[i]);
+        this.vertices[i] = v;
+    }
 
     /**
      * The center of mass of the Convex
@@ -115,12 +123,9 @@ Convex.prototype.updateCenterOfMass = function(){
 
         vec2.centroid(centroid,a,b,c);
 
-        vec2.sub(ca, c, a);
-        vec2.sub(cb, c, b);
-
         // Get mass for the triangle (density=1 in this case)
         // http://math.stackexchange.com/questions/80198/area-of-triangle-via-vectors
-        var m = 0.5 * vec2.crossLength(ca,cb);
+        var m = decomp.Point.area(a,b,c)
         totalArea += m;
 
         // Add to center of mass
@@ -218,5 +223,24 @@ Convex.prototype.updateBoundingRadius = function(){
     }
 
     this.boundingRadius = Math.sqrt(r2);
+};
+
+Convex.prototype.updateArea = function(){
+    this.updateTriangles();
+    this.area = 0;
+
+    var triangles = this.triangles,
+        verts = this.vertices;
+    for(var i=0; i!==triangles.length; i++){
+        var t = triangles[i],
+            a = verts[t[0]],
+            b = verts[t[1]],
+            c = verts[t[2]];
+
+        // Get mass for the triangle (density=1 in this case)
+        // http://math.stackexchange.com/questions/80198/area-of-triangle-via-vectors
+        var m = decomp.Point.area(a,b,c)
+        this.area += m;
+    }
 };
 

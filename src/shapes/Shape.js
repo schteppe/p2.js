@@ -60,6 +60,9 @@ function Shape(type){
      * @type {Material}
      */
     this.material = null;
+
+    this.area = 0;
+    this.updateArea();
 };
 
 Shape.CIRCLE =      1;
@@ -87,4 +90,8 @@ Shape.prototype.computeMomentOfInertia = function(mass){
  */
 Shape.prototype.updateBoundingRadius = function(){
     throw new Error("Shape.updateBoundingRadius is not implemented in this Shape...");
+};
+
+Shape.prototype.updateArea = function(){
+    // To be implemented in all subclasses
 };
