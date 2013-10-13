@@ -23,11 +23,12 @@ var GSSolver = require('../solver/GSSolver')
 module.exports = World;
 
 function now(){
-    if(performance.now)
-        return performance.now();
-    else if(performance.webkitNow)
-        return performance.webkitNow();
-    else
+    if(typeof(performance)!="undefined"){
+        if(performance.now)
+            return performance.now();
+        else if(performance.webkitNow)
+            return performance.webkitNow();
+    } else
         return new Date().getTime();
 }
 
