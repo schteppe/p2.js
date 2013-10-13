@@ -61,7 +61,7 @@ module.exports = {
     version :                       require('../package.json').version,
 };
 
-},{"../package.json":2,"./objects/Body":3,"./collision/Broadphase":4,"./shapes/Capsule":5,"./shapes/Circle":6,"./constraints/Constraint":7,"./constraints/ContactEquation":8,"./material/ContactMaterial":9,"./shapes/Convex":10,"./constraints/DistanceConstraint":11,"./constraints/Equation":12,"./events/EventEmitter":13,"./constraints/FrictionEquation":14,"./collision/GridBroadphase":15,"./solver/GSSolver":16,"./solver/IslandSolver":17,"./shapes/Line":18,"./material/Material":19,"./collision/NaiveBroadphase":20,"./shapes/Particle":21,"./shapes/Plane":22,"./constraints/PointToPointConstraint":23,"./constraints/PrismaticConstraint":24,"./shapes/Rectangle":25,"./constraints/RotationalVelocityEquation":26,"./shapes/Shape":27,"./collision/SAP1DBroadphase":28,"./solver/Solver":29,"./objects/Spring":30,"./utils/Utils":31,"./world/World":32,"./collision/QuadTree":33,"./math/vec2":34}],2:[function(require,module,exports){
+},{"../package.json":2,"./objects/Body":3,"./collision/Broadphase":4,"./shapes/Capsule":5,"./shapes/Circle":6,"./constraints/Constraint":7,"./constraints/ContactEquation":8,"./material/ContactMaterial":9,"./shapes/Convex":10,"./constraints/DistanceConstraint":11,"./constraints/Equation":12,"./events/EventEmitter":13,"./constraints/FrictionEquation":14,"./collision/GridBroadphase":15,"./solver/GSSolver":16,"./solver/IslandSolver":17,"./shapes/Line":18,"./material/Material":19,"./collision/NaiveBroadphase":20,"./shapes/Particle":21,"./shapes/Plane":22,"./constraints/PointToPointConstraint":23,"./constraints/PrismaticConstraint":24,"./shapes/Rectangle":25,"./constraints/RotationalVelocityEquation":26,"./collision/SAP1DBroadphase":27,"./shapes/Shape":28,"./solver/Solver":29,"./objects/Spring":30,"./utils/Utils":31,"./world/World":32,"./collision/QuadTree":33,"./math/vec2":34}],2:[function(require,module,exports){
 module.exports={
     "name": "p2",
     "version": "0.2.0",
@@ -99,7 +99,8 @@ module.exports={
         "grunt-contrib-concat": "~0.1.3",
         "grunt-contrib-uglify": "*",
         "grunt-browserify" : "*",
-        "browserify":"*"
+        "browserify":"*",
+        "poly-decomp" : "git://github.com/schteppe/poly-decomp.js"
     },
     "dependencies" : {
         "gl-matrix":"2.0.0"
@@ -419,7 +420,7 @@ function Material(){
     this.id = idCounter++;
 };
 
-},{}],27:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 module.exports = Shape;
 
 /**
@@ -482,6 +483,15 @@ function Shape(type){
      * @type {Material}
      */
     this.material = null;
+
+    /**
+     * Area of this shape.
+     * @property area
+     * @type {Number}
+     */
+    this.area = 0;
+
+    this.updateArea();
 };
 
 Shape.CIRCLE =      1;
@@ -511,6 +521,14 @@ Shape.prototype.updateBoundingRadius = function(){
     throw new Error("Shape.updateBoundingRadius is not implemented in this Shape...");
 };
 
+/**
+ * Update the .area property of the shape.
+ * @method updateArea
+ */
+Shape.prototype.updateArea = function(){
+    // To be implemented in all subclasses
+};
+
 },{}],31:[function(require,module,exports){
 module.exports = Utils;
 
@@ -538,339 +556,7 @@ Utils.appendArray = function(a,b){
     }
 };
 
-},{}],3:[function(require,module,exports){
-var vec2 = require('../math/vec2');
-
-module.exports = Body;
-
-var zero = vec2.fromValues(0,0);
-
-/**
- * A rigid body. Has got a center of mass, position, velocity and a number of
- * shapes that are used for collisions.
- *
- * @class Body
- * @constructor
- * @param {Object}              [options]
- * @param {Number}              [options.mass=0]    A number >= 0. If zero, the .motionState will be set to Body.STATIC.
- * @param {Float32Array|Array}  [options.position]
- * @param {Float32Array|Array}  [options.velocity]
- * @param {Number}              [options.angle=0]
- * @param {Number}              [options.angularVelocity=0]
- * @param {Float32Array|Array}  [options.force]
- * @param {Number}              [options.angularForce=0]
- *
- * @todo Should not take mass as argument to Body, but as density to each Shape
- */
-function Body(options){
-    options = options || {};
-
-    /**
-     * The body identifyer
-     * @property id
-     * @type {Number}
-     */
-    this.id = ++Body._idCounter;
-
-    /**
-     * The shapes of the body. The local transform of the shape in .shapes[i] is
-     * defined by .shapeOffsets[i] and .shapeAngles[i].
-     *
-     * @property shapes
-     * @type {Array}
-     */
-    this.shapes = [];
-
-    /**
-     * The local shape offsets, relative to the body center of mass. This is an
-     * array of Float32Array.
-     * @property shapeOffsets
-     * @type {Array}
-     */
-    this.shapeOffsets = [];
-
-    /**
-     * The body-local shape angle transforms. This is an array of numbers (angles).
-     * @property shapeAngles
-     * @type {Array}
-     */
-    this.shapeAngles = [];
-
-    /**
-     * The mass of the body.
-     * @property mass
-     * @type {number}
-     */
-    this.mass = options.mass || 0;
-
-    /**
-     * The inverse mass of the body.
-     * @property invMass
-     * @type {number}
-     */
-    this.invMass = 0;
-
-    /**
-     * The inertia of the body around the Z axis.
-     * @property inertia
-     * @type {number}
-     */
-    this.inertia = 0;
-
-    /**
-     * The inverse inertia of the body.
-     * @property invInertia
-     * @type {number}
-     */
-    this.invInertia = 0;
-
-    this.updateMassProperties();
-
-    /**
-     * The position of the body
-     * @property position
-     * @type {Float32Array}
-     */
-    this.position = vec2.fromValues(0,0);
-    if(options.position) vec2.copy(this.position, options.position);
-
-    /**
-     * The velocity of the body
-     * @property velocity
-     * @type {Float32Array}
-     */
-    this.velocity = vec2.fromValues(0,0);
-    if(options.velocity) vec2.copy(this.velocity, options.velocity);
-
-    /**
-     * Constraint velocity that was added to the body during the last step.
-     * @property vlambda
-     * @type {Float32Array}
-     */
-    this.vlambda = vec2.fromValues(0,0);
-
-    /**
-     * Angular constraint velocity that was added to the body during last step.
-     * @property wlambda
-     * @type {Float32Array}
-     */
-    this.wlambda = 0;
-
-    /**
-     * The angle of the body
-     * @property angle
-     * @type {number}
-     */
-    this.angle = options.angle || 0;
-
-    /**
-     * The angular velocity of the body
-     * @property angularVelocity
-     * @type {number}
-     */
-    this.angularVelocity = options.angularVelocity || 0;
-
-    /**
-     * The force acting on the body
-     * @property force
-     * @type {Float32Array}
-     */
-    this.force = vec2.create();
-    if(options.force) vec2.copy(this.force, options.force);
-
-    /**
-     * The angular force acting on the body
-     * @property angularForce
-     * @type {number}
-     */
-    this.angularForce = options.angularForce || 0;
-
-    /**
-     * The type of motion this body has. Should be one of: Body.STATIC (the body
-     * does not move), Body.DYNAMIC (body can move and respond to collisions)
-     * and Body.KINEMATIC (only moves according to its .velocity).
-     *
-     * @property motionState
-     * @type {number}
-     *
-     * @example
-     *     // This body will move and interact with other bodies
-     *     var dynamicBody = new Body();
-     *     dynamicBody.motionState = Body.DYNAMIC;
-     *
-     * @example
-     *     // This body will not move at all
-     *     var staticBody = new Body();
-     *     staticBody.motionState = Body.STATIC;
-     *
-     * @example
-     *     // This body will only move if you change its velocity
-     *     var kinematicBody = new Body();
-     *     kinematicBody.motionState = Body.KINEMATIC;
-     */
-    this.motionState = this.mass == 0 ? Body.STATIC : Body.DYNAMIC;
-
-    /**
-     * Bounding circle radius
-     * @property boundingRadius
-     * @type {Number}
-     */
-    this.boundingRadius = 0;
-};
-
-Body._idCounter = 0;
-
-/**
- * Update the bounding radius of the body. Should be done if any of the shapes
- * are changed.
- * @method updateBoundingRadius
- */
-Body.prototype.updateBoundingRadius = function(){
-    var shapes = this.shapes,
-        shapeOffsets = this.shapeOffsets,
-        N = shapes.length,
-        radius = 0;
-
-    for(var i=0; i!==N; i++){
-        var shape = shapes[i],
-            offset = vec2.length(shapeOffsets[i] || zero),
-            r = shape.boundingRadius;
-        if(offset + r > radius)
-            radius = offset + r;
-    }
-
-    this.boundingRadius = radius;
-};
-
-/**
- * Add a shape to the body. You can pass a local transform when adding a shape,
- * so that the shape gets an offset and angle relative to the body center of mass.
- * Will automatically update the mass properties and bounding radius.
- *
- * @method addShape
- * @param  {Shape}              shape
- * @param  {Float32Array|Array} [offset] Local body offset of the shape.
- * @param  {Number}             [angle]  Local body angle.
- *
- * @example
- *     var body = new Body(),
- *         shape = new Circle();
- *
- *     // Add the shape to the body, positioned in the center
- *     body.addShape(shape);
- *
- *     // Add another shape to the body, positioned 1 unit length from the body center of mass along the local x-axis.
- *     body.addShape(shape,[1,0]);
- *
- *     // Add another shape to the body, positioned 1 unit length from the body center of mass along the local y-axis, and rotated 90 degrees CCW.
- *     body.addShape(shape,[0,1],Math.PI/2);
- */
-Body.prototype.addShape = function(shape,offset,angle){
-    this.shapes      .push(shape);
-    this.shapeOffsets.push(offset);
-    this.shapeAngles .push(angle);
-    this.updateMassProperties();
-    this.updateBoundingRadius();
-};
-
-/**
- * Updates .inertia, .invMass, .invInertia for this Body. Should be called when
- * changing the structure or mass of the Body.
- *
- * @method updateMassProperties
- *
- * @example
- *     body.mass += 1;
- *     body.updateMassProperties();
- */
-Body.prototype.updateMassProperties = function(){
-    var shapes = this.shapes,
-        N = shapes.length,
-        m = this.mass / N,
-        I = 0;
-
-    for(var i=0; i<N; i++){
-        var shape = shapes[i],
-            r2 = vec2.squaredLength(this.shapeOffsets[i] || zero),
-            Icm = shape.computeMomentOfInertia(m);
-        I += Icm + m*r2;
-    }
-
-    this.inertia = I;
-
-    // Inverse mass properties are easy
-    this.invMass = this.mass > 0 ? 1/this.mass : 0;
-    this.invInertia = I>0 ? 1/I : 0;
-};
-
-var Body_applyForce_r = vec2.create();
-
-/**
- * Apply force to a world point. This could for example be a point on the RigidBody surface. Applying force this way will add to Body.force and Body.angularForce.
- * @method applyForce
- * @param {Float32Array} force The force to add.
- * @param {Float32Array} worldPoint A world point to apply the force on.
- */
-Body.prototype.applyForce = function(force,worldPoint){
-    // Compute point position relative to the body center
-    var r = Body_applyForce_r;
-    vec2.sub(r,worldPoint,this.position);
-
-    // Add linear force
-    vec2.add(this.force,this.force,force);
-
-    // Compute produced rotational force
-    var rotForce = vec2.crossLength(r,force);
-
-    // Add rotational force
-    this.angularForce += rotForce;
-};
-
-/**
- * Transform a world point to local body frame.
- * @method toLocalFrame
- * @param  {Float32Array|Array} out          The vector to store the result in
- * @param  {Float32Array|Array} worldPoint   The input world vector
- */
-Body.prototype.toLocalFrame = function(out, worldPoint){
-    vec2.toLocalFrame(out, worldPoint, this.position, this.angle);
-};
-
-/**
- * Transform a local point to world frame.
- * @method toWorldFrame
- * @param  {Array} out          The vector to store the result in
- * @param  {Array} localPoint   The input local vector
- */
-Body.prototype.toWorldFrame = function(out, localPoint){
-    vec2.toGlobalFrame(out, localPoint, this.position, this.angle);
-};
-
-/**
- * Dynamic body.
- * @property DYNAMIC
- * @type {Number}
- * @static
- */
-Body.DYNAMIC = 1;
-
-/**
- * Static body.
- * @property STATIC
- * @type {Number}
- * @static
- */
-Body.STATIC = 2;
-
-/**
- * Kinematic body.
- * @property KINEMATIC
- * @type {Number}
- * @static
- */
-Body.KINEMATIC = 4;
-
-},{"../math/vec2":34}],4:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 var vec2 = require('../math/vec2')
 ,   Nearphase = require('./Nearphase')
 ,   Shape = require('./../shapes/Shape')
@@ -915,7 +601,7 @@ Broadphase.boundingRadiusCheck = function(bodyA, bodyB){
     return d2 <= r*r;
 };
 
-},{"../math/vec2":34,"./Nearphase":35,"./../shapes/Shape":27}],5:[function(require,module,exports){
+},{"../math/vec2":34,"./Nearphase":35,"./../shapes/Shape":28}],5:[function(require,module,exports){
 var Shape = require('./Shape')
 ,   vec2 = require('../math/vec2')
 
@@ -956,7 +642,7 @@ Capsule.prototype.updateBoundingRadius = function(){
     this.boundingRadius = this.radius + this.length/2;
 };
 
-},{"./Shape":27,"../math/vec2":34}],6:[function(require,module,exports){
+},{"../math/vec2":34,"./Shape":28}],6:[function(require,module,exports){
 var Shape = require('./Shape');
 
 module.exports = Circle;
@@ -989,7 +675,7 @@ Circle.prototype.updateBoundingRadius = function(){
     this.boundingRadius = this.radius;
 };
 
-},{"./Shape":27}],8:[function(require,module,exports){
+},{"./Shape":28}],8:[function(require,module,exports){
 var Equation = require("./Equation"),
     vec2 = require('../math/vec2'),
     mat2 = require('../math/mat2');
@@ -1127,222 +813,7 @@ ContactEquation.prototype.addToWlambda = function(deltalambda){
 };
 
 
-},{"./Equation":12,"../math/vec2":34,"../math/mat2":36}],10:[function(require,module,exports){
-var Shape = require('./Shape')
-,   vec2 = require('../math/vec2')
-,   polyk = require('../math/polyk')
-
-module.exports = Convex;
-
-/**
- * Convex shape class.
- * @class Convex
- * @constructor
- * @extends {Shape}
- * @param {Array} vertices An array of Float32Array vertices that span this shape. Vertices are given in counter-clockwise (CCW) direction.
- */
-function Convex(vertices){
-
-    /**
-     * Vertices defined in the local frame.
-     * @property vertices
-     * @type {Array}
-     */
-    this.vertices = vertices || [];
-
-    /**
-     * The center of mass of the Convex
-     * @property centerOfMass
-     * @type {Float32Array}
-     */
-    this.centerOfMass = vec2.fromValues(0,0);
-
-    /**
-     * Triangulated version of this convex. The structure is Array of 3-Arrays, and each subarray contains 3 integers, referencing the vertices.
-     * @property triangles
-     * @type {Array}
-     */
-    this.triangles = [];
-
-    if(this.vertices.length){
-        this.updateTriangles();
-        this.updateCenterOfMass();
-    }
-
-    /**
-     * The bounding radius of the convex
-     * @property boundingRadius
-     * @type {Number}
-     */
-    this.boundingRadius = 0;
-    this.updateBoundingRadius();
-
-    Shape.call(this,Shape.CONVEX);
-};
-Convex.prototype = new Shape();
-
-Convex.prototype.updateTriangles = function(){
-
-    this.triangles.length = 0;
-
-    // Rewrite on polyk notation, array of numbers
-    var polykVerts = [];
-    for(var i=0; i<this.vertices.length; i++){
-        var v = this.vertices[i];
-        polykVerts.push(v[0],v[1]);
-    }
-
-    // Triangulate
-    var triangles = polyk.Triangulate(polykVerts);
-
-    // Loop over all triangles, add their inertia contributions to I
-    for(var i=0; i<triangles.length; i+=3){
-        var id1 = triangles[i],
-            id2 = triangles[i+1],
-            id3 = triangles[i+2];
-
-        // Add to triangles
-        this.triangles.push([id1,id2,id3]);
-    }
-};
-
-var updateCenterOfMass_centroid = vec2.create(),
-    updateCenterOfMass_centroid_times_mass = vec2.create(),
-    updateCenterOfMass_a = vec2.create(),
-    updateCenterOfMass_b = vec2.create(),
-    updateCenterOfMass_c = vec2.create(),
-    updateCenterOfMass_ac = vec2.create(),
-    updateCenterOfMass_ca = vec2.create(),
-    updateCenterOfMass_cb = vec2.create(),
-    updateCenterOfMass_n = vec2.create();
-Convex.prototype.updateCenterOfMass = function(){
-    var triangles = this.triangles,
-        verts = this.vertices,
-        cm = this.centerOfMass,
-        centroid = updateCenterOfMass_centroid,
-        n = updateCenterOfMass_n,
-        a = updateCenterOfMass_a,
-        b = updateCenterOfMass_b,
-        c = updateCenterOfMass_c,
-        ac = updateCenterOfMass_ac,
-        ca = updateCenterOfMass_ca,
-        cb = updateCenterOfMass_cb,
-        centroid_times_mass = updateCenterOfMass_centroid_times_mass;
-
-    vec2.set(cm,0,0);
-
-    for(var i=0; i<triangles.length; i++){
-        var t = triangles[i],
-            a = verts[t[0]],
-            b = verts[t[1]],
-            c = verts[t[2]];
-
-        vec2.centroid(centroid,a,b,c);
-
-        vec2.sub(ca, c, a);
-        vec2.sub(cb, c, b);
-
-        // Get mass for the triangle (density=1 in this case)
-        // http://math.stackexchange.com/questions/80198/area-of-triangle-via-vectors
-        var m = 0.5 * vec2.crossLength(ca,cb);
-
-        // Add to center of mass
-        vec2.scale(centroid_times_mass, centroid, m);
-        vec2.add(cm, cm, centroid_times_mass);
-    }
-};
-
-/**
- * Compute the mass moment of inertia of the Convex.
- * @method conputeMomentOfInertia
- * @param  {Number} mass
- * @return {Number}
- * @todo  should use .triangles
- */
-Convex.prototype.computeMomentOfInertia = function(mass){
-
-    // In short: Triangulate the Convex, compute centroid and inertia of
-    // each sub-triangle. Add up to total using parallel axis theorem.
-
-    var I = 0;
-
-    // Rewrite on polyk notation, array of numbers
-    var polykVerts = [];
-    for(var i=0; i<this.vertices.length; i++){
-        var v = this.vertices[i];
-        polykVerts.push(v[0],v[1]);
-    }
-
-    // Triangulate
-    var triangles = polyk.Triangulate(polykVerts);
-
-    // Get total convex area and density
-    var area = polyk.GetArea(polykVerts);
-    var density = mass / area;
-
-    // Temp vectors
-    var a = vec2.create(),
-        b = vec2.create(),
-        c = vec2.create(),
-        centroid = vec2.create(),
-        n = vec2.create(),
-        ac = vec2.create(),
-        ca = vec2.create(),
-        cb = vec2.create(),
-        centroid_times_mass = vec2.create();
-
-    // Loop over all triangles, add their inertia contributions to I
-    for(var i=0; i<triangles.length; i+=3){
-        var id1 = triangles[i],
-            id2 = triangles[i+1],
-            id3 = triangles[i+2];
-
-        // a,b,c are triangle corners
-        vec2.set(a, polykVerts[2*id1], polykVerts[2*id1+1]);
-        vec2.set(b, polykVerts[2*id2], polykVerts[2*id2+1]);
-        vec2.set(c, polykVerts[2*id3], polykVerts[2*id3+1]);
-
-        vec2.centroid(centroid, a, b, c);
-
-        vec2.sub(ca, c, a);
-        vec2.sub(cb, c, b);
-
-        var area_triangle = 0.5 * vec2.crossLength(ca,cb);
-        var base = vec2.length(ca);
-        var height = 2*area_triangle / base; // a=b*h/2 => h=2*a/b
-
-        // Get inertia for this triangle: http://answers.yahoo.com/question/index?qid=20080721030038AA3oE1m
-        var I_triangle = (base * (Math.pow(height,3))) / 36;
-
-        // Get mass for the triangle
-        var m = base*height/2 * density;
-
-        // Add to total inertia using parallel axis theorem
-        var r2 = vec2.squaredLength(centroid);
-        I += I_triangle + m*r2;
-    }
-
-    return I;
-};
-
-/**
- * Updates the .boundingRadius property
- * @method updateBoundingRadius
- */
-Convex.prototype.updateBoundingRadius = function(){
-    var verts = this.vertices,
-        r2 = 0;
-
-    for(var i=0; i!==verts.length; i++){
-        var l2 = vec2.squaredLength(verts[i]);
-        if(l2 > r2) r2 = l2;
-    }
-
-    this.boundingRadius = Math.sqrt(r2);
-};
-
-
-},{"./Shape":27,"../math/vec2":34,"../math/polyk":37}],11:[function(require,module,exports){
+},{"./Equation":12,"../math/vec2":34,"../math/mat2":36}],11:[function(require,module,exports){
 var Constraint = require('./Constraint')
 ,   ContactEquation = require('./ContactEquation')
 ,   vec2 = require('../math/vec2')
@@ -1406,7 +877,7 @@ DistanceConstraint.prototype.getMaxForce = function(f){
     return normal.maxForce;
 };
 
-},{"./Constraint":7,"../math/vec2":34,"./ContactEquation":8}],14:[function(require,module,exports){
+},{"./Constraint":7,"./ContactEquation":8,"../math/vec2":34}],14:[function(require,module,exports){
 var mat2 = require('../math/mat2')
 ,   vec2 = require('../math/vec2')
 ,   Equation = require('./Equation')
@@ -2102,7 +1573,7 @@ IslandSolver.prototype.solve = function(dt,world){
     }
 };
 
-},{"./Solver":29,"../math/vec2":34,"../solver/Island":38,"../objects/Body":3}],18:[function(require,module,exports){
+},{"./Solver":29,"../math/vec2":34,"../solver/Island":37,"../objects/Body":3}],18:[function(require,module,exports){
 var Shape = require('./Shape');
 
 module.exports = Line;
@@ -2134,7 +1605,7 @@ Line.prototype.updateBoundingRadius = function(){
 };
 
 
-},{"./Shape":27}],20:[function(require,module,exports){
+},{"./Shape":28}],20:[function(require,module,exports){
 var Circle = require('../shapes/Circle')
 ,   Plane = require('../shapes/Plane')
 ,   Shape = require('../shapes/Shape')
@@ -2183,7 +1654,7 @@ NaiveBroadphase.prototype.getCollisionPairs = function(world){
     return result;
 };
 
-},{"../shapes/Circle":6,"../shapes/Plane":22,"../shapes/Shape":27,"../shapes/Particle":21,"../collision/Broadphase":4,"../math/vec2":34}],21:[function(require,module,exports){
+},{"../shapes/Circle":6,"../shapes/Plane":22,"../shapes/Shape":28,"../shapes/Particle":21,"../collision/Broadphase":4,"../math/vec2":34}],21:[function(require,module,exports){
 var Shape = require('./Shape');
 
 module.exports = Particle;
@@ -2207,7 +1678,7 @@ Particle.prototype.updateBoundingRadius = function(){
 };
 
 
-},{"./Shape":27}],22:[function(require,module,exports){
+},{"./Shape":28}],22:[function(require,module,exports){
 var Shape = require('./Shape');
 
 module.exports = Plane;
@@ -2231,7 +1702,7 @@ Plane.prototype.updateBoundingRadius = function(){
 };
 
 
-},{"./Shape":27}],23:[function(require,module,exports){
+},{"./Shape":28}],23:[function(require,module,exports){
 var Constraint = require('./Constraint')
 ,   ContactEquation = require('./ContactEquation')
 ,   RotationalVelocityEquation = require('./RotationalVelocityEquation')
@@ -2457,7 +1928,7 @@ Rectangle.prototype.updateBoundingRadius = function(){
 };
 
 
-},{"../math/vec2":34,"./Shape":27,"./Convex":10}],26:[function(require,module,exports){
+},{"../math/vec2":34,"./Shape":28,"./Convex":10}],26:[function(require,module,exports){
 var Equation = require("./Equation"),
     vec2 = require('../math/vec2');
 
@@ -2529,7 +2000,7 @@ RotationalVelocityEquation.prototype.addToWlambda = function(deltalambda){
 };
 
 
-},{"./Equation":12,"../math/vec2":34}],28:[function(require,module,exports){
+},{"./Equation":12,"../math/vec2":34}],27:[function(require,module,exports){
 var Circle = require('../shapes/Circle')
 ,   Plane = require('../shapes/Plane')
 ,   Shape = require('../shapes/Shape')
@@ -2651,7 +2122,7 @@ SAP1DBroadphase.prototype.getCollisionPairs = function(world){
     return result;
 };
 
-},{"../shapes/Circle":6,"../shapes/Plane":22,"../shapes/Shape":27,"../shapes/Particle":21,"../collision/Broadphase":4,"../math/vec2":34}],29:[function(require,module,exports){
+},{"../shapes/Circle":6,"../shapes/Plane":22,"../shapes/Shape":28,"../shapes/Particle":21,"../collision/Broadphase":4,"../math/vec2":34}],29:[function(require,module,exports){
 var Utils = require('../utils/Utils');
 
 module.exports = Solver;
@@ -3773,7 +3244,7 @@ World.prototype.hitTest = function(worldPoint,bodies,precision){
     return result;
 };
 
-},{"../../package.json":2,"../solver/GSSolver":16,"../collision/NaiveBroadphase":20,"../math/vec2":34,"../shapes/Circle":6,"../shapes/Rectangle":25,"../shapes/Convex":10,"../shapes/Line":18,"../shapes/Plane":22,"../shapes/Capsule":5,"../events/EventEmitter":13,"../shapes/Particle":21,"../objects/Body":3,"../objects/Spring":30,"../material/Material":19,"../material/ContactMaterial":9,"../constraints/DistanceConstraint":11,"../constraints/PointToPointConstraint":23,"../constraints/PrismaticConstraint":24,"../collision/Broadphase":4,"../collision/Nearphase":35}],33:[function(require,module,exports){
+},{"../../package.json":2,"../solver/GSSolver":16,"../collision/NaiveBroadphase":20,"../math/vec2":34,"../shapes/Circle":6,"../shapes/Rectangle":25,"../shapes/Convex":10,"../shapes/Line":18,"../shapes/Plane":22,"../shapes/Capsule":5,"../shapes/Particle":21,"../events/EventEmitter":13,"../objects/Body":3,"../objects/Spring":30,"../material/Material":19,"../material/ContactMaterial":9,"../constraints/DistanceConstraint":11,"../constraints/PointToPointConstraint":23,"../constraints/PrismaticConstraint":24,"../collision/Broadphase":4,"../collision/Nearphase":35}],33:[function(require,module,exports){
 var Plane = require("../shapes/Plane");
 var Broadphase = require("../collision/Broadphase");
 
@@ -4275,7 +3746,7 @@ vec2.centroid = function(out, a, b, c){
 // Export everything
 module.exports = vec2;
 
-},{"../../node_modules/gl-matrix/src/gl-matrix/vec2":39}],37:[function(require,module,exports){
+},{"../../node_modules/gl-matrix/src/gl-matrix/vec2":38}],39:[function(require,module,exports){
 
     /*
         PolyK library
@@ -4754,7 +4225,7 @@ module.exports = vec2;
 
 module.exports = PolyK;
 
-},{}],38:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 module.exports = Island;
 
 /**
@@ -4837,7 +4308,7 @@ Island.prototype.solve = function(dt,solver){
     solver.solve(dt,{bodies:bodies});
 };
 
-},{}],39:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 /* Copyright (c) 2012, Brandon Jones, Colin MacKenzie IV. All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -6534,7 +6005,469 @@ var mat2 = require('../../node_modules/gl-matrix/src/gl-matrix/mat2').mat2;
 // Export everything
 module.exports = mat2;
 
-},{"../../node_modules/gl-matrix/src/gl-matrix/mat2":40}],40:[function(require,module,exports){
+},{"../../node_modules/gl-matrix/src/gl-matrix/mat2":40}],3:[function(require,module,exports){
+var vec2 = require('../math/vec2')
+,   decomp = require('poly-decomp')
+,   Convex = require('../shapes/Convex')
+
+module.exports = Body;
+
+var zero = vec2.fromValues(0,0);
+
+/**
+ * A rigid body. Has got a center of mass, position, velocity and a number of
+ * shapes that are used for collisions.
+ *
+ * @class Body
+ * @constructor
+ * @param {Object}              [options]
+ * @param {Number}              [options.mass=0]    A number >= 0. If zero, the .motionState will be set to Body.STATIC.
+ * @param {Float32Array|Array}  [options.position]
+ * @param {Float32Array|Array}  [options.velocity]
+ * @param {Number}              [options.angle=0]
+ * @param {Number}              [options.angularVelocity=0]
+ * @param {Float32Array|Array}  [options.force]
+ * @param {Number}              [options.angularForce=0]
+ *
+ * @todo Should not take mass as argument to Body, but as density to each Shape
+ */
+function Body(options){
+    options = options || {};
+
+    /**
+     * The body identifyer
+     * @property id
+     * @type {Number}
+     */
+    this.id = ++Body._idCounter;
+
+    /**
+     * The shapes of the body. The local transform of the shape in .shapes[i] is
+     * defined by .shapeOffsets[i] and .shapeAngles[i].
+     *
+     * @property shapes
+     * @type {Array}
+     */
+    this.shapes = [];
+
+    /**
+     * The local shape offsets, relative to the body center of mass. This is an
+     * array of Float32Array.
+     * @property shapeOffsets
+     * @type {Array}
+     */
+    this.shapeOffsets = [];
+
+    /**
+     * The body-local shape angle transforms. This is an array of numbers (angles).
+     * @property shapeAngles
+     * @type {Array}
+     */
+    this.shapeAngles = [];
+
+    /**
+     * The mass of the body.
+     * @property mass
+     * @type {number}
+     */
+    this.mass = options.mass || 0;
+
+    /**
+     * The inverse mass of the body.
+     * @property invMass
+     * @type {number}
+     */
+    this.invMass = 0;
+
+    /**
+     * The inertia of the body around the Z axis.
+     * @property inertia
+     * @type {number}
+     */
+    this.inertia = 0;
+
+    /**
+     * The inverse inertia of the body.
+     * @property invInertia
+     * @type {number}
+     */
+    this.invInertia = 0;
+
+    this.updateMassProperties();
+
+    /**
+     * The position of the body
+     * @property position
+     * @type {Float32Array}
+     */
+    this.position = vec2.fromValues(0,0);
+    if(options.position) vec2.copy(this.position, options.position);
+
+    /**
+     * The velocity of the body
+     * @property velocity
+     * @type {Float32Array}
+     */
+    this.velocity = vec2.fromValues(0,0);
+    if(options.velocity) vec2.copy(this.velocity, options.velocity);
+
+    /**
+     * Constraint velocity that was added to the body during the last step.
+     * @property vlambda
+     * @type {Float32Array}
+     */
+    this.vlambda = vec2.fromValues(0,0);
+
+    /**
+     * Angular constraint velocity that was added to the body during last step.
+     * @property wlambda
+     * @type {Float32Array}
+     */
+    this.wlambda = 0;
+
+    /**
+     * The angle of the body
+     * @property angle
+     * @type {number}
+     */
+    this.angle = options.angle || 0;
+
+    /**
+     * The angular velocity of the body
+     * @property angularVelocity
+     * @type {number}
+     */
+    this.angularVelocity = options.angularVelocity || 0;
+
+    /**
+     * The force acting on the body
+     * @property force
+     * @type {Float32Array}
+     */
+    this.force = vec2.create();
+    if(options.force) vec2.copy(this.force, options.force);
+
+    /**
+     * The angular force acting on the body
+     * @property angularForce
+     * @type {number}
+     */
+    this.angularForce = options.angularForce || 0;
+
+    /**
+     * The type of motion this body has. Should be one of: Body.STATIC (the body
+     * does not move), Body.DYNAMIC (body can move and respond to collisions)
+     * and Body.KINEMATIC (only moves according to its .velocity).
+     *
+     * @property motionState
+     * @type {number}
+     *
+     * @example
+     *     // This body will move and interact with other bodies
+     *     var dynamicBody = new Body();
+     *     dynamicBody.motionState = Body.DYNAMIC;
+     *
+     * @example
+     *     // This body will not move at all
+     *     var staticBody = new Body();
+     *     staticBody.motionState = Body.STATIC;
+     *
+     * @example
+     *     // This body will only move if you change its velocity
+     *     var kinematicBody = new Body();
+     *     kinematicBody.motionState = Body.KINEMATIC;
+     */
+    this.motionState = this.mass == 0 ? Body.STATIC : Body.DYNAMIC;
+
+    /**
+     * Bounding circle radius
+     * @property boundingRadius
+     * @type {Number}
+     */
+    this.boundingRadius = 0;
+};
+
+Body._idCounter = 0;
+
+/**
+ * Update the bounding radius of the body. Should be done if any of the shapes
+ * are changed.
+ * @method updateBoundingRadius
+ */
+Body.prototype.updateBoundingRadius = function(){
+    var shapes = this.shapes,
+        shapeOffsets = this.shapeOffsets,
+        N = shapes.length,
+        radius = 0;
+
+    for(var i=0; i!==N; i++){
+        var shape = shapes[i],
+            offset = vec2.length(shapeOffsets[i] || zero),
+            r = shape.boundingRadius;
+        if(offset + r > radius)
+            radius = offset + r;
+    }
+
+    this.boundingRadius = radius;
+};
+
+/**
+ * Add a shape to the body. You can pass a local transform when adding a shape,
+ * so that the shape gets an offset and angle relative to the body center of mass.
+ * Will automatically update the mass properties and bounding radius.
+ *
+ * @method addShape
+ * @param  {Shape}              shape
+ * @param  {Float32Array|Array} [offset] Local body offset of the shape.
+ * @param  {Number}             [angle]  Local body angle.
+ *
+ * @example
+ *     var body = new Body(),
+ *         shape = new Circle();
+ *
+ *     // Add the shape to the body, positioned in the center
+ *     body.addShape(shape);
+ *
+ *     // Add another shape to the body, positioned 1 unit length from the body center of mass along the local x-axis.
+ *     body.addShape(shape,[1,0]);
+ *
+ *     // Add another shape to the body, positioned 1 unit length from the body center of mass along the local y-axis, and rotated 90 degrees CCW.
+ *     body.addShape(shape,[0,1],Math.PI/2);
+ */
+Body.prototype.addShape = function(shape,offset,angle){
+
+    // Copy the offset vector
+    if(offset){
+        offset = vec2.fromValues(offset[0],offset[1]);
+    }
+
+    this.shapes      .push(shape);
+    this.shapeOffsets.push(offset);
+    this.shapeAngles .push(angle);
+    this.updateMassProperties();
+    this.updateBoundingRadius();
+};
+
+/**
+ * Remove a shape
+ * @method removeShape
+ * @param  {Shape}  shape
+ * @return {Boolean}       True if the shape was found and removed, else false.
+ */
+Body.prototype.removeShape = function(shape){
+    var idx = this.shapes.indexOf(shape);
+
+    if(idx != -1){
+        this.shapes.splice(idx,1);
+        this.shapeOffsets.splice(idx,1);
+        this.shapeAngles.splice(idx,1);
+        return true;
+    } else
+        return false;
+};
+
+/**
+ * Updates .inertia, .invMass, .invInertia for this Body. Should be called when
+ * changing the structure or mass of the Body.
+ *
+ * @method updateMassProperties
+ *
+ * @example
+ *     body.mass += 1;
+ *     body.updateMassProperties();
+ */
+Body.prototype.updateMassProperties = function(){
+    var shapes = this.shapes,
+        N = shapes.length,
+        m = this.mass / N,
+        I = 0;
+
+    for(var i=0; i<N; i++){
+        var shape = shapes[i],
+            r2 = vec2.squaredLength(this.shapeOffsets[i] || zero),
+            Icm = shape.computeMomentOfInertia(m);
+        I += Icm + m*r2;
+    }
+
+    this.inertia = I;
+
+    // Inverse mass properties are easy
+    this.invMass = this.mass > 0 ? 1/this.mass : 0;
+    this.invInertia = I>0 ? 1/I : 0;
+};
+
+var Body_applyForce_r = vec2.create();
+
+/**
+ * Apply force to a world point. This could for example be a point on the RigidBody surface. Applying force this way will add to Body.force and Body.angularForce.
+ * @method applyForce
+ * @param {Float32Array} force The force to add.
+ * @param {Float32Array} worldPoint A world point to apply the force on.
+ */
+Body.prototype.applyForce = function(force,worldPoint){
+    // Compute point position relative to the body center
+    var r = Body_applyForce_r;
+    vec2.sub(r,worldPoint,this.position);
+
+    // Add linear force
+    vec2.add(this.force,this.force,force);
+
+    // Compute produced rotational force
+    var rotForce = vec2.crossLength(r,force);
+
+    // Add rotational force
+    this.angularForce += rotForce;
+};
+
+/**
+ * Transform a world point to local body frame.
+ * @method toLocalFrame
+ * @param  {Float32Array|Array} out          The vector to store the result in
+ * @param  {Float32Array|Array} worldPoint   The input world vector
+ */
+Body.prototype.toLocalFrame = function(out, worldPoint){
+    vec2.toLocalFrame(out, worldPoint, this.position, this.angle);
+};
+
+/**
+ * Transform a local point to world frame.
+ * @method toWorldFrame
+ * @param  {Array} out          The vector to store the result in
+ * @param  {Array} localPoint   The input local vector
+ */
+Body.prototype.toWorldFrame = function(out, localPoint){
+    vec2.toGlobalFrame(out, localPoint, this.position, this.angle);
+};
+
+/**
+ * Reads a concave shape path, and assembles convex shapes from that and puts them at proper offset points.
+ * @method fromConcavePath
+ * @param {Array} path An array of 2d vectors, e.g. [[0,0],[0,1],...] that resembles a convex shape. The shape must be simple and without holes.
+ * @param {Object} [options]
+ * @param {Boolean} [options.optimalDecomp=false]   Set to true if you need optimal decomposition. Warning: very slow for polygons with more than 10 vertices.
+ * @param {Boolean} [options.skipSimpleCheck=false] Set to true if you already know that the path is not intersecting itself.
+ * @param {Boolean|Number} [options.removeCollinearPoints=false] Set to a number (angle threshold value) to remove collinear points, or false to keep all points.
+ * @return {Boolean} True on success, else false.
+ */
+Body.prototype.fromConcavePath = function(path,options){
+    options = options || {};
+
+    // Remove all shapes
+    for(var i=this.shapes.length; i>=0; --i)
+        this.removeShape(this.shapes[i]);
+
+    var p = new decomp.Polygon();
+    p.vertices = path;
+
+    // Check if any line segment intersects the path itself
+    if(!options.skipSimpleCheck && !p.isSimple()) return false;
+
+    // Make it counter-clockwise
+    p.makeCCW();
+
+    if(typeof(options.removeCollinearPoints)=="number"){
+        p.removeCollinearPoints(options.removeCollinearPoints);
+    }
+
+    // Slow or fast decomp?
+    var convexes;
+    if(options.optimalDecomp)   convexes = p.decomp();
+    else                        convexes = p.quickDecomp();
+
+    var cm = vec2.create();
+
+    // Add convexes
+    for(var i=0; i!==convexes.length; i++){
+        // Create convex
+        var c = new Convex(convexes[i].vertices);
+
+        // Move all vertices so its center of mass is in the local center of the convex
+        for(var j=0; j!==c.vertices.length; j++){
+            var v = c.vertices[j];
+            vec2.sub(v,v,c.centerOfMass);
+        }
+
+        vec2.scale(cm,c.centerOfMass,1);
+        c.updateTriangles();
+        c.updateCenterOfMass();
+        c.updateBoundingRadius();
+
+        // Add the shape
+        this.addShape(c,cm);
+    }
+
+    this.adjustCenterOfMass();
+
+    return true;
+};
+
+var adjustCenterOfMass_tmp1 = vec2.fromValues(0,0),
+    adjustCenterOfMass_tmp2 = vec2.fromValues(0,0),
+    adjustCenterOfMass_tmp3 = vec2.fromValues(0,0),
+    adjustCenterOfMass_tmp4 = vec2.fromValues(0,0);
+
+/**
+ * Moves the shape offsets so their center of mass becomes the body center of mass.
+ * @method adjustCenterOfMass
+ */
+Body.prototype.adjustCenterOfMass = function(){
+    var zero =              adjustCenterOfMass_tmp1,
+        offset_times_area = adjustCenterOfMass_tmp2,
+        sum =               adjustCenterOfMass_tmp3,
+        cm =                adjustCenterOfMass_tmp4,
+        totalArea =         0;
+    vec2.set(sum,0,0);
+    vec2.set(zero,0,0);
+
+    for(var i=0; i!==this.shapes.length; i++){
+        var s = this.shapes[i],
+            offset = this.shapeOffsets[i] || zero;
+        vec2.scale(offset_times_area,offset,s.area);
+        vec2.add(sum,sum,offset_times_area);
+        totalArea += s.area;
+    }
+
+    vec2.scale(cm,sum,1/totalArea);
+
+    // Now move all shapes
+    for(var i=0; i!==this.shapes.length; i++){
+        var s = this.shapes[i],
+            offset = this.shapeOffsets[i];
+
+        // Offset may be undefined. Fix that.
+        if(!offset){
+            offset = this.shapeOffsets[i] = vec2.create();
+        }
+
+        vec2.sub(offset,offset,cm);
+    }
+};
+
+/**
+ * Dynamic body.
+ * @property DYNAMIC
+ * @type {Number}
+ * @static
+ */
+Body.DYNAMIC = 1;
+
+/**
+ * Static body.
+ * @property STATIC
+ * @type {Number}
+ * @static
+ */
+Body.STATIC = 2;
+
+/**
+ * Kinematic body.
+ * @property KINEMATIC
+ * @type {Number}
+ * @static
+ */
+Body.KINEMATIC = 4;
+
+},{"../math/vec2":34,"../shapes/Convex":10,"poly-decomp":41}],40:[function(require,module,exports){
 /* Copyright (c) 2012, Brandon Jones, Colin MacKenzie IV. All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -6777,6 +6710,927 @@ if(typeof(exports) !== 'undefined') {
     exports.mat2 = mat2;
 }
 
-},{}]},{},[1])(1)
+},{}],10:[function(require,module,exports){
+var Shape = require('./Shape')
+,   vec2 = require('../math/vec2')
+,   polyk = require('../math/polyk')
+,   decomp = require('poly-decomp')
+
+module.exports = Convex;
+
+/**
+ * Convex shape class.
+ * @class Convex
+ * @constructor
+ * @extends {Shape}
+ * @param {Array} vertices An array of Float32Array vertices that span this shape. Vertices are given in counter-clockwise (CCW) direction.
+ */
+function Convex(vertices){
+
+    /**
+     * Vertices defined in the local frame.
+     * @property vertices
+     * @type {Array}
+     */
+    this.vertices = vertices || [];
+
+    // Copy the verts
+    for(var i=0; i<this.vertices.length; i++){
+        var v = vec2.fromValues();
+        vec2.copy(v,this.vertices[i]);
+        this.vertices[i] = v;
+    }
+
+    /**
+     * The center of mass of the Convex
+     * @property centerOfMass
+     * @type {Float32Array}
+     */
+    this.centerOfMass = vec2.fromValues(0,0);
+
+    /**
+     * Triangulated version of this convex. The structure is Array of 3-Arrays, and each subarray contains 3 integers, referencing the vertices.
+     * @property triangles
+     * @type {Array}
+     */
+    this.triangles = [];
+
+    if(this.vertices.length){
+        this.updateTriangles();
+        this.updateCenterOfMass();
+    }
+
+    /**
+     * The bounding radius of the convex
+     * @property boundingRadius
+     * @type {Number}
+     */
+    this.boundingRadius = 0;
+    this.updateBoundingRadius();
+
+    Shape.call(this,Shape.CONVEX);
+};
+Convex.prototype = new Shape();
+
+/**
+ * Update the .triangles property
+ * @method updateTriangles
+ */
+Convex.prototype.updateTriangles = function(){
+
+    this.triangles.length = 0;
+
+    // Rewrite on polyk notation, array of numbers
+    var polykVerts = [];
+    for(var i=0; i<this.vertices.length; i++){
+        var v = this.vertices[i];
+        polykVerts.push(v[0],v[1]);
+    }
+
+    // Triangulate
+    var triangles = polyk.Triangulate(polykVerts);
+
+    // Loop over all triangles, add their inertia contributions to I
+    for(var i=0; i<triangles.length; i+=3){
+        var id1 = triangles[i],
+            id2 = triangles[i+1],
+            id3 = triangles[i+2];
+
+        // Add to triangles
+        this.triangles.push([id1,id2,id3]);
+    }
+};
+
+var updateCenterOfMass_centroid = vec2.create(),
+    updateCenterOfMass_centroid_times_mass = vec2.create(),
+    updateCenterOfMass_a = vec2.create(),
+    updateCenterOfMass_b = vec2.create(),
+    updateCenterOfMass_c = vec2.create(),
+    updateCenterOfMass_ac = vec2.create(),
+    updateCenterOfMass_ca = vec2.create(),
+    updateCenterOfMass_cb = vec2.create(),
+    updateCenterOfMass_n = vec2.create();
+
+/**
+ * Update the .centerOfMass property.
+ * @method updateCenterOfMass
+ */
+Convex.prototype.updateCenterOfMass = function(){
+    var triangles = this.triangles,
+        verts = this.vertices,
+        cm = this.centerOfMass,
+        centroid = updateCenterOfMass_centroid,
+        n = updateCenterOfMass_n,
+        a = updateCenterOfMass_a,
+        b = updateCenterOfMass_b,
+        c = updateCenterOfMass_c,
+        ac = updateCenterOfMass_ac,
+        ca = updateCenterOfMass_ca,
+        cb = updateCenterOfMass_cb,
+        centroid_times_mass = updateCenterOfMass_centroid_times_mass;
+
+    vec2.set(cm,0,0);
+    var totalArea = 0;
+
+    for(var i=0; i!==triangles.length; i++){
+        var t = triangles[i],
+            a = verts[t[0]],
+            b = verts[t[1]],
+            c = verts[t[2]];
+
+        vec2.centroid(centroid,a,b,c);
+
+        // Get mass for the triangle (density=1 in this case)
+        // http://math.stackexchange.com/questions/80198/area-of-triangle-via-vectors
+        var m = decomp.Point.area(a,b,c)
+        totalArea += m;
+
+        // Add to center of mass
+        vec2.scale(centroid_times_mass, centroid, m);
+        vec2.add(cm, cm, centroid_times_mass);
+    }
+
+    vec2.scale(cm,cm,1/totalArea);
+};
+
+/**
+ * Compute the mass moment of inertia of the Convex.
+ * @method conputeMomentOfInertia
+ * @param  {Number} mass
+ * @return {Number}
+ * @todo  should use .triangles
+ */
+Convex.prototype.computeMomentOfInertia = function(mass){
+
+    // In short: Triangulate the Convex, compute centroid and inertia of
+    // each sub-triangle. Add up to total using parallel axis theorem.
+
+    var I = 0;
+
+    // Rewrite on polyk notation, array of numbers
+    var polykVerts = [];
+    for(var i=0; i<this.vertices.length; i++){
+        var v = this.vertices[i];
+        polykVerts.push(v[0],v[1]);
+    }
+
+    // Triangulate
+    var triangles = polyk.Triangulate(polykVerts);
+
+    // Get total convex area and density
+    var area = polyk.GetArea(polykVerts);
+    var density = mass / area;
+
+    // Temp vectors
+    var a = vec2.create(),
+        b = vec2.create(),
+        c = vec2.create(),
+        centroid = vec2.create(),
+        n = vec2.create(),
+        ac = vec2.create(),
+        ca = vec2.create(),
+        cb = vec2.create(),
+        centroid_times_mass = vec2.create();
+
+    // Loop over all triangles, add their inertia contributions to I
+    for(var i=0; i<triangles.length; i+=3){
+        var id1 = triangles[i],
+            id2 = triangles[i+1],
+            id3 = triangles[i+2];
+
+        // a,b,c are triangle corners
+        vec2.set(a, polykVerts[2*id1], polykVerts[2*id1+1]);
+        vec2.set(b, polykVerts[2*id2], polykVerts[2*id2+1]);
+        vec2.set(c, polykVerts[2*id3], polykVerts[2*id3+1]);
+
+        vec2.centroid(centroid, a, b, c);
+
+        vec2.sub(ca, c, a);
+        vec2.sub(cb, c, b);
+
+        var area_triangle = 0.5 * vec2.crossLength(ca,cb);
+        var base = vec2.length(ca);
+        var height = 2*area_triangle / base; // a=b*h/2 => h=2*a/b
+
+        // Get inertia for this triangle: http://answers.yahoo.com/question/index?qid=20080721030038AA3oE1m
+        var I_triangle = (base * (Math.pow(height,3))) / 36;
+
+        // Get mass for the triangle
+        var m = base*height/2 * density;
+
+        // Add to total inertia using parallel axis theorem
+        var r2 = vec2.squaredLength(centroid);
+        I += I_triangle + m*r2;
+    }
+
+    return I;
+};
+
+/**
+ * Updates the .boundingRadius property
+ * @method updateBoundingRadius
+ */
+Convex.prototype.updateBoundingRadius = function(){
+    var verts = this.vertices,
+        r2 = 0;
+
+    for(var i=0; i!==verts.length; i++){
+        var l2 = vec2.squaredLength(verts[i]);
+        if(l2 > r2) r2 = l2;
+    }
+
+    this.boundingRadius = Math.sqrt(r2);
+};
+
+/**
+ * Update the .area
+ * @method updateArea
+ */
+Convex.prototype.updateArea = function(){
+    this.updateTriangles();
+    this.area = 0;
+
+    var triangles = this.triangles,
+        verts = this.vertices;
+    for(var i=0; i!==triangles.length; i++){
+        var t = triangles[i],
+            a = verts[t[0]],
+            b = verts[t[1]],
+            c = verts[t[2]];
+
+        // Get mass for the triangle (density=1 in this case)
+        // http://math.stackexchange.com/questions/80198/area-of-triangle-via-vectors
+        var m = decomp.Point.area(a,b,c)
+        this.area += m;
+    }
+};
+
+
+},{"./Shape":28,"../math/vec2":34,"../math/polyk":39,"poly-decomp":41}],41:[function(require,module,exports){
+module.exports = {
+    Polygon : require("./Polygon"),
+    Point : require("./Point"),
+};
+
+},{"./Polygon":42,"./Point":43}],43:[function(require,module,exports){
+module.exports = Point;
+
+/**
+ * Point related functions
+ * @class Point
+ */
+function Point(){};
+
+/**
+ * Get the area of a triangle spanned by the three given points. Note that the area will be negative if the points are not given in counter-clockwise order.
+ * @static
+ * @method area
+ * @param  {Array} a
+ * @param  {Array} b
+ * @param  {Array} c
+ * @return {Number}
+ */
+Point.area = function(a,b,c){
+    return (((b[0] - a[0])*(c[1] - a[1]))-((c[0] - a[0])*(b[1] - a[1])));
+};
+
+Point.left = function(a,b,c){
+    return Point.area(a,b,c) > 0;
+};
+
+Point.leftOn = function(a,b,c) {
+    return Point.area(a, b, c) >= 0;
+};
+
+Point.right = function(a,b,c) {
+    return Point.area(a, b, c) < 0;
+};
+
+Point.rightOn = function(a,b,c) {
+    return Point.area(a, b, c) <= 0;
+};
+
+var tmpPoint1 = [],
+    tmpPoint2 = [];
+
+/**
+ * Check if three points are collinear
+ * @method collinear
+ * @param  {Array} a
+ * @param  {Array} b
+ * @param  {Array} c
+ * @param  {Number} [thresholdAngle=0] Threshold angle to use when comparing the vectors. The function will return true if the angle between the resulting vectors is less than this value. Use zero for max precision.
+ * @return {Boolean}
+ */
+Point.collinear = function(a,b,c,thresholdAngle) {
+    if(!thresholdAngle)
+        return Point.area(a, b, c) == 0;
+    else {
+        var ab = tmpPoint1,
+            bc = tmpPoint2;
+
+        ab[0] = b[0]-a[0];
+        ab[1] = b[1]-a[1];
+        bc[0] = c[0]-b[0];
+        bc[1] = c[1]-b[1];
+
+        var dot = ab[0]*bc[0] + ab[1]*bc[1],
+            magA = Math.sqrt(ab[0]*ab[0] + ab[1]*ab[1]),
+            magB = Math.sqrt(bc[0]*bc[0] + bc[1]*bc[1]),
+            angle = Math.acos(dot/(magA*magB));
+        return angle < thresholdAngle;
+    }
+};
+
+Point.sqdist = function(a,b){
+    var dx = b[0] - a[0];
+    var dy = b[1] - a[1];
+    return dx * dx + dy * dy;
+};
+
+},{}],42:[function(require,module,exports){
+var Line = require("./Line")
+,   Point = require("./Point")
+,   Scalar = require("./Scalar")
+
+module.exports = Polygon;
+
+/**
+ * Polygon class.
+ * @class Polygon
+ * @constructor
+ */
+function Polygon(){
+
+    /**
+     * Vertices that this polygon consists of. An array of array of numbers, example: [[0,0],[1,0],..]
+     * @property vertices
+     * @type {Array}
+     */
+    this.vertices = [];
+}
+
+/**
+ * Get a vertex at position i. It does not matter if i is out of bounds, this function will just cycle.
+ * @method at
+ * @param  {Number} i
+ * @return {Array}
+ */
+Polygon.prototype.at = function(i){
+    var v = this.vertices,
+        s = v.length;
+    return v[i < 0 ? i % s + s : i % s];
+};
+
+/**
+ * Get first vertex
+ * @method first
+ * @return {Array}
+ */
+Polygon.prototype.first = function(){
+    return this.vertices[0];
+};
+
+/**
+ * Get last vertex
+ * @method last
+ * @return {Array}
+ */
+Polygon.prototype.last = function(){
+    return this.vertices[this.vertices.length-1];
+};
+
+/**
+ * Clear the polygon data
+ * @method clear
+ * @return {Array}
+ */
+Polygon.prototype.clear = function(){
+    this.vertices.length = 0;
+};
+
+/**
+ * Append points "from" to "to"-1 from an other polygon "poly" onto this one.
+ * @method append
+ * @param {Polygon} poly The polygon to get points from.
+ * @param {Number}  from The vertex index in "poly".
+ * @param {Number}  to The end vertex index in "poly". Note that this vertex is NOT included when appending.
+ * @return {Array}
+ */
+Polygon.prototype.append = function(poly,from,to){
+    if(typeof(from) == "undefined") throw new Error("From is not given!");
+    if(typeof(to) == "undefined")   throw new Error("To is not given!");
+
+    if(to-1 < from)                 throw new Error("lol1");
+    if(to > poly.vertices.length)   throw new Error("lol2");
+    if(from < 0)                    throw new Error("lol3");
+
+    for(var i=from; i<to; i++){
+        this.vertices.push(poly.vertices[i]);
+    }
+};
+
+/**
+ * Make sure that the polygon vertices are ordered counter-clockwise.
+ * @method makeCCW
+ */
+Polygon.prototype.makeCCW = function(){
+    var br = 0,
+        v = this.vertices;
+
+    // find bottom right point
+    for (var i = 1; i < this.vertices.length; ++i) {
+        if (v[i][1] < v[br][1] || (v[i][1] == v[br][1] && v[i][0] > v[br][0])) {
+            br = i;
+        }
+    }
+
+    // reverse poly if clockwise
+    if (!Point.left(this.at(br - 1), this.at(br), this.at(br + 1))) {
+        this.reverse();
+    }
+};
+
+/**
+ * Reverse the vertices in the polygon
+ * @method reverse
+ */
+Polygon.prototype.reverse = function(){
+    var tmp = [];
+    for(var i=0, N=this.vertices.length; i!==N; i++){
+        tmp.push(this.vertices.pop());
+    }
+    this.vertices = tmp;
+};
+
+/**
+ * Check if a point in the polygon is a reflex point
+ * @method isReflex
+ * @param  {Number}  i
+ * @return {Boolean}
+ */
+Polygon.prototype.isReflex = function(i){
+    return Point.right(this.at(i - 1), this.at(i), this.at(i + 1));
+};
+
+var tmpLine1=[],
+    tmpLine2=[];
+
+/**
+ * Check if two vertices in the polygon can see each other
+ * @method canSee
+ * @param  {Number} a Vertex index 1
+ * @param  {Number} b Vertex index 2
+ * @return {Boolean}
+ */
+Polygon.prototype.canSee = function(a,b) {
+    var p, dist, l1=tmpLine1, l2=tmpLine2;
+
+    if (Point.leftOn(this.at(a + 1), this.at(a), this.at(b)) && Point.rightOn(this.at(a - 1), this.at(a), this.at(b))) {
+        return false;
+    }
+    dist = Point.sqdist(this.at(a), this.at(b));
+    for (var i = 0; i !== this.vertices.length; ++i) { // for each edge
+        if ((i + 1) % this.vertices.length === a || i === a) // ignore incident edges
+            continue;
+        if (Point.leftOn(this.at(a), this.at(b), this.at(i + 1)) && Point.rightOn(this.at(a), this.at(b), this.at(i))) { // if diag intersects an edge
+            l1[0] = this.at(a);
+            l1[1] = this.at(b);
+            l2[0] = this.at(i);
+            l2[1] = this.at(i + 1);
+            p = Line.lineInt(l1,l2);
+            if (Point.sqdist(this.at(a), p) < dist) { // if edge is blocking visibility to b
+                return false;
+            }
+        }
+    }
+
+    return true;
+};
+
+/**
+ * Copy the polygon from vertex i to vertex j.
+ * @method copy
+ * @param  {Number} i
+ * @param  {Number} j
+ * @param  {Polygon} [targetPoly]   Optional target polygon to save in.
+ * @return {Polygon}                The resulting copy.
+ */
+Polygon.prototype.copy = function(i,j,targetPoly){
+    var p = targetPoly || new Polygon();
+    p.clear();
+    if (i < j) {
+        // Insert all vertices from i to j
+        for(var k=i; k<=j; k++)
+            p.vertices.push(this.vertices[k]);
+
+    } else {
+
+        // Insert vertices 0 to j
+        for(var k=0; k<=j; k++)
+            p.vertices.push(this.vertices[k]);
+
+        // Insert vertices i to end
+        for(var k=i; k<this.vertices.length; k++)
+            p.vertices.push(this.vertices[k]);
+    }
+
+    return p;
+};
+
+/**
+ * Decomposes the polygon into convex pieces. Returns a list of edges [[p1,p2],[p2,p3],...] that cuts the polygon.
+ * Note that this algorithm has complexity O(N^4) and will be very slow for polygons with many vertices.
+ * @method getCutEdges
+ * @return {Array}
+ */
+Polygon.prototype.getCutEdges = function() {
+    var min=[], tmp1=[], tmp2=[], tmpPoly = new Polygon();
+    var nDiags = Number.MAX_VALUE;
+
+    for (var i = 0; i < this.vertices.length; ++i) {
+        if (this.isReflex(i)) {
+            for (var j = 0; j < this.vertices.length; ++j) {
+                if (this.canSee(i, j)) {
+                    tmp1 = this.copy(i, j, tmpPoly).getCutEdges();
+                    tmp2 = this.copy(j, i, tmpPoly).getCutEdges();
+
+                    for(var k=0; k<tmp2.length; k++)
+                        tmp1.push(tmp2[k]);
+
+                    if (tmp1.length < nDiags) {
+                        min = tmp1;
+                        nDiags = tmp1.length;
+                        min.push([this.at(i), this.at(j)]);
+                    }
+                }
+            }
+        }
+    }
+
+    return min;
+};
+
+/**
+ * Decomposes the polygon into one or more convex sub-Polygons.
+ * @method decomp
+ * @return {Array} An array or Polygon objects.
+ */
+Polygon.prototype.decomp = function(){
+    var edges = this.getCutEdges();
+    if(edges.length > 0)
+        return this.slice(edges);
+    else
+        return [this];
+};
+
+/**
+ * Slices the polygon given one or more cut edges. If given one, this function will return two polygons (false on failure). If many, an array of polygons.
+ * @method slice
+ * @param {Array} cutEdges A list of edges, as returned by .getCutEdges()
+ * @return {Array}
+ */
+Polygon.prototype.slice = function(cutEdges){
+    if(cutEdges.length == 0) return [this];
+    if(cutEdges instanceof Array && cutEdges.length && cutEdges[0] instanceof Array && cutEdges[0].length==2 && cutEdges[0][0] instanceof Array){
+
+        var polys = [this];
+
+        for(var i=0; i<cutEdges.length; i++){
+            var cutEdge = cutEdges[i];
+            // Cut all polys
+            for(var j=0; j<polys.length; j++){
+                var poly = polys[j];
+                var result = poly.slice(cutEdge);
+                if(result){
+                    // Found poly! Cut and quit
+                    polys.splice(j,1);
+                    polys.push(result[0],result[1]);
+                    break;
+                }
+            }
+        }
+
+        return polys;
+    } else {
+
+        // Was given one edge
+        var cutEdge = cutEdges;
+        var i = this.vertices.indexOf(cutEdge[0]);
+        var j = this.vertices.indexOf(cutEdge[1]);
+
+        if(i != -1 && j != -1){
+            return [this.copy(i,j),
+                    this.copy(j,i)];
+        } else {
+            return false;
+        }
+    }
+};
+
+/**
+ * Checks that the line segments of this polygon do not intersect each other.
+ * @method isSimple
+ * @param  {Array} path An array of vertices e.g. [[0,0],[0,1],...]
+ * @return {Boolean}
+ * @todo Should it check all segments with all others?
+ */
+Polygon.prototype.isSimple = function(){
+    var path = this.vertices;
+    // Check
+    for(var i=0; i<path.length-1; i++){
+        for(var j=0; j<i-1; j++){
+            if(Line.segmentsIntersect(path[i], path[i+1], path[j], path[j+1] )){
+                return false;
+            }
+        }
+    }
+
+    // Check the segment between the last and the first point to all others
+    for(var i=1; i<path.length-2; i++){
+        if(Line.segmentsIntersect(path[0], path[path.length-1], path[i], path[i+1] )){
+            return false;
+        }
+    }
+
+    return true;
+};
+
+function getIntersectionPoint(p1, p2, q1, q2, delta){
+    delta = delta || 0;
+   var a1 = p2[1] - p1[1];
+   var b1 = p1[0] - p2[0];
+   var c1 = (a1 * p1[0]) + (b1 * p1[1]);
+   var a2 = q2[1] - q1[1];
+   var b2 = q1[0] - q2[0];
+   var c2 = (a2 * q1[0]) + (b2 * q1[1]);
+   var det = (a1 * b2) - (a2 * b1);
+
+   if(!Scalar.eq(det,0,delta))
+      return [((b2 * c1) - (b1 * c2)) / det, ((a1 * c2) - (a2 * c1)) / det]
+   else
+      return [0,0]
+}
+
+/**
+ * Quickly decompose the Polygon into convex sub-polygons.
+ * @method quickDecomp
+ * @param  {Array} result
+ * @param  {Array} [reflexVertices]
+ * @param  {Array} [steinerPoints]
+ * @param  {Number} [delta]
+ * @param  {Number} [maxlevel]
+ * @param  {Number} [level]
+ * @return {Array}
+ */
+Polygon.prototype.quickDecomp = function(result,reflexVertices,steinerPoints,delta,maxlevel,level){
+    maxlevel = maxlevel || 100;
+    level = level || 0;
+    delta = delta || 25;
+    result = typeof(result)!="undefined" ? result : [];
+    reflexVertices = reflexVertices || [];
+    steinerPoints = steinerPoints || [];
+
+    var upperInt=[0,0], lowerInt=[0,0], p=[0,0]; // Points
+    var upperDist=0, lowerDist=0, d=0, closestDist=0; // scalars
+    var upperIndex=0, lowerIndex=0, closestIndex=0; // Integers
+    var lowerPoly=new Polygon(), upperPoly=new Polygon(); // polygons
+    var poly = this,
+        v = this.vertices;
+
+    if(v.length < 3) return result;
+
+    level++;
+    if(level > maxlevel){
+        console.warn("quickDecomp: max level ("+maxlevel+") reached.");
+        return result;
+    }
+
+    for (var i = 0; i < this.vertices.length; ++i) {
+        if (poly.isReflex(i)) {
+            reflexVertices.push(poly.vertices[i]);
+            upperDist = lowerDist = Number.MAX_VALUE;
+
+
+            for (var j = 0; j < this.vertices.length; ++j) {
+                if (Point.left(poly.at(i - 1), poly.at(i), poly.at(j))
+                        && Point.rightOn(poly.at(i - 1), poly.at(i), poly.at(j - 1))) { // if line intersects with an edge
+                    p = getIntersectionPoint(poly.at(i - 1), poly.at(i), poly.at(j), poly.at(j - 1)); // find the point of intersection
+                    if (Point.right(poly.at(i + 1), poly.at(i), p)) { // make sure it's inside the poly
+                        d = Point.sqdist(poly.vertices[i], p);
+                        if (d < lowerDist) { // keep only the closest intersection
+                            lowerDist = d;
+                            lowerInt = p;
+                            lowerIndex = j;
+                        }
+                    }
+                }
+                if (Point.left(poly.at(i + 1), poly.at(i), poly.at(j + 1))
+                        && Point.rightOn(poly.at(i + 1), poly.at(i), poly.at(j))) {
+                    p = getIntersectionPoint(poly.at(i + 1), poly.at(i), poly.at(j), poly.at(j + 1));
+                    if (Point.left(poly.at(i - 1), poly.at(i), p)) {
+                        d = Point.sqdist(poly.vertices[i], p);
+                        if (d < upperDist) {
+                            upperDist = d;
+                            upperInt = p;
+                            upperIndex = j;
+                        }
+                    }
+                }
+            }
+
+            // if there are no vertices to connect to, choose a point in the middle
+            if (lowerIndex == (upperIndex + 1) % this.vertices.length) {
+                //console.log("Case 1: Vertex("+i+"), lowerIndex("+lowerIndex+"), upperIndex("+upperIndex+"), poly.size("+this.vertices.length+")");
+                p[0] = (lowerInt[0] + upperInt[0]) / 2;
+                p[1] = (lowerInt[1] + upperInt[1]) / 2;
+                steinerPoints.push(p);
+
+                if (i < upperIndex) {
+                    //lowerPoly.insert(lowerPoly.end(), poly.begin() + i, poly.begin() + upperIndex + 1);
+                    lowerPoly.append(poly, i, upperIndex+1);
+                    lowerPoly.vertices.push(p);
+                    upperPoly.vertices.push(p);
+                    if (lowerIndex != 0){
+                        //upperPoly.insert(upperPoly.end(), poly.begin() + lowerIndex, poly.end());
+                        upperPoly.append(poly,lowerIndex,poly.vertices.length);
+                    }
+                    //upperPoly.insert(upperPoly.end(), poly.begin(), poly.begin() + i + 1);
+                    upperPoly.append(poly,0,i+1);
+                } else {
+                    if (i != 0){
+                        //lowerPoly.insert(lowerPoly.end(), poly.begin() + i, poly.end());
+                        lowerPoly.append(poly,i,poly.vertices.length);
+                    }
+                    //lowerPoly.insert(lowerPoly.end(), poly.begin(), poly.begin() + upperIndex + 1);
+                    lowerPoly.append(poly,0,upperIndex+1);
+                    lowerPoly.vertices.push(p);
+                    upperPoly.vertices.push(p);
+                    //upperPoly.insert(upperPoly.end(), poly.begin() + lowerIndex, poly.begin() + i + 1);
+                    upperPoly.append(poly,lowerIndex,i+1);
+                }
+            } else {
+                // connect to the closest point within the triangle
+                //console.log("Case 2: Vertex("+i+"), closestIndex("+closestIndex+"), poly.size("+this.vertices.length+")\n");
+
+                if (lowerIndex > upperIndex) {
+                    upperIndex += this.vertices.length;
+                }
+                closestDist = Number.MAX_VALUE;
+
+                if(upperIndex < lowerIndex){
+                    return result;
+                }
+
+                for (var j = lowerIndex; j <= upperIndex; ++j) {
+                    if (Point.leftOn(poly.at(i - 1), poly.at(i), poly.at(j))
+                            && Point.rightOn(poly.at(i + 1), poly.at(i), poly.at(j))) {
+                        d = Point.sqdist(poly.at(i), poly.at(j));
+                        if (d < closestDist) {
+                            closestDist = d;
+                            closestIndex = j % this.vertices.length;
+                        }
+                    }
+                }
+
+                if (i < closestIndex) {
+                    lowerPoly.append(poly,i,closestIndex+1);
+                    if (closestIndex != 0){
+                        upperPoly.append(poly,closestIndex,v.length);
+                    }
+                    upperPoly.append(poly,0,i+1);
+                } else {
+                    if (i != 0){
+                        lowerPoly.append(poly,i,v.length);
+                    }
+                    lowerPoly.append(poly,0,closestIndex+1);
+                    upperPoly.append(poly,closestIndex,i+1);
+                }
+            }
+
+            // solve smallest poly first
+            if (lowerPoly.vertices.length < upperPoly.vertices.length) {
+                lowerPoly.quickDecomp(result,reflexVertices,steinerPoints,delta,maxlevel,level);
+                upperPoly.quickDecomp(result,reflexVertices,steinerPoints,delta,maxlevel,level);
+            } else {
+                upperPoly.quickDecomp(result,reflexVertices,steinerPoints,delta,maxlevel,level);
+                lowerPoly.quickDecomp(result,reflexVertices,steinerPoints,delta,maxlevel,level);
+            }
+
+            return result;
+        }
+    }
+    result.push(this);
+
+    return result;
+};
+
+/**
+ * Remove collinear points in the polygon.
+ * @method removeCollinearPoints
+ * @param  {Number} [precision] The threshold angle to use when determining whether two edges are collinear. Use zero for finest precision.
+ * @return {Number}           The number of points removed
+ */
+Polygon.prototype.removeCollinearPoints = function(precision){
+    var num = 0;
+    for(var i=this.vertices.length-1; this.vertices.length>3 && i>=0; --i){
+        if(Point.collinear(this.at(i-1),this.at(i),this.at(i+1),precision)){
+            // Remove the middle point
+            this.vertices.splice(i%this.vertices.length,1);
+            i--; // Jump one point forward. Otherwise we may get a chain removal
+            num++;
+        }
+    }
+    return num;
+};
+
+},{"./Line":44,"./Point":43,"./Scalar":45}],45:[function(require,module,exports){
+module.exports = Scalar;
+
+/**
+ * Scalar functions
+ * @class Scalar
+ */
+function Scalar(){}
+
+/**
+ * Check if two scalars are equal
+ * @static
+ * @method eq
+ * @param  {Number} a
+ * @param  {Number} b
+ * @param  {Number} [precision]
+ * @return {Boolean}
+ */
+Scalar.eq = function(a,b,precision){
+    precision = precision || 0;
+    return Math.abs(a-b) < precision;
+};
+
+},{}],44:[function(require,module,exports){
+var Scalar = require('./Scalar');
+
+module.exports = Line;
+
+/**
+ * Container for line-related functions
+ * @class Line
+ */
+function Line(){};
+
+/**
+ * Compute the intersection between two lines.
+ * @static
+ * @method lineInt
+ * @param  {Array}  l1          Line vector 1
+ * @param  {Array}  l2          Line vector 2
+ * @param  {Number} precision   Precision to use when checking if the lines are parallel
+ * @return {Array}              The intersection point.
+ */
+Line.lineInt = function(l1,l2,precision){
+    precision = precision || 0;
+    var i = [0,0]; // point
+    var a1, b1, c1, a2, b2, c2, det; // scalars
+    a1 = l1[1][1] - l1[0][1];
+    b1 = l1[0][0] - l1[1][0];
+    c1 = a1 * l1[0][0] + b1 * l1[0][1];
+    a2 = l2[1][1] - l2[0][1];
+    b2 = l2[0][0] - l2[1][0];
+    c2 = a2 * l2[0][0] + b2 * l2[0][1];
+    det = a1 * b2 - a2*b1;
+    if (!Scalar.eq(det, 0, precision)) { // lines are not parallel
+        i[0] = (b2 * c1 - b1 * c2) / det;
+        i[1] = (a1 * c2 - a2 * c1) / det;
+    }
+    return i;
+};
+
+/**
+ * Checks if two line segments intersects.
+ * @method segmentsIntersect
+ * @param {Array} p1 The start vertex of the first line segment.
+ * @param {Array} p2 The end vertex of the first line segment.
+ * @param {Array} q1 The start vertex of the second line segment.
+ * @param {Array} q2 The end vertex of the second line segment.
+ * @return {Boolean} True if the two line segments intersect
+ */
+Line.segmentsIntersect = function(p1, p2, q1, q2){
+   var dx = p2[0] - p1[0];
+   var dy = p2[1] - p1[1];
+   var da = q2[0] - q1[0];
+   var db = q2[1] - q1[1];
+
+   // segments are parallel
+   if(da*dy - db*dx == 0)
+      return false;
+
+   var s = (dx * (q1[1] - p1[1]) + dy * (p1[0] - q1[0])) / (da * dy - db * dx)
+   var t = (da * (p1[1] - q1[1]) + db * (q1[0] - p1[0])) / (db * dx - da * dy)
+
+   return (s>=0 && s<=1 && t>=0 && t<=1);
+};
+
+
+},{"./Scalar":45}]},{},[1])(1)
 });
 ;
