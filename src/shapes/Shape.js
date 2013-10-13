@@ -61,7 +61,13 @@ function Shape(type){
      */
     this.material = null;
 
+    /**
+     * Area of this shape.
+     * @property area
+     * @type {Number}
+     */
     this.area = 0;
+
     this.updateArea();
 };
 
@@ -92,6 +98,10 @@ Shape.prototype.updateBoundingRadius = function(){
     throw new Error("Shape.updateBoundingRadius is not implemented in this Shape...");
 };
 
+/**
+ * Update the .area property of the shape.
+ * @method updateArea
+ */
 Shape.prototype.updateArea = function(){
     // To be implemented in all subclasses
 };

@@ -59,6 +59,10 @@ function Convex(vertices){
 };
 Convex.prototype = new Shape();
 
+/**
+ * Update the .triangles property
+ * @method updateTriangles
+ */
 Convex.prototype.updateTriangles = function(){
 
     this.triangles.length = 0;
@@ -225,6 +229,10 @@ Convex.prototype.updateBoundingRadius = function(){
     this.boundingRadius = Math.sqrt(r2);
 };
 
+/**
+ * Update the .area
+ * @method updateArea
+ */
 Convex.prototype.updateArea = function(){
     this.updateTriangles();
     this.area = 0;
