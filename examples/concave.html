@@ -31,11 +31,12 @@
         // Give a concave path to the body.
         // Body.prototype.fromConcavePath will automatically add shapes at
         // proper offsets and adjust the center of mass.
-        concaveBody.fromConcavePath([[-1, 1],
-                                     [-1, 0],
-                                     [1, 0],
-                                     [1, 1],
-                                     [0.5, 0.5]]);
+        var path = [[-1, 1],
+                    [-1, 0],
+                    [1, 0],
+                    [1, 1],
+                    [0.5, 0.5]];
+        concaveBody.fromConcavePath(path);
 
         world.addBody(concaveBody);
 
