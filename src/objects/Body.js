@@ -400,6 +400,7 @@ var adjustCenterOfMass_tmp1 = vec2.fromValues(0,0),
 
 /**
  * Moves the shape offsets so their center of mass becomes the body center of mass.
+ * @method adjustCenterOfMass
  */
 Body.prototype.adjustCenterOfMass = function(){
     var zero =              adjustCenterOfMass_tmp1,
