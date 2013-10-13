@@ -61,7 +61,7 @@ module.exports = {
     version :                       require('../package.json').version,
 };
 
-},{"../package.json":2,"./objects/Body":3,"./collision/Broadphase":4,"./shapes/Capsule":5,"./shapes/Circle":6,"./constraints/Constraint":7,"./constraints/ContactEquation":8,"./material/ContactMaterial":9,"./shapes/Convex":10,"./constraints/DistanceConstraint":11,"./constraints/Equation":12,"./events/EventEmitter":13,"./constraints/FrictionEquation":14,"./collision/GridBroadphase":15,"./solver/GSSolver":16,"./solver/IslandSolver":17,"./shapes/Line":18,"./material/Material":19,"./collision/NaiveBroadphase":20,"./shapes/Particle":21,"./shapes/Plane":22,"./constraints/PointToPointConstraint":23,"./constraints/PrismaticConstraint":24,"./shapes/Rectangle":25,"./constraints/RotationalVelocityEquation":26,"./collision/SAP1DBroadphase":27,"./shapes/Shape":28,"./solver/Solver":29,"./objects/Spring":30,"./utils/Utils":31,"./world/World":32,"./collision/QuadTree":33,"./math/vec2":34}],2:[function(require,module,exports){
+},{"../package.json":2,"./objects/Body":3,"./collision/Broadphase":4,"./shapes/Capsule":5,"./shapes/Circle":6,"./constraints/Constraint":7,"./constraints/ContactEquation":8,"./material/ContactMaterial":9,"./shapes/Convex":10,"./constraints/DistanceConstraint":11,"./constraints/Equation":12,"./events/EventEmitter":13,"./constraints/FrictionEquation":14,"./collision/GridBroadphase":15,"./solver/GSSolver":16,"./solver/IslandSolver":17,"./shapes/Line":18,"./material/Material":19,"./shapes/Particle":20,"./shapes/Plane":21,"./constraints/PointToPointConstraint":22,"./constraints/PrismaticConstraint":23,"./collision/NaiveBroadphase":24,"./shapes/Rectangle":25,"./constraints/RotationalVelocityEquation":26,"./collision/SAP1DBroadphase":27,"./shapes/Shape":28,"./solver/Solver":29,"./objects/Spring":30,"./utils/Utils":31,"./world/World":32,"./collision/QuadTree":33,"./math/vec2":34}],2:[function(require,module,exports){
 module.exports={
     "name": "p2",
     "version": "0.2.0",
@@ -1059,7 +1059,7 @@ FrictionEquation.prototype.addToWlambda = function(deltalambda){
     bj.wlambda += bj.invInertia * this.rjxt * deltalambda;
 };
 
-},{"../math/vec2":34,"../math/mat2":36,"./Equation":12}],15:[function(require,module,exports){
+},{"../math/mat2":36,"../math/vec2":34,"./Equation":12}],15:[function(require,module,exports){
 var Circle = require('../shapes/Circle')
 ,   Plane = require('../shapes/Plane')
 ,   Particle = require('../shapes/Particle')
@@ -1220,7 +1220,7 @@ GridBroadphase.prototype.getCollisionPairs = function(world){
     return result;
 };
 
-},{"../shapes/Circle":6,"../shapes/Particle":21,"../shapes/Plane":22,"../collision/Broadphase":4,"../math/vec2":34}],16:[function(require,module,exports){
+},{"../shapes/Circle":6,"../shapes/Plane":21,"../shapes/Particle":20,"../collision/Broadphase":4,"../math/vec2":34}],16:[function(require,module,exports){
 var vec2 = require('../math/vec2'),
     Solver = require('./Solver');
 
@@ -1606,79 +1606,6 @@ Line.prototype.updateBoundingRadius = function(){
 
 
 },{"./Shape":28}],20:[function(require,module,exports){
-var Circle = require('../shapes/Circle')
-,   Plane = require('../shapes/Plane')
-,   Shape = require('../shapes/Shape')
-,   Particle = require('../shapes/Particle')
-,   Broadphase = require('../collision/Broadphase')
-,   vec2 = require('../math/vec2')
-
-module.exports = NaiveBroadphase;
-
-/**
- * Naive broadphase implementation. Does N^2 tests.
- *
- * @class NaiveBroadphase
- * @constructor
- * @extends Broadphase
- */
-function NaiveBroadphase(){
-    Broadphase.apply(this);
-};
-NaiveBroadphase.prototype = new Broadphase();
-
-/**
- * Get the colliding pairs
- * @method getCollisionPairs
- * @param  {World} world
- * @return {Array}
- */
-NaiveBroadphase.prototype.getCollisionPairs = function(world){
-    var bodies = world.bodies,
-        result = this.result,
-        i, j, bi, bj;
-
-    result.length = 0;
-
-    for(i=0, Ncolliding=bodies.length; i!==Ncolliding; i++){
-        bi = bodies[i];
-
-        for(j=0; j<i; j++){
-            bj = bodies[j];
-
-            if(Broadphase.boundingRadiusCheck(bi,bj))
-                result.push(bi,bj);
-        }
-    }
-
-    return result;
-};
-
-},{"../shapes/Circle":6,"../shapes/Plane":22,"../shapes/Shape":28,"../shapes/Particle":21,"../collision/Broadphase":4,"../math/vec2":34}],22:[function(require,module,exports){
-var Shape = require('./Shape');
-
-module.exports = Plane;
-
-/**
- * Plane shape class. The plane is facing in the Y direction.
- * @class Plane
- * @extends {Shape}
- * @constructor
- */
-function Plane(){
-    Shape.call(this,Shape.PLANE);
-};
-Plane.prototype = new Shape();
-Plane.prototype.computeMomentOfInertia = function(mass){
-    return 0; // Plane is infinite. The inertia should therefore be infinty but by convention we set 0 here
-};
-
-Plane.prototype.updateBoundingRadius = function(){
-    this.boundingRadius = Number.MAX_VALUE;
-};
-
-
-},{"./Shape":28}],21:[function(require,module,exports){
 var Shape = require('./Shape');
 
 module.exports = Particle;
@@ -1702,7 +1629,31 @@ Particle.prototype.updateBoundingRadius = function(){
 };
 
 
-},{"./Shape":28}],23:[function(require,module,exports){
+},{"./Shape":28}],21:[function(require,module,exports){
+var Shape = require('./Shape');
+
+module.exports = Plane;
+
+/**
+ * Plane shape class. The plane is facing in the Y direction.
+ * @class Plane
+ * @extends {Shape}
+ * @constructor
+ */
+function Plane(){
+    Shape.call(this,Shape.PLANE);
+};
+Plane.prototype = new Shape();
+Plane.prototype.computeMomentOfInertia = function(mass){
+    return 0; // Plane is infinite. The inertia should therefore be infinty but by convention we set 0 here
+};
+
+Plane.prototype.updateBoundingRadius = function(){
+    this.boundingRadius = Number.MAX_VALUE;
+};
+
+
+},{"./Shape":28}],22:[function(require,module,exports){
 var Constraint = require('./Constraint')
 ,   ContactEquation = require('./ContactEquation')
 ,   RotationalVelocityEquation = require('./RotationalVelocityEquation')
@@ -1798,7 +1749,7 @@ PointToPointConstraint.prototype.setMotorSpeed = function(speed){
     this.equations[i].relativeVelocity = speed;
 };
 
-},{"./Constraint":7,"./ContactEquation":8,"../math/vec2":34,"./RotationalVelocityEquation":26}],24:[function(require,module,exports){
+},{"./Constraint":7,"./ContactEquation":8,"./RotationalVelocityEquation":26,"../math/vec2":34}],23:[function(require,module,exports){
 var Constraint = require('./Constraint')
 ,   ContactEquation = require('./ContactEquation')
 ,   vec2 = require('../math/vec2')
@@ -1883,7 +1834,56 @@ PrismaticConstraint.prototype.update = function(){
     vec2.set(tangentB.ri, 0, 0);
 };
 
-},{"./Constraint":7,"./ContactEquation":8,"../math/vec2":34}],25:[function(require,module,exports){
+},{"./Constraint":7,"./ContactEquation":8,"../math/vec2":34}],24:[function(require,module,exports){
+var Circle = require('../shapes/Circle')
+,   Plane = require('../shapes/Plane')
+,   Shape = require('../shapes/Shape')
+,   Particle = require('../shapes/Particle')
+,   Broadphase = require('../collision/Broadphase')
+,   vec2 = require('../math/vec2')
+
+module.exports = NaiveBroadphase;
+
+/**
+ * Naive broadphase implementation. Does N^2 tests.
+ *
+ * @class NaiveBroadphase
+ * @constructor
+ * @extends Broadphase
+ */
+function NaiveBroadphase(){
+    Broadphase.apply(this);
+};
+NaiveBroadphase.prototype = new Broadphase();
+
+/**
+ * Get the colliding pairs
+ * @method getCollisionPairs
+ * @param  {World} world
+ * @return {Array}
+ */
+NaiveBroadphase.prototype.getCollisionPairs = function(world){
+    var bodies = world.bodies,
+        result = this.result,
+        i, j, bi, bj;
+
+    result.length = 0;
+
+    for(i=0, Ncolliding=bodies.length; i!==Ncolliding; i++){
+        bi = bodies[i];
+
+        for(j=0; j<i; j++){
+            bj = bodies[j];
+
+            if(Broadphase.boundingRadiusCheck(bi,bj))
+                result.push(bi,bj);
+        }
+    }
+
+    return result;
+};
+
+},{"../shapes/Circle":6,"../shapes/Plane":21,"../shapes/Shape":28,"../shapes/Particle":20,"../collision/Broadphase":4,"../math/vec2":34}],25:[function(require,module,exports){
 var vec2 = require('../math/vec2')
 ,   Shape = require('./Shape')
 ,   Convex = require('./Convex')
@@ -2122,7 +2122,7 @@ SAP1DBroadphase.prototype.getCollisionPairs = function(world){
     return result;
 };
 
-},{"../shapes/Circle":6,"../shapes/Shape":28,"../shapes/Plane":22,"../shapes/Particle":21,"../collision/Broadphase":4,"../math/vec2":34}],29:[function(require,module,exports){
+},{"../shapes/Circle":6,"../shapes/Plane":21,"../shapes/Shape":28,"../shapes/Particle":20,"../collision/Broadphase":4,"../math/vec2":34}],29:[function(require,module,exports){
 var Utils = require('../utils/Utils');
 
 module.exports = Solver;
@@ -2398,11 +2398,12 @@ var GSSolver = require('../solver/GSSolver')
 module.exports = World;
 
 function now(){
-    if(performance.now)
-        return performance.now();
-    else if(performance.webkitNow)
-        return performance.webkitNow();
-    else
+    if(typeof(performance)!="undefined"){
+        if(performance.now)
+            return performance.now();
+        else if(performance.webkitNow)
+            return performance.webkitNow();
+    } else
         return new Date().getTime();
 }
 
@@ -3244,7 +3245,7 @@ World.prototype.hitTest = function(worldPoint,bodies,precision){
     return result;
 };
 
-},{"../../package.json":2,"../solver/GSSolver":16,"../collision/NaiveBroadphase":20,"../math/vec2":34,"../shapes/Circle":6,"../shapes/Rectangle":25,"../shapes/Convex":10,"../shapes/Line":18,"../shapes/Plane":22,"../shapes/Capsule":5,"../shapes/Particle":21,"../events/EventEmitter":13,"../objects/Body":3,"../objects/Spring":30,"../material/Material":19,"../material/ContactMaterial":9,"../constraints/DistanceConstraint":11,"../constraints/PointToPointConstraint":23,"../constraints/PrismaticConstraint":24,"../collision/Broadphase":4,"../collision/Nearphase":35}],33:[function(require,module,exports){
+},{"../../package.json":2,"../solver/GSSolver":16,"../collision/NaiveBroadphase":24,"../math/vec2":34,"../shapes/Circle":6,"../shapes/Rectangle":25,"../shapes/Line":18,"../shapes/Convex":10,"../shapes/Plane":21,"../shapes/Capsule":5,"../shapes/Particle":20,"../events/EventEmitter":13,"../objects/Body":3,"../objects/Spring":30,"../material/Material":19,"../material/ContactMaterial":9,"../constraints/DistanceConstraint":11,"../constraints/PointToPointConstraint":22,"../constraints/PrismaticConstraint":23,"../collision/Broadphase":4,"../collision/Nearphase":35}],33:[function(require,module,exports){
 var Plane = require("../shapes/Plane");
 var Broadphase = require("../collision/Broadphase");
 
@@ -3622,7 +3623,7 @@ BoundsNode.prototype.clear = function(){
 }
 
 
-},{"../shapes/Plane":22,"../collision/Broadphase":4}],34:[function(require,module,exports){
+},{"../shapes/Plane":21,"../collision/Broadphase":4}],34:[function(require,module,exports){
 /**
  * The vec2 object from glMatrix, extended with the functions documented here. See http://glmatrix.net for full doc.
  * @class vec2
