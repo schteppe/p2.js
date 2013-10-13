@@ -642,7 +642,7 @@ Capsule.prototype.updateBoundingRadius = function(){
     this.boundingRadius = this.radius + this.length/2;
 };
 
-},{"../math/vec2":34,"./Shape":28}],6:[function(require,module,exports){
+},{"./Shape":28,"../math/vec2":34}],6:[function(require,module,exports){
 var Shape = require('./Shape');
 
 module.exports = Circle;
@@ -1059,7 +1059,7 @@ FrictionEquation.prototype.addToWlambda = function(deltalambda){
     bj.wlambda += bj.invInertia * this.rjxt * deltalambda;
 };
 
-},{"../math/mat2":36,"../math/vec2":34,"./Equation":12}],15:[function(require,module,exports){
+},{"../math/vec2":34,"../math/mat2":36,"./Equation":12}],15:[function(require,module,exports){
 var Circle = require('../shapes/Circle')
 ,   Plane = require('../shapes/Plane')
 ,   Particle = require('../shapes/Particle')
@@ -1220,7 +1220,7 @@ GridBroadphase.prototype.getCollisionPairs = function(world){
     return result;
 };
 
-},{"../shapes/Circle":6,"../shapes/Plane":22,"../shapes/Particle":21,"../collision/Broadphase":4,"../math/vec2":34}],16:[function(require,module,exports){
+},{"../shapes/Circle":6,"../shapes/Particle":21,"../shapes/Plane":22,"../collision/Broadphase":4,"../math/vec2":34}],16:[function(require,module,exports){
 var vec2 = require('../math/vec2'),
     Solver = require('./Solver');
 
@@ -1654,31 +1654,7 @@ NaiveBroadphase.prototype.getCollisionPairs = function(world){
     return result;
 };
 
-},{"../shapes/Circle":6,"../shapes/Plane":22,"../shapes/Shape":28,"../shapes/Particle":21,"../collision/Broadphase":4,"../math/vec2":34}],21:[function(require,module,exports){
-var Shape = require('./Shape');
-
-module.exports = Particle;
-
-/**
- * Particle shape class.
- * @class Particle
- * @constructor
- * @extends {Shape}
- */
-function Particle(){
-    Shape.call(this,Shape.PARTICLE);
-};
-Particle.prototype = new Shape();
-Particle.prototype.computeMomentOfInertia = function(mass){
-    return 0; // Can't rotate a particle
-};
-
-Particle.prototype.updateBoundingRadius = function(){
-    this.boundingRadius = 0;
-};
-
-
-},{"./Shape":28}],22:[function(require,module,exports){
+},{"../shapes/Circle":6,"../shapes/Plane":22,"../shapes/Shape":28,"../shapes/Particle":21,"../collision/Broadphase":4,"../math/vec2":34}],22:[function(require,module,exports){
 var Shape = require('./Shape');
 
 module.exports = Plane;
@@ -1699,6 +1675,30 @@ Plane.prototype.computeMomentOfInertia = function(mass){
 
 Plane.prototype.updateBoundingRadius = function(){
     this.boundingRadius = Number.MAX_VALUE;
+};
+
+
+},{"./Shape":28}],21:[function(require,module,exports){
+var Shape = require('./Shape');
+
+module.exports = Particle;
+
+/**
+ * Particle shape class.
+ * @class Particle
+ * @constructor
+ * @extends {Shape}
+ */
+function Particle(){
+    Shape.call(this,Shape.PARTICLE);
+};
+Particle.prototype = new Shape();
+Particle.prototype.computeMomentOfInertia = function(mass){
+    return 0; // Can't rotate a particle
+};
+
+Particle.prototype.updateBoundingRadius = function(){
+    this.boundingRadius = 0;
 };
 
 
@@ -1798,7 +1798,7 @@ PointToPointConstraint.prototype.setMotorSpeed = function(speed){
     this.equations[i].relativeVelocity = speed;
 };
 
-},{"./Constraint":7,"./ContactEquation":8,"./RotationalVelocityEquation":26,"../math/vec2":34}],24:[function(require,module,exports){
+},{"./Constraint":7,"./ContactEquation":8,"../math/vec2":34,"./RotationalVelocityEquation":26}],24:[function(require,module,exports){
 var Constraint = require('./Constraint')
 ,   ContactEquation = require('./ContactEquation')
 ,   vec2 = require('../math/vec2')
@@ -2122,7 +2122,7 @@ SAP1DBroadphase.prototype.getCollisionPairs = function(world){
     return result;
 };
 
-},{"../shapes/Circle":6,"../shapes/Plane":22,"../shapes/Shape":28,"../shapes/Particle":21,"../collision/Broadphase":4,"../math/vec2":34}],29:[function(require,module,exports){
+},{"../shapes/Circle":6,"../shapes/Shape":28,"../shapes/Plane":22,"../shapes/Particle":21,"../collision/Broadphase":4,"../math/vec2":34}],29:[function(require,module,exports){
 var Utils = require('../utils/Utils');
 
 module.exports = Solver;
@@ -6185,6 +6185,8 @@ function Body(options){
      * @type {Number}
      */
     this.boundingRadius = 0;
+
+    this.concavePath = null;
 };
 
 Body._idCounter = 0;
@@ -6359,14 +6361,24 @@ Body.prototype.fromConcavePath = function(path,options){
     var p = new decomp.Polygon();
     p.vertices = path;
 
-    // Check if any line segment intersects the path itself
-    if(!options.skipSimpleCheck && !p.isSimple()) return false;
-
     // Make it counter-clockwise
     p.makeCCW();
 
     if(typeof(options.removeCollinearPoints)=="number"){
         p.removeCollinearPoints(options.removeCollinearPoints);
+    }
+
+    // Check if any line segment intersects the path itself
+    if(typeof(options.skipSimpleCheck) == "undefined"){
+        if(!p.isSimple()) return false;
+    }
+
+    // Save this path for later
+    this.concavePath = p.vertices.slice(0);
+    for(var i=0; i<this.concavePath.length; i++){
+        var v = [0,0];
+        vec2.copy(v,this.concavePath[i]);
+        this.concavePath[i] = v;
     }
 
     // Slow or fast decomp?
@@ -6441,6 +6453,17 @@ Body.prototype.adjustCenterOfMass = function(){
 
         vec2.sub(offset,offset,cm);
     }
+
+    // Move the body position too
+    vec2.add(this.position,this.position,cm);
+
+    // And concave path
+    for(var i=0; this.concavePath && i<this.concavePath.length; i++){
+        vec2.sub(this.concavePath[i], this.concavePath[i], cm);
+    }
+
+    this.updateMassProperties();
+    this.updateBoundingRadius();
 };
 
 /**
@@ -6879,7 +6902,8 @@ Convex.prototype.computeMomentOfInertia = function(mass){
 
     // Get total convex area and density
     var area = polyk.GetArea(polykVerts);
-    var density = mass / area;
+    this.updateArea();
+    var density = mass / this.area;
 
     // Temp vectors
     var a = vec2.create(),
@@ -6908,15 +6932,15 @@ Convex.prototype.computeMomentOfInertia = function(mass){
         vec2.sub(ca, c, a);
         vec2.sub(cb, c, b);
 
-        var area_triangle = 0.5 * vec2.crossLength(ca,cb);
+        var area_triangle = decomp.Point.area(a,b,c)
         var base = vec2.length(ca);
         var height = 2*area_triangle / base; // a=b*h/2 => h=2*a/b
 
-        // Get inertia for this triangle: http://answers.yahoo.com/question/index?qid=20080721030038AA3oE1m
-        var I_triangle = (base * (Math.pow(height,3))) / 36;
-
         // Get mass for the triangle
-        var m = base*height/2 * density;
+        var m = area_triangle * density;
+
+        // Get inertia for this triangle: http://answers.yahoo.com/question/index?qid=20080721030038AA3oE1m
+        var I_triangle = m*(base * (Math.pow(height,3))) / 36;
 
         // Add to total inertia using parallel axis theorem
         var r2 = vec2.squaredLength(centroid);
