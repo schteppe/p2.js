@@ -368,7 +368,7 @@ Body.prototype.fromConcavePath = function(path,options){
     // Save this path for later
     this.concavePath = p.vertices.slice(0);
     for(var i=0; i<this.concavePath.length; i++){
-        var v = vec2.create();
+        var v = [0,0];
         vec2.copy(v,this.concavePath[i]);
         this.concavePath[i] = v;
     }
