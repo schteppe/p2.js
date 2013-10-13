@@ -164,7 +164,7 @@ Demo.prototype.handleMouseMove = function(physicsPosition){
             // drawing a polygon - add new point
             var sqdist = vec2.dist(physicsPosition,this.drawPoints[this.drawPoints.length-1]);
             if(sqdist > sampling*sampling){
-                var copy = vec2.create();
+                var copy = [0,0];
                 vec2.copy(copy,physicsPosition);
                 this.drawPoints.push(copy);
             }

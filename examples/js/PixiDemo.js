@@ -285,18 +285,28 @@ PixiDemo.drawPath = function(g,path,color,fillColor,lineWidth){
     lineWidth = lineWidth || 1;
     color = typeof(color)=="undefined" ? 0x000000 : color;
     g.lineStyle(lineWidth, color, 1);
-    //g.beginFill(0x000000);
+    g.beginFill(fillColor);
     var lastx = null,
         lasty = null;
     for(var i=0; i<path.length; i++){
         var v = path[i],
             x = v[0],
             y = v[1];
-        if(x !== lastx || y !== lasty){
+        if(x != lastx || y != lasty){
             if(i==0)
                 g.moveTo(x,y);
-            else
-                g.lineTo(x,y);
+            else {
+                // Check if the lines are parallel
+                var p1x = lastx,
+                    p1y = lasty,
+                    p2x = x,
+                    p2y = y,
+                    p3x = path[(i+1)%path.length][0],
+                    p3y = path[(i+1)%path.length][1];
+                var area = ((p2x - p1x)*(p3y - p1y))-((p3x - p1x)*(p2y - p1y));
+                if(area!=0)
+                    g.lineTo(x,y);
+            }
             lastx = x;
             lasty = y;
         }
@@ -304,7 +314,7 @@ PixiDemo.drawPath = function(g,path,color,fillColor,lineWidth){
     // Draw back to first
     if(path.length > 0)
         g.lineTo(path[0][0],path[0][1]);
-    //g.endFill();
+    g.endFill();
 };
 
 var X = vec2.fromValues(1,0),
