@@ -166,7 +166,8 @@ Convex.prototype.computeMomentOfInertia = function(mass){
 
     // Get total convex area and density
     var area = polyk.GetArea(polykVerts);
-    var density = mass / area;
+    this.updateArea();
+    var density = mass / this.area;
 
     // Temp vectors
     var a = vec2.create(),
@@ -195,15 +196,15 @@ Convex.prototype.computeMomentOfInertia = function(mass){
         vec2.sub(ca, c, a);
         vec2.sub(cb, c, b);
 
-        var area_triangle = 0.5 * vec2.crossLength(ca,cb);
+        var area_triangle = decomp.Point.area(a,b,c)
         var base = vec2.length(ca);
         var height = 2*area_triangle / base; // a=b*h/2 => h=2*a/b
 
-        // Get inertia for this triangle: http://answers.yahoo.com/question/index?qid=20080721030038AA3oE1m
-        var I_triangle = (base * (Math.pow(height,3))) / 36;
-
         // Get mass for the triangle
-        var m = base*height/2 * density;
+        var m = area_triangle * density;
+
+        // Get inertia for this triangle: http://answers.yahoo.com/question/index?qid=20080721030038AA3oE1m
+        var I_triangle = m*(base * (Math.pow(height,3))) / 36;
 
         // Add to total inertia using parallel axis theorem
         var r2 = vec2.squaredLength(centroid);

@@ -177,6 +177,8 @@ function Body(options){
      * @type {Number}
      */
     this.boundingRadius = 0;
+
+    this.concavePath = null;
 };
 
 Body._idCounter = 0;
@@ -351,14 +353,24 @@ Body.prototype.fromConcavePath = function(path,options){
     var p = new decomp.Polygon();
     p.vertices = path;
 
-    // Check if any line segment intersects the path itself
-    if(!options.skipSimpleCheck && !p.isSimple()) return false;
-
     // Make it counter-clockwise
     p.makeCCW();
 
     if(typeof(options.removeCollinearPoints)=="number"){
         p.removeCollinearPoints(options.removeCollinearPoints);
+    }
+
+    // Check if any line segment intersects the path itself
+    if(typeof(options.skipSimpleCheck) == "undefined"){
+        if(!p.isSimple()) return false;
+    }
+
+    // Save this path for later
+    this.concavePath = p.vertices.slice(0);
+    for(var i=0; i<this.concavePath.length; i++){
+        var v = vec2.create();
+        vec2.copy(v,this.concavePath[i]);
+        this.concavePath[i] = v;
     }
 
     // Slow or fast decomp?
@@ -433,6 +445,17 @@ Body.prototype.adjustCenterOfMass = function(){
 
         vec2.sub(offset,offset,cm);
     }
+
+    // Move the body position too
+    vec2.add(this.position,this.position,cm);
+
+    // And concave path
+    for(var i=0; this.concavePath && i<this.concavePath.length; i++){
+        vec2.sub(this.concavePath[i], this.concavePath[i], cm);
+    }
+
+    this.updateMassProperties();
+    this.updateBoundingRadius();
 };
 
 /**
