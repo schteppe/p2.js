@@ -222,8 +222,10 @@ PixiDemo.drawCapsule = function(g, x, y, angle, len, radius, color, fillColor, l
     // Draw circles at ends
     var c = Math.cos(angle);
     var s = Math.sin(angle);
+    g.beginFill(fillColor);
     g.drawCircle(-len/2*c + x, -len/2*s + y, radius);
     g.drawCircle( len/2*c + x,  len/2*s + y, radius);
+    g.endFill();
 
     // Draw rectangle
     g.lineStyle(lineWidth, color, 0);
@@ -244,10 +246,11 @@ PixiDemo.drawCapsule = function(g, x, y, angle, len, radius, color, fillColor, l
 };
 
 // Todo angle
-PixiDemo.drawRectangle = function(g,x,y,angle,w,h,color,lineWidth){
+PixiDemo.drawRectangle = function(g,x,y,angle,w,h,color,fillColor,lineWidth){
     lineWidth = lineWidth || 1;
     color = typeof(color)=="undefined" ? 0x000000 : color;
     g.lineStyle(lineWidth, color, 1);
+    g.beginFill(fillColor);
     g.drawRect(x-w/2,y-h/2,w,h);
 };
 
@@ -265,19 +268,10 @@ PixiDemo.drawConvex = function(g,verts,triangles,color,fillColor,lineWidth){
         else
             g.lineTo(x,y);
     }
-    g.lineTo(verts[0][0],verts[0][1]);
     g.endFill();
-
-    // Draw triangles
-    for(var i=0; i<triangles.length; i++){
-        var t = triangles[i],
-            a = verts[t[0]],
-            b = verts[t[1]],
-            c = verts[t[2]];
-        g.moveTo(a[0],a[1]);
-        g.lineTo(b[0],b[1]);
-        g.lineTo(c[0],c[1]);
-        g.lineTo(a[0],a[1]);
+    if(verts.length>2){
+        g.moveTo(verts[verts.length-1][0],verts[verts.length-1][1]);
+        g.lineTo(verts[0][0],verts[0][1]);
     }
 };
 
@@ -311,10 +305,12 @@ PixiDemo.drawPath = function(g,path,color,fillColor,lineWidth){
             lasty = y;
         }
     }
-    // Draw back to first
-    if(path.length > 0)
-        g.lineTo(path[0][0],path[0][1]);
     g.endFill();
+
+    if(path.length>2){
+        g.moveTo(path[path.length-1][0],path[path.length-1][1]);
+        g.lineTo(path[0][0],path[0][1]);
+    }
 };
 
 var X = vec2.fromValues(1,0),
@@ -377,9 +373,43 @@ PixiDemo.prototype.render = function(){
     this.renderer.render(this.container);
 }
 
+//http://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
+function componentToHex(c) {
+    var hex = c.toString(16);
+    return hex.length == 1 ? "0" + hex : hex;
+}
+function rgbToHex(r, g, b) {
+    return componentToHex(r) + componentToHex(g) + componentToHex(b);
+}
+//http://stackoverflow.com/questions/43044/algorithm-to-randomly-generate-an-aesthetically-pleasing-color-palette
+function randomPastelHex(){
+    var mix = [255,255,255];
+    var red =   Math.floor(Math.random()*256);
+    var green = Math.floor(Math.random()*256);
+    var blue =  Math.floor(Math.random()*256);
+
+    // mix the color
+    red =   Math.floor((red + mix[0]) / 2);
+    green = Math.floor((green + mix[1]) / 2);
+    blue =  Math.floor((blue + mix[2]) / 2);
+
+    return rgbToHex(red,green,blue);
+}
+
 PixiDemo.prototype.addRenderable = function(obj){
     var ppu = this.pixelsPerLengthUnit,
         lw = this.lineWidth;
+
+    // Random color
+    var hex = "", letters="0123456789abcdef";
+    for(var i=0; i<6; i++){
+        if(i%2 == 0)
+            hex += "a";
+        else
+            hex += letters[Math.floor(Math.random()*16)];
+    }
+    var color = parseInt(randomPastelHex(),16),
+        lineColor = 0x000000;
 
     var zero = [0,0];
 
@@ -393,7 +423,7 @@ PixiDemo.prototype.addRenderable = function(obj){
                 var v = obj.concavePath[j];
                 path.push([v[0]*ppu, -v[1]*ppu]);
             }
-            PixiDemo.drawPath(sprite, path, 0x000000, 0xFFFFFF, lw);
+            PixiDemo.drawPath(sprite, path, 0x000000, color, lw);
         } else {
             for(var i=0; i<obj.shapes.length; i++){
                 var child = obj.shapes[i],
@@ -403,23 +433,23 @@ PixiDemo.prototype.addRenderable = function(obj){
                 angle = angle || 0;
 
                 if(child instanceof Circle){
-                    PixiDemo.drawCircle(sprite,offset[0]*ppu,offset[1]*ppu,angle,child.radius*ppu,0xFFFFFF,lw);
+                    PixiDemo.drawCircle(sprite,offset[0]*ppu,offset[1]*ppu,angle,child.radius*ppu,color,lw);
 
                 } else if(child instanceof Particle){
-                    PixiDemo.drawCircle(sprite,offset[0]*ppu,offset[1]*ppu,angle,2*lw,0x000000,0);
+                    PixiDemo.drawCircle(sprite,offset[0]*ppu,offset[1]*ppu,angle,2*lw,lineColor,0);
 
                 } else if(child instanceof Plane){
                     // TODO use shape angle
-                    PixiDemo.drawPlane(sprite, -10*ppu, 10*ppu, 0x000000, lw, lw*10, lw*10);
+                    PixiDemo.drawPlane(sprite, -10*ppu, 10*ppu, lineColor, lw, lw*10, lw*10);
 
                 } else if(child instanceof Line){
-                    PixiDemo.drawLine(sprite, child.length*ppu, 0x000000, lw);
+                    PixiDemo.drawLine(sprite, child.length*ppu, lineColor, lw);
 
                 } else if(child instanceof Rectangle){
-                    PixiDemo.drawRectangle(sprite, offset[0]*ppu, offset[1]*ppu, angle, child.width*ppu, child.height*ppu, 0x000000, lw);
+                    PixiDemo.drawRectangle(sprite, offset[0]*ppu, offset[1]*ppu, angle, child.width*ppu, child.height*ppu, lineColor, color, lw);
 
                 } else if(child instanceof Capsule){
-                    PixiDemo.drawCapsule(sprite, offset[0]*ppu, offset[1]*ppu, angle, child.length*ppu, child.radius*ppu, 0x000000, 0xFFFFFF,lw);
+                    PixiDemo.drawCapsule(sprite, offset[0]*ppu, offset[1]*ppu, angle, child.length*ppu, child.radius*ppu, lineColor, color,lw);
 
                 } else if(child instanceof Convex){
                     // Scale verts
@@ -430,8 +460,7 @@ PixiDemo.prototype.addRenderable = function(obj){
                         vec2.rotate(vrot, v, angle);
                         verts.push([(vrot[0]+offset[0])*ppu, -(vrot[1]+offset[1])*ppu]);
                     }
-                    PixiDemo.drawConvex(sprite, verts, []/*child.triangles*/, 0x000000, 0xFFFFFF, lw);
-
+                    PixiDemo.drawConvex(sprite, verts, []/*child.triangles*/, lineColor, color, lw);
                 }
             }
         }
