@@ -1,4 +1,4 @@
-var GSSolver = require('../solver/GSSolver')
+var  GSSolver = require('../solver/GSSolver')
 ,    NaiveBroadphase = require('../collision/NaiveBroadphase')
 ,    vec2 = require('../math/vec2')
 ,    Circle = require('../shapes/Circle')
@@ -18,7 +18,7 @@ var GSSolver = require('../solver/GSSolver')
 ,    PrismaticConstraint = require('../constraints/PrismaticConstraint')
 ,    pkg = require('../../package.json')
 ,    Broadphase = require('../collision/Broadphase')
-,    Nearphase = require('../collision/Nearphase')
+,    Narrowphase = require('../collision/Narrowphase')
 
 module.exports = World;
 
@@ -73,12 +73,12 @@ function World(options){
     this.solver = options.solver || new GSSolver();
 
     /**
-     * The nearphase to use to generate contacts.
+     * The narrowphase to use to generate contacts.
      *
-     * @property nearphase
-     * @type {Nearphase}
+     * @property narrowphase
+     * @type {Narrowphase}
      */
-    this.nearphase = new Nearphase();
+    this.narrowphase = new Narrowphase();
 
     /**
      * Gravity in the world. This is applied on all bodies in the beginning of each step().
@@ -259,7 +259,7 @@ World.prototype.step = function(dt){
         solver = this.solver,
         Nbodies = this.bodies.length,
         broadphase = this.broadphase,
-        np = this.nearphase,
+        np = this.narrowphase,
         constraints = this.constraints,
         t0, t1,
         fhMinv = step_fhMinv,
@@ -291,7 +291,7 @@ World.prototype.step = function(dt){
     // Broadphase
     var result = broadphase.getCollisionPairs(this);
 
-    // Nearphase
+    // Narrowphase
     var glen = vec2.length(this.gravity);
     np.reset();
     for(var i=0, Nresults=result.length; i!==Nresults; i+=2){
@@ -337,7 +337,7 @@ World.prototype.step = function(dt){
                 var aiw = ai + bi.angle;
                 var ajw = aj + bj.angle;
 
-                // Run nearphase
+                // Run narrowphase
                 np.enableFriction = mu > 0;
                 np.slipForce = mug;
                 if(si instanceof Circle){
@@ -840,7 +840,7 @@ World.prototype.hitTest = function(worldPoint,bodies,precision){
         tmp = hitTest_tmp2;
     pb.addShape(ps);
 
-    var n = this.nearphase,
+    var n = this.narrowphase,
         result = [];
 
     // Check bodies

@@ -7,7 +7,7 @@ var vec2 = require('../math/vec2')
 ,   FrictionEquation = require('../constraints/FrictionEquation')
 ,   Circle = require('../shapes/Circle')
 
-module.exports = Nearphase;
+module.exports = Narrowphase;
 
 // Temp things
 var yAxis = vec2.fromValues(0,1);
@@ -29,11 +29,11 @@ var tmp1 = vec2.fromValues(0,0)
 ,   tmp15 = vec2.fromValues(0,0)
 
 /**
- * Nearphase. Creates contacts and friction given shapes and transforms.
- * @class Nearphase
+ * Narrowphase. Creates contacts and friction given shapes and transforms.
+ * @class Narrowphase
  * @constructor
  */
-function Nearphase(){
+function Narrowphase(){
     this.contactEquations = [];
     this.frictionEquations = [];
     this.enableFriction = true;
@@ -47,7 +47,7 @@ function Nearphase(){
  * Throws away the old equatons and gets ready to create new
  * @method reset
  */
-Nearphase.prototype.reset = function(){
+Narrowphase.prototype.reset = function(){
     if(this.reuseObjects){
         var ce = this.contactEquations,
             fe = this.frictionEquations,
@@ -68,7 +68,7 @@ Nearphase.prototype.reset = function(){
  * @param  {Body} bodyB
  * @return {ContactEquation}
  */
-Nearphase.prototype.createContactEquation = function(bodyA,bodyB){
+Narrowphase.prototype.createContactEquation = function(bodyA,bodyB){
     var c = this.reusableContactEquations.length ? this.reusableContactEquations.pop() : new ContactEquation(bodyA,bodyB);
     c.bi = bodyA;
     c.bj = bodyB;
@@ -82,7 +82,7 @@ Nearphase.prototype.createContactEquation = function(bodyA,bodyB){
  * @param  {Body} bodyB
  * @return {FrictionEquation}
  */
-Nearphase.prototype.createFrictionEquation = function(bodyA,bodyB){
+Narrowphase.prototype.createFrictionEquation = function(bodyA,bodyB){
     var c = this.reusableFrictionEquations.length ? this.reusableFrictionEquations.pop() : new FrictionEquation(bodyA,bodyB);
     c.bi = bodyA;
     c.bj = bodyB;
@@ -96,7 +96,7 @@ Nearphase.prototype.createFrictionEquation = function(bodyA,bodyB){
  * @param  {ContactEquation} contactEquation
  * @return {FrictionEquation}
  */
-Nearphase.prototype.createFrictionFromContact = function(c){
+Narrowphase.prototype.createFrictionFromContact = function(c){
     var eq = this.createFrictionEquation(c.bi,c.bj);
     vec2.copy(eq.ri, c.ri);
     vec2.copy(eq.rj, c.rj);
@@ -105,7 +105,7 @@ Nearphase.prototype.createFrictionFromContact = function(c){
 }
 
 /**
- * Plane/line nearphase
+ * Plane/line Narrowphase
  * @method planeLine
  * @param  {Body} bi
  * @param  {Plane} si
@@ -116,7 +116,7 @@ Nearphase.prototype.createFrictionFromContact = function(c){
  * @param  {Array} xj
  * @param  {Number} aj
  */
-Nearphase.prototype.planeLine = function(bi,si,xi,ai, bj,sj,xj,aj){
+Narrowphase.prototype.planeLine = function(bi,si,xi,ai, bj,sj,xj,aj){
     var lineShape = sj,
         lineAngle = aj,
         lineBody = bj,
@@ -197,12 +197,12 @@ Nearphase.prototype.planeLine = function(bi,si,xi,ai, bj,sj,xj,aj){
     }
 };
 
-Nearphase.prototype.particleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTest){
+Narrowphase.prototype.particleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTest){
     return this.circleLine(bi,si,xi,ai, bj,sj,xj,aj, justTest, sj.radius, 0);
 };
 
 /**
- * Circle/line nearphase
+ * Circle/line Narrowphase
  * @method circleLine
  * @param  {Body} bi
  * @param  {Circle} si
@@ -216,7 +216,7 @@ Nearphase.prototype.particleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTes
  * @param {Number} lineRadius Radius to add to the line. Can be used to test Capsules.
  * @param {Number} circleRadius If set, this value overrides the circle shape radius.
  */
-Nearphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj, justTest, lineRadius, circleRadius){
+Narrowphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj, justTest, lineRadius, circleRadius){
     var lineShape = sj,
         lineAngle = aj,
         lineBody = bj,
@@ -358,7 +358,7 @@ Nearphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj, justTest, li
 };
 
 /**
- * Circle/capsule nearphase
+ * Circle/capsule Narrowphase
  * @method circleCapsule
  * @param  {Body}   bi
  * @param  {Circle} si
@@ -369,12 +369,12 @@ Nearphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj, justTest, li
  * @param  {Array}  xj
  * @param  {Number} aj
  */
-Nearphase.prototype.circleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTest){
+Narrowphase.prototype.circleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTest){
     return this.circleLine(bi,si,xi,ai, bj,sj,xj,aj, justTest, sj.radius);
 };
 
 /**
- * Circle/convex nearphase
+ * Circle/convex Narrowphase
  * @method circleConvex
  * @param  {Body} bi
  * @param  {Circle} si
@@ -385,7 +385,7 @@ Nearphase.prototype.circleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTest)
  * @param  {Array} xj
  * @param  {Number} aj
  */
-Nearphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTest, circleRadius){
+Narrowphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTest, circleRadius){
     var convexShape = sj,
         convexAngle = aj,
         convexBody = bj,
@@ -528,7 +528,7 @@ Nearphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTest
 };
 
 /**
- * Particle/convex nearphase
+ * Particle/convex Narrowphase
  * @method particleConvex
  * @param  {Body} bi
  * @param  {Particle} si
@@ -539,7 +539,7 @@ Nearphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTest
  * @param  {Array} xj
  * @param  {Number} aj
  */
-Nearphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTest ){
+Narrowphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTest ){
     var convexShape = sj,
         convexAngle = aj,
         convexBody = bj,
@@ -651,7 +651,7 @@ Nearphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
 };
 
 /**
- * Circle/circle nearphase
+ * Circle/circle Narrowphase
  * @method circleCircle
  * @param  {Body} bi
  * @param  {Circle} si
@@ -662,7 +662,7 @@ Nearphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
  * @param  {Array} xj
  * @param  {Number} aj
  */
-Nearphase.prototype.circleCircle = function(  bi,si,xi,ai, bj,sj,xj,aj, justTest){
+Narrowphase.prototype.circleCircle = function(  bi,si,xi,ai, bj,sj,xj,aj, justTest){
     var bodyA = bi,
         shapeA = si,
         offsetA = xi,
@@ -701,7 +701,7 @@ Nearphase.prototype.circleCircle = function(  bi,si,xi,ai, bj,sj,xj,aj, justTest
 };
 
 /**
- * Convex/Plane nearphase
+ * Convex/Plane Narrowphase
  * @method convexPlane
  * @param  {Body} bi
  * @param  {Convex} si
@@ -712,7 +712,7 @@ Nearphase.prototype.circleCircle = function(  bi,si,xi,ai, bj,sj,xj,aj, justTest
  * @param  {Array} xj
  * @param  {Number} aj
  */
-Nearphase.prototype.convexPlane = function( bi,si,xi,ai, bj,sj,xj,aj ){
+Narrowphase.prototype.convexPlane = function( bi,si,xi,ai, bj,sj,xj,aj ){
     var convexBody = bi,
         convexOffset = xi,
         convexShape = si,
@@ -774,7 +774,7 @@ Nearphase.prototype.convexPlane = function( bi,si,xi,ai, bj,sj,xj,aj ){
 };
 
 /**
- * Nearphase for particle vs plane
+ * Narrowphase for particle vs plane
  * @method particlePlane
  * @param  {Body}       bi The particle body
  * @param  {Particle}   si Particle shape
@@ -785,7 +785,7 @@ Nearphase.prototype.convexPlane = function( bi,si,xi,ai, bj,sj,xj,aj ){
  * @param  {Array}      xj World position for the plane
  * @param  {Number}     aj World angle for the plane
  */
-Nearphase.prototype.particlePlane = function( bi,si,xi,ai, bj,sj,xj,aj, justTest ){
+Narrowphase.prototype.particlePlane = function( bi,si,xi,ai, bj,sj,xj,aj, justTest ){
     var particleBody = bi,
         particleShape = si,
         particleOffset = xi,
@@ -829,7 +829,7 @@ Nearphase.prototype.particlePlane = function( bi,si,xi,ai, bj,sj,xj,aj, justTest
 };
 
 /**
- * Circle/Particle nearphase
+ * Circle/Particle Narrowphase
  * @method circleParticle
  * @param  {Body} bi
  * @param  {Circle} si
@@ -840,7 +840,7 @@ Nearphase.prototype.particlePlane = function( bi,si,xi,ai, bj,sj,xj,aj, justTest
  * @param  {Array} xj
  * @param  {Number} aj
  */
-Nearphase.prototype.circleParticle = function(   bi,si,xi,ai, bj,sj,xj,aj, justTest ){
+Narrowphase.prototype.circleParticle = function(   bi,si,xi,ai, bj,sj,xj,aj, justTest ){
     var circleBody = bi,
         circleShape = si,
         circleOffset = xi,
@@ -878,7 +878,7 @@ var capsulePlane_tmpCircle = new Circle(1),
     capsulePlane_tmp1 = vec2.create(),
     capsulePlane_tmp2 = vec2.create(),
     capsulePlane_tmp3 = vec2.create();
-Nearphase.prototype.capsulePlane = function( bi,si,xi,ai, bj,sj,xj,aj ){
+Narrowphase.prototype.capsulePlane = function( bi,si,xi,ai, bj,sj,xj,aj ){
     var end1 = capsulePlane_tmp1,
         end2 = capsulePlane_tmp2,
         circle = capsulePlane_tmpCircle,
@@ -895,7 +895,7 @@ Nearphase.prototype.capsulePlane = function( bi,si,xi,ai, bj,sj,xj,aj ){
 
     circle.radius = si.radius;
 
-    // Do nearphase as two circles
+    // Do Narrowphase as two circles
     this.circlePlane(bi,circle,end1,0, bj,sj,xj,aj);
     this.circlePlane(bi,circle,end2,0, bj,sj,xj,aj);
 };
@@ -911,7 +911,7 @@ Nearphase.prototype.capsulePlane = function( bi,si,xi,ai, bj,sj,xj,aj ){
  * @param  {Array}   xj     Extra offset for the plane shape.
  * @param  {Number}  aj     Extra angle to apply to the plane
  */
-Nearphase.prototype.circlePlane = function(   bi,si,xi,ai, bj,sj,xj,aj ){
+Narrowphase.prototype.circlePlane = function(   bi,si,xi,ai, bj,sj,xj,aj ){
     var circleBody = bi,
         circleShape = si,
         circleOffset = xi, // Offset from body center, rotated!
@@ -965,7 +965,7 @@ Nearphase.prototype.circlePlane = function(   bi,si,xi,ai, bj,sj,xj,aj ){
 
 
 /**
- * Convex/convex nearphase.See <a href="http://www.altdevblogaday.com/2011/05/13/contact-generation-between-3d-convex-meshes/">this article</a> for more info.
+ * Convex/convex Narrowphase.See <a href="http://www.altdevblogaday.com/2011/05/13/contact-generation-between-3d-convex-meshes/">this article</a> for more info.
  * @method convexConvex
  * @param  {Body} bi
  * @param  {Convex} si
@@ -976,7 +976,7 @@ Nearphase.prototype.circlePlane = function(   bi,si,xi,ai, bj,sj,xj,aj ){
  * @param  {Array} xj
  * @param  {Number} aj
  */
-Nearphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj ){
+Narrowphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj ){
     var sepAxis = tmp1,
         worldPoint = tmp2,
         worldPoint0 = tmp3,
@@ -987,7 +987,7 @@ Nearphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj ){
         dist = tmp8,
         worldNormal = tmp9;
 
-    var found = Nearphase.findSeparatingAxis(si,xi,ai,sj,xj,aj,sepAxis);
+    var found = Narrowphase.findSeparatingAxis(si,xi,ai,sj,xj,aj,sepAxis);
     if(!found) return false;
 
     // Make sure the separating axis is directed from shape i to shape j
@@ -997,8 +997,8 @@ Nearphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj ){
     }
 
     // Find edges with normals closest to the separating axis
-    var closestEdge1 = Nearphase.getClosestEdge(si,ai,sepAxis,true), // Flipped axis
-        closestEdge2 = Nearphase.getClosestEdge(sj,aj,sepAxis);
+    var closestEdge1 = Narrowphase.getClosestEdge(si,ai,sepAxis,true), // Flipped axis
+        closestEdge2 = Narrowphase.getClosestEdge(sj,aj,sepAxis);
 
     if(closestEdge1==-1 || closestEdge2==-1) return false;
 
@@ -1118,7 +1118,7 @@ var pcoa_tmp1 = vec2.fromValues(0,0);
  * @param  {Array} worldAxis
  * @param  {Array} result
  */
-Nearphase.projectConvexOntoAxis = function(convexShape, convexOffset, convexAngle, worldAxis, result){
+Narrowphase.projectConvexOntoAxis = function(convexShape, convexOffset, convexAngle, worldAxis, result){
     var max=null,
         min=null,
         v,
@@ -1169,7 +1169,7 @@ var fsa_tmp1 = vec2.fromValues(0,0)
  * @param  {Array}      sepAxis     The resulting axis
  * @return {Boolean}                Whether the axis could be found.
  */
-Nearphase.findSeparatingAxis = function(c1,offset1,angle1,c2,offset2,angle2,sepAxis){
+Narrowphase.findSeparatingAxis = function(c1,offset1,angle1,c2,offset2,angle2,sepAxis){
     var maxDist = null,
         overlap = false,
         found = false,
@@ -1200,8 +1200,8 @@ Nearphase.findSeparatingAxis = function(c1,offset1,angle1,c2,offset2,angle2,sepA
             vec2.normalize(normal,normal);
 
             // Project hulls onto that normal
-            Nearphase.projectConvexOntoAxis(c1,offset1,angle1,normal,span1);
-            Nearphase.projectConvexOntoAxis(c2,offset2,angle2,normal,span2);
+            Narrowphase.projectConvexOntoAxis(c1,offset1,angle1,normal,span1);
+            Narrowphase.projectConvexOntoAxis(c2,offset2,angle2,normal,span2);
 
             // Order by span position
             var a=span1,
@@ -1243,7 +1243,7 @@ var gce_tmp1 = vec2.fromValues(0,0)
  * @param  {Boolean}    flip
  * @return {Number}             Index of the edge that is closest. This index and the next spans the resulting edge. Returns -1 if failed.
  */
-Nearphase.getClosestEdge = function(c,angle,axis,flip){
+Narrowphase.getClosestEdge = function(c,angle,axis,flip){
     var localAxis = gce_tmp1,
         edge = gce_tmp2,
         normal = gce_tmp3;

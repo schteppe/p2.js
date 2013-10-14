@@ -220,7 +220,7 @@ Demo.prototype.updateStats = function(){
         this.stats_Nsummed = 0;
     }
     this.stats_stepdiv.innerHTML = "Physics step: "+(Math.round(this.stats_average*100)/100)+"ms";
-    this.stats_contactsdiv.innerHTML = "Contacts: "+this.world.nearphase.contactEquations.length;
+    this.stats_contactsdiv.innerHTML = "Contacts: "+this.world.narrowphase.contactEquations.length;
 };
 
 /**
