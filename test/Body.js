@@ -8,11 +8,11 @@ exports.construct = function(test){
 
 exports.fromConcave = function(test){
     var b = new Body();
-    test.ok(b.fromConcavePath( [[-1, 1],
-                                [-1, 0],
-                                [1, 0],
-                                [1, 1],
-                                [0.5, 0.5]]));
+    test.ok(b.fromPolygon( [[-1, 1],
+                            [-1, 0],
+                            [1, 0],
+                            [1, 1],
+                            [0.5, 0.5]]));
 
     test.ok(b.shapes.length > 0);
 

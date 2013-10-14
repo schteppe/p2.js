@@ -197,7 +197,7 @@ Demo.prototype.handleMouseUp = function(physicsPosition){
             if(this.drawPoints.length > 3){
                 // Create polygon
                 var b = new Body({ mass : 1 });
-                if(b.fromConcavePath(this.drawPoints,{
+                if(b.fromPolygon(this.drawPoints,{
                     removeCollinearPoints : 0.01,
                 })){
                     this.world.addBody(b);

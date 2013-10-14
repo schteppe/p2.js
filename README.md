@@ -78,7 +78,7 @@ setInterval(function(){
 | Line      | -      | -     | -         | -      | -        | (todo) | (todo)  |
 | Capsule   | -      | -     | -         | -      | -        | -      | (todo)  |
 
-Note that concave polygon shapes can be created using ```Body.prototype.fromConcavePath```.
+Note that concave polygon shapes can be created using ```Body.prototype.fromPolygon```.
 
 ### Change log
 ##### Current development version (0.3)
@@ -86,8 +86,7 @@ Note that concave polygon shapes can be created using ```Body.prototype.fromConc
 * The returned array by ```Broadphase.prototype.getCollisionPairs``` is now reused in between calls.
 * Added method ```.addEquations``` to ```Solver``` to faster add an array of ```Equation```s.
 * Added method ```.updateArea``` and property ```.area``` to Shape
-* Added methods ```.adjustCenterOfMass``` and ```.fromConcavePath``` to ```Body```.
-* Added method ```.fromConcavePath``` to ```Body```.
+* Added methods ```.adjustCenterOfMass``` and ```.fromPolygon``` to ```Body```.
 * Renamed ```Nearphase``` to ```Narrowphase```.
 
 ##### 0.2

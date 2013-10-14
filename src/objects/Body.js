@@ -334,16 +334,16 @@ Body.prototype.toWorldFrame = function(out, localPoint){
 };
 
 /**
- * Reads a concave shape path, and assembles convex shapes from that and puts them at proper offset points.
- * @method fromConcavePath
- * @param {Array} path An array of 2d vectors, e.g. [[0,0],[0,1],...] that resembles a convex shape. The shape must be simple and without holes.
+ * Reads a polygon shape path, and assembles convex shapes from that and puts them at proper offset points.
+ * @method fromPolygon
+ * @param {Array} path An array of 2d vectors, e.g. [[0,0],[0,1],...] that resembles a concave or convex polygon. The shape must be simple and without holes.
  * @param {Object} [options]
  * @param {Boolean} [options.optimalDecomp=false]   Set to true if you need optimal decomposition. Warning: very slow for polygons with more than 10 vertices.
  * @param {Boolean} [options.skipSimpleCheck=false] Set to true if you already know that the path is not intersecting itself.
  * @param {Boolean|Number} [options.removeCollinearPoints=false] Set to a number (angle threshold value) to remove collinear points, or false to keep all points.
  * @return {Boolean} True on success, else false.
  */
-Body.prototype.fromConcavePath = function(path,options){
+Body.prototype.fromPolygon = function(path,options){
     options = options || {};
 
     // Remove all shapes

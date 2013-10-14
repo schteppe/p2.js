@@ -29,14 +29,14 @@
         var concaveBody = new p2.Body({ mass : 1, position:[0,2] });
 
         // Give a concave path to the body.
-        // Body.prototype.fromConcavePath will automatically add shapes at
+        // Body.prototype.fromPolygon will automatically add shapes at
         // proper offsets and adjust the center of mass.
         var path = [[-1, 1],
                     [-1, 0],
                     [1, 0],
                     [1, 1],
                     [0.5, 0.5]];
-        concaveBody.fromConcavePath(path);
+        concaveBody.fromPolygon(path);
 
         world.addBody(concaveBody);
 
