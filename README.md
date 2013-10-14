@@ -88,6 +88,7 @@ Note that concave polygon shapes can be created using ```Body.prototype.fromConc
 * Added method ```.updateArea``` and property ```.area``` to Shape
 * Added methods ```.adjustCenterOfMass``` and ```.fromConcavePath``` to ```Body```.
 * Added method ```.fromConcavePath``` to ```Body```.
+* Renamed ```Nearphase``` to ```Narrowphase```.
 
 ##### 0.2
 * Removed ```World.collidingBodies``` since ```World.bodies``` can be used equivalently.
