@@ -1,4 +1,4 @@
-var Nearphase = require("../src/collision/Nearphase")
+var Narrowphase = require("../src/collision/Narrowphase")
 ,   Convex = require("../src/shapes/Convex")
 ,   Body = require("../src/objects/Body")
 ,   Rectangle = require("../src/shapes/Rectangle")
@@ -29,7 +29,7 @@ exports.projectConvexOntoAxis = {
         var span = vec2.create();
 
         // Moved along axis propendicular to the projection axis
-        Nearphase.projectConvexOntoAxis(circle,[1,0],0,[0,1],span);
+        Narrowphase.projectConvexOntoAxis(circle,[1,0],0,[0,1],span);
 
         test.ok(span[0] > -1 - eps);
         test.ok(span[0] < -1 + eps);
@@ -37,7 +37,7 @@ exports.projectConvexOntoAxis = {
         test.ok(span[1] < 1 + eps);
 
         // Along the x axis
-        Nearphase.projectConvexOntoAxis(circle,[0,1],0,[0,1],span);
+        Narrowphase.projectConvexOntoAxis(circle,[0,1],0,[0,1],span);
 
         test.ok(span[0] > 0 - eps);
         test.ok(span[0] < 0 + eps);
@@ -45,7 +45,7 @@ exports.projectConvexOntoAxis = {
         test.ok(span[1] < 2 + eps);
 
         // Along the x axis - rotated 180 degrees - should not do anything special
-        Nearphase.projectConvexOntoAxis(circle,[0,1],Math.PI / 2,[0,1],span);
+        Narrowphase.projectConvexOntoAxis(circle,[0,1],Math.PI / 2,[0,1],span);
 
         test.ok(span[0] > 0 - eps);
         test.ok(span[0] < 0 + eps);
@@ -57,7 +57,7 @@ exports.projectConvexOntoAxis = {
 
     rect : function(test){
         var span = vec2.create();
-        Nearphase.projectConvexOntoAxis(rect,[1,0],0,[0,1],span);
+        Narrowphase.projectConvexOntoAxis(rect,[1,0],0,[0,1],span);
         test.done();
     },
 
@@ -65,7 +65,7 @@ exports.projectConvexOntoAxis = {
 
 exports.findSeparatingAxis = function(test){
     var axis = vec2.create();
-    Nearphase.findSeparatingAxis(circle,[0,0],0,circle,[0,1+eps],0,axis);
+    Narrowphase.findSeparatingAxis(circle,[0,0],0,circle,[0,1+eps],0,axis);
 
     // Check length
     var l = vec2.length(axis);
@@ -79,7 +79,7 @@ exports.findSeparatingAxis = function(test){
 
 
     // Check what happens if there is overlap
-    Nearphase.findSeparatingAxis(circle,[0,0],0,circle,[0,0.5],0,axis);
+    Narrowphase.findSeparatingAxis(circle,[0,0],0,circle,[0,0.5],0,axis);
 
     // Check direction - should still be quite near up/down direction
     var d = vec2.dot(axis, [0,1]);
@@ -88,7 +88,7 @@ exports.findSeparatingAxis = function(test){
 
 
     // Check what happens if there is diagonal overlap
-    Nearphase.findSeparatingAxis(circle,[0,0],0,circle,[0.5,0.5],0,axis);
+    Narrowphase.findSeparatingAxis(circle,[0,0],0,circle,[0.5,0.5],0,axis);
 
     // Check direction
     var d = vec2.dot(axis, vec2.normalize([1,1],[1,1]));
@@ -100,7 +100,7 @@ exports.findSeparatingAxis = function(test){
 };
 
 exports.getClosestEdge = function(test){
-    var i = Nearphase.getClosestEdge(circle, 0, [1,0]);
+    var i = Narrowphase.getClosestEdge(circle, 0, [1,0]);
 
     // Should be first or last edge
     test.ok(i != -1);
