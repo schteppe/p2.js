@@ -27,6 +27,7 @@ var tmp1 = vec2.fromValues(0,0)
 ,   tmp13 = vec2.fromValues(0,0)
 ,   tmp14 = vec2.fromValues(0,0)
 ,   tmp15 = vec2.fromValues(0,0)
+,   tmp16 = vec2.fromValues(0,0)
 
 /**
  * Narrowphase. Creates contacts and friction given shapes and transforms.
@@ -561,16 +562,16 @@ Narrowphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, just
         closestEdge = -1,
         closestEdgeDistance = null,
         closestEdgeOrthoDist = tmp12,
-        closestEdgeProjectedPoint = tmp13;
+        closestEdgeProjectedPoint = tmp13,
+        localPoint = tmp14;
 
-    var numReported = 0;
-
-    verts = convexShape.vertices;
+    var numReported = 0,
+        verts = convexShape.vertices;
 
     // Check all edges first
-    var lastd = null;
-    for(var i=0; i<verts.length; i++){
-        var v0 = verts[i],
+    var lastCross = null;
+    for(var i=0; i!==verts.length+1; i++){
+        var v0 = verts[i%verts.length],
             v1 = verts[(i+1)%verts.length];
 
         // Transform vertices to world
@@ -591,9 +592,13 @@ Narrowphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, just
         var d = dot(dist, worldTangent);
         sub(centerDist, worldVertex0, convexOffset);
 
-        if(lastd===null) lastd = d;
+        var cross = vec2.crossLength(worldEdgeUnit,dist);
 
-        if(d*lastd < 0) return false;
+        if(lastCross===null) lastCross = cross;
+
+        // If we got a different sign of the distance vector, the point is out of the polygon
+        if(cross*lastCross < 0) return false;
+        lastCross = cross;
 
         sub(convexToparticle, particleOffset, convexOffset);
 
