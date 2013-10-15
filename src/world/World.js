@@ -22,6 +22,8 @@ var  GSSolver = require('../solver/GSSolver')
 
 module.exports = World;
 
+var currentVersion = pkg.version.split(".").slice(0,2).join("."); // "X.Y"
+
 function now(){
     if(typeof(performance)!="undefined"){
         if(performance.now)
@@ -511,7 +513,7 @@ World.prototype.removeBody = function(body){
  */
 World.prototype.toJSON = function(){
     var json = {
-        p2 : pkg.version.split(".").slice(0,2).join("."), // "X.Y"
+        p2 : currentVersion,
         bodies : [],
         springs : [],
         solver : {},
@@ -655,7 +657,27 @@ World.prototype.toJSON = function(){
 };
 
 /**
- * Load a scene from a serialized state.
+ * Upgrades a JSON object to current version
+ * @method upgradeJSON
+ * @param  {Object} json
+ * @return {Object|Boolean} New json object, or false on failure.
+ */
+World.upgradeJSON = function(json){
+    if(!json || !json.p2)
+        return false;
+
+    switch(json.p2){
+        case currentVersion:
+            // We are at latest json version
+            return JSON.parse(JSON.stringify(json));
+            break;
+    }
+
+    return World.upgradeJSON(json);
+};
+
+/**
+ * Load a scene from a serialized state in JSON format.
  *
  * @method fromJSON
  * @param  {Object} json
@@ -663,127 +685,121 @@ World.prototype.toJSON = function(){
  */
 World.prototype.fromJSON = function(json){
     this.clear();
+    json = World.upgradeJSON(json);
+
+    // Upgrade failed.
+    if(!json) return false;
 
     if(!json.p2)
         return false;
 
-    switch(json.p2){
+    // Set gravity
+    vec2.copy(this.gravity, json.gravity);
 
-        case "0.2":
+    // Load bodies
+    var id2material = {};
+    for(var i=0; i!==json.bodies.length; i++){
+        var jb = json.bodies[i],
+            jss = jb.shapes;
 
-            // Set gravity
-            vec2.copy(this.gravity, json.gravity);
+        var b = new Body({
+            mass :              jb.mass,
+            position :          jb.position,
+            angle :             jb.angle,
+            velocity :          jb.velocity,
+            angularVelocity :   jb.angularVelocity,
+            force :             jb.force,
+        });
+        b.id = jb.id;
 
-            // Load bodies
-            var id2material = {};
-            for(var i=0; i!==json.bodies.length; i++){
-                var jb = json.bodies[i],
-                    jss = jb.shapes;
+        for(var j=0; j<jss.length; j++){
+            var shape, js=jss[j];
 
-                var b = new Body({
-                    mass :              jb.mass,
-                    position :          jb.position,
-                    angle :             jb.angle,
-                    velocity :          jb.velocity,
-                    angularVelocity :   jb.angularVelocity,
-                    force :             jb.force,
-                });
-                b.id = jb.id;
-
-                for(var j=0; j<jss.length; j++){
-                    var shape, js=jss[j];
-
-                    switch(js.type){
-                        case "Circle":      shape = new Circle(js.radius);              break;
-                        case "Plane":       shape = new Plane();                        break;
-                        case "Particle":    shape = new Particle();                     break;
-                        case "Line":        shape = new Line(js.length);                break;
-                        case "Rectangle":   shape = new Rectangle(js.width,js.height);  break;
-                        case "Convex":      shape = new Convex(js.verts);               break;
-                        case "Capsule":     shape = new Capsule(js.length, js.radius);  break;
-                        default:
-                            throw new Error("Shape type not supported: "+js.type);
-                            break;
-                    }
-                    shape.collisionMask = js.collisionMask;
-                    shape.collisionGroup = js.collisionGroup;
-                    shape.material = js.material;
-                    if(shape.material){
-                        shape.material = new Material();
-                        shape.material.id = js.material.id;
-                        id2material[shape.material.id+""] = shape.material;
-                    }
-                    b.addShape(shape,js.offset,js.angle);
-                }
-
-                if(jb.concavePath)
-                    b.concavePath = jb.concavePath;
-
-                this.addBody(b);
+            switch(js.type){
+                case "Circle":      shape = new Circle(js.radius);              break;
+                case "Plane":       shape = new Plane();                        break;
+                case "Particle":    shape = new Particle();                     break;
+                case "Line":        shape = new Line(js.length);                break;
+                case "Rectangle":   shape = new Rectangle(js.width,js.height);  break;
+                case "Convex":      shape = new Convex(js.verts);               break;
+                case "Capsule":     shape = new Capsule(js.length, js.radius);  break;
+                default:
+                    throw new Error("Shape type not supported: "+js.type);
+                    break;
             }
-
-            // Load springs
-            for(var i=0; i<json.springs.length; i++){
-                var js = json.springs[i];
-                var s = new Spring(this.bodies[js.bodyA], this.bodies[js.bodyB], {
-                    stiffness : js.stiffness,
-                    damping : js.damping,
-                    restLength : js.restLength,
-                    localAnchorA : js.localAnchorA,
-                    localAnchorB : js.localAnchorB,
-                });
-                this.addSpring(s);
+            shape.collisionMask = js.collisionMask;
+            shape.collisionGroup = js.collisionGroup;
+            shape.material = js.material;
+            if(shape.material){
+                shape.material = new Material();
+                shape.material.id = js.material.id;
+                id2material[shape.material.id+""] = shape.material;
             }
+            b.addShape(shape,js.offset,js.angle);
+        }
 
-            // Load contact materials
-            for(var i=0; i<json.contactMaterials.length; i++){
-                var jm = json.contactMaterials[i];
-                var cm = new ContactMaterial(id2material[jm.materialA+""], id2material[jm.materialB+""], {
-                    friction :              jm.friction,
-                    restitution :           jm.restitution,
-                    stiffness :             jm.stiffness,
-                    relaxation :            jm.relaxation,
-                    frictionStiffness :     jm.frictionStiffness,
-                    frictionRelaxation :    jm.frictionRelaxation,
-                });
-                cm.id = jm.id;
-                this.addContactMaterial(cm);
-            }
+        if(jb.concavePath)
+            b.concavePath = jb.concavePath;
 
-            // Load constraints
-            for(var i=0; i<json.constraints.length; i++){
-                var jc = json.constraints[i],
-                    c;
-                switch(jc.type){
-                    case "DistanceConstraint":
-                        c = new DistanceConstraint(this.bodies[jc.bodyA], this.bodies[jc.bodyB], jc.distance, jc.maxForce);
-                        break;
-                    case "PointToPointConstraint":
-                        c = new PointToPointConstraint(this.bodies[jc.bodyA], jc.pivotA, this.bodies[jc.bodyB], jc.pivotB, jc.maxForce);
-                        if(jc.motorSpeed){
-                            c.enableMotor();
-                            c.setMotorSpeed(jc.motorSpeed);
-                        }
-                        break;
-                    case "PrismaticConstraint":
-                        c = new PrismaticConstraint(this.bodies[jc.bodyA], this.bodies[jc.bodyB], {
-                            maxForce : jc.maxForce,
-                            localAxisA : jc.localAxisA,
-                            localAxisB : jc.localAxisB,
-                        });
-                        break;
-                    default:
-                        throw new Error("Constraint type not recognized: "+jc.type);
-                }
-                this.addConstraint(c);
-            }
-
-            break;
-
-        default:
-            return false;
-            break;
+        this.addBody(b);
     }
+
+    // Load springs
+    for(var i=0; i<json.springs.length; i++){
+        var js = json.springs[i];
+        var s = new Spring(this.bodies[js.bodyA], this.bodies[js.bodyB], {
+            stiffness : js.stiffness,
+            damping : js.damping,
+            restLength : js.restLength,
+            localAnchorA : js.localAnchorA,
+            localAnchorB : js.localAnchorB,
+        });
+        this.addSpring(s);
+    }
+
+    // Load contact materials
+    for(var i=0; i<json.contactMaterials.length; i++){
+        var jm = json.contactMaterials[i];
+        var cm = new ContactMaterial(id2material[jm.materialA+""], id2material[jm.materialB+""], {
+            friction :              jm.friction,
+            restitution :           jm.restitution,
+            stiffness :             jm.stiffness,
+            relaxation :            jm.relaxation,
+            frictionStiffness :     jm.frictionStiffness,
+            frictionRelaxation :    jm.frictionRelaxation,
+        });
+        cm.id = jm.id;
+        this.addContactMaterial(cm);
+    }
+
+    // Load constraints
+    for(var i=0; i<json.constraints.length; i++){
+        var jc = json.constraints[i],
+            c;
+        switch(jc.type){
+            case "DistanceConstraint":
+                c = new DistanceConstraint(this.bodies[jc.bodyA], this.bodies[jc.bodyB], jc.distance, jc.maxForce);
+                break;
+            case "PointToPointConstraint":
+                c = new PointToPointConstraint(this.bodies[jc.bodyA], jc.pivotA, this.bodies[jc.bodyB], jc.pivotB, jc.maxForce);
+                if(jc.motorSpeed){
+                    c.enableMotor();
+                    c.setMotorSpeed(jc.motorSpeed);
+                }
+                break;
+            case "PrismaticConstraint":
+                c = new PrismaticConstraint(this.bodies[jc.bodyA], this.bodies[jc.bodyB], {
+                    maxForce : jc.maxForce,
+                    localAxisA : jc.localAxisA,
+                    localAxisB : jc.localAxisB,
+                });
+                break;
+            default:
+                throw new Error("Constraint type not recognized: "+jc.type);
+        }
+        this.addConstraint(c);
+    }
+
 
     return true;
 };
