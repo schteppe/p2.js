@@ -522,7 +522,7 @@ World.prototype.toJSON = function(){
     };
 
     // Serialize springs
-    for(var i=0; i<this.springs.length; i++){
+    for(var i=0; i!==this.springs.length; i++){
         var s = this.springs[i];
         json.springs.push({
             bodyA : this.bodies.indexOf(s.bodyA),
@@ -551,6 +551,7 @@ World.prototype.toJSON = function(){
             jc.pivotA = v2a(c.pivotA);
             jc.pivotB = v2a(c.pivotB);
             jc.maxForce = c.maxForce;
+            jc.motorSpeed = c.getMotorSpeed(); // False if motor is disabled, otherwise number.
         } else if(c instanceof PrismaticConstraint){
             jc.type = "PrismaticConstraint";
             jc.localAxisA = v2a(c.localAxisA);
@@ -565,7 +566,7 @@ World.prototype.toJSON = function(){
     }
 
     // Serialize bodies
-    for(var i=0; i<this.bodies.length; i++){
+    for(var i=0; i!==this.bodies.length; i++){
         var b = this.bodies[i],
             ss = b.shapes,
             jsonShapes = [];
@@ -615,6 +616,7 @@ World.prototype.toJSON = function(){
 
             jsonShapes.push(jsonShape);
         }
+
         json.bodies.push({
             id : b.id,
             mass : b.mass,
@@ -624,6 +626,7 @@ World.prototype.toJSON = function(){
             angularVelocity : b.angularVelocity,
             force : v2a(b.force),
             shapes : jsonShapes,
+            concavePath : b.concavePath,
         });
     }
 
@@ -673,7 +676,7 @@ World.prototype.fromJSON = function(json){
 
             // Load bodies
             var id2material = {};
-            for(var i=0; i<json.bodies.length; i++){
+            for(var i=0; i!==json.bodies.length; i++){
                 var jb = json.bodies[i],
                     jss = jb.shapes;
 
@@ -712,6 +715,9 @@ World.prototype.fromJSON = function(json){
                     }
                     b.addShape(shape,js.offset,js.angle);
                 }
+
+                if(jb.concavePath)
+                    b.concavePath = jb.concavePath;
 
                 this.addBody(b);
             }
@@ -754,6 +760,10 @@ World.prototype.fromJSON = function(json){
                         break;
                     case "PointToPointConstraint":
                         c = new PointToPointConstraint(this.bodies[jc.bodyA], jc.pivotA, this.bodies[jc.bodyB], jc.pivotB, jc.maxForce);
+                        if(jc.motorSpeed){
+                            c.enableMotor();
+                            c.setMotorSpeed(jc.motorSpeed);
+                        }
                         break;
                     case "PrismaticConstraint":
                         c = new PrismaticConstraint(this.bodies[jc.bodyA], this.bodies[jc.bodyB], {

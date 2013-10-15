@@ -83,6 +83,15 @@ PointToPointConstraint.prototype.disableMotor = function(){
 };
 
 /**
+ * Check if the motor is enabled.
+ * @method motorIsEnabled
+ * @return {Boolean}
+ */
+PointToPointConstraint.prototype.motorIsEnabled = function(){
+    return !!this.motorEquation;
+};
+
+/**
  * Set the speed of the rotational constraint motor
  * @method setMotorSpeed
  * @param  {Number} speed
@@ -91,4 +100,14 @@ PointToPointConstraint.prototype.setMotorSpeed = function(speed){
     if(!this.motorEquation) return;
     var i = this.equations.indexOf(this.motorEquation);
     this.equations[i].relativeVelocity = speed;
+};
+
+/**
+ * Get the speed of the rotational constraint motor
+ * @method getMotorSpeed
+ * @return  {Number} The current speed, or false if the motor is not enabled.
+ */
+PointToPointConstraint.prototype.getMotorSpeed = function(){
+    if(!this.motorEquation) return false;
+    return this.motorEquation.relativeVelocity;
 };
