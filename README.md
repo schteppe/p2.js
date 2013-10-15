@@ -81,13 +81,14 @@ setInterval(function(){
 Note that concave polygon shapes can be created using ```Body.prototype.fromPolygon```.
 
 ### Change log
-##### Current development version (0.3)
+##### Current development version (to be 0.3)
 * Added ```Utils```
 * The returned array by ```Broadphase.prototype.getCollisionPairs``` is now reused in between calls.
 * Added method ```.addEquations``` to ```Solver``` to faster add an array of ```Equation```s.
 * Added method ```.updateArea``` and property ```.area``` to Shape
 * Added methods ```.adjustCenterOfMass``` and ```.fromPolygon``` to ```Body```.
 * Renamed ```Nearphase``` to ```Narrowphase```.
+* Added method ```World.upgradeJSON```.
 
 ##### 0.2
 * Removed ```World.collidingBodies``` since ```World.bodies``` can be used equivalently.
