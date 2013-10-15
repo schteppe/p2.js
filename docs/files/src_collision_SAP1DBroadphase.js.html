@@ -61,6 +61,8 @@
             
                 <li><a href="../classes/Equation.html">Equation</a></li>
             
+                <li><a href="../classes/EventEmitter.html">EventEmitter</a></li>
+            
                 <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
             
                 <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
@@ -71,13 +73,15 @@
             
                 <li><a href="../classes/IslandSolver.html">IslandSolver</a></li>
             
+                <li><a href="../classes/Line.html">Line</a></li>
+            
                 <li><a href="../classes/mat2.html">mat2</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
-                <li><a href="../classes/Nearphase.html">Nearphase</a></li>
+                <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
             
                 <li><a href="../classes/Particle.html">Particle</a></li>
             
@@ -100,6 +104,8 @@
                 <li><a href="../classes/Solver.html">Solver</a></li>
             
                 <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/Utils.html">Utils</a></li>
             
                 <li><a href="../classes/vec2.html">vec2</a></li>
             
@@ -231,22 +237,29 @@ SAP1DBroadphase.sortAxisListY = function(bodyA,bodyB){
  */
 SAP1DBroadphase.prototype.getCollisionPairs = function(world){
     var bodies = this.axisList,
-        result = [],
-        axisIndex = this.axisIndex;
+        result = this.result,
+        axisIndex = this.axisIndex,
+        i,j;
+
+    result.length = 0;
 
     // Sort the list
     bodies.sort(axisIndex === 0 ? SAP1DBroadphase.sortAxisListX : SAP1DBroadphase.sortAxisListY );
 
     // Look through the list
-    for(var i=0, N=bodies.length; i!==N; i++){
-        var bi = bodies[i];
+    for(i=0, N=bodies.length; i!==N; i++){
+        var bi = bodies[i],
+            biPos = bi.position[axisIndex],
+            ri = bi.boundingRadius;
 
-        for(var j=i+1; j&lt;N; j++){
+        for(j=i+1; j&lt;N; j++){
             var bj = bodies[j],
-                boundA1 = bi.position[axisIndex]-bi.boundingRadius,
-                boundA2 = bi.position[axisIndex]+bi.boundingRadius,
-                boundB1 = bj.position[axisIndex]-bj.boundingRadius,
-                boundB2 = bj.position[axisIndex]+bj.boundingRadius;
+                bjPos = bj.position[axisIndex],
+                rj = bj.boundingRadius,
+                boundA1 = biPos-ri,
+                boundA2 = biPos+ri,
+                boundB1 = bjPos-rj,
+                boundB2 = bjPos+rj;
 
             // Abort if we got gap til the next body
             if( boundB1 &gt; boundA2 ){

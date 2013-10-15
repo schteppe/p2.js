@@ -61,6 +61,8 @@
             
                 <li><a href="../classes/Equation.html">Equation</a></li>
             
+                <li><a href="../classes/EventEmitter.html">EventEmitter</a></li>
+            
                 <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
             
                 <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
@@ -71,13 +73,15 @@
             
                 <li><a href="../classes/IslandSolver.html">IslandSolver</a></li>
             
+                <li><a href="../classes/Line.html">Line</a></li>
+            
                 <li><a href="../classes/mat2.html">mat2</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
-                <li><a href="../classes/Nearphase.html">Nearphase</a></li>
+                <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
             
                 <li><a href="../classes/Particle.html">Particle</a></li>
             
@@ -100,6 +104,8 @@
                 <li><a href="../classes/Solver.html">Solver</a></li>
             
                 <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/Utils.html">Utils</a></li>
             
                 <li><a href="../classes/vec2.html">vec2</a></li>
             
@@ -152,7 +158,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_objects_Body.js.html#l7"><code>src&#x2F;objects&#x2F;Body.js:7</code></a>
+            Defined in: <a href="../files/src_objects_Body.js.html#l9"><code>src&#x2F;objects&#x2F;Body.js:9</code></a>
         </div>
     
 
@@ -164,7 +170,8 @@
 
 
 <div class="box intro">
-    <p>A physics body.</p>
+    <p>A rigid body. Has got a center of mass, position, velocity and a number of
+shapes that are used for collisions.</p>
 
 </div>
 
@@ -213,7 +220,7 @@
             
         
         
-        <a href="../files/src_objects_Body.js.html#l7"><code>src&#x2F;objects&#x2F;Body.js:7</code></a>
+        <a href="../files/src_objects_Body.js.html#l9"><code>src&#x2F;objects&#x2F;Body.js:9</code></a>
         
         </p>
 
@@ -251,26 +258,13 @@
                             
                             <li class="param">
                                 
-                                    <code class="param-name">shape</code>
-                                    <span class="type"><a href="../classes/Shape.html" class="crosslink">Shape</a></span>
-                                
-
-                                <div class="param-description">
-                                    <p>Used for collision detection. If absent the body will not collide.</p>
-
-                                </div>
-
-                                
-                            </li>
-                            
-                            <li class="param">
-                                
-                                    <code class="param-name">mass</code>
+                                    <code class="param-name optional">[mass=0]</code>
                                     <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
                                 
 
                                 <div class="param-description">
-                                    <p>A number &gt;= 0. If zero, the body becomes static. Defaults to static [0].</p>
+                                    <p>A number &gt;= 0. If zero, the .motionState will be set to Body.STATIC.</p>
 
                                 </div>
 
@@ -279,21 +273,9 @@
                             
                             <li class="param">
                                 
-                                    <code class="param-name">position</code>
-                                    <span class="type">Float32Array</span>
-                                
-
-                                <div class="param-description">
-                                    
-                                </div>
-
-                                
-                            </li>
-                            
-                            <li class="param">
-                                
-                                    <code class="param-name">velocity</code>
-                                    <span class="type">Float32Array</span>
+                                    <code class="param-name optional">[position]</code>
+                                    <span class="type">Float32Array | Array</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
                                 
 
                                 <div class="param-description">
@@ -305,8 +287,23 @@
                             
                             <li class="param">
                                 
-                                    <code class="param-name">angle</code>
+                                    <code class="param-name optional">[velocity]</code>
+                                    <span class="type">Float32Array | Array</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[angle=0]</code>
                                     <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
                                 
 
                                 <div class="param-description">
@@ -318,8 +315,9 @@
                             
                             <li class="param">
                                 
-                                    <code class="param-name">angularVelocity</code>
+                                    <code class="param-name optional">[angularVelocity=0]</code>
                                     <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
                                 
 
                                 <div class="param-description">
@@ -331,8 +329,9 @@
                             
                             <li class="param">
                                 
-                                    <code class="param-name">force</code>
-                                    <span class="type">Float32Array</span>
+                                    <code class="param-name optional">[force]</code>
+                                    <span class="type">Float32Array | Array</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
                                 
 
                                 <div class="param-description">
@@ -344,8 +343,9 @@
                             
                             <li class="param">
                                 
-                                    <code class="param-name">angularForce</code>
+                                    <code class="param-name optional">[angularForce=0]</code>
                                     <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
                                 
 
                                 <div class="param-description">
@@ -403,7 +403,28 @@
                             </li>
                         
                             <li class="index-item method">
+                                <a href="#method_adjustCenterOfMass">adjustCenterOfMass</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
                                 <a href="#method_applyForce">applyForce</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_fromPolygon">fromPolygon</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_removeShape">removeShape</a>
 
                                 
                                 
@@ -418,6 +439,13 @@
                         
                             <li class="index-item method">
                                 <a href="#method_toWorldFrame">toWorldFrame</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_updateBoundingRadius">updateBoundingRadius</a>
 
                                 
                                 
@@ -441,13 +469,6 @@
                     <ul class="index-list properties">
                         
                             <li class="index-item property">
-                                <a href="#property_aabbMin">aabbMin</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
                                 <a href="#property_angle">angle</a>
 
                                 
@@ -463,6 +484,13 @@
                         
                             <li class="index-item property">
                                 <a href="#property_angularVelocity">angularVelocity</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_boundingRadius">boundingRadius</a>
 
                                 
                                 
@@ -622,13 +650,13 @@
             
                 <li class="arg">
                     
-                        <code>offset</code>
+                        <code class="optional">[offset]</code>
                     
                 </li>
             
                 <li class="arg">
                     
-                        <code>angle</code>
+                        <code class="optional">[angle]</code>
                     
                 </li>
             
@@ -661,7 +689,7 @@
             
         
         
-        <a href="../files/src_objects_Body.js.html#l177"><code>src&#x2F;objects&#x2F;Body.js:177</code></a>
+        <a href="../files/src_objects_Body.js.html#l208"><code>src&#x2F;objects&#x2F;Body.js:208</code></a>
         
         </p>
 
@@ -672,7 +700,9 @@
     </div>
 
     <div class="description">
-        <p>Add a shape to the body</p>
+        <p>Add a shape to the body. You can pass a local transform when adding a shape,
+so that the shape gets an offset and angle relative to the body center of mass.
+Will automatically update the mass properties and bounding radius.</p>
 
     </div>
 
@@ -699,14 +729,16 @@
             
                 <li class="param">
                     
-                        <code class="param-name">offset</code>
-                        <span class="type">Array</span>
+                        <code class="param-name optional">[offset]</code>
+                        <span class="type">Float32Array | Array</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
                     
 
                     
 
                     <div class="param-description">
-                         
+                        <p>Local body offset of the shape.</p>
+
                     </div>
 
                     
@@ -714,14 +746,16 @@
             
                 <li class="param">
                     
-                        <code class="param-name">angle</code>
+                        <code class="param-name optional">[angle]</code>
                         <span class="type">Number</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
                     
 
                     
 
                     <div class="param-description">
-                         
+                        <p>Local body angle.</p>
+
                     </div>
 
                     
@@ -729,6 +763,80 @@
             
             </ul>
         </div>
+    
+
+    
+
+    
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre class="code prettyprint"><code>var body = new Body(),
+    shape = new Circle();
+
+// Add the shape to the body, positioned in the center
+body.addShape(shape);
+
+// Add another shape to the body, positioned 1 unit length from the body center of mass along the local x-axis.
+body.addShape(shape,[1,0]);
+
+// Add another shape to the body, positioned 1 unit length from the body center of mass along the local y-axis, and rotated 90 degrees CCW.
+body.addShape(shape,[0,1],Math.PI/2);</code></pre>
+
+            </div>
+        </div>
+    
+</div>
+
+                
+                    <div id="method_adjustCenterOfMass" class="method item">
+    <h3 class="name"><code>adjustCenterOfMass</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Body.js.html#l413"><code>src&#x2F;objects&#x2F;Body.js:413</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Moves the shape offsets so their center of mass becomes the body center of mass.</p>
+
+    </div>
+
     
 
     
@@ -785,7 +893,7 @@
             
         
         
-        <a href="../files/src_objects_Body.js.html#l216"><code>src&#x2F;objects&#x2F;Body.js:216</code></a>
+        <a href="../files/src_objects_Body.js.html#l295"><code>src&#x2F;objects&#x2F;Body.js:295</code></a>
         
         </p>
 
@@ -848,6 +956,290 @@
 </div>
 
                 
+                    <div id="method_fromPolygon" class="method item">
+    <h3 class="name"><code>fromPolygon</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>path</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code class="optional">[options]</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Boolean</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Body.js.html#l336"><code>src&#x2F;objects&#x2F;Body.js:336</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Reads a polygon shape path, and assembles convex shapes from that and puts them at proper offset points.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">path</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>An array of 2d vectors, e.g. [[0,0],[0,1],...] that resembles a concave or convex polygon. The shape must be simple and without holes.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name optional">[options]</code>
+                        <span class="type">Object</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                        <ul class="params-list">
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[optimalDecomp=false]</code>
+                                    <span class="type">Boolean</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
+
+                                <div class="param-description">
+                                    <p>Set to true if you need optimal decomposition. Warning: very slow for polygons with more than 10 vertices.</p>
+
+                                </div>
+
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[skipSimpleCheck=false]</code>
+                                    <span class="type">Boolean</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
+
+                                <div class="param-description">
+                                    <p>Set to true if you already know that the path is not intersecting itself.</p>
+
+                                </div>
+
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[removeCollinearPoints=false]</code>
+                                    <span class="type">Boolean | Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
+
+                                <div class="param-description">
+                                    <p>Set to a number (angle threshold value) to remove collinear points, or false to keep all points.</p>
+
+                                </div>
+
+                                
+                            </li>
+                            
+                        </ul>
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Boolean</span>:
+                    
+                    <p>True on success, else false.</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_removeShape" class="method item">
+    <h3 class="name"><code>removeShape</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>shape</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Boolean</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Body.js.html#l245"><code>src&#x2F;objects&#x2F;Body.js:245</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Remove a shape</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">shape</code>
+                        <span class="type"><a href="../classes/Shape.html" class="crosslink">Shape</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Boolean</span>:
+                    
+                    <p>True if the shape was found and removed, else false.</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
                     <div id="method_toLocalFrame" class="method item">
     <h3 class="name"><code>toLocalFrame</code></h3>
 
@@ -896,7 +1288,7 @@
             
         
         
-        <a href="../files/src_objects_Body.js.html#l238"><code>src&#x2F;objects&#x2F;Body.js:238</code></a>
+        <a href="../files/src_objects_Body.js.html#l316"><code>src&#x2F;objects&#x2F;Body.js:316</code></a>
         
         </p>
 
@@ -920,7 +1312,7 @@
                 <li class="param">
                     
                         <code class="param-name">out</code>
-                        <span class="type">Array</span>
+                        <span class="type">Float32Array | Array</span>
                     
 
                     
@@ -936,7 +1328,7 @@
                 <li class="param">
                     
                         <code class="param-name">worldPoint</code>
-                        <span class="type">Array</span>
+                        <span class="type">Float32Array | Array</span>
                     
 
                     
@@ -1007,7 +1399,7 @@
             
         
         
-        <a href="../files/src_objects_Body.js.html#l248"><code>src&#x2F;objects&#x2F;Body.js:248</code></a>
+        <a href="../files/src_objects_Body.js.html#l326"><code>src&#x2F;objects&#x2F;Body.js:326</code></a>
         
         </p>
 
@@ -1070,6 +1462,62 @@
 </div>
 
                 
+                    <div id="method_updateBoundingRadius" class="method item">
+    <h3 class="name"><code>updateBoundingRadius</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Body.js.html#l186"><code>src&#x2F;objects&#x2F;Body.js:186</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Update the bounding radius of the body. Should be done if any of the shapes
+are changed.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
                     <div id="method_updateMassProperties" class="method item">
     <h3 class="name"><code>updateMassProperties</code></h3>
 
@@ -1102,7 +1550,7 @@
             
         
         
-        <a href="../files/src_objects_Body.js.html#l192"><code>src&#x2F;objects&#x2F;Body.js:192</code></a>
+        <a href="../files/src_objects_Body.js.html#l263"><code>src&#x2F;objects&#x2F;Body.js:263</code></a>
         
         </p>
 
@@ -1113,7 +1561,8 @@
     </div>
 
     <div class="description">
-        <p>Updates .inertia, .invMass, .invInertia for this Body. Should be called when changing the structure of the Body.</p>
+        <p>Updates .inertia, .invMass, .invInertia for this Body. Should be called when
+changing the structure or mass of the Body.</p>
 
     </div>
 
@@ -1121,6 +1570,16 @@
 
     
 
+    
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre class="code prettyprint"><code>body.mass += 1;
+body.updateMassProperties();</code></pre>
+
+            </div>
+        </div>
     
 </div>
 
@@ -1131,51 +1590,6 @@
         
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
-
-                
-                    <div id="property_aabbMin" class="property item">
-    <h3 class="name"><code>aabbMin</code></h3>
-    <span class="type">Array</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_objects_Body.js.html#l150"><code>src&#x2F;objects&#x2F;Body.js:150</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Bounding box max point, in world coordinates.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
 
                 
                     <div id="property_angle" class="property item">
@@ -1201,7 +1615,7 @@
             
         
         
-        <a href="../files/src_objects_Body.js.html#l114"><code>src&#x2F;objects&#x2F;Body.js:114</code></a>
+        <a href="../files/src_objects_Body.js.html#l120"><code>src&#x2F;objects&#x2F;Body.js:120</code></a>
         
         </p>
 
@@ -1246,7 +1660,7 @@
             
         
         
-        <a href="../files/src_objects_Body.js.html#l136"><code>src&#x2F;objects&#x2F;Body.js:136</code></a>
+        <a href="../files/src_objects_Body.js.html#l142"><code>src&#x2F;objects&#x2F;Body.js:142</code></a>
         
         </p>
 
@@ -1291,7 +1705,7 @@
             
         
         
-        <a href="../files/src_objects_Body.js.html#l121"><code>src&#x2F;objects&#x2F;Body.js:121</code></a>
+        <a href="../files/src_objects_Body.js.html#l127"><code>src&#x2F;objects&#x2F;Body.js:127</code></a>
         
         </p>
 
@@ -1302,6 +1716,51 @@
 
     <div class="description">
         <p>The angular velocity of the body</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_boundingRadius" class="property item">
+    <h3 class="name"><code>boundingRadius</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Body.js.html#l174"><code>src&#x2F;objects&#x2F;Body.js:174</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Bounding circle radius</p>
 
     </div>
 
@@ -1338,7 +1797,7 @@
             
         
         
-        <a href="../files/src_objects_Body.js.html#l258"><code>src&#x2F;objects&#x2F;Body.js:258</code></a>
+        <a href="../files/src_objects_Body.js.html#l461"><code>src&#x2F;objects&#x2F;Body.js:461</code></a>
         
         </p>
 
@@ -1383,7 +1842,7 @@
             
         
         
-        <a href="../files/src_objects_Body.js.html#l128"><code>src&#x2F;objects&#x2F;Body.js:128</code></a>
+        <a href="../files/src_objects_Body.js.html#l134"><code>src&#x2F;objects&#x2F;Body.js:134</code></a>
         
         </p>
 
@@ -1428,7 +1887,7 @@
             
         
         
-        <a href="../files/src_objects_Body.js.html#l26"><code>src&#x2F;objects&#x2F;Body.js:26</code></a>
+        <a href="../files/src_objects_Body.js.html#l29"><code>src&#x2F;objects&#x2F;Body.js:29</code></a>
         
         </p>
 
@@ -1473,7 +1932,7 @@
             
         
         
-        <a href="../files/src_objects_Body.js.html#l68"><code>src&#x2F;objects&#x2F;Body.js:68</code></a>
+        <a href="../files/src_objects_Body.js.html#l74"><code>src&#x2F;objects&#x2F;Body.js:74</code></a>
         
         </p>
 
@@ -1518,7 +1977,7 @@
             
         
         
-        <a href="../files/src_objects_Body.js.html#l75"><code>src&#x2F;objects&#x2F;Body.js:75</code></a>
+        <a href="../files/src_objects_Body.js.html#l81"><code>src&#x2F;objects&#x2F;Body.js:81</code></a>
         
         </p>
 
@@ -1563,7 +2022,7 @@
             
         
         
-        <a href="../files/src_objects_Body.js.html#l61"><code>src&#x2F;objects&#x2F;Body.js:61</code></a>
+        <a href="../files/src_objects_Body.js.html#l67"><code>src&#x2F;objects&#x2F;Body.js:67</code></a>
         
         </p>
 
@@ -1610,7 +2069,7 @@
             
         
         
-        <a href="../files/src_objects_Body.js.html#l274"><code>src&#x2F;objects&#x2F;Body.js:274</code></a>
+        <a href="../files/src_objects_Body.js.html#l477"><code>src&#x2F;objects&#x2F;Body.js:477</code></a>
         
         </p>
 
@@ -1655,7 +2114,7 @@
             
         
         
-        <a href="../files/src_objects_Body.js.html#l54"><code>src&#x2F;objects&#x2F;Body.js:54</code></a>
+        <a href="../files/src_objects_Body.js.html#l60"><code>src&#x2F;objects&#x2F;Body.js:60</code></a>
         
         </p>
 
@@ -1700,7 +2159,7 @@
             
         
         
-        <a href="../files/src_objects_Body.js.html#l143"><code>src&#x2F;objects&#x2F;Body.js:143</code></a>
+        <a href="../files/src_objects_Body.js.html#l149"><code>src&#x2F;objects&#x2F;Body.js:149</code></a>
         
         </p>
 
@@ -1710,12 +2169,31 @@
     </div>
 
     <div class="description">
-        <p>The type of motion this body has. Should be one of: Body.STATIC, Body.DYNAMIC and Body.KINEMATIC.</p>
+        <p>The type of motion this body has. Should be one of: Body.STATIC (the body
+does not move), Body.DYNAMIC (body can move and respond to collisions)
+and Body.KINEMATIC (only moves according to its .velocity).</p>
 
     </div>
 
     
 
+    
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre class="code prettyprint"><code>// This body will move and interact with other bodies
+var dynamicBody = new Body();
+dynamicBody.motionState = Body.DYNAMIC;</code></pre>
+<pre class="code prettyprint"><code>// This body will not move at all
+var staticBody = new Body();
+staticBody.motionState = Body.STATIC;</code></pre>
+<pre class="code prettyprint"><code>// This body will only move if you change its velocity
+var kinematicBody = new Body();
+kinematicBody.motionState = Body.KINEMATIC;</code></pre>
+
+            </div>
+        </div>
     
 
     
@@ -1745,7 +2223,7 @@
             
         
         
-        <a href="../files/src_objects_Body.js.html#l84"><code>src&#x2F;objects&#x2F;Body.js:84</code></a>
+        <a href="../files/src_objects_Body.js.html#l90"><code>src&#x2F;objects&#x2F;Body.js:90</code></a>
         
         </p>
 
@@ -1790,7 +2268,7 @@
             
         
         
-        <a href="../files/src_objects_Body.js.html#l47"><code>src&#x2F;objects&#x2F;Body.js:47</code></a>
+        <a href="../files/src_objects_Body.js.html#l53"><code>src&#x2F;objects&#x2F;Body.js:53</code></a>
         
         </p>
 
@@ -1800,7 +2278,7 @@
     </div>
 
     <div class="description">
-        <p>The body-local shape angle transformations.</p>
+        <p>The body-local shape angle transforms. This is an array of numbers (angles).</p>
 
     </div>
 
@@ -1835,7 +2313,7 @@
             
         
         
-        <a href="../files/src_objects_Body.js.html#l40"><code>src&#x2F;objects&#x2F;Body.js:40</code></a>
+        <a href="../files/src_objects_Body.js.html#l45"><code>src&#x2F;objects&#x2F;Body.js:45</code></a>
         
         </p>
 
@@ -1845,7 +2323,8 @@
     </div>
 
     <div class="description">
-        <p>The local shape offsets, relative to the body center of mass.</p>
+        <p>The local shape offsets, relative to the body center of mass. This is an
+array of Float32Array.</p>
 
     </div>
 
@@ -1880,7 +2359,7 @@
             
         
         
-        <a href="../files/src_objects_Body.js.html#l33"><code>src&#x2F;objects&#x2F;Body.js:33</code></a>
+        <a href="../files/src_objects_Body.js.html#l36"><code>src&#x2F;objects&#x2F;Body.js:36</code></a>
         
         </p>
 
@@ -1890,7 +2369,8 @@
     </div>
 
     <div class="description">
-        <p>The shapes of the body.</p>
+        <p>The shapes of the body. The local transform of the shape in .shapes[i] is
+defined by .shapeOffsets[i] and .shapeAngles[i].</p>
 
     </div>
 
@@ -1927,7 +2407,7 @@
             
         
         
-        <a href="../files/src_objects_Body.js.html#l266"><code>src&#x2F;objects&#x2F;Body.js:266</code></a>
+        <a href="../files/src_objects_Body.js.html#l469"><code>src&#x2F;objects&#x2F;Body.js:469</code></a>
         
         </p>
 
@@ -1972,7 +2452,7 @@
             
         
         
-        <a href="../files/src_objects_Body.js.html#l92"><code>src&#x2F;objects&#x2F;Body.js:92</code></a>
+        <a href="../files/src_objects_Body.js.html#l98"><code>src&#x2F;objects&#x2F;Body.js:98</code></a>
         
         </p>
 
@@ -2017,7 +2497,7 @@
             
         
         
-        <a href="../files/src_objects_Body.js.html#l100"><code>src&#x2F;objects&#x2F;Body.js:100</code></a>
+        <a href="../files/src_objects_Body.js.html#l106"><code>src&#x2F;objects&#x2F;Body.js:106</code></a>
         
         </p>
 
@@ -2062,7 +2542,7 @@
             
         
         
-        <a href="../files/src_objects_Body.js.html#l107"><code>src&#x2F;objects&#x2F;Body.js:107</code></a>
+        <a href="../files/src_objects_Body.js.html#l113"><code>src&#x2F;objects&#x2F;Body.js:113</code></a>
         
         </p>
 
@@ -2072,7 +2552,7 @@
     </div>
 
     <div class="description">
-        <p>Angular constraint velocity that was added to the body during the last step.</p>
+        <p>Angular constraint velocity that was added to the body during last step.</p>
 
     </div>
 

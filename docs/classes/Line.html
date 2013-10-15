@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/solver/IslandSolver.js - p2.js</title>
+    <title>Line - p2.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -150,171 +150,192 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: src/solver/IslandSolver.js</h1>
+                        <h1>Line Class</h1>
+<div class="box meta">
+    
 
-<div class="file">
-    <pre class="code prettyprint linenums">
-var Solver = require(&#x27;./Solver&#x27;)
-,   vec2 = require(&#x27;../math/vec2&#x27;)
-,   Island = require(&#x27;../solver/Island&#x27;)
-,   Body = require(&#x27;../objects/Body&#x27;)
-,   STATIC = Body.STATIC
+    
+        <div class="extends">
+            Extends <a href="../classes/Shape.html" class="crosslink">Shape</a>
+        </div>
+    
 
-module.exports = IslandSolver;
+    
+        <div class="foundat">
+            Defined in: <a href="../files/src_shapes_Line.js.html#l5"><code>src&#x2F;shapes&#x2F;Line.js:5</code></a>
+        </div>
+    
 
-/**
- * Splits the system of bodies and equations into independent islands
- *
- * @class IslandSolver
- * @constructor
- * @param {Solver} subsolver
- * @extends Solver
- */
-function IslandSolver(subsolver){
-    Solver.call(this);
-    var that = this;
+    
 
-    /**
-     * The solver used in the workers.
-     * @property subsolver
-     * @type {Solver}
-     */
-    this.subsolver = subsolver;
+    
+</div>
 
-    /**
-     * Number of islands
-     * @property numIslands
-     * @type {number}
-     */
-    this.numIslands = 0;
 
-    // Pooling of node objects saves some GC load
-    this._nodePool = [];
-};
-IslandSolver.prototype = new Object(Solver.prototype);
 
-function getUnvisitedNode(nodes){
-    var Nnodes = nodes.length;
-    for(var i=0; i!==Nnodes; i++){
-        var node = nodes[i];
-        if(!node.visited &amp;&amp; !(node.body.motionState &amp; STATIC)){ // correct?
-            return node;
-        }
-    }
-    return false;
-}
+<div class="box intro">
+    <p>Line shape class. The line shape is along the x direction, and stretches from [-length/2, 0] to [length/2,0].</p>
 
-function bfs(root,visitFunc){
-    var queue = [];
-    queue.push(root);
-    root.visited = true;
-    visitFunc(root);
-    while(queue.length) {
-        var node = queue.pop();
-        // Loop over unvisited child nodes
-        var child;
-        while((child = getUnvisitedNode(node.children))) {
-            child.visited = true;
-            visitFunc(child);
-            queue.push(child);
-        }
-    }
-}
+</div>
 
-/**
- * Solves the full system.
- * @method solve
- * @param  {Number} dt
- * @param  {World} world
- */
-IslandSolver.prototype.solve = function(dt,world){
-    var nodes = [],
-        bodies=world.bodies,
-        equations=this.equations,
-        Neq=equations.length,
-        Nbodies=bodies.length,
-        subsolver=this.subsolver,
-        workers = this._workers,
-        workerData = this._workerData,
-        workerIslandGroups = this._workerIslandGroups;
 
-    // Create needed nodes, reuse if possible
-    for(var i=0; i!==Nbodies; i++){
-        if(this._nodePool.length)
-            nodes.push( this._nodePool.pop() );
-        else {
-            nodes.push({
-                body:bodies[i],
-                children:[],
-                eqs:[],
-                visited:false
-            });
-        }
-    }
+    <div class="constructor">
+        <h2>Constructor</h2>
+        <div id="method_Line" class="method item">
+    <h3 class="name"><code>Line</code></h3>
 
-    // Reset node values
-    for(var i=0; i!==Nbodies; i++){
-        var node = nodes[i];
-        node.body = bodies[i];
-        node.children.length = 0;
-        node.eqs.length = 0;
-        node.visited = false;
-    }
+    
+        <span class="paren">()</span>
+    
 
-    // Add connectivity data. Each equation connects 2 bodies.
-    for(var k=0; k!==Neq; k++){
-        var eq=equations[k],
-            i=bodies.indexOf(eq.bi),
-            j=bodies.indexOf(eq.bj),
-            ni=nodes[i],
-            nj=nodes[j];
-        ni.children.push(nj);
-        ni.eqs.push(eq);
-        nj.children.push(ni);
-        nj.eqs.push(eq);
-    }
+    
 
-    // The BFS search algorithm needs a traversal function. What we do is gather all bodies and equations connected.
-    var child, n=0, eqs=[], bds=[];
-    function visitFunc(node){
-        bds.push(node.body);
-        var Neqs = node.eqs.length;
-        for(var i=0; i!==Neqs; i++){
-            var eq = node.eqs[i];
-            if(eqs.indexOf(eq) === -1){
-                eqs.push(eq);
-            }
-        }
-    }
+    
 
-    // Get islands
-    var islands = [];
-    while((child = getUnvisitedNode(nodes))){
-        var island = new Island(); // @todo Should be reused from somewhere
-        eqs.length = 0;
-        bds.length = 0;
-        bfs(child,visitFunc); // run search algo to gather an island of bodies
+    
 
-        // Add equations to island
-        var Neqs = eqs.length;
-        for(var i=0; i!==Neqs; i++){
-            var eq = eqs[i];
-            island.equations.push(eq);
-        }
+    
 
-        n++;
-        islands.push(island);
-    }
+    
 
-    this.numIslands = n;
+    
 
-    // Solve islands
-    for(var i=0; i&lt;islands.length; i++){
-        islands[i].solve(dt,this.subsolver);
-    }
-};
+    
 
-    </pre>
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_shapes_Line.js.html#l5"><code>src&#x2F;shapes&#x2F;Line.js:5</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+    </div>
+
+
+<div id="classdocs" class="tabview">
+    <ul class="api-class-tabs">
+        <li class="api-class-tab index"><a href="#index">Index</a></li>
+
+        
+        
+            <li class="api-class-tab properties"><a href="#properties">Properties</a></li>
+        
+        
+        
+    </ul>
+
+    <div>
+        <div id="index" class="api-class-tabpanel index">
+            <h2 class="off-left">Item Index</h2>
+
+            
+
+            
+                <div class="index-section properties">
+                    <h3>Properties</h3>
+
+                    <ul class="index-list properties extends">
+                        
+                            <li class="index-item property">
+                                <a href="#property_length">length</a>
+
+                                
+                                
+                            </li>
+                        
+                    </ul>
+                </div>
+            
+
+            
+
+            
+        </div>
+
+        
+
+        
+            <div id="properties" class="api-class-tabpanel">
+                <h2 class="off-left">Properties</h2>
+
+                
+                    <div id="property_length" class="property item">
+    <h3 class="name"><code>length</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_shapes_Line.js.html#l13"><code>src&#x2F;shapes&#x2F;Line.js:13</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Length of this line</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+            </div>
+        
+
+        
+
+        
+    </div>
 </div>
 
                     </div>

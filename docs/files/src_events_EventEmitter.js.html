@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/solver/IslandSolver.js - p2.js</title>
+    <title>src/events/EventEmitter.js - p2.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -150,167 +150,92 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: src/solver/IslandSolver.js</h1>
+                        <h1 class="file-heading">File: src/events/EventEmitter.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
-var Solver = require(&#x27;./Solver&#x27;)
-,   vec2 = require(&#x27;../math/vec2&#x27;)
-,   Island = require(&#x27;../solver/Island&#x27;)
-,   Body = require(&#x27;../objects/Body&#x27;)
-,   STATIC = Body.STATIC
-
-module.exports = IslandSolver;
-
 /**
- * Splits the system of bodies and equations into independent islands
- *
- * @class IslandSolver
+ * Base class for objects that dispatches events.
+ * @class EventEmitter
  * @constructor
- * @param {Solver} subsolver
- * @extends Solver
  */
-function IslandSolver(subsolver){
-    Solver.call(this);
-    var that = this;
+var EventEmitter = function () {}
+
+module.exports = EventEmitter;
+
+EventEmitter.prototype = {
+    constructor: EventEmitter,
 
     /**
-     * The solver used in the workers.
-     * @property subsolver
-     * @type {Solver}
+     * Add an event listener
+     * @method on
+     * @param  {String} type
+     * @param  {Function} listener
+     * @return {EventEmitter} The self object, for chainability.
      */
-    this.subsolver = subsolver;
+    on: function ( type, listener ) {
+        if ( this._listeners === undefined ) this._listeners = {};
+        var listeners = this._listeners;
+        if ( listeners[ type ] === undefined ) {
+            listeners[ type ] = [];
+        }
+        if ( listeners[ type ].indexOf( listener ) === - 1 ) {
+            listeners[ type ].push( listener );
+        }
+        return this;
+    },
 
     /**
-     * Number of islands
-     * @property numIslands
-     * @type {number}
+     * Check if an event listener is added
+     * @method has
+     * @param  {String} type
+     * @param  {Function} listener
+     * @return {Boolean}
      */
-    this.numIslands = 0;
-
-    // Pooling of node objects saves some GC load
-    this._nodePool = [];
-};
-IslandSolver.prototype = new Object(Solver.prototype);
-
-function getUnvisitedNode(nodes){
-    var Nnodes = nodes.length;
-    for(var i=0; i!==Nnodes; i++){
-        var node = nodes[i];
-        if(!node.visited &amp;&amp; !(node.body.motionState &amp; STATIC)){ // correct?
-            return node;
+    has: function ( type, listener ) {
+        if ( this._listeners === undefined ) return false;
+        var listeners = this._listeners;
+        if ( listeners[ type ] !== undefined &amp;&amp; listeners[ type ].indexOf( listener ) !== - 1 ) {
+            return true;
         }
-    }
-    return false;
-}
+        return false;
+    },
 
-function bfs(root,visitFunc){
-    var queue = [];
-    queue.push(root);
-    root.visited = true;
-    visitFunc(root);
-    while(queue.length) {
-        var node = queue.pop();
-        // Loop over unvisited child nodes
-        var child;
-        while((child = getUnvisitedNode(node.children))) {
-            child.visited = true;
-            visitFunc(child);
-            queue.push(child);
+    /**
+     * Remove an event listener
+     * @method off
+     * @param  {String} type
+     * @param  {Function} listener
+     * @return {EventEmitter} The self object, for chainability.
+     */
+    off: function ( type, listener ) {
+        if ( this._listeners === undefined ) return;
+        var listeners = this._listeners;
+        var index = listeners[ type ].indexOf( listener );
+        if ( index !== - 1 ) {
+            listeners[ type ].splice( index, 1 );
         }
-    }
-}
+        return this;
+    },
 
-/**
- * Solves the full system.
- * @method solve
- * @param  {Number} dt
- * @param  {World} world
- */
-IslandSolver.prototype.solve = function(dt,world){
-    var nodes = [],
-        bodies=world.bodies,
-        equations=this.equations,
-        Neq=equations.length,
-        Nbodies=bodies.length,
-        subsolver=this.subsolver,
-        workers = this._workers,
-        workerData = this._workerData,
-        workerIslandGroups = this._workerIslandGroups;
-
-    // Create needed nodes, reuse if possible
-    for(var i=0; i!==Nbodies; i++){
-        if(this._nodePool.length)
-            nodes.push( this._nodePool.pop() );
-        else {
-            nodes.push({
-                body:bodies[i],
-                children:[],
-                eqs:[],
-                visited:false
-            });
-        }
-    }
-
-    // Reset node values
-    for(var i=0; i!==Nbodies; i++){
-        var node = nodes[i];
-        node.body = bodies[i];
-        node.children.length = 0;
-        node.eqs.length = 0;
-        node.visited = false;
-    }
-
-    // Add connectivity data. Each equation connects 2 bodies.
-    for(var k=0; k!==Neq; k++){
-        var eq=equations[k],
-            i=bodies.indexOf(eq.bi),
-            j=bodies.indexOf(eq.bj),
-            ni=nodes[i],
-            nj=nodes[j];
-        ni.children.push(nj);
-        ni.eqs.push(eq);
-        nj.children.push(ni);
-        nj.eqs.push(eq);
-    }
-
-    // The BFS search algorithm needs a traversal function. What we do is gather all bodies and equations connected.
-    var child, n=0, eqs=[], bds=[];
-    function visitFunc(node){
-        bds.push(node.body);
-        var Neqs = node.eqs.length;
-        for(var i=0; i!==Neqs; i++){
-            var eq = node.eqs[i];
-            if(eqs.indexOf(eq) === -1){
-                eqs.push(eq);
+    /**
+     * Emit an event.
+     * @method emit
+     * @param  {Object} event
+     * @param  {String} event.type
+     * @return {EventEmitter} The self object, for chainability.
+     */
+    emit: function ( event ) {
+        if ( this._listeners === undefined ) return;
+        var listeners = this._listeners;
+        var listenerArray = listeners[ event.type ];
+        if ( listenerArray !== undefined ) {
+            event.target = this;
+            for ( var i = 0, l = listenerArray.length; i &lt; l; i ++ ) {
+                listenerArray[ i ].call( this, event );
             }
         }
-    }
-
-    // Get islands
-    var islands = [];
-    while((child = getUnvisitedNode(nodes))){
-        var island = new Island(); // @todo Should be reused from somewhere
-        eqs.length = 0;
-        bds.length = 0;
-        bfs(child,visitFunc); // run search algo to gather an island of bodies
-
-        // Add equations to island
-        var Neqs = eqs.length;
-        for(var i=0; i!==Neqs; i++){
-            var eq = eqs[i];
-            island.equations.push(eq);
-        }
-
-        n++;
-        islands.push(island);
-    }
-
-    this.numIslands = n;
-
-    // Solve islands
-    for(var i=0; i&lt;islands.length; i++){
-        islands[i].solve(dt,this.subsolver);
+        return this;
     }
 };
 

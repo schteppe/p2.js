@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/collision/Nearphase.js - p2.js</title>
+    <title>src/collision/Narrowphase.js - p2.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -61,6 +61,8 @@
             
                 <li><a href="../classes/Equation.html">Equation</a></li>
             
+                <li><a href="../classes/EventEmitter.html">EventEmitter</a></li>
+            
                 <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
             
                 <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
@@ -71,13 +73,15 @@
             
                 <li><a href="../classes/IslandSolver.html">IslandSolver</a></li>
             
+                <li><a href="../classes/Line.html">Line</a></li>
+            
                 <li><a href="../classes/mat2.html">mat2</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
-                <li><a href="../classes/Nearphase.html">Nearphase</a></li>
+                <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
             
                 <li><a href="../classes/Particle.html">Particle</a></li>
             
@@ -100,6 +104,8 @@
                 <li><a href="../classes/Solver.html">Solver</a></li>
             
                 <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/Utils.html">Utils</a></li>
             
                 <li><a href="../classes/vec2.html">vec2</a></li>
             
@@ -144,7 +150,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: src/collision/Nearphase.js</h1>
+                        <h1 class="file-heading">File: src/collision/Narrowphase.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
@@ -152,11 +158,12 @@ var vec2 = require(&#x27;../math/vec2&#x27;)
 ,   sub = vec2.sub
 ,   add = vec2.add
 ,   dot = vec2.dot
+,   Utils = require(&#x27;../utils/Utils&#x27;)
 ,   ContactEquation = require(&#x27;../constraints/ContactEquation&#x27;)
 ,   FrictionEquation = require(&#x27;../constraints/FrictionEquation&#x27;)
 ,   Circle = require(&#x27;../shapes/Circle&#x27;)
 
-module.exports = Nearphase;
+module.exports = Narrowphase;
 
 // Temp things
 var yAxis = vec2.fromValues(0,1);
@@ -176,13 +183,14 @@ var tmp1 = vec2.fromValues(0,0)
 ,   tmp13 = vec2.fromValues(0,0)
 ,   tmp14 = vec2.fromValues(0,0)
 ,   tmp15 = vec2.fromValues(0,0)
+,   tmp16 = vec2.fromValues(0,0)
 
 /**
- * Nearphase. Creates contacts and friction given shapes and transforms.
- * @class Nearphase
+ * Narrowphase. Creates contacts and friction given shapes and transforms.
+ * @class Narrowphase
  * @constructor
  */
-function Nearphase(){
+function Narrowphase(){
     this.contactEquations = [];
     this.frictionEquations = [];
     this.enableFriction = true;
@@ -196,15 +204,14 @@ function Nearphase(){
  * Throws away the old equatons and gets ready to create new
  * @method reset
  */
-Nearphase.prototype.reset = function(){
+Narrowphase.prototype.reset = function(){
     if(this.reuseObjects){
         var ce = this.contactEquations,
             fe = this.frictionEquations,
             rfe = this.reusableFrictionEquations,
             rce = this.reusableContactEquations;
-        for(var i=0, N=ce.length; i!==N; i++) rce.push(ce[i]);
-        for(var i=0, N=fe.length; i!==N; i++) rfe.push(fe[i]);
-
+        Utils.appendArray(rce,ce);
+        Utils.appendArray(rfe,fe);
     }
 
     // Reset
@@ -218,7 +225,7 @@ Nearphase.prototype.reset = function(){
  * @param  {Body} bodyB
  * @return {ContactEquation}
  */
-Nearphase.prototype.createContactEquation = function(bodyA,bodyB){
+Narrowphase.prototype.createContactEquation = function(bodyA,bodyB){
     var c = this.reusableContactEquations.length ? this.reusableContactEquations.pop() : new ContactEquation(bodyA,bodyB);
     c.bi = bodyA;
     c.bj = bodyB;
@@ -232,7 +239,7 @@ Nearphase.prototype.createContactEquation = function(bodyA,bodyB){
  * @param  {Body} bodyB
  * @return {FrictionEquation}
  */
-Nearphase.prototype.createFrictionEquation = function(bodyA,bodyB){
+Narrowphase.prototype.createFrictionEquation = function(bodyA,bodyB){
     var c = this.reusableFrictionEquations.length ? this.reusableFrictionEquations.pop() : new FrictionEquation(bodyA,bodyB);
     c.bi = bodyA;
     c.bj = bodyB;
@@ -246,7 +253,7 @@ Nearphase.prototype.createFrictionEquation = function(bodyA,bodyB){
  * @param  {ContactEquation} contactEquation
  * @return {FrictionEquation}
  */
-Nearphase.prototype.createFrictionFromContact = function(c){
+Narrowphase.prototype.createFrictionFromContact = function(c){
     var eq = this.createFrictionEquation(c.bi,c.bj);
     vec2.copy(eq.ri, c.ri);
     vec2.copy(eq.rj, c.rj);
@@ -255,7 +262,7 @@ Nearphase.prototype.createFrictionFromContact = function(c){
 }
 
 /**
- * Plane/line nearphase
+ * Plane/line Narrowphase
  * @method planeLine
  * @param  {Body} bi
  * @param  {Plane} si
@@ -266,7 +273,7 @@ Nearphase.prototype.createFrictionFromContact = function(c){
  * @param  {Array} xj
  * @param  {Number} aj
  */
-Nearphase.prototype.planeLine = function(bi,si,xi,ai, bj,sj,xj,aj){
+Narrowphase.prototype.planeLine = function(bi,si,xi,ai, bj,sj,xj,aj){
     var lineShape = sj,
         lineAngle = aj,
         lineBody = bj,
@@ -347,12 +354,12 @@ Nearphase.prototype.planeLine = function(bi,si,xi,ai, bj,sj,xj,aj){
     }
 };
 
-Nearphase.prototype.particleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTest){
+Narrowphase.prototype.particleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTest){
     return this.circleLine(bi,si,xi,ai, bj,sj,xj,aj, justTest, sj.radius, 0);
 };
 
 /**
- * Circle/line nearphase
+ * Circle/line Narrowphase
  * @method circleLine
  * @param  {Body} bi
  * @param  {Circle} si
@@ -366,7 +373,7 @@ Nearphase.prototype.particleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTes
  * @param {Number} lineRadius Radius to add to the line. Can be used to test Capsules.
  * @param {Number} circleRadius If set, this value overrides the circle shape radius.
  */
-Nearphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj, justTest, lineRadius, circleRadius){
+Narrowphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj, justTest, lineRadius, circleRadius){
     var lineShape = sj,
         lineAngle = aj,
         lineBody = bj,
@@ -508,7 +515,7 @@ Nearphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj, justTest, li
 };
 
 /**
- * Circle/capsule nearphase
+ * Circle/capsule Narrowphase
  * @method circleCapsule
  * @param  {Body}   bi
  * @param  {Circle} si
@@ -519,12 +526,12 @@ Nearphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj, justTest, li
  * @param  {Array}  xj
  * @param  {Number} aj
  */
-Nearphase.prototype.circleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTest){
+Narrowphase.prototype.circleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTest){
     return this.circleLine(bi,si,xi,ai, bj,sj,xj,aj, justTest, sj.radius);
 };
 
 /**
- * Circle/convex nearphase
+ * Circle/convex Narrowphase
  * @method circleConvex
  * @param  {Body} bi
  * @param  {Circle} si
@@ -535,14 +542,15 @@ Nearphase.prototype.circleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTest)
  * @param  {Array} xj
  * @param  {Number} aj
  */
-Nearphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj){
+Narrowphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTest, circleRadius){
     var convexShape = sj,
         convexAngle = aj,
         convexBody = bj,
         convexOffset = xj,
         circleOffset = xi,
         circleBody = bi,
-        circleShape = si;
+        circleShape = si,
+        circleRadius = typeof(circleRadius)==&quot;number&quot; ? circleRadius : circleShape.radius;
 
     var worldVertex0 = tmp1,
         worldVertex1 = tmp2,
@@ -554,7 +562,12 @@ Nearphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj){
         orthoDist = tmp8,
         projectedPoint = tmp9,
         dist = tmp10,
-        worldVertex = tmp11;
+        worldVertex = tmp11,
+
+        closestEdge = -1,
+        closestEdgeDistance = null,
+        closestEdgeOrthoDist = tmp12,
+        closestEdgeProjectedPoint = tmp13;
 
     var numReported = 0;
 
@@ -583,7 +596,7 @@ Nearphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj){
 
         sub(convexToCircle, circleOffset, convexOffset);
 
-        if(d &lt; circleShape.radius &amp;&amp; dot(centerDist,convexToCircle) &gt; 0){
+        if(d &lt; circleRadius &amp;&amp; dot(centerDist,convexToCircle) &gt; 0){
 
             // Now project the circle onto the edge
             vec2.scale(orthoDist, worldTangent, d);
@@ -597,23 +610,70 @@ Nearphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj){
             if(pos &gt; pos0 &amp;&amp; pos &lt; pos1){
                 // We got contact!
 
+                if(justTest) return true;
+
+                if(closestEdgeDistance === null || d*d&lt;closestEdgeDistance*closestEdgeDistance){
+                    closestEdgeDistance = d;
+                    closestEdge = i;
+                    vec2.copy(closestEdgeOrthoDist, orthoDist);
+                    vec2.copy(closestEdgeProjectedPoint, projectedPoint);
+                }
+            }
+        }
+    }
+
+    if(closestEdge != -1){
+        var c = this.createContactEquation(circleBody,convexBody);
+
+        vec2.scale(c.ni, closestEdgeOrthoDist, -1);
+        vec2.normalize(c.ni, c.ni);
+
+        vec2.scale(c.ri,  c.ni, circleRadius);
+        add(c.ri, c.ri, circleOffset);
+        sub(c.ri, c.ri, circleBody.position);
+
+        sub(c.rj, closestEdgeProjectedPoint, convexOffset);
+        add(c.rj, c.rj, convexOffset);
+        sub(c.rj, c.rj, convexBody.position);
+
+        this.contactEquations.push(c);
+
+        if(this.enableFriction)
+            this.frictionEquations.push( this.createFrictionFromContact(c) );
+
+        return true;
+    }
+
+    // Check all vertices
+    if(circleRadius &gt; 0){
+        for(var i=0; i&lt;verts.length; i++){
+            var localVertex = verts[i];
+            vec2.rotate(worldVertex, localVertex, convexAngle);
+            add(worldVertex, worldVertex, convexOffset);
+
+            sub(dist, worldVertex, circleOffset);
+            if(vec2.squaredLength(dist) &lt; circleRadius*circleRadius){
+
+                if(justTest) return true;
+
                 var c = this.createContactEquation(circleBody,convexBody);
 
-                vec2.scale(c.ni, orthoDist, -1);
-                vec2.normalize(c.ni, c.ni);
+                vec2.copy(c.ni, dist);
+                vec2.normalize(c.ni,c.ni);
 
-                vec2.scale( c.ri, c.ni,  circleShape.radius);
+                // Vector from circle to contact point is the normal times the circle radius
+                vec2.scale(c.ri, c.ni, circleRadius);
                 add(c.ri, c.ri, circleOffset);
                 sub(c.ri, c.ri, circleBody.position);
 
-                sub( c.rj, projectedPoint, convexOffset);
+                sub(c.rj, worldVertex, convexOffset);
                 add(c.rj, c.rj, convexOffset);
                 sub(c.rj, c.rj, convexBody.position);
 
                 this.contactEquations.push(c);
 
                 if(this.enableFriction){
-                    this.frictionEquations.push( this.createFrictionFromContact(c) );
+                    this.frictionEquations.push(this.createFrictionFromContact(c));
                 }
 
                 return true;
@@ -621,43 +681,11 @@ Nearphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj){
         }
     }
 
-    // Check all vertices
-    for(var i=0; i&lt;verts.length; i++){
-        var localVertex = verts[i];
-        vec2.rotate(worldVertex, localVertex, convexAngle);
-        add(worldVertex, worldVertex, convexOffset);
-
-        sub(dist, worldVertex, circleOffset);
-        if(vec2.squaredLength(dist) &lt; circleShape.radius*circleShape.radius){
-
-            var c = this.createContactEquation(circleBody,convexBody);
-
-            vec2.copy(c.ni, dist);
-            vec2.normalize(c.ni,c.ni);
-
-            // Vector from circle to contact point is the normal times the circle radius
-            vec2.scale(c.ri, c.ni, circleShape.radius);
-            add(c.ri, c.ri, circleOffset);
-            sub(c.ri, c.ri, circleBody.position);
-
-            sub(c.rj, worldVertex, convexOffset);
-            add(c.rj, c.rj, convexOffset);
-            sub(c.rj, c.rj, convexBody.position);
-
-            this.contactEquations.push(c);
-
-            if(this.enableFriction){
-                this.frictionEquations.push(this.createFrictionFromContact(c));
-            }
-
-            return true;
-        }
-    }
     return false;
 };
 
 /**
- * Particle/convex nearphase
+ * Particle/convex Narrowphase
  * @method particleConvex
  * @param  {Body} bi
  * @param  {Particle} si
@@ -668,7 +696,7 @@ Nearphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj){
  * @param  {Array} xj
  * @param  {Number} aj
  */
-Nearphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTest ){
+Narrowphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTest ){
     var convexShape = sj,
         convexAngle = aj,
         convexBody = bj,
@@ -690,15 +718,16 @@ Nearphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
         closestEdge = -1,
         closestEdgeDistance = null,
         closestEdgeOrthoDist = tmp12,
-        closestEdgeProjectedPoint = tmp13;
+        closestEdgeProjectedPoint = tmp13,
+        localPoint = tmp14;
 
-    var numReported = 0;
-
-    verts = convexShape.vertices;
+    var numReported = 0,
+        verts = convexShape.vertices;
 
     // Check all edges first
-    for(var i=0; i&lt;verts.length; i++){
-        var v0 = verts[i],
+    var lastCross = null;
+    for(var i=0; i!==verts.length+1; i++){
+        var v0 = verts[i%verts.length],
             v1 = verts[(i+1)%verts.length];
 
         // Transform vertices to world
@@ -718,6 +747,14 @@ Nearphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
         sub(dist, particleOffset, worldVertex0);
         var d = dot(dist, worldTangent);
         sub(centerDist, worldVertex0, convexOffset);
+
+        var cross = vec2.crossLength(worldEdgeUnit,dist);
+
+        if(lastCross===null) lastCross = cross;
+
+        // If we got a different sign of the distance vector, the point is out of the polygon
+        if(cross*lastCross &lt; 0) return false;
+        lastCross = cross;
 
         sub(convexToparticle, particleOffset, convexOffset);
 
@@ -752,10 +789,12 @@ Nearphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
         vec2.copy(c.ni, closestEdgeOrthoDist);
         vec2.normalize(c.ni, c.ni);
 
+        // Particle has no extent to the contact point
         vec2.set(c.ri,  0, 0);
         add(c.ri, c.ri, particleOffset);
         sub(c.ri, c.ri, particleBody.position);
 
+        // From convex center to point
         sub(c.rj, closestEdgeProjectedPoint, convexOffset);
         add(c.rj, c.rj, convexOffset);
         sub(c.rj, c.rj, convexBody.position);
@@ -773,7 +812,7 @@ Nearphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
 };
 
 /**
- * Circle/circle nearphase
+ * Circle/circle Narrowphase
  * @method circleCircle
  * @param  {Body} bi
  * @param  {Circle} si
@@ -784,7 +823,7 @@ Nearphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
  * @param  {Array} xj
  * @param  {Number} aj
  */
-Nearphase.prototype.circleCircle = function(  bi,si,xi,ai, bj,sj,xj,aj, justTest){
+Narrowphase.prototype.circleCircle = function(  bi,si,xi,ai, bj,sj,xj,aj, justTest){
     var bodyA = bi,
         shapeA = si,
         offsetA = xi,
@@ -823,7 +862,7 @@ Nearphase.prototype.circleCircle = function(  bi,si,xi,ai, bj,sj,xj,aj, justTest
 };
 
 /**
- * Convex/Plane nearphase
+ * Convex/Plane Narrowphase
  * @method convexPlane
  * @param  {Body} bi
  * @param  {Convex} si
@@ -834,7 +873,7 @@ Nearphase.prototype.circleCircle = function(  bi,si,xi,ai, bj,sj,xj,aj, justTest
  * @param  {Array} xj
  * @param  {Number} aj
  */
-Nearphase.prototype.convexPlane = function( bi,si,xi,ai, bj,sj,xj,aj ){
+Narrowphase.prototype.convexPlane = function( bi,si,xi,ai, bj,sj,xj,aj ){
     var convexBody = bi,
         convexOffset = xi,
         convexShape = si,
@@ -896,7 +935,7 @@ Nearphase.prototype.convexPlane = function( bi,si,xi,ai, bj,sj,xj,aj ){
 };
 
 /**
- * Nearphase for particle vs plane
+ * Narrowphase for particle vs plane
  * @method particlePlane
  * @param  {Body}       bi The particle body
  * @param  {Particle}   si Particle shape
@@ -907,7 +946,7 @@ Nearphase.prototype.convexPlane = function( bi,si,xi,ai, bj,sj,xj,aj ){
  * @param  {Array}      xj World position for the plane
  * @param  {Number}     aj World angle for the plane
  */
-Nearphase.prototype.particlePlane = function( bi,si,xi,ai, bj,sj,xj,aj, justTest ){
+Narrowphase.prototype.particlePlane = function( bi,si,xi,ai, bj,sj,xj,aj, justTest ){
     var particleBody = bi,
         particleShape = si,
         particleOffset = xi,
@@ -951,7 +990,7 @@ Nearphase.prototype.particlePlane = function( bi,si,xi,ai, bj,sj,xj,aj, justTest
 };
 
 /**
- * Circle/Particle nearphase
+ * Circle/Particle Narrowphase
  * @method circleParticle
  * @param  {Body} bi
  * @param  {Circle} si
@@ -962,7 +1001,7 @@ Nearphase.prototype.particlePlane = function( bi,si,xi,ai, bj,sj,xj,aj, justTest
  * @param  {Array} xj
  * @param  {Number} aj
  */
-Nearphase.prototype.circleParticle = function(   bi,si,xi,ai, bj,sj,xj,aj, justTest ){
+Narrowphase.prototype.circleParticle = function(   bi,si,xi,ai, bj,sj,xj,aj, justTest ){
     var circleBody = bi,
         circleShape = si,
         circleOffset = xi,
@@ -1000,7 +1039,7 @@ var capsulePlane_tmpCircle = new Circle(1),
     capsulePlane_tmp1 = vec2.create(),
     capsulePlane_tmp2 = vec2.create(),
     capsulePlane_tmp3 = vec2.create();
-Nearphase.prototype.capsulePlane = function( bi,si,xi,ai, bj,sj,xj,aj ){
+Narrowphase.prototype.capsulePlane = function( bi,si,xi,ai, bj,sj,xj,aj ){
     var end1 = capsulePlane_tmp1,
         end2 = capsulePlane_tmp2,
         circle = capsulePlane_tmpCircle,
@@ -1017,7 +1056,7 @@ Nearphase.prototype.capsulePlane = function( bi,si,xi,ai, bj,sj,xj,aj ){
 
     circle.radius = si.radius;
 
-    // Do nearphase as two circles
+    // Do Narrowphase as two circles
     this.circlePlane(bi,circle,end1,0, bj,sj,xj,aj);
     this.circlePlane(bi,circle,end2,0, bj,sj,xj,aj);
 };
@@ -1033,7 +1072,7 @@ Nearphase.prototype.capsulePlane = function( bi,si,xi,ai, bj,sj,xj,aj ){
  * @param  {Array}   xj     Extra offset for the plane shape.
  * @param  {Number}  aj     Extra angle to apply to the plane
  */
-Nearphase.prototype.circlePlane = function(   bi,si,xi,ai, bj,sj,xj,aj ){
+Narrowphase.prototype.circlePlane = function(   bi,si,xi,ai, bj,sj,xj,aj ){
     var circleBody = bi,
         circleShape = si,
         circleOffset = xi, // Offset from body center, rotated!
@@ -1087,7 +1126,7 @@ Nearphase.prototype.circlePlane = function(   bi,si,xi,ai, bj,sj,xj,aj ){
 
 
 /**
- * Convex/convex nearphase.See &lt;a href=&quot;http://www.altdevblogaday.com/2011/05/13/contact-generation-between-3d-convex-meshes/&quot;&gt;this article&lt;/a&gt; for more info.
+ * Convex/convex Narrowphase.See &lt;a href=&quot;http://www.altdevblogaday.com/2011/05/13/contact-generation-between-3d-convex-meshes/&quot;&gt;this article&lt;/a&gt; for more info.
  * @method convexConvex
  * @param  {Body} bi
  * @param  {Convex} si
@@ -1098,7 +1137,7 @@ Nearphase.prototype.circlePlane = function(   bi,si,xi,ai, bj,sj,xj,aj ){
  * @param  {Array} xj
  * @param  {Number} aj
  */
-Nearphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj ){
+Narrowphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj ){
     var sepAxis = tmp1,
         worldPoint = tmp2,
         worldPoint0 = tmp3,
@@ -1109,7 +1148,7 @@ Nearphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj ){
         dist = tmp8,
         worldNormal = tmp9;
 
-    var found = Nearphase.findSeparatingAxis(si,xi,ai,sj,xj,aj,sepAxis);
+    var found = Narrowphase.findSeparatingAxis(si,xi,ai,sj,xj,aj,sepAxis);
     if(!found) return false;
 
     // Make sure the separating axis is directed from shape i to shape j
@@ -1119,8 +1158,8 @@ Nearphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj ){
     }
 
     // Find edges with normals closest to the separating axis
-    var closestEdge1 = Nearphase.getClosestEdge(si,ai,sepAxis,true), // Flipped axis
-        closestEdge2 = Nearphase.getClosestEdge(sj,aj,sepAxis);
+    var closestEdge1 = Narrowphase.getClosestEdge(si,ai,sepAxis,true), // Flipped axis
+        closestEdge2 = Narrowphase.getClosestEdge(sj,aj,sepAxis);
 
     if(closestEdge1==-1 || closestEdge2==-1) return false;
 
@@ -1240,7 +1279,7 @@ var pcoa_tmp1 = vec2.fromValues(0,0);
  * @param  {Array} worldAxis
  * @param  {Array} result
  */
-Nearphase.projectConvexOntoAxis = function(convexShape, convexOffset, convexAngle, worldAxis, result){
+Narrowphase.projectConvexOntoAxis = function(convexShape, convexOffset, convexAngle, worldAxis, result){
     var max=null,
         min=null,
         v,
@@ -1291,7 +1330,7 @@ var fsa_tmp1 = vec2.fromValues(0,0)
  * @param  {Array}      sepAxis     The resulting axis
  * @return {Boolean}                Whether the axis could be found.
  */
-Nearphase.findSeparatingAxis = function(c1,offset1,angle1,c2,offset2,angle2,sepAxis){
+Narrowphase.findSeparatingAxis = function(c1,offset1,angle1,c2,offset2,angle2,sepAxis){
     var maxDist = null,
         overlap = false,
         found = false,
@@ -1302,15 +1341,15 @@ Nearphase.findSeparatingAxis = function(c1,offset1,angle1,c2,offset2,angle2,sepA
         span1 = fsa_tmp5,
         span2 = fsa_tmp6;
 
-    for(var j=0; j&lt;2; j++){
+    for(var j=0; j!==2; j++){
         var c = c1,
             angle = angle1;
-        if(j==1){
+        if(j===1){
             c = c2;
             angle = angle2;
         }
 
-        for(var i=0; i&lt;c.vertices.length; i++){
+        for(var i=0; i!==c.vertices.length; i++){
             // Get the world edge
             vec2.rotate(worldPoint0, c.vertices[i], angle);
             vec2.rotate(worldPoint1, c.vertices[(i+1)%c.vertices.length], angle);
@@ -1322,8 +1361,8 @@ Nearphase.findSeparatingAxis = function(c1,offset1,angle1,c2,offset2,angle2,sepA
             vec2.normalize(normal,normal);
 
             // Project hulls onto that normal
-            Nearphase.projectConvexOntoAxis(c1,offset1,angle1,normal,span1);
-            Nearphase.projectConvexOntoAxis(c2,offset2,angle2,normal,span2);
+            Narrowphase.projectConvexOntoAxis(c1,offset1,angle1,normal,span1);
+            Narrowphase.projectConvexOntoAxis(c2,offset2,angle2,normal,span2);
 
             // Order by span position
             var a=span1,
@@ -1335,11 +1374,9 @@ Nearphase.findSeparatingAxis = function(c1,offset1,angle1,c2,offset2,angle2,sepA
                 swapped = true;
             }
 
-
             // Get separating distance
             var dist = b[0] - a[1];
             overlap = dist &lt; 0;
-
 
             if(maxDist===null || dist &gt; maxDist){
                 vec2.copy(sepAxis, normal);
@@ -1367,7 +1404,7 @@ var gce_tmp1 = vec2.fromValues(0,0)
  * @param  {Boolean}    flip
  * @return {Number}             Index of the edge that is closest. This index and the next spans the resulting edge. Returns -1 if failed.
  */
-Nearphase.getClosestEdge = function(c,angle,axis,flip){
+Narrowphase.getClosestEdge = function(c,angle,axis,flip){
     var localAxis = gce_tmp1,
         edge = gce_tmp2,
         normal = gce_tmp3;
@@ -1378,18 +1415,20 @@ Nearphase.getClosestEdge = function(c,angle,axis,flip){
         vec2.scale(localAxis,localAxis,-1);
     }
 
-    var closestEdge = -1;
-    for(var i=0; i&lt;c.vertices.length; i++){
+    var closestEdge = -1,
+        N = c.vertices.length,
+        halfPi = Math.PI / 2;
+    for(var i=0; i!==N; i++){
         // Get the edge
-        sub(edge, c.vertices[(i+1)%(c.vertices.length)], c.vertices[i%(c.vertices.length)]);
+        sub(edge, c.vertices[(i+1)%N], c.vertices[i%N]);
 
         // Get normal - just rotate 90 degrees since vertices are given in CCW
-        vec2.rotate(normal, edge, -Math.PI / 2);
+        vec2.rotate(normal, edge, -halfPi);
         vec2.normalize(normal,normal);
 
         var d = dot(normal,localAxis);
         if(closestEdge == -1 || d &gt; maxDot){
-            closestEdge = i % c.vertices.length;
+            closestEdge = i % N;
             maxDot = d;
         }
     }

@@ -61,6 +61,8 @@
             
                 <li><a href="../classes/Equation.html">Equation</a></li>
             
+                <li><a href="../classes/EventEmitter.html">EventEmitter</a></li>
+            
                 <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
             
                 <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
@@ -71,13 +73,15 @@
             
                 <li><a href="../classes/IslandSolver.html">IslandSolver</a></li>
             
+                <li><a href="../classes/Line.html">Line</a></li>
+            
                 <li><a href="../classes/mat2.html">mat2</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
-                <li><a href="../classes/Nearphase.html">Nearphase</a></li>
+                <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
             
                 <li><a href="../classes/Particle.html">Particle</a></li>
             
@@ -100,6 +104,8 @@
                 <li><a href="../classes/Solver.html">Solver</a></li>
             
                 <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/Utils.html">Utils</a></li>
             
                 <li><a href="../classes/vec2.html">vec2</a></li>
             
@@ -157,6 +163,12 @@ module.exports = Shape;
  */
 function Shape(type){
     this.type = type;
+
+    /**
+     * Bounding circle radius of this shape
+     * @property boundingRadius
+     * @type {Number}
+     */
     this.boundingRadius = 0;
 
     /**
@@ -164,6 +176,26 @@ function Shape(type){
      * @property collisionGroup
      * @type {Number}
      * @example
+     *     // Setup bits for each available group
+     *     var PLAYER = Math.pow(2,0),
+     *         ENEMY =  Math.pow(2,1),
+     *         GROUND = Math.pow(2,2)
+     *
+     *     // Put shapes into their groups
+     *     player1Shape.collisionGroup = PLAYER;
+     *     player2Shape.collisionGroup = PLAYER;
+     *     enemyShape  .collisionGroup = ENEMY;
+     *     groundShape .collisionGroup = GROUND;
+     *
+     *     // Assign groups that each shape collide with.
+     *     // Note that the players can collide with ground and enemies, but not with other players.
+     *     player1Shape.collisionMask = ENEMY | GROUND;
+     *     player2Shape.collisionMask = ENEMY | GROUND;
+     *     enemyShape  .collisionMask = PLAYER | GROUND;
+     *     groundShape .collisionMask = PLAYER | ENEMY;
+     *
+     * @example
+     *     // How collision check is done
      *     if(shapeA.collisionGroup &amp; shapeB.collisionMask)!=0 &amp;&amp; (shapeB.collisionGroup &amp; shapeA.collisionMask)!=0){
      *         // The shapes will collide
      *     }
@@ -171,7 +203,7 @@ function Shape(type){
     this.collisionGroup = 1;
 
     /**
-     * Collision mask of this shape.
+     * Collision mask of this shape. See .collisionGroup.
      * @property collisionMask
      * @type {Number}
      */
@@ -179,11 +211,20 @@ function Shape(type){
     if(type) this.updateBoundingRadius();
 
     /**
-     * Material to use in collisions for this Shape
+     * Material to use in collisions for this Shape. If this is set to null, the world will use default material properties instead.
      * @property material
-     * @type {Material} Either a Material instance or null.
+     * @type {Material}
      */
     this.material = null;
+
+    /**
+     * Area of this shape.
+     * @property area
+     * @type {Number}
+     */
+    this.area = 0;
+
+    this.updateArea();
 };
 
 Shape.CIRCLE =      1;
@@ -204,8 +245,21 @@ Shape.prototype.computeMomentOfInertia = function(mass){
     throw new Error(&quot;Shape.computeMomentOfInertia is not implemented in this Shape...&quot;);
 };
 
+/**
+ * Returns the bounding circle radius of this shape.
+ * @method updateBoundingRadius
+ * @return {Number}
+ */
 Shape.prototype.updateBoundingRadius = function(){
     throw new Error(&quot;Shape.updateBoundingRadius is not implemented in this Shape...&quot;);
+};
+
+/**
+ * Update the .area property of the shape.
+ * @method updateArea
+ */
+Shape.prototype.updateArea = function(){
+    // To be implemented in all subclasses
 };
 
     </pre>

@@ -61,6 +61,8 @@
             
                 <li><a href="../classes/Equation.html">Equation</a></li>
             
+                <li><a href="../classes/EventEmitter.html">EventEmitter</a></li>
+            
                 <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
             
                 <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
@@ -71,13 +73,15 @@
             
                 <li><a href="../classes/IslandSolver.html">IslandSolver</a></li>
             
+                <li><a href="../classes/Line.html">Line</a></li>
+            
                 <li><a href="../classes/mat2.html">mat2</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
-                <li><a href="../classes/Nearphase.html">Nearphase</a></li>
+                <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
             
                 <li><a href="../classes/Particle.html">Particle</a></li>
             
@@ -100,6 +104,8 @@
                 <li><a href="../classes/Solver.html">Solver</a></li>
             
                 <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/Utils.html">Utils</a></li>
             
                 <li><a href="../classes/vec2.html">vec2</a></li>
             
@@ -156,7 +162,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_shapes_Convex.js.html#l7"><code>src&#x2F;shapes&#x2F;Convex.js:7</code></a>
+            Defined in: <a href="../files/src_shapes_Convex.js.html#l8"><code>src&#x2F;shapes&#x2F;Convex.js:8</code></a>
         </div>
     
 
@@ -217,7 +223,7 @@
             
         
         
-        <a href="../files/src_shapes_Convex.js.html#l7"><code>src&#x2F;shapes&#x2F;Convex.js:7</code></a>
+        <a href="../files/src_shapes_Convex.js.html#l8"><code>src&#x2F;shapes&#x2F;Convex.js:8</code></a>
         
         </p>
 
@@ -297,7 +303,28 @@
                             </li>
                         
                             <li class="index-item method">
+                                <a href="#method_updateArea">updateArea</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
                                 <a href="#method_updateBoundingRadius">updateBoundingRadius</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_updateCenterOfMass">updateCenterOfMass</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_updateTriangles">updateTriangles</a>
 
                                 
                                 
@@ -401,7 +428,7 @@
             
         
         
-        <a href="../files/src_shapes_Convex.js.html#l125"><code>src&#x2F;shapes&#x2F;Convex.js:125</code></a>
+        <a href="../files/src_shapes_Convex.js.html#l143"><code>src&#x2F;shapes&#x2F;Convex.js:143</code></a>
         
         </p>
 
@@ -459,6 +486,61 @@
 </div>
 
                 
+                    <div id="method_updateArea" class="method item">
+    <h3 class="name"><code>updateArea</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_shapes_Convex.js.html#l233"><code>src&#x2F;shapes&#x2F;Convex.js:233</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Update the .area</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
                     <div id="method_updateBoundingRadius" class="method item">
     <h3 class="name"><code>updateBoundingRadius</code></h3>
 
@@ -491,7 +573,7 @@
             
         
         
-        <a href="../files/src_shapes_Convex.js.html#l198"><code>src&#x2F;shapes&#x2F;Convex.js:198</code></a>
+        <a href="../files/src_shapes_Convex.js.html#l217"><code>src&#x2F;shapes&#x2F;Convex.js:217</code></a>
         
         </p>
 
@@ -503,6 +585,116 @@
 
     <div class="description">
         <p>Updates the .boundingRadius property</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_updateCenterOfMass" class="method item">
+    <h3 class="name"><code>updateCenterOfMass</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_shapes_Convex.js.html#l101"><code>src&#x2F;shapes&#x2F;Convex.js:101</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Update the .centerOfMass property.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_updateTriangles" class="method item">
+    <h3 class="name"><code>updateTriangles</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_shapes_Convex.js.html#l62"><code>src&#x2F;shapes&#x2F;Convex.js:62</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Update the .triangles property</p>
 
     </div>
 
@@ -545,7 +737,7 @@
             
         
         
-        <a href="../files/src_shapes_Convex.js.html#l42"><code>src&#x2F;shapes&#x2F;Convex.js:42</code></a>
+        <a href="../files/src_shapes_Convex.js.html#l50"><code>src&#x2F;shapes&#x2F;Convex.js:50</code></a>
         
         </p>
 
@@ -590,7 +782,7 @@
             
         
         
-        <a href="../files/src_shapes_Convex.js.html#l23"><code>src&#x2F;shapes&#x2F;Convex.js:23</code></a>
+        <a href="../files/src_shapes_Convex.js.html#l31"><code>src&#x2F;shapes&#x2F;Convex.js:31</code></a>
         
         </p>
 
@@ -635,7 +827,7 @@
             
         
         
-        <a href="../files/src_shapes_Convex.js.html#l30"><code>src&#x2F;shapes&#x2F;Convex.js:30</code></a>
+        <a href="../files/src_shapes_Convex.js.html#l38"><code>src&#x2F;shapes&#x2F;Convex.js:38</code></a>
         
         </p>
 
@@ -680,7 +872,7 @@
             
         
         
-        <a href="../files/src_shapes_Convex.js.html#l16"><code>src&#x2F;shapes&#x2F;Convex.js:16</code></a>
+        <a href="../files/src_shapes_Convex.js.html#l17"><code>src&#x2F;shapes&#x2F;Convex.js:17</code></a>
         
         </p>
 

@@ -61,6 +61,8 @@
             
                 <li><a href="../classes/Equation.html">Equation</a></li>
             
+                <li><a href="../classes/EventEmitter.html">EventEmitter</a></li>
+            
                 <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
             
                 <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
@@ -71,13 +73,15 @@
             
                 <li><a href="../classes/IslandSolver.html">IslandSolver</a></li>
             
+                <li><a href="../classes/Line.html">Line</a></li>
+            
                 <li><a href="../classes/mat2.html">mat2</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
-                <li><a href="../classes/Nearphase.html">Nearphase</a></li>
+                <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
             
                 <li><a href="../classes/Particle.html">Particle</a></li>
             
@@ -100,6 +104,8 @@
                 <li><a href="../classes/Solver.html">Solver</a></li>
             
                 <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/Utils.html">Utils</a></li>
             
                 <li><a href="../classes/vec2.html">vec2</a></li>
             
@@ -150,13 +156,13 @@
 
     
         <div class="extends">
-            Extends EventEmitter
+            Extends <a href="../classes/EventEmitter.html" class="crosslink">EventEmitter</a>
         </div>
     
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_world_World.js.html#l32"><code>src&#x2F;world&#x2F;World.js:32</code></a>
+            Defined in: <a href="../files/src_world_World.js.html#l37"><code>src&#x2F;world&#x2F;World.js:37</code></a>
         </div>
     
 
@@ -217,7 +223,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l32"><code>src&#x2F;world&#x2F;World.js:32</code></a>
+        <a href="../files/src_world_World.js.html#l37"><code>src&#x2F;world&#x2F;World.js:37</code></a>
         
         </p>
 
@@ -433,6 +439,13 @@
                                 
                             </li>
                         
+                            <li class="index-item method">
+                                <a href="#method_upgradeJSON">upgradeJSON</a>
+
+                                
+                                
+                            </li>
+                        
                     </ul>
                 </div>
             
@@ -472,6 +485,13 @@
                             </li>
                         
                             <li class="index-item property">
+                                <a href="#property_"></a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
                                 <a href="#property_contactMaterials">contactMaterials</a>
 
                                 
@@ -500,13 +520,6 @@
                             </li>
                         
                             <li class="index-item property">
-                                <a href="#property_"></a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
                                 <a href="#property_lastTimeStep">lastTimeStep</a>
 
                                 
@@ -514,7 +527,14 @@
                             </li>
                         
                             <li class="index-item property">
-                                <a href="#property_nearphase">nearphase</a>
+                                <a href="#property_narrowphase">narrowphase</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_solveConstraints">solveConstraints</a>
 
                                 
                                 
@@ -590,7 +610,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l462"><code>src&#x2F;world&#x2F;World.js:462</code></a>
+        <a href="../files/src_world_World.js.html#l475"><code>src&#x2F;world&#x2F;World.js:475</code></a>
         
         </p>
 
@@ -632,6 +652,17 @@
 
     
 
+    
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre class="code prettyprint"><code>var world = new World(),
+    body = new Body();
+world.addBody(body);</code></pre>
+
+            </div>
+        </div>
     
 </div>
 
@@ -678,7 +709,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l167"><code>src&#x2F;world&#x2F;World.js:167</code></a>
+        <a href="../files/src_world_World.js.html#l183"><code>src&#x2F;world&#x2F;World.js:183</code></a>
         
         </p>
 
@@ -766,7 +797,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l178"><code>src&#x2F;world&#x2F;World.js:178</code></a>
+        <a href="../files/src_world_World.js.html#l193"><code>src&#x2F;world&#x2F;World.js:193</code></a>
         
         </p>
 
@@ -854,7 +885,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l438"><code>src&#x2F;world&#x2F;World.js:438</code></a>
+        <a href="../files/src_world_World.js.html#l451"><code>src&#x2F;world&#x2F;World.js:451</code></a>
         
         </p>
 
@@ -932,7 +963,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l715"><code>src&#x2F;world&#x2F;World.js:715</code></a>
+        <a href="../files/src_world_World.js.html#l807"><code>src&#x2F;world&#x2F;World.js:807</code></a>
         
         </p>
 
@@ -991,7 +1022,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l741"><code>src&#x2F;world&#x2F;World.js:741</code></a>
+        <a href="../files/src_world_World.js.html#l833"><code>src&#x2F;world&#x2F;World.js:833</code></a>
         
         </p>
 
@@ -1072,7 +1103,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l611"><code>src&#x2F;world&#x2F;World.js:611</code></a>
+        <a href="../files/src_world_World.js.html#l679"><code>src&#x2F;world&#x2F;World.js:679</code></a>
         
         </p>
 
@@ -1083,7 +1114,7 @@
     </div>
 
     <div class="description">
-        <p>Load a scene from a serialized state.</p>
+        <p>Load a scene from a serialized state in JSON format.</p>
 
     </div>
 
@@ -1184,7 +1215,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l187"><code>src&#x2F;world&#x2F;World.js:187</code></a>
+        <a href="../files/src_world_World.js.html#l202"><code>src&#x2F;world&#x2F;World.js:202</code></a>
         
         </p>
 
@@ -1317,7 +1348,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l756"><code>src&#x2F;world&#x2F;World.js:756</code></a>
+        <a href="../files/src_world_World.js.html#l848"><code>src&#x2F;world&#x2F;World.js:848</code></a>
         
         </p>
 
@@ -1452,7 +1483,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l474"><code>src&#x2F;world&#x2F;World.js:474</code></a>
+        <a href="../files/src_world_World.js.html#l493"><code>src&#x2F;world&#x2F;World.js:493</code></a>
         
         </p>
 
@@ -1540,7 +1571,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l206"><code>src&#x2F;world&#x2F;World.js:206</code></a>
+        <a href="../files/src_world_World.js.html#l221"><code>src&#x2F;world&#x2F;World.js:221</code></a>
         
         </p>
 
@@ -1628,7 +1659,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l450"><code>src&#x2F;world&#x2F;World.js:450</code></a>
+        <a href="../files/src_world_World.js.html#l463"><code>src&#x2F;world&#x2F;World.js:463</code></a>
         
         </p>
 
@@ -1687,12 +1718,6 @@
                     
                 </li>
             
-                <li class="arg">
-                    
-                        <code>callback</code>
-                    
-                </li>
-            
             </ul><span class="paren">)</span>
         </div>
     
@@ -1722,7 +1747,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l229"><code>src&#x2F;world&#x2F;World.js:229</code></a>
+        <a href="../files/src_world_World.js.html#l244"><code>src&#x2F;world&#x2F;World.js:244</code></a>
         
         </p>
 
@@ -1759,28 +1784,22 @@
                     
                 </li>
             
-                <li class="param">
-                    
-                        <code class="param-name">callback</code>
-                        <span class="type">Function</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>Called when done.</p>
-
-                    </div>
-
-                    
-                </li>
-            
             </ul>
         </div>
     
 
     
 
+    
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre class="code prettyprint"><code>var world = new World();
+world.step(0.01);</code></pre>
+
+            </div>
+        </div>
     
 </div>
 
@@ -1821,7 +1840,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l486"><code>src&#x2F;world&#x2F;World.js:486</code></a>
+        <a href="../files/src_world_World.js.html#l508"><code>src&#x2F;world&#x2F;World.js:508</code></a>
         
         </p>
 
@@ -1847,6 +1866,112 @@
                     
                         <span class="type">Object</span>:
                     
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_upgradeJSON" class="method item">
+    <h3 class="name"><code>upgradeJSON</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>json</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Object | Boolean</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_World.js.html#l659"><code>src&#x2F;world&#x2F;World.js:659</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Upgrades a JSON object to current version</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">json</code>
+                        <span class="type">Object</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Object | Boolean</span>:
+                    
+                    <p>New json object, or false on failure.</p>
+
                 
             </div>
         </div>
@@ -1887,7 +2012,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l134"><code>src&#x2F;world&#x2F;World.js:134</code></a>
+        <a href="../files/src_world_World.js.html#l139"><code>src&#x2F;world&#x2F;World.js:139</code></a>
         
         </p>
 
@@ -1932,7 +2057,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l56"><code>src&#x2F;world&#x2F;World.js:56</code></a>
+        <a href="../files/src_world_World.js.html#l61"><code>src&#x2F;world&#x2F;World.js:61</code></a>
         
         </p>
 
@@ -1977,7 +2102,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l104"><code>src&#x2F;world&#x2F;World.js:104</code></a>
+        <a href="../files/src_world_World.js.html#l109"><code>src&#x2F;world&#x2F;World.js:109</code></a>
         
         </p>
 
@@ -2022,7 +2147,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l112"><code>src&#x2F;world&#x2F;World.js:112</code></a>
+        <a href="../files/src_world_World.js.html#l117"><code>src&#x2F;world&#x2F;World.js:117</code></a>
         
         </p>
 
@@ -2033,6 +2158,51 @@
 
     <div class="description">
         <p>User-added constraints.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_" class="property item">
+    <h3 class="name"><code></code></h3>
+    <span class="type">Float32Array</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_World.js.html#l85"><code>src&#x2F;world&#x2F;World.js:85</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Gravity in the world. This is applied on all bodies in the beginning of each step().</p>
 
     </div>
 
@@ -2067,7 +2237,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l141"><code>src&#x2F;world&#x2F;World.js:141</code></a>
+        <a href="../files/src_world_World.js.html#l153"><code>src&#x2F;world&#x2F;World.js:153</code></a>
         
         </p>
 
@@ -2112,7 +2282,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l120"><code>src&#x2F;world&#x2F;World.js:120</code></a>
+        <a href="../files/src_world_World.js.html#l125"><code>src&#x2F;world&#x2F;World.js:125</code></a>
         
         </p>
 
@@ -2157,7 +2327,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l88"><code>src&#x2F;world&#x2F;World.js:88</code></a>
+        <a href="../files/src_world_World.js.html#l93"><code>src&#x2F;world&#x2F;World.js:93</code></a>
         
         </p>
 
@@ -2202,7 +2372,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l96"><code>src&#x2F;world&#x2F;World.js:96</code></a>
+        <a href="../files/src_world_World.js.html#l101"><code>src&#x2F;world&#x2F;World.js:101</code></a>
         
         </p>
 
@@ -2213,51 +2383,6 @@
 
     <div class="description">
         <p>How many millisecconds the last step() took. This is updated each step if .doProfiling is set to true.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_" class="property item">
-    <h3 class="name"><code></code></h3>
-    <span class="type">Float32Array</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_world_World.js.html#l80"><code>src&#x2F;world&#x2F;World.js:80</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Gravity in the world. This is applied on all bodies in the beginning of each step().</p>
 
     </div>
 
@@ -2292,7 +2417,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l127"><code>src&#x2F;world&#x2F;World.js:127</code></a>
+        <a href="../files/src_world_World.js.html#l132"><code>src&#x2F;world&#x2F;World.js:132</code></a>
         
         </p>
 
@@ -2314,9 +2439,9 @@
 </div>
 
                 
-                    <div id="property_nearphase" class="property item">
-    <h3 class="name"><code>nearphase</code></h3>
-    <span class="type"><a href="../classes/Nearphase.html" class="crosslink">Nearphase</a></span>
+                    <div id="property_narrowphase" class="property item">
+    <h3 class="name"><code>narrowphase</code></h3>
+    <span class="type"><a href="../classes/Narrowphase.html" class="crosslink">Narrowphase</a></span>
 
     
 
@@ -2337,7 +2462,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l72"><code>src&#x2F;world&#x2F;World.js:72</code></a>
+        <a href="../files/src_world_World.js.html#l77"><code>src&#x2F;world&#x2F;World.js:77</code></a>
         
         </p>
 
@@ -2347,7 +2472,52 @@
     </div>
 
     <div class="description">
-        <p>The nearphase to use to generate contacts.</p>
+        <p>The narrowphase to use to generate contacts.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_solveConstraints" class="property item">
+    <h3 class="name"><code>solveConstraints</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_World.js.html#l146"><code>src&#x2F;world&#x2F;World.js:146</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Enable/disable constraint solving in each step.</p>
 
     </div>
 
@@ -2382,7 +2552,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l64"><code>src&#x2F;world&#x2F;World.js:64</code></a>
+        <a href="../files/src_world_World.js.html#l69"><code>src&#x2F;world&#x2F;World.js:69</code></a>
         
         </p>
 
@@ -2427,7 +2597,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l48"><code>src&#x2F;world&#x2F;World.js:48</code></a>
+        <a href="../files/src_world_World.js.html#l53"><code>src&#x2F;world&#x2F;World.js:53</code></a>
         
         </p>
 

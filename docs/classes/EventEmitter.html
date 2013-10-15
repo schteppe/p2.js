@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>IslandSolver - p2.js</title>
+    <title>EventEmitter - p2.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -150,19 +150,15 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>IslandSolver Class</h1>
+                        <h1>EventEmitter Class</h1>
 <div class="box meta">
     
 
     
-        <div class="extends">
-            Extends <a href="../classes/Solver.html" class="crosslink">Solver</a>
-        </div>
-    
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_solver_IslandSolver.js.html#l9"><code>src&#x2F;solver&#x2F;IslandSolver.js:9</code></a>
+            Defined in: <a href="../files/src_events_EventEmitter.js.html#l1"><code>src&#x2F;events&#x2F;EventEmitter.js:1</code></a>
         </div>
     
 
@@ -174,378 +170,15 @@
 
 
 <div class="box intro">
-    <p>Splits the system of bodies and equations into independent islands</p>
+    <p>Base class for objects that dispatches events.</p>
 
 </div>
 
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_IslandSolver" class="method item">
-    <h3 class="name"><code>IslandSolver</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>subsolver</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_solver_IslandSolver.js.html#l9"><code>src&#x2F;solver&#x2F;IslandSolver.js:9</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">subsolver</code>
-                        <span class="type"><a href="../classes/Solver.html" class="crosslink">Solver</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
-</div>
-
-    </div>
-
-
-<div id="classdocs" class="tabview">
-    <ul class="api-class-tabs">
-        <li class="api-class-tab index"><a href="#index">Index</a></li>
-
-        
-            <li class="api-class-tab methods"><a href="#methods">Methods</a></li>
-        
-        
-            <li class="api-class-tab properties"><a href="#properties">Properties</a></li>
-        
-        
-        
-    </ul>
-
-    <div>
-        <div id="index" class="api-class-tabpanel index">
-            <h2 class="off-left">Item Index</h2>
-
-            
-                <div class="index-section methods">
-                    <h3>Methods</h3>
-
-                    <ul class="index-list methods extends">
-                        
-                            <li class="index-item method inherited">
-                                <a href="#method_addEquation">addEquation</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method inherited">
-                                <a href="#method_addEquations">addEquations</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method inherited">
-                                <a href="#method_removeAllEquations">removeAllEquations</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method inherited">
-                                <a href="#method_removeEquation">removeEquation</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method">
-                                <a href="#method_solve">solve</a>
-
-                                
-                                
-                            </li>
-                        
-                    </ul>
-                </div>
-            
-
-            
-                <div class="index-section properties">
-                    <h3>Properties</h3>
-
-                    <ul class="index-list properties extends">
-                        
-                            <li class="index-item property inherited">
-                                <a href="#property_equations">equations</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_numIslands">numIslands</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_subsolver">subsolver</a>
-
-                                
-                                
-                            </li>
-                        
-                    </ul>
-                </div>
-            
-
-            
-
-            
-        </div>
-
-        
-            <div id="methods" class="api-class-tabpanel">
-                <h2 class="off-left">Methods</h2>
-
-                
-                    <div id="method_addEquation" class="method item inherited">
-    <h3 class="name"><code>addEquation</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>eq</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/Solver.html#method_addEquation">Solver</a>:
-            
-        
-        
-        <a href="../files/src_solver_Solver.js.html#l25"><code>src&#x2F;solver&#x2F;Solver.js:25</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Add an equation to be solved.</p>
-
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">eq</code>
-                        <span class="type"><a href="../classes/Equation.html" class="crosslink">Equation</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_addEquations" class="method item inherited">
-    <h3 class="name"><code>addEquations</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>eqs</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/Solver.html#method_addEquations">Solver</a>:
-            
-        
-        
-        <a href="../files/src_solver_Solver.js.html#l35"><code>src&#x2F;solver&#x2F;Solver.js:35</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Add equations. Same as .addEquation, but this time the argument is an array of Equations</p>
-
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">eqs</code>
-                        <span class="type">Array</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_removeAllEquations" class="method item inherited">
-    <h3 class="name"><code>removeAllEquations</code></h3>
+        <div id="method_EventEmitter" class="method item">
+    <h3 class="name"><code>EventEmitter</code></h3>
 
     
         <span class="paren">()</span>
@@ -568,12 +201,15 @@
     <div class="meta">
         
             
-                <p>Inherited from
-                <a href="../classes/Solver.html#method_removeAllEquations">Solver</a>:
+                
+                <p>
+                
+                Defined in
+                
             
         
         
-        <a href="../files/src_solver_Solver.js.html#l57"><code>src&#x2F;solver&#x2F;Solver.js:57</code></a>
+        <a href="../files/src_events_EventEmitter.js.html#l1"><code>src&#x2F;events&#x2F;EventEmitter.js:1</code></a>
         
         </p>
 
@@ -584,8 +220,7 @@
     </div>
 
     <div class="description">
-        <p>Remove all currently added equations.</p>
-
+        
     </div>
 
     
@@ -595,94 +230,77 @@
     
 </div>
 
-                
-                    <div id="method_removeEquation" class="method item inherited">
-    <h3 class="name"><code>removeEquation</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>eq</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/Solver.html#method_removeEquation">Solver</a>:
-            
-        
-        
-        <a href="../files/src_solver_Solver.js.html#l45"><code>src&#x2F;solver&#x2F;Solver.js:45</code></a>
-        
-        </p>
-
-
-        
-
-        
     </div>
 
-    <div class="description">
-        <p>Remove an equation.</p>
 
-    </div>
+<div id="classdocs" class="tabview">
+    <ul class="api-class-tabs">
+        <li class="api-class-tab index"><a href="#index">Index</a></li>
 
-    
-        <div class="params">
-            <h4>Parameters:</h4>
+        
+            <li class="api-class-tab methods"><a href="#methods">Methods</a></li>
+        
+        
+        
+        
+    </ul>
 
-            <ul class="params-list">
+    <div>
+        <div id="index" class="api-class-tabpanel index">
+            <h2 class="off-left">Item Index</h2>
+
             
-                <li class="param">
-                    
-                        <code class="param-name">eq</code>
-                        <span class="type"><a href="../classes/Equation.html" class="crosslink">Equation</a></span>
-                    
+                <div class="index-section methods">
+                    <h3>Methods</h3>
 
-                    
-
-                    <div class="param-description">
+                    <ul class="index-list methods">
                         
-                    </div>
+                            <li class="index-item method">
+                                <a href="#method_emit">emit</a>
 
-                    
-                </li>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_has">has</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_off">off</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_on">on</a>
+
+                                
+                                
+                            </li>
+                        
+                    </ul>
+                </div>
             
-            </ul>
+
+            
+
+            
+
+            
         </div>
-    
 
-    
-
-    
-</div>
+        
+            <div id="methods" class="api-class-tabpanel">
+                <h2 class="off-left">Methods</h2>
 
                 
-                    <div id="method_solve" class="method item">
-    <h3 class="name"><code>solve</code></h3>
+                    <div id="method_emit" class="method item">
+    <h3 class="name"><code>emit</code></h3>
 
     
         <div class="args">
@@ -690,13 +308,7 @@
             
                 <li class="arg">
                     
-                        <code>dt</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>world</code>
+                        <code>event</code>
                     
                 </li>
             
@@ -704,6 +316,10 @@
         </div>
     
 
+    
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/EventEmitter.html" class="crosslink">EventEmitter</a></span>
+        </span>
     
 
     
@@ -729,7 +345,7 @@
             
         
         
-        <a href="../files/src_solver_IslandSolver.js.html#l68"><code>src&#x2F;solver&#x2F;IslandSolver.js:68</code></a>
+        <a href="../files/src_events_EventEmitter.js.html#l65"><code>src&#x2F;events&#x2F;EventEmitter.js:65</code></a>
         
         </p>
 
@@ -740,7 +356,7 @@
     </div>
 
     <div class="description">
-        <p>Solves the full system.</p>
+        <p>Emit an event.</p>
 
     </div>
 
@@ -752,8 +368,137 @@
             
                 <li class="param">
                     
-                        <code class="param-name">dt</code>
-                        <span class="type">Number</span>
+                        <code class="param-name">event</code>
+                        <span class="type">Object</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                        <ul class="params-list">
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name">type</code>
+                                    <span class="type">String</span>
+                                
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                                
+                            </li>
+                            
+                        </ul>
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/EventEmitter.html" class="crosslink">EventEmitter</a></span>:
+                    
+                    <p>The self object, for chainability.</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_has" class="method item">
+    <h3 class="name"><code>has</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>type</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>listener</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Boolean</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_events_EventEmitter.js.html#l32"><code>src&#x2F;events&#x2F;EventEmitter.js:32</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Check if an event listener is added</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">type</code>
+                        <span class="type">String</span>
                     
 
                     
@@ -767,8 +512,8 @@
             
                 <li class="param">
                     
-                        <code class="param-name">world</code>
-                        <span class="type"><a href="../classes/World.html" class="crosslink">World</a></span>
+                        <code class="param-name">listener</code>
+                        <span class="type">Function</span>
                     
 
                     
@@ -785,64 +530,55 @@
     
 
     
+        <div class="returns">
+            <h4>Returns:</h4>
 
-    
-</div>
-
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Boolean</span>:
+                    
                 
             </div>
-        
-
-        
-            <div id="properties" class="api-class-tabpanel">
-                <h2 class="off-left">Properties</h2>
-
-                
-                    <div id="property_equations" class="property item inherited">
-    <h3 class="name"><code>equations</code></h3>
-    <span class="type">Array</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/Solver.html#property_equations">Solver</a>:
-            
-        
-        
-        <a href="../files/src_solver_Solver.js.html#l12"><code>src&#x2F;solver&#x2F;Solver.js:12</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Current equations in the solver.</p>
-
-    </div>
-
-    
-
+        </div>
     
 
     
 </div>
 
                 
-                    <div id="property_numIslands" class="property item">
-    <h3 class="name"><code>numIslands</code></h3>
-    <span class="type">Number</span>
+                    <div id="method_off" class="method item">
+    <h3 class="name"><code>off</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>type</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>listener</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/EventEmitter.html" class="crosslink">EventEmitter</a></span>
+        </span>
+    
+
+    
+
+    
 
     
 
@@ -863,9 +599,10 @@
             
         
         
-        <a href="../files/src_solver_IslandSolver.js.html#l28"><code>src&#x2F;solver&#x2F;IslandSolver.js:28</code></a>
+        <a href="../files/src_events_EventEmitter.js.html#l48"><code>src&#x2F;events&#x2F;EventEmitter.js:48</code></a>
         
         </p>
+
 
         
 
@@ -873,21 +610,102 @@
     </div>
 
     <div class="description">
-        <p>Number of islands</p>
+        <p>Remove an event listener</p>
 
     </div>
 
     
+        <div class="params">
+            <h4>Parameters:</h4>
 
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">type</code>
+                        <span class="type">String</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">listener</code>
+                        <span class="type">Function</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/EventEmitter.html" class="crosslink">EventEmitter</a></span>:
+                    
+                    <p>The self object, for chainability.</p>
+
+                
+            </div>
+        </div>
     
 
     
 </div>
 
                 
-                    <div id="property_subsolver" class="property item">
-    <h3 class="name"><code>subsolver</code></h3>
-    <span class="type"><a href="../classes/Solver.html" class="crosslink">Solver</a></span>
+                    <div id="method_on" class="method item">
+    <h3 class="name"><code>on</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>type</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>listener</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/EventEmitter.html" class="crosslink">EventEmitter</a></span>
+        </span>
+    
+
+    
+
+    
 
     
 
@@ -908,9 +726,10 @@
             
         
         
-        <a href="../files/src_solver_IslandSolver.js.html#l21"><code>src&#x2F;solver&#x2F;IslandSolver.js:21</code></a>
+        <a href="../files/src_events_EventEmitter.js.html#l13"><code>src&#x2F;events&#x2F;EventEmitter.js:13</code></a>
         
         </p>
+
 
         
 
@@ -918,12 +737,64 @@
     </div>
 
     <div class="description">
-        <p>The solver used in the workers.</p>
+        <p>Add an event listener</p>
 
     </div>
 
     
+        <div class="params">
+            <h4>Parameters:</h4>
 
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">type</code>
+                        <span class="type">String</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">listener</code>
+                        <span class="type">Function</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/EventEmitter.html" class="crosslink">EventEmitter</a></span>:
+                    
+                    <p>The self object, for chainability.</p>
+
+                
+            </div>
+        </div>
     
 
     
@@ -931,6 +802,8 @@
 
                 
             </div>
+        
+
         
 
         

@@ -61,6 +61,8 @@
             
                 <li><a href="../classes/Equation.html">Equation</a></li>
             
+                <li><a href="../classes/EventEmitter.html">EventEmitter</a></li>
+            
                 <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
             
                 <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
@@ -71,13 +73,15 @@
             
                 <li><a href="../classes/IslandSolver.html">IslandSolver</a></li>
             
+                <li><a href="../classes/Line.html">Line</a></li>
+            
                 <li><a href="../classes/mat2.html">mat2</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
-                <li><a href="../classes/Nearphase.html">Nearphase</a></li>
+                <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
             
                 <li><a href="../classes/Particle.html">Particle</a></li>
             
@@ -100,6 +104,8 @@
                 <li><a href="../classes/Solver.html">Solver</a></li>
             
                 <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/Utils.html">Utils</a></li>
             
                 <li><a href="../classes/vec2.html">vec2</a></li>
             
@@ -156,7 +162,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_constraints_FrictionEquation.js.html#l19"><code>src&#x2F;constraints&#x2F;FrictionEquation.js:19</code></a>
+            Defined in: <a href="../files/src_constraints_FrictionEquation.js.html#l20"><code>src&#x2F;constraints&#x2F;FrictionEquation.js:20</code></a>
         </div>
     
 
@@ -229,7 +235,7 @@
             
         
         
-        <a href="../files/src_constraints_FrictionEquation.js.html#l19"><code>src&#x2F;constraints&#x2F;FrictionEquation.js:19</code></a>
+        <a href="../files/src_constraints_FrictionEquation.js.html#l20"><code>src&#x2F;constraints&#x2F;FrictionEquation.js:20</code></a>
         
         </p>
 
@@ -314,6 +320,8 @@
             <li class="api-class-tab methods"><a href="#methods">Methods</a></li>
         
         
+            <li class="api-class-tab properties"><a href="#properties">Properties</a></li>
+        
         
         
     </ul>
@@ -339,6 +347,35 @@
                 </div>
             
 
+            
+                <div class="index-section properties">
+                    <h3>Properties</h3>
+
+                    <ul class="index-list properties extends">
+                        
+                            <li class="index-item property">
+                                <a href="#property_ri">ri</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_rj">rj</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_t">t</a>
+
+                                
+                                
+                            </li>
+                        
+                    </ul>
+                </div>
             
 
             
@@ -393,7 +430,7 @@
             
         
         
-        <a href="../files/src_constraints_FrictionEquation.js.html#l40"><code>src&#x2F;constraints&#x2F;FrictionEquation.js:40</code></a>
+        <a href="../files/src_constraints_FrictionEquation.js.html#l60"><code>src&#x2F;constraints&#x2F;FrictionEquation.js:60</code></a>
         
         </p>
 
@@ -404,7 +441,8 @@
     </div>
 
     <div class="description">
-        <p>Set the slipping condition for the constraint. If the force</p>
+        <p>Set the slipping condition for the constraint. The friction force cannot be
+larger than this value.</p>
 
     </div>
 
@@ -442,6 +480,147 @@
             </div>
         
 
+        
+            <div id="properties" class="api-class-tabpanel">
+                <h2 class="off-left">Properties</h2>
+
+                
+                    <div id="property_ri" class="property item">
+    <h3 class="name"><code>ri</code></h3>
+    <span class="type">Float32Array</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_constraints_FrictionEquation.js.html#l33"><code>src&#x2F;constraints&#x2F;FrictionEquation.js:33</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Relative vector from center of body i to the contact point, in world coords.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_rj" class="property item">
+    <h3 class="name"><code>rj</code></h3>
+    <span class="type">Float32Array</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_constraints_FrictionEquation.js.html#l40"><code>src&#x2F;constraints&#x2F;FrictionEquation.js:40</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Relative vector from center of body j to the contact point, in world coords.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_t" class="property item">
+    <h3 class="name"><code>t</code></h3>
+    <span class="type">Float32Array</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_constraints_FrictionEquation.js.html#l47"><code>src&#x2F;constraints&#x2F;FrictionEquation.js:47</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Tangent vector that the friction force will act along, in world coords.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+            </div>
         
 
         

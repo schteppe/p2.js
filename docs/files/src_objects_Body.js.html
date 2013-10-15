@@ -61,6 +61,8 @@
             
                 <li><a href="../classes/Equation.html">Equation</a></li>
             
+                <li><a href="../classes/EventEmitter.html">EventEmitter</a></li>
+            
                 <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
             
                 <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
@@ -71,13 +73,15 @@
             
                 <li><a href="../classes/IslandSolver.html">IslandSolver</a></li>
             
+                <li><a href="../classes/Line.html">Line</a></li>
+            
                 <li><a href="../classes/mat2.html">mat2</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
-                <li><a href="../classes/Nearphase.html">Nearphase</a></li>
+                <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
             
                 <li><a href="../classes/Particle.html">Particle</a></li>
             
@@ -100,6 +104,8 @@
                 <li><a href="../classes/Solver.html">Solver</a></li>
             
                 <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/Utils.html">Utils</a></li>
             
                 <li><a href="../classes/vec2.html">vec2</a></li>
             
@@ -148,27 +154,30 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
-var vec2 = require(&#x27;../math/vec2&#x27;);
+var vec2 = require(&#x27;../math/vec2&#x27;)
+,   decomp = require(&#x27;poly-decomp&#x27;)
+,   Convex = require(&#x27;../shapes/Convex&#x27;)
 
 module.exports = Body;
 
 var zero = vec2.fromValues(0,0);
 
 /**
- * A physics body.
+ * A rigid body. Has got a center of mass, position, velocity and a number of
+ * shapes that are used for collisions.
  *
  * @class Body
  * @constructor
- * @param {Object}          [options]
- * @param {Shape}           options.shape           Used for collision detection. If absent the body will not collide.
- * @param {number}          options.mass            A number &gt;= 0. If zero, the body becomes static. Defaults to static [0].
- * @param {Float32Array}    options.position
- * @param {Float32Array}    options.velocity
- * @param {number}          options.angle
- * @param {number}          options.angularVelocity
- * @param {Float32Array}    options.force
- * @param {number}          options.angularForce
- * @todo Should not take mass as an argument to Body, but as density to each Shape
+ * @param {Object}              [options]
+ * @param {Number}              [options.mass=0]    A number &gt;= 0. If zero, the .motionState will be set to Body.STATIC.
+ * @param {Float32Array|Array}  [options.position]
+ * @param {Float32Array|Array}  [options.velocity]
+ * @param {Number}              [options.angle=0]
+ * @param {Number}              [options.angularVelocity=0]
+ * @param {Float32Array|Array}  [options.force]
+ * @param {Number}              [options.angularForce=0]
+ *
+ * @todo Should not take mass as argument to Body, but as density to each Shape
  */
 function Body(options){
     options = options || {};
@@ -181,21 +190,24 @@ function Body(options){
     this.id = ++Body._idCounter;
 
     /**
-     * The shapes of the body.
+     * The shapes of the body. The local transform of the shape in .shapes[i] is
+     * defined by .shapeOffsets[i] and .shapeAngles[i].
+     *
      * @property shapes
      * @type {Array}
      */
     this.shapes = [];
 
     /**
-     * The local shape offsets, relative to the body center of mass.
+     * The local shape offsets, relative to the body center of mass. This is an
+     * array of Float32Array.
      * @property shapeOffsets
      * @type {Array}
      */
     this.shapeOffsets = [];
 
     /**
-     * The body-local shape angle transformations.
+     * The body-local shape angle transforms. This is an array of numbers (angles).
      * @property shapeAngles
      * @type {Array}
      */
@@ -255,7 +267,7 @@ function Body(options){
     this.vlambda = vec2.fromValues(0,0);
 
     /**
-     * Angular constraint velocity that was added to the body during the last step.
+     * Angular constraint velocity that was added to the body during last step.
      * @property wlambda
      * @type {Float32Array}
      */
@@ -291,22 +303,47 @@ function Body(options){
     this.angularForce = options.angularForce || 0;
 
     /**
-     * The type of motion this body has. Should be one of: Body.STATIC, Body.DYNAMIC and Body.KINEMATIC.
+     * The type of motion this body has. Should be one of: Body.STATIC (the body
+     * does not move), Body.DYNAMIC (body can move and respond to collisions)
+     * and Body.KINEMATIC (only moves according to its .velocity).
+     *
      * @property motionState
      * @type {number}
+     *
+     * @example
+     *     // This body will move and interact with other bodies
+     *     var dynamicBody = new Body();
+     *     dynamicBody.motionState = Body.DYNAMIC;
+     *
+     * @example
+     *     // This body will not move at all
+     *     var staticBody = new Body();
+     *     staticBody.motionState = Body.STATIC;
+     *
+     * @example
+     *     // This body will only move if you change its velocity
+     *     var kinematicBody = new Body();
+     *     kinematicBody.motionState = Body.KINEMATIC;
      */
     this.motionState = this.mass == 0 ? Body.STATIC : Body.DYNAMIC;
 
     /**
-     * Bounding box max point, in world coordinates.
-     * @property aabbMin
-     * @type {Array}
+     * Bounding circle radius
+     * @property boundingRadius
+     * @type {Number}
      */
     this.boundingRadius = 0;
+
+    this.concavePath = null;
 };
 
 Body._idCounter = 0;
 
+/**
+ * Update the bounding radius of the body. Should be done if any of the shapes
+ * are changed.
+ * @method updateBoundingRadius
+ */
 Body.prototype.updateBoundingRadius = function(){
     var shapes = this.shapes,
         shapeOffsets = this.shapeOffsets,
@@ -325,13 +362,35 @@ Body.prototype.updateBoundingRadius = function(){
 };
 
 /**
- * Add a shape to the body
+ * Add a shape to the body. You can pass a local transform when adding a shape,
+ * so that the shape gets an offset and angle relative to the body center of mass.
+ * Will automatically update the mass properties and bounding radius.
+ *
  * @method addShape
- * @param  {Shape} shape
- * @param  {Array} offset
- * @param  {Number} angle
+ * @param  {Shape}              shape
+ * @param  {Float32Array|Array} [offset] Local body offset of the shape.
+ * @param  {Number}             [angle]  Local body angle.
+ *
+ * @example
+ *     var body = new Body(),
+ *         shape = new Circle();
+ *
+ *     // Add the shape to the body, positioned in the center
+ *     body.addShape(shape);
+ *
+ *     // Add another shape to the body, positioned 1 unit length from the body center of mass along the local x-axis.
+ *     body.addShape(shape,[1,0]);
+ *
+ *     // Add another shape to the body, positioned 1 unit length from the body center of mass along the local y-axis, and rotated 90 degrees CCW.
+ *     body.addShape(shape,[0,1],Math.PI/2);
  */
 Body.prototype.addShape = function(shape,offset,angle){
+
+    // Copy the offset vector
+    if(offset){
+        offset = vec2.fromValues(offset[0],offset[1]);
+    }
+
     this.shapes      .push(shape);
     this.shapeOffsets.push(offset);
     this.shapeAngles .push(angle);
@@ -340,8 +399,32 @@ Body.prototype.addShape = function(shape,offset,angle){
 };
 
 /**
- * Updates .inertia, .invMass, .invInertia for this Body. Should be called when changing the structure of the Body.
+ * Remove a shape
+ * @method removeShape
+ * @param  {Shape}  shape
+ * @return {Boolean}       True if the shape was found and removed, else false.
+ */
+Body.prototype.removeShape = function(shape){
+    var idx = this.shapes.indexOf(shape);
+
+    if(idx != -1){
+        this.shapes.splice(idx,1);
+        this.shapeOffsets.splice(idx,1);
+        this.shapeAngles.splice(idx,1);
+        return true;
+    } else
+        return false;
+};
+
+/**
+ * Updates .inertia, .invMass, .invInertia for this Body. Should be called when
+ * changing the structure or mass of the Body.
+ *
  * @method updateMassProperties
+ *
+ * @example
+ *     body.mass += 1;
+ *     body.updateMassProperties();
  */
 Body.prototype.updateMassProperties = function(){
     var shapes = this.shapes,
@@ -363,13 +446,14 @@ Body.prototype.updateMassProperties = function(){
     this.invInertia = I&gt;0 ? 1/I : 0;
 };
 
+var Body_applyForce_r = vec2.create();
+
 /**
  * Apply force to a world point. This could for example be a point on the RigidBody surface. Applying force this way will add to Body.force and Body.angularForce.
  * @method applyForce
  * @param {Float32Array} force The force to add.
  * @param {Float32Array} worldPoint A world point to apply the force on.
  */
-var Body_applyForce_r = vec2.create();
 Body.prototype.applyForce = function(force,worldPoint){
     // Compute point position relative to the body center
     var r = Body_applyForce_r;
@@ -388,8 +472,8 @@ Body.prototype.applyForce = function(force,worldPoint){
 /**
  * Transform a world point to local body frame.
  * @method toLocalFrame
- * @param  {Array} out          The vector to store the result in
- * @param  {Array} worldPoint   The input world vector
+ * @param  {Float32Array|Array} out          The vector to store the result in
+ * @param  {Float32Array|Array} worldPoint   The input world vector
  */
 Body.prototype.toLocalFrame = function(out, worldPoint){
     vec2.toLocalFrame(out, worldPoint, this.position, this.angle);
@@ -403,6 +487,131 @@ Body.prototype.toLocalFrame = function(out, worldPoint){
  */
 Body.prototype.toWorldFrame = function(out, localPoint){
     vec2.toGlobalFrame(out, localPoint, this.position, this.angle);
+};
+
+/**
+ * Reads a polygon shape path, and assembles convex shapes from that and puts them at proper offset points.
+ * @method fromPolygon
+ * @param {Array} path An array of 2d vectors, e.g. [[0,0],[0,1],...] that resembles a concave or convex polygon. The shape must be simple and without holes.
+ * @param {Object} [options]
+ * @param {Boolean} [options.optimalDecomp=false]   Set to true if you need optimal decomposition. Warning: very slow for polygons with more than 10 vertices.
+ * @param {Boolean} [options.skipSimpleCheck=false] Set to true if you already know that the path is not intersecting itself.
+ * @param {Boolean|Number} [options.removeCollinearPoints=false] Set to a number (angle threshold value) to remove collinear points, or false to keep all points.
+ * @return {Boolean} True on success, else false.
+ */
+Body.prototype.fromPolygon = function(path,options){
+    options = options || {};
+
+    // Remove all shapes
+    for(var i=this.shapes.length; i&gt;=0; --i)
+        this.removeShape(this.shapes[i]);
+
+    var p = new decomp.Polygon();
+    p.vertices = path;
+
+    // Make it counter-clockwise
+    p.makeCCW();
+
+    if(typeof(options.removeCollinearPoints)==&quot;number&quot;){
+        p.removeCollinearPoints(options.removeCollinearPoints);
+    }
+
+    // Check if any line segment intersects the path itself
+    if(typeof(options.skipSimpleCheck) == &quot;undefined&quot;){
+        if(!p.isSimple()) return false;
+    }
+
+    // Save this path for later
+    this.concavePath = p.vertices.slice(0);
+    for(var i=0; i&lt;this.concavePath.length; i++){
+        var v = [0,0];
+        vec2.copy(v,this.concavePath[i]);
+        this.concavePath[i] = v;
+    }
+
+    // Slow or fast decomp?
+    var convexes;
+    if(options.optimalDecomp)   convexes = p.decomp();
+    else                        convexes = p.quickDecomp();
+
+    var cm = vec2.create();
+
+    // Add convexes
+    for(var i=0; i!==convexes.length; i++){
+        // Create convex
+        var c = new Convex(convexes[i].vertices);
+
+        // Move all vertices so its center of mass is in the local center of the convex
+        for(var j=0; j!==c.vertices.length; j++){
+            var v = c.vertices[j];
+            vec2.sub(v,v,c.centerOfMass);
+        }
+
+        vec2.scale(cm,c.centerOfMass,1);
+        c.updateTriangles();
+        c.updateCenterOfMass();
+        c.updateBoundingRadius();
+
+        // Add the shape
+        this.addShape(c,cm);
+    }
+
+    this.adjustCenterOfMass();
+
+    return true;
+};
+
+var adjustCenterOfMass_tmp1 = vec2.fromValues(0,0),
+    adjustCenterOfMass_tmp2 = vec2.fromValues(0,0),
+    adjustCenterOfMass_tmp3 = vec2.fromValues(0,0),
+    adjustCenterOfMass_tmp4 = vec2.fromValues(0,0);
+
+/**
+ * Moves the shape offsets so their center of mass becomes the body center of mass.
+ * @method adjustCenterOfMass
+ */
+Body.prototype.adjustCenterOfMass = function(){
+    var zero =              adjustCenterOfMass_tmp1,
+        offset_times_area = adjustCenterOfMass_tmp2,
+        sum =               adjustCenterOfMass_tmp3,
+        cm =                adjustCenterOfMass_tmp4,
+        totalArea =         0;
+    vec2.set(sum,0,0);
+    vec2.set(zero,0,0);
+
+    for(var i=0; i!==this.shapes.length; i++){
+        var s = this.shapes[i],
+            offset = this.shapeOffsets[i] || zero;
+        vec2.scale(offset_times_area,offset,s.area);
+        vec2.add(sum,sum,offset_times_area);
+        totalArea += s.area;
+    }
+
+    vec2.scale(cm,sum,1/totalArea);
+
+    // Now move all shapes
+    for(var i=0; i!==this.shapes.length; i++){
+        var s = this.shapes[i],
+            offset = this.shapeOffsets[i];
+
+        // Offset may be undefined. Fix that.
+        if(!offset){
+            offset = this.shapeOffsets[i] = vec2.create();
+        }
+
+        vec2.sub(offset,offset,cm);
+    }
+
+    // Move the body position too
+    vec2.add(this.position,this.position,cm);
+
+    // And concave path
+    for(var i=0; this.concavePath &amp;&amp; i&lt;this.concavePath.length; i++){
+        vec2.sub(this.concavePath[i], this.concavePath[i], cm);
+    }
+
+    this.updateMassProperties();
+    this.updateBoundingRadius();
 };
 
 /**
