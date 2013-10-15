@@ -592,12 +592,12 @@ Narrowphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, just
         var d = dot(dist, worldTangent);
         sub(centerDist, worldVertex0, convexOffset);
 
-        var cross = vec2.crossLength(worldEdgeUnit,dist);
+        var cross = vec2.crossLength(worldEdge,dist);
 
         if(lastCross===null) lastCross = cross;
 
         // If we got a different sign of the distance vector, the point is out of the polygon
-        if(cross*lastCross < 0) return false;
+        if(cross*lastCross <= 0) return false;
         lastCross = cross;
 
         sub(convexToparticle, particleOffset, convexOffset);
