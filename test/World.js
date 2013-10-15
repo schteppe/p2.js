@@ -7,10 +7,14 @@ var World = require("../src/world/World")
 ,   Line = require("../src/shapes/Line")
 ,   Capsule = require("../src/shapes/Capsule")
 ,   Plane = require("../src/shapes/Plane")
+,   Spring = require("../src/objects/Spring")
 ,   Material = require("../src/material/Material")
 ,   ContactMaterial = require("../src/material/ContactMaterial")
 ,   DistanceConstraint = require("../src/constraints/DistanceConstraint")
+,   PointToPointConstraint = require("../src/constraints/PointToPointConstraint")
+,   PrismaticConstraint = require("../src/constraints/PrismaticConstraint")
 ,   vec2 = require("../src/math/vec2")
+,   _ = require('underscore')
 
 var world;
 
@@ -20,7 +24,11 @@ exports.setUp = function(callback){
 };
 
 exports.toJSON = function(test){
-    var size = 1,
+
+    var r = Math.random,
+        rv = function(){ return [r(),r()]; },
+        lastMaterial,
+        size = 1,
         shapes = [
             new Particle(),
             new Circle(size/2),
@@ -31,8 +39,13 @@ exports.toJSON = function(test){
             new Plane(),
         ];
 
-    var r = Math.random,
-        lastMaterial;
+    // Set gravity
+    vec2.set(world.gravity,r(),r());
+
+    // Collision groups
+    groups = [1,2,4];
+
+    // Add all shape types
     for(var i=0; i<shapes.length; i++){
         var b = new Body({
                 position : [r(),r()],
@@ -44,16 +57,37 @@ exports.toJSON = function(test){
             }),
             s = shapes[i];
 
-        b.addShape(s);
+        // Set collision masks and groups
+        s.collisionGroup = groups[_.random(0,groups.length-1)];
+        s.collisionMask = groups[_.random(0,groups.length-1)];
 
-        // Add material or not?
+        // Add shape at given position
+        b.addShape(s,rv(),r());
+
+        // Things that should be different for the first body
         if(i==0){
+            // Add material
             s.material = new Material();
             lastMaterial = s.material;
+
+            // Set concavePath
+            b.concavePath = [rv(),rv(),rv(),rv()];
         }
 
         world.addBody(b);
     }
+
+    var bodyA = world.bodies[0],
+        bodyB = world.bodies[1];
+
+    // Add springs
+    world.addSpring(new Spring(bodyA,bodyB,{
+        stiffness : r(),
+        damping : r(),
+        restLength : r(),
+        localAnchorA : rv(),
+        localAnchorB : rv(),
+    }));
 
     // Create contact material
     if(lastMaterial){
@@ -68,8 +102,23 @@ exports.toJSON = function(test){
         world.addContactMaterial(cm);
     }
 
-    // Add constraints
-    world.addConstraint(new DistanceConstraint(world.bodies[0],world.bodies[1],r(),r()));
+    // Add distance constraint
+    world.addConstraint(new DistanceConstraint(bodyA,bodyB,r(),r()));
+
+    // p2p without motor
+    world.addConstraint(new PointToPointConstraint(bodyA,rv(),bodyB,rv(),r()));
+    // p2p with motor
+    var p2p = new PointToPointConstraint(bodyA,rv(),bodyB,rv(),r());
+    p2p.enableMotor = true;
+    p2p.setMotorSpeed(r());
+    world.addConstraint(p2p);
+
+    // Prismatic
+    world.addConstraint(new PrismaticConstraint(bodyA, bodyB, {
+        maxForce : r(),
+        localAxisA : rv(),
+        localAxisB : rv(),
+    }));
 
     // JSON roundtrip
     var world2 = new World();

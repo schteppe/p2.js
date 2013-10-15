@@ -36,6 +36,7 @@
         "grunt-contrib-uglify": "*",
         "grunt-browserify" : "*",
         "browserify":"*",
+        "underscore":"*",
         "poly-decomp" : "git://github.com/schteppe/poly-decomp.js"
     },
     "dependencies" : {
