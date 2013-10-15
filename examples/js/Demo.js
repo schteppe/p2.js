@@ -55,6 +55,7 @@ function Demo(world){
     this.pickPrecision = 5;
 
     this.drawPoints = [];
+    this.drawPointsChangeEvent = { type : "drawPointsChange" };
 
     this.stats_sum = 0;
     this.stats_N = 100;
@@ -150,6 +151,7 @@ Demo.prototype.handleMouseDown = function(physicsPosition){
             var copy = vec2.create();
             vec2.copy(copy,physicsPosition);
             this.drawPoints.push(copy);
+            this.emit(this.drawPointsChangeEvent);
             break;
     }
 };
@@ -167,6 +169,7 @@ Demo.prototype.handleMouseMove = function(physicsPosition){
                 var copy = [0,0];
                 vec2.copy(copy,physicsPosition);
                 this.drawPoints.push(copy);
+                this.emit(this.drawPointsChangeEvent);
             }
             break;
     }
@@ -204,6 +207,7 @@ Demo.prototype.handleMouseUp = function(physicsPosition){
                 }
             }
             this.drawPoints = [];
+            this.emit(this.drawPointsChangeEvent);
             break;
     }
 };

@@ -14,6 +14,8 @@
 function PixiDemo(world,options){
     options = options || {};
 
+    var that = this;
+
     var settings = {
         lineWidth : 2,
         scrollFactor : 0.1,
@@ -25,15 +27,32 @@ function PixiDemo(world,options){
         settings[key] = options[key];
 
     this.settings = settings;
-    this.pixelsPerLengthUnit =  settings.pixelsPerLengthUnit;
+    var ppu = this.pixelsPerLengthUnit =  settings.pixelsPerLengthUnit;
     this.lineWidth =            settings.lineWidth;
     this.scrollFactor =         settings.scrollFactor;
 
-    this.sprites = [],
+    this.sprites = [];
     this.springSprites = [];
 
-    Demo.call(this,world);
     this.pickPrecision = 20 / settings.pixelsPerLengthUnit;
+
+    Demo.call(this,world);
+
+    // Update "ghost draw line"
+    this.on("drawPointsChange",function(e){
+        var g = that.drawShapeGraphics;
+        var path = that.drawPoints;
+
+        g.clear();
+
+        var path2 = [];
+        for(var j=0; j<path.length; j++){
+            var v = path[j];
+            path2.push([v[0]*ppu, that.settings.height -v[1]*ppu]);
+        }
+
+        PixiDemo.drawPath(g,path2,0xff0000,false,that.lineWidth);
+    });
 };
 PixiDemo.prototype = Object.create(Demo.prototype);
 
@@ -63,6 +82,9 @@ PixiDemo.prototype.init = function(){
 
     this.container.addChild(stage);
 
+    this.drawShapeGraphics = new PIXI.Graphics();
+    stage.addChild(this.drawShapeGraphics);
+
     stage.position.x = renderer.width/2; // center at origin
     stage.position.y = -renderer.height/2;
 
@@ -77,6 +99,8 @@ PixiDemo.prototype.init = function(){
         lastMoveX = e.global.x;
         lastMoveY = e.global.y;
 
+        that.lastMousePos = e.global;
+
         var pos = e.getLocalPosition(stage);
         vec2.set(init_stagePosition, pos.x, pos.y);
         that.stagePositionToPhysics(init_physicsPosition, init_stagePosition);
@@ -90,6 +114,8 @@ PixiDemo.prototype.init = function(){
         lastMoveX = e.global.x;
         lastMoveY = e.global.y;
 
+        that.lastMousePos = e.global;
+
         var pos = e.getLocalPosition(stage);
         vec2.set(init_stagePosition, pos.x, pos.y);
         that.stagePositionToPhysics(init_physicsPosition, init_stagePosition);
@@ -99,6 +125,8 @@ PixiDemo.prototype.init = function(){
         down = false;
         lastMoveX = e.global.x;
         lastMoveY = e.global.y;
+
+        that.lastMousePos = e.global;
 
         var pos = e.getLocalPosition(stage);
         vec2.set(init_stagePosition, pos.x, pos.y);
@@ -279,7 +307,8 @@ PixiDemo.drawPath = function(g,path,color,fillColor,lineWidth){
     lineWidth = lineWidth || 1;
     color = typeof(color)=="undefined" ? 0x000000 : color;
     g.lineStyle(lineWidth, color, 1);
-    g.beginFill(fillColor);
+    if(typeof(fillColor)=="number")
+        g.beginFill(fillColor);
     var lastx = null,
         lasty = null;
     for(var i=0; i<path.length; i++){
@@ -305,9 +334,11 @@ PixiDemo.drawPath = function(g,path,color,fillColor,lineWidth){
             lasty = y;
         }
     }
-    g.endFill();
+    if(typeof(fillColor)=="number")
+        g.endFill();
 
-    if(path.length>2){
+    // Close the path
+    if(path.length>2 && typeof(fillColor)=="number"){
         g.moveTo(path[path.length-1][0],path[path.length-1][1]);
         g.lineTo(path[0][0],path[0][1]);
     }
@@ -417,8 +448,7 @@ PixiDemo.prototype.addRenderable = function(obj){
 
         var sprite = new PIXI.Graphics();
         if(obj.concavePath){
-            var path = [],
-                vrot = vec2.create();
+            var path = [];
             for(var j=0; j!==obj.concavePath.length; j++){
                 var v = obj.concavePath[j];
                 path.push([v[0]*ppu, -v[1]*ppu]);
