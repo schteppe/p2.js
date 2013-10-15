@@ -160,7 +160,7 @@ Demo.prototype.handleMouseDown = function(physicsPosition){
  * Should be called by subclasses whenever there's a mousedown event
  */
 Demo.prototype.handleMouseMove = function(physicsPosition){
-    var sampling = 0.3;
+    var sampling = 0.4;
     switch(this.state){
         case DemoStates.DRAWINGPOLYGON:
             // drawing a polygon - add new point
