@@ -34,9 +34,9 @@ function PixiDemo(world,options){
     this.sprites = [];
     this.springSprites = [];
 
-    this.pickPrecision = 20 / settings.pixelsPerLengthUnit;
-
     Demo.call(this,world);
+
+    this.pickPrecision = 20 / settings.pixelsPerLengthUnit;
 
     // Update "ghost draw line"
     this.on("drawPointsChange",function(e){
