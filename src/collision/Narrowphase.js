@@ -563,10 +563,38 @@ Narrowphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, just
         closestEdgeDistance = null,
         closestEdgeOrthoDist = tmp12,
         closestEdgeProjectedPoint = tmp13,
-        localPoint = tmp14;
+        r0 = tmp14, // vector from particle to vertex0
+        r1 = tmp15,
+        localPoint = tmp16;
 
     var numReported = 0,
         verts = convexShape.vertices;
+
+    // Check if the point is in the polygon
+    var lastCross = null;
+    for(var i=0; i!==verts.length+1; i++){
+        var v0 = verts[i%verts.length],
+            v1 = verts[(i+1)%verts.length];
+
+        // Transform vertices to world
+        // can we instead transform particleOffset to local of the convex???
+        vec2.rotate(worldVertex0, v0, convexAngle);
+        vec2.rotate(worldVertex1, v1, convexAngle);
+        add(worldVertex0, worldVertex0, convexOffset);
+        add(worldVertex1, worldVertex1, convexOffset);
+
+        sub(r0, worldVertex0, particleOffset);
+        sub(r1, worldVertex1, particleOffset);
+        var cross = vec2.crossLength(r0,r1);
+
+        if(lastCross===null) lastCross = cross;
+
+        // If we got a different sign of the distance vector, the point is out of the polygon
+        if(cross*lastCross <= 0){
+            return false;
+        }
+        lastCross = cross;
+    }
 
     // Check all edges first
     var lastCross = null;
@@ -591,14 +619,6 @@ Narrowphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, just
         sub(dist, particleOffset, worldVertex0);
         var d = dot(dist, worldTangent);
         sub(centerDist, worldVertex0, convexOffset);
-
-        var cross = vec2.crossLength(worldEdge,dist);
-
-        if(lastCross===null) lastCross = cross;
-
-        // If we got a different sign of the distance vector, the point is out of the polygon
-        if(cross*lastCross <= 0) return false;
-        lastCross = cross;
 
         sub(convexToparticle, particleOffset, convexOffset);
 
