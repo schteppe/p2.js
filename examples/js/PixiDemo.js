@@ -54,6 +54,16 @@ function PixiDemo(world,options){
 
         PixiDemo.drawPath(g,path2,0xff0000,false,that.lineWidth);
     });
+
+    // Update draw circle
+    this.on("drawCircleChange",function(e){
+        var g = that.drawShapeGraphics;
+        g.clear();
+        var center = that.drawCircleCenter;
+        var R = vec2.dist(center, that.drawCirclePoint);
+        var h = that.renderer.height;
+        PixiDemo.drawCircle(g,center[0]*ppu,h-ppu*center[1],0,ppu*R,false,that.lineWidth);
+    });
 };
 PixiDemo.prototype = Object.create(Demo.prototype);
 
@@ -173,7 +183,7 @@ PixiDemo.prototype.init = function(){
  */
 PixiDemo.drawCircle = function(g,x,y,angle,radius,color,lineWidth){
     lineWidth = lineWidth || 1;
-    color = typeof(color)!="undefined" ? color : 0xffffff;
+    color = typeof(color)=="number" ? color : 0xffffff;
     g.lineStyle(lineWidth, 0x000000, 1);
     g.beginFill(color, 1.0);
     g.drawCircle(x, y, radius);

@@ -23,11 +23,13 @@ var requestAnimationFrame =     window.requestAnimationFrame       ||
                                 };
 
 function DemoStates(){};
-DemoStates.DEFAULT =  1;
-DemoStates.PANNING =  2;
-DemoStates.DRAGGING = 3;
-DemoStates.DRAWPOLYGON = 4;
-DemoStates.DRAWINGPOLYGON  = 5;
+DemoStates.DEFAULT =            1;
+DemoStates.PANNING =            2;
+DemoStates.DRAGGING =           3;
+DemoStates.DRAWPOLYGON =        4;
+DemoStates.DRAWINGPOLYGON  =    5;
+DemoStates.DRAWCIRCLE =         6;
+DemoStates.DRAWINGCIRCLE  =     7;
 
 /**
  * Base class for rendering of a scene.
@@ -56,6 +58,9 @@ function Demo(world){
 
     this.drawPoints = [];
     this.drawPointsChangeEvent = { type : "drawPointsChange" };
+    this.drawCircleCenter = vec2.create();
+    this.drawCirclePoint = vec2.create();
+    this.drawCircleChangeEvent = { type : "drawCircleChange" };
 
     // If contacts should be drawn
     this.drawContacts = false;
@@ -92,6 +97,7 @@ function Demo(world){
 
     document.addEventListener('keypress',function(e){
         if(e.keyCode){
+            var s = that.state;
             switch(String.fromCharCode(e.keyCode)){
                 case "p": // pause
                     that.paused = !that.paused;
@@ -106,12 +112,11 @@ function Demo(world){
                 case "c": // toggle draw contacts
                     that.drawContacts = !that.drawContacts;
                     break;
-                case "d": // toggle draw mode
-                    if(that.state == DemoStates.DRAWPOLYGON){
-                        that.state = DemoStates.DEFAULT;
-                    } else {
-                        that.state = DemoStates.DRAWPOLYGON;
-                    }
+                case "d": // toggle draw polygon mode
+                    that.state = (s == DemoStates.DRAWPOLYGON ? DemoStates.DEFAULT : s = DemoStates.DRAWPOLYGON);
+                    break;
+                case "a": // toggle draw circle mode
+                    that.state = (s == DemoStates.DRAWCIRCLE ? DemoStates.DEFAULT : s = DemoStates.DRAWCIRCLE);
                     break;
             }
         }
@@ -157,6 +162,14 @@ Demo.prototype.handleMouseDown = function(physicsPosition){
             this.drawPoints.push(copy);
             this.emit(this.drawPointsChangeEvent);
             break;
+
+        case DemoStates.DRAWCIRCLE:
+            // Start drawing a circle
+            this.state = DemoStates.DRAWINGCIRCLE;
+            vec2.copy(this.drawCircleCenter,physicsPosition);
+            vec2.copy(this.drawCirclePoint, physicsPosition);
+            this.emit(this.drawCircleChangeEvent);
+            break;
     }
 };
 
@@ -175,6 +188,12 @@ Demo.prototype.handleMouseMove = function(physicsPosition){
                 this.drawPoints.push(copy);
                 this.emit(this.drawPointsChangeEvent);
             }
+            break;
+
+        case DemoStates.DRAWINGCIRCLE:
+            // drawing a circle - change the circle radius point to current
+            vec2.copy(this.drawCirclePoint, physicsPosition);
+            this.emit(this.drawCircleChangeEvent);
             break;
     }
 };
@@ -212,6 +231,20 @@ Demo.prototype.handleMouseUp = function(physicsPosition){
             }
             this.drawPoints = [];
             this.emit(this.drawPointsChangeEvent);
+            break;
+
+        case DemoStates.DRAWINGCIRCLE:
+            // End this drawing state
+            this.state = DemoStates.DRAWCIRCLE;
+            var R = vec2.dist(this.drawCircleCenter,this.drawCirclePoint);
+            if(R > 0){
+                // Create circle
+                var b = new Body({ mass : 1, position : this.drawCircleCenter });
+                b.addShape(new Circle(R));
+                this.world.addBody(b);
+            }
+            vec2.copy(this.drawCircleCenter,this.drawCirclePoint);
+            this.emit(this.drawCircleChangeEvent);
             break;
     }
 };
