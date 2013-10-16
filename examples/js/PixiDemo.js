@@ -83,8 +83,13 @@ PixiDemo.prototype.init = function(){
 
     this.container.addChild(stage);
 
+    // Graphics object for drawing shapes
     this.drawShapeGraphics = new PIXI.Graphics();
     stage.addChild(this.drawShapeGraphics);
+
+    // Graphics object for contacts
+    this.contactGraphics = new PIXI.Graphics();
+    stage.addChild(this.contactGraphics);
 
     stage.position.x = renderer.width/2; // center at origin
     stage.position.y = -renderer.height/2;
@@ -419,6 +424,35 @@ PixiDemo.prototype.render = function(){
 
         // And scale
         sprite.scale.x = vec2.length(distVec) / (s.restLength * pixelsPerLengthUnit);
+    }
+
+    // Clear contacts
+    this.contactGraphics.clear();
+    if(this.drawContacts){
+        this.stage.removeChild(this.contactGraphics);
+        this.stage.addChild(this.contactGraphics);
+
+        var g = this.contactGraphics,
+            ppu = pixelsPerLengthUnit;
+        g.lineStyle(this.lineWidth,0x000000,1);
+        for(var i=0; i!==this.world.narrowphase.contactEquations.length; i++){
+            var eq = this.world.narrowphase.contactEquations[i],
+                bi = eq.bi,
+                bj = eq.bj,
+                ri = eq.ri,
+                rj = eq.rj,
+                xi = (     bi.position[0] * ppu ),
+                yi = ( h - bi.position[1] * ppu ),
+                xj = (     bj.position[0] * ppu ),
+                yj = ( h - bj.position[1] * ppu );
+
+            g.moveTo(xi,yi);
+            g.lineTo(xi+ri[0]*ppu,yi-ri[1]*ppu);
+
+            g.moveTo(xj,yj);
+            g.lineTo(xj+rj[0]*ppu,yj-rj[1]*ppu);
+
+        }
     }
 
     this.renderer.render(this.container);

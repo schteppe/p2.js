@@ -57,6 +57,9 @@ function Demo(world){
     this.drawPoints = [];
     this.drawPointsChangeEvent = { type : "drawPointsChange" };
 
+    // If contacts should be drawn
+    this.drawContacts = false;
+
     this.stats_sum = 0;
     this.stats_N = 100;
     this.stats_Nsummed = 0;
@@ -100,12 +103,13 @@ function Demo(world){
                     that.removeAllVisuals();
                     that.world.fromJSON(that.initialState);
                     break;
+                case "c": // toggle draw contacts
+                    that.drawContacts = !that.drawContacts;
+                    break;
                 case "d": // toggle draw mode
                     if(that.state == DemoStates.DRAWPOLYGON){
-                        console.log("default mode")
                         that.state = DemoStates.DEFAULT;
                     } else {
-                        console.log("draw poly mode")
                         that.state = DemoStates.DRAWPOLYGON;
                     }
                     break;
