@@ -28,6 +28,8 @@ var tmp1 = vec2.fromValues(0,0)
 ,   tmp14 = vec2.fromValues(0,0)
 ,   tmp15 = vec2.fromValues(0,0)
 ,   tmp16 = vec2.fromValues(0,0)
+,   tmp17 = vec2.fromValues(0,0)
+,   tmp18 = vec2.fromValues(0,0)
 
 /**
  * Narrowphase. Creates contacts and friction given shapes and transforms.
@@ -585,11 +587,15 @@ Narrowphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
 };
 
 // Check if a point is in a polygon
+var pic_worldVertex0 = vec2.create(),
+    pic_worldVertex1 = vec2.create(),
+    pic_r0 = vec2.create(),
+    pic_r1 = vec2.create();
 function pointInConvex(worldPoint,convexShape,convexOffset,convexAngle){
-    var worldVertex0 = vec2.create(),
-        worldVertex1 = vec2.create(),
-        r0 = vec2.create(),
-        r1 = vec2.create(),
+    var worldVertex0 = pic_worldVertex0,
+        worldVertex1 = pic_worldVertex1,
+        r0 = pic_r0,
+        r1 = pic_r1,
         point = worldPoint,
         verts = convexShape.vertices,
         lastCross = null;
@@ -657,38 +663,20 @@ Narrowphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, just
         closestEdgeProjectedPoint = tmp13,
         r0 = tmp14, // vector from particle to vertex0
         r1 = tmp15,
-        localPoint = tmp16;
+        localPoint = tmp16,
+        candidateDist = tmp17,
+        minEdgeNormal = tmp18,
+        minCandidateDistance = Number.MAX_VALUE;
 
     var numReported = 0,
+        found = false,
         verts = convexShape.vertices;
 
-    // Check if the point is in the polygon
-    var lastCross = null;
-    for(var i=0; i!==verts.length+1; i++){
-        var v0 = verts[i%verts.length],
-            v1 = verts[(i+1)%verts.length];
+    // Check if the particle is in the polygon at all
+    if(!pointInConvex(particleOffset,convexShape,convexOffset,convexAngle))
+        return false;
 
-        // Transform vertices to world
-        // can we instead transform particleOffset to local of the convex???
-        vec2.rotate(worldVertex0, v0, convexAngle);
-        vec2.rotate(worldVertex1, v1, convexAngle);
-        add(worldVertex0, worldVertex0, convexOffset);
-        add(worldVertex1, worldVertex1, convexOffset);
-
-        sub(r0, worldVertex0, particleOffset);
-        sub(r1, worldVertex1, particleOffset);
-        var cross = vec2.crossLength(r0,r1);
-
-        if(lastCross===null) lastCross = cross;
-
-        // If we got a different sign of the distance vector, the point is out of the polygon
-        if(cross*lastCross <= 0){
-            return false;
-        }
-        lastCross = cross;
-    }
-
-    // Check all edges first
+    // Check edges first
     var lastCross = null;
     for(var i=0; i!==verts.length+1; i++){
         var v0 = verts[i%verts.length],
@@ -714,6 +702,8 @@ Narrowphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, just
 
         sub(convexToparticle, particleOffset, convexOffset);
 
+
+        /*
         if(d < 0 && dot(centerDist,convexToparticle) >= 0){
 
             // Now project the particle onto the edge
@@ -737,12 +727,24 @@ Narrowphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, just
                 }
             }
         }
+        */
+
+        vec2.sub(candidateDist,worldVertex0,particleOffset);
+        var candidateDistance = Math.abs(vec2.dot(candidateDist,worldTangent));
+
+        if(candidateDistance < minCandidateDistance){
+            minCandidateDistance = candidateDistance;
+            vec2.scale(closestEdgeProjectedPoint,worldTangent,candidateDistance);
+            vec2.add(closestEdgeProjectedPoint,closestEdgeProjectedPoint,particleOffset);
+            vec2.copy(minEdgeNormal,worldTangent);
+            found = true;
+        }
     }
 
-    if(closestEdge != -1){
+    if(found){
         var c = this.createContactEquation(particleBody,convexBody);
 
-        vec2.copy(c.ni, closestEdgeOrthoDist);
+        vec2.scale(c.ni, minEdgeNormal, -1);
         vec2.normalize(c.ni, c.ni);
 
         // Particle has no extent to the contact point
