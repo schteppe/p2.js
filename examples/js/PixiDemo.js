@@ -33,6 +33,7 @@ function PixiDemo(world,options){
 
     this.sprites = [];
     this.springSprites = [];
+    this.debugPolygons = false;
 
     Demo.call(this,world);
 
@@ -282,24 +283,43 @@ PixiDemo.drawRectangle = function(g,x,y,angle,w,h,color,fillColor,lineWidth){
     g.drawRect(x-w/2,y-h/2,w,h);
 };
 
-PixiDemo.drawConvex = function(g,verts,triangles,color,fillColor,lineWidth){
+PixiDemo.drawConvex = function(g,verts,triangles,color,fillColor,lineWidth,debug,offset){
     lineWidth = lineWidth || 1;
     color = typeof(color)=="undefined" ? 0x000000 : color;
-    g.lineStyle(lineWidth, color, 1);
-    g.beginFill(fillColor);
-    for(var i=0; i<verts.length; i++){
-        var v = verts[i],
-            x = v[0],
-            y = v[1];
-        if(i==0)
-            g.moveTo(x,y);
-        else
-            g.lineTo(x,y);
-    }
-    g.endFill();
-    if(verts.length>2){
-        g.moveTo(verts[verts.length-1][0],verts[verts.length-1][1]);
-        g.lineTo(verts[0][0],verts[0][1]);
+    if(!debug){
+        g.lineStyle(lineWidth, color, 1);
+        g.beginFill(fillColor);
+        for(var i=0; i!==verts.length; i++){
+            var v = verts[i],
+                x = v[0],
+                y = v[1];
+            if(i==0)
+                g.moveTo(x,y);
+            else
+                g.lineTo(x,y);
+        }
+        g.endFill();
+        if(verts.length>2){
+            g.moveTo(verts[verts.length-1][0],verts[verts.length-1][1]);
+            g.lineTo(verts[0][0],verts[0][1]);
+        }
+    } else {
+        var colors = [0xff0000,0x00ff00,0x0000ff];
+        for(var i=0; i!==verts.length+1; i++){
+            var v0 = verts[i%verts.length],
+                v1 = verts[(i+1)%verts.length],
+                x0 = v0[0],
+                y0 = v0[1],
+                x1 = v1[0],
+                y1 = v1[1];
+            g.lineStyle(lineWidth, colors[i%colors.length], 1);
+            g.moveTo(x0,y0);
+            g.lineTo(x1,y1);
+            g.drawCircle(x0,y0,lineWidth*2);
+        }
+
+        g.lineStyle(lineWidth, 0x000000, 1);
+        g.drawCircle(offset[0],offset[1],lineWidth*2);
     }
 };
 
@@ -447,7 +467,7 @@ PixiDemo.prototype.addRenderable = function(obj){
     if(obj instanceof Body && obj.shapes.length){
 
         var sprite = new PIXI.Graphics();
-        if(obj.concavePath){
+        if(obj.concavePath && !this.debugPolygons){
             var path = [];
             for(var j=0; j!==obj.concavePath.length; j++){
                 var v = obj.concavePath[j];
@@ -490,7 +510,8 @@ PixiDemo.prototype.addRenderable = function(obj){
                         vec2.rotate(vrot, v, angle);
                         verts.push([(vrot[0]+offset[0])*ppu, -(vrot[1]+offset[1])*ppu]);
                     }
-                    PixiDemo.drawConvex(sprite, verts, []/*child.triangles*/, lineColor, color, lw);
+
+                    PixiDemo.drawConvex(sprite, verts, child.triangles, lineColor, color, lw, this.debugPolygons,[offset[0]*ppu,-offset[1]*ppu]);
                 }
             }
         }
