@@ -46,7 +46,7 @@ module.exports = {
     NaiveBroadphase :               require('./collision/NaiveBroadphase'),
     Particle :                      require('./shapes/Particle'),
     Plane :                         require('./shapes/Plane'),
-    PointToPointConstraint :        require('./constraints/PointToPointConstraint'),
+    RevoluteConstraint :            require('./constraints/RevoluteConstraint'),
     PrismaticConstraint :           require('./constraints/PrismaticConstraint'),
     Rectangle :                     require('./shapes/Rectangle'),
     RotationalVelocityEquation :    require('./constraints/RotationalVelocityEquation'),
@@ -61,7 +61,7 @@ module.exports = {
     version :                       require('../package.json').version,
 };
 
-},{"../package.json":2,"./objects/Body":3,"./collision/Broadphase":4,"./shapes/Capsule":5,"./shapes/Circle":6,"./constraints/Constraint":7,"./constraints/ContactEquation":8,"./material/ContactMaterial":9,"./shapes/Convex":10,"./constraints/DistanceConstraint":11,"./constraints/Equation":12,"./events/EventEmitter":13,"./constraints/FrictionEquation":14,"./collision/GridBroadphase":15,"./solver/GSSolver":16,"./solver/IslandSolver":17,"./shapes/Line":18,"./material/Material":19,"./collision/NaiveBroadphase":20,"./shapes/Particle":21,"./shapes/Plane":22,"./constraints/PointToPointConstraint":23,"./constraints/PrismaticConstraint":24,"./shapes/Rectangle":25,"./constraints/RotationalVelocityEquation":26,"./collision/SAP1DBroadphase":27,"./shapes/Shape":28,"./solver/Solver":29,"./objects/Spring":30,"./utils/Utils":31,"./world/World":32,"./collision/QuadTree":33,"./math/vec2":34}],2:[function(require,module,exports){
+},{"../package.json":2,"./objects/Body":3,"./collision/Broadphase":4,"./shapes/Capsule":5,"./shapes/Circle":6,"./constraints/Constraint":7,"./constraints/ContactEquation":8,"./material/ContactMaterial":9,"./shapes/Convex":10,"./constraints/DistanceConstraint":11,"./constraints/Equation":12,"./events/EventEmitter":13,"./constraints/FrictionEquation":14,"./collision/GridBroadphase":15,"./solver/GSSolver":16,"./solver/IslandSolver":17,"./shapes/Line":18,"./material/Material":19,"./collision/NaiveBroadphase":20,"./shapes/Particle":21,"./shapes/Plane":22,"./constraints/RevoluteConstraint":23,"./constraints/PrismaticConstraint":24,"./shapes/Rectangle":25,"./constraints/RotationalVelocityEquation":26,"./collision/SAP1DBroadphase":27,"./shapes/Shape":28,"./solver/Solver":29,"./objects/Spring":30,"./utils/Utils":31,"./world/World":32,"./collision/QuadTree":33,"./math/vec2":34}],2:[function(require,module,exports){
 module.exports={
     "name": "p2",
     "version": "0.2.0",
@@ -1704,11 +1704,11 @@ var Constraint = require('./Constraint')
 ,   RotationalVelocityEquation = require('./RotationalVelocityEquation')
 ,   vec2 = require('../math/vec2')
 
-module.exports = PointToPointConstraint;
+module.exports = RevoluteConstraint;
 
 /**
- * Connects two bodies at given offset points
- * @class PointToPointConstraint
+ * Connects two bodies at given offset points, letting them rotate relative to each other around this point.
+ * @class RevoluteConstraint
  * @constructor
  * @author schteppe
  * @param {Body}            bodyA
@@ -1719,7 +1719,7 @@ module.exports = PointToPointConstraint;
  * @extends {Constraint}
  * @todo Ability to specify world points
  */
-function PointToPointConstraint(bodyA, pivotA, bodyB, pivotB, maxForce){
+function RevoluteConstraint(bodyA, pivotA, bodyB, pivotB, maxForce){
     Constraint.call(this,bodyA,bodyB);
 
     maxForce = typeof(maxForce)!="undefined" ? maxForce : 1e7;
@@ -1741,9 +1741,9 @@ function PointToPointConstraint(bodyA, pivotA, bodyB, pivotB, maxForce){
 
     this.motorEquation = null;
 }
-PointToPointConstraint.prototype = new Constraint();
+RevoluteConstraint.prototype = new Constraint();
 
-PointToPointConstraint.prototype.update = function(){
+RevoluteConstraint.prototype.update = function(){
     var bodyA =  this.bodyA,
         bodyB =  this.bodyB,
         pivotA = this.pivotA,
@@ -1766,7 +1766,7 @@ PointToPointConstraint.prototype.update = function(){
  * Enable the rotational motor
  * @method enableMotor
  */
-PointToPointConstraint.prototype.enableMotor = function(){
+RevoluteConstraint.prototype.enableMotor = function(){
     if(this.motorEquation) return;
     this.motorEquation = new RotationalVelocityEquation(this.bodyA,this.bodyB);
     this.equations.push(this.motorEquation);
@@ -1776,7 +1776,7 @@ PointToPointConstraint.prototype.enableMotor = function(){
  * Disable the rotational motor
  * @method disableMotor
  */
-PointToPointConstraint.prototype.disableMotor = function(){
+RevoluteConstraint.prototype.disableMotor = function(){
     if(!this.motorEquation) return;
     var i = this.equations.indexOf(this.motorEquation);
     this.motorEquation = null;
@@ -1788,7 +1788,7 @@ PointToPointConstraint.prototype.disableMotor = function(){
  * @method motorIsEnabled
  * @return {Boolean}
  */
-PointToPointConstraint.prototype.motorIsEnabled = function(){
+RevoluteConstraint.prototype.motorIsEnabled = function(){
     return !!this.motorEquation;
 };
 
@@ -1797,7 +1797,7 @@ PointToPointConstraint.prototype.motorIsEnabled = function(){
  * @method setMotorSpeed
  * @param  {Number} speed
  */
-PointToPointConstraint.prototype.setMotorSpeed = function(speed){
+RevoluteConstraint.prototype.setMotorSpeed = function(speed){
     if(!this.motorEquation) return;
     var i = this.equations.indexOf(this.motorEquation);
     this.equations[i].relativeVelocity = speed;
@@ -1808,7 +1808,7 @@ PointToPointConstraint.prototype.setMotorSpeed = function(speed){
  * @method getMotorSpeed
  * @return  {Number} The current speed, or false if the motor is not enabled.
  */
-PointToPointConstraint.prototype.getMotorSpeed = function(){
+RevoluteConstraint.prototype.getMotorSpeed = function(){
     if(!this.motorEquation) return false;
     return this.motorEquation.relativeVelocity;
 };
@@ -2137,7 +2137,7 @@ SAP1DBroadphase.prototype.getCollisionPairs = function(world){
     return result;
 };
 
-},{"../shapes/Circle":6,"../shapes/Plane":22,"../shapes/Shape":28,"../shapes/Particle":21,"../collision/Broadphase":4,"../math/vec2":34}],29:[function(require,module,exports){
+},{"../shapes/Circle":6,"../shapes/Plane":22,"../shapes/Particle":21,"../shapes/Shape":28,"../collision/Broadphase":4,"../math/vec2":34}],29:[function(require,module,exports){
 var Utils = require('../utils/Utils');
 
 module.exports = Solver;
@@ -2404,7 +2404,7 @@ var  GSSolver = require('../solver/GSSolver')
 ,    Material = require('../material/Material')
 ,    ContactMaterial = require('../material/ContactMaterial')
 ,    DistanceConstraint = require('../constraints/DistanceConstraint')
-,    PointToPointConstraint = require('../constraints/PointToPointConstraint')
+,    RevoluteConstraint = require('../constraints/RevoluteConstraint')
 ,    PrismaticConstraint = require('../constraints/PrismaticConstraint')
 ,    pkg = require('../../package.json')
 ,    Broadphase = require('../collision/Broadphase')
@@ -2938,8 +2938,8 @@ World.prototype.toJSON = function(){
             jc.type = "DistanceConstraint";
             jc.distance = c.distance;
             jc.maxForce = c.getMaxForce();
-        } else if(c instanceof PointToPointConstraint){
-            jc.type = "PointToPointConstraint";
+        } else if(c instanceof RevoluteConstraint){
+            jc.type = "RevoluteConstraint";
             jc.pivotA = v2a(c.pivotA);
             jc.pivotB = v2a(c.pivotB);
             jc.maxForce = c.maxForce;
@@ -3170,8 +3170,8 @@ World.prototype.fromJSON = function(json){
             case "DistanceConstraint":
                 c = new DistanceConstraint(this.bodies[jc.bodyA], this.bodies[jc.bodyB], jc.distance, jc.maxForce);
                 break;
-            case "PointToPointConstraint":
-                c = new PointToPointConstraint(this.bodies[jc.bodyA], jc.pivotA, this.bodies[jc.bodyB], jc.pivotB, jc.maxForce);
+            case "RevoluteConstraint":
+                c = new RevoluteConstraint(this.bodies[jc.bodyA], jc.pivotA, this.bodies[jc.bodyB], jc.pivotB, jc.maxForce);
                 if(jc.motorSpeed){
                     c.enableMotor();
                     c.setMotorSpeed(jc.motorSpeed);
@@ -3286,7 +3286,7 @@ World.prototype.hitTest = function(worldPoint,bodies,precision){
     return result;
 };
 
-},{"../../package.json":2,"../solver/GSSolver":16,"../collision/NaiveBroadphase":20,"../math/vec2":34,"../shapes/Circle":6,"../shapes/Rectangle":25,"../shapes/Convex":10,"../shapes/Line":18,"../shapes/Plane":22,"../shapes/Capsule":5,"../shapes/Particle":21,"../events/EventEmitter":13,"../objects/Body":3,"../objects/Spring":30,"../material/Material":19,"../material/ContactMaterial":9,"../constraints/DistanceConstraint":11,"../constraints/PointToPointConstraint":23,"../constraints/PrismaticConstraint":24,"../collision/Broadphase":4,"../collision/Narrowphase":37}],33:[function(require,module,exports){
+},{"../../package.json":2,"../solver/GSSolver":16,"../collision/NaiveBroadphase":20,"../math/vec2":34,"../shapes/Circle":6,"../shapes/Rectangle":25,"../shapes/Convex":10,"../shapes/Line":18,"../shapes/Plane":22,"../shapes/Capsule":5,"../shapes/Particle":21,"../events/EventEmitter":13,"../objects/Body":3,"../objects/Spring":30,"../material/Material":19,"../material/ContactMaterial":9,"../constraints/DistanceConstraint":11,"../constraints/RevoluteConstraint":23,"../constraints/PrismaticConstraint":24,"../collision/Broadphase":4,"../collision/Narrowphase":37}],33:[function(require,module,exports){
 var Plane = require("../shapes/Plane");
 var Broadphase = require("../collision/Broadphase");
 
@@ -4267,6 +4267,89 @@ module.exports = vec2;
 
 module.exports = PolyK;
 
+},{}],36:[function(require,module,exports){
+module.exports = Island;
+
+/**
+ * An island of bodies connected with equations.
+ * @class Island
+ * @constructor
+ */
+function Island(){
+
+    /**
+     * Current equations in this island.
+     * @property equations
+     * @type {Array}
+     */
+    this.equations = [];
+
+    /**
+     * Current bodies in this island.
+     * @property bodies
+     * @type {Array}
+     */
+    this.bodies = [];
+}
+
+/**
+ * Clean this island from bodies and equations.
+ * @method reset
+ */
+Island.prototype.reset = function(){
+    this.equations.length = this.bodies.length = 0;
+}
+
+
+/**
+ * Get all unique bodies in this island.
+ * @method getBodies
+ * @return {Array} An array of Body
+ */
+Island.prototype.getBodies = function(){
+    var bodies = [],
+        bodyIds = [],
+        eqs = this.equations;
+    for(var i=0; i!==eqs.length; i++){
+        var eq = eqs[i];
+        if(bodyIds.indexOf(eq.bi.id)===-1){
+            bodies.push(eq.bi);
+            bodyIds.push(eq.bi.id);
+        }
+        if(bodyIds.indexOf(eq.bj.id)===-1){
+            bodies.push(eq.bj);
+            bodyIds.push(eq.bj.id);
+        }
+    }
+    return bodies;
+};
+
+/**
+ * Solves all constraints in the group of islands.
+ * @method solve
+ * @param  {Number} dt
+ * @param  {Solver} solver
+ */
+Island.prototype.solve = function(dt,solver){
+    var bodies = [];
+
+    solver.removeAllEquations();
+
+    // Add equations to solver
+    var numEquations = this.equations.length;
+    for(var j=0; j!==numEquations; j++){
+        solver.addEquation(this.equations[j]);
+    }
+    var islandBodies = this.getBodies();
+    var numBodies = islandBodies.length;
+    for(var j=0; j!==numBodies; j++){
+        bodies.push(islandBodies[j]);
+    }
+
+    // Solve
+    solver.solve(dt,{bodies:bodies});
+};
+
 },{}],38:[function(require,module,exports){
 /* Copyright (c) 2012, Brandon Jones, Colin MacKenzie IV. All rights reserved.
 
@@ -4700,89 +4783,6 @@ vec2.str = function (a) {
 if(typeof(exports) !== 'undefined') {
     exports.vec2 = vec2;
 }
-
-},{}],36:[function(require,module,exports){
-module.exports = Island;
-
-/**
- * An island of bodies connected with equations.
- * @class Island
- * @constructor
- */
-function Island(){
-
-    /**
-     * Current equations in this island.
-     * @property equations
-     * @type {Array}
-     */
-    this.equations = [];
-
-    /**
-     * Current bodies in this island.
-     * @property bodies
-     * @type {Array}
-     */
-    this.bodies = [];
-}
-
-/**
- * Clean this island from bodies and equations.
- * @method reset
- */
-Island.prototype.reset = function(){
-    this.equations.length = this.bodies.length = 0;
-}
-
-
-/**
- * Get all unique bodies in this island.
- * @method getBodies
- * @return {Array} An array of Body
- */
-Island.prototype.getBodies = function(){
-    var bodies = [],
-        bodyIds = [],
-        eqs = this.equations;
-    for(var i=0; i!==eqs.length; i++){
-        var eq = eqs[i];
-        if(bodyIds.indexOf(eq.bi.id)===-1){
-            bodies.push(eq.bi);
-            bodyIds.push(eq.bi.id);
-        }
-        if(bodyIds.indexOf(eq.bj.id)===-1){
-            bodies.push(eq.bj);
-            bodyIds.push(eq.bj.id);
-        }
-    }
-    return bodies;
-};
-
-/**
- * Solves all constraints in the group of islands.
- * @method solve
- * @param  {Number} dt
- * @param  {Solver} solver
- */
-Island.prototype.solve = function(dt,solver){
-    var bodies = [];
-
-    solver.removeAllEquations();
-
-    // Add equations to solver
-    var numEquations = this.equations.length;
-    for(var j=0; j!==numEquations; j++){
-        solver.addEquation(this.equations[j]);
-    }
-    var islandBodies = this.getBodies();
-    var numBodies = islandBodies.length;
-    for(var j=0; j!==numBodies; j++){
-        bodies.push(islandBodies[j]);
-    }
-
-    // Solve
-    solver.solve(dt,{bodies:bodies});
-};
 
 },{}],35:[function(require,module,exports){
 /**
@@ -7757,7 +7757,7 @@ Polygon.prototype.removeCollinearPoints = function(precision){
     return num;
 };
 
-},{"./Line":44,"./Scalar":45,"./Point":43}],45:[function(require,module,exports){
+},{"./Line":44,"./Point":43,"./Scalar":45}],45:[function(require,module,exports){
 module.exports = Scalar;
 
 /**
