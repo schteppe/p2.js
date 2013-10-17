@@ -90,6 +90,9 @@ PixiDemo.prototype.init = function(){
     var stage =     this.stage =        new PIXI.DisplayObjectContainer();
     var container = this.container =    new PIXI.Stage(0xFFFFFF,true);
     document.body.appendChild(this.renderer.view);
+    $(this.renderer.view).on("contextmenu",function(e){
+        return false;
+    });
 
     this.container.addChild(stage);
 
