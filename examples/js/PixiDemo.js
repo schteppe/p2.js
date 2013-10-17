@@ -232,20 +232,33 @@ PixiDemo.drawSpring = function(g,restLength,color,lineWidth){
  * @param  {Number} diagSize
  * @todo Should consider an angle
  */
-PixiDemo.drawPlane = function(g, x0, x1, color, lineWidth, diagMargin, diagSize){
+PixiDemo.drawPlane = function(g, x0, x1, color, lineColor, lineWidth, diagMargin, diagSize){
     lineWidth = lineWidth || 1;
     color = typeof(color)=="undefined" ? 0xffffff : color;
-    g.lineStyle(lineWidth, color, 1);
+    g.lineStyle(lineWidth, lineColor, 1);
+
+    // Draw a fill color
+    g.lineStyle(0,0,0);
+    g.beginFill(color);
+    var max = 1e6;
+    g.moveTo(-max,0);
+    g.lineTo(max,0);
+    g.lineTo(max,max);
+    g.lineTo(-max,max);
+    g.endFill();
 
     // Draw the actual plane
-    g.moveTo(x0,0);
-    g.lineTo(x1,0);
+    g.lineStyle(lineWidth,lineColor);
+    g.moveTo(-max,0);
+    g.lineTo(max,0);
 
     // Draw diagonal lines
+    /*
     for(var i=0; x0 + i*diagMargin < x1; i++){
         g.moveTo(x0 + i*diagMargin,            0);
         g.lineTo(x0 + i*diagMargin +diagSize,  +diagSize);
     }
+    */
 };
 
 PixiDemo.drawLine = function(g, len, color, lineWidth){
@@ -484,9 +497,9 @@ function randomPastelHex(){
     var blue =  Math.floor(Math.random()*256);
 
     // mix the color
-    red =   Math.floor((red + mix[0]) / 2);
-    green = Math.floor((green + mix[1]) / 2);
-    blue =  Math.floor((blue + mix[2]) / 2);
+    red =   Math.floor((red +   3*mix[0]) / 4);
+    green = Math.floor((green + 3*mix[1]) / 4);
+    blue =  Math.floor((blue +  3*mix[2]) / 4);
 
     return rgbToHex(red,green,blue);
 }
@@ -496,13 +509,6 @@ PixiDemo.prototype.addRenderable = function(obj){
         lw = this.lineWidth;
 
     // Random color
-    var hex = "", letters="0123456789abcdef";
-    for(var i=0; i<6; i++){
-        if(i%2 == 0)
-            hex += "a";
-        else
-            hex += letters[Math.floor(Math.random()*16)];
-    }
     var color = parseInt(randomPastelHex(),16),
         lineColor = 0x000000;
 
@@ -517,7 +523,7 @@ PixiDemo.prototype.addRenderable = function(obj){
                 var v = obj.concavePath[j];
                 path.push([v[0]*ppu, -v[1]*ppu]);
             }
-            PixiDemo.drawPath(sprite, path, 0x000000, color, lw);
+            PixiDemo.drawPath(sprite, path, lineColor, color, lw);
         } else {
             for(var i=0; i<obj.shapes.length; i++){
                 var child = obj.shapes[i],
@@ -534,7 +540,7 @@ PixiDemo.prototype.addRenderable = function(obj){
 
                 } else if(child instanceof Plane){
                     // TODO use shape angle
-                    PixiDemo.drawPlane(sprite, -10*ppu, 10*ppu, lineColor, lw, lw*10, lw*10);
+                    PixiDemo.drawPlane(sprite, -10*ppu, 10*ppu, color, lineColor, lw, lw*10, lw*10);
 
                 } else if(child instanceof Line){
                     PixiDemo.drawLine(sprite, child.length*ppu, lineColor, lw);
