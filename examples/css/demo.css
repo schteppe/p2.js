@@ -18,14 +18,11 @@ body {
 }
 
 #menu {
-    position:absolute;
-    top:0;
-    left:0;
     width:300px;
     background-color: #eee;
-    height:100%;
     padding:10px;
     margin-bottom: 5px;
+    opacity: 0.9;
 }
 
 #menu-container {
@@ -33,13 +30,13 @@ body {
     top:0;
     left:0;
     height:100%;
+    padding:10px;
 }
-
 
 #logo {
     position : absolute;
-    right: 10px;
-    top : 10px;
+    right: 15px;
+    top : 0px;
     text-align: center;
 }
 #logo a {
@@ -65,6 +62,7 @@ label {
     display:block;
 }
 
+/*
 fieldset {
     border: 1px solid #ddd;
     padding:10px;
@@ -74,3 +72,4 @@ fieldset {
 legend {
     font-weight: bold;
 }
+*/

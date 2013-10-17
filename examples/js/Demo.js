@@ -22,6 +22,15 @@ var requestAnimationFrame =     window.requestAnimationFrame       ||
                                     window.setTimeout(callback, 1000 / 60);
                                 };
 
+(function($){
+    $.fn.disableSelection = function() {
+        return this
+                 .attr('unselectable', 'on')
+                 .css('user-select', 'none')
+                 .on('selectstart', false);
+    };
+})(jQuery);
+
 function DemoStates(){};
 DemoStates.DEFAULT =            1;
 DemoStates.PANNING =            2;
@@ -337,50 +346,53 @@ Demo.prototype.createMenu = function(){
     var that = this;
 
     // Insert logo
-    $("body").append("<div id='logo'><h1><a href='http://github.com/schteppe/p2.js'>p2.js</a></h1><p>Physics Engine</p></div>");
+    $("body").append($("<div id='logo'><h1><a href='http://github.com/schteppe/p2.js'>p2.js</a></h1><p>Physics Engine</p></div>").disableSelection());
 
     // Insert menu
     var $menucontainer = $([
         "<div id='menu-container'>",
-            "<button id='menu-container-open'>Open menu</button>",
-            "<div id='menu'>",
-                "<button id='menu-hide'>Hide menu</button>",
+            "<button class='btn' id='menu-container-open'>Open menu</button>",
+            "<div id='menu' class='well'>",
+                "<button class='btn' id='menu-hide'>Hide menu</button>",
                 "<fieldset id='menu-controls-container'>",
                     "<legend>Simulation control</legend>",
-                    "<button id='menu-playpause'>Pause [p]</button>",
-                    "<button id='menu-restart'>Restart [r]</button>",
+                    "<button class='btn' id='menu-playpause'>Pause</button>",
+                    "<button class='btn' id='menu-restart'>Restart</button>",
                 "</fieldset>",
 
                 "<fieldset id='menu-solver-container'>",
                     "<legend>Solver</legend>",
                     "<label>Relaxation</label>",
-                    "<input id='menu-solver-relaxation' type='number' step='any' min='0' value='4'>",
+                    "<input class='input-block-level' id='menu-solver-relaxation' type='number' step='any' min='0' value='4'>",
                     "<label>Stiffness</label>",
-                    "<input id='menu-solver-stiffness' type='number' step='any' min='0' value='"+this.world.solver.stiffness+"'>",
+                    "<input class='input-block-level' id='menu-solver-stiffness' type='number' step='any' min='0' value='"+this.world.solver.stiffness+"'>",
                 "</fieldset>",
 
             "</div>",
         "</div>"
-    ].join("\n"));
+    ].join("\n")).disableSelection();
     $("body").append($menucontainer);
 
-    var $menu = $("#menu").hide();
+    var $menu = $("#menu").hide(),
+        $openButton = $("#menu-container-open");
 
     // Hide menu
     $("#menu-hide").click(function(e){
         $menu.hide();
+        $openButton.show();
     });
 
     // Open menu
     $("#menu-container-open").click(function(e){
         $menu.show();
+        $openButton.hide();
     });
 
     // Play/pause
     $("#menu-playpause").click(function(e){
         that.paused = !that.paused;
-        if(that.paused) $(this).text("Play [p]");
-        else            $(this).text("Pause [p]");
+        if(that.paused) $(this).text("Play");
+        else            $(this).text("Pause");
     });
 
     // Restart
