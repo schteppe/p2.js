@@ -66,8 +66,8 @@
         bumpShape   .collisionMask =    planeShape.collisionMask;
 
         // Constrain wheels to chassis
-        var c1 = new p2.PointToPointConstraint(chassisBody,[-0.5,-0.3],wheelBody1,[0,0]);
-        var c2 = new p2.PointToPointConstraint(chassisBody,[ 0.5,-0.3],wheelBody2,[0,0]);
+        var c1 = new p2.RevoluteConstraint(chassisBody,[-0.5,-0.3],wheelBody1,[0,0]);
+        var c2 = new p2.RevoluteConstraint(chassisBody,[ 0.5,-0.3],wheelBody2,[0,0]);
         world.addConstraint(c1);
         world.addConstraint(c2);
 

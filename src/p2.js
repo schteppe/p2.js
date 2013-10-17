@@ -21,7 +21,7 @@ module.exports = {
     NaiveBroadphase :               require('./collision/NaiveBroadphase'),
     Particle :                      require('./shapes/Particle'),
     Plane :                         require('./shapes/Plane'),
-    PointToPointConstraint :        require('./constraints/PointToPointConstraint'),
+    RevoluteConstraint :            require('./constraints/RevoluteConstraint'),
     PrismaticConstraint :           require('./constraints/PrismaticConstraint'),
     Rectangle :                     require('./shapes/Rectangle'),
     RotationalVelocityEquation :    require('./constraints/RotationalVelocityEquation'),

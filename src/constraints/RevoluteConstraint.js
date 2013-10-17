@@ -3,11 +3,11 @@ var Constraint = require('./Constraint')
 ,   RotationalVelocityEquation = require('./RotationalVelocityEquation')
 ,   vec2 = require('../math/vec2')
 
-module.exports = PointToPointConstraint;
+module.exports = RevoluteConstraint;
 
 /**
- * Connects two bodies at given offset points
- * @class PointToPointConstraint
+ * Connects two bodies at given offset points, letting them rotate relative to each other around this point.
+ * @class RevoluteConstraint
  * @constructor
  * @author schteppe
  * @param {Body}            bodyA
@@ -18,7 +18,7 @@ module.exports = PointToPointConstraint;
  * @extends {Constraint}
  * @todo Ability to specify world points
  */
-function PointToPointConstraint(bodyA, pivotA, bodyB, pivotB, maxForce){
+function RevoluteConstraint(bodyA, pivotA, bodyB, pivotB, maxForce){
     Constraint.call(this,bodyA,bodyB);
 
     maxForce = typeof(maxForce)!="undefined" ? maxForce : 1e7;
@@ -40,9 +40,9 @@ function PointToPointConstraint(bodyA, pivotA, bodyB, pivotB, maxForce){
 
     this.motorEquation = null;
 }
-PointToPointConstraint.prototype = new Constraint();
+RevoluteConstraint.prototype = new Constraint();
 
-PointToPointConstraint.prototype.update = function(){
+RevoluteConstraint.prototype.update = function(){
     var bodyA =  this.bodyA,
         bodyB =  this.bodyB,
         pivotA = this.pivotA,
@@ -65,7 +65,7 @@ PointToPointConstraint.prototype.update = function(){
  * Enable the rotational motor
  * @method enableMotor
  */
-PointToPointConstraint.prototype.enableMotor = function(){
+RevoluteConstraint.prototype.enableMotor = function(){
     if(this.motorEquation) return;
     this.motorEquation = new RotationalVelocityEquation(this.bodyA,this.bodyB);
     this.equations.push(this.motorEquation);
@@ -75,7 +75,7 @@ PointToPointConstraint.prototype.enableMotor = function(){
  * Disable the rotational motor
  * @method disableMotor
  */
-PointToPointConstraint.prototype.disableMotor = function(){
+RevoluteConstraint.prototype.disableMotor = function(){
     if(!this.motorEquation) return;
     var i = this.equations.indexOf(this.motorEquation);
     this.motorEquation = null;
@@ -87,7 +87,7 @@ PointToPointConstraint.prototype.disableMotor = function(){
  * @method motorIsEnabled
  * @return {Boolean}
  */
-PointToPointConstraint.prototype.motorIsEnabled = function(){
+RevoluteConstraint.prototype.motorIsEnabled = function(){
     return !!this.motorEquation;
 };
 
@@ -96,7 +96,7 @@ PointToPointConstraint.prototype.motorIsEnabled = function(){
  * @method setMotorSpeed
  * @param  {Number} speed
  */
-PointToPointConstraint.prototype.setMotorSpeed = function(speed){
+RevoluteConstraint.prototype.setMotorSpeed = function(speed){
     if(!this.motorEquation) return;
     var i = this.equations.indexOf(this.motorEquation);
     this.equations[i].relativeVelocity = speed;
@@ -107,7 +107,7 @@ PointToPointConstraint.prototype.setMotorSpeed = function(speed){
  * @method getMotorSpeed
  * @return  {Number} The current speed, or false if the motor is not enabled.
  */
-PointToPointConstraint.prototype.getMotorSpeed = function(){
+RevoluteConstraint.prototype.getMotorSpeed = function(){
     if(!this.motorEquation) return false;
     return this.motorEquation.relativeVelocity;
 };

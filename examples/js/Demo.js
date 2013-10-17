@@ -10,7 +10,7 @@ var vec2 =      p2.vec2
 ,   Particle =  p2.Particle
 ,   Line =      p2.Line
 ,   EventEmitter = p2.EventEmitter
-,   PointToPointConstraint = p2.PointToPointConstraint
+,   RevoluteConstraint = p2.RevoluteConstraint
 
 // shim layer with setTimeout fallback
 var requestAnimationFrame =     window.requestAnimationFrame       ||
@@ -145,7 +145,7 @@ Demo.prototype.handleMouseDown = function(physicsPosition){
                 var localPoint = vec2.create();
                 b.toLocalFrame(localPoint,physicsPosition);
                 this.world.addBody(this.nullBody);
-                this.mouseConstraint = new PointToPointConstraint(  this.nullBody, physicsPosition,
+                this.mouseConstraint = new RevoluteConstraint(  this.nullBody, physicsPosition,
                                                                     b,             localPoint);
                 this.world.addConstraint(this.mouseConstraint);
             } else {

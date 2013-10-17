@@ -10,7 +10,7 @@ JavaScript 2D rigid body physics engine.
 * Rigid body physics
 * Collision detection (no CCD)
 * Contacts, friction
-* Stiff constraints: Distance, PointToPoint, Prismatic
+* Stiff constraints: Distance, Revolute, Prismatic
 * Motors
 * Springs
 * Dynamic, kinematic, static bodies
@@ -89,6 +89,7 @@ Note that concave polygon shapes can be created using ```Body.prototype.fromPoly
 * Added methods ```.adjustCenterOfMass``` and ```.fromPolygon``` to ```Body```.
 * Renamed ```Nearphase``` to ```Narrowphase```.
 * Added method ```World.upgradeJSON```.
+* Renamed ```PointToPointConstraint``` to ```RevoluteConstraint```.
 
 ##### 0.2
 * Removed ```World.collidingBodies``` since ```World.bodies``` can be used equivalently.

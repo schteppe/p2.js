@@ -11,7 +11,7 @@ var World = require("../src/world/World")
 ,   Material = require("../src/material/Material")
 ,   ContactMaterial = require("../src/material/ContactMaterial")
 ,   DistanceConstraint = require("../src/constraints/DistanceConstraint")
-,   PointToPointConstraint = require("../src/constraints/PointToPointConstraint")
+,   RevoluteConstraint = require("../src/constraints/RevoluteConstraint")
 ,   PrismaticConstraint = require("../src/constraints/PrismaticConstraint")
 ,   vec2 = require("../src/math/vec2")
 ,   _ = require('underscore')
@@ -106,9 +106,9 @@ exports.toJSON = function(test){
     world.addConstraint(new DistanceConstraint(bodyA,bodyB,r(),r()));
 
     // p2p without motor
-    world.addConstraint(new PointToPointConstraint(bodyA,rv(),bodyB,rv(),r()));
+    world.addConstraint(new RevoluteConstraint(bodyA,rv(),bodyB,rv(),r()));
     // p2p with motor
-    var p2p = new PointToPointConstraint(bodyA,rv(),bodyB,rv(),r());
+    var p2p = new RevoluteConstraint(bodyA,rv(),bodyB,rv(),r());
     p2p.enableMotor = true;
     p2p.setMotorSpeed(r());
     world.addConstraint(p2p);

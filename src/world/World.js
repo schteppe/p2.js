@@ -14,7 +14,7 @@ var  GSSolver = require('../solver/GSSolver')
 ,    Material = require('../material/Material')
 ,    ContactMaterial = require('../material/ContactMaterial')
 ,    DistanceConstraint = require('../constraints/DistanceConstraint')
-,    PointToPointConstraint = require('../constraints/PointToPointConstraint')
+,    RevoluteConstraint = require('../constraints/RevoluteConstraint')
 ,    PrismaticConstraint = require('../constraints/PrismaticConstraint')
 ,    pkg = require('../../package.json')
 ,    Broadphase = require('../collision/Broadphase')
@@ -548,8 +548,8 @@ World.prototype.toJSON = function(){
             jc.type = "DistanceConstraint";
             jc.distance = c.distance;
             jc.maxForce = c.getMaxForce();
-        } else if(c instanceof PointToPointConstraint){
-            jc.type = "PointToPointConstraint";
+        } else if(c instanceof RevoluteConstraint){
+            jc.type = "RevoluteConstraint";
             jc.pivotA = v2a(c.pivotA);
             jc.pivotB = v2a(c.pivotB);
             jc.maxForce = c.maxForce;
@@ -780,8 +780,8 @@ World.prototype.fromJSON = function(json){
             case "DistanceConstraint":
                 c = new DistanceConstraint(this.bodies[jc.bodyA], this.bodies[jc.bodyB], jc.distance, jc.maxForce);
                 break;
-            case "PointToPointConstraint":
-                c = new PointToPointConstraint(this.bodies[jc.bodyA], jc.pivotA, this.bodies[jc.bodyB], jc.pivotB, jc.maxForce);
+            case "RevoluteConstraint":
+                c = new RevoluteConstraint(this.bodies[jc.bodyA], jc.pivotA, this.bodies[jc.bodyB], jc.pivotB, jc.maxForce);
                 if(jc.motorSpeed){
                     c.enableMotor();
                     c.setMotorSpeed(jc.motorSpeed);

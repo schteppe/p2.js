@@ -34,7 +34,7 @@
         var groundBody = new p2.Body();
         world.addBody(groundBody);
 
-        world.addConstraint( new p2.PointToPointConstraint(line, [0.5,0], groundBody, [-1.5,0]) );
+        world.addConstraint( new p2.RevoluteConstraint(line, [0.5,0], groundBody, [-1.5,0]) );
 
         // Create circle rope
         var shape = new p2.Circle(r);
@@ -58,7 +58,7 @@
             world.addBody(p);
         }
 
-        // Create PointToPointConstraint
+        // Create RevoluteConstraint
         var bodyA = new p2.Body({
             mass: 1,
             position: [3,0],
@@ -74,7 +74,7 @@
         world.addBody(bodyB);
         var pivotA = [0,2];
         var pivotB = [0,-2];
-        var c = new p2.PointToPointConstraint(bodyA, pivotA, bodyB, pivotB);
+        var c = new p2.RevoluteConstraint(bodyA, pivotA, bodyB, pivotB);
         world.addConstraint(c);
 
 
