@@ -77,6 +77,7 @@ function Demo(world){
     this.resize(this.w,this.h);
     this.render();
     this.createStats();
+    this.createMenu();
 
     world.on("postStep",function(e){
         that.render();
@@ -330,4 +331,69 @@ Demo.prototype.createStats = function(){
     document.body.appendChild(contactsDiv);
     this.stats_stepdiv = stepDiv;
     this.stats_contactsdiv = contactsDiv;
+};
+
+Demo.prototype.createMenu = function(){
+    var that = this;
+
+    // Insert logo
+    $("body").append("<div id='logo'><h1><a href='http://github.com/schteppe/p2.js'>p2.js</a></h1><p>Physics Engine</p></div>");
+
+    // Insert menu
+    var $menucontainer = $([
+        "<div id='menu-container'>",
+            "<button id='menu-container-open'>Open menu</button>",
+            "<div id='menu'>",
+                "<button id='menu-hide'>Hide menu</button>",
+                "<fieldset id='menu-controls-container'>",
+                    "<legend>Simulation control</legend>",
+                    "<button id='menu-playpause'>Pause [p]</button>",
+                    "<button id='menu-restart'>Restart [r]</button>",
+                "</fieldset>",
+
+                "<fieldset id='menu-solver-container'>",
+                    "<legend>Solver</legend>",
+                    "<label>Relaxation</label>",
+                    "<input id='menu-solver-relaxation' type='number' step='any' min='0' value='4'>",
+                    "<label>Stiffness</label>",
+                    "<input id='menu-solver-stiffness' type='number' step='any' min='0' value='"+this.world.solver.stiffness+"'>",
+                "</fieldset>",
+
+            "</div>",
+        "</div>"
+    ].join("\n"));
+    $("body").append($menucontainer);
+
+    var $menu = $("#menu").hide();
+
+    // Hide menu
+    $("#menu-hide").click(function(e){
+        $menu.hide();
+    });
+
+    // Open menu
+    $("#menu-container-open").click(function(e){
+        $menu.show();
+    });
+
+    // Play/pause
+    $("#menu-playpause").click(function(e){
+        that.paused = !that.paused;
+        if(that.paused) $(this).text("Play [p]");
+        else            $(this).text("Pause [p]");
+    });
+
+    // Restart
+    $("#menu-restart").click(function(e){
+        // Until Demo gets a restart() method
+        that.removeAllVisuals();
+        that.world.fromJSON(that.initialState);
+    });
+
+    $("#menu-solver-relaxation").change(function(e){
+        that.world.solver.relaxation = parseFloat($(this).val());
+    });
+    $("#menu-solver-stiffness").change(function(e){
+        that.world.solver.stiffness = parseFloat($(this).val());
+    });
 };

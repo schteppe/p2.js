@@ -6,6 +6,7 @@
 body {
     overflow: hidden;
     background:white;
+    font: 13px Helvetica, arial, freesans, clean, sans-serif;
 }
 
 #step {
@@ -14,4 +15,62 @@ body {
     left:0;
     padding:4px;
     background-color: white;
+}
+
+#menu {
+    position:absolute;
+    top:0;
+    left:0;
+    width:300px;
+    background-color: #eee;
+    height:100%;
+    padding:10px;
+    margin-bottom: 5px;
+}
+
+#menu-container {
+    position:absolute;
+    top:0;
+    left:0;
+    height:100%;
+}
+
+
+#logo {
+    position : absolute;
+    right: 10px;
+    top : 10px;
+    text-align: center;
+}
+#logo a {
+    color:black;
+    text-decoration: none;
+}
+
+#menu-container-open {
+    margin:10px;
+}
+
+#step,#contacts {
+    display:none;
+}
+
+button {
+    padding:2px 4px;
+    margin-right:  4px;
+    margin-bottom: 4px;
+}
+
+label {
+    display:block;
+}
+
+fieldset {
+    border: 1px solid #ddd;
+    padding:10px;
+    margin-top:15px;
+}
+
+legend {
+    font-weight: bold;
 }
