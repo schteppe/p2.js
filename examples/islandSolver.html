@@ -23,7 +23,8 @@
             subsolver = new p2.GSSolver();  // Solver to use in each subsystem
 
         world.solver = new p2.IslandSolver(subsolver);
-        subsolver.setSpookParams(1e7,3);
+        subsolver.stiffness = 1e7;
+        subsolver.relaxation = 3;
         subsolver.tolerance = 0.1;
         subsolver.iterations = N;
 

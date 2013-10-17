@@ -60,19 +60,6 @@ function GSSolver(options){
 GSSolver.prototype = new Solver();
 
 /**
- * Set stiffness parameters
- *
- * @method setSpookParams
- * @param  {number} k
- * @param  {number} d
- * @deprecated
- */
-GSSolver.prototype.setSpookParams = function(k,d){
-    this.stiffness = k;
-    this.relaxation = d;
-};
-
-/**
  * Solve the system of equations
  * @method solve
  * @param  {Number}  dt       Time step
