@@ -22,9 +22,13 @@ function PixiDemo(world,options){
         pixelsPerLengthUnit : 128,
         width : 1280, // Pixi screen resolution
         height : 720,
+        useDeviceAspect : true,
     };
     for(var key in options)
         settings[key] = options[key];
+
+    if(settings.useDeviceAspect)
+        settings.height = $(window).height() / $(window).width() * settings.width;
 
     this.settings = settings;
     var ppu = this.pixelsPerLengthUnit =  settings.pixelsPerLengthUnit;
