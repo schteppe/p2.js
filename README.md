@@ -81,7 +81,7 @@ setInterval(function(){
 Note that concave polygon shapes can be created using ```Body.prototype.fromPolygon```.
 
 ### Change log
-##### Current development version (to be 0.3)
+##### 0.3
 * Added ```Utils```
 * The returned array by ```Broadphase.prototype.getCollisionPairs``` is now reused in between calls.
 * Added method ```.addEquations``` to ```Solver``` to faster add an array of ```Equation```s.
