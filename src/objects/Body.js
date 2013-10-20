@@ -229,10 +229,13 @@ Body.prototype.updateBoundingRadius = function(){
  *     body.addShape(shape,[0,1],Math.PI/2);
  */
 Body.prototype.addShape = function(shape,offset,angle){
+    angle = angle || 0.0;
 
     // Copy the offset vector
     if(offset){
         offset = vec2.fromValues(offset[0],offset[1]);
+    } else {
+        offset = vec2.fromValues(0,0);
     }
 
     this.shapes      .push(shape);
