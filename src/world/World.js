@@ -312,13 +312,6 @@ World.prototype.step = function(dt){
                     xj = bj.shapeOffsets[l] || zero,
                     aj = bj.shapeAngles[l] || 0;
 
-                if(!((si.collisionGroup & sj.collisionMask) !== 0 && (sj.collisionGroup & si.collisionMask) !== 0))
-                    continue;
-
-                var reducedMass = (bi.invMass + bj.invMass);
-                if(reducedMass > 0)
-                    reducedMass = 1/reducedMass;
-
                 var mu = this.defaultFriction;
 
                 if(si.material && sj.material){
@@ -328,68 +321,7 @@ World.prototype.step = function(dt){
                     }
                 }
 
-                var mug = mu * glen * reducedMass,
-                    doFriction = mu > 0;
-
-                // Get world position and angle of each shape
-                rotate(xiw, xi, bi.angle);
-                rotate(xjw, xj, bj.angle);
-                add(xiw, xiw, bi.position);
-                add(xjw, xjw, bj.position);
-                var aiw = ai + bi.angle;
-                var ajw = aj + bj.angle;
-
-                // Run narrowphase
-                np.enableFriction = mu > 0;
-                np.slipForce = mug;
-                if(si instanceof Circle){
-                         if(sj instanceof Circle)       np.circleCircle  (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-                    else if(sj instanceof Particle)     np.circleParticle(bi,si,xiw,aiw, bj,sj,xjw,ajw);
-                    else if(sj instanceof Plane)        np.circlePlane   (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-                    else if(sj instanceof Rectangle)    np.circleConvex  (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-                    else if(sj instanceof Convex)       np.circleConvex  (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-                    else if(sj instanceof Line)         np.circleLine    (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-                    else if(sj instanceof Capsule)      np.circleCapsule (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-
-                } else if(si instanceof Particle){
-                         if(sj instanceof Circle)       np.circleParticle   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-                    else if(sj instanceof Plane)        np.particlePlane    (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-                    else if(sj instanceof Rectangle)    np.particleConvex   (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-                    else if(sj instanceof Convex)       np.particleConvex   (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-                    else if(sj instanceof Capsule)      np.particleCapsule  (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-
-                } else if(si instanceof Plane){
-                         if(sj instanceof Circle)       np.circlePlane   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-                    else if(sj instanceof Particle)     np.particlePlane (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-                    else if(sj instanceof Rectangle)    np.convexPlane   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-                    else if(sj instanceof Convex)       np.convexPlane   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-                    else if(sj instanceof Line)         np.planeLine     (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-                    else if(sj instanceof Capsule)      np.capsulePlane  (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-
-                } else if(si instanceof Rectangle){
-                         if(sj instanceof Plane)        np.convexPlane    (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-                    else if(sj instanceof Circle)       np.circleConvex   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-                    else if(sj instanceof Rectangle)    np.convexConvex   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-                    else if(sj instanceof Convex)       np.convexConvex   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-                    else if(sj instanceof Particle)     np.particleConvex (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-
-                } else if(si instanceof Convex){
-                         if(sj instanceof Plane)        np.convexPlane    (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-                    else if(sj instanceof Circle)       np.circleConvex   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-                    else if(sj instanceof Rectangle)    np.convexConvex   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-                    else if(sj instanceof Convex)       np.convexConvex   (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-                    else if(sj instanceof Particle)     np.particleConvex (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-
-                } else if(si instanceof Line){
-                         if(sj instanceof Circle)       np.circleLine     (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-                    else if(sj instanceof Plane)        np.planeLine      (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-
-                } else if(si instanceof Capsule){
-                         if(sj instanceof Plane)        np.capsulePlane   (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-                         if(sj instanceof Circle)       np.circleCapsule  (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-                         if(sj instanceof Particle)     np.particleCapsule(bj,sj,xjw,ajw, bi,si,xiw,aiw);
-
-                }
+                World.runNarrowphase(np,bi,si,xi,ai,bj,sj,xj,aj,mu,glen);
             }
         }
     }
@@ -422,9 +354,7 @@ World.prototype.step = function(dt){
 
     // Reset force
     for(var i=0; i!==Nbodies; i++){
-        var bi = bodies[i];
-        vec2.set(bi.force,0.0,0.0);
-        bi.angularForce = 0.0;
+        bodies[i].setZeroForce();
     }
 
     if(doProfiling){
@@ -437,6 +367,14 @@ World.prototype.step = function(dt){
 
 var ib_fhMinv = vec2.create();
 var ib_velodt = vec2.create();
+
+/**
+ * Move a body forward in time.
+ * @static
+ * @method integrateBody
+ * @param  {Body} body
+ * @param  {Number} dt
+ */
 World.integrateBody = function(body,dt){
     var minv = body.invMass,
         f = body.force,
@@ -452,6 +390,95 @@ World.integrateBody = function(body,dt){
     vec2.add(velo,ib_fhMinv,velo);
     vec2.scale(ib_velodt,velo,dt);
     vec2.add(pos,pos,ib_velodt);
+};
+
+/**
+ * Runs narrowphase for the shape pair i and j.
+ * @static
+ * @method runNarrowphase
+ * @param  {Narrowphase} np
+ * @param  {Body} bi
+ * @param  {Shape} si
+ * @param  {Array} xi
+ * @param  {Number} ai
+ * @param  {Body} bj
+ * @param  {Shape} sj
+ * @param  {Array} xj
+ * @param  {Number} aj
+ * @param  {Number} mu
+ * @param  {Number} glen
+ */
+World.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,mu,glen){
+
+    if(!((si.collisionGroup & sj.collisionMask) !== 0 && (sj.collisionGroup & si.collisionMask) !== 0))
+        return;
+
+    var reducedMass = bi.invMass + bj.invMass;
+    if(reducedMass > 0)
+        reducedMass = 1/reducedMass;
+
+    var mug = mu * glen * reducedMass,
+        doFriction = mu > 0;
+
+    // Get world position and angle of each shape
+    vec2.rotate(xiw, xi, bi.angle);
+    vec2.rotate(xjw, xj, bj.angle);
+    vec2.add(xiw, xiw, bi.position);
+    vec2.add(xjw, xjw, bj.position);
+    var aiw = ai + bi.angle;
+    var ajw = aj + bj.angle;
+
+    // Run narrowphase
+    np.enableFriction = mu > 0;
+    np.slipForce = mug;
+    if(si instanceof Circle){
+             if(sj instanceof Circle)       np.circleCircle  (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+        else if(sj instanceof Particle)     np.circleParticle(bi,si,xiw,aiw, bj,sj,xjw,ajw);
+        else if(sj instanceof Plane)        np.circlePlane   (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+        else if(sj instanceof Rectangle)    np.circleConvex  (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+        else if(sj instanceof Convex)       np.circleConvex  (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+        else if(sj instanceof Line)         np.circleLine    (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+        else if(sj instanceof Capsule)      np.circleCapsule (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+
+    } else if(si instanceof Particle){
+             if(sj instanceof Circle)       np.circleParticle   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+        else if(sj instanceof Plane)        np.particlePlane    (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+        else if(sj instanceof Rectangle)    np.particleConvex   (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+        else if(sj instanceof Convex)       np.particleConvex   (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+        else if(sj instanceof Capsule)      np.particleCapsule  (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+
+    } else if(si instanceof Plane){
+             if(sj instanceof Circle)       np.circlePlane   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+        else if(sj instanceof Particle)     np.particlePlane (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+        else if(sj instanceof Rectangle)    np.convexPlane   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+        else if(sj instanceof Convex)       np.convexPlane   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+        else if(sj instanceof Line)         np.planeLine     (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+        else if(sj instanceof Capsule)      np.capsulePlane  (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+
+    } else if(si instanceof Rectangle){
+             if(sj instanceof Plane)        np.convexPlane    (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+        else if(sj instanceof Circle)       np.circleConvex   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+        else if(sj instanceof Rectangle)    np.convexConvex   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+        else if(sj instanceof Convex)       np.convexConvex   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+        else if(sj instanceof Particle)     np.particleConvex (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+
+    } else if(si instanceof Convex){
+             if(sj instanceof Plane)        np.convexPlane    (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+        else if(sj instanceof Circle)       np.circleConvex   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+        else if(sj instanceof Rectangle)    np.convexConvex   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+        else if(sj instanceof Convex)       np.convexConvex   (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+        else if(sj instanceof Particle)     np.particleConvex (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+
+    } else if(si instanceof Line){
+             if(sj instanceof Circle)       np.circleLine     (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+        else if(sj instanceof Plane)        np.planeLine      (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+
+    } else if(si instanceof Capsule){
+             if(sj instanceof Plane)        np.capsulePlane   (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+             if(sj instanceof Circle)       np.circleCapsule  (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+             if(sj instanceof Particle)     np.particleCapsule(bj,sj,xjw,ajw, bi,si,xiw,aiw);
+
+    }
 };
 
 /**

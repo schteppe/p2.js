@@ -459,6 +459,15 @@ Body.prototype.adjustCenterOfMass = function(){
 };
 
 /**
+ * Sets the force on the body to zero.
+ * @method setZeroForce
+ */
+Body.prototype.setZeroForce = function(){
+    vec2.set(this.force,0.0,0.0);
+    this.angularForce = 0.0;
+};
+
+/**
  * Dynamic body.
  * @property DYNAMIC
  * @type {Number}
