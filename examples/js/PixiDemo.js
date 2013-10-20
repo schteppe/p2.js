@@ -399,6 +399,12 @@ PixiDemo.drawPath = function(g,path,color,fillColor,lineWidth){
     }
 };
 
+PixiDemo.updateSpriteTransform = function(sprite,body,ppu,h){
+    sprite.position.x =     body.position[0] * ppu;
+    sprite.position.y = h - body.position[1] * ppu;
+    sprite.rotation = -body.angle;
+};
+
 var X = vec2.fromValues(1,0),
     distVec = vec2.fromValues(0,0),
     worldAnchorA = vec2.fromValues(0,0),
@@ -411,16 +417,12 @@ PixiDemo.prototype.render = function(){
         sprites = this.sprites;
 
     // Update body transforms
-    for(var i=0; i<this.bodies.length; i++){
-        var b = this.bodies[i],
-            s = this.sprites[i];
-        s.position.x =     b.position[0] * pixelsPerLengthUnit;
-        s.position.y = h - b.position[1] * pixelsPerLengthUnit;
-        s.rotation = -b.angle;
+    for(var i=0; i!==this.bodies.length; i++){
+        PixiDemo.updateSpriteTransform(this.sprites[i],this.bodies[i],pixelsPerLengthUnit,h);
     }
 
     // Update spring transforms
-    for(var i=0; i<this.springs.length; i++){
+    for(var i=0; i!==this.springs.length; i++){
         var s = this.springs[i],
             sprite = springSprites[i],
             bA = s.bodyA,
