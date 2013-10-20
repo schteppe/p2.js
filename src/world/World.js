@@ -276,10 +276,14 @@ World.prototype.step = function(dt){
         t0 = now();
     }
 
+    var glen = vec2.length(this.gravity);
+
     // add gravity to bodies
-    for(var i=0; i!==Nbodies; i++){
-        var fi = bodies[i].force;
-        add(fi,fi,g);
+    if(glen > 0){
+        for(var i=0; i!==Nbodies; i++){
+            var fi = bodies[i].force;
+            add(fi,fi,g);
+        }
     }
 
     // Add spring forces
@@ -294,7 +298,6 @@ World.prototype.step = function(dt){
     var result = broadphase.getCollisionPairs(this);
 
     // Narrowphase
-    var glen = vec2.length(this.gravity);
     np.reset();
     for(var i=0, Nresults=result.length; i!==Nresults; i+=2){
         var bi = result[i],
