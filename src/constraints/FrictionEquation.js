@@ -68,11 +68,12 @@ FrictionEquation.prototype.setSlipForce = function(slipForce){
     this.minForce = -slipForce;
 };
 
-var rixtVec = [0,0,0];
-var rjxtVec = [0,0,0];
-var ri3 = [0,0,0];
-var rj3 = [0,0,0];
-var t3 = [0,0,0];
+var A = Float32Array || Array;
+var rixtVec = new A(3),
+    rjxtVec = new A(3),
+    ri3 = new A(3),
+    rj3 = new A(3),
+    t3 = new A(3);
 FrictionEquation.prototype.computeB = function(a,b,h){
     var a = this.a,
         b = this.b,
@@ -122,7 +123,6 @@ FrictionEquation.prototype.computeC = function(eps){
     var bi = this.bi,
         bj = this.bj,
         t = this.t,
-        C = 0.0,
         tmp = computeC_tmp1,
         imMat1 = tmpMat1,
         imMat2 = tmpMat2,
@@ -134,7 +134,7 @@ FrictionEquation.prototype.computeC = function(eps){
     imMat1[0] = imMat1[3] = bi.invMass;
     imMat2[0] = imMat2[3] = bj.invMass;
 
-    C = dot(t,vec2.transformMat2(tmp,t,imMat1)) + dot(t,vec2.transformMat2(tmp,t,imMat2)) + eps;
+    var C = dot(t,vec2.transformMat2(tmp,t,imMat1)) + dot(t,vec2.transformMat2(tmp,t,imMat2)) + eps;
 
     //C = bi.invMass + bj.invMass + eps;
 
@@ -168,12 +168,10 @@ FrictionEquation.prototype.addToWlambda = function(deltalambda){
     imMat2[0] = imMat2[3] = bj.invMass;
 
     vec2.scale(tmp,vec2.transformMat2(tmp,t,imMat1),-deltalambda);
-    //vec2.scale(tmp, t, -bi.invMass * deltalambda);  //t.mult(invMassi * deltalambda, tmp);
-    vec2.add(bi.vlambda, bi.vlambda, tmp);          //bi.vlambda.vsub(tmp,bi.vlambda);
+    vec2.add(bi.vlambda, bi.vlambda, tmp);
 
     vec2.scale(tmp,vec2.transformMat2(tmp,t,imMat2),deltalambda);
-    //vec2.scale(tmp, t, bj.invMass * deltalambda);   //t.mult(invMassj * deltalambda, tmp);
-    vec2.add(bj.vlambda, bj.vlambda, tmp);          //bj.vlambda.vadd(tmp,bj.vlambda);
+    vec2.add(bj.vlambda, bj.vlambda, tmp);
 
     bi.wlambda -= bi.invInertia * this.rixt * deltalambda;
     bj.wlambda += bj.invInertia * this.rjxt * deltalambda;
