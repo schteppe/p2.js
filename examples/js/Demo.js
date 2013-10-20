@@ -125,10 +125,10 @@ function Demo(world){
                     that.drawContacts = !that.drawContacts;
                     break;
                 case "d": // toggle draw polygon mode
-                    that.state = (s == DemoStates.DRAWPOLYGON ? DemoStates.DEFAULT : s = DemoStates.DRAWPOLYGON);
+                    that.setState(s == DemoStates.DRAWPOLYGON ? DemoStates.DEFAULT : s = DemoStates.DRAWPOLYGON);
                     break;
                 case "a": // toggle draw circle mode
-                    that.state = (s == DemoStates.DRAWCIRCLE ? DemoStates.DEFAULT : s = DemoStates.DRAWCIRCLE);
+                    that.setState(s == DemoStates.DRAWCIRCLE ? DemoStates.DEFAULT : s = DemoStates.DRAWCIRCLE);
                     break;
             }
         }
@@ -163,7 +163,7 @@ Demo.prototype.handleMouseDown = function(physicsPosition){
             var result = this.world.hitTest(physicsPosition,world.bodies,this.pickPrecision);
             if(result.length > 0){
                 var b = result[0]; // The grabbed body
-                this.state = DemoStates.DRAGGING;
+                this.setState(DemoStates.DRAGGING);
                 // Add mouse joint to the body
                 var localPoint = vec2.create();
                 b.toLocalFrame(localPoint,physicsPosition);
@@ -172,13 +172,13 @@ Demo.prototype.handleMouseDown = function(physicsPosition){
                                                                     b,             localPoint);
                 this.world.addConstraint(this.mouseConstraint);
             } else {
-                this.state = DemoStates.PANNING;
+                this.setState(DemoStates.PANNING);
             }
             break;
 
         case DemoStates.DRAWPOLYGON:
             // Start drawing a polygon
-            this.state = DemoStates.DRAWINGPOLYGON;
+            this.setState(DemoStates.DRAWINGPOLYGON);
             this.drawPoints = [];
             var copy = vec2.create();
             vec2.copy(copy,physicsPosition);
@@ -188,7 +188,7 @@ Demo.prototype.handleMouseDown = function(physicsPosition){
 
         case DemoStates.DRAWCIRCLE:
             // Start drawing a circle
-            this.state = DemoStates.DRAWINGCIRCLE;
+            this.setState(DemoStates.DRAWINGCIRCLE);
             vec2.copy(this.drawCircleCenter,physicsPosition);
             vec2.copy(this.drawCirclePoint, physicsPosition);
             this.emit(this.drawCircleChangeEvent);
@@ -237,12 +237,12 @@ Demo.prototype.handleMouseUp = function(physicsPosition){
             this.world.removeBody(this.nullBody);
 
         case DemoStates.PANNING:
-            this.state = DemoStates.DEFAULT;
+            this.setState(DemoStates.DEFAULT);
             break;
 
         case DemoStates.DRAWINGPOLYGON:
             // End this drawing state
-            this.state = DemoStates.DRAWPOLYGON;
+            this.setState(DemoStates.DRAWPOLYGON);
             if(this.drawPoints.length > 3){
                 // Create polygon
                 var b = new Body({ mass : 1 });
@@ -258,7 +258,7 @@ Demo.prototype.handleMouseUp = function(physicsPosition){
 
         case DemoStates.DRAWINGCIRCLE:
             // End this drawing state
-            this.state = DemoStates.DRAWCIRCLE;
+            this.setState(DemoStates.DRAWCIRCLE);
             var R = vec2.dist(this.drawCircleCenter,this.drawCirclePoint);
             if(R > 0){
                 // Create circle
@@ -356,7 +356,9 @@ Demo.prototype.createStats = function(){
 };
 
 Demo.prototype.createMenu = function(){
-    var that = this;
+    var that = this,
+        playHtml = "<b class='icon-play'></b>",
+        pauseHtml = "<b class='icon-pause'></b>";
 
     // Insert logo
     $("body").append($("<div id='logo'><h1><a href='http://github.com/schteppe/p2.js'>p2.js</a></h1><p>Physics Engine</p></div>").disableSelection());
@@ -370,8 +372,8 @@ Demo.prototype.createMenu = function(){
 
                 "<fieldset id='menu-controls-container'>",
                     "<h4>Simulation control</h4>",
-                    "<button class='btn' id='menu-playpause'>Pause</button>",
-                    "<button class='btn' id='menu-restart'>Restart</button>",
+                    "<button class='btn' id='menu-restart'><b class='icon-fast-backward'></b></button>",
+                    "<button class='btn' id='menu-playpause'>"+pauseHtml+"</button>",
                 "</fieldset>",
 
                 "<fieldset id='menu-tools'>",
@@ -385,10 +387,17 @@ Demo.prototype.createMenu = function(){
 
                 "<fieldset id='menu-solver-container'>",
                     "<h4>Solver</h4>",
-                    "<label>Relaxation</label>",
-                    "<input class='input-block-level' id='menu-solver-relaxation' type='number' step='any' min='0' value='4'>",
-                    "<label>Stiffness</label>",
-                    "<input class='input-block-level' id='menu-solver-stiffness' type='number' step='any' min='0' value='"+this.world.solver.stiffness+"'>",
+
+                    "<div class='input-prepend input-block-level'>",
+                      "<span class='add-on'>Relaxation</span>",
+                      "<input id='menu-solver-relaxation' type='number' step='any' min='0' value='4'>",
+                    "</div>",
+
+                    "<div class='input-prepend input-block-level'>",
+                      "<span class='add-on'>Stiffness</span>",
+                      "<input id='menu-solver-stiffness' type='number' step='any' min='0' value='"+this.world.solver.stiffness+"'>",
+                    "</div>",
+
                 "</fieldset>",
 
             "</div>",
@@ -414,32 +423,46 @@ Demo.prototype.createMenu = function(){
     // Play/pause
     $("#menu-playpause").click(function(e){
         that.paused = !that.paused;
-        if(that.paused) $(this).text("Play");
-        else            $(this).text("Pause");
-    });
+        if(that.paused) $(this).html(playHtml);
+        else            $(this).html(pauseHtml);
+    }).tooltip({
+        title : "Play or pause simulation [p]",
+    }),
 
     // Restart
     $("#menu-restart").click(function(e){
         // Until Demo gets a restart() method
         that.removeAllVisuals();
         that.world.fromJSON(that.initialState);
-    });
+    }).tooltip({
+        title : "Restart simulation [r]",
+    }),
 
     $("#menu-solver-relaxation").change(function(e){
         that.world.solver.relaxation = parseFloat($(this).val());
+    }).tooltip({
+        title : '# timesteps needed for stabilization'
     });
     $("#menu-solver-stiffness").change(function(e){
         that.world.solver.stiffness = parseFloat($(this).val());
+    }).tooltip({
+        title : "Constraint stiffness",
     });
 
     $("#menu-tools-default").click(function(e){
         that.setState(DemoStates.DEFAULT);
+    }).tooltip({
+        title : "Pick and pan tool",
     });
     $("#menu-tools-polygon").click(function(e){
         that.setState(DemoStates.DRAWPOLYGON);
+    }).tooltip({
+        title : "Draw polygon [d]",
     });
     $("#menu-tools-circle").click(function(e){
         that.setState(DemoStates.DRAWCIRCLE);
+    }).tooltip({
+        title : "Draw circle [a]",
     });
 };
 
@@ -448,9 +471,16 @@ Demo.prototype.updateTools = function(){
     $("#menu-tools button").removeClass("active");
     var id;
     switch(this.state){
+        case DemoStates.PANNING:
+        case DemoStates.DRAGGING:
         case DemoStates.DEFAULT:        id = "#menu-tools-default"; break;
+        case DemoStates.DRAWINGPOLYGON:
         case DemoStates.DRAWPOLYGON:    id = "#menu-tools-polygon"; break;
+        case DemoStates.DRAWINGCIRCLE:
         case DemoStates.DRAWCIRCLE:     id = "#menu-tools-circle";  break;
+        default:
+            console.warn("Demo: uncaught state: "+this.state);
+            break;
     }
     if(id){
         $(id).addClass("active");
