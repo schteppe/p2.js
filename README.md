@@ -88,8 +88,12 @@ Note that concave polygon shapes can be created using ```Body.prototype.fromPoly
 * Added method ```.updateArea``` and property ```.area``` to Shape
 * Added methods ```.adjustCenterOfMass``` and ```.fromPolygon``` to ```Body```.
 * Renamed ```Nearphase``` to ```Narrowphase```.
-* Added method ```World.upgradeJSON```.
+* Added methods ```.upgradeJSON```, ```.runNarrowphase``` and ```.integrateBody``` to ```World```.
 * Renamed ```PointToPointConstraint``` to ```RevoluteConstraint```.
+* Added static method ```GSSolver.iterateEquation```.
+* Added methods ```.addConstraintVelocity```, ```.resetConstraintVelocity```, ```.setZeroForce``` to ```Body```.
+* Added static method ```SAP1DBroadphase.checkBounds```.
+* ```body.shapeOffsets``` and ```.shapeAngles``` may now only be vectors and numbers.
 
 ##### 0.2
 * Removed ```World.collidingBodies``` since ```World.bodies``` can be used equivalently.
