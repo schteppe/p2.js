@@ -385,6 +385,7 @@ Demo.prototype.createMenu = function(){
                     "<h4>Simulation control</h4>",
                     "<button class='btn' id='menu-restart'><b class='icon-fast-backward'></b></button>",
                     "<button class='btn' id='menu-playpause'>"+pauseHtml+"</button>",
+                    "<button class='btn' id='menu-step'><b class='icon-step-forward'></b></button>",
                 "</fieldset>",
 
                 "<fieldset id='menu-tools'>",
@@ -438,7 +439,14 @@ Demo.prototype.createMenu = function(){
         else            $(this).html(pauseHtml);
     }).tooltip({
         title : "Play or pause simulation [p]",
-    }),
+    });
+
+    // Step
+    $("#menu-step").click(function(e){
+        that.world.step(that.world.lastTimeStep);
+    }).tooltip({
+        title : "Step simulation [s]",
+    });
 
     // Restart
     $("#menu-restart").click(function(e){
