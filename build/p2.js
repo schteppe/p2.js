@@ -597,7 +597,40 @@ Broadphase.boundingRadiusCheck = function(bodyA, bodyB){
     return d2 <= r*r;
 };
 
-},{"../math/vec2":34}],5:[function(require,module,exports){
+},{"../math/vec2":34}],6:[function(require,module,exports){
+var Shape = require('./Shape');
+
+module.exports = Circle;
+
+/**
+ * Circle shape class.
+ * @class Circle
+ * @extends {Shape}
+ * @constructor
+ * @param {number} radius
+ */
+function Circle(radius){
+
+    /**
+     * The radius of the circle.
+     * @property radius
+     * @type {number}
+     */
+    this.radius = radius || 1;
+
+    Shape.call(this,Shape.CIRCLE);
+};
+Circle.prototype = new Shape();
+Circle.prototype.computeMomentOfInertia = function(mass){
+    var r = this.radius;
+    return mass * r * r / 2;
+};
+
+Circle.prototype.updateBoundingRadius = function(){
+    this.boundingRadius = this.radius;
+};
+
+},{"./Shape":28}],5:[function(require,module,exports){
 var Shape = require('./Shape')
 ,   vec2 = require('../math/vec2')
 
@@ -638,40 +671,7 @@ Capsule.prototype.updateBoundingRadius = function(){
     this.boundingRadius = this.radius + this.length/2;
 };
 
-},{"./Shape":28,"../math/vec2":34}],6:[function(require,module,exports){
-var Shape = require('./Shape');
-
-module.exports = Circle;
-
-/**
- * Circle shape class.
- * @class Circle
- * @extends {Shape}
- * @constructor
- * @param {number} radius
- */
-function Circle(radius){
-
-    /**
-     * The radius of the circle.
-     * @property radius
-     * @type {number}
-     */
-    this.radius = radius || 1;
-
-    Shape.call(this,Shape.CIRCLE);
-};
-Circle.prototype = new Shape();
-Circle.prototype.computeMomentOfInertia = function(mass){
-    var r = this.radius;
-    return mass * r * r / 2;
-};
-
-Circle.prototype.updateBoundingRadius = function(){
-    this.boundingRadius = this.radius;
-};
-
-},{"./Shape":28}],8:[function(require,module,exports){
+},{"./Shape":28,"../math/vec2":34}],8:[function(require,module,exports){
 var Equation = require("./Equation"),
     vec2 = require('../math/vec2'),
     mat2 = require('../math/mat2');
@@ -944,11 +944,12 @@ FrictionEquation.prototype.setSlipForce = function(slipForce){
     this.minForce = -slipForce;
 };
 
-var rixtVec = [0,0,0];
-var rjxtVec = [0,0,0];
-var ri3 = [0,0,0];
-var rj3 = [0,0,0];
-var t3 = [0,0,0];
+var A = Float32Array || Array;
+var rixtVec = new A(3),
+    rjxtVec = new A(3),
+    ri3 = new A(3),
+    rj3 = new A(3),
+    t3 = new A(3);
 FrictionEquation.prototype.computeB = function(a,b,h){
     var a = this.a,
         b = this.b,
@@ -998,7 +999,6 @@ FrictionEquation.prototype.computeC = function(eps){
     var bi = this.bi,
         bj = this.bj,
         t = this.t,
-        C = 0.0,
         tmp = computeC_tmp1,
         imMat1 = tmpMat1,
         imMat2 = tmpMat2,
@@ -1010,7 +1010,7 @@ FrictionEquation.prototype.computeC = function(eps){
     imMat1[0] = imMat1[3] = bi.invMass;
     imMat2[0] = imMat2[3] = bj.invMass;
 
-    C = dot(t,vec2.transformMat2(tmp,t,imMat1)) + dot(t,vec2.transformMat2(tmp,t,imMat2)) + eps;
+    var C = dot(t,vec2.transformMat2(tmp,t,imMat1)) + dot(t,vec2.transformMat2(tmp,t,imMat2)) + eps;
 
     //C = bi.invMass + bj.invMass + eps;
 
@@ -1044,12 +1044,10 @@ FrictionEquation.prototype.addToWlambda = function(deltalambda){
     imMat2[0] = imMat2[3] = bj.invMass;
 
     vec2.scale(tmp,vec2.transformMat2(tmp,t,imMat1),-deltalambda);
-    //vec2.scale(tmp, t, -bi.invMass * deltalambda);  //t.mult(invMassi * deltalambda, tmp);
-    vec2.add(bi.vlambda, bi.vlambda, tmp);          //bi.vlambda.vsub(tmp,bi.vlambda);
+    vec2.add(bi.vlambda, bi.vlambda, tmp);
 
     vec2.scale(tmp,vec2.transformMat2(tmp,t,imMat2),deltalambda);
-    //vec2.scale(tmp, t, bj.invMass * deltalambda);   //t.mult(invMassj * deltalambda, tmp);
-    vec2.add(bj.vlambda, bj.vlambda, tmp);          //bj.vlambda.vadd(tmp,bj.vlambda);
+    vec2.add(bj.vlambda, bj.vlambda, tmp);
 
     bi.wlambda -= bi.invInertia * this.rixt * deltalambda;
     bj.wlambda += bj.invInertia * this.rjxt * deltalambda;
@@ -1279,19 +1277,6 @@ function GSSolver(options){
 GSSolver.prototype = new Solver();
 
 /**
- * Set stiffness parameters
- *
- * @method setSpookParams
- * @param  {number} k
- * @param  {number} d
- * @deprecated
- */
-GSSolver.prototype.setSpookParams = function(k,d){
-    this.stiffness = k;
-    this.relaxation = d;
-};
-
-/**
  * Solve the system of equations
  * @method solve
  * @param  {Number}  dt       Time step
@@ -1349,9 +1334,7 @@ GSSolver.prototype.solve = function(dt,world){
 
         // Reset vlambda
         for(i=0; i!==Nbodies; i++){
-            var b=bodies[i], vlambda=b.vlambda;
-            set(vlambda,0,0);
-            b.wlambda = 0;
+            bodies[i].resetConstraintVelocity();
         }
 
         // Iterate over equations
@@ -1361,52 +1344,51 @@ GSSolver.prototype.solve = function(dt,world){
             deltalambdaTot = 0.0;
 
             for(j=0; j!==Neq; j++){
-
                 c = equations[j];
-
                 var _eps = useGlobalParams ? eps : c.eps;
 
-                // Compute iteration
-                maxForce = c.maxForce;
-                minForce = c.minForce;
-
-                B = Bs[j];
-                invC = invCs[j];
-                lambdaj = lambda[j];
-                GWlambda = c.computeGWlambda(_eps);
-
-                if(useZeroRHS) B = 0;
-
-                deltalambda = invC * ( B - GWlambda - _eps * lambdaj );
-
-                // Clamp if we are not within the min/max interval
-                lambdaj_plus_deltalambda = lambdaj + deltalambda;
-                if(lambdaj_plus_deltalambda < minForce){
-                    deltalambda = minForce - lambdaj;
-                } else if(lambdaj_plus_deltalambda > maxForce){
-                    deltalambda = maxForce - lambdaj;
-                }
-                lambda[j] += deltalambda;
-
-                deltalambdaTot += Math.abs(deltalambda);
-
-                c.addToWlambda(deltalambda);
+                var deltalambda = GSSolver.iterateEquation(j,c,_eps,Bs,invCs,lambda,useZeroRHS);
+                if(tolSquared !== 0) deltalambdaTot += Math.abs(deltalambda);
             }
 
             // If the total error is small enough - stop iterate
-            if(deltalambdaTot*deltalambdaTot <= tolSquared) break;
+            if(tolSquared !== 0 && deltalambdaTot*deltalambdaTot <= tolSquared) break;
         }
 
         // Add result to velocity
         for(i=0; i!==Nbodies; i++){
-            var b=bodies[i], v=b.velocity;
-            add( v, v, b.vlambda);
-            b.angularVelocity += b.wlambda;
+            bodies[i].addConstraintVelocity();
         }
     }
     errorTot = deltalambdaTot;
 };
 
+GSSolver.iterateEquation = function(j,eq,eps,Bs,invCs,lambda,useZeroRHS){
+    // Compute iteration
+    var maxForce = eq.maxForce,
+        minForce = eq.minForce,
+        B = Bs[j],
+        invC = invCs[j],
+        lambdaj = lambda[j],
+        GWlambda = eq.computeGWlambda(eps);
+
+    if(useZeroRHS) B = 0;
+
+    var deltalambda = invC * ( B - GWlambda - eps * lambdaj );
+
+    // Clamp if we are not within the min/max interval
+    var lambdaj_plus_deltalambda = lambdaj + deltalambda;
+    if(lambdaj_plus_deltalambda < minForce){
+        deltalambda = minForce - lambdaj;
+    } else if(lambdaj_plus_deltalambda > maxForce){
+        deltalambda = maxForce - lambdaj;
+    }
+    lambda[j] += deltalambda;
+
+    eq.addToWlambda(deltalambda);
+
+    return deltalambda;
+};
 
 },{"../math/vec2":34,"./Solver":29}],17:[function(require,module,exports){
 var Solver = require('./Solver')
@@ -2110,23 +2092,13 @@ SAP1DBroadphase.prototype.getCollisionPairs = function(world){
 
     // Look through the list
     for(i=0, N=bodies.length; i!==N; i++){
-        var bi = bodies[i],
-            biPos = bi.position[axisIndex],
-            ri = bi.boundingRadius;
+        var bi = bodies[i];
 
         for(j=i+1; j<N; j++){
-            var bj = bodies[j],
-                bjPos = bj.position[axisIndex],
-                rj = bj.boundingRadius,
-                boundA1 = biPos-ri,
-                boundA2 = biPos+ri,
-                boundB1 = bjPos-rj,
-                boundB2 = bjPos+rj;
+            var bj = bodies[j];
 
-            // Abort if we got gap til the next body
-            if( boundB1 > boundA2 ){
+            if(!SAP1DBroadphase.checkBounds(bi,bj,axisIndex))
                 break;
-            }
 
             // If we got overlap, add pair
             if(Broadphase.boundingRadiusCheck(bi,bj))
@@ -2137,7 +2109,21 @@ SAP1DBroadphase.prototype.getCollisionPairs = function(world){
     return result;
 };
 
-},{"../shapes/Circle":6,"../shapes/Plane":22,"../shapes/Particle":21,"../shapes/Shape":28,"../collision/Broadphase":4,"../math/vec2":34}],29:[function(require,module,exports){
+// Returns true if bounds overlap
+SAP1DBroadphase.checkBounds = function(bi,bj,axisIndex){
+    var biPos = bi.position[axisIndex],
+        ri = bi.boundingRadius,
+        bjPos = bj.position[axisIndex],
+        rj = bj.boundingRadius,
+        boundA1 = biPos-ri,
+        boundA2 = biPos+ri,
+        boundB1 = bjPos-rj,
+        boundB2 = bjPos+rj;
+
+    return boundB1 < boundA2;
+};
+
+},{"../shapes/Circle":6,"../shapes/Plane":22,"../shapes/Shape":28,"../shapes/Particle":21,"../collision/Broadphase":4,"../math/vec2":34}],29:[function(require,module,exports){
 var Utils = require('../utils/Utils');
 
 module.exports = Solver;
@@ -2666,10 +2652,14 @@ World.prototype.step = function(dt){
         t0 = now();
     }
 
+    var glen = vec2.length(this.gravity);
+
     // add gravity to bodies
-    for(var i=0; i!==Nbodies; i++){
-        var fi = bodies[i].force;
-        add(fi,fi,g);
+    if(glen > 0){
+        for(var i=0; i!==Nbodies; i++){
+            var fi = bodies[i].force;
+            add(fi,fi,g);
+        }
     }
 
     // Add spring forces
@@ -2684,7 +2674,6 @@ World.prototype.step = function(dt){
     var result = broadphase.getCollisionPairs(this);
 
     // Narrowphase
-    var glen = vec2.length(this.gravity);
     np.reset();
     for(var i=0, Nresults=result.length; i!==Nresults; i+=2){
         var bi = result[i],
@@ -2702,13 +2691,6 @@ World.prototype.step = function(dt){
                     xj = bj.shapeOffsets[l] || zero,
                     aj = bj.shapeAngles[l] || 0;
 
-                if(!((si.collisionGroup & sj.collisionMask) !== 0 && (sj.collisionGroup & si.collisionMask) !== 0))
-                    continue;
-
-                var reducedMass = (bi.invMass + bj.invMass);
-                if(reducedMass > 0)
-                    reducedMass = 1/reducedMass;
-
                 var mu = this.defaultFriction;
 
                 if(si.material && sj.material){
@@ -2718,68 +2700,7 @@ World.prototype.step = function(dt){
                     }
                 }
 
-                var mug = mu * glen * reducedMass,
-                    doFriction = mu > 0;
-
-                // Get world position and angle of each shape
-                rotate(xiw, xi, bi.angle);
-                rotate(xjw, xj, bj.angle);
-                add(xiw, xiw, bi.position);
-                add(xjw, xjw, bj.position);
-                var aiw = ai + bi.angle;
-                var ajw = aj + bj.angle;
-
-                // Run narrowphase
-                np.enableFriction = mu > 0;
-                np.slipForce = mug;
-                if(si instanceof Circle){
-                         if(sj instanceof Circle)       np.circleCircle  (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-                    else if(sj instanceof Particle)     np.circleParticle(bi,si,xiw,aiw, bj,sj,xjw,ajw);
-                    else if(sj instanceof Plane)        np.circlePlane   (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-                    else if(sj instanceof Rectangle)    np.circleConvex  (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-                    else if(sj instanceof Convex)       np.circleConvex  (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-                    else if(sj instanceof Line)         np.circleLine    (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-                    else if(sj instanceof Capsule)      np.circleCapsule (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-
-                } else if(si instanceof Particle){
-                         if(sj instanceof Circle)       np.circleParticle   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-                    else if(sj instanceof Plane)        np.particlePlane    (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-                    else if(sj instanceof Rectangle)    np.particleConvex   (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-                    else if(sj instanceof Convex)       np.particleConvex   (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-                    else if(sj instanceof Capsule)      np.particleCapsule  (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-
-                } else if(si instanceof Plane){
-                         if(sj instanceof Circle)       np.circlePlane   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-                    else if(sj instanceof Particle)     np.particlePlane (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-                    else if(sj instanceof Rectangle)    np.convexPlane   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-                    else if(sj instanceof Convex)       np.convexPlane   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-                    else if(sj instanceof Line)         np.planeLine     (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-                    else if(sj instanceof Capsule)      np.capsulePlane  (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-
-                } else if(si instanceof Rectangle){
-                         if(sj instanceof Plane)        np.convexPlane    (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-                    else if(sj instanceof Circle)       np.circleConvex   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-                    else if(sj instanceof Rectangle)    np.convexConvex   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-                    else if(sj instanceof Convex)       np.convexConvex   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-                    else if(sj instanceof Particle)     np.particleConvex (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-
-                } else if(si instanceof Convex){
-                         if(sj instanceof Plane)        np.convexPlane    (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-                    else if(sj instanceof Circle)       np.circleConvex   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-                    else if(sj instanceof Rectangle)    np.convexConvex   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-                    else if(sj instanceof Convex)       np.convexConvex   (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-                    else if(sj instanceof Particle)     np.particleConvex (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-
-                } else if(si instanceof Line){
-                         if(sj instanceof Circle)       np.circleLine     (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-                    else if(sj instanceof Plane)        np.planeLine      (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-
-                } else if(si instanceof Capsule){
-                         if(sj instanceof Plane)        np.capsulePlane   (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-                         if(sj instanceof Circle)       np.circleCapsule  (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-                         if(sj instanceof Particle)     np.particleCapsule(bj,sj,xjw,ajw, bi,si,xiw,aiw);
-
-                }
+                World.runNarrowphase(np,bi,si,xi,ai,bj,sj,xj,aj,mu,glen);
             }
         }
     }
@@ -2806,28 +2727,13 @@ World.prototype.step = function(dt){
         var body = bodies[i];
 
         if(body.mass>0){
-            var minv = body.invMass,
-                f = body.force,
-                pos = body.position,
-                velo = body.velocity;
-
-            // Angular step
-            body.angularVelocity += body.angularForce * body.invInertia * dt;
-            body.angle += body.angularVelocity * dt;
-
-            // Linear step
-            scale(fhMinv,f,dt*minv);
-            add(velo,fhMinv,velo);
-            scale(velodt,velo,dt);
-            add(pos,pos,velodt);
+            World.integrateBody(body,dt);
         }
     }
 
     // Reset force
     for(var i=0; i!==Nbodies; i++){
-        var bi = bodies[i];
-        vec2.set(bi.force,0.0,0.0);
-        bi.angularForce = 0.0;
+        bodies[i].setZeroForce();
     }
 
     if(doProfiling){
@@ -2836,6 +2742,122 @@ World.prototype.step = function(dt){
     }
 
     this.emit(this.postStepEvent);
+};
+
+var ib_fhMinv = vec2.create();
+var ib_velodt = vec2.create();
+
+/**
+ * Move a body forward in time.
+ * @static
+ * @method integrateBody
+ * @param  {Body} body
+ * @param  {Number} dt
+ */
+World.integrateBody = function(body,dt){
+    var minv = body.invMass,
+        f = body.force,
+        pos = body.position,
+        velo = body.velocity;
+
+    // Angular step
+    body.angularVelocity += body.angularForce * body.invInertia * dt;
+    body.angle += body.angularVelocity * dt;
+
+    // Linear step
+    vec2.scale(ib_fhMinv,f,dt*minv);
+    vec2.add(velo,ib_fhMinv,velo);
+    vec2.scale(ib_velodt,velo,dt);
+    vec2.add(pos,pos,ib_velodt);
+};
+
+/**
+ * Runs narrowphase for the shape pair i and j.
+ * @static
+ * @method runNarrowphase
+ * @param  {Narrowphase} np
+ * @param  {Body} bi
+ * @param  {Shape} si
+ * @param  {Array} xi
+ * @param  {Number} ai
+ * @param  {Body} bj
+ * @param  {Shape} sj
+ * @param  {Array} xj
+ * @param  {Number} aj
+ * @param  {Number} mu
+ * @param  {Number} glen
+ */
+World.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,mu,glen){
+
+    if(!((si.collisionGroup & sj.collisionMask) !== 0 && (sj.collisionGroup & si.collisionMask) !== 0))
+        return;
+
+    var reducedMass = bi.invMass + bj.invMass;
+    if(reducedMass > 0)
+        reducedMass = 1/reducedMass;
+
+    var mug = mu * glen * reducedMass,
+        doFriction = mu > 0;
+
+    // Get world position and angle of each shape
+    vec2.rotate(xiw, xi, bi.angle);
+    vec2.rotate(xjw, xj, bj.angle);
+    vec2.add(xiw, xiw, bi.position);
+    vec2.add(xjw, xjw, bj.position);
+    var aiw = ai + bi.angle;
+    var ajw = aj + bj.angle;
+
+    // Run narrowphase
+    np.enableFriction = mu > 0;
+    np.slipForce = mug;
+    if(si instanceof Circle){
+             if(sj instanceof Circle)       np.circleCircle  (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+        else if(sj instanceof Particle)     np.circleParticle(bi,si,xiw,aiw, bj,sj,xjw,ajw);
+        else if(sj instanceof Plane)        np.circlePlane   (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+        else if(sj instanceof Rectangle)    np.circleConvex  (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+        else if(sj instanceof Convex)       np.circleConvex  (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+        else if(sj instanceof Line)         np.circleLine    (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+        else if(sj instanceof Capsule)      np.circleCapsule (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+
+    } else if(si instanceof Particle){
+             if(sj instanceof Circle)       np.circleParticle   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+        else if(sj instanceof Plane)        np.particlePlane    (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+        else if(sj instanceof Rectangle)    np.particleConvex   (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+        else if(sj instanceof Convex)       np.particleConvex   (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+        else if(sj instanceof Capsule)      np.particleCapsule  (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+
+    } else if(si instanceof Plane){
+             if(sj instanceof Circle)       np.circlePlane   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+        else if(sj instanceof Particle)     np.particlePlane (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+        else if(sj instanceof Rectangle)    np.convexPlane   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+        else if(sj instanceof Convex)       np.convexPlane   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+        else if(sj instanceof Line)         np.planeLine     (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+        else if(sj instanceof Capsule)      np.capsulePlane  (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+
+    } else if(si instanceof Rectangle){
+             if(sj instanceof Plane)        np.convexPlane    (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+        else if(sj instanceof Circle)       np.circleConvex   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+        else if(sj instanceof Rectangle)    np.convexConvex   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+        else if(sj instanceof Convex)       np.convexConvex   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+        else if(sj instanceof Particle)     np.particleConvex (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+
+    } else if(si instanceof Convex){
+             if(sj instanceof Plane)        np.convexPlane    (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+        else if(sj instanceof Circle)       np.circleConvex   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+        else if(sj instanceof Rectangle)    np.convexConvex   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+        else if(sj instanceof Convex)       np.convexConvex   (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+        else if(sj instanceof Particle)     np.particleConvex (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+
+    } else if(si instanceof Line){
+             if(sj instanceof Circle)       np.circleLine     (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+        else if(sj instanceof Plane)        np.planeLine      (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+
+    } else if(si instanceof Capsule){
+             if(sj instanceof Plane)        np.capsulePlane   (bi,si,xiw,aiw, bj,sj,xjw,ajw);
+             if(sj instanceof Circle)       np.circleCapsule  (bj,sj,xjw,ajw, bi,si,xiw,aiw);
+             if(sj instanceof Particle)     np.particleCapsule(bj,sj,xjw,ajw, bi,si,xiw,aiw);
+
+    }
 };
 
 /**
@@ -6194,7 +6216,7 @@ Narrowphase.getClosestEdge = function(c,angle,axis,flip){
 };
 
 
-},{"../math/vec2":34,"../utils/Utils":31,"../constraints/ContactEquation":8,"../constraints/FrictionEquation":14,"../shapes/Circle":6}],3:[function(require,module,exports){
+},{"../utils/Utils":31,"../math/vec2":34,"../constraints/ContactEquation":8,"../constraints/FrictionEquation":14,"../shapes/Circle":6}],3:[function(require,module,exports){
 var vec2 = require('../math/vec2')
 ,   decomp = require('poly-decomp')
 ,   Convex = require('../shapes/Convex')
@@ -6426,10 +6448,13 @@ Body.prototype.updateBoundingRadius = function(){
  *     body.addShape(shape,[0,1],Math.PI/2);
  */
 Body.prototype.addShape = function(shape,offset,angle){
+    angle = angle || 0.0;
 
     // Copy the offset vector
     if(offset){
         offset = vec2.fromValues(offset[0],offset[1]);
+    } else {
+        offset = vec2.fromValues(0,0);
     }
 
     this.shapes      .push(shape);
@@ -6653,6 +6678,29 @@ Body.prototype.adjustCenterOfMass = function(){
 
     this.updateMassProperties();
     this.updateBoundingRadius();
+};
+
+/**
+ * Sets the force on the body to zero.
+ * @method setZeroForce
+ */
+Body.prototype.setZeroForce = function(){
+    vec2.set(this.force,0.0,0.0);
+    this.angularForce = 0.0;
+};
+
+Body.prototype.resetConstraintVelocity = function(){
+    var b = this,
+        vlambda = b.vlambda;
+    vec2.set(vlambda,0,0);
+    b.wlambda = 0;
+};
+
+Body.prototype.addConstraintVelocity = function(){
+    var b = this,
+        v = b.velocity;
+    vec2.add( v, v, b.vlambda);
+    b.angularVelocity += b.wlambda;
 };
 
 /**
