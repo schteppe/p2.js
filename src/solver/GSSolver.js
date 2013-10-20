@@ -127,11 +127,12 @@ GSSolver.prototype.solve = function(dt,world){
             deltalambdaTot = 0.0;
 
             for(j=0; j!==Neq; j++){
-
                 c = equations[j];
-
                 var _eps = useGlobalParams ? eps : c.eps;
 
+                var deltalambda = GSSolver.iterateEquation(j,c,_eps,Bs,invCs,lambda,useZeroRHS);
+                if(tolSquared !== 0) deltalambdaTot += Math.abs(deltalambda);
+                /*
                 // Compute iteration
                 maxForce = c.maxForce;
                 minForce = c.minForce;
@@ -157,10 +158,11 @@ GSSolver.prototype.solve = function(dt,world){
                 deltalambdaTot += Math.abs(deltalambda);
 
                 c.addToWlambda(deltalambda);
+                */
             }
 
             // If the total error is small enough - stop iterate
-            if(deltalambdaTot*deltalambdaTot <= tolSquared) break;
+            if(tolSquared !== 0 && deltalambdaTot*deltalambdaTot <= tolSquared) break;
         }
 
         // Add result to velocity
@@ -171,3 +173,29 @@ GSSolver.prototype.solve = function(dt,world){
     errorTot = deltalambdaTot;
 };
 
+GSSolver.iterateEquation = function(j,eq,eps,Bs,invCs,lambda,useZeroRHS){
+    // Compute iteration
+    var maxForce = eq.maxForce,
+        minForce = eq.minForce,
+        B = Bs[j],
+        invC = invCs[j],
+        lambdaj = lambda[j],
+        GWlambda = eq.computeGWlambda(eps);
+
+    if(useZeroRHS) B = 0;
+
+    var deltalambda = invC * ( B - GWlambda - eps * lambdaj );
+
+    // Clamp if we are not within the min/max interval
+    var lambdaj_plus_deltalambda = lambdaj + deltalambda;
+    if(lambdaj_plus_deltalambda < minForce){
+        deltalambda = minForce - lambdaj;
+    } else if(lambdaj_plus_deltalambda > maxForce){
+        deltalambda = maxForce - lambdaj;
+    }
+    lambda[j] += deltalambda;
+
+    eq.addToWlambda(deltalambda);
+
+    return deltalambda;
+};
