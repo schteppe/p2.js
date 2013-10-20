@@ -91,7 +91,6 @@ function Demo(world){
     this.createMenu();
 
     world.on("postStep",function(e){
-        that.render();
         that.updateStats();
     }).on("addBody",function(e){
         that.addVisual(e.body);
