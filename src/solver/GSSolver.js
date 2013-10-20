@@ -132,33 +132,6 @@ GSSolver.prototype.solve = function(dt,world){
 
                 var deltalambda = GSSolver.iterateEquation(j,c,_eps,Bs,invCs,lambda,useZeroRHS);
                 if(tolSquared !== 0) deltalambdaTot += Math.abs(deltalambda);
-                /*
-                // Compute iteration
-                maxForce = c.maxForce;
-                minForce = c.minForce;
-
-                B = Bs[j];
-                invC = invCs[j];
-                lambdaj = lambda[j];
-                GWlambda = c.computeGWlambda(_eps);
-
-                if(useZeroRHS) B = 0;
-
-                deltalambda = invC * ( B - GWlambda - _eps * lambdaj );
-
-                // Clamp if we are not within the min/max interval
-                lambdaj_plus_deltalambda = lambdaj + deltalambda;
-                if(lambdaj_plus_deltalambda < minForce){
-                    deltalambda = minForce - lambdaj;
-                } else if(lambdaj_plus_deltalambda > maxForce){
-                    deltalambda = maxForce - lambdaj;
-                }
-                lambda[j] += deltalambda;
-
-                deltalambdaTot += Math.abs(deltalambda);
-
-                c.addToWlambda(deltalambda);
-                */
             }
 
             // If the total error is small enough - stop iterate
