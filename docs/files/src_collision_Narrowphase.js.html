@@ -87,13 +87,13 @@
             
                 <li><a href="../classes/Plane.html">Plane</a></li>
             
-                <li><a href="../classes/PointToPointConstraint.html">PointToPointConstraint</a></li>
-            
                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
             
                 <li><a href="../classes/QuadTree.html">QuadTree</a></li>
             
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
+            
+                <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
             
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
@@ -184,6 +184,8 @@ var tmp1 = vec2.fromValues(0,0)
 ,   tmp14 = vec2.fromValues(0,0)
 ,   tmp15 = vec2.fromValues(0,0)
 ,   tmp16 = vec2.fromValues(0,0)
+,   tmp17 = vec2.fromValues(0,0)
+,   tmp18 = vec2.fromValues(0,0)
 
 /**
  * Narrowphase. Creates contacts and friction given shapes and transforms.
@@ -567,14 +569,26 @@ Narrowphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
         closestEdge = -1,
         closestEdgeDistance = null,
         closestEdgeOrthoDist = tmp12,
-        closestEdgeProjectedPoint = tmp13;
+        closestEdgeProjectedPoint = tmp13,
+        candidate = tmp14,
+        candidateDist = tmp15,
+        minCandidate = tmp16,
+
+        found = false,
+        minCandidateDistance = Number.MAX_VALUE;
 
     var numReported = 0;
+
+    // New algorithm:
+    // 1. Check so center of circle is not inside the polygon. If it is, this wont work...
+    // 2. For each edge
+    // 2. 1. Get point on circle that is closest to the edge (scale normal with -radius)
+    // 2. 2. Check if point is inside.
 
     verts = convexShape.vertices;
 
     // Check all edges first
-    for(var i=0; i&lt;verts.length; i++){
+    for(var i=0; i!==verts.length; i++){
         var v0 = verts[i],
             v1 = verts[(i+1)%verts.length];
 
@@ -589,39 +603,82 @@ Narrowphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
         // Get tangent to the edge. Points out of the Convex
         vec2.rotate(worldTangent, worldEdgeUnit, -Math.PI/2);
 
-        // Check distance from the plane spanned by the edge vs the circle
-        sub(dist, circleOffset, worldVertex0);
-        var d = dot(dist, worldTangent);
-        sub(centerDist, worldVertex0, convexOffset);
+        // Get point on circle, closest to the polygon
+        vec2.scale(candidate,worldTangent,-circleShape.radius);
+        add(candidate,candidate,circleOffset);
 
-        sub(convexToCircle, circleOffset, convexOffset);
+        if(pointInConvex(candidate,convexShape,convexOffset,convexAngle)){
 
-        if(d &lt; circleRadius &amp;&amp; dot(centerDist,convexToCircle) &gt; 0){
+            vec2.sub(candidateDist,worldVertex0,candidate);
+            var candidateDistance = Math.abs(vec2.dot(candidateDist,worldTangent));
 
-            // Now project the circle onto the edge
-            vec2.scale(orthoDist, worldTangent, d);
-            sub(projectedPoint, circleOffset, orthoDist);
+            /*
+            // Check distance from the plane spanned by the edge vs the circle
+            sub(dist, circleOffset, worldVertex0);
+            var d = dot(dist, worldTangent);
+            sub(centerDist, worldVertex0, convexOffset);
 
-            // Check if the point is within the edge span
-            var pos =  dot(worldEdgeUnit, projectedPoint);
-            var pos0 = dot(worldEdgeUnit, worldVertex0);
-            var pos1 = dot(worldEdgeUnit, worldVertex1);
+            sub(convexToCircle, circleOffset, convexOffset);
 
-            if(pos &gt; pos0 &amp;&amp; pos &lt; pos1){
-                // We got contact!
+            if(d &lt; circleRadius &amp;&amp; dot(centerDist,convexToCircle) &gt; 0){
 
-                if(justTest) return true;
+                // Now project the circle onto the edge
+                vec2.scale(orthoDist, worldTangent, d);
+                sub(projectedPoint, circleOffset, orthoDist);
 
-                if(closestEdgeDistance === null || d*d&lt;closestEdgeDistance*closestEdgeDistance){
-                    closestEdgeDistance = d;
-                    closestEdge = i;
-                    vec2.copy(closestEdgeOrthoDist, orthoDist);
-                    vec2.copy(closestEdgeProjectedPoint, projectedPoint);
+
+                // Check if the point is within the edge span
+                var pos =  dot(worldEdgeUnit, projectedPoint);
+                var pos0 = dot(worldEdgeUnit, worldVertex0);
+                var pos1 = dot(worldEdgeUnit, worldVertex1);
+
+                if(pos &gt; pos0 &amp;&amp; pos &lt; pos1){
+                    // We got contact!
+
+                    if(justTest) return true;
+
+                    if(closestEdgeDistance === null || d*d&lt;closestEdgeDistance*closestEdgeDistance){
+                        closestEdgeDistance = d;
+                        closestEdge = i;
+                        vec2.copy(closestEdgeOrthoDist, orthoDist);
+                        vec2.copy(closestEdgeProjectedPoint, projectedPoint);
+                    }
                 }
+            }
+            */
+
+            if(candidateDistance &lt; minCandidateDistance){
+                vec2.copy(minCandidate,candidate);
+                minCandidateDistance = candidateDistance;
+                vec2.scale(closestEdgeProjectedPoint,worldTangent,candidateDistance);
+                vec2.add(closestEdgeProjectedPoint,closestEdgeProjectedPoint,candidate);
+                found = true;
             }
         }
     }
 
+    if(found){
+        var c = this.createContactEquation(circleBody,convexBody);
+        vec2.sub(c.ni, minCandidate, circleOffset)
+        vec2.normalize(c.ni, c.ni);
+
+        vec2.scale(c.ri,  c.ni, circleRadius);
+        add(c.ri, c.ri, circleOffset);
+        sub(c.ri, c.ri, circleBody.position);
+
+        sub(c.rj, closestEdgeProjectedPoint, convexOffset);
+        add(c.rj, c.rj, convexOffset);
+        sub(c.rj, c.rj, convexBody.position);
+
+        this.contactEquations.push(c);
+
+        if(this.enableFriction)
+            this.frictionEquations.push( this.createFrictionFromContact(c) );
+
+        return true;
+    }
+
+    /*
     if(closestEdge != -1){
         var c = this.createContactEquation(circleBody,convexBody);
 
@@ -643,6 +700,7 @@ Narrowphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
 
         return true;
     }
+    */
 
     // Check all vertices
     if(circleRadius &gt; 0){
@@ -684,6 +742,45 @@ Narrowphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
     return false;
 };
 
+// Check if a point is in a polygon
+var pic_worldVertex0 = vec2.create(),
+    pic_worldVertex1 = vec2.create(),
+    pic_r0 = vec2.create(),
+    pic_r1 = vec2.create();
+function pointInConvex(worldPoint,convexShape,convexOffset,convexAngle){
+    var worldVertex0 = pic_worldVertex0,
+        worldVertex1 = pic_worldVertex1,
+        r0 = pic_r0,
+        r1 = pic_r1,
+        point = worldPoint,
+        verts = convexShape.vertices,
+        lastCross = null;
+    for(var i=0; i!==verts.length+1; i++){
+        var v0 = verts[i%verts.length],
+            v1 = verts[(i+1)%verts.length];
+
+        // Transform vertices to world
+        // can we instead transform point to local of the convex???
+        vec2.rotate(worldVertex0, v0, convexAngle);
+        vec2.rotate(worldVertex1, v1, convexAngle);
+        add(worldVertex0, worldVertex0, convexOffset);
+        add(worldVertex1, worldVertex1, convexOffset);
+
+        sub(r0, worldVertex0, point);
+        sub(r1, worldVertex1, point);
+        var cross = vec2.crossLength(r0,r1);
+
+        if(lastCross===null) lastCross = cross;
+
+        // If we got a different sign of the distance vector, the point is out of the polygon
+        if(cross*lastCross &lt;= 0){
+            return false;
+        }
+        lastCross = cross;
+    }
+    return true;
+};
+
 /**
  * Particle/convex Narrowphase
  * @method particleConvex
@@ -695,6 +792,7 @@ Narrowphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
  * @param  {Convex} sj
  * @param  {Array} xj
  * @param  {Number} aj
+ * @todo use pointInConvex and code more similar to circleConvex
  */
 Narrowphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTest ){
     var convexShape = sj,
@@ -719,12 +817,22 @@ Narrowphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, just
         closestEdgeDistance = null,
         closestEdgeOrthoDist = tmp12,
         closestEdgeProjectedPoint = tmp13,
-        localPoint = tmp14;
+        r0 = tmp14, // vector from particle to vertex0
+        r1 = tmp15,
+        localPoint = tmp16,
+        candidateDist = tmp17,
+        minEdgeNormal = tmp18,
+        minCandidateDistance = Number.MAX_VALUE;
 
     var numReported = 0,
+        found = false,
         verts = convexShape.vertices;
 
-    // Check all edges first
+    // Check if the particle is in the polygon at all
+    if(!pointInConvex(particleOffset,convexShape,convexOffset,convexAngle))
+        return false;
+
+    // Check edges first
     var lastCross = null;
     for(var i=0; i!==verts.length+1; i++){
         var v0 = verts[i%verts.length],
@@ -748,16 +856,10 @@ Narrowphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, just
         var d = dot(dist, worldTangent);
         sub(centerDist, worldVertex0, convexOffset);
 
-        var cross = vec2.crossLength(worldEdgeUnit,dist);
-
-        if(lastCross===null) lastCross = cross;
-
-        // If we got a different sign of the distance vector, the point is out of the polygon
-        if(cross*lastCross &lt; 0) return false;
-        lastCross = cross;
-
         sub(convexToparticle, particleOffset, convexOffset);
 
+
+        /*
         if(d &lt; 0 &amp;&amp; dot(centerDist,convexToparticle) &gt;= 0){
 
             // Now project the particle onto the edge
@@ -781,12 +883,24 @@ Narrowphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, just
                 }
             }
         }
+        */
+
+        vec2.sub(candidateDist,worldVertex0,particleOffset);
+        var candidateDistance = Math.abs(vec2.dot(candidateDist,worldTangent));
+
+        if(candidateDistance &lt; minCandidateDistance){
+            minCandidateDistance = candidateDistance;
+            vec2.scale(closestEdgeProjectedPoint,worldTangent,candidateDistance);
+            vec2.add(closestEdgeProjectedPoint,closestEdgeProjectedPoint,particleOffset);
+            vec2.copy(minEdgeNormal,worldTangent);
+            found = true;
+        }
     }
 
-    if(closestEdge != -1){
+    if(found){
         var c = this.createContactEquation(particleBody,convexBody);
 
-        vec2.copy(c.ni, closestEdgeOrthoDist);
+        vec2.scale(c.ni, minEdgeNormal, -1);
         vec2.normalize(c.ni, c.ni);
 
         // Particle has no extent to the contact point
