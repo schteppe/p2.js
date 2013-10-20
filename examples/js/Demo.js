@@ -160,9 +160,21 @@ Demo.prototype.handleMouseDown = function(physicsPosition){
     switch(this.state){
 
         case DemoStates.DEFAULT:
+
+            // Check if the clicked point overlaps bodies
             var result = this.world.hitTest(physicsPosition,world.bodies,this.pickPrecision);
-            if(result.length > 0){
-                var b = result[0]; // The grabbed body
+
+            // Remove static bodies
+            var b;
+            while(result.length > 0){
+                b = result.shift();
+                if(b.motionState == Body.STATIC)
+                    b = null;
+                else
+                    break;
+            }
+
+            if(b){
                 this.setState(DemoStates.DRAGGING);
                 // Add mouse joint to the body
                 var localPoint = vec2.create();
