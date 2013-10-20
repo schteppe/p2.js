@@ -416,20 +416,7 @@ World.prototype.step = function(dt){
         var body = bodies[i];
 
         if(body.mass>0){
-            var minv = body.invMass,
-                f = body.force,
-                pos = body.position,
-                velo = body.velocity;
-
-            // Angular step
-            body.angularVelocity += body.angularForce * body.invInertia * dt;
-            body.angle += body.angularVelocity * dt;
-
-            // Linear step
-            scale(fhMinv,f,dt*minv);
-            add(velo,fhMinv,velo);
-            scale(velodt,velo,dt);
-            add(pos,pos,velodt);
+            World.integrateBody(body,dt);
         }
     }
 
@@ -446,6 +433,25 @@ World.prototype.step = function(dt){
     }
 
     this.emit(this.postStepEvent);
+};
+
+var ib_fhMinv = vec2.create();
+var ib_velodt = vec2.create();
+World.integrateBody = function(body,dt){
+    var minv = body.invMass,
+        f = body.force,
+        pos = body.position,
+        velo = body.velocity;
+
+    // Angular step
+    body.angularVelocity += body.angularForce * body.invInertia * dt;
+    body.angle += body.angularVelocity * dt;
+
+    // Linear step
+    vec2.scale(ib_fhMinv,f,dt*minv);
+    vec2.add(velo,ib_fhMinv,velo);
+    vec2.scale(ib_velodt,velo,dt);
+    vec2.add(pos,pos,ib_velodt);
 };
 
 /**
