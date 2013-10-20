@@ -1,0 +1,58 @@
+
+<script src="../build/p2.js"></script>
+<script>
+    var world = new p2.World(),
+        dt = 1/60;
+    world.addBody(new p2.Body({ mass : 1.3 }));
+    var Nbodies = world.bodies.length,
+        bodies = world.bodies;
+
+    var fhMinv = p2.vec2.create(),
+        velodt = p2.vec2.create();
+
+    setInterval(function(){
+        // Step forward
+        for(var i=0; i!==Nbodies; i++){
+            var body = bodies[i];
+
+            if(body.mass > 0){
+
+                if(true){
+                    integrateBody(body,dt);
+                } else {
+                    var minv = body.invMass,
+                        f = body.force,
+                        pos = body.position,
+                        velo = body.velocity;
+
+                    // Angular step
+                    body.angularVelocity += body.angularForce * body.invInertia * dt;
+                    body.angle += body.angularVelocity * dt;
+
+                    // Linear step
+                    p2.vec2.scale(fhMinv,f,dt*minv);
+                    p2.vec2.add(velo,fhMinv,velo);
+                    p2.vec2.scale(velodt,velo,dt);
+                    p2.vec2.add(pos,pos,velodt);
+                }
+            }
+        }
+    },1/60*1000);
+
+    function integrateBody(body,dt){
+        var minv = body.invMass,
+            f = body.force,
+            pos = body.position,
+            velo = body.velocity;
+
+        // Angular step
+        body.angularVelocity += body.angularForce * body.invInertia * dt;
+        body.angle += body.angularVelocity * dt;
+
+        // Linear step
+        p2.vec2.scale(fhMinv,f,dt*minv);
+        p2.vec2.add(velo,fhMinv,velo);
+        p2.vec2.scale(velodt,velo,dt);
+        p2.vec2.add(pos,pos,velodt);
+    }
+</script>

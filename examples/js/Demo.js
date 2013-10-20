@@ -71,6 +71,8 @@ function Demo(world){
     this.drawCirclePoint = vec2.create();
     this.drawCircleChangeEvent = { type : "drawCircleChange" };
 
+    this.stateChangeEvent = { type : "stateChange", state:null };
+
     // If contacts should be drawn
     this.drawContacts = false;
 
@@ -137,8 +139,19 @@ function Demo(world){
         this.addVisual(world.bodies[i]);
     for(var i=0; i<world.springs.length; i++)
         this.addVisual(world.springs[i]);
+
+    this.on("stateChange",function(e){
+        that.updateTools();
+    });
+    this.updateTools();
 }
 Demo.prototype = new EventEmitter();
+
+Demo.prototype.setState = function(s){
+    this.state = s;
+    this.stateChangeEvent.state = s;
+    this.emit(this.stateChangeEvent);
+};
 
 /**
  * Should be called by subclasses whenever there's a mousedown event
@@ -354,14 +367,24 @@ Demo.prototype.createMenu = function(){
             "<button class='btn' id='menu-container-open'>Open menu</button>",
             "<div id='menu' class='well'>",
                 "<button class='btn' id='menu-hide'>Hide menu</button>",
+
                 "<fieldset id='menu-controls-container'>",
-                    "<legend>Simulation control</legend>",
+                    "<h4>Simulation control</h4>",
                     "<button class='btn' id='menu-playpause'>Pause</button>",
                     "<button class='btn' id='menu-restart'>Restart</button>",
                 "</fieldset>",
 
+                "<fieldset id='menu-tools'>",
+                    "<h4>Tools</h4>",
+                    "<div class='btn-group'>",
+                        "<button class='btn' id='menu-tools-default'>Pick/pan</button>",
+                        "<button class='btn' id='menu-tools-polygon'>Polygon</button>",
+                        "<button class='btn' id='menu-tools-circle'>Circle</button>",
+                    "</div>",
+                "</fieldset>",
+
                 "<fieldset id='menu-solver-container'>",
-                    "<legend>Solver</legend>",
+                    "<h4>Solver</h4>",
                     "<label>Relaxation</label>",
                     "<input class='input-block-level' id='menu-solver-relaxation' type='number' step='any' min='0' value='4'>",
                     "<label>Stiffness</label>",
@@ -408,4 +431,28 @@ Demo.prototype.createMenu = function(){
     $("#menu-solver-stiffness").change(function(e){
         that.world.solver.stiffness = parseFloat($(this).val());
     });
+
+    $("#menu-tools-default").click(function(e){
+        that.setState(DemoStates.DEFAULT);
+    });
+    $("#menu-tools-polygon").click(function(e){
+        that.setState(DemoStates.DRAWPOLYGON);
+    });
+    $("#menu-tools-circle").click(function(e){
+        that.setState(DemoStates.DRAWCIRCLE);
+    });
+};
+
+
+Demo.prototype.updateTools = function(){
+    $("#menu-tools button").removeClass("active");
+    var id;
+    switch(this.state){
+        case DemoStates.DEFAULT:        id = "#menu-tools-default"; break;
+        case DemoStates.DRAWPOLYGON:    id = "#menu-tools-polygon"; break;
+        case DemoStates.DRAWCIRCLE:     id = "#menu-tools-circle";  break;
+    }
+    if(id){
+        $(id).addClass("active");
+    }
 };
