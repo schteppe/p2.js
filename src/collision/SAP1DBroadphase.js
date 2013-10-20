@@ -92,23 +92,13 @@ SAP1DBroadphase.prototype.getCollisionPairs = function(world){
 
     // Look through the list
     for(i=0, N=bodies.length; i!==N; i++){
-        var bi = bodies[i],
-            biPos = bi.position[axisIndex],
-            ri = bi.boundingRadius;
+        var bi = bodies[i];
 
         for(j=i+1; j<N; j++){
-            var bj = bodies[j],
-                bjPos = bj.position[axisIndex],
-                rj = bj.boundingRadius,
-                boundA1 = biPos-ri,
-                boundA2 = biPos+ri,
-                boundB1 = bjPos-rj,
-                boundB2 = bjPos+rj;
+            var bj = bodies[j];
 
-            // Abort if we got gap til the next body
-            if( boundB1 > boundA2 ){
+            if(!SAP1DBroadphase.checkBounds(bi,bj,axisIndex))
                 break;
-            }
 
             // If we got overlap, add pair
             if(Broadphase.boundingRadiusCheck(bi,bj))
@@ -117,4 +107,18 @@ SAP1DBroadphase.prototype.getCollisionPairs = function(world){
     }
 
     return result;
+};
+
+// Returns true if bounds overlap
+SAP1DBroadphase.checkBounds = function(bi,bj,axisIndex){
+    var biPos = bi.position[axisIndex],
+        ri = bi.boundingRadius,
+        bjPos = bj.position[axisIndex],
+        rj = bj.boundingRadius,
+        boundA1 = biPos-ri,
+        boundA2 = biPos+ri,
+        boundB1 = bjPos-rj,
+        boundB2 = bjPos+rj;
+
+    return boundB1 < boundA2;
 };
