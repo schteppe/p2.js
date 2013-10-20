@@ -117,9 +117,7 @@ GSSolver.prototype.solve = function(dt,world){
 
         // Reset vlambda
         for(i=0; i!==Nbodies; i++){
-            var b=bodies[i], vlambda=b.vlambda;
-            set(vlambda,0,0);
-            b.wlambda = 0;
+            bodies[i].resetConstraintVelocity();
         }
 
         // Iterate over equations
@@ -167,9 +165,7 @@ GSSolver.prototype.solve = function(dt,world){
 
         // Add result to velocity
         for(i=0; i!==Nbodies; i++){
-            var b=bodies[i], v=b.velocity;
-            add( v, v, b.vlambda);
-            b.angularVelocity += b.wlambda;
+            bodies[i].addConstraintVelocity();
         }
     }
     errorTot = deltalambdaTot;

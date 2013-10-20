@@ -470,6 +470,20 @@ Body.prototype.setZeroForce = function(){
     this.angularForce = 0.0;
 };
 
+Body.prototype.resetConstraintVelocity = function(){
+    var b = this,
+        vlambda = b.vlambda;
+    vec2.set(vlambda,0,0);
+    b.wlambda = 0;
+};
+
+Body.prototype.addConstraintVelocity = function(){
+    var b = this,
+        v = b.velocity;
+    vec2.add( v, v, b.vlambda);
+    b.angularVelocity += b.wlambda;
+};
+
 /**
  * Dynamic body.
  * @property DYNAMIC
