@@ -44,6 +44,7 @@ function Narrowphase(){
     this.reuseObjects = true;
     this.reusableContactEquations = [];
     this.reusableFrictionEquations = [];
+    this.restitution = 0; // For contact constraints
 };
 
 /**
@@ -75,6 +76,7 @@ Narrowphase.prototype.createContactEquation = function(bodyA,bodyB){
     var c = this.reusableContactEquations.length ? this.reusableContactEquations.pop() : new ContactEquation(bodyA,bodyB);
     c.bi = bodyA;
     c.bj = bodyB;
+    c.restitution = this.restitution;
     return c;
 };
 

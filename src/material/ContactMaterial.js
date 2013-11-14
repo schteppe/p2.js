@@ -49,7 +49,7 @@ function ContactMaterial(materialA, materialB, options){
      * @property restitution
      * @type {Number}
      */
-    this.restitution =  typeof(options.restitution) !== "undefined" ?   Number(options.restitution) : 0.3;
+    this.restitution =  typeof(options.restitution) !== "undefined" ?   Number(options.restitution) : 0.0;
 
     /**
      * Stiffness of the resulting ContactEquation that this ContactMaterial generate

@@ -315,16 +315,18 @@ World.prototype.step = function(dt){
                     xj = bj.shapeOffsets[l] || zero,
                     aj = bj.shapeAngles[l] || 0;
 
-                var mu = this.defaultFriction;
+                var mu = this.defaultFriction,
+                    restitution = 0.0;
 
                 if(si.material && sj.material){
                     var cm = this.getContactMaterial(si.material,sj.material);
                     if(cm){
                         mu = cm.friction;
+                        restitution = cm.restitution;
                     }
                 }
 
-                World.runNarrowphase(np,bi,si,xi,ai,bj,sj,xj,aj,mu,glen);
+                World.runNarrowphase(np,bi,si,xi,ai,bj,sj,xj,aj,mu,glen,restitution);
             }
         }
     }
@@ -411,7 +413,7 @@ World.integrateBody = function(body,dt){
  * @param  {Number} mu
  * @param  {Number} glen
  */
-World.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,mu,glen){
+World.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,mu,glen,restitution){
 
     if(!((si.collisionGroup & sj.collisionMask) !== 0 && (sj.collisionGroup & si.collisionMask) !== 0))
         return;
@@ -434,6 +436,7 @@ World.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,mu,glen){
     // Run narrowphase
     np.enableFriction = mu > 0;
     np.slipForce = mug;
+    np.restitution = restitution;
     if(si instanceof Circle){
              if(sj instanceof Circle)       np.circleCircle  (bi,si,xiw,aiw, bj,sj,xjw,ajw);
         else if(sj instanceof Particle)     np.circleParticle(bi,si,xiw,aiw, bj,sj,xjw,ajw);
