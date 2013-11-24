@@ -81,6 +81,13 @@ setInterval(function(){
 Note that concave polygon shapes can be created using ```Body.prototype.fromPolygon```.
 
 ### Change log
+
+##### Current dev version
+* Added method ```Narrowphase.prototype.collidedLastStep```
+* Added property ```.firstImpact``` to ```ContactEquation``` and changed the way it handles restitution.
+* ```Solver``` now inherits from ```EventEmitter```.
+* ```IslandSolver``` now emits a "beforeSolveIsland" event.
+
 ##### 0.3
 * Added ```Utils```
 * The returned array by ```Broadphase.prototype.getCollisionPairs``` is now reused in between calls.
