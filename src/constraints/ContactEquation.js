@@ -49,11 +49,20 @@ ContactEquation.prototype.computeB = function(a,b,h){
         invMassj = bj.invMass,
         invIi = bi.invInertia,
         invIj = bj.invInertia,
-        n = this.ni;
+        n = this.ni,
+        G = this.G;
 
     // Caluclate cross products
     this.rixn = vec2.crossLength(ri,n);
     this.rjxn = vec2.crossLength(rj,n);
+
+    // G = [-n -rixn n rjxn]
+    G[0] = -n[0];
+    G[1] = -n[1];
+    G[2] = -this.rixn;
+    G[3] = n[0];
+    G[4] = n[1];
+    G[5] = this.rjxn;
 
     // Calculate q = xj+rj -(xi+ri) i.e. the penetration vector
     vec2.add(penetrationVec,xj,rj);
