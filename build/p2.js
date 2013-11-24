@@ -696,6 +696,7 @@ function ContactEquation(bi,bj){
     this.rixn = 0;
     this.rjxn = 0;
     this.restitution = 0;
+    this.firstImpact = false;
 };
 ContactEquation.prototype = new Equation();
 ContactEquation.prototype.constructor = ContactEquation;
@@ -733,10 +734,16 @@ ContactEquation.prototype.computeB = function(a,b,h){
     vec2.sub(penetrationVec,penetrationVec,xi);
     vec2.sub(penetrationVec,penetrationVec,ri);
 
-    var Gq = vec2.dot(n,penetrationVec);
-
     // Compute iteration
-    var GW = (1-this.restitution) * (vec2.dot(vj,n) - vec2.dot(vi,n) + wj * this.rjxn - wi * this.rixn);
+    var GW, Gq;
+    if(this.firstImpact && this.restitution !== 0){
+        Gq = 0;//vec2.dot(n,penetrationVec);
+        GW = (1/b)*(1+this.restitution) * (vec2.dot(vj,n) - vec2.dot(vi,n) + wj * this.rjxn - wi * this.rixn);
+    } else {
+        GW = vec2.dot(vj,n) - vec2.dot(vi,n) + wj * this.rjxn - wi * this.rixn;
+        Gq = vec2.dot(n,penetrationVec);
+    }
+
     var GiMf = vec2.dot(fj,n)*invMassj - vec2.dot(fi,n)*invMassi + invIj*tauj*this.rjxn - invIi*taui*this.rixn;
 
     var B = - Gq * a - GW * b - h*GiMf;
@@ -1645,7 +1652,7 @@ NaiveBroadphase.prototype.getCollisionPairs = function(world){
     return result;
 };
 
-},{"../shapes/Circle":6,"../shapes/Plane":22,"../shapes/Shape":28,"../shapes/Particle":21,"../collision/Broadphase":4,"../math/vec2":34}],21:[function(require,module,exports){
+},{"../shapes/Circle":6,"../shapes/Plane":22,"../shapes/Particle":21,"../shapes/Shape":28,"../collision/Broadphase":4,"../math/vec2":34}],21:[function(require,module,exports){
 var Shape = require('./Shape');
 
 module.exports = Particle;
@@ -2567,6 +2574,11 @@ function World(options){
      */
     this.contactMaterials = [];
 
+    this.contactBodiesA = [];
+    this.contactBodiesB = [];
+    this.oldContactBodiesA = [];
+    this.oldContactBodiesB = [];
+
     // Id counters
     this._constraintIdCounter = 0;
     this._bodyIdCounter = 0;
@@ -3345,7 +3357,7 @@ World.prototype.hitTest = function(worldPoint,bodies,precision){
     return result;
 };
 
-},{"../../package.json":2,"../solver/GSSolver":16,"../collision/NaiveBroadphase":20,"../math/vec2":34,"../shapes/Circle":6,"../shapes/Rectangle":25,"../shapes/Convex":10,"../shapes/Line":18,"../shapes/Plane":22,"../shapes/Capsule":5,"../shapes/Particle":21,"../events/EventEmitter":13,"../objects/Body":3,"../objects/Spring":30,"../material/Material":19,"../material/ContactMaterial":9,"../constraints/DistanceConstraint":11,"../constraints/RevoluteConstraint":23,"../constraints/PrismaticConstraint":24,"../collision/Broadphase":4,"../collision/Narrowphase":37}],33:[function(require,module,exports){
+},{"../../package.json":2,"../solver/GSSolver":16,"../collision/NaiveBroadphase":20,"../math/vec2":34,"../shapes/Circle":6,"../shapes/Convex":10,"../shapes/Rectangle":25,"../shapes/Line":18,"../shapes/Plane":22,"../shapes/Capsule":5,"../shapes/Particle":21,"../events/EventEmitter":13,"../objects/Body":3,"../objects/Spring":30,"../material/Material":19,"../material/ContactMaterial":9,"../constraints/DistanceConstraint":11,"../constraints/RevoluteConstraint":23,"../constraints/PrismaticConstraint":24,"../collision/Narrowphase":37,"../collision/Broadphase":4}],33:[function(require,module,exports){
 var Plane = require("../shapes/Plane");
 var Broadphase = require("../collision/Broadphase");
 
@@ -4903,6 +4915,20 @@ function Narrowphase(){
     this.reusableContactEquations = [];
     this.reusableFrictionEquations = [];
     this.restitution = 0; // For contact constraints
+
+    // Keep track of the colliding bodies last step
+    this.collidingBodiesLastStep = {};
+};
+
+Narrowphase.prototype.collidedLastStep = function(bi,bj){
+    var id1 = bi.id,
+        id2 = bj.id;
+    if(id1 > id2){
+        var tmp = id1;
+        id1 = id2;
+        id2 = tmp;
+    }
+    return !!this.collidingBodiesLastStep[id1 + " " + id2];
 };
 
 /**
@@ -4910,6 +4936,22 @@ function Narrowphase(){
  * @method reset
  */
 Narrowphase.prototype.reset = function(){
+
+    // Save the colliding bodies data
+    for(var key in this.collidingBodiesLastStep)
+        delete this.collidingBodiesLastStep[key];
+    for(var i=0; i!==this.contactEquations.length; i++){
+        var eq = this.contactEquations[i],
+            id1 = eq.bi.id,
+            id2 = eq.bj.id;
+        if(id1 > id2){
+            var tmp = id1;
+            id1 = id2;
+            id2 = tmp;
+        }
+        this.collidingBodiesLastStep[id1 + " " + id2] = true;
+    }
+
     if(this.reuseObjects){
         var ce = this.contactEquations,
             fe = this.frictionEquations,
@@ -4935,6 +4977,7 @@ Narrowphase.prototype.createContactEquation = function(bodyA,bodyB){
     c.bi = bodyA;
     c.bj = bodyB;
     c.restitution = this.restitution;
+    c.firstImpact = !this.collidedLastStep(bodyA,bodyB);
     return c;
 };
 
@@ -7844,7 +7887,7 @@ Polygon.prototype.removeCollinearPoints = function(precision){
     return num;
 };
 
-},{"./Line":44,"./Scalar":45,"./Point":43}],45:[function(require,module,exports){
+},{"./Line":44,"./Point":43,"./Scalar":45}],45:[function(require,module,exports){
 module.exports = Scalar;
 
 /**
