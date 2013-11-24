@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>p2.js</title>
+    <script src="../build/p2.js"></script>
+    <script src="js/jquery.js"></script>
+    <script src="js/pixi.js"></script>
+    <script src="js/Demo.js"></script>
+    <script src="js/PixiDemo.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <link href="css/demo.css" rel="stylesheet"/>
+    <link href="css/bootstrap.min.css" rel="stylesheet"/>
+</head>
+<body>
+    <script>
+
+        var world = new p2.World({
+            doProfiling:true,
+            gravity : [0,-10],
+        });
+
+        var circle =   new p2.Circle(0.5),
+            body = new p2.Body({ position: [0,1], mass:1 });
+        circle.material = new p2.Material();
+        body.addShape(circle);
+        world.addBody(body);
+
+        // Create ground
+        var planeShape = new p2.Plane(),
+            plane = new p2.Body({
+            position:[0,-1],
+        });
+        planeShape.material = new p2.Material();
+        plane.addShape(planeShape);
+        world.addBody(plane);
+
+        world.addContactMaterial(new p2.ContactMaterial(planeShape.material, circle.material, {
+            restitution : 0.8,
+        }));
+
+        var demo = new PixiDemo(world);
+
+        function update(){
+            if(!demo.paused)
+                world.step(1/60);
+            demo.render();
+            requestAnimationFrame(update);
+        }
+        requestAnimationFrame(update);
+
+    </script>
+</body>
+</html>
