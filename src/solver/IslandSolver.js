@@ -34,8 +34,13 @@ function IslandSolver(subsolver,options){
 
     // Pooling of node objects saves some GC load
     this._nodePool = [];
+
+    this.beforeSolveIslandEvent = {
+        type : "beforeSolveIsland",
+        island : null,
+    };
 };
-IslandSolver.prototype = new Object(Solver.prototype);
+IslandSolver.prototype = new Solver();
 
 function getUnvisitedNode(nodes){
     var Nnodes = nodes.length;
@@ -153,7 +158,11 @@ IslandSolver.prototype.solve = function(dt,world){
     this.numIslands = n;
 
     // Solve islands
+    var e = this.beforeSolveIslandEvent;
     for(var i=0; i<islands.length; i++){
-        islands[i].solve(dt,this.subsolver);
+        var island = islands[i];
+        e.island = island;
+        this.emit(e);
+        island.solve(dt,this.subsolver);
     }
 };

@@ -1,4 +1,5 @@
-var Utils = require('../utils/Utils');
+var Utils = require('../utils/Utils')
+,   EventEmitter = require('../events/EventEmitter')
 
 module.exports = Solver;
 
@@ -9,6 +10,8 @@ module.exports = Solver;
  */
 function Solver(options){
     options = options || {};
+
+    EventEmitter.call(this);
 
     /**
      * Current equations in the solver.
@@ -25,6 +28,7 @@ function Solver(options){
      */
     this.equationSortFunction = options.equationSortFunction || false;
 };
+Solver.prototype = new EventEmitter();
 
 Solver.prototype.solve = function(dt,world){
     throw new Error("Solver.solve should be implemented by subclasses!");
