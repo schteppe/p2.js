@@ -7,7 +7,8 @@ module.exports = Solver;
  * @class Solver
  * @constructor
  */
-function Solver(){
+function Solver(options){
+    options = options || {};
 
     /**
      * Current equations in the solver.
@@ -16,10 +17,26 @@ function Solver(){
      * @type {Array}
      */
     this.equations = [];
+
+    /**
+     * Function that is used to sort all equations before each solve.
+     * @property equationSortFunction
+     * @type {function|boolean}
+     */
+    this.equationSortFunction = options.equationSortFunction || false;
 };
 
 Solver.prototype.solve = function(dt,world){
     throw new Error("Solver.solve should be implemented by subclasses!");
+};
+
+/**
+ * Sort all equations using the .equationSortFunction. Should be called by subclasses before solving.
+ * @method sortEquations
+ */
+Solver.prototype.sortEquations = function(){
+    if(this.equationSortFunction)
+        this.equations.sort(this.equationSortFunction);
 };
 
 /**

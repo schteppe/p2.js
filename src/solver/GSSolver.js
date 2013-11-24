@@ -19,7 +19,7 @@ var ARRAY_TYPE = Float32Array || Array;
  * @param {Number} options.tolerance
  */
 function GSSolver(options){
-    Solver.call(this);
+    Solver.call(this,options);
     options = options || {};
     this.iterations = options.iterations || 10;
     this.tolerance = options.tolerance || 0;
@@ -66,6 +66,9 @@ GSSolver.prototype = new Solver();
  * @param  {World}   world    World to solve
  */
 GSSolver.prototype.solve = function(dt,world){
+
+    this.sortEquations();
+
     var iter = 0,
         maxIter = this.iterations,
         tolSquared = this.tolerance*this.tolerance,

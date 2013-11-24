@@ -14,8 +14,8 @@ module.exports = IslandSolver;
  * @param {Solver} subsolver
  * @extends Solver
  */
-function IslandSolver(subsolver){
-    Solver.call(this);
+function IslandSolver(subsolver,options){
+    Solver.call(this,options);
     var that = this;
 
     /**
@@ -26,7 +26,7 @@ function IslandSolver(subsolver){
     this.subsolver = subsolver;
 
     /**
-     * Number of islands
+     * Number of islands. Read only.
      * @property numIslands
      * @type {number}
      */
