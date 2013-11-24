@@ -22,6 +22,7 @@ function ContactEquation(bi,bj){
     this.rixn = 0;
     this.rjxn = 0;
     this.restitution = 0;
+    this.firstImpact = false;
 };
 ContactEquation.prototype = new Equation();
 ContactEquation.prototype.constructor = ContactEquation;
@@ -59,10 +60,16 @@ ContactEquation.prototype.computeB = function(a,b,h){
     vec2.sub(penetrationVec,penetrationVec,xi);
     vec2.sub(penetrationVec,penetrationVec,ri);
 
-    var Gq = vec2.dot(n,penetrationVec);
-
     // Compute iteration
-    var GW = (1-this.restitution) * (vec2.dot(vj,n) - vec2.dot(vi,n) + wj * this.rjxn - wi * this.rixn);
+    var GW, Gq;
+    if(this.firstImpact && this.restitution !== 0){
+        Gq = 0;
+        GW = (1/b)*(1+this.restitution) * (vec2.dot(vj,n) - vec2.dot(vi,n) + wj * this.rjxn - wi * this.rixn);
+    } else {
+        GW = vec2.dot(vj,n) - vec2.dot(vi,n) + wj * this.rjxn - wi * this.rixn;
+        Gq = vec2.dot(n,penetrationVec);
+    }
+
     var GiMf = vec2.dot(fj,n)*invMassj - vec2.dot(fi,n)*invMassi + invIj*tauj*this.rjxn - invIi*taui*this.rixn;
 
     var B = - Gq * a - GW * b - h*GiMf;
