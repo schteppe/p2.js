@@ -1,9 +1,8 @@
-var vec2 = require('../math/vec2'),
-    Solver = require('./Solver');
+var vec2 = require('../math/vec2')
+,   Solver = require('./Solver')
+,   Utils = require('../utils/Utils')
 
 module.exports = GSSolver;
-
-var ARRAY_TYPE = Float32Array || Array;
 
 /**
  * Iterative Gauss-Seidel constraint equation solver.
@@ -25,9 +24,9 @@ function GSSolver(options){
     this.tolerance = options.tolerance || 0;
     this.debug = options.debug || false;
     this.arrayStep = 30;
-    this.lambda = new ARRAY_TYPE(this.arrayStep);
-    this.Bs =     new ARRAY_TYPE(this.arrayStep);
-    this.invCs =  new ARRAY_TYPE(this.arrayStep);
+    this.lambda = new Utils.ARRAY_TYPE(this.arrayStep);
+    this.Bs =     new Utils.ARRAY_TYPE(this.arrayStep);
+    this.invCs =  new Utils.ARRAY_TYPE(this.arrayStep);
 
     /**
      * Whether to use .stiffness and .relaxation parameters from the Solver instead of each Equation individually.
@@ -89,9 +88,9 @@ GSSolver.prototype.solve = function(dt,world){
 
     // Things that does not change during iteration can be computed once
     if(this.lambda.length < Neq){
-        this.lambda = new ARRAY_TYPE(Neq + this.arrayStep);
-        this.Bs =     new ARRAY_TYPE(Neq + this.arrayStep);
-        this.invCs =  new ARRAY_TYPE(Neq + this.arrayStep);
+        this.lambda = new Utils.ARRAY_TYPE(Neq + this.arrayStep);
+        this.Bs =     new Utils.ARRAY_TYPE(Neq + this.arrayStep);
+        this.invCs =  new Utils.ARRAY_TYPE(Neq + this.arrayStep);
     }
     var invCs = this.invCs,
         Bs = this.Bs,

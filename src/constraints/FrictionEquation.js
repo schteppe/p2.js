@@ -1,6 +1,7 @@
 var mat2 = require('../math/mat2')
 ,   vec2 = require('../math/vec2')
 ,   Equation = require('./Equation')
+,   Utils = require('../utils/Utils')
 
 module.exports = FrictionEquation;
 
@@ -68,7 +69,7 @@ FrictionEquation.prototype.setSlipForce = function(slipForce){
     this.minForce = -slipForce;
 };
 
-var A = Float32Array || Array;
+var A = Utils.ARRAY_TYPE;
 var rixtVec = new A(3),
     rjxtVec = new A(3),
     ri3 = new A(3),

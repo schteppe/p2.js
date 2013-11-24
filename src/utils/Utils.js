@@ -23,3 +23,5 @@ Utils.appendArray = function(a,b){
         }
     }
 };
+
+Utils.ARRAY_TYPE = Float32Array || Array;
