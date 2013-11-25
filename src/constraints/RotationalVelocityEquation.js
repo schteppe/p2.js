@@ -13,7 +13,7 @@ module.exports = RotationalVelocityEquation;
  * @param {Body} bj
  */
 function RotationalVelocityEquation(bi,bj){
-    Equation.call(this,bi,bj,-1e6,1e6);
+    Equation.call(this,bi,bj,-Number.MAX_VALUE,Number.MAX_VALUE);
     this.relativeVelocity = 1;
     this.ratio = 1;
 };
