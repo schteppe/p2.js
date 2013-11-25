@@ -17,6 +17,7 @@ module.exports = {
     Island :                        require('./solver/IslandSolver'),
     IslandSolver :                  require('./solver/IslandSolver'),
     Line :                          require('./shapes/Line'),
+    LockConstraint :                require('./constraints/LockConstraint'),
     Material :                      require('./material/Material'),
     NaiveBroadphase :               require('./collision/NaiveBroadphase'),
     Particle :                      require('./shapes/Particle'),

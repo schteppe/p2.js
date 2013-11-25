@@ -64,6 +64,12 @@ function Equation(bi,bj,minForce,maxForce){
      */
     this.G = new Utils.ARRAY_TYPE(6);
 
+    // Constraint frames for body i and j
+    this.xi = vec2.create();
+    this.xj = vec2.create();
+    this.ai = 0;
+    this.aj = 0;
+
     this.a = 0;
     this.b = 0;
     this.eps = 0;
@@ -95,6 +101,43 @@ function Gmult(G,vi,wi,vj,wj){
             G[4] * vj[1] +
             G[5] * wj;
 }
+
+/**
+ * Computes the RHS of the SPOOK equation
+ * @method computeB
+ * @return {Number}
+ */
+Equation.prototype.computeB = function(a,b,h){
+    var GW = this.computeGW();
+    var Gq = this.computeGq();
+    var GiMf = this.computeGiMf();
+    return - Gq * a - GW * b - GiMf*h;
+};
+
+/**
+ * Computes G*q, where q are the generalized body coordinates
+ * @method computeGq
+ * @return {Number}
+ */
+var qi = vec2.create(),
+    qj = vec2.create();
+Equation.prototype.computeGq = function(){
+    var G = this.G,
+        bi = this.bi,
+        bj = this.bj,
+        xi = bi.position,
+        xj = bj.position,
+        ai = bi.angle,
+        aj = bj.angle;
+
+    vec2.rotate(qi,this.xi,ai);
+    vec2.rotate(qj,this.xj,aj);
+    vec2.add(qi,qi,xi);
+    vec2.add(qj,qj,xj);
+
+    return Gmult(G, qi, ai+this.ai,
+                    qj, aj+this.aj );
+};
 
 /**
  * Computes G*W, where W are the body velocities
