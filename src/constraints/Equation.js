@@ -183,6 +183,8 @@ Equation.prototype.computeGiMGt = function(){
 var addToWlambda_temp = vec2.create(),
     addToWlambda_Gi = vec2.create(),
     addToWlambda_Gj = vec2.create();
+var tmpMat1 = mat2.create(),
+    tmpMat2 = mat2.create();
 Equation.prototype.addToWlambda = function(deltalambda){
     var bi = this.bi,
         bj = this.bj,
@@ -214,3 +216,6 @@ Equation.prototype.addToWlambda = function(deltalambda){
     bj.wlambda += bj.invInertia * G[5] * deltalambda;
 };
 
+Equation.prototype.computeC = function(eps){
+    return this.computeGiMGt() + eps;
+};
