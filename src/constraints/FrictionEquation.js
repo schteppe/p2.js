@@ -51,9 +51,6 @@ function FrictionEquation(bi,bj,slipForce){
      * @type {Float32Array}
      */
     this.t = vec2.create();
-
-    this.rixt = 0;
-    this.rjxt = 0;
 };
 FrictionEquation.prototype = new Equation();
 FrictionEquation.prototype.constructor = FrictionEquation;
@@ -82,7 +79,8 @@ FrictionEquation.prototype.computeB = function(a,b,h){
         bj = this.bj,
         ri = this.ri,
         rj = this.rj,
-        t = this.t;
+        t = this.t,
+        G = this.G;
 
     // Caluclate cross products
     ri3[0] = ri[0];
@@ -93,87 +91,22 @@ FrictionEquation.prototype.computeB = function(a,b,h){
     t3[1] = t[1];
     cross(rixtVec, ri3, t3);//ri.cross(t,rixt);
     cross(rjxtVec, rj3, t3);//rj.cross(t,rjxt);
-    this.rixt = rixtVec[2];
-    this.rjxt = rjxtVec[2];
+    var rixt = rixtVec[2];
+    var rjxt = rjxtVec[2];
 
-    var GW = -dot(bi.velocity,t) + dot(bj.velocity,t) - this.rixt*bi.angularVelocity + this.rjxt*bj.angularVelocity; // eq. 40
-    var GiMf = -dot(bi.force,t)*bi.invMass +dot(bj.force,t)*bj.invMass -this.rixt*bi.invInertia*bi.angularForce + this.rjxt*bj.invInertia*bj.angularForce;
+    // G = [-t -rixt t rjxt]
+    // And remember, this is a pure velocity constraint, g is always zero!
+    G[0] = -t[0];
+    G[1] = -t[1];
+    G[2] = -rixt;
+    G[3] = t[0];
+    G[4] = t[1];
+    G[5] = rjxt;
 
-    var B = /* - Gq * a  */ - GW * b - h*GiMf;
+    var GW = this.computeGW();
+    var GiMf = this.computeGiMf();
+
+    var B = /* - g * a  */ - GW * b - h*GiMf;
 
     return B;
-};
-
-// Compute C = G * iM * G' + eps
-//
-// G*iM*G' =
-//
-//                             [ iM1          ] [-t     ]
-// [-t (-ri x t) t (rj x t)] * [    iI1       ] [-ri x t]
-//                             [       iM2    ] [t      ]
-//                             [          iI2 ] [rj x t ]
-//
-// = (-t)*iM1*(-t) + (-ri x t)*iI1*(-ri x t) + t*iM2*t + (rj x t)*iI2*(rj x t)
-//
-// = t*iM1*t + (ri x t)*iI1*(ri x t) + t*iM2*t + (rj x t)*iI2*(rj x t)
-//
-var computeC_tmp1 = vec2.create(),
-    tmpMat1 = mat2.create(),
-    tmpMat2 = mat2.create();
-FrictionEquation.prototype.computeC = function(eps){
-    var bi = this.bi,
-        bj = this.bj,
-        t = this.t,
-        tmp = computeC_tmp1,
-        imMat1 = tmpMat1,
-        imMat2 = tmpMat2,
-        dot = vec2.dot;
-
-    mat2.identity(imMat1);
-    mat2.identity(imMat2);
-
-    imMat1[0] = imMat1[3] = bi.invMass;
-    imMat2[0] = imMat2[3] = bj.invMass;
-
-    var C = dot(t,vec2.transformMat2(tmp,t,imMat1)) + dot(t,vec2.transformMat2(tmp,t,imMat2)) + eps;
-
-    //C = bi.invMass + bj.invMass + eps;
-
-    C += bi.invInertia * this.rixt * this.rixt;
-    C += bj.invInertia * this.rjxt * this.rjxt;
-
-    return C;
-};
-
-FrictionEquation.prototype.computeGWlambda = function(){
-    var bi = this.bi,
-        bj = this.bj,
-        t = this.t,
-        dot = vec2.dot;
-
-    return dot(t, bj.vlambda) + bj.wlambda * this.rjxt - bi.wlambda * this.rixt - dot(t, bi.vlambda);
-};
-
-var FrictionEquation_addToWlambda_tmp = vec2.create();
-FrictionEquation.prototype.addToWlambda = function(deltalambda){
-    var bi = this.bi,
-        bj = this.bj,
-        t = this.t,
-        tmp = FrictionEquation_addToWlambda_tmp,
-        imMat1 = tmpMat1,
-        imMat2 = tmpMat2;
-
-    mat2.identity(imMat1);
-    mat2.identity(imMat2);
-    imMat1[0] = imMat1[3] = bi.invMass;
-    imMat2[0] = imMat2[3] = bj.invMass;
-
-    vec2.scale(tmp,vec2.transformMat2(tmp,t,imMat1),-deltalambda);
-    vec2.add(bi.vlambda, bi.vlambda, tmp);
-
-    vec2.scale(tmp,vec2.transformMat2(tmp,t,imMat2),deltalambda);
-    vec2.add(bj.vlambda, bj.vlambda, tmp);
-
-    bi.wlambda -= bi.invInertia * this.rixt * deltalambda;
-    bj.wlambda += bj.invInertia * this.rjxt * deltalambda;
 };
