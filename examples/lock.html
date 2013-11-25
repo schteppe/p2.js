@@ -20,6 +20,11 @@
             gravity : [0,-10],
         });
 
+        // Groups
+        var PLANE = Math.pow(2,1);
+        var A =     Math.pow(2,2);
+        var B =     Math.pow(2,3);
+
         // Create a circle
         var circleShape = new p2.Circle(0.5);
         var bodyA = new p2.Body({
@@ -27,13 +32,18 @@
             position: [1, 1],
         });
         bodyA.addShape(circleShape);
+        circleShape.collisionGroup = A;
+        circleShape.collisionMask =  PLANE;
         world.addBody(bodyA);
 
         var bodyB = new p2.Body({
             mass: 1,
             position: [-1, 1],
         });
-        bodyB.addShape(circleShape);
+        var circleShapeB = new p2.Circle(0.5);
+        bodyB.addShape(circleShapeB);
+        circleShapeB.collisionGroup = B;
+        circleShapeB.collisionMask =  PLANE;
         world.addBody(bodyB);
 
         var c = new p2.LockConstraint(bodyA,bodyB,[-1,0],0,[1,0],0);
@@ -41,6 +51,8 @@
 
         // Create ground
         var planeShape = new p2.Plane();
+        planeShape.collisionGroup = PLANE;
+        planeShape.collisionMask =  A | B;
         var plane = new p2.Body({
             position : [0,-1],
         });

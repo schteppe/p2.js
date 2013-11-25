@@ -130,6 +130,7 @@ Equation.prototype.computeGq = function(){
         ai = bi.angle,
         aj = bj.angle;
 
+    // Transform to the given body frames
     vec2.rotate(qi,this.xi,ai);
     vec2.rotate(qj,this.xj,aj);
     vec2.add(qi,qi,xi);
@@ -137,6 +138,22 @@ Equation.prototype.computeGq = function(){
 
     return Gmult(G, qi, ai+this.ai,
                     qj, aj+this.aj );
+};
+
+var tmp_i = vec2.create(),
+    tmp_j = vec2.create();
+Equation.prototype.transformedGmult = function(G,vi,wi,vj,wj){
+    // Transform velocity to the given body frames
+    // v_p = v + w x r
+    vec2.rotate(tmp_i,this.xi,Math.PI / 2 + this.bi.angle); // Get r, and rotate 90 degrees. We get the "x r" part
+    vec2.rotate(tmp_j,this.xj,Math.PI / 2 + this.bj.angle);
+    vec2.scale(tmp_i,tmp_i,wi); // Temp vectors are now (w x r)
+    vec2.scale(tmp_j,tmp_j,wj);
+    vec2.add(tmp_i,tmp_i,vi);
+    vec2.add(tmp_j,tmp_j,vj);
+
+    // Note: angular velocity is same
+    return Gmult(G,tmp_i,wi,tmp_j,wj);
 };
 
 /**
@@ -152,7 +169,7 @@ Equation.prototype.computeGW = function(){
         vj = bj.velocity,
         wi = bi.angularVelocity,
         wj = bj.angularVelocity;
-    return Gmult(G,vi,wi,vj,wj);
+    return this.transformedGmult(G,vi,wi,vj,wj);
 };
 
 /**
@@ -168,7 +185,7 @@ Equation.prototype.computeGWlambda = function(){
         vj = bj.vlambda,
         wi = bi.wlambda,
         wj = bj.wlambda;
-    return Gmult(G,vi,wi,vj,wj);
+    return this.transformedGmult(G,vi,wi,vj,wj);
 };
 
 /**
@@ -176,6 +193,8 @@ Equation.prototype.computeGWlambda = function(){
  * @method computeGiMf
  * @return {Number}
  */
+var iMfi = vec2.create(),
+    iMfj = vec2.create();
 Equation.prototype.computeGiMf = function(){
     var bi = this.bi,
         bj = this.bj,
@@ -189,12 +208,10 @@ Equation.prototype.computeGiMf = function(){
         invIj = bj.invInertia,
         G = this.G;
 
-    return  G[0] * fi[0] * invMassi +
-            G[1] * fi[1] * invMassi +
-            G[2] * ti *    invIi +
-            G[3] * fj[0] * invMassj +
-            G[4] * fj[1] * invMassj +
-            G[5] * tj *    invIj;
+    vec2.scale(iMfi, fi,invMassi);
+    vec2.scale(iMfj, fj,invMassj);
+
+    return this.transformedGmult(G,iMfi,ti*invIi,iMfj,tj*invIj);
 };
 
 /**
@@ -205,10 +222,6 @@ Equation.prototype.computeGiMf = function(){
 Equation.prototype.computeGiMGt = function(){
     var bi = this.bi,
         bj = this.bj,
-        fi = bi.force,
-        ti = bi.angularForce,
-        fj = bj.force,
-        tj = bj.angularForce,
         invMassi = bi.invMass,
         invMassj = bj.invMass,
         invIi = bi.invInertia,
@@ -225,7 +238,9 @@ Equation.prototype.computeGiMGt = function(){
 
 var addToWlambda_temp = vec2.create(),
     addToWlambda_Gi = vec2.create(),
-    addToWlambda_Gj = vec2.create();
+    addToWlambda_Gj = vec2.create(),
+    addToWlambda_ri = vec2.create(),
+    addToWlambda_rj = vec2.create();
 var tmpMat1 = mat2.create(),
     tmpMat2 = mat2.create();
 Equation.prototype.addToWlambda = function(deltalambda){
@@ -236,6 +251,8 @@ Equation.prototype.addToWlambda = function(deltalambda){
         imMat2 = tmpMat2,
         Gi = addToWlambda_Gi,
         Gj = addToWlambda_Gj,
+        ri = addToWlambda_ri,
+        rj = addToWlambda_rj,
         G = this.G;
 
     Gi[0] = G[0];
@@ -248,11 +265,19 @@ Equation.prototype.addToWlambda = function(deltalambda){
     imMat1[0] = imMat1[3] = bi.invMass;
     imMat2[0] = imMat2[3] = bj.invMass;
 
+    vec2.rotate(ri,this.xi,bi.angle);
+    vec2.rotate(rj,this.xj,bj.angle);
+
     // Add to linear velocity
     vec2.scale(temp,vec2.transformMat2(temp,Gi,imMat1),deltalambda);
-    vec2.add( bi.vlambda,bi.vlambda, temp );
+    vec2.add( bi.vlambda, bi.vlambda, temp);
+    // This impulse is in the offset frame
+    // Also add contribution to angular
+    bi.wlambda -= vec2.crossLength(temp,ri);
+
     vec2.scale(temp,vec2.transformMat2(temp,Gj,imMat2),deltalambda);
-    vec2.add( bj.vlambda,bj.vlambda, temp);
+    vec2.add( bj.vlambda, bj.vlambda, temp);
+    bj.wlambda -= vec2.crossLength(temp,rj);
 
     // Add to angular velocity
     bi.wlambda += bi.invInertia * G[2] * deltalambda;

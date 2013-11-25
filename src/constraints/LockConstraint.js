@@ -26,16 +26,19 @@ function LockConstraint(bodyA,bodyB,offsetA,angleA,offsetB,angleB,maxForce){
         y =     new Equation(bodyA,bodyB,-maxForce,maxForce),
         rot =   new Equation(bodyA,bodyB,-maxForce,maxForce);
 
-    x.G[0] =  1;
-    x.G[3] = -1;
-    y.G[1] =  1;
-    y.G[4] = -1;
+    // G = [-1  0  0  1  0  0;
+    //       0 -1  0  0  1  0;
+    //       0  0 -1  0  0  1]
+    x.G[0] = -1;
+    x.G[3] =  1;
+    y.G[1] = -1;
+    y.G[4] =  1;
     rot.G[2] =  1;
     rot.G[5] = -1;
 
-    var eqs = this.equations = [ x, y, rot ];
+    var eqs = this.equations = [ x,y ];
 
-    for(var i=0; i<3; i++){
+    for(var i=0; i<eqs.length; i++){
         var eq = eqs[i];
         if(offsetA) vec2.copy(eq.xi, offsetA);
         if(offsetB) vec2.copy(eq.xj, offsetB);
@@ -46,5 +49,5 @@ function LockConstraint(bodyA,bodyB,offsetA,angleA,offsetB,angleB,maxForce){
 LockConstraint.prototype = new Constraint();
 
 LockConstraint.prototype.update = function(){
-
+    //console.log(this.equations[0].computeGW());
 };
