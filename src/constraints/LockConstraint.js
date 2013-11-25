@@ -36,7 +36,7 @@ function LockConstraint(bodyA,bodyB,offsetA,angleA,offsetB,angleB,maxForce){
     rot.G[2] =  1;
     rot.G[5] = -1;
 
-    var eqs = this.equations = [ x,y ];
+    var eqs = this.equations = [ x,y,rot ];
 
     for(var i=0; i<eqs.length; i++){
         var eq = eqs[i];
