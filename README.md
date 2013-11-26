@@ -88,6 +88,7 @@ Note that concave polygon shapes can be created using ```Body.prototype.fromPoly
 * ```Solver``` now inherits from ```EventEmitter```.
 * ```IslandSolver``` now emits a "beforeSolveIsland" event.
 * Added method ```Solver.prototype.sortEquations``` and property ```.equationSortFunction```.
+* Added class ```LockConstraint```.
 
 ##### 0.3
 * Added ```Utils```
