@@ -22,6 +22,7 @@
             doProfiling:true,
             gravity : [0,-10],
         });
+        world.solver.iterations = 100;
 
         var circleShape = new p2.Circle(0.5);
         circleShape.collisionGroup = CIRCLE;
