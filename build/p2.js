@@ -1451,7 +1451,7 @@ Broadphase.boundingRadiusCheck = function(bodyA, bodyB){
     return d2 <= r*r;
 };
 
-},{"../math/vec2":28}],10:[function(require,module,exports){
+},{"../math/vec2":29}],10:[function(require,module,exports){
 var Circle = require('../shapes/Circle')
 ,   Plane = require('../shapes/Plane')
 ,   Particle = require('../shapes/Particle')
@@ -1612,7 +1612,7 @@ GridBroadphase.prototype.getCollisionPairs = function(world){
     return result;
 };
 
-},{"../collision/Broadphase":9,"../math/vec2":28,"../shapes/Circle":33,"../shapes/Particle":36,"../shapes/Plane":37}],11:[function(require,module,exports){
+},{"../collision/Broadphase":9,"../math/vec2":29,"../shapes/Circle":34,"../shapes/Particle":37,"../shapes/Plane":38}],11:[function(require,module,exports){
 var Circle = require('../shapes/Circle')
 ,   Plane = require('../shapes/Plane')
 ,   Shape = require('../shapes/Shape')
@@ -1661,7 +1661,7 @@ NaiveBroadphase.prototype.getCollisionPairs = function(world){
     return result;
 };
 
-},{"../collision/Broadphase":9,"../math/vec2":28,"../shapes/Circle":33,"../shapes/Particle":36,"../shapes/Plane":37,"../shapes/Shape":39}],12:[function(require,module,exports){
+},{"../collision/Broadphase":9,"../math/vec2":29,"../shapes/Circle":34,"../shapes/Particle":37,"../shapes/Plane":38,"../shapes/Shape":40}],12:[function(require,module,exports){
 var vec2 = require('../math/vec2')
 ,   sub = vec2.sub
 ,   add = vec2.add
@@ -3092,7 +3092,7 @@ Narrowphase.getClosestEdge = function(c,angle,axis,flip){
 };
 
 
-},{"../constraints/ContactEquation":16,"../constraints/FrictionEquation":19,"../math/vec2":28,"../shapes/Circle":33,"../utils/Utils":44}],13:[function(require,module,exports){
+},{"../constraints/ContactEquation":16,"../constraints/FrictionEquation":19,"../math/vec2":29,"../shapes/Circle":34,"../utils/Utils":45}],13:[function(require,module,exports){
 var Plane = require("../shapes/Plane");
 var Broadphase = require("../collision/Broadphase");
 
@@ -3470,7 +3470,7 @@ BoundsNode.prototype.clear = function(){
 }
 
 
-},{"../collision/Broadphase":9,"../shapes/Plane":37}],14:[function(require,module,exports){
+},{"../collision/Broadphase":9,"../shapes/Plane":38}],14:[function(require,module,exports){
 var Circle = require('../shapes/Circle')
 ,   Plane = require('../shapes/Plane')
 ,   Shape = require('../shapes/Shape')
@@ -3596,7 +3596,7 @@ SAP1DBroadphase.checkBounds = function(bi,bj,axisIndex){
     return boundB1 < boundA2;
 };
 
-},{"../collision/Broadphase":9,"../math/vec2":28,"../shapes/Circle":33,"../shapes/Particle":36,"../shapes/Plane":37,"../shapes/Shape":39}],15:[function(require,module,exports){
+},{"../collision/Broadphase":9,"../math/vec2":29,"../shapes/Circle":34,"../shapes/Particle":37,"../shapes/Plane":38,"../shapes/Shape":40}],15:[function(require,module,exports){
 module.exports = Constraint;
 
 /**
@@ -3712,7 +3712,7 @@ ContactEquation.prototype.computeB = function(a,b,h){
     return B;
 };
 
-},{"../math/mat2":26,"../math/vec2":28,"./Equation":18}],17:[function(require,module,exports){
+},{"../math/mat2":27,"../math/vec2":29,"./Equation":18}],17:[function(require,module,exports){
 var Constraint = require('./Constraint')
 ,   ContactEquation = require('./ContactEquation')
 ,   vec2 = require('../math/vec2')
@@ -3776,7 +3776,7 @@ DistanceConstraint.prototype.getMaxForce = function(f){
     return normal.maxForce;
 };
 
-},{"../math/vec2":28,"./Constraint":15,"./ContactEquation":16}],18:[function(require,module,exports){
+},{"../math/vec2":29,"./Constraint":15,"./ContactEquation":16}],18:[function(require,module,exports){
 module.exports = Equation;
 
 var vec2 = require('../math/vec2'),
@@ -3843,6 +3843,15 @@ function Equation(bi,bj,minForce,maxForce){
      */
     this.G = new Utils.ARRAY_TYPE(6);
 
+    // Constraint frames for body i and j
+    /*
+    this.xi = vec2.create();
+    this.xj = vec2.create();
+    this.ai = 0;
+    this.aj = 0;
+    */
+    this.offset = 0;
+
     this.a = 0;
     this.b = 0;
     this.eps = 0;
@@ -3876,6 +3885,63 @@ function Gmult(G,vi,wi,vj,wj){
 }
 
 /**
+ * Computes the RHS of the SPOOK equation
+ * @method computeB
+ * @return {Number}
+ */
+Equation.prototype.computeB = function(a,b,h){
+    var GW = this.computeGW();
+    var Gq = this.computeGq();
+    var GiMf = this.computeGiMf();
+    return - Gq * a - GW * b - GiMf*h;
+};
+
+/**
+ * Computes G*q, where q are the generalized body coordinates
+ * @method computeGq
+ * @return {Number}
+ */
+var qi = vec2.create(),
+    qj = vec2.create();
+Equation.prototype.computeGq = function(){
+    var G = this.G,
+        bi = this.bi,
+        bj = this.bj,
+        xi = bi.position,
+        xj = bj.position,
+        ai = bi.angle,
+        aj = bj.angle;
+
+    // Transform to the given body frames
+    /*
+    vec2.rotate(qi,this.xi,ai);
+    vec2.rotate(qj,this.xj,aj);
+    vec2.add(qi,qi,xi);
+    vec2.add(qj,qj,xj);
+    */
+
+    return Gmult(G, qi, ai, qj, aj) + this.offset;
+};
+
+var tmp_i = vec2.create(),
+    tmp_j = vec2.create();
+Equation.prototype.transformedGmult = function(G,vi,wi,vj,wj){
+    // Transform velocity to the given body frames
+    // v_p = v + w x r
+    /*
+    vec2.rotate(tmp_i,this.xi,Math.PI / 2 + this.bi.angle); // Get r, and rotate 90 degrees. We get the "x r" part
+    vec2.rotate(tmp_j,this.xj,Math.PI / 2 + this.bj.angle);
+    vec2.scale(tmp_i,tmp_i,wi); // Temp vectors are now (w x r)
+    vec2.scale(tmp_j,tmp_j,wj);
+    vec2.add(tmp_i,tmp_i,vi);
+    vec2.add(tmp_j,tmp_j,vj);
+    */
+
+    // Note: angular velocity is same
+    return Gmult(G,vi,wi,vj,wj);
+};
+
+/**
  * Computes G*W, where W are the body velocities
  * @method computeGW
  * @return {Number}
@@ -3888,7 +3954,7 @@ Equation.prototype.computeGW = function(){
         vj = bj.velocity,
         wi = bi.angularVelocity,
         wj = bj.angularVelocity;
-    return Gmult(G,vi,wi,vj,wj);
+    return this.transformedGmult(G,vi,wi,vj,wj);
 };
 
 /**
@@ -3904,7 +3970,7 @@ Equation.prototype.computeGWlambda = function(){
         vj = bj.vlambda,
         wi = bi.wlambda,
         wj = bj.wlambda;
-    return Gmult(G,vi,wi,vj,wj);
+    return this.transformedGmult(G,vi,wi,vj,wj);
 };
 
 /**
@@ -3912,6 +3978,8 @@ Equation.prototype.computeGWlambda = function(){
  * @method computeGiMf
  * @return {Number}
  */
+var iMfi = vec2.create(),
+    iMfj = vec2.create();
 Equation.prototype.computeGiMf = function(){
     var bi = this.bi,
         bj = this.bj,
@@ -3925,12 +3993,10 @@ Equation.prototype.computeGiMf = function(){
         invIj = bj.invInertia,
         G = this.G;
 
-    return  G[0] * fi[0] * invMassi +
-            G[1] * fi[1] * invMassi +
-            G[2] * ti *    invIi +
-            G[3] * fj[0] * invMassj +
-            G[4] * fj[1] * invMassj +
-            G[5] * tj *    invIj;
+    vec2.scale(iMfi, fi,invMassi);
+    vec2.scale(iMfj, fj,invMassj);
+
+    return this.transformedGmult(G,iMfi,ti*invIi,iMfj,tj*invIj);
 };
 
 /**
@@ -3941,10 +4007,6 @@ Equation.prototype.computeGiMf = function(){
 Equation.prototype.computeGiMGt = function(){
     var bi = this.bi,
         bj = this.bj,
-        fi = bi.force,
-        ti = bi.angularForce,
-        fj = bj.force,
-        tj = bj.angularForce,
         invMassi = bi.invMass,
         invMassj = bj.invMass,
         invIi = bi.invInertia,
@@ -3961,7 +4023,9 @@ Equation.prototype.computeGiMGt = function(){
 
 var addToWlambda_temp = vec2.create(),
     addToWlambda_Gi = vec2.create(),
-    addToWlambda_Gj = vec2.create();
+    addToWlambda_Gj = vec2.create(),
+    addToWlambda_ri = vec2.create(),
+    addToWlambda_rj = vec2.create();
 var tmpMat1 = mat2.create(),
     tmpMat2 = mat2.create();
 Equation.prototype.addToWlambda = function(deltalambda){
@@ -3972,6 +4036,8 @@ Equation.prototype.addToWlambda = function(deltalambda){
         imMat2 = tmpMat2,
         Gi = addToWlambda_Gi,
         Gj = addToWlambda_Gj,
+        ri = addToWlambda_ri,
+        rj = addToWlambda_rj,
         G = this.G;
 
     Gi[0] = G[0];
@@ -3984,11 +4050,21 @@ Equation.prototype.addToWlambda = function(deltalambda){
     imMat1[0] = imMat1[3] = bi.invMass;
     imMat2[0] = imMat2[3] = bj.invMass;
 
+    /*
+    vec2.rotate(ri,this.xi,bi.angle);
+    vec2.rotate(rj,this.xj,bj.angle);
+    */
+
     // Add to linear velocity
     vec2.scale(temp,vec2.transformMat2(temp,Gi,imMat1),deltalambda);
-    vec2.add( bi.vlambda,bi.vlambda, temp );
+    vec2.add( bi.vlambda, bi.vlambda, temp);
+    // This impulse is in the offset frame
+    // Also add contribution to angular
+    //bi.wlambda -= vec2.crossLength(temp,ri);
+
     vec2.scale(temp,vec2.transformMat2(temp,Gj,imMat2),deltalambda);
-    vec2.add( bj.vlambda,bj.vlambda, temp);
+    vec2.add( bj.vlambda, bj.vlambda, temp);
+    //bj.wlambda -= vec2.crossLength(temp,rj);
 
     // Add to angular velocity
     bi.wlambda += bi.invInertia * G[2] * deltalambda;
@@ -3999,7 +4075,7 @@ Equation.prototype.computeC = function(eps){
     return this.computeGiMGt() + eps;
 };
 
-},{"../math/mat2":26,"../math/vec2":28,"../utils/Utils":44}],19:[function(require,module,exports){
+},{"../math/mat2":27,"../math/vec2":29,"../utils/Utils":45}],19:[function(require,module,exports){
 var mat2 = require('../math/mat2')
 ,   vec2 = require('../math/vec2')
 ,   Equation = require('./Equation')
@@ -4075,9 +4151,7 @@ var rixtVec = new A(3),
     rj3 = new A(3),
     t3 = new A(3);
 FrictionEquation.prototype.computeB = function(a,b,h){
-    var a = this.a,
-        b = this.b,
-        bi = this.bi,
+    var bi = this.bi,
         bj = this.bj,
         ri = this.ri,
         rj = this.rj,
@@ -4113,7 +4187,96 @@ FrictionEquation.prototype.computeB = function(a,b,h){
     return B;
 };
 
-},{"../math/mat2":26,"../math/vec2":28,"../utils/Utils":44,"./Equation":18}],20:[function(require,module,exports){
+},{"../math/mat2":27,"../math/vec2":29,"../utils/Utils":45,"./Equation":18}],20:[function(require,module,exports){
+var Constraint = require('./Constraint')
+,   vec2 = require('../math/vec2')
+,   Equation = require('./Equation')
+
+module.exports = LockConstraint;
+
+/**
+ * Locks the relative position between two bodies.
+ *
+ * @class LockConstraint
+ * @constructor
+ * @author schteppe
+ * @param {Body} bodyA
+ * @param {Body} bodyB
+ * @param {Array}  [localOffsetB] The offset of bodyB in bodyA's frame.
+ * @param {number} [localAngleB]  The angle of bodyB in bodyA's frame.
+ * @param {number} maxForce
+ * @extends {Constraint}
+ */
+function LockConstraint(bodyA,bodyB,localOffsetB,localAngleB,maxForce){
+    Constraint.call(this,bodyA,bodyB);
+    if(typeof(maxForce)==="undefined" )
+        maxForce = Number.MAX_VALUE;
+
+    localOffsetB = localOffsetB || vec2.fromValues(0,0);
+    localAngleB = localAngleB || 0;
+
+    // Use 3 equations:
+    // gx =   (xj - xi - l) * xhat = 0
+    // gy =   (xj - xi - l) * yhat = 0
+    // ...and one for locking the angle.
+    //
+    // For the position constraints, we get
+    // G*W = (vj - vi - ldot  ) * xhat
+    //     = (vj - vi - wi x l) * xhat
+    //
+    // Since (wi x l) * xhat = (l x xhat) * wi, we get
+    // G*W = [ -1   0   (-l x xhat)  1   0   0]
+
+    var x =     new Equation(bodyA,bodyB,-maxForce,maxForce),
+        y =     new Equation(bodyA,bodyB,-maxForce,maxForce),
+        rot =   new Equation(bodyA,bodyB,-maxForce,maxForce);
+
+    var l = vec2.create(),
+        g = vec2.create();
+    x.computeGq = function(){
+        vec2.rotate(l,localOffsetB,bodyA.angle);
+        vec2.sub(g,bodyB.position,bodyA.position);
+        vec2.sub(g,g,l);
+        return g[0];
+    }
+    y.computeGq = function(){
+        vec2.rotate(l,localOffsetB,bodyA.angle);
+        vec2.sub(g,bodyB.position,bodyA.position);
+        vec2.sub(g,g,l);
+        return g[1];
+    }
+
+    rot.G[2] =  1;
+    rot.G[5] = -1;
+    rot.offset = localAngleB;
+
+    this.localOffsetB = localOffsetB;
+
+    var eqs = this.equations = [ x, y, rot ];
+}
+LockConstraint.prototype = new Constraint();
+
+var l = vec2.create();
+var xAxis = vec2.fromValues(1,0);
+var yAxis = vec2.fromValues(0,1);
+LockConstraint.prototype.update = function(){
+    var x = this.equations[0],
+        y = this.equations[1];
+
+    vec2.rotate(l,this.localOffsetB,bodyA.angle);
+
+    x.G[0] = -1;
+    x.G[1] =  0;
+    x.G[2] = -vec2.crossLength(l,xAxis);
+    x.G[3] =  1;
+
+    y.G[0] =  0;
+    y.G[1] = -1;
+    y.G[2] = -vec2.crossLength(l,yAxis);
+    y.G[4] =  1;
+};
+
+},{"../math/vec2":29,"./Constraint":15,"./Equation":18}],21:[function(require,module,exports){
 var Constraint = require('./Constraint')
 ,   ContactEquation = require('./ContactEquation')
 ,   vec2 = require('../math/vec2')
@@ -4198,7 +4361,7 @@ PrismaticConstraint.prototype.update = function(){
     vec2.set(tangentB.ri, 0, 0);
 };
 
-},{"../math/vec2":28,"./Constraint":15,"./ContactEquation":16}],21:[function(require,module,exports){
+},{"../math/vec2":29,"./Constraint":15,"./ContactEquation":16}],22:[function(require,module,exports){
 var Constraint = require('./Constraint')
 ,   ContactEquation = require('./ContactEquation')
 ,   RotationalVelocityEquation = require('./RotationalVelocityEquation')
@@ -4313,7 +4476,7 @@ RevoluteConstraint.prototype.getMotorSpeed = function(){
     return this.motorEquation.relativeVelocity;
 };
 
-},{"../math/vec2":28,"./Constraint":15,"./ContactEquation":16,"./RotationalVelocityEquation":22}],22:[function(require,module,exports){
+},{"../math/vec2":29,"./Constraint":15,"./ContactEquation":16,"./RotationalVelocityEquation":23}],23:[function(require,module,exports){
 var Equation = require("./Equation"),
     vec2 = require('../math/vec2');
 
@@ -4329,7 +4492,7 @@ module.exports = RotationalVelocityEquation;
  * @param {Body} bj
  */
 function RotationalVelocityEquation(bi,bj){
-    Equation.call(this,bi,bj,-1e6,1e6);
+    Equation.call(this,bi,bj,-Number.MAX_VALUE,Number.MAX_VALUE);
     this.relativeVelocity = 1;
     this.ratio = 1;
 };
@@ -4347,7 +4510,7 @@ RotationalVelocityEquation.prototype.computeB = function(a,b,h){
     return B;
 };
 
-},{"../math/vec2":28,"./Equation":18}],23:[function(require,module,exports){
+},{"../math/vec2":29,"./Equation":18}],24:[function(require,module,exports){
 /**
  * Base class for objects that dispatches events.
  * @class EventEmitter
@@ -4433,7 +4596,7 @@ EventEmitter.prototype = {
     }
 };
 
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 module.exports = ContactMaterial;
 
 var idCounter = 0;
@@ -4516,7 +4679,7 @@ function ContactMaterial(materialA, materialB, options){
     this.frictionRelaxation =   typeof(options.frictionRelaxation)  !== "undefined" ?   Number(options.frictionRelaxation)  : 3;
 };
 
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 module.exports = Material;
 
 var idCounter = 0;
@@ -4537,7 +4700,7 @@ function Material(){
     this.id = idCounter++;
 };
 
-},{}],26:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 /**
  * The mat2 object from glMatrix, extended with the functions documented here. See http://glmatrix.net for full doc.
  * @class mat2
@@ -4549,7 +4712,7 @@ var mat2 = require('../../node_modules/gl-matrix/src/gl-matrix/mat2').mat2;
 // Export everything
 module.exports = mat2;
 
-},{"../../node_modules/gl-matrix/src/gl-matrix/mat2":1}],27:[function(require,module,exports){
+},{"../../node_modules/gl-matrix/src/gl-matrix/mat2":1}],28:[function(require,module,exports){
 
     /*
         PolyK library
@@ -5028,7 +5191,7 @@ module.exports = mat2;
 
 module.exports = PolyK;
 
-},{}],28:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 /**
  * The vec2 object from glMatrix, extended with the functions documented here. See http://glmatrix.net for full doc.
  * @class vec2
@@ -5152,7 +5315,7 @@ vec2.centroid = function(out, a, b, c){
 // Export everything
 module.exports = vec2;
 
-},{"../../node_modules/gl-matrix/src/gl-matrix/vec2":2}],29:[function(require,module,exports){
+},{"../../node_modules/gl-matrix/src/gl-matrix/vec2":2}],30:[function(require,module,exports){
 var vec2 = require('../math/vec2')
 ,   decomp = require('poly-decomp')
 ,   Convex = require('../shapes/Convex')
@@ -5663,7 +5826,7 @@ Body.STATIC = 2;
  */
 Body.KINEMATIC = 4;
 
-},{"../math/vec2":28,"../shapes/Convex":34,"poly-decomp":7}],30:[function(require,module,exports){
+},{"../math/vec2":29,"../shapes/Convex":35,"poly-decomp":7}],31:[function(require,module,exports){
 var vec2 = require('../math/vec2');
 
 module.exports = Spring;
@@ -5846,7 +6009,7 @@ Spring.prototype.applyForce = function(){
     bodyB.angularForce += rj_x_f;
 };
 
-},{"../math/vec2":28}],31:[function(require,module,exports){
+},{"../math/vec2":29}],32:[function(require,module,exports){
 // Export p2 classes
 module.exports = {
     Body :                          require('./objects/Body'),
@@ -5866,6 +6029,7 @@ module.exports = {
     Island :                        require('./solver/IslandSolver'),
     IslandSolver :                  require('./solver/IslandSolver'),
     Line :                          require('./shapes/Line'),
+    LockConstraint :                require('./constraints/LockConstraint'),
     Material :                      require('./material/Material'),
     NaiveBroadphase :               require('./collision/NaiveBroadphase'),
     Particle :                      require('./shapes/Particle'),
@@ -5885,7 +6049,7 @@ module.exports = {
     version :                       require('../package.json').version,
 };
 
-},{"../package.json":8,"./collision/Broadphase":9,"./collision/GridBroadphase":10,"./collision/NaiveBroadphase":11,"./collision/QuadTree":13,"./collision/SAP1DBroadphase":14,"./constraints/Constraint":15,"./constraints/ContactEquation":16,"./constraints/DistanceConstraint":17,"./constraints/Equation":18,"./constraints/FrictionEquation":19,"./constraints/PrismaticConstraint":20,"./constraints/RevoluteConstraint":21,"./constraints/RotationalVelocityEquation":22,"./events/EventEmitter":23,"./material/ContactMaterial":24,"./material/Material":25,"./math/vec2":28,"./objects/Body":29,"./objects/Spring":30,"./shapes/Capsule":32,"./shapes/Circle":33,"./shapes/Convex":34,"./shapes/Line":35,"./shapes/Particle":36,"./shapes/Plane":37,"./shapes/Rectangle":38,"./shapes/Shape":39,"./solver/GSSolver":40,"./solver/IslandSolver":42,"./solver/Solver":43,"./utils/Utils":44,"./world/World":45}],32:[function(require,module,exports){
+},{"../package.json":8,"./collision/Broadphase":9,"./collision/GridBroadphase":10,"./collision/NaiveBroadphase":11,"./collision/QuadTree":13,"./collision/SAP1DBroadphase":14,"./constraints/Constraint":15,"./constraints/ContactEquation":16,"./constraints/DistanceConstraint":17,"./constraints/Equation":18,"./constraints/FrictionEquation":19,"./constraints/LockConstraint":20,"./constraints/PrismaticConstraint":21,"./constraints/RevoluteConstraint":22,"./constraints/RotationalVelocityEquation":23,"./events/EventEmitter":24,"./material/ContactMaterial":25,"./material/Material":26,"./math/vec2":29,"./objects/Body":30,"./objects/Spring":31,"./shapes/Capsule":33,"./shapes/Circle":34,"./shapes/Convex":35,"./shapes/Line":36,"./shapes/Particle":37,"./shapes/Plane":38,"./shapes/Rectangle":39,"./shapes/Shape":40,"./solver/GSSolver":41,"./solver/IslandSolver":43,"./solver/Solver":44,"./utils/Utils":45,"./world/World":46}],33:[function(require,module,exports){
 var Shape = require('./Shape')
 ,   vec2 = require('../math/vec2')
 
@@ -5926,7 +6090,7 @@ Capsule.prototype.updateBoundingRadius = function(){
     this.boundingRadius = this.radius + this.length/2;
 };
 
-},{"../math/vec2":28,"./Shape":39}],33:[function(require,module,exports){
+},{"../math/vec2":29,"./Shape":40}],34:[function(require,module,exports){
 var Shape = require('./Shape');
 
 module.exports = Circle;
@@ -5959,7 +6123,7 @@ Circle.prototype.updateBoundingRadius = function(){
     this.boundingRadius = this.radius;
 };
 
-},{"./Shape":39}],34:[function(require,module,exports){
+},{"./Shape":40}],35:[function(require,module,exports){
 var Shape = require('./Shape')
 ,   vec2 = require('../math/vec2')
 ,   polyk = require('../math/polyk')
@@ -6216,7 +6380,7 @@ Convex.prototype.updateArea = function(){
 };
 
 
-},{"../math/polyk":27,"../math/vec2":28,"./Shape":39,"poly-decomp":7}],35:[function(require,module,exports){
+},{"../math/polyk":28,"../math/vec2":29,"./Shape":40,"poly-decomp":7}],36:[function(require,module,exports){
 var Shape = require('./Shape');
 
 module.exports = Line;
@@ -6248,7 +6412,7 @@ Line.prototype.updateBoundingRadius = function(){
 };
 
 
-},{"./Shape":39}],36:[function(require,module,exports){
+},{"./Shape":40}],37:[function(require,module,exports){
 var Shape = require('./Shape');
 
 module.exports = Particle;
@@ -6272,7 +6436,7 @@ Particle.prototype.updateBoundingRadius = function(){
 };
 
 
-},{"./Shape":39}],37:[function(require,module,exports){
+},{"./Shape":40}],38:[function(require,module,exports){
 var Shape = require('./Shape');
 
 module.exports = Plane;
@@ -6296,7 +6460,7 @@ Plane.prototype.updateBoundingRadius = function(){
 };
 
 
-},{"./Shape":39}],38:[function(require,module,exports){
+},{"./Shape":40}],39:[function(require,module,exports){
 var vec2 = require('../math/vec2')
 ,   Shape = require('./Shape')
 ,   Convex = require('./Convex')
@@ -6341,7 +6505,7 @@ Rectangle.prototype.updateBoundingRadius = function(){
 };
 
 
-},{"../math/vec2":28,"./Convex":34,"./Shape":39}],39:[function(require,module,exports){
+},{"../math/vec2":29,"./Convex":35,"./Shape":40}],40:[function(require,module,exports){
 module.exports = Shape;
 
 /**
@@ -6450,7 +6614,7 @@ Shape.prototype.updateArea = function(){
     // To be implemented in all subclasses
 };
 
-},{}],40:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 var vec2 = require('../math/vec2')
 ,   Solver = require('./Solver')
 ,   Utils = require('../utils/Utils')
@@ -6628,7 +6792,7 @@ GSSolver.iterateEquation = function(j,eq,eps,Bs,invCs,lambda,useZeroRHS){
     return deltalambda;
 };
 
-},{"../math/vec2":28,"../utils/Utils":44,"./Solver":43}],41:[function(require,module,exports){
+},{"../math/vec2":29,"../utils/Utils":45,"./Solver":44}],42:[function(require,module,exports){
 module.exports = Island;
 
 /**
@@ -6711,7 +6875,7 @@ Island.prototype.solve = function(dt,solver){
     solver.solve(dt,{bodies:bodies});
 };
 
-},{}],42:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 var Solver = require('./Solver')
 ,   vec2 = require('../math/vec2')
 ,   Island = require('../solver/Island')
@@ -6881,7 +7045,7 @@ IslandSolver.prototype.solve = function(dt,world){
     }
 };
 
-},{"../math/vec2":28,"../objects/Body":29,"../solver/Island":41,"./Solver":43}],43:[function(require,module,exports){
+},{"../math/vec2":29,"../objects/Body":30,"../solver/Island":42,"./Solver":44}],44:[function(require,module,exports){
 var Utils = require('../utils/Utils')
 ,   EventEmitter = require('../events/EventEmitter')
 
@@ -6969,7 +7133,7 @@ Solver.prototype.removeAllEquations = function(){
 };
 
 
-},{"../events/EventEmitter":23,"../utils/Utils":44}],44:[function(require,module,exports){
+},{"../events/EventEmitter":24,"../utils/Utils":45}],45:[function(require,module,exports){
 module.exports = Utils;
 
 /**
@@ -6998,7 +7162,7 @@ Utils.appendArray = function(a,b){
 
 Utils.ARRAY_TYPE = Float32Array || Array;
 
-},{}],45:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 var  GSSolver = require('../solver/GSSolver')
 ,    NaiveBroadphase = require('../collision/NaiveBroadphase')
 ,    vec2 = require('../math/vec2')
@@ -7936,7 +8100,7 @@ World.prototype.hitTest = function(worldPoint,bodies,precision){
     return result;
 };
 
-},{"../../package.json":8,"../collision/Broadphase":9,"../collision/NaiveBroadphase":11,"../collision/Narrowphase":12,"../constraints/DistanceConstraint":17,"../constraints/PrismaticConstraint":20,"../constraints/RevoluteConstraint":21,"../events/EventEmitter":23,"../material/ContactMaterial":24,"../material/Material":25,"../math/vec2":28,"../objects/Body":29,"../objects/Spring":30,"../shapes/Capsule":32,"../shapes/Circle":33,"../shapes/Convex":34,"../shapes/Line":35,"../shapes/Particle":36,"../shapes/Plane":37,"../shapes/Rectangle":38,"../solver/GSSolver":40}]},{},[31])
-(31)
+},{"../../package.json":8,"../collision/Broadphase":9,"../collision/NaiveBroadphase":11,"../collision/Narrowphase":12,"../constraints/DistanceConstraint":17,"../constraints/PrismaticConstraint":21,"../constraints/RevoluteConstraint":22,"../events/EventEmitter":24,"../material/ContactMaterial":25,"../material/Material":26,"../math/vec2":29,"../objects/Body":30,"../objects/Spring":31,"../shapes/Capsule":33,"../shapes/Circle":34,"../shapes/Convex":35,"../shapes/Line":36,"../shapes/Particle":37,"../shapes/Plane":38,"../shapes/Rectangle":39,"../solver/GSSolver":41}]},{},[32])
+(32)
 });
 ;
