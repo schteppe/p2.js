@@ -14,34 +14,56 @@
 <body>
     <script>
 
-        // Create a world
+        var BOX = Math.pow(2,1);
+        var PLANE = Math.pow(2,2);
+        var CIRCLE = Math.pow(2,3);
+
         var world = new p2.World({
             doProfiling:true,
             gravity : [0,-10],
         });
 
-        // Create a circle
         var circleShape = new p2.Circle(0.5);
+        circleShape.collisionGroup = CIRCLE;
+        circleShape.collisionMask = BOX | PLANE;
         var bodyA = new p2.Body({
             mass: 1,
             position: [-1, 1],
         });
         bodyA.addShape(circleShape);
         world.addBody(bodyA);
-
         var bodyB = new p2.Body({
             mass: 1,
             position: [1, 1],
         });
-        var circleShapeB = new p2.Circle(0.5);
-        bodyB.addShape(circleShapeB);
+        bodyB.addShape(circleShape);
         world.addBody(bodyB);
 
         var c = new p2.LockConstraint(bodyA,bodyB,[2,0],0);
         world.addConstraint(c);
 
+        // Create a beam
+        var boxShape = new p2.Rectangle(0.4,0.5);
+        boxShape.collisionGroup = BOX;
+        boxShape.collisionMask = CIRCLE | PLANE;
+        var r = 1.01,
+            lastBody,
+            N = 10;
+        for(var i=0; i<N; i++){
+            var b = new p2.Body({ mass:0.1, position:[i*boxShape.width*r - N*boxShape.width*r/2,3] });
+            b.addShape(boxShape);
+            world.addBody(b);
+            if(lastBody){
+                var c = new p2.LockConstraint(b,lastBody,[-boxShape.width*r,0],0);
+                world.addConstraint(c);
+            }
+            lastBody = b;
+        }
+
         // Create ground
         var planeShape = new p2.Plane();
+        planeShape.collisionGroup = PLANE;
+        planeShape.collisionMask = BOX | CIRCLE;
         var plane = new p2.Body({
             position : [0,-1],
         });
