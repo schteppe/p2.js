@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <script src="../../build/p2.js"></script>
+  </head>
+  <body>
+    <canvas width="600" height="400" id="myCanvas"></canvas>
+
+    <script>
+      var canvas, ctx, w, h,
+          world, circleBody, planeBody;
+
+      function init(){
+
+        // Init canvas
+        canvas = document.getElementById("myCanvas");
+        w = canvas.width;
+        h = canvas.height;
+
+        ctx = canvas.getContext("2d");
+        ctx.lineWidth = 0.05;
+
+        // Init p2.js
+        world = new p2.World();
+
+        // Add circle
+        circleShape = new p2.Circle(1);
+        circleBody = new p2.Body({ mass:1, position:[0,3] });
+        circleBody.addShape(circleShape);
+        world.addBody(circleBody);
+
+        // Add plane
+        planeShape = new p2.Plane();
+        planeBody = new p2.Body();
+        planeBody.addShape(planeShape);
+        world.addBody(planeBody);
+      }
+
+      function drawCircle(){
+        ctx.beginPath();
+        var x = circleBody.position[0],
+            y = circleBody.position[1],
+            radius = circleShape.radius;
+        ctx.arc(x,y,radius,0,2*Math.PI);
+        ctx.stroke();
+      }
+
+      function drawPlane(){
+        var y = planeBody.position[1];
+        ctx.moveTo(-w, y);
+        ctx.lineTo( w, y);
+        ctx.stroke();
+      }
+
+      function render(){
+        // Clear the canvas
+        ctx.clearRect(0,0,w,h);
+
+        // Transform the canvas
+        ctx.save();
+        ctx.translate(w/2, h/2);  // Translate to the center
+        ctx.scale(50, -50);       // Zoom and flip y
+
+        // Draw
+        drawCircle();
+        drawPlane();
+
+        // Restore transform
+        ctx.restore();
+      }
+
+      init();
+      animate();
+
+      function animate(){
+        requestAnimationFrame(animate);
+        world.step(1/60);
+        render();
+      }
+    </script>
+
+  </body>
+</html>
