@@ -5,11 +5,16 @@
     <script src="../../build/p2.js"></script>
   </head>
   <body>
+
+    <!-- The canvas, where we draw stuff -->
     <canvas width="600" height="400" id="myCanvas"></canvas>
 
     <script>
       var canvas, ctx, w, h,
           world, circleBody, planeBody;
+
+      init();
+      animate();
 
       function init(){
 
@@ -24,13 +29,13 @@
         // Init p2.js
         world = new p2.World();
 
-        // Add circle
+        // Add a circle
         circleShape = new p2.Circle(1);
         circleBody = new p2.Body({ mass:1, position:[0,3] });
         circleBody.addShape(circleShape);
         world.addBody(circleBody);
 
-        // Add plane
+        // Add a plane
         planeShape = new p2.Plane();
         planeBody = new p2.Body();
         planeBody.addShape(planeShape);
@@ -58,11 +63,13 @@
         ctx.clearRect(0,0,w,h);
 
         // Transform the canvas
+        // Note that we need to flip the y axis since Canvas pixel coordinates
+        // goes from top to bottom, while physics does the opposite.
         ctx.save();
         ctx.translate(w/2, h/2);  // Translate to the center
-        ctx.scale(50, -50);       // Zoom and flip y
+        ctx.scale(50, -50);       // Zoom in and flip y axis
 
-        // Draw
+        // Draw all bodies
         drawCircle();
         drawPlane();
 
@@ -70,12 +77,14 @@
         ctx.restore();
       }
 
-      init();
-      animate();
-
+      // Animation loop
       function animate(){
         requestAnimationFrame(animate);
+
+        // Move physics bodies forward in time
         world.step(1/60);
+
+        // Render scene
         render();
       }
     </script>
