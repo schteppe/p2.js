@@ -237,6 +237,7 @@ var step_r = vec2.create(),
     step_f = vec2.create(),
     step_fhMinv = vec2.create(),
     step_velodt = vec2.create(),
+    step_mg = vec2.create(),
     xiw = vec2.fromValues(0,0),
     xjw = vec2.fromValues(0,0),
     zero = vec2.fromValues(0,0);
@@ -266,6 +267,7 @@ World.prototype.step = function(dt){
         t0, t1,
         fhMinv = step_fhMinv,
         velodt = step_velodt,
+        mg = step_mg,
         scale = vec2.scale,
         add = vec2.add,
         rotate = vec2.rotate;
@@ -276,13 +278,15 @@ World.prototype.step = function(dt){
         t0 = now();
     }
 
-    var glen = vec2.length(this.gravity);
+    var glen = vec2.length(g);
 
     // add gravity to bodies
-    if(glen > 0){
+    if(glen !== 0){
         for(var i=0; i!==Nbodies; i++){
-            var fi = bodies[i].force;
-            add(fi,fi,g);
+            var b = bodies[i],
+                fi = b.force;
+            vec2.scale(mg,g,b.mass);
+            add(fi,fi,mg);
         }
     }
 
