@@ -65,10 +65,13 @@ function Equation(bi,bj,minForce,maxForce){
     this.G = new Utils.ARRAY_TYPE(6);
 
     // Constraint frames for body i and j
+    /*
     this.xi = vec2.create();
     this.xj = vec2.create();
     this.ai = 0;
     this.aj = 0;
+    */
+    this.offset = 0;
 
     this.a = 0;
     this.b = 0;
@@ -131,13 +134,14 @@ Equation.prototype.computeGq = function(){
         aj = bj.angle;
 
     // Transform to the given body frames
+    /*
     vec2.rotate(qi,this.xi,ai);
     vec2.rotate(qj,this.xj,aj);
     vec2.add(qi,qi,xi);
     vec2.add(qj,qj,xj);
+    */
 
-    return Gmult(G, qi, ai+this.ai,
-                    qj, aj+this.aj );
+    return Gmult(G, qi, ai, qj, aj) + this.offset;
 };
 
 var tmp_i = vec2.create(),
@@ -145,15 +149,17 @@ var tmp_i = vec2.create(),
 Equation.prototype.transformedGmult = function(G,vi,wi,vj,wj){
     // Transform velocity to the given body frames
     // v_p = v + w x r
+    /*
     vec2.rotate(tmp_i,this.xi,Math.PI / 2 + this.bi.angle); // Get r, and rotate 90 degrees. We get the "x r" part
     vec2.rotate(tmp_j,this.xj,Math.PI / 2 + this.bj.angle);
     vec2.scale(tmp_i,tmp_i,wi); // Temp vectors are now (w x r)
     vec2.scale(tmp_j,tmp_j,wj);
     vec2.add(tmp_i,tmp_i,vi);
     vec2.add(tmp_j,tmp_j,vj);
+    */
 
     // Note: angular velocity is same
-    return Gmult(G,tmp_i,wi,tmp_j,wj);
+    return Gmult(G,vi,wi,vj,wj);
 };
 
 /**
@@ -265,19 +271,21 @@ Equation.prototype.addToWlambda = function(deltalambda){
     imMat1[0] = imMat1[3] = bi.invMass;
     imMat2[0] = imMat2[3] = bj.invMass;
 
+    /*
     vec2.rotate(ri,this.xi,bi.angle);
     vec2.rotate(rj,this.xj,bj.angle);
+    */
 
     // Add to linear velocity
     vec2.scale(temp,vec2.transformMat2(temp,Gi,imMat1),deltalambda);
     vec2.add( bi.vlambda, bi.vlambda, temp);
     // This impulse is in the offset frame
     // Also add contribution to angular
-    bi.wlambda -= vec2.crossLength(temp,ri);
+    //bi.wlambda -= vec2.crossLength(temp,ri);
 
     vec2.scale(temp,vec2.transformMat2(temp,Gj,imMat2),deltalambda);
     vec2.add( bj.vlambda, bj.vlambda, temp);
-    bj.wlambda -= vec2.crossLength(temp,rj);
+    //bj.wlambda -= vec2.crossLength(temp,rj);
 
     // Add to angular velocity
     bi.wlambda += bi.invInertia * G[2] * deltalambda;
