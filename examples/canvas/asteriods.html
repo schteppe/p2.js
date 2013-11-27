@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <script src="../../build/p2.js"></script>
+    <style>
+      body {
+        background-color: black;
+        margin:0;
+        padding:0;
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+      var canvas, ctx, w, h, shipSize=0.3, size = 5,
+          planeShape, planeBodyUp, planeBodyDown, planeBodyLeft, planeBodyRight,
+          world, shipShape, shipBody,
+          bulletBodies=[], bulletShape, bulletRadius=0.05;
+
+      init();
+      animate();
+
+      function init(){
+
+        // Init canvas
+        canvas = document.createElement("canvas");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        document.body.appendChild(canvas);
+        w = canvas.width;
+        h = canvas.height;
+
+        ctx = canvas.getContext("2d");
+        ctx.lineWidth = 0.02;
+        ctx.strokeStyle = 'white';
+
+        // Init p2.js
+        world = new p2.World({
+          gravity : [0,0],
+        });
+
+        // Add ship physics
+        shipShape = new p2.Circle(shipSize);
+        shipBody = new p2.Body({ mass:1, position:[0,0],angularVelocity:1 });
+        shipBody.addShape(shipShape);
+        world.addBody(shipBody);
+
+        // Create bullet shape
+        bulletShape = new p2.Circle(bulletRadius);
+
+        // Add planes
+        planeShape = new p2.Plane();
+        planeBodyUp = new p2.Body();
+        planeBodyDown = new p2.Body();
+        planeBodyLeft = new p2.Body();
+        planeBodyRight = new p2.Body();
+        planeBodyUp   .addShape(planeShape,[ 0, size], Math.PI);
+        planeBodyDown .addShape(planeShape,[ 0,-size], 0);
+        planeBodyLeft .addShape(planeShape,[-size, 0], -Math.PI/2);
+        planeBodyRight.addShape(planeShape,[ size, 0], Math.PI/2);
+        world.addBody(planeBodyUp);
+        world.addBody(planeBodyDown);
+        world.addBody(planeBodyLeft);
+        world.addBody(planeBodyRight);
+      }
+
+      function drawShip(){
+        ctx.beginPath();
+        var x = shipBody.position[0],
+            y = shipBody.position[1],
+            radius = shipShape.radius;
+        ctx.save();
+        ctx.translate(x,y);  // Translate to the center
+        ctx.rotate(shipBody.angle);
+        ctx.arc(0,0,radius,0,2*Math.PI);
+        ctx.moveTo(0,0);
+        ctx.lineTo(0,radius);
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      function drawBullets(){
+        for(var i=0; i!==bulletBodies.length; i++){
+          var bulletBody=bulletBodies[i],
+              x = bulletBody.position[0],
+              y = bulletBody.position[1];
+          ctx.beginPath();
+          ctx.arc(x,y,bulletRadius,0,2*Math.PI);
+          ctx.stroke();
+        }
+      }
+
+      function drawBounds(){
+        ctx.moveTo(-size, -size);
+        ctx.lineTo(-size,  size);
+        ctx.lineTo( size,  size);
+        ctx.lineTo( size, -size);
+        ctx.lineTo(-size, -size);
+        ctx.stroke();
+      }
+
+      function render(){
+        // Clear the canvas
+        ctx.clearRect(0,0,w,h);
+
+        // Transform the canvas
+        // Note that we need to flip the y axis since Canvas pixel coordinates
+        // goes from top to bottom, while physics does the opposite.
+        ctx.save();
+        ctx.translate(w/2, h/2);  // Translate to the center
+        ctx.scale(50, -50);       // Zoom in and flip y axis
+
+        // Draw all bodies
+        drawShip();
+        drawBullets();
+        drawBounds();
+
+        // Restore transform
+        ctx.restore();
+      }
+
+      // Animation loop
+      function animate(){
+        requestAnimationFrame(animate);
+
+        updatePhysics();
+
+        // Render scene
+        render();
+      }
+
+      var keyLeft, keyRight, keyUp, keyDown, keyShoot;
+
+      function updatePhysics(){
+
+        // Set velocities
+        if(keyLeft)       shipBody.angularVelocity= 3;
+        else if(keyRight) shipBody.angularVelocity=-3;
+        else              shipBody.angularVelocity = 0;
+
+        // Thrust
+        if(keyUp){
+          var magnitude = 2,
+              angle = shipBody.angle + Math.PI / 2;
+          shipBody.force[0] += magnitude*Math.cos(angle);
+          shipBody.force[1] += magnitude*Math.sin(angle);
+        }
+
+        // Shoot
+        if(keyShoot){
+          var bulletBody = new p2.Body({ mass:0.1, position:shipBody.position });
+          bulletBody.addShape(bulletShape);
+          bulletBodies.push(bulletBody);
+          world.addBody(bulletBody);
+        }
+
+        // Move physics bodies forward in time
+        world.step(1/60);
+      }
+
+      window.onkeydown = function(evt) {
+        switch(evt.keyCode){
+          case 32: keyShoot = true; break;
+          case 37: keyLeft =  true; break;
+          case 38: keyUp =    true; break;
+          case 39: keyRight = true; break;
+          case 40: keyDown =  true; break;
+        }
+      }
+
+      window.onkeyup = function(evt) {
+        switch(evt.keyCode){
+          case 32: keyShoot = false; break;
+          case 37: keyLeft =  false; break;
+          case 38: keyUp =    false; break;
+          case 39: keyRight = false; break;
+          case 40: keyDown =  false; break;
+        }
+      }
+    </script>
+
+  </body>
+</html>
