@@ -17,7 +17,7 @@
       var canvas, ctx, w, h, shipSize=0.3, spaceWidth=16, spaceHeight=9,
           world, shipShape, shipBody,
           bulletBodies=[], bulletShape, bulletRadius=0.03,
-          asteroidShape, asteroidRadius=0.9, asteroids=[],
+          asteroidShapes=[], numAsteroidLevels=4, asteroidRadius=0.9, asteroids=[],
           SHIP=Math.pow(2,1),
           BULLET=Math.pow(2,2),
           ASTEROID=Math.pow(2,3);
@@ -58,16 +58,20 @@
         bulletShape.collisionMask = ASTEROID;
 
         // Add some asteroids
-        asteroidShape = new p2.Circle(asteroidRadius);
-        asteroidShape.collisionGroup = ASTEROID;
-        asteroidShape.collisionMask = BULLET | SHIP;
+        for(var i=0; i<numAsteroidLevels; i++){
+          console.log(asteroidRadius*(numAsteroidLevels-i)/numAsteroidLevels)
+          asteroidShapes[i] = new p2.Circle(asteroidRadius*(numAsteroidLevels-i)/numAsteroidLevels);
+          asteroidShapes[i].collisionGroup = ASTEROID;
+          asteroidShapes[i].collisionMask = BULLET | SHIP;
+        }
         for(var i=0; i<10; i++){
           var x = (Math.random()-0.5) * spaceWidth/2,
               y = (Math.random()-0.5) * spaceHeight/2,
               vx = (Math.random()-0.5) * 1,
               vy = (Math.random()-0.5) * 1;
           var asteroidBody = new p2.Body({mass:10,position:[x,y],velocity:[vx,vy]});
-          asteroidBody.addShape(asteroidShape);
+          asteroidBody.level = 1;
+          asteroidBody.addShape(asteroidShapes[0]);
           asteroids.push(asteroidBody);
           world.addBody(asteroidBody);
         }
@@ -95,7 +99,7 @@
           var a = asteroids[i],
               x = a.position[0],
               y = a.position[1],
-              radius = asteroidRadius;
+              radius = a.shapes[0].radius;
           ctx.save();
           ctx.translate(x,y);  // Translate to the center
           ctx.rotate(a.angle);
@@ -244,6 +248,36 @@
         if(body.position[1] < -spaceHeight/2) body.position[1] =  spaceHeight/2;
       }
 
+      function explode(asteroidBody,bulletBody){
+        // Remove asteroid
+        world.removeBody(asteroidBody);
+        asteroids.splice(asteroids.indexOf(asteroidBody),1);
+
+        // Remove bullet
+        world.removeBody(bulletBody);
+        bulletBodies.splice(bulletBodies.indexOf(bulletBody),1);
+
+        // Add new asteroids
+        var x = asteroidBody.position[0],
+            y = asteroidBody.position[1];
+        if(asteroidBody.level < 4){
+          var angleDisturb = Math.PI/2 * Math.random();
+          for(var i=0; i<4; i++){
+            var angle = Math.PI/2*i+ angleDisturb;
+            var r = asteroidBody.shapes[0].radius - asteroidShapes[asteroidBody.level].radius;
+            var subAsteroidBody = new p2.Body({
+              mass : 10,
+              position:[x+r*Math.cos(angle),y+r*Math.sin(angle)],
+              velocity : [Math.random()-0.5,Math.random()-0.5],
+            });
+            subAsteroidBody.addShape(asteroidShapes[asteroidBody.level]);
+            subAsteroidBody.level = asteroidBody.level + 1;
+            world.addBody(subAsteroidBody);
+            asteroids.push(subAsteroidBody);
+          }
+        }
+      }
+
       world.on("impact",function(evt){
         var bodyA = evt.bodyA,
             bodyB = evt.bodyB;
@@ -262,7 +296,7 @@
               otherBody = bodyB==bulletBody ? bodyA : bodyB;
 
           if(otherBody.shapes[0].collisionGroup == ASTEROID){
-            console.log("Bang");
+            explode(otherBody,bulletBody);
           }
         }
       });
