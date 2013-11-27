@@ -23,6 +23,25 @@ function PrismaticConstraint(bodyA,bodyB,options){
     options = options || {};
     Constraint.call(this,bodyA,bodyB);
 
+    /*
+
+    Should use new Equation formulation here. The constraint violation for the common axis point is
+
+        g = ( xj + rj - xi - rj ) * n   :=  gg*n
+
+    where r are body-local anchor points, and n is a constraint axis defined in body i frame.
+
+        gdot =  ( vj + wj x rj - vi - wi x ri ) * n + ( xj + rj - xi - rj ) * ( wi x n )
+
+    Note the use of the chain rule. Now we identify the jacobian
+
+        G*W = [ -n      -ri x n + n x gg     n    rj x n ] * [vi wi vj wj]
+
+    The rotational part is just a rotation lock.
+
+     */
+
+
     var maxForce = this.maxForce = typeof(options.maxForce)==="undefined" ? options.maxForce : 1e6;
 
     // Equations to be fed to the solver
