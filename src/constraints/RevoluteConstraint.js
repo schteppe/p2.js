@@ -1,9 +1,15 @@
 var Constraint = require('./Constraint')
-,   ContactEquation = require('./ContactEquation')
+,   Equation = require('./Equation')
 ,   RotationalVelocityEquation = require('./RotationalVelocityEquation')
 ,   vec2 = require('../math/vec2')
 
 module.exports = RevoluteConstraint;
+
+var worldPivotA = vec2.create(),
+    worldPivotB = vec2.create(),
+    xAxis = vec2.fromValues(1,0),
+    yAxis = vec2.fromValues(0,1),
+    g = vec2.create();
 
 /**
  * Connects two bodies at given offset points, letting them rotate relative to each other around this point.
@@ -21,22 +27,40 @@ module.exports = RevoluteConstraint;
 function RevoluteConstraint(bodyA, pivotA, bodyB, pivotB, maxForce){
     Constraint.call(this,bodyA,bodyB);
 
-    maxForce = typeof(maxForce)!="undefined" ? maxForce : 1e7;
+    maxForce = typeof(maxForce)!="undefined" ? maxForce : Number.MAX_VALUE;
 
     this.pivotA = pivotA;
     this.pivotB = pivotB;
 
     // Equations to be fed to the solver
     var eqs = this.equations = [
-        new ContactEquation(bodyA,bodyB), // Normal
-        new ContactEquation(bodyA,bodyB), // Tangent
+        new Equation(bodyA,bodyB,-maxForce,maxForce), // Normal
+        new Equation(bodyA,bodyB,-maxForce,maxForce), // Tangent
     ];
 
-    var normal =  eqs[0];
-    var tangent = eqs[1];
+    var x =  eqs[0];
+    var y = eqs[1];
 
-    tangent.minForce = normal.minForce = -maxForce;
-    tangent.maxForce = normal.maxForce =  maxForce;
+    x.computeGq = function(){
+        vec2.rotate(worldPivotA, pivotA, bodyA.angle);
+        vec2.rotate(worldPivotB, pivotB, bodyB.angle);
+        vec2.add(g, bodyB.position, worldPivotB);
+        vec2.sub(g, g, bodyA.position);
+        vec2.sub(g, g, worldPivotA);
+        return vec2.dot(g,xAxis);
+    };
+
+    y.computeGq = function(){
+        vec2.rotate(worldPivotA, pivotA, bodyA.angle);
+        vec2.rotate(worldPivotB, pivotB, bodyB.angle);
+        vec2.add(g, bodyB.position, worldPivotB);
+        vec2.sub(g, g, bodyA.position);
+        vec2.sub(g, g, worldPivotA);
+        return vec2.dot(g,yAxis);
+    };
+
+    y.minForce = x.minForce = -maxForce;
+    y.maxForce = x.maxForce =  maxForce;
 
     this.motorEquation = null;
 }
@@ -49,8 +73,28 @@ RevoluteConstraint.prototype.update = function(){
         pivotB = this.pivotB,
         eqs =    this.equations,
         normal = eqs[0],
-        tangent= eqs[1];
+        tangent= eqs[1],
+        x = eqs[0],
+        y = eqs[1];
 
+    vec2.rotate(worldPivotA, pivotA, bodyA.angle);
+    vec2.rotate(worldPivotB, pivotB, bodyB.angle);
+
+    x.G[0] = -1;
+    x.G[1] =  0;
+    x.G[2] = -vec2.crossLength(worldPivotA,xAxis);
+    x.G[3] =  1;
+    x.G[4] =  0;
+    x.G[5] =  vec2.crossLength(worldPivotB,xAxis);
+
+    y.G[0] =  0;
+    y.G[1] = -1;
+    y.G[2] = -vec2.crossLength(worldPivotA,yAxis);
+    y.G[3] =  0;
+    y.G[4] =  1;
+    y.G[5] =  vec2.crossLength(worldPivotB,yAxis);
+
+    /*
     vec2.subtract(normal.ni, bodyB.position, bodyA.position);
     vec2.normalize(normal.ni,normal.ni);
     vec2.rotate(normal.ri, pivotA, bodyA.angle);
@@ -59,6 +103,7 @@ RevoluteConstraint.prototype.update = function(){
     vec2.rotate(tangent.ni, normal.ni, Math.PI / 2);
     vec2.copy(tangent.ri, normal.ri);
     vec2.copy(tangent.rj, normal.rj);
+    */
 };
 
 /**
