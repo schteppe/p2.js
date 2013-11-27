@@ -158,6 +158,13 @@ function World(options){
      */
     this.contactMaterials = [];
 
+    /**
+     * World time.
+     * @property time
+     * @type {Number}
+     */
+    this.time = 0.0;
+
     // Id counters
     this._constraintIdCounter = 0;
     this._bodyIdCounter = 0;
@@ -387,6 +394,9 @@ World.prototype.step = function(dt){
             this.emit(ev);
         }
     }
+
+    // Increment time
+    this.time += dt;
 
     this.emit(this.postStepEvent);
 };
