@@ -93,17 +93,6 @@ RevoluteConstraint.prototype.update = function(){
     y.G[3] =  0;
     y.G[4] =  1;
     y.G[5] =  vec2.crossLength(worldPivotB,yAxis);
-
-    /*
-    vec2.subtract(normal.ni, bodyB.position, bodyA.position);
-    vec2.normalize(normal.ni,normal.ni);
-    vec2.rotate(normal.ri, pivotA, bodyA.angle);
-    vec2.rotate(normal.rj, pivotB, bodyB.angle);
-
-    vec2.rotate(tangent.ni, normal.ni, Math.PI / 2);
-    vec2.copy(tangent.ri, normal.ri);
-    vec2.copy(tangent.rj, normal.rj);
-    */
 };
 
 /**
