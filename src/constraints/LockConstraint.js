@@ -12,20 +12,19 @@ module.exports = LockConstraint;
  * @author schteppe
  * @param {Body} bodyA
  * @param {Body} bodyB
- * @param {Array}  [localOffsetB] The offset of bodyB in bodyA's frame.
- * @param {number} [localAngleB]  The angle of bodyB in bodyA's frame.
- * @param {number} maxForce
+ * @param {Object} [options]
+ * @param {Array}  [options.localOffsetB] The offset of bodyB in bodyA's frame.
+ * @param {number} [options.localAngleB]  The angle of bodyB in bodyA's frame.
+ * @param {number} [options.maxForce]
  * @extends {Constraint}
  */
-function LockConstraint(bodyA,bodyB,localOffsetB,localAngleB,maxForce){
+function LockConstraint(bodyA,bodyB,options){
     Constraint.call(this,bodyA,bodyB);
-    if(typeof(maxForce)==="undefined" )
-        maxForce = Number.MAX_VALUE;
-
-    localOffsetB = localOffsetB || vec2.fromValues(0,0);
+    var maxForce = ( typeof(options.maxForce)=="undefined" ? Number.MAX_VALUE : options.maxForce );
+    var localOffsetB = options.localOffsetB || vec2.fromValues(0,0);
     localOffsetB = vec2.fromValues(localOffsetB[0],localOffsetB[1]);
 
-    localAngleB = localAngleB || 0;
+    var localAngleB = options.localAngleB || 0;
 
     // Use 3 equations:
     // gx =   (xj - xi - l) * xhat = 0
@@ -81,6 +80,7 @@ function LockConstraint(bodyA,bodyB,localOffsetB,localAngleB,maxForce){
 
     this.localOffsetB = localOffsetB;
     this.localAngleB =  localAngleB;
+    this.maxForce = maxForce;
 
     var eqs = this.equations = [ x, y, rot ];
 }

@@ -14,6 +14,7 @@ var  GSSolver = require('../solver/GSSolver')
 ,    Material = require('../material/Material')
 ,    ContactMaterial = require('../material/ContactMaterial')
 ,    DistanceConstraint = require('../constraints/DistanceConstraint')
+,    LockConstraint = require('../constraints/LockConstraint')
 ,    RevoluteConstraint = require('../constraints/RevoluteConstraint')
 ,    PrismaticConstraint = require('../constraints/PrismaticConstraint')
 ,    pkg = require('../../package.json')
@@ -602,6 +603,11 @@ World.prototype.toJSON = function(){
             jc.localAxisA = v2a(c.localAxisA);
             jc.localAxisB = v2a(c.localAxisB);
             jc.maxForce = c.maxForce;
+        } else if(c instanceof LockConstraint){
+            jc.type = "LockConstraint";
+            jc.localOffsetB = v2a(c.localOffsetB);
+            jc.localAngleB = c.localAngleB;
+            jc.maxForce = c.maxForce;
         } else {
             console.error("Constraint not supported yet!");
             continue;
@@ -709,10 +715,21 @@ World.upgradeJSON = function(json){
     if(!json || !json.p2)
         return false;
 
+    // Clone the json object
+    json = JSON.parse(JSON.stringify(json));
+
+    // Check version
     switch(json.p2){
+
         case currentVersion:
             // We are at latest json version
-            return JSON.parse(JSON.stringify(json));
+            return json;
+
+        case "0.3":
+            // Changes since 0.2:
+            // - Started caring about versioning
+            // - Added LockConstraint type
+            json.p2 = "0.4";
             break;
     }
 
@@ -837,12 +854,18 @@ World.prototype.fromJSON = function(json){
                     localAxisB : jc.localAxisB,
                 });
                 break;
+            case "LockConstraint":
+                c = new LockConstraint(this.bodies[jc.bodyA], this.bodies[jc.bodyB], {
+                    maxForce :     jc.maxForce,
+                    localOffsetB : jc.localOffsetB,
+                    localAngleB :  jc.localAngleB,
+                });
+                break;
             default:
                 throw new Error("Constraint type not recognized: "+jc.type);
         }
         this.addConstraint(c);
     }
-
 
     return true;
 };
