@@ -14,10 +14,13 @@
   </head>
   <body>
     <script>
-      var canvas, ctx, w, h, shipSize=0.3, size = 5,
-          planeShape, planeBodyUp, planeBodyDown, planeBodyLeft, planeBodyRight,
+      var canvas, ctx, w, h, shipSize=0.3, spaceWidth=16, spaceHeight=9,
           world, shipShape, shipBody,
-          bulletBodies=[], bulletShape, bulletRadius=0.05;
+          bulletBodies=[], bulletShape, bulletRadius=0.03,
+          asteroidShape, asteroidRadius=0.9, asteroids=[],
+          SHIP=Math.pow(2,1),
+          BULLET=Math.pow(2,2),
+          ASTEROID=Math.pow(2,3);
 
       init();
       animate();
@@ -34,7 +37,7 @@
 
         ctx = canvas.getContext("2d");
         ctx.lineWidth = 0.02;
-        ctx.strokeStyle = 'white';
+        ctx.strokeStyle = ctx.fillStyle = 'white';
 
         // Init p2.js
         world = new p2.World({
@@ -45,25 +48,29 @@
         shipShape = new p2.Circle(shipSize);
         shipBody = new p2.Body({ mass:1, position:[0,0],angularVelocity:1 });
         shipBody.addShape(shipShape);
+        shipShape.collisionGroup = SHIP;
+        shipShape.collisionMask = ASTEROID;
         world.addBody(shipBody);
 
         // Create bullet shape
         bulletShape = new p2.Circle(bulletRadius);
+        bulletShape.collisionGroup = BULLET;
+        bulletShape.collisionMask = ASTEROID;
 
-        // Add planes
-        planeShape = new p2.Plane();
-        planeBodyUp = new p2.Body();
-        planeBodyDown = new p2.Body();
-        planeBodyLeft = new p2.Body();
-        planeBodyRight = new p2.Body();
-        planeBodyUp   .addShape(planeShape,[ 0, size], Math.PI);
-        planeBodyDown .addShape(planeShape,[ 0,-size], 0);
-        planeBodyLeft .addShape(planeShape,[-size, 0], -Math.PI/2);
-        planeBodyRight.addShape(planeShape,[ size, 0], Math.PI/2);
-        world.addBody(planeBodyUp);
-        world.addBody(planeBodyDown);
-        world.addBody(planeBodyLeft);
-        world.addBody(planeBodyRight);
+        // Add some asteroids
+        asteroidShape = new p2.Circle(asteroidRadius);
+        asteroidShape.collisionGroup = ASTEROID;
+        asteroidShape.collisionMask = BULLET | SHIP;
+        for(var i=0; i<10; i++){
+          var x = (Math.random()-0.5) * spaceWidth/2,
+              y = (Math.random()-0.5) * spaceHeight/2,
+              vx = (Math.random()-0.5) * 1,
+              vy = (Math.random()-0.5) * 1;
+          var asteroidBody = new p2.Body({mass:10,position:[x,y],velocity:[vx,vy]});
+          asteroidBody.addShape(asteroidShape);
+          asteroids.push(asteroidBody);
+          world.addBody(asteroidBody);
+        }
       }
 
       function drawShip(){
@@ -79,6 +86,26 @@
         ctx.lineTo(0,radius);
         ctx.stroke();
         ctx.restore();
+        ctx.closePath();
+      }
+
+      function drawAsteroids(){
+        for(var i=0; i!==asteroids.length; i++){
+          ctx.beginPath();
+          var a = asteroids[i],
+              x = a.position[0],
+              y = a.position[1],
+              radius = asteroidRadius;
+          ctx.save();
+          ctx.translate(x,y);  // Translate to the center
+          ctx.rotate(a.angle);
+          ctx.arc(0,0,radius,0,2*Math.PI);
+          ctx.moveTo(0,0);
+          ctx.lineTo(0,radius);
+          ctx.stroke();
+          ctx.restore();
+          ctx.closePath();
+        }
       }
 
       function drawBullets(){
@@ -88,16 +115,18 @@
               y = bulletBody.position[1];
           ctx.beginPath();
           ctx.arc(x,y,bulletRadius,0,2*Math.PI);
+          ctx.fill();
           ctx.stroke();
+          ctx.closePath();
         }
       }
 
       function drawBounds(){
-        ctx.moveTo(-size, -size);
-        ctx.lineTo(-size,  size);
-        ctx.lineTo( size,  size);
-        ctx.lineTo( size, -size);
-        ctx.lineTo(-size, -size);
+        ctx.moveTo(-spaceWidth/2, -spaceHeight/2);
+        ctx.lineTo(-spaceWidth/2,  spaceHeight/2);
+        ctx.lineTo( spaceWidth/2,  spaceHeight/2);
+        ctx.lineTo( spaceWidth/2, -spaceHeight/2);
+        ctx.lineTo(-spaceWidth/2, -spaceHeight/2);
         ctx.stroke();
       }
 
@@ -116,6 +145,7 @@
         drawShip();
         drawBullets();
         drawBounds();
+        drawAsteroids();
 
         // Restore transform
         ctx.restore();
@@ -131,14 +161,14 @@
         render();
       }
 
-      var keyLeft, keyRight, keyUp, keyDown, keyShoot;
+      var keyLeft, keyRight, keyUp, keyDown, keyShoot, lastShootTime=world.time;
 
       function updatePhysics(){
 
         // Set velocities
-        if(keyLeft)       shipBody.angularVelocity= 3;
-        else if(keyRight) shipBody.angularVelocity=-3;
-        else              shipBody.angularVelocity = 0;
+        if(keyLeft)       shipBody.angularVelocity =  3;
+        else if(keyRight) shipBody.angularVelocity = -3;
+        else              shipBody.angularVelocity =  0;
 
         // Thrust
         if(keyUp){
@@ -149,36 +179,93 @@
         }
 
         // Shoot
-        if(keyShoot){
-          var bulletBody = new p2.Body({ mass:0.1, position:shipBody.position });
+        if(keyShoot && world.time - lastShootTime > 0.2){
+          var bulletBody = new p2.Body({ mass:0.05, position:shipBody.position });
           bulletBody.addShape(bulletShape);
           bulletBodies.push(bulletBody);
+          var magnitude = 2,
+              angle = shipBody.angle + Math.PI / 2;
+          bulletBody.velocity[0] += magnitude*Math.cos(angle) + shipBody.velocity[0];
+          bulletBody.velocity[1] += magnitude*Math.sin(angle) + shipBody.velocity[1];
           world.addBody(bulletBody);
+          lastShootTime = world.time;
+          bulletBody.dieTime = world.time + 2;
         }
+
+        for(var i=0; i!==bulletBodies.length; i++){
+          var b=bulletBodies[i];
+
+          // If the bullet is old, delete it
+          if(b.dieTime <= world.time){
+            bulletBodies.splice(i,1);
+            world.removeBody(b);
+            i--;
+            continue;
+          }
+
+          // If any body is out of bounds, move it to the other end
+          warp(b);
+        }
+
+        for(var i=0; i!==asteroids.length; i++){
+          var a=asteroids[i];
+          warp(a);
+        }
+
+        // Warp the ship
+        warp(shipBody);
 
         // Move physics bodies forward in time
         world.step(1/60);
       }
 
       window.onkeydown = function(evt) {
-        switch(evt.keyCode){
-          case 32: keyShoot = true; break;
-          case 37: keyLeft =  true; break;
-          case 38: keyUp =    true; break;
-          case 39: keyRight = true; break;
-          case 40: keyDown =  true; break;
-        }
+        handleKey(evt.keyCode,true);
       }
 
       window.onkeyup = function(evt) {
-        switch(evt.keyCode){
-          case 32: keyShoot = false; break;
-          case 37: keyLeft =  false; break;
-          case 38: keyUp =    false; break;
-          case 39: keyRight = false; break;
-          case 40: keyDown =  false; break;
+        handleKey(evt.keyCode,false);
+      }
+
+      function handleKey(code,isDown){
+        switch(code){
+          case 32: keyShoot = isDown; break;
+          case 37: keyLeft =  isDown; break;
+          case 38: keyUp =    isDown; break;
+          case 39: keyRight = isDown; break;
+          case 40: keyDown =  isDown; break;
         }
       }
+
+      function warp(body){
+        if(body.position[0] >  spaceWidth /2) body.position[0] = -spaceWidth/2;
+        if(body.position[1] >  spaceHeight/2) body.position[1] = -spaceHeight/2;
+        if(body.position[0] < -spaceWidth /2) body.position[0] =  spaceWidth/2;
+        if(body.position[1] < -spaceHeight/2) body.position[1] =  spaceHeight/2;
+      }
+
+      world.on("impact",function(evt){
+        var bodyA = evt.bodyA,
+            bodyB = evt.bodyB;
+
+        if(bodyA.id == shipBody.id || bodyB.id == shipBody.id){
+          // Ship collided with something
+          var s = bodyA.shapes[0].collisionGroup == SHIP ? bodyA : bodyB,
+              otherBody = bodyB==s ? bodyA : bodyB;
+          if(otherBody.shapes[0].collisionGroup == ASTEROID){
+            console.log("Game over!");
+          }
+
+        } else if(bodyA.shapes[0].collisionGroup == BULLET || bodyB.shapes[0].collisionGroup == BULLET){
+          // Bullet collided with something
+          var bulletBody = bodyA.shapes[0].collisionGroup == BULLET ? bodyA : bodyB,
+              otherBody = bodyB==bulletBody ? bodyA : bodyB;
+
+          if(otherBody.shapes[0].collisionGroup == ASTEROID){
+            console.log("Bang");
+          }
+        }
+      });
     </script>
 
   </body>
