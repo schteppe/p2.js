@@ -1,5 +1,5 @@
 var Constraint = require('./Constraint')
-,   ContactEquation = require('./ContactEquation')
+,   Equation = require('./Equation')
 ,   vec2 = require('../math/vec2')
 
 module.exports = DistanceConstraint;
@@ -21,13 +21,17 @@ function DistanceConstraint(bodyA,bodyB,distance,maxForce){
 
     this.distance = distance;
 
-    if(typeof(maxForce)==="undefined" ) {
-        maxForce = 1e6;
-    }
+    if(typeof(maxForce)==="undefined" )
+        maxForce = Number.MAX_VALUE;
 
-    var normal = new ContactEquation(bodyA,bodyB); // Just in the normal direction
-
+    var normal = new Equation(bodyA,bodyB,-maxForce,maxForce); // Just in the normal direction
     this.equations = [ normal ];
+
+    var r = vec2.create();
+    normal.computeGq = function(){
+        vec2.sub(r, bodyB.position, bodyA.position);
+        return vec2.length(r)-distance;
+    };
 
     // Make the contact constraint bilateral
     this.setMaxForce(maxForce);
@@ -38,16 +42,20 @@ DistanceConstraint.prototype = new Constraint();
  * Update the constraint equations. Should be done if any of the bodies changed position, before solving.
  * @method update
  */
+var n = vec2.create();
 DistanceConstraint.prototype.update = function(){
     var normal = this.equations[0],
         bodyA = this.bodyA,
         bodyB = this.bodyB,
-        distance = this.distance;
+        distance = this.distance,
+        G = normal.G;
 
-    vec2.sub(normal.ni, bodyB.position, bodyA.position);
-    vec2.normalize(normal.ni,normal.ni);
-    vec2.scale(normal.ri, normal.ni,  distance*0.5);
-    vec2.scale(normal.rj, normal.ni, -distance*0.5);
+    vec2.sub(n, bodyB.position, bodyA.position);
+    vec2.normalize(n,n);
+    G[0] = -n[0];
+    G[1] = -n[1];
+    G[3] =  n[0];
+    G[4] =  n[1];
 };
 
 DistanceConstraint.prototype.setMaxForce = function(f){
