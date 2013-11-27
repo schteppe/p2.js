@@ -178,6 +178,11 @@ function World(options){
         type : "addSpring",
         body : null
     };
+    this.impactEvent = {
+        type: "impact",
+        bodyA : null,
+        bodyB : null,
+    };
 };
 World.prototype = new Object(EventEmitter.prototype);
 
@@ -370,6 +375,17 @@ World.prototype.step = function(dt){
     if(doProfiling){
         t1 = now();
         that.lastStepTime = t1-t0;
+    }
+
+    // Emit impact event
+    var ev = this.impactEvent;
+    for(var i=0; i!==np.contactEquations.length; i++){
+        var eq = np.contactEquations[i];
+        if(eq.firstImpact){
+            ev.bodyA = eq.bi;
+            ev.bodyB = eq.bj;
+            this.emit(ev);
+        }
     }
 
     this.emit(this.postStepEvent);
