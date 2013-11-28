@@ -29,7 +29,7 @@
     <div id="lives" class="textBox"></div>
     <script>
       var canvas, ctx, w, h, zoom,
-          shipSize=0.3, spaceWidth=16, spaceHeight=9,
+          shipSize=0.3, spaceWidth=16, spaceHeight=9, hideShip=false,
           world, shipShape, shipBody, shipReloadTime=0.1, shipTurnSpeed=4,
           bulletBodies=[], bulletShape, bulletRadius=0.03, bulletLifeTime=2,
           asteroidShapes=[], numAsteroidLevels=4, asteroidRadius=0.9, maxAsteroidSpeed=2,asteroids=[], numAsteroidVerts=10,
@@ -200,19 +200,21 @@
       }
 
       function drawShip(){
-        var x = shipBody.position[0],
-            y = shipBody.position[1],
-            radius = shipShape.radius;
-        ctx.save();
-        ctx.translate(x,y);         // Translate to the ship center
-        ctx.rotate(shipBody.angle); // Rotate to ship orientation
-        ctx.moveTo(-radius*0.6,-radius);
-        ctx.lineTo(0,radius);
-        ctx.lineTo( radius*0.6,-radius);
-        ctx.moveTo(-radius*0.5, -radius*0.5);
-        ctx.lineTo( radius*0.5, -radius*0.5);
-        ctx.stroke();
-        ctx.restore();
+        if(!hideShip){
+            var x = shipBody.position[0],
+                y = shipBody.position[1],
+                radius = shipShape.radius;
+            ctx.save();
+            ctx.translate(x,y);         // Translate to the ship center
+            ctx.rotate(shipBody.angle); // Rotate to ship orientation
+            ctx.moveTo(-radius*0.6,-radius);
+            ctx.lineTo(0,radius);
+            ctx.lineTo( radius*0.6,-radius);
+            ctx.moveTo(-radius*0.5, -radius*0.5);
+            ctx.lineTo( radius*0.5, -radius*0.5);
+            ctx.stroke();
+            ctx.restore();
+        }
       }
 
       function drawAsteroids(){
@@ -351,7 +353,32 @@
           var s = bodyA.shapes[0].collisionGroup == SHIP ? bodyA : bodyB,
               otherBody = bodyB==s ? bodyA : bodyB;
           if(otherBody.shapes[0].collisionGroup == ASTEROID){
-            console.log("Game over!");
+            lives--;
+            updateLives();
+            // Remove the ship body for a while
+            world.removeBody(shipBody);
+            hideShip = true;
+
+            var interval = setInterval(function(){
+                // Check if the ship position is free from asteroids
+                var free = true;
+                for(var i=0; i<asteroids.length; i++){
+                    var a = asteroids[i];
+                    if(Math.pow(a.position[0]-shipBody.position[0],2) + Math.pow(a.position[1]-shipBody.position[1],2) < initSpace){
+                        free = false;
+                    }
+                }
+                if(free){
+                    // Add ship again
+                    shipBody.velocity[0] = 0;
+                    shipBody.velocity[1] = 0;
+                    shipBody.angularVelocity = 0;
+                    shipBody.angle = 0;
+                    hideShip = false;
+                    world.addBody(shipBody);
+                    clearInterval(interval);
+                }
+            },1000);
           }
 
         } else if(bodyA.shapes[0].collisionGroup == BULLET || bodyB.shapes[0].collisionGroup == BULLET){
