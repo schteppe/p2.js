@@ -75,6 +75,8 @@
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
+                <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
+            
                 <li><a href="../classes/mat2.html">mat2</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
@@ -205,7 +207,7 @@ function ContactMaterial(materialA, materialB, options){
      * @property restitution
      * @type {Number}
      */
-    this.restitution =  typeof(options.restitution) !== &quot;undefined&quot; ?   Number(options.restitution) : 0.3;
+    this.restitution =  typeof(options.restitution) !== &quot;undefined&quot; ?   Number(options.restitution) : 0.0;
 
     /**
      * Stiffness of the resulting ContactEquation that this ContactMaterial generate

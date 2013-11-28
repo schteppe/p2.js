@@ -75,6 +75,8 @@
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
+                <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
+            
                 <li><a href="../classes/mat2.html">mat2</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
@@ -154,12 +156,11 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
-var vec2 = require(&#x27;../math/vec2&#x27;),
-    Solver = require(&#x27;./Solver&#x27;);
+var vec2 = require(&#x27;../math/vec2&#x27;)
+,   Solver = require(&#x27;./Solver&#x27;)
+,   Utils = require(&#x27;../utils/Utils&#x27;)
 
 module.exports = GSSolver;
-
-var ARRAY_TYPE = Float32Array || Array;
 
 /**
  * Iterative Gauss-Seidel constraint equation solver.
@@ -175,15 +176,28 @@ var ARRAY_TYPE = Float32Array || Array;
  * @param {Number} options.tolerance
  */
 function GSSolver(options){
-    Solver.call(this);
+    Solver.call(this,options);
     options = options || {};
+
+    /**
+     * The number of iterations to do when solving. More gives better results, but is more expensive.
+     * @property iterations
+     * @type {Number}
+     */
     this.iterations = options.iterations || 10;
+
+    /**
+     * The error tolerance. If the total error is below this limit, the solver will stop. Set to zero for as good solution as possible.
+     * @property tolerance
+     * @type {Number}
+     */
     this.tolerance = options.tolerance || 0;
+
     this.debug = options.debug || false;
     this.arrayStep = 30;
-    this.lambda = new ARRAY_TYPE(this.arrayStep);
-    this.Bs =     new ARRAY_TYPE(this.arrayStep);
-    this.invCs =  new ARRAY_TYPE(this.arrayStep);
+    this.lambda = new Utils.ARRAY_TYPE(this.arrayStep);
+    this.Bs =     new Utils.ARRAY_TYPE(this.arrayStep);
+    this.invCs =  new Utils.ARRAY_TYPE(this.arrayStep);
 
     /**
      * Whether to use .stiffness and .relaxation parameters from the Solver instead of each Equation individually.
@@ -193,14 +207,14 @@ function GSSolver(options){
     this.useGlobalEquationParameters = true;
 
     /**
-     * Global equation stiffness.
+     * Global equation stiffness. Larger number gives harder contacts, etc, but may also be more expensive to compute, or it will make your simulation explode.
      * @property stiffness
      * @type {Number}
      */
     this.stiffness = 1e6;
 
     /**
-     * Global equation relaxation.
+     * Global equation relaxation. This is the number of timesteps required for a constraint to be resolved. Larger number will give softer contacts. Set to around 3 or 4 for good enough results.
      * @property relaxation
      * @type {Number}
      */
@@ -222,6 +236,9 @@ GSSolver.prototype = new Solver();
  * @param  {World}   world    World to solve
  */
 GSSolver.prototype.solve = function(dt,world){
+
+    this.sortEquations();
+
     var iter = 0,
         maxIter = this.iterations,
         tolSquared = this.tolerance*this.tolerance,
@@ -242,9 +259,9 @@ GSSolver.prototype.solve = function(dt,world){
 
     // Things that does not change during iteration can be computed once
     if(this.lambda.length &lt; Neq){
-        this.lambda = new ARRAY_TYPE(Neq + this.arrayStep);
-        this.Bs =     new ARRAY_TYPE(Neq + this.arrayStep);
-        this.invCs =  new ARRAY_TYPE(Neq + this.arrayStep);
+        this.lambda = new Utils.ARRAY_TYPE(Neq + this.arrayStep);
+        this.Bs =     new Utils.ARRAY_TYPE(Neq + this.arrayStep);
+        this.invCs =  new Utils.ARRAY_TYPE(Neq + this.arrayStep);
     }
     var invCs = this.invCs,
         Bs = this.Bs,

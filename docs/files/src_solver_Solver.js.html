@@ -75,6 +75,8 @@
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
+                <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
+            
                 <li><a href="../classes/mat2.html">mat2</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
@@ -154,7 +156,8 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
-var Utils = require(&#x27;../utils/Utils&#x27;);
+var Utils = require(&#x27;../utils/Utils&#x27;)
+,   EventEmitter = require(&#x27;../events/EventEmitter&#x27;)
 
 module.exports = Solver;
 
@@ -162,8 +165,12 @@ module.exports = Solver;
  * Base class for constraint solvers.
  * @class Solver
  * @constructor
+ * @extends {EventEmitter}
  */
-function Solver(){
+function Solver(options){
+    options = options || {};
+
+    EventEmitter.call(this);
 
     /**
      * Current equations in the solver.
@@ -172,10 +179,33 @@ function Solver(){
      * @type {Array}
      */
     this.equations = [];
-};
 
+    /**
+     * Function that is used to sort all equations before each solve.
+     * @property equationSortFunction
+     * @type {function|boolean}
+     */
+    this.equationSortFunction = options.equationSortFunction || false;
+};
+Solver.prototype = new EventEmitter();
+
+/**
+ * Method to be implemented in each subclass
+ * @method solve
+ * @param  {Number} dt
+ * @param  {World} world
+ */
 Solver.prototype.solve = function(dt,world){
     throw new Error(&quot;Solver.solve should be implemented by subclasses!&quot;);
+};
+
+/**
+ * Sort all equations using the .equationSortFunction. Should be called by subclasses before solving.
+ * @method sortEquations
+ */
+Solver.prototype.sortEquations = function(){
+    if(this.equationSortFunction)
+        this.equations.sort(this.equationSortFunction);
 };
 
 /**

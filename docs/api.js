@@ -18,6 +18,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "Island",
         "IslandSolver",
         "Line",
+        "LockConstraint",
         "Material",
         "NaiveBroadphase",
         "Narrowphase",

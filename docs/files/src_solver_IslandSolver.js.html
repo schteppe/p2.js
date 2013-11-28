@@ -75,6 +75,8 @@
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
+                <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
+            
                 <li><a href="../classes/mat2.html">mat2</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
@@ -168,10 +170,11 @@ module.exports = IslandSolver;
  * @class IslandSolver
  * @constructor
  * @param {Solver} subsolver
+ * @param {Object} options
  * @extends Solver
  */
-function IslandSolver(subsolver){
-    Solver.call(this);
+function IslandSolver(subsolver,options){
+    Solver.call(this,options);
     var that = this;
 
     /**
@@ -182,7 +185,7 @@ function IslandSolver(subsolver){
     this.subsolver = subsolver;
 
     /**
-     * Number of islands
+     * Number of islands. Read only.
      * @property numIslands
      * @type {number}
      */
@@ -190,8 +193,18 @@ function IslandSolver(subsolver){
 
     // Pooling of node objects saves some GC load
     this._nodePool = [];
+
+    /**
+     * Fires before an island is solved.
+     * @event beforeSolveIsland
+     * @param {Island} island
+     */
+    this.beforeSolveIslandEvent = {
+        type : &quot;beforeSolveIsland&quot;,
+        island : null,
+    };
 };
-IslandSolver.prototype = new Object(Solver.prototype);
+IslandSolver.prototype = new Solver();
 
 function getUnvisitedNode(nodes){
     var Nnodes = nodes.length;
@@ -309,8 +322,12 @@ IslandSolver.prototype.solve = function(dt,world){
     this.numIslands = n;
 
     // Solve islands
+    var e = this.beforeSolveIslandEvent;
     for(var i=0; i&lt;islands.length; i++){
-        islands[i].solve(dt,this.subsolver);
+        var island = islands[i];
+        e.island = island;
+        this.emit(e);
+        island.solve(dt,this.subsolver);
     }
 };
 

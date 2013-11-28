@@ -75,6 +75,8 @@
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
+                <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
+            
                 <li><a href="../classes/mat2.html">mat2</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
@@ -155,10 +157,14 @@
     
 
     
+        <div class="extends">
+            Extends <a href="../classes/EventEmitter.html" class="crosslink">EventEmitter</a>
+        </div>
+    
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_solver_Solver.js.html#l5"><code>src&#x2F;solver&#x2F;Solver.js:5</code></a>
+            Defined in: <a href="../files/src_solver_Solver.js.html#l6"><code>src&#x2F;solver&#x2F;Solver.js:6</code></a>
         </div>
     
 
@@ -209,7 +215,7 @@
             
         
         
-        <a href="../files/src_solver_Solver.js.html#l5"><code>src&#x2F;solver&#x2F;Solver.js:5</code></a>
+        <a href="../files/src_solver_Solver.js.html#l6"><code>src&#x2F;solver&#x2F;Solver.js:6</code></a>
         
         </p>
 
@@ -255,7 +261,7 @@
                 <div class="index-section methods">
                     <h3>Methods</h3>
 
-                    <ul class="index-list methods">
+                    <ul class="index-list methods extends">
                         
                             <li class="index-item method">
                                 <a href="#method_addEquation">addEquation</a>
@@ -285,6 +291,20 @@
                                 
                             </li>
                         
+                            <li class="index-item method">
+                                <a href="#method_solve">solve</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_sortEquations">sortEquations</a>
+
+                                
+                                
+                            </li>
+                        
                     </ul>
                 </div>
             
@@ -293,10 +313,17 @@
                 <div class="index-section properties">
                     <h3>Properties</h3>
 
-                    <ul class="index-list properties">
+                    <ul class="index-list properties extends">
                         
                             <li class="index-item property">
                                 <a href="#property_equations">equations</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_equationSortFunction">equationSortFunction</a>
 
                                 
                                 
@@ -358,7 +385,7 @@
             
         
         
-        <a href="../files/src_solver_Solver.js.html#l25"><code>src&#x2F;solver&#x2F;Solver.js:25</code></a>
+        <a href="../files/src_solver_Solver.js.html#l53"><code>src&#x2F;solver&#x2F;Solver.js:53</code></a>
         
         </p>
 
@@ -446,7 +473,7 @@
             
         
         
-        <a href="../files/src_solver_Solver.js.html#l35"><code>src&#x2F;solver&#x2F;Solver.js:35</code></a>
+        <a href="../files/src_solver_Solver.js.html#l63"><code>src&#x2F;solver&#x2F;Solver.js:63</code></a>
         
         </p>
 
@@ -524,7 +551,7 @@
             
         
         
-        <a href="../files/src_solver_Solver.js.html#l57"><code>src&#x2F;solver&#x2F;Solver.js:57</code></a>
+        <a href="../files/src_solver_Solver.js.html#l85"><code>src&#x2F;solver&#x2F;Solver.js:85</code></a>
         
         </p>
 
@@ -589,7 +616,7 @@
             
         
         
-        <a href="../files/src_solver_Solver.js.html#l45"><code>src&#x2F;solver&#x2F;Solver.js:45</code></a>
+        <a href="../files/src_solver_Solver.js.html#l73"><code>src&#x2F;solver&#x2F;Solver.js:73</code></a>
         
         </p>
 
@@ -635,6 +662,170 @@
 </div>
 
                 
+                    <div id="method_solve" class="method item">
+    <h3 class="name"><code>solve</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>dt</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>world</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_solver_Solver.js.html#l34"><code>src&#x2F;solver&#x2F;Solver.js:34</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Method to be implemented in each subclass</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">dt</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">world</code>
+                        <span class="type"><a href="../classes/World.html" class="crosslink">World</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_sortEquations" class="method item">
+    <h3 class="name"><code>sortEquations</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_solver_Solver.js.html#l44"><code>src&#x2F;solver&#x2F;Solver.js:44</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Sort all equations using the .equationSortFunction. Should be called by subclasses before solving.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
             </div>
         
 
@@ -666,7 +857,7 @@
             
         
         
-        <a href="../files/src_solver_Solver.js.html#l12"><code>src&#x2F;solver&#x2F;Solver.js:12</code></a>
+        <a href="../files/src_solver_Solver.js.html#l17"><code>src&#x2F;solver&#x2F;Solver.js:17</code></a>
         
         </p>
 
@@ -677,6 +868,51 @@
 
     <div class="description">
         <p>Current equations in the solver.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_equationSortFunction" class="property item">
+    <h3 class="name"><code>equationSortFunction</code></h3>
+    <span class="type">Function | Boolean</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_solver_Solver.js.html#l25"><code>src&#x2F;solver&#x2F;Solver.js:25</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Function that is used to sort all equations before each solve.</p>
 
     </div>
 

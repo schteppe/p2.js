@@ -75,6 +75,8 @@
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
+                <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
+            
                 <li><a href="../classes/mat2.html">mat2</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
@@ -158,7 +160,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_constraints_Equation.js.html#l3"><code>src&#x2F;constraints&#x2F;Equation.js:3</code></a>
+            Defined in: <a href="../files/src_constraints_Equation.js.html#l7"><code>src&#x2F;constraints&#x2F;Equation.js:7</code></a>
         </div>
     
 
@@ -237,7 +239,7 @@
             
         
         
-        <a href="../files/src_constraints_Equation.js.html#l3"><code>src&#x2F;constraints&#x2F;Equation.js:3</code></a>
+        <a href="../files/src_constraints_Equation.js.html#l7"><code>src&#x2F;constraints&#x2F;Equation.js:7</code></a>
         
         </p>
 
@@ -358,6 +360,62 @@
                     <ul class="index-list methods">
                         
                             <li class="index-item method">
+                                <a href="#method_addToWlambda">addToWlambda</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_computeB">computeB</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_computeC">computeC</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_computeGiMf">computeGiMf</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_computeGiMGt">computeGiMGt</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_computeGq">computeGq</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_computeGW">computeGW</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_computeGWlambda">computeGWlambda</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
                                 <a href="#method_updateSpookParams">updateSpookParams</a>
 
                                 
@@ -383,6 +441,13 @@
                         
                             <li class="index-item property">
                                 <a href="#property_bj">bj</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_G">G</a>
 
                                 
                                 
@@ -430,6 +495,624 @@
                 <h2 class="off-left">Methods</h2>
 
                 
+                    <div id="method_addToWlambda" class="method item">
+    <h3 class="name"><code>addToWlambda</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>deltalambda</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_constraints_Equation.js.html#l253"><code>src&#x2F;constraints&#x2F;Equation.js:253</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Add constraint velocity to the bodies.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">deltalambda</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_computeB" class="method item">
+    <h3 class="name"><code>computeB</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Number</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_constraints_Equation.js.html#l108"><code>src&#x2F;constraints&#x2F;Equation.js:108</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Computes the RHS of the SPOOK equation</p>
+
+    </div>
+
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Number</span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_computeC" class="method item">
+    <h3 class="name"><code>computeC</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>eps</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Number</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_constraints_Equation.js.html#l301"><code>src&#x2F;constraints&#x2F;Equation.js:301</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Compute the denominator part of the SPOOK equation: C = G<em>inv(M)</em>G&#39; + eps</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">eps</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Number</span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_computeGiMf" class="method item">
+    <h3 class="name"><code>computeGiMf</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Number</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_constraints_Equation.js.html#l197"><code>src&#x2F;constraints&#x2F;Equation.js:197</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Computes G<em>inv(M)</em>f, where M is the mass matrix with diagonal blocks for each body, and f are the forces on the bodies.</p>
+
+    </div>
+
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Number</span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_computeGiMGt" class="method item">
+    <h3 class="name"><code>computeGiMGt</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Number</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_constraints_Equation.js.html#l223"><code>src&#x2F;constraints&#x2F;Equation.js:223</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Computes G<em>inv(M)</em>G&#39;</p>
+
+    </div>
+
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Number</span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_computeGq" class="method item">
+    <h3 class="name"><code>computeGq</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Number</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_constraints_Equation.js.html#l120"><code>src&#x2F;constraints&#x2F;Equation.js:120</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Computes G*q, where q are the generalized body coordinates</p>
+
+    </div>
+
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Number</span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_computeGW" class="method item">
+    <h3 class="name"><code>computeGW</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Number</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_constraints_Equation.js.html#l165"><code>src&#x2F;constraints&#x2F;Equation.js:165</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Computes G*W, where W are the body velocities</p>
+
+    </div>
+
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Number</span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_computeGWlambda" class="method item">
+    <h3 class="name"><code>computeGWlambda</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Number</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_constraints_Equation.js.html#l181"><code>src&#x2F;constraints&#x2F;Equation.js:181</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Computes G*Wlambda, where W are the body velocities</p>
+
+    </div>
+
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Number</span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
                     <div id="method_updateSpookParams" class="method item">
     <h3 class="name"><code>updateSpookParams</code></h3>
 
@@ -472,7 +1155,7 @@
             
         
         
-        <a href="../files/src_constraints_Equation.js.html#l64"><code>src&#x2F;constraints&#x2F;Equation.js:64</code></a>
+        <a href="../files/src_constraints_Equation.js.html#l84"><code>src&#x2F;constraints&#x2F;Equation.js:84</code></a>
         
         </p>
 
@@ -549,7 +1232,7 @@
             
         
         
-        <a href="../files/src_constraints_Equation.js.html#l28"><code>src&#x2F;constraints&#x2F;Equation.js:28</code></a>
+        <a href="../files/src_constraints_Equation.js.html#l32"><code>src&#x2F;constraints&#x2F;Equation.js:32</code></a>
         
         </p>
 
@@ -594,7 +1277,7 @@
             
         
         
-        <a href="../files/src_constraints_Equation.js.html#l35"><code>src&#x2F;constraints&#x2F;Equation.js:35</code></a>
+        <a href="../files/src_constraints_Equation.js.html#l39"><code>src&#x2F;constraints&#x2F;Equation.js:39</code></a>
         
         </p>
 
@@ -605,6 +1288,51 @@
 
     <div class="description">
         <p>Second body participating in the constraint</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_G" class="property item">
+    <h3 class="name"><code>G</code></h3>
+    <span class="type">Array</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_constraints_Equation.js.html#l60"><code>src&#x2F;constraints&#x2F;Equation.js:60</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The Jacobian entry of this equation. 6 numbers, 3 per body (x,y,angle).</p>
 
     </div>
 
@@ -639,7 +1367,7 @@
             
         
         
-        <a href="../files/src_constraints_Equation.js.html#l21"><code>src&#x2F;constraints&#x2F;Equation.js:21</code></a>
+        <a href="../files/src_constraints_Equation.js.html#l25"><code>src&#x2F;constraints&#x2F;Equation.js:25</code></a>
         
         </p>
 
@@ -684,7 +1412,7 @@
             
         
         
-        <a href="../files/src_constraints_Equation.js.html#l14"><code>src&#x2F;constraints&#x2F;Equation.js:14</code></a>
+        <a href="../files/src_constraints_Equation.js.html#l18"><code>src&#x2F;constraints&#x2F;Equation.js:18</code></a>
         
         </p>
 
@@ -729,7 +1457,7 @@
             
         
         
-        <a href="../files/src_constraints_Equation.js.html#l49"><code>src&#x2F;constraints&#x2F;Equation.js:49</code></a>
+        <a href="../files/src_constraints_Equation.js.html#l53"><code>src&#x2F;constraints&#x2F;Equation.js:53</code></a>
         
         </p>
 
@@ -774,7 +1502,7 @@
             
         
         
-        <a href="../files/src_constraints_Equation.js.html#l42"><code>src&#x2F;constraints&#x2F;Equation.js:42</code></a>
+        <a href="../files/src_constraints_Equation.js.html#l46"><code>src&#x2F;constraints&#x2F;Equation.js:46</code></a>
         
         </p>
 

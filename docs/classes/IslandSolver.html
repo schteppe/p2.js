@@ -75,6 +75,8 @@
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
+                <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
+            
                 <li><a href="../classes/mat2.html">mat2</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
@@ -194,6 +196,12 @@
                     
                 </li>
             
+                <li class="arg">
+                    
+                        <code>options</code>
+                    
+                </li>
+            
             </ul><span class="paren">)</span>
         </div>
     
@@ -258,6 +266,21 @@
                     
                 </li>
             
+                <li class="param">
+                    
+                        <code class="param-name">options</code>
+                        <span class="type">Object</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
             </ul>
         </div>
     
@@ -281,6 +304,8 @@
             <li class="api-class-tab properties"><a href="#properties">Properties</a></li>
         
         
+        
+            <li class="api-class-tab events"><a href="#events">Events</a></li>
         
     </ul>
 
@@ -322,8 +347,15 @@
                                 
                             </li>
                         
-                            <li class="index-item method">
+                            <li class="index-item method inherited">
                                 <a href="#method_solve">solve</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_sortEquations">sortEquations</a>
 
                                 
                                 
@@ -341,6 +373,13 @@
                         
                             <li class="index-item property inherited">
                                 <a href="#property_equations">equations</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_equationSortFunction">equationSortFunction</a>
 
                                 
                                 
@@ -366,6 +405,21 @@
 
             
 
+            
+                <div class="index-section events">
+                    <h3>Events</h3>
+
+                    <ul class="index-list events extends">
+                        
+                            <li class="index-item event">
+                                <a href="#event_beforeSolveIsland">beforeSolveIsland</a>
+
+                                
+                                
+                            </li>
+                        
+                    </ul>
+                </div>
             
         </div>
 
@@ -413,7 +467,7 @@
             
         
         
-        <a href="../files/src_solver_Solver.js.html#l25"><code>src&#x2F;solver&#x2F;Solver.js:25</code></a>
+        <a href="../files/src_solver_Solver.js.html#l53"><code>src&#x2F;solver&#x2F;Solver.js:53</code></a>
         
         </p>
 
@@ -498,7 +552,7 @@
             
         
         
-        <a href="../files/src_solver_Solver.js.html#l35"><code>src&#x2F;solver&#x2F;Solver.js:35</code></a>
+        <a href="../files/src_solver_Solver.js.html#l63"><code>src&#x2F;solver&#x2F;Solver.js:63</code></a>
         
         </p>
 
@@ -573,7 +627,7 @@
             
         
         
-        <a href="../files/src_solver_Solver.js.html#l57"><code>src&#x2F;solver&#x2F;Solver.js:57</code></a>
+        <a href="../files/src_solver_Solver.js.html#l85"><code>src&#x2F;solver&#x2F;Solver.js:85</code></a>
         
         </p>
 
@@ -635,7 +689,7 @@
             
         
         
-        <a href="../files/src_solver_Solver.js.html#l45"><code>src&#x2F;solver&#x2F;Solver.js:45</code></a>
+        <a href="../files/src_solver_Solver.js.html#l73"><code>src&#x2F;solver&#x2F;Solver.js:73</code></a>
         
         </p>
 
@@ -720,16 +774,16 @@
 
     <div class="meta">
         
+            <p>Inherited from
+            <a href="../classes/Solver.html#method_solve">
+                Solver
+            </a>
             
-                
-                <p>
-                
-                Defined in
-                
+            but overwritten in
             
         
         
-        <a href="../files/src_solver_IslandSolver.js.html#l68"><code>src&#x2F;solver&#x2F;IslandSolver.js:68</code></a>
+        <a href="../files/src_solver_IslandSolver.js.html#l79"><code>src&#x2F;solver&#x2F;IslandSolver.js:79</code></a>
         
         </p>
 
@@ -790,6 +844,58 @@
 </div>
 
                 
+                    <div id="method_sortEquations" class="method item inherited">
+    <h3 class="name"><code>sortEquations</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Solver.html#method_sortEquations">Solver</a>:
+            
+        
+        
+        <a href="../files/src_solver_Solver.js.html#l44"><code>src&#x2F;solver&#x2F;Solver.js:44</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Sort all equations using the .equationSortFunction. Should be called by subclasses before solving.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
             </div>
         
 
@@ -818,7 +924,7 @@
             
         
         
-        <a href="../files/src_solver_Solver.js.html#l12"><code>src&#x2F;solver&#x2F;Solver.js:12</code></a>
+        <a href="../files/src_solver_Solver.js.html#l17"><code>src&#x2F;solver&#x2F;Solver.js:17</code></a>
         
         </p>
 
@@ -829,6 +935,48 @@
 
     <div class="description">
         <p>Current equations in the solver.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_equationSortFunction" class="property item inherited">
+    <h3 class="name"><code>equationSortFunction</code></h3>
+    <span class="type">Function | Boolean</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Solver.html#property_equationSortFunction">Solver</a>:
+            
+        
+        
+        <a href="../files/src_solver_Solver.js.html#l25"><code>src&#x2F;solver&#x2F;Solver.js:25</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Function that is used to sort all equations before each solve.</p>
 
     </div>
 
@@ -863,7 +1011,7 @@
             
         
         
-        <a href="../files/src_solver_IslandSolver.js.html#l28"><code>src&#x2F;solver&#x2F;IslandSolver.js:28</code></a>
+        <a href="../files/src_solver_IslandSolver.js.html#l29"><code>src&#x2F;solver&#x2F;IslandSolver.js:29</code></a>
         
         </p>
 
@@ -873,7 +1021,7 @@
     </div>
 
     <div class="description">
-        <p>Number of islands</p>
+        <p>Number of islands. Read only.</p>
 
     </div>
 
@@ -908,7 +1056,7 @@
             
         
         
-        <a href="../files/src_solver_IslandSolver.js.html#l21"><code>src&#x2F;solver&#x2F;IslandSolver.js:21</code></a>
+        <a href="../files/src_solver_IslandSolver.js.html#l22"><code>src&#x2F;solver&#x2F;IslandSolver.js:22</code></a>
         
         </p>
 
@@ -935,6 +1083,79 @@
 
         
 
+        
+            <div id="events" class="api-class-tabpanel">
+                <h2 class="off-left">Events</h2>
+
+                
+                    <div id="event_beforeSolveIsland" class="events item">
+    <h3 class="name"><code>beforeSolveIsland</code></h3>
+    <span class="type"></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_solver_IslandSolver.js.html#l39"><code>src&#x2F;solver&#x2F;IslandSolver.js:39</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Fires before an island is solved.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Event Payload:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">island</code>
+                        <span class="type"><a href="../classes/Island.html" class="crosslink">Island</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+
+    
+</div>
+
+                
+            </div>
         
     </div>
 </div>

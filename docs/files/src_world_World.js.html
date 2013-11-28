@@ -75,6 +75,8 @@
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
+                <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
+            
                 <li><a href="../classes/mat2.html">mat2</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
@@ -170,6 +172,7 @@ var  GSSolver = require(&#x27;../solver/GSSolver&#x27;)
 ,    Material = require(&#x27;../material/Material&#x27;)
 ,    ContactMaterial = require(&#x27;../material/ContactMaterial&#x27;)
 ,    DistanceConstraint = require(&#x27;../constraints/DistanceConstraint&#x27;)
+,    LockConstraint = require(&#x27;../constraints/LockConstraint&#x27;)
 ,    RevoluteConstraint = require(&#x27;../constraints/RevoluteConstraint&#x27;)
 ,    PrismaticConstraint = require(&#x27;../constraints/PrismaticConstraint&#x27;)
 ,    pkg = require(&#x27;../../package.json&#x27;)
@@ -313,25 +316,63 @@ function World(options){
      */
     this.contactMaterials = [];
 
+    /**
+     * World time.
+     * @property time
+     * @type {Number}
+     */
+    this.time = 0.0;
+
     // Id counters
     this._constraintIdCounter = 0;
     this._bodyIdCounter = 0;
 
-    // Event objects that are reused
+    /**
+     * Fired after the step().
+     * @event postStep
+     */
     this.postStepEvent = {
         type : &quot;postStep&quot;,
     };
+
+    /**
+     * @event addBody
+     * @param {Body} body
+     */
     this.addBodyEvent = {
         type : &quot;addBody&quot;,
         body : null
     };
+
+    /**
+     * @event removeBody
+     * @param {Body} body
+     */
     this.removeBodyEvent = {
         type : &quot;removeBody&quot;,
         body : null
     };
+
+    /**
+     * Fired when a spring is added to the world.
+     * @event addSpring
+     * @param {Spring} spring
+     */
     this.addSpringEvent = {
         type : &quot;addSpring&quot;,
-        body : null
+        spring : null,
+    };
+
+    /**
+     * Fired when a first contact is created between two bodies. This event is fired after the step has been done.
+     * @event impact
+     * @param {Body} bodyA
+     * @param {Body} bodyB
+     */
+    this.impactEvent = {
+        type: &quot;impact&quot;,
+        bodyA : null,
+        bodyB : null,
     };
 };
 World.prototype = new Object(EventEmitter.prototype);
@@ -393,6 +434,7 @@ var step_r = vec2.create(),
     step_f = vec2.create(),
     step_fhMinv = vec2.create(),
     step_velodt = vec2.create(),
+    step_mg = vec2.create(),
     xiw = vec2.fromValues(0,0),
     xjw = vec2.fromValues(0,0),
     zero = vec2.fromValues(0,0);
@@ -422,6 +464,7 @@ World.prototype.step = function(dt){
         t0, t1,
         fhMinv = step_fhMinv,
         velodt = step_velodt,
+        mg = step_mg,
         scale = vec2.scale,
         add = vec2.add,
         rotate = vec2.rotate;
@@ -432,13 +475,15 @@ World.prototype.step = function(dt){
         t0 = now();
     }
 
-    var glen = vec2.length(this.gravity);
+    var glen = vec2.length(g);
 
     // add gravity to bodies
-    if(glen &gt; 0){
+    if(glen !== 0){
         for(var i=0; i!==Nbodies; i++){
-            var fi = bodies[i].force;
-            add(fi,fi,g);
+            var b = bodies[i],
+                fi = b.force;
+            vec2.scale(mg,g,b.mass);
+            add(fi,fi,mg);
         }
     }
 
@@ -471,16 +516,18 @@ World.prototype.step = function(dt){
                     xj = bj.shapeOffsets[l] || zero,
                     aj = bj.shapeAngles[l] || 0;
 
-                var mu = this.defaultFriction;
+                var mu = this.defaultFriction,
+                    restitution = 0.0;
 
                 if(si.material &amp;&amp; sj.material){
                     var cm = this.getContactMaterial(si.material,sj.material);
                     if(cm){
                         mu = cm.friction;
+                        restitution = cm.restitution;
                     }
                 }
 
-                World.runNarrowphase(np,bi,si,xi,ai,bj,sj,xj,aj,mu,glen);
+                World.runNarrowphase(np,bi,si,xi,ai,bj,sj,xj,aj,mu,glen,restitution);
             }
         }
     }
@@ -520,6 +567,20 @@ World.prototype.step = function(dt){
         t1 = now();
         that.lastStepTime = t1-t0;
     }
+
+    // Emit impact event
+    var ev = this.impactEvent;
+    for(var i=0; i!==np.contactEquations.length; i++){
+        var eq = np.contactEquations[i];
+        if(eq.firstImpact){
+            ev.bodyA = eq.bi;
+            ev.bodyB = eq.bj;
+            this.emit(ev);
+        }
+    }
+
+    // Increment time
+    this.time += dt;
 
     this.emit(this.postStepEvent);
 };
@@ -567,7 +628,7 @@ World.integrateBody = function(body,dt){
  * @param  {Number} mu
  * @param  {Number} glen
  */
-World.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,mu,glen){
+World.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,mu,glen,restitution){
 
     if(!((si.collisionGroup &amp; sj.collisionMask) !== 0 &amp;&amp; (sj.collisionGroup &amp; si.collisionMask) !== 0))
         return;
@@ -590,6 +651,7 @@ World.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,mu,glen){
     // Run narrowphase
     np.enableFriction = mu &gt; 0;
     np.slipForce = mug;
+    np.restitution = restitution;
     if(si instanceof Circle){
              if(sj instanceof Circle)       np.circleCircle  (bi,si,xiw,aiw, bj,sj,xjw,ajw);
         else if(sj instanceof Particle)     np.circleParticle(bi,si,xiw,aiw, bj,sj,xjw,ajw);
@@ -693,6 +755,7 @@ World.prototype.removeBody = function(body){
     if(idx!==-1){
         this.bodies.splice(idx,1);
         this.removeBodyEvent.body = body;
+        body.resetConstraintVelocity();
         this.emit(this.removeBodyEvent);
     }
 };
@@ -750,6 +813,11 @@ World.prototype.toJSON = function(){
             jc.type = &quot;PrismaticConstraint&quot;;
             jc.localAxisA = v2a(c.localAxisA);
             jc.localAxisB = v2a(c.localAxisB);
+            jc.maxForce = c.maxForce;
+        } else if(c instanceof LockConstraint){
+            jc.type = &quot;LockConstraint&quot;;
+            jc.localOffsetB = v2a(c.localOffsetB);
+            jc.localAngleB = c.localAngleB;
             jc.maxForce = c.maxForce;
         } else {
             console.error(&quot;Constraint not supported yet!&quot;);
@@ -858,10 +926,21 @@ World.upgradeJSON = function(json){
     if(!json || !json.p2)
         return false;
 
+    // Clone the json object
+    json = JSON.parse(JSON.stringify(json));
+
+    // Check version
     switch(json.p2){
+
         case currentVersion:
             // We are at latest json version
-            return JSON.parse(JSON.stringify(json));
+            return json;
+
+        case &quot;0.3&quot;:
+            // Changes since 0.2:
+            // - Started caring about versioning
+            // - Added LockConstraint type
+            json.p2 = &quot;0.4&quot;;
             break;
     }
 
@@ -986,12 +1065,18 @@ World.prototype.fromJSON = function(json){
                     localAxisB : jc.localAxisB,
                 });
                 break;
+            case &quot;LockConstraint&quot;:
+                c = new LockConstraint(this.bodies[jc.bodyA], this.bodies[jc.bodyB], {
+                    maxForce :     jc.maxForce,
+                    localOffsetB : jc.localOffsetB,
+                    localAngleB :  jc.localAngleB,
+                });
+                break;
             default:
                 throw new Error(&quot;Constraint type not recognized: &quot;+jc.type);
         }
         this.addConstraint(c);
     }
-
 
     return true;
 };

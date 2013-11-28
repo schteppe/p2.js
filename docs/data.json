@@ -104,6 +104,15 @@
             "fors": {},
             "namespaces": {}
         },
+        "src/constraints/LockConstraint.js": {
+            "name": "src/constraints/LockConstraint.js",
+            "modules": {},
+            "classes": {
+                "LockConstraint": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
         "src/constraints/PrismaticConstraint.js": {
             "name": "src/constraints/PrismaticConstraint.js",
             "modules": {},
@@ -504,7 +513,7 @@
             "extension_for": [],
             "file": "src/constraints/ContactEquation.js",
             "line": 7,
-            "description": "Non-penetration constraint equation.",
+            "description": "Non-penetration constraint equation. Tries to make the ri and rj vectors the same point.",
             "is_constructor": 1,
             "extends": "Equation",
             "params": [
@@ -566,7 +575,7 @@
             "plugin_for": [],
             "extension_for": [],
             "file": "src/constraints/Equation.js",
-            "line": 3,
+            "line": 7,
             "description": "Base class for constraint equations.",
             "is_constructor": 1,
             "params": [
@@ -601,7 +610,7 @@
             "plugin_for": [],
             "extension_for": [],
             "file": "src/constraints/FrictionEquation.js",
-            "line": 20,
+            "line": 21,
             "description": "Constrains the slipping in a contact along a tangent",
             "is_constructor": 1,
             "params": [
@@ -622,6 +631,59 @@
                 }
             ],
             "extends": "{Equation}"
+        },
+        "LockConstraint": {
+            "name": "LockConstraint",
+            "shortname": "LockConstraint",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/constraints/LockConstraint.js",
+            "line": 7,
+            "description": "Locks the relative position between two bodies.",
+            "is_constructor": 1,
+            "author": "schteppe",
+            "params": [
+                {
+                    "name": "bodyA",
+                    "description": "",
+                    "type": "Body"
+                },
+                {
+                    "name": "bodyB",
+                    "description": "",
+                    "type": "Body"
+                },
+                {
+                    "name": "options",
+                    "description": "",
+                    "type": "Object",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "localOffsetB",
+                            "description": "The offset of bodyB in bodyA's frame.",
+                            "type": "Array",
+                            "optional": true
+                        },
+                        {
+                            "name": "localAngleB",
+                            "description": "The angle of bodyB in bodyA's frame.",
+                            "type": "Number",
+                            "optional": true
+                        },
+                        {
+                            "name": "maxForce",
+                            "description": "",
+                            "type": "Number",
+                            "optional": true
+                        }
+                    ]
+                }
+            ],
+            "extends": "{Constraint}"
         },
         "PrismaticConstraint": {
             "name": "PrismaticConstraint",
@@ -686,7 +748,7 @@
             "plugin_for": [],
             "extension_for": [],
             "file": "src/constraints/RevoluteConstraint.js",
-            "line": 8,
+            "line": 14,
             "description": "Connects two bodies at given offset points, letting them rotate relative to each other around this point.",
             "is_constructor": 1,
             "author": "schteppe",
@@ -1032,7 +1094,7 @@
             "params": [
                 {
                     "name": "radius",
-                    "description": "",
+                    "description": "The radius of this circle",
                     "type": "Number"
                 }
             ]
@@ -1069,6 +1131,13 @@
             "file": "src/shapes/Line.js",
             "line": 5,
             "description": "Line shape class. The line shape is along the x direction, and stretches from [-length/2, 0] to [length/2,0].",
+            "params": [
+                {
+                    "name": "length",
+                    "description": "The total length of the line",
+                    "type": "Number"
+                }
+            ],
             "extends": "{Shape}",
             "is_constructor": 1
         },
@@ -1112,6 +1181,18 @@
             "line": 7,
             "description": "Rectangle shape class.",
             "is_constructor": 1,
+            "params": [
+                {
+                    "name": "w",
+                    "description": "Width",
+                    "type": "Number"
+                },
+                {
+                    "name": "h",
+                    "description": "Height",
+                    "type": "Number"
+                }
+            ],
             "extends": "{Convex}"
         },
         "Shape": {
@@ -1136,7 +1217,7 @@
             "plugin_for": [],
             "extension_for": [],
             "file": "src/solver/GSSolver.js",
-            "line": 8,
+            "line": 7,
             "description": "Iterative Gauss-Seidel constraint equation solver.",
             "is_constructor": 1,
             "extends": "Solver",
@@ -1206,6 +1287,11 @@
                     "name": "subsolver",
                     "description": "",
                     "type": "Solver"
+                },
+                {
+                    "name": "options",
+                    "description": "",
+                    "type": "Object"
                 }
             ],
             "extends": "Solver"
@@ -1219,9 +1305,10 @@
             "plugin_for": [],
             "extension_for": [],
             "file": "src/solver/Solver.js",
-            "line": 5,
+            "line": 6,
             "description": "Base class for constraint solvers.",
-            "is_constructor": 1
+            "is_constructor": 1,
+            "extends": "{EventEmitter}"
         },
         "Utils": {
             "name": "Utils",
@@ -1245,7 +1332,7 @@
             "plugin_for": [],
             "extension_for": [],
             "file": "src/world/World.js",
-            "line": 37,
+            "line": 38,
             "description": "The dynamics world, where all bodies and constraints lives.",
             "is_constructor": 1,
             "params": [
@@ -1384,7 +1471,29 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 49,
+            "line": 53,
+            "description": "Check if the bodies were in contact since the last reset().",
+            "params": [
+                {
+                    "name": "bi",
+                    "description": "",
+                    "type": "Body"
+                },
+                {
+                    "name": "bj",
+                    "description": "",
+                    "type": "Body"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Boolean"
+            },
+            "class": "Narrowphase"
+        },
+        {
+            "file": "src/collision/Narrowphase.js",
+            "line": 70,
             "description": "Throws away the old equatons and gets ready to create new",
             "itemtype": "method",
             "name": "reset",
@@ -1392,7 +1501,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 67,
+            "line": 104,
             "description": "Creates a ContactEquation, either by reusing an existing object or creating a new one.",
             "itemtype": "method",
             "name": "createContactEquation",
@@ -1416,7 +1525,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 81,
+            "line": 120,
             "description": "Creates a FrictionEquation, either by reusing an existing object or creating a new one.",
             "itemtype": "method",
             "name": "createFrictionEquation",
@@ -1440,7 +1549,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 96,
+            "line": 135,
             "description": "Creates a FrictionEquation given the data in the ContactEquation. Uses same offset vectors ri and rj, but the tangent vector will be constructed from the collision normal.",
             "itemtype": "method",
             "name": "createFrictionFromContact",
@@ -1459,7 +1568,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 110,
+            "line": 149,
             "description": "Plane/line Narrowphase",
             "itemtype": "method",
             "name": "planeLine",
@@ -1509,7 +1618,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 207,
+            "line": 246,
             "description": "Circle/line Narrowphase",
             "itemtype": "method",
             "name": "circleLine",
@@ -1574,7 +1683,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 363,
+            "line": 402,
             "description": "Circle/capsule Narrowphase",
             "itemtype": "method",
             "name": "circleCapsule",
@@ -1624,7 +1733,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 379,
+            "line": 418,
             "description": "Circle/convex Narrowphase",
             "itemtype": "method",
             "name": "circleConvex",
@@ -1674,7 +1783,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 628,
+            "line": 667,
             "description": "Particle/convex Narrowphase",
             "itemtype": "method",
             "name": "particleConvex",
@@ -1727,7 +1836,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 772,
+            "line": 811,
             "description": "Circle/circle Narrowphase",
             "itemtype": "method",
             "name": "circleCircle",
@@ -1777,7 +1886,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 822,
+            "line": 861,
             "description": "Convex/Plane Narrowphase",
             "itemtype": "method",
             "name": "convexPlane",
@@ -1827,7 +1936,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 895,
+            "line": 934,
             "description": "Narrowphase for particle vs plane",
             "itemtype": "method",
             "name": "particlePlane",
@@ -1877,7 +1986,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 950,
+            "line": 989,
             "description": "Circle/Particle Narrowphase",
             "itemtype": "method",
             "name": "circleParticle",
@@ -1927,7 +2036,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 1022,
+            "line": 1061,
             "description": "Creates ContactEquations and FrictionEquations for a collision.",
             "itemtype": "method",
             "name": "circlePlane",
@@ -1972,7 +2081,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 1086,
+            "line": 1125,
             "description": "Convex/convex Narrowphase.See <a href=\"http://www.altdevblogaday.com/2011/05/13/contact-generation-between-3d-convex-meshes/\">this article</a> for more info.",
             "itemtype": "method",
             "name": "convexConvex",
@@ -2022,7 +2131,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 1230,
+            "line": 1269,
             "description": "Project a Convex onto a world-oriented axis",
             "itemtype": "method",
             "name": "projectConvexOntoAxis",
@@ -2058,7 +2167,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 1278,
+            "line": 1317,
             "description": "Find a separating axis between the shapes, that maximizes the separating distance between them.",
             "itemtype": "method",
             "name": "findSeparatingAxis",
@@ -2108,7 +2217,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 1355,
+            "line": 1394,
             "description": "Get the edge that has a normal closest to an axis.",
             "itemtype": "method",
             "name": "getClosestEdge",
@@ -2318,16 +2427,97 @@
             "class": "Constraint"
         },
         {
+            "file": "src/constraints/ContactEquation.js",
+            "line": 19,
+            "description": "Vector from body i center of mass to the contact point.",
+            "itemtype": "property",
+            "name": "ri",
+            "type": "{Array}",
+            "class": "ContactEquation"
+        },
+        {
+            "file": "src/constraints/ContactEquation.js",
+            "line": 27,
+            "description": "Vector from body j center of mass to the contact point.",
+            "itemtype": "property",
+            "name": "rj",
+            "type": "{Array}",
+            "class": "ContactEquation"
+        },
+        {
+            "file": "src/constraints/ContactEquation.js",
+            "line": 34,
+            "description": "The normal vector, pointing out of body i",
+            "itemtype": "property",
+            "name": "ni",
+            "type": "{Array}",
+            "class": "ContactEquation"
+        },
+        {
+            "file": "src/constraints/ContactEquation.js",
+            "line": 41,
+            "description": "The restitution to use. 0=no bounciness, 1=max bounciness.",
+            "itemtype": "property",
+            "name": "restitution",
+            "type": "{Number}",
+            "class": "ContactEquation"
+        },
+        {
+            "file": "src/constraints/ContactEquation.js",
+            "line": 48,
+            "description": "Set to true if this is the first impact between the bodies (not persistant contact).",
+            "itemtype": "property",
+            "name": "firstImpact",
+            "type": "{Boolean}",
+            "class": "ContactEquation"
+        },
+        {
             "file": "src/constraints/DistanceConstraint.js",
-            "line": 37,
+            "line": 22,
+            "description": "The distance to keep.",
+            "itemtype": "property",
+            "name": "distance",
+            "type": "{Number}",
+            "class": "DistanceConstraint"
+        },
+        {
+            "file": "src/constraints/DistanceConstraint.js",
+            "line": 46,
             "description": "Update the constraint equations. Should be done if any of the bodies changed position, before solving.",
             "itemtype": "method",
             "name": "update",
             "class": "DistanceConstraint"
         },
         {
+            "file": "src/constraints/DistanceConstraint.js",
+            "line": 66,
+            "description": "Set the max force to be used",
+            "itemtype": "method",
+            "name": "setMaxForce",
+            "params": [
+                {
+                    "name": "f",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "class": "DistanceConstraint"
+        },
+        {
+            "file": "src/constraints/DistanceConstraint.js",
+            "line": 77,
+            "description": "Get the max force",
+            "itemtype": "method",
+            "name": "getMaxForce",
+            "return": {
+                "description": "",
+                "type": "Number"
+            },
+            "class": "DistanceConstraint"
+        },
+        {
             "file": "src/constraints/Equation.js",
-            "line": 14,
+            "line": 18,
             "description": "Minimum force to apply when solving",
             "itemtype": "property",
             "name": "minForce",
@@ -2336,7 +2526,7 @@
         },
         {
             "file": "src/constraints/Equation.js",
-            "line": 21,
+            "line": 25,
             "description": "Max force to apply when solving",
             "itemtype": "property",
             "name": "maxForce",
@@ -2345,7 +2535,7 @@
         },
         {
             "file": "src/constraints/Equation.js",
-            "line": 28,
+            "line": 32,
             "description": "First body participating in the constraint",
             "itemtype": "property",
             "name": "bi",
@@ -2354,7 +2544,7 @@
         },
         {
             "file": "src/constraints/Equation.js",
-            "line": 35,
+            "line": 39,
             "description": "Second body participating in the constraint",
             "itemtype": "property",
             "name": "bj",
@@ -2363,7 +2553,7 @@
         },
         {
             "file": "src/constraints/Equation.js",
-            "line": 42,
+            "line": 46,
             "description": "The stiffness of this equation. Typically chosen to a large number (~1e7), but can be chosen somewhat freely to get a stable simulation.",
             "itemtype": "property",
             "name": "stiffness",
@@ -2372,7 +2562,7 @@
         },
         {
             "file": "src/constraints/Equation.js",
-            "line": 49,
+            "line": 53,
             "description": "The number of time steps needed to stabilize the constraint equation. Typically between 3 and 5 time steps.",
             "itemtype": "property",
             "name": "relaxation",
@@ -2381,7 +2571,16 @@
         },
         {
             "file": "src/constraints/Equation.js",
-            "line": 64,
+            "line": 60,
+            "description": "The Jacobian entry of this equation. 6 numbers, 3 per body (x,y,angle).",
+            "itemtype": "property",
+            "name": "G",
+            "type": "{Array}",
+            "class": "Equation"
+        },
+        {
+            "file": "src/constraints/Equation.js",
+            "line": 84,
             "description": "Update SPOOK parameters .a, .b and .eps according to the given time step. See equations 9, 10 and 11 in the <a href=\"http://www8.cs.umu.se/kurser/5DV058/VT09/lectures/spooknotes.pdf\">SPOOK notes</a>.",
             "itemtype": "method",
             "name": "updateSpookParams",
@@ -2395,8 +2594,114 @@
             "class": "Equation"
         },
         {
+            "file": "src/constraints/Equation.js",
+            "line": 108,
+            "description": "Computes the RHS of the SPOOK equation",
+            "itemtype": "method",
+            "name": "computeB",
+            "return": {
+                "description": "",
+                "type": "Number"
+            },
+            "class": "Equation"
+        },
+        {
+            "file": "src/constraints/Equation.js",
+            "line": 120,
+            "description": "Computes G*q, where q are the generalized body coordinates",
+            "itemtype": "method",
+            "name": "computeGq",
+            "return": {
+                "description": "",
+                "type": "Number"
+            },
+            "class": "Equation"
+        },
+        {
+            "file": "src/constraints/Equation.js",
+            "line": 165,
+            "description": "Computes G*W, where W are the body velocities",
+            "itemtype": "method",
+            "name": "computeGW",
+            "return": {
+                "description": "",
+                "type": "Number"
+            },
+            "class": "Equation"
+        },
+        {
+            "file": "src/constraints/Equation.js",
+            "line": 181,
+            "description": "Computes G*Wlambda, where W are the body velocities",
+            "itemtype": "method",
+            "name": "computeGWlambda",
+            "return": {
+                "description": "",
+                "type": "Number"
+            },
+            "class": "Equation"
+        },
+        {
+            "file": "src/constraints/Equation.js",
+            "line": 197,
+            "description": "Computes G*inv(M)*f, where M is the mass matrix with diagonal blocks for each body, and f are the forces on the bodies.",
+            "itemtype": "method",
+            "name": "computeGiMf",
+            "return": {
+                "description": "",
+                "type": "Number"
+            },
+            "class": "Equation"
+        },
+        {
+            "file": "src/constraints/Equation.js",
+            "line": 223,
+            "description": "Computes G*inv(M)*G'",
+            "itemtype": "method",
+            "name": "computeGiMGt",
+            "return": {
+                "description": "",
+                "type": "Number"
+            },
+            "class": "Equation"
+        },
+        {
+            "file": "src/constraints/Equation.js",
+            "line": 253,
+            "description": "Add constraint velocity to the bodies.",
+            "itemtype": "method",
+            "name": "addToWlambda",
+            "params": [
+                {
+                    "name": "deltalambda",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "class": "Equation"
+        },
+        {
+            "file": "src/constraints/Equation.js",
+            "line": 301,
+            "description": "Compute the denominator part of the SPOOK equation: C = G*inv(M)*G' + eps",
+            "itemtype": "method",
+            "name": "computeC",
+            "params": [
+                {
+                    "name": "eps",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Number"
+            },
+            "class": "Equation"
+        },
+        {
             "file": "src/constraints/FrictionEquation.js",
-            "line": 33,
+            "line": 34,
             "description": "Relative vector from center of body i to the contact point, in world coords.",
             "itemtype": "property",
             "name": "ri",
@@ -2405,7 +2710,7 @@
         },
         {
             "file": "src/constraints/FrictionEquation.js",
-            "line": 40,
+            "line": 41,
             "description": "Relative vector from center of body j to the contact point, in world coords.",
             "itemtype": "property",
             "name": "rj",
@@ -2414,7 +2719,7 @@
         },
         {
             "file": "src/constraints/FrictionEquation.js",
-            "line": 47,
+            "line": 48,
             "description": "Tangent vector that the friction force will act along, in world coords.",
             "itemtype": "property",
             "name": "t",
@@ -2423,7 +2728,7 @@
         },
         {
             "file": "src/constraints/FrictionEquation.js",
-            "line": 60,
+            "line": 58,
             "description": "Set the slipping condition for the constraint. The friction force cannot be\nlarger than this value.",
             "itemtype": "method",
             "name": "setSlipForce",
@@ -2438,7 +2743,7 @@
         },
         {
             "file": "src/constraints/PrismaticConstraint.js",
-            "line": 60,
+            "line": 79,
             "description": "Update the constraint equations. Should be done if any of the bodies changed position, before solving.",
             "itemtype": "method",
             "name": "update",
@@ -2446,7 +2751,7 @@
         },
         {
             "file": "src/constraints/RevoluteConstraint.js",
-            "line": 64,
+            "line": 98,
             "description": "Enable the rotational motor",
             "itemtype": "method",
             "name": "enableMotor",
@@ -2454,7 +2759,7 @@
         },
         {
             "file": "src/constraints/RevoluteConstraint.js",
-            "line": 74,
+            "line": 108,
             "description": "Disable the rotational motor",
             "itemtype": "method",
             "name": "disableMotor",
@@ -2462,7 +2767,7 @@
         },
         {
             "file": "src/constraints/RevoluteConstraint.js",
-            "line": 85,
+            "line": 119,
             "description": "Check if the motor is enabled.",
             "itemtype": "method",
             "name": "motorIsEnabled",
@@ -2474,7 +2779,7 @@
         },
         {
             "file": "src/constraints/RevoluteConstraint.js",
-            "line": 94,
+            "line": 128,
             "description": "Set the speed of the rotational constraint motor",
             "itemtype": "method",
             "name": "setMotorSpeed",
@@ -2489,7 +2794,7 @@
         },
         {
             "file": "src/constraints/RevoluteConstraint.js",
-            "line": 105,
+            "line": 139,
             "description": "Get the speed of the rotational constraint motor",
             "itemtype": "method",
             "name": "getMotorSpeed",
@@ -3516,7 +3821,7 @@
         },
         {
             "file": "src/shapes/Line.js",
-            "line": 13,
+            "line": 14,
             "description": "Length of this line",
             "itemtype": "property",
             "name": "length",
@@ -3524,8 +3829,42 @@
             "class": "Line"
         },
         {
+            "file": "src/shapes/Plane.js",
+            "line": 16,
+            "description": "Compute moment of inertia",
+            "itemtype": "method",
+            "name": "computeMomentOfInertia",
+            "class": "Plane"
+        },
+        {
+            "file": "src/shapes/Plane.js",
+            "line": 24,
+            "description": "Update the bounding radius",
+            "itemtype": "method",
+            "name": "updateBoundingRadius",
+            "class": "Plane"
+        },
+        {
             "file": "src/shapes/Rectangle.js",
-            "line": 26,
+            "line": 21,
+            "description": "Total width of the rectangle",
+            "itemtype": "property",
+            "name": "width",
+            "type": "{Number}",
+            "class": "Rectangle"
+        },
+        {
+            "file": "src/shapes/Rectangle.js",
+            "line": 28,
+            "description": "Total height of the rectangle",
+            "itemtype": "property",
+            "name": "height",
+            "type": "{Number}",
+            "class": "Rectangle"
+        },
+        {
+            "file": "src/shapes/Rectangle.js",
+            "line": 39,
             "description": "Compute moment of inertia",
             "itemtype": "method",
             "name": "computeMomentOfInertia",
@@ -3540,6 +3879,14 @@
                 "description": "",
                 "type": "Number"
             },
+            "class": "Rectangle"
+        },
+        {
+            "file": "src/shapes/Rectangle.js",
+            "line": 51,
+            "description": "Update the bounding radius",
+            "itemtype": "method",
+            "name": "updateBoundingRadius",
             "class": "Rectangle"
         },
         {
@@ -3632,7 +3979,25 @@
         },
         {
             "file": "src/solver/GSSolver.js",
-            "line": 32,
+            "line": 24,
+            "description": "The number of iterations to do when solving. More gives better results, but is more expensive.",
+            "itemtype": "property",
+            "name": "iterations",
+            "type": "{Number}",
+            "class": "GSSolver"
+        },
+        {
+            "file": "src/solver/GSSolver.js",
+            "line": 31,
+            "description": "The error tolerance. If the total error is below this limit, the solver will stop. Set to zero for as good solution as possible.",
+            "itemtype": "property",
+            "name": "tolerance",
+            "type": "{Number}",
+            "class": "GSSolver"
+        },
+        {
+            "file": "src/solver/GSSolver.js",
+            "line": 44,
             "description": "Whether to use .stiffness and .relaxation parameters from the Solver instead of each Equation individually.",
             "type": "{Boolean}",
             "itemtype": "property",
@@ -3641,8 +4006,8 @@
         },
         {
             "file": "src/solver/GSSolver.js",
-            "line": 39,
-            "description": "Global equation stiffness.",
+            "line": 51,
+            "description": "Global equation stiffness. Larger number gives harder contacts, etc, but may also be more expensive to compute, or it will make your simulation explode.",
             "itemtype": "property",
             "name": "stiffness",
             "type": "{Number}",
@@ -3650,8 +4015,8 @@
         },
         {
             "file": "src/solver/GSSolver.js",
-            "line": 46,
-            "description": "Global equation relaxation.",
+            "line": 58,
+            "description": "Global equation relaxation. This is the number of timesteps required for a constraint to be resolved. Larger number will give softer contacts. Set to around 3 or 4 for good enough results.",
             "itemtype": "property",
             "name": "relaxation",
             "type": "{Number}",
@@ -3659,7 +4024,7 @@
         },
         {
             "file": "src/solver/GSSolver.js",
-            "line": 53,
+            "line": 65,
             "description": "Set to true to set all right hand side terms to zero when solving. Can be handy for a few applications.",
             "itemtype": "property",
             "name": "useZeroRHS",
@@ -3668,7 +4033,7 @@
         },
         {
             "file": "src/solver/GSSolver.js",
-            "line": 62,
+            "line": 74,
             "description": "Solve the system of equations",
             "itemtype": "method",
             "name": "solve",
@@ -3746,7 +4111,7 @@
         },
         {
             "file": "src/solver/IslandSolver.js",
-            "line": 21,
+            "line": 22,
             "description": "The solver used in the workers.",
             "itemtype": "property",
             "name": "subsolver",
@@ -3755,8 +4120,8 @@
         },
         {
             "file": "src/solver/IslandSolver.js",
-            "line": 28,
-            "description": "Number of islands",
+            "line": 29,
+            "description": "Number of islands. Read only.",
             "itemtype": "property",
             "name": "numIslands",
             "type": "{number}",
@@ -3764,7 +4129,22 @@
         },
         {
             "file": "src/solver/IslandSolver.js",
-            "line": 68,
+            "line": 39,
+            "description": "Fires before an island is solved.",
+            "itemtype": "event",
+            "name": "beforeSolveIsland",
+            "params": [
+                {
+                    "name": "island",
+                    "description": "",
+                    "type": "Island"
+                }
+            ],
+            "class": "IslandSolver"
+        },
+        {
+            "file": "src/solver/IslandSolver.js",
+            "line": 79,
             "description": "Solves the full system.",
             "itemtype": "method",
             "name": "solve",
@@ -3784,7 +4164,7 @@
         },
         {
             "file": "src/solver/Solver.js",
-            "line": 12,
+            "line": 17,
             "description": "Current equations in the solver.",
             "itemtype": "property",
             "name": "equations",
@@ -3794,6 +4174,43 @@
         {
             "file": "src/solver/Solver.js",
             "line": 25,
+            "description": "Function that is used to sort all equations before each solve.",
+            "itemtype": "property",
+            "name": "equationSortFunction",
+            "type": "{function|boolean}",
+            "class": "Solver"
+        },
+        {
+            "file": "src/solver/Solver.js",
+            "line": 34,
+            "description": "Method to be implemented in each subclass",
+            "itemtype": "method",
+            "name": "solve",
+            "params": [
+                {
+                    "name": "dt",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "world",
+                    "description": "",
+                    "type": "World"
+                }
+            ],
+            "class": "Solver"
+        },
+        {
+            "file": "src/solver/Solver.js",
+            "line": 44,
+            "description": "Sort all equations using the .equationSortFunction. Should be called by subclasses before solving.",
+            "itemtype": "method",
+            "name": "sortEquations",
+            "class": "Solver"
+        },
+        {
+            "file": "src/solver/Solver.js",
+            "line": 53,
             "description": "Add an equation to be solved.",
             "itemtype": "method",
             "name": "addEquation",
@@ -3808,7 +4225,7 @@
         },
         {
             "file": "src/solver/Solver.js",
-            "line": 35,
+            "line": 63,
             "description": "Add equations. Same as .addEquation, but this time the argument is an array of Equations",
             "itemtype": "method",
             "name": "addEquations",
@@ -3823,7 +4240,7 @@
         },
         {
             "file": "src/solver/Solver.js",
-            "line": 45,
+            "line": 73,
             "description": "Remove an equation.",
             "itemtype": "method",
             "name": "removeEquation",
@@ -3838,7 +4255,7 @@
         },
         {
             "file": "src/solver/Solver.js",
-            "line": 57,
+            "line": 85,
             "description": "Remove all currently added equations.",
             "itemtype": "method",
             "name": "removeAllEquations",
@@ -3866,8 +4283,18 @@
             "class": "Utils"
         },
         {
+            "file": "src/utils/Utils.js",
+            "line": 27,
+            "description": "The array type to use for internal numeric computations.",
+            "type": "{Array}",
+            "static": 1,
+            "itemtype": "property",
+            "name": "ARRAY_TYPE",
+            "class": "Utils"
+        },
+        {
             "file": "src/world/World.js",
-            "line": 53,
+            "line": 54,
             "description": "All springs in the world.",
             "itemtype": "property",
             "name": "springs",
@@ -3876,7 +4303,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 61,
+            "line": 62,
             "description": "All bodies in the world.",
             "itemtype": "property",
             "name": "bodies",
@@ -3885,7 +4312,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 69,
+            "line": 70,
             "description": "The solver used to satisfy constraints and contacts.",
             "itemtype": "property",
             "name": "solver",
@@ -3894,7 +4321,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 77,
+            "line": 78,
             "description": "The narrowphase to use to generate contacts.",
             "itemtype": "property",
             "name": "narrowphase",
@@ -3903,7 +4330,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 85,
+            "line": 86,
             "description": "Gravity in the world. This is applied on all bodies in the beginning of each step().",
             "itemtype": "property",
             "name": "",
@@ -3912,7 +4339,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 93,
+            "line": 94,
             "description": "Whether to do timing measurements during the step() or not.",
             "itemtype": "property",
             "name": "doPofiling",
@@ -3921,7 +4348,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 101,
+            "line": 102,
             "description": "How many millisecconds the last step() took. This is updated each step if .doProfiling is set to true.",
             "itemtype": "property",
             "name": "lastStepTime",
@@ -3930,7 +4357,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 109,
+            "line": 110,
             "description": "The broadphase algorithm to use.",
             "itemtype": "property",
             "name": "broadphase",
@@ -3939,7 +4366,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 117,
+            "line": 118,
             "description": "User-added constraints.",
             "itemtype": "property",
             "name": "constraints",
@@ -3948,7 +4375,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 125,
+            "line": 126,
             "description": "Friction between colliding bodies. This value is used if no matching ContactMaterial is found for the body pair.",
             "itemtype": "property",
             "name": "defaultFriction",
@@ -3957,7 +4384,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 132,
+            "line": 133,
             "description": "For keeping track of what time step size we used last step",
             "itemtype": "property",
             "name": "lastTimeStep",
@@ -3966,7 +4393,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 139,
+            "line": 140,
             "description": "Enable to automatically apply spring forces each step.",
             "itemtype": "property",
             "name": "applySpringForces",
@@ -3975,7 +4402,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 146,
+            "line": 147,
             "description": "Enable/disable constraint solving in each step.",
             "itemtype": "property",
             "name": "solveConstraints",
@@ -3984,7 +4411,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 153,
+            "line": 154,
             "description": "The ContactMaterials added to the World.",
             "itemtype": "property",
             "name": "contactMaterials",
@@ -3993,7 +4420,87 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 183,
+            "line": 161,
+            "description": "World time.",
+            "itemtype": "property",
+            "name": "time",
+            "type": "{Number}",
+            "class": "World"
+        },
+        {
+            "file": "src/world/World.js",
+            "line": 172,
+            "description": "Fired after the step().",
+            "itemtype": "event",
+            "name": "postStep",
+            "class": "World"
+        },
+        {
+            "file": "src/world/World.js",
+            "line": 180,
+            "itemtype": "event",
+            "name": "addBody",
+            "params": [
+                {
+                    "name": "body",
+                    "description": "",
+                    "type": "Body"
+                }
+            ],
+            "class": "World"
+        },
+        {
+            "file": "src/world/World.js",
+            "line": 189,
+            "itemtype": "event",
+            "name": "removeBody",
+            "params": [
+                {
+                    "name": "body",
+                    "description": "",
+                    "type": "Body"
+                }
+            ],
+            "class": "World"
+        },
+        {
+            "file": "src/world/World.js",
+            "line": 198,
+            "description": "Fired when a spring is added to the world.",
+            "itemtype": "event",
+            "name": "addSpring",
+            "params": [
+                {
+                    "name": "spring",
+                    "description": "",
+                    "type": "Spring"
+                }
+            ],
+            "class": "World"
+        },
+        {
+            "file": "src/world/World.js",
+            "line": 208,
+            "description": "Fired when a first contact is created between two bodies. This event is fired after the step has been done.",
+            "itemtype": "event",
+            "name": "impact",
+            "params": [
+                {
+                    "name": "bodyA",
+                    "description": "",
+                    "type": "Body"
+                },
+                {
+                    "name": "bodyB",
+                    "description": "",
+                    "type": "Body"
+                }
+            ],
+            "class": "World"
+        },
+        {
+            "file": "src/world/World.js",
+            "line": 222,
             "description": "Add a constraint to the simulation.",
             "itemtype": "method",
             "name": "addConstraint",
@@ -4008,7 +4515,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 193,
+            "line": 232,
             "description": "Add a ContactMaterial to the simulation.",
             "itemtype": "method",
             "name": "addContactMaterial",
@@ -4023,7 +4530,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 202,
+            "line": 241,
             "description": "Get a contact material given two materials",
             "itemtype": "method",
             "name": "getContactMaterial",
@@ -4050,7 +4557,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 221,
+            "line": 260,
             "description": "Removes a constraint",
             "itemtype": "method",
             "name": "removeConstraint",
@@ -4065,7 +4572,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 244,
+            "line": 284,
             "description": "Step the physics world forward in time.",
             "itemtype": "method",
             "name": "step",
@@ -4083,7 +4590,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 374,
+            "line": 433,
             "description": "Move a body forward in time.",
             "static": 1,
             "itemtype": "method",
@@ -4104,7 +4611,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 398,
+            "line": 457,
             "description": "Runs narrowphase for the shape pair i and j.",
             "static": 1,
             "itemtype": "method",
@@ -4170,7 +4677,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 487,
+            "line": 547,
             "description": "Add a spring to the simulation",
             "itemtype": "method",
             "name": "addSpring",
@@ -4185,7 +4692,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 499,
+            "line": 559,
             "description": "Remove a spring",
             "itemtype": "method",
             "name": "removeSpring",
@@ -4200,7 +4707,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 511,
+            "line": 571,
             "description": "Add a body to the simulation",
             "itemtype": "method",
             "name": "addBody",
@@ -4218,7 +4725,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 529,
+            "line": 589,
             "description": "Remove a body from the simulation",
             "itemtype": "method",
             "name": "removeBody",
@@ -4233,7 +4740,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 544,
+            "line": 605,
             "description": "Convert the world to a JSON-serializable Object.",
             "itemtype": "method",
             "name": "toJSON",
@@ -4245,7 +4752,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 695,
+            "line": 761,
             "description": "Upgrades a JSON object to current version",
             "itemtype": "method",
             "name": "upgradeJSON",
@@ -4264,7 +4771,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 715,
+            "line": 792,
             "description": "Load a scene from a serialized state in JSON format.",
             "itemtype": "method",
             "name": "fromJSON",
@@ -4283,7 +4790,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 843,
+            "line": 926,
             "description": "Resets the World, removes all bodies, constraints and springs.",
             "itemtype": "method",
             "name": "clear",
@@ -4291,7 +4798,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 869,
+            "line": 952,
             "description": "Get a copy of this World instance",
             "itemtype": "method",
             "name": "clone",
@@ -4303,7 +4810,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 884,
+            "line": 967,
             "description": "Test if a world point overlaps bodies",
             "itemtype": "method",
             "name": "hitTest",
@@ -4331,5 +4838,10 @@
             "class": "World"
         }
     ],
-    "warnings": []
+    "warnings": [
+        {
+            "message": "Missing item type\nCheck if the bodies were in contact since the last reset().",
+            "line": " src/collision/Narrowphase.js:53"
+        }
+    ]
 }

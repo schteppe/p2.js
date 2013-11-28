@@ -75,6 +75,8 @@
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
+                <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
+            
                 <li><a href="../classes/mat2.html">mat2</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
@@ -162,7 +164,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_solver_GSSolver.js.html#l8"><code>src&#x2F;solver&#x2F;GSSolver.js:8</code></a>
+            Defined in: <a href="../files/src_solver_GSSolver.js.html#l7"><code>src&#x2F;solver&#x2F;GSSolver.js:7</code></a>
         </div>
     
 
@@ -223,7 +225,7 @@
             
         
         
-        <a href="../files/src_solver_GSSolver.js.html#l8"><code>src&#x2F;solver&#x2F;GSSolver.js:8</code></a>
+        <a href="../files/src_solver_GSSolver.js.html#l7"><code>src&#x2F;solver&#x2F;GSSolver.js:7</code></a>
         
         </p>
 
@@ -392,8 +394,15 @@
                                 
                             </li>
                         
-                            <li class="index-item method">
+                            <li class="index-item method inherited">
                                 <a href="#method_solve">solve</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_sortEquations">sortEquations</a>
 
                                 
                                 
@@ -416,6 +425,20 @@
                                 
                             </li>
                         
+                            <li class="index-item property inherited">
+                                <a href="#property_equationSortFunction">equationSortFunction</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_iterations">iterations</a>
+
+                                
+                                
+                            </li>
+                        
                             <li class="index-item property">
                                 <a href="#property_relaxation">relaxation</a>
 
@@ -425,6 +448,13 @@
                         
                             <li class="index-item property">
                                 <a href="#property_stiffness">stiffness</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_tolerance">tolerance</a>
 
                                 
                                 
@@ -497,7 +527,7 @@
             
         
         
-        <a href="../files/src_solver_Solver.js.html#l25"><code>src&#x2F;solver&#x2F;Solver.js:25</code></a>
+        <a href="../files/src_solver_Solver.js.html#l53"><code>src&#x2F;solver&#x2F;Solver.js:53</code></a>
         
         </p>
 
@@ -582,7 +612,7 @@
             
         
         
-        <a href="../files/src_solver_Solver.js.html#l35"><code>src&#x2F;solver&#x2F;Solver.js:35</code></a>
+        <a href="../files/src_solver_Solver.js.html#l63"><code>src&#x2F;solver&#x2F;Solver.js:63</code></a>
         
         </p>
 
@@ -657,7 +687,7 @@
             
         
         
-        <a href="../files/src_solver_Solver.js.html#l57"><code>src&#x2F;solver&#x2F;Solver.js:57</code></a>
+        <a href="../files/src_solver_Solver.js.html#l85"><code>src&#x2F;solver&#x2F;Solver.js:85</code></a>
         
         </p>
 
@@ -719,7 +749,7 @@
             
         
         
-        <a href="../files/src_solver_Solver.js.html#l45"><code>src&#x2F;solver&#x2F;Solver.js:45</code></a>
+        <a href="../files/src_solver_Solver.js.html#l73"><code>src&#x2F;solver&#x2F;Solver.js:73</code></a>
         
         </p>
 
@@ -804,16 +834,16 @@
 
     <div class="meta">
         
+            <p>Inherited from
+            <a href="../classes/Solver.html#method_solve">
+                Solver
+            </a>
             
-                
-                <p>
-                
-                Defined in
-                
+            but overwritten in
             
         
         
-        <a href="../files/src_solver_GSSolver.js.html#l62"><code>src&#x2F;solver&#x2F;GSSolver.js:62</code></a>
+        <a href="../files/src_solver_GSSolver.js.html#l74"><code>src&#x2F;solver&#x2F;GSSolver.js:74</code></a>
         
         </p>
 
@@ -876,6 +906,58 @@
 </div>
 
                 
+                    <div id="method_sortEquations" class="method item inherited">
+    <h3 class="name"><code>sortEquations</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Solver.html#method_sortEquations">Solver</a>:
+            
+        
+        
+        <a href="../files/src_solver_Solver.js.html#l44"><code>src&#x2F;solver&#x2F;Solver.js:44</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Sort all equations using the .equationSortFunction. Should be called by subclasses before solving.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
             </div>
         
 
@@ -904,7 +986,7 @@
             
         
         
-        <a href="../files/src_solver_Solver.js.html#l12"><code>src&#x2F;solver&#x2F;Solver.js:12</code></a>
+        <a href="../files/src_solver_Solver.js.html#l17"><code>src&#x2F;solver&#x2F;Solver.js:17</code></a>
         
         </p>
 
@@ -915,6 +997,93 @@
 
     <div class="description">
         <p>Current equations in the solver.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_equationSortFunction" class="property item inherited">
+    <h3 class="name"><code>equationSortFunction</code></h3>
+    <span class="type">Function | Boolean</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Solver.html#property_equationSortFunction">Solver</a>:
+            
+        
+        
+        <a href="../files/src_solver_Solver.js.html#l25"><code>src&#x2F;solver&#x2F;Solver.js:25</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Function that is used to sort all equations before each solve.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_iterations" class="property item">
+    <h3 class="name"><code>iterations</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_solver_GSSolver.js.html#l24"><code>src&#x2F;solver&#x2F;GSSolver.js:24</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The number of iterations to do when solving. More gives better results, but is more expensive.</p>
 
     </div>
 
@@ -949,7 +1118,7 @@
             
         
         
-        <a href="../files/src_solver_GSSolver.js.html#l46"><code>src&#x2F;solver&#x2F;GSSolver.js:46</code></a>
+        <a href="../files/src_solver_GSSolver.js.html#l58"><code>src&#x2F;solver&#x2F;GSSolver.js:58</code></a>
         
         </p>
 
@@ -959,7 +1128,7 @@
     </div>
 
     <div class="description">
-        <p>Global equation relaxation.</p>
+        <p>Global equation relaxation. This is the number of timesteps required for a constraint to be resolved. Larger number will give softer contacts. Set to around 3 or 4 for good enough results.</p>
 
     </div>
 
@@ -994,7 +1163,7 @@
             
         
         
-        <a href="../files/src_solver_GSSolver.js.html#l39"><code>src&#x2F;solver&#x2F;GSSolver.js:39</code></a>
+        <a href="../files/src_solver_GSSolver.js.html#l51"><code>src&#x2F;solver&#x2F;GSSolver.js:51</code></a>
         
         </p>
 
@@ -1004,7 +1173,52 @@
     </div>
 
     <div class="description">
-        <p>Global equation stiffness.</p>
+        <p>Global equation stiffness. Larger number gives harder contacts, etc, but may also be more expensive to compute, or it will make your simulation explode.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_tolerance" class="property item">
+    <h3 class="name"><code>tolerance</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_solver_GSSolver.js.html#l31"><code>src&#x2F;solver&#x2F;GSSolver.js:31</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The error tolerance. If the total error is below this limit, the solver will stop. Set to zero for as good solution as possible.</p>
 
     </div>
 
@@ -1039,7 +1253,7 @@
             
         
         
-        <a href="../files/src_solver_GSSolver.js.html#l32"><code>src&#x2F;solver&#x2F;GSSolver.js:32</code></a>
+        <a href="../files/src_solver_GSSolver.js.html#l44"><code>src&#x2F;solver&#x2F;GSSolver.js:44</code></a>
         
         </p>
 
@@ -1084,7 +1298,7 @@
             
         
         
-        <a href="../files/src_solver_GSSolver.js.html#l53"><code>src&#x2F;solver&#x2F;GSSolver.js:53</code></a>
+        <a href="../files/src_solver_GSSolver.js.html#l65"><code>src&#x2F;solver&#x2F;GSSolver.js:65</code></a>
         
         </p>
 

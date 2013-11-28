@@ -75,6 +75,8 @@
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
+                <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
+            
                 <li><a href="../classes/mat2.html">mat2</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
@@ -200,6 +202,27 @@ function Narrowphase(){
     this.reuseObjects = true;
     this.reusableContactEquations = [];
     this.reusableFrictionEquations = [];
+    this.restitution = 0; // For contact constraints
+
+    // Keep track of the colliding bodies last step
+    this.collidingBodiesLastStep = {};
+};
+
+/**
+ * Check if the bodies were in contact since the last reset().
+ * @param  {Body} bi
+ * @param  {Body} bj
+ * @return {Boolean}
+ */
+Narrowphase.prototype.collidedLastStep = function(bi,bj){
+    var id1 = bi.id,
+        id2 = bj.id;
+    if(id1 &gt; id2){
+        var tmp = id1;
+        id1 = id2;
+        id2 = tmp;
+    }
+    return !!this.collidingBodiesLastStep[id1 + &quot; &quot; + id2];
 };
 
 /**
@@ -207,6 +230,22 @@ function Narrowphase(){
  * @method reset
  */
 Narrowphase.prototype.reset = function(){
+
+    // Save the colliding bodies data
+    for(var key in this.collidingBodiesLastStep)
+        delete this.collidingBodiesLastStep[key];
+    for(var i=0; i!==this.contactEquations.length; i++){
+        var eq = this.contactEquations[i],
+            id1 = eq.bi.id,
+            id2 = eq.bj.id;
+        if(id1 &gt; id2){
+            var tmp = id1;
+            id1 = id2;
+            id2 = tmp;
+        }
+        this.collidingBodiesLastStep[id1 + &quot; &quot; + id2] = true;
+    }
+
     if(this.reuseObjects){
         var ce = this.contactEquations,
             fe = this.frictionEquations,
@@ -231,6 +270,8 @@ Narrowphase.prototype.createContactEquation = function(bodyA,bodyB){
     var c = this.reusableContactEquations.length ? this.reusableContactEquations.pop() : new ContactEquation(bodyA,bodyB);
     c.bi = bodyA;
     c.bj = bodyB;
+    c.restitution = this.restitution;
+    c.firstImpact = !this.collidedLastStep(bodyA,bodyB);
     return c;
 };
 
