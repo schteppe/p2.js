@@ -22,11 +22,26 @@
         margin:10px;
         display: inline-block;
       }
+      .textBox.centered {
+        width:300px;
+        height:100px;
+        margin-left: -150px; /* margin is -0.5 * dimension */
+        margin-top: -50px;
+        position: absolute;
+        top:50%;
+        left:50%;
+        vertical-align: middle;
+        text-align: center;
+      }
+      .hidden {
+        display: none;
+      }
     </style>
   </head>
   <body>
     <div id="level" class="textBox"></div>
     <div id="lives" class="textBox"></div>
+    <div id="gameover" class="textBox centered hidden">GAME OVER</div>
     <script>
       var canvas, ctx, w, h, zoom,
           shipSize=0.3, spaceWidth=16, spaceHeight=9, hideShip=false,
@@ -344,6 +359,7 @@
       }
 
       // Catch impacts in the world
+      // Todo: check if several bullets hit the same asteroid in the same time step
       world.on("impact",function(evt){
         var bodyA = evt.bodyA,
             bodyB = evt.bodyB;
@@ -355,30 +371,37 @@
           if(otherBody.shapes[0].collisionGroup == ASTEROID){
             lives--;
             updateLives();
+
             // Remove the ship body for a while
             world.removeBody(shipBody);
             hideShip = true;
 
-            var interval = setInterval(function(){
-                // Check if the ship position is free from asteroids
-                var free = true;
-                for(var i=0; i<asteroids.length; i++){
-                    var a = asteroids[i];
-                    if(Math.pow(a.position[0]-shipBody.position[0],2) + Math.pow(a.position[1]-shipBody.position[1],2) < initSpace){
-                        free = false;
+            if(lives > 0){
+                var interval = setInterval(function(){
+                    // Check if the ship position is free from asteroids
+                    var free = true;
+                    for(var i=0; i<asteroids.length; i++){
+                        var a = asteroids[i];
+                        if(Math.pow(a.position[0]-shipBody.position[0],2) + Math.pow(a.position[1]-shipBody.position[1],2) < initSpace){
+                            free = false;
+                        }
                     }
-                }
-                if(free){
-                    // Add ship again
-                    shipBody.velocity[0] = 0;
-                    shipBody.velocity[1] = 0;
-                    shipBody.angularVelocity = 0;
-                    shipBody.angle = 0;
-                    hideShip = false;
-                    world.addBody(shipBody);
-                    clearInterval(interval);
-                }
-            },1000);
+                    if(free){
+                        // Add ship again
+                        shipBody.force[0] =
+                            shipBody.force[1] =
+                            shipBody.velocity[0] =
+                            shipBody.velocity[1] =
+                            shipBody.angularVelocity =
+                            shipBody.angle = 0;
+                        hideShip = false;
+                        world.addBody(shipBody);
+                        clearInterval(interval);
+                    }
+                },1000);
+            } else {
+                document.getElementById('gameover').setAttribute('style','hidden:true');
+            }
           }
 
         } else if(bodyA.shapes[0].collisionGroup == BULLET || bodyB.shapes[0].collisionGroup == BULLET){
