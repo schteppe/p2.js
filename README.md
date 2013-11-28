@@ -91,6 +91,7 @@ Note that concave polygon shapes can be created using ```Body.prototype.fromPoly
 * Added class ```LockConstraint```.
 * Added property ```.time``` to ```World```.
 * ```World``` now emits ```'impact'``` event.
+* Added property ```Utils.ARRAY_TYPE```.
 
 ##### 0.3
 * Added ```Utils```
