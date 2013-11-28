@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <title>p2.js Asteroids</title>
     <meta charset="utf-8">
     <script src="../../build/p2.js"></script>
     <style>
@@ -13,6 +14,9 @@
         font-family:"Courier New", Courier, monospace;
         font-size: 24px;
       }
+      a {
+        color:white;
+      }
       canvas {
         position:absolute;
         top:0;
@@ -23,9 +27,9 @@
         display: inline-block;
       }
       .textBox.centered {
-        width:300px;
+        width:500px;
         height:100px;
-        margin-left: -150px; /* margin is -0.5 * dimension */
+        margin-left: -250px;
         margin-top: -50px;
         position: absolute;
         top:50%;
@@ -33,15 +37,22 @@
         vertical-align: middle;
         text-align: center;
       }
+      .textBox.bottom {
+        position:absolute;
+        right:0;
+        bottom:0;
+      }
       .hidden {
         display: none;
       }
     </style>
   </head>
   <body>
+    <div id="logo" class="textBox bottom right">POWERED BY <a href="https://github.com/schteppe/p2.js">P2.JS</a> PHYSICS</div>
     <div id="level" class="textBox"></div>
     <div id="lives" class="textBox"></div>
     <div id="gameover" class="textBox centered hidden">GAME OVER</div>
+    <div id="instructions" class="textBox centered">ARROW KEYS = CONTROL SHIP<br/>SPACE = SHOOT</div>
     <script>
       var canvas, ctx, w, h, zoom,
           shipSize=0.3, spaceWidth=16, spaceHeight=9, hideShip=false,
@@ -51,7 +62,7 @@
           SHIP=Math.pow(2,1),
           BULLET=Math.pow(2,2),
           ASTEROID=Math.pow(2,3),
-          initSpace=asteroidRadius*3,
+          initSpace=asteroidRadius*2,
           level=1, lives=3;
 
       var keyLeft, keyRight, keyUp, keyDown, keyShoot, lastShootTime=0;
@@ -65,7 +76,7 @@
         canvas = document.createElement("canvas");
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-        document.body.appendChild(canvas);
+        document.body.insertBefore(canvas,document.getElementById("logo"));
         w = canvas.width;
         h = canvas.height;
 
@@ -133,7 +144,7 @@
         }
 
         // Shoot
-        if(keyShoot && world.time - lastShootTime > shipReloadTime){
+        if(keyShoot && !hideShip && world.time - lastShootTime > shipReloadTime){
 
           // Create a bullet body
           var bulletBody = new p2.Body({ mass:0.05, position:shipBody.position });
@@ -234,7 +245,6 @@
 
       function drawAsteroids(){
         for(var i=0; i!==asteroids.length; i++){
-          ctx.beginPath();
           var a = asteroids[i],
               x = a.position[0],
               y = a.position[1],
@@ -242,6 +252,8 @@
           ctx.save();
           ctx.translate(x,y);  // Translate to the center
           ctx.rotate(a.angle);
+
+          ctx.beginPath();
 
           for(var j=0; j!==numAsteroidVerts; j++){
             var xv = a.verts[j][0],
@@ -263,8 +275,8 @@
               y = bulletBody.position[1];
           ctx.beginPath();
           ctx.arc(x,y,bulletRadius,0,2*Math.PI);
-          //ctx.closePath();
           ctx.fill();
+          ctx.closePath();
         }
       }
 
@@ -331,8 +343,8 @@
           var radius = asteroidBody.shapes[0].radius;
           for(var j=0; j!==numAsteroidVerts; j++){
             var angle = j*2*Math.PI / numAsteroidVerts,
-                xv = radius*Math.cos(angle) + rand()*radius*0.5,
-                yv = radius*Math.sin(angle) + rand()*radius*0.5;
+                xv = radius*Math.cos(angle) + rand()*radius*0.4,
+                yv = radius*Math.sin(angle) + rand()*radius*0.4;
             asteroidBody.verts.push([xv,yv]);
           }
       }
@@ -352,7 +364,10 @@
         switch(code){
           case 32: keyShoot = isDown; break;
           case 37: keyLeft =  isDown; break;
-          case 38: keyUp =    isDown; break;
+          case 38:
+            keyUp =    isDown;
+            document.getElementById("instructions").classList.add("hidden");
+            break;
           case 39: keyRight = isDown; break;
           case 40: keyDown =  isDown; break;
         }
@@ -398,9 +413,9 @@
                         world.addBody(shipBody);
                         clearInterval(interval);
                     }
-                },1000);
+                },100);
             } else {
-                document.getElementById('gameover').setAttribute('style','hidden:true');
+                document.getElementById('gameover').classList.remove('hidden');
             }
           }
 
@@ -422,26 +437,29 @@
 
         // Remove bullet
         world.removeBody(bulletBody);
-        bulletBodies.splice(bulletBodies.indexOf(bulletBody),1);
+        var idx = bulletBodies.indexOf(bulletBody);
+        if(idx != -1){
+          bulletBodies.splice(idx,1);
 
-        // Add new sub-asteroids
-        var x = asteroidBody.position[0],
-            y = asteroidBody.position[1];
-        if(asteroidBody.level < 4){
-          var angleDisturb = Math.PI/2 * Math.random();
-          for(var i=0; i<4; i++){
-            var angle = Math.PI/2*i+ angleDisturb;
-            var r = asteroidBody.shapes[0].radius - asteroidShapes[asteroidBody.level].radius;
-            var subAsteroidBody = new p2.Body({
-              mass : 10,
-              position:[x+r*Math.cos(angle),y+r*Math.sin(angle)],
-              velocity : [rand(),rand()],
-            });
-            subAsteroidBody.addShape(asteroidShapes[asteroidBody.level]);
-            subAsteroidBody.level = asteroidBody.level + 1;
-            world.addBody(subAsteroidBody);
-            addAsteroidVerts(subAsteroidBody);
-            asteroids.push(subAsteroidBody);
+          // Add new sub-asteroids
+          var x = asteroidBody.position[0],
+              y = asteroidBody.position[1];
+          if(asteroidBody.level < 4){
+            var angleDisturb = Math.PI/2 * Math.random();
+            for(var i=0; i<4; i++){
+              var angle = Math.PI/2*i+ angleDisturb;
+              var r = asteroidBody.shapes[0].radius - asteroidShapes[asteroidBody.level].radius;
+              var subAsteroidBody = new p2.Body({
+                mass : 10,
+                position:[x+r*Math.cos(angle),y+r*Math.sin(angle)],
+                velocity : [rand(),rand()],
+              });
+              subAsteroidBody.addShape(asteroidShapes[asteroidBody.level]);
+              subAsteroidBody.level = asteroidBody.level + 1;
+              world.addBody(subAsteroidBody);
+              addAsteroidVerts(subAsteroidBody);
+              asteroids.push(subAsteroidBody);
+            }
           }
         }
 
