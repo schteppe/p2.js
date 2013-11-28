@@ -571,6 +571,7 @@ World.prototype.removeBody = function(body){
     if(idx!==-1){
         this.bodies.splice(idx,1);
         this.removeBodyEvent.body = body;
+        body.resetConstraintVelocity();
         this.emit(this.removeBodyEvent);
     }
 };
