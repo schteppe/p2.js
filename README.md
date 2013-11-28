@@ -86,9 +86,11 @@ Note that concave polygon shapes can be created using ```Body.prototype.fromPoly
 * Added method ```Narrowphase.prototype.collidedLastStep```
 * Added property ```.firstImpact``` to ```ContactEquation``` and changed the way it handles restitution.
 * ```Solver``` now inherits from ```EventEmitter```.
-* ```IslandSolver``` now emits a "beforeSolveIsland" event.
+* ```IslandSolver``` now emits a ```'beforeSolveIsland'``` event.
 * Added method ```Solver.prototype.sortEquations``` and property ```.equationSortFunction```.
 * Added class ```LockConstraint```.
+* Added property ```.time``` to ```World```.
+* ```World``` now emits ```'impact'``` event.
 
 ##### 0.3
 * Added ```Utils```
@@ -142,7 +144,7 @@ Note that concave polygon shapes can be created using ```Body.prototype.fromPoly
 ##### 0.1
 
 * Added ```EventEmitter```
-* ```World``` now emits the following events: ```postStep```, ```addBody```, ```addSpring```
+* ```World``` now emits the following events: ```'postStep'```, ```'addBody'```, ```'addSpring'```
 * Moved properties of ```Body.MotionState``` to ```Body```. Usage is now ```Body.STATIC```, ```Body.DYNAMIC```, ```Body.KINEMATIC```.
 * Removed asynchronous behaviour of ```World.step()```.
 
