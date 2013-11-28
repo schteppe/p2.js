@@ -9,10 +9,22 @@
         margin:0;
         padding:0;
         overflow: hidden;
+        color:white;
+        font-family:"Courier New", Courier, monospace;
+        font-size: 24px;
+      }
+      canvas {
+        position:absolute;
+        top:0;
+        left:0;
+      }
+      .textBox {
+        margin:10px;
       }
     </style>
   </head>
   <body>
+    <div id="level" class="textBox"></div>
     <script>
       var canvas, ctx, w, h, shipSize=0.3, spaceWidth=16, spaceHeight=9,
           world, shipShape, shipBody, shipReloadTime=0.1, shipTurnSpeed=4,
@@ -66,6 +78,14 @@
           asteroidShapes[i].collisionMask = BULLET | SHIP;
         }
         addAsteroids();
+
+        // Update the level text box
+        updateLevel();
+      }
+
+      function updateLevel(){
+        var el = document.getElementById("level");
+        el.innerHTML = "Level "+level;
       }
 
       // Returns a random number between -0.5 and 0.5
@@ -341,6 +361,7 @@
 
         if(asteroids.length == 0){
           level++;
+          updateLevel();
           addAsteroids();
         }
       }
