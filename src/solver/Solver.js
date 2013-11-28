@@ -7,6 +7,7 @@ module.exports = Solver;
  * Base class for constraint solvers.
  * @class Solver
  * @constructor
+ * @extends {EventEmitter}
  */
 function Solver(options){
     options = options || {};
@@ -30,6 +31,12 @@ function Solver(options){
 };
 Solver.prototype = new EventEmitter();
 
+/**
+ * Method to be implemented in each subclass
+ * @method solve
+ * @param  {Number} dt
+ * @param  {World} world
+ */
 Solver.prototype.solve = function(dt,world){
     throw new Error("Solver.solve should be implemented by subclasses!");
 };

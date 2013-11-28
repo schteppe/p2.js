@@ -5,7 +5,7 @@ var Equation = require("./Equation"),
 module.exports = ContactEquation;
 
 /**
- * Non-penetration constraint equation.
+ * Non-penetration constraint equation. Tries to make the ri and rj vectors the same point.
  *
  * @class ContactEquation
  * @constructor
@@ -15,11 +15,41 @@ module.exports = ContactEquation;
  */
 function ContactEquation(bi,bj){
     Equation.call(this,bi,bj,0,Number.MAX_VALUE);
+
+    /**
+     * Vector from body i center of mass to the contact point.
+     * @property ri
+     * @type {Array}
+     */
     this.ri = vec2.create();
     this.penetrationVec = vec2.create();
+
+    /**
+     * Vector from body j center of mass to the contact point.
+     * @property rj
+     * @type {Array}
+     */
     this.rj = vec2.create();
+
+    /**
+     * The normal vector, pointing out of body i
+     * @property ni
+     * @type {Array}
+     */
     this.ni = vec2.create();
+
+    /**
+     * The restitution to use. 0=no bounciness, 1=max bounciness.
+     * @property restitution
+     * @type {Number}
+     */
     this.restitution = 0;
+
+    /**
+     * Set to true if this is the first impact between the bodies (not persistant contact).
+     * @property firstImpact
+     * @type {Boolean}
+     */
     this.firstImpact = false;
 };
 ContactEquation.prototype = new Equation();

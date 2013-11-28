@@ -50,6 +50,12 @@ function Narrowphase(){
     this.collidingBodiesLastStep = {};
 };
 
+/**
+ * Check if the bodies were in contact since the last reset().
+ * @param  {Body} bi
+ * @param  {Body} bj
+ * @return {Boolean}
+ */
 Narrowphase.prototype.collidedLastStep = function(bi,bj){
     var id1 = bi.id,
         id2 = bj.id;

@@ -58,7 +58,7 @@ function Equation(bi,bj,minForce,maxForce){
     this.relaxation = 4;
 
     /**
-     * The Jacobian entry of this equation.
+     * The Jacobian entry of this equation. 6 numbers, 3 per body (x,y,angle).
      * @property G
      * @type {Array}
      */
@@ -249,6 +249,12 @@ var addToWlambda_temp = vec2.create(),
     addToWlambda_rj = vec2.create();
 var tmpMat1 = mat2.create(),
     tmpMat2 = mat2.create();
+
+/**
+ * Add constraint velocity to the bodies.
+ * @method addToWlambda
+ * @param {Number} deltalambda
+ */
 Equation.prototype.addToWlambda = function(deltalambda){
     var bi = this.bi,
         bj = this.bj,
@@ -292,6 +298,12 @@ Equation.prototype.addToWlambda = function(deltalambda){
     bj.wlambda += bj.invInertia * G[5] * deltalambda;
 };
 
+/**
+ * Compute the denominator part of the SPOOK equation: C = G*inv(M)*G' + eps
+ * @method computeC
+ * @param  {Number} eps
+ * @return {Number}
+ */
 Equation.prototype.computeC = function(eps){
     return this.computeGiMGt() + eps;
 };

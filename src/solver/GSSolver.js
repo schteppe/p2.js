@@ -20,8 +20,21 @@ module.exports = GSSolver;
 function GSSolver(options){
     Solver.call(this,options);
     options = options || {};
+
+    /**
+     * The number of iterations to do when solving. More gives better results, but is more expensive.
+     * @property iterations
+     * @type {Number}
+     */
     this.iterations = options.iterations || 10;
+
+    /**
+     * The error tolerance. If the total error is below this limit, the solver will stop. Set to zero for as good solution as possible.
+     * @property tolerance
+     * @type {Number}
+     */
     this.tolerance = options.tolerance || 0;
+
     this.debug = options.debug || false;
     this.arrayStep = 30;
     this.lambda = new Utils.ARRAY_TYPE(this.arrayStep);
@@ -36,14 +49,14 @@ function GSSolver(options){
     this.useGlobalEquationParameters = true;
 
     /**
-     * Global equation stiffness.
+     * Global equation stiffness. Larger number gives harder contacts, etc, but may also be more expensive to compute, or it will make your simulation explode.
      * @property stiffness
      * @type {Number}
      */
     this.stiffness = 1e6;
 
     /**
-     * Global equation relaxation.
+     * Global equation relaxation. This is the number of timesteps required for a constraint to be resolved. Larger number will give softer contacts. Set to around 3 or 4 for good enough results.
      * @property relaxation
      * @type {Number}
      */

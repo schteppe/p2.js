@@ -12,6 +12,7 @@ module.exports = IslandSolver;
  * @class IslandSolver
  * @constructor
  * @param {Solver} subsolver
+ * @param {Object} options
  * @extends Solver
  */
 function IslandSolver(subsolver,options){
@@ -35,6 +36,11 @@ function IslandSolver(subsolver,options){
     // Pooling of node objects saves some GC load
     this._nodePool = [];
 
+    /**
+     * Fires before an island is solved.
+     * @event beforeSolveIsland
+     * @param {Island} island
+     */
     this.beforeSolveIslandEvent = {
         type : "beforeSolveIsland",
         island : null,

@@ -19,6 +19,11 @@ module.exports = DistanceConstraint;
 function DistanceConstraint(bodyA,bodyB,distance,maxForce){
     Constraint.call(this,bodyA,bodyB);
 
+    /**
+     * The distance to keep.
+     * @property distance
+     * @type {Number}
+     */
     this.distance = distance;
 
     if(typeof(maxForce)==="undefined" )
@@ -58,12 +63,22 @@ DistanceConstraint.prototype.update = function(){
     G[4] =  n[1];
 };
 
+/**
+ * Set the max force to be used
+ * @method setMaxForce
+ * @param {Number} f
+ */
 DistanceConstraint.prototype.setMaxForce = function(f){
     var normal = this.equations[0];
     normal.minForce = -f;
     normal.maxForce =  f;
 };
 
+/**
+ * Get the max force
+ * @method getMaxForce
+ * @return {Number}
+ */
 DistanceConstraint.prototype.getMaxForce = function(f){
     var normal = this.equations[0];
     return normal.maxForce;

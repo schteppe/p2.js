@@ -169,22 +169,48 @@ function World(options){
     this._constraintIdCounter = 0;
     this._bodyIdCounter = 0;
 
-    // Event objects that are reused
+    /**
+     * Fired after the step().
+     * @event postStep
+     */
     this.postStepEvent = {
         type : "postStep",
     };
+
+    /**
+     * @event addBody
+     * @param {Body} body
+     */
     this.addBodyEvent = {
         type : "addBody",
         body : null
     };
+
+    /**
+     * @event removeBody
+     * @param {Body} body
+     */
     this.removeBodyEvent = {
         type : "removeBody",
         body : null
     };
+
+    /**
+     * Fired when a spring is added to the world.
+     * @event addSpring
+     * @param {Spring} spring
+     */
     this.addSpringEvent = {
         type : "addSpring",
-        body : null
+        spring : null,
     };
+
+    /**
+     * Fired when a first contact is created between two bodies. This event is fired after the step has been done.
+     * @event impact
+     * @param {Body} bodyA
+     * @param {Body} bodyB
+     */
     this.impactEvent = {
         type: "impact",
         bodyA : null,
