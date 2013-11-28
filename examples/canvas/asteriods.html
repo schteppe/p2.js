@@ -39,6 +39,8 @@
           initSpace=asteroidRadius*3,
           level=1, lives=3;
 
+      var keyLeft, keyRight, keyUp, keyDown, keyShoot, lastShootTime=0;
+
       init();
       animate();
 
@@ -90,148 +92,6 @@
         updateLives();
       }
 
-      function updateLevel(){
-        var el = document.getElementById("level");
-        el.innerHTML = "Level "+level;
-      }
-
-      function updateLives(){
-        var el = document.getElementById("lives");
-        el.innerHTML = "Lives "+lives;
-      }
-
-      // Returns a random number between -0.5 and 0.5
-      function rand(){
-        return Math.random()-0.5;
-      }
-
-      // Adds some asteroids to the scene.
-      function addAsteroids(){
-        for(var i=0; i<level; i++){
-          var x = rand() * spaceWidth,
-              y = rand() * spaceHeight,
-              vx = rand() * maxAsteroidSpeed,
-              vy = rand() * maxAsteroidSpeed,
-              va = rand() * maxAsteroidSpeed;
-
-          // Aviod the ship!
-          if(Math.abs(x-shipBody.position[0]) < initSpace){
-            if(y-shipBody.position[1] > 0){
-              y += initSpace;
-            } else {
-              y -= initSpace;
-            }
-          }
-
-          // Create asteroid body
-          var asteroidBody = new p2.Body({
-            mass:10,
-            position:[x,y],
-            velocity:[vx,vy],
-            angularVelocity : va,
-          });
-          asteroidBody.addShape(asteroidShapes[0]);
-          asteroids.push(asteroidBody);
-          world.addBody(asteroidBody);
-          asteroidBody.level = 1;
-          addAsteroidVerts(asteroidBody);
-        }
-      }
-
-      // Adds random .verts to an asteroid body
-      function addAsteroidVerts(asteroidBody){
-          asteroidBody.verts = [];
-          var radius = asteroidBody.shapes[0].radius;
-          for(var j=0; j!==numAsteroidVerts; j++){
-            var angle = j*2*Math.PI / numAsteroidVerts,
-                xv = radius*Math.cos(angle) + rand()*radius*0.5,
-                yv = radius*Math.sin(angle) + rand()*radius*0.5;
-            asteroidBody.verts.push([xv,yv]);
-          }
-      }
-
-      function drawShip(){
-        var x = shipBody.position[0],
-            y = shipBody.position[1],
-            radius = shipShape.radius;
-        ctx.save();
-        ctx.translate(x,y);         // Translate to the ship center
-        ctx.rotate(shipBody.angle); // Rotate to ship orientation
-        ctx.moveTo(-radius*0.6,-radius);
-        ctx.lineTo(0,radius);
-        ctx.lineTo( radius*0.6,-radius);
-        ctx.moveTo(-radius*0.5, -radius*0.5);
-        ctx.lineTo( radius*0.5, -radius*0.5);
-        ctx.stroke();
-        ctx.restore();
-      }
-
-      function drawAsteroids(){
-        for(var i=0; i!==asteroids.length; i++){
-          ctx.beginPath();
-          var a = asteroids[i],
-              x = a.position[0],
-              y = a.position[1],
-              radius = a.shapes[0].radius;
-          ctx.save();
-          ctx.translate(x,y);  // Translate to the center
-          ctx.rotate(a.angle);
-
-          for(var j=0; j!==numAsteroidVerts; j++){
-            var xv = a.verts[j][0],
-                yv = a.verts[j][1];
-            if(j==0) ctx.moveTo(xv,yv);
-            else     ctx.lineTo(xv,yv);
-          }
-
-          ctx.closePath();
-          ctx.stroke();
-          ctx.restore();
-        }
-      }
-
-      function drawBullets(){
-        for(var i=0; i!==bulletBodies.length; i++){
-          var bulletBody=bulletBodies[i],
-              x = bulletBody.position[0],
-              y = bulletBody.position[1];
-          ctx.beginPath();
-          ctx.arc(x,y,bulletRadius,0,2*Math.PI);
-          //ctx.closePath();
-          ctx.fill();
-        }
-      }
-
-      function drawBounds(){
-        ctx.moveTo(-spaceWidth/2, -spaceHeight/2);
-        ctx.lineTo(-spaceWidth/2,  spaceHeight/2);
-        ctx.lineTo( spaceWidth/2,  spaceHeight/2);
-        ctx.lineTo( spaceWidth/2, -spaceHeight/2);
-        ctx.lineTo(-spaceWidth/2, -spaceHeight/2);
-        ctx.stroke();
-      }
-
-      function render(){
-        // Clear the canvas
-        ctx.clearRect(0,0,w,h);
-
-        // Transform the canvas
-        // Note that we need to flip the y axis since Canvas pixel coordinates
-        // goes from top to bottom, while physics does the opposite.
-        ctx.save();
-        ctx.translate(w/2, h/2);  // Translate to the center
-        ctx.scale(zoom, -zoom);       // Zoom in and flip y axis
-
-        // Draw all things
-        drawShip();
-        drawBullets();
-        drawBounds();
-        drawAsteroids();
-
-        // Restore transform
-        ctx.restore();
-      }
-
       // Animation loop
       function animate(){
         requestAnimationFrame(animate);
@@ -241,8 +101,6 @@
         // Render scene
         render();
       }
-
-      var keyLeft, keyRight, keyUp, keyDown, keyShoot, lastShootTime=world.time;
 
       function updatePhysics(){
 
@@ -311,6 +169,157 @@
         world.step(1/60);
       }
 
+      // If the body is out of space bounds, warp it to the other side
+      function warp(body){
+        var p = body.position;
+        if(p[0] >  spaceWidth /2) p[0] = -spaceWidth/2;
+        if(p[1] >  spaceHeight/2) p[1] = -spaceHeight/2;
+        if(p[0] < -spaceWidth /2) p[0] =  spaceWidth/2;
+        if(p[1] < -spaceHeight/2) p[1] =  spaceHeight/2;
+      }
+
+      function render(){
+        // Clear the canvas
+        ctx.clearRect(0,0,w,h);
+
+        // Transform the canvas
+        // Note that we need to flip the y axis since Canvas pixel coordinates
+        // goes from top to bottom, while physics does the opposite.
+        ctx.save();
+        ctx.translate(w/2, h/2);  // Translate to the center
+        ctx.scale(zoom, -zoom);       // Zoom in and flip y axis
+
+        // Draw all things
+        drawShip();
+        drawBullets();
+        drawBounds();
+        drawAsteroids();
+
+        // Restore transform
+        ctx.restore();
+      }
+
+      function drawShip(){
+        var x = shipBody.position[0],
+            y = shipBody.position[1],
+            radius = shipShape.radius;
+        ctx.save();
+        ctx.translate(x,y);         // Translate to the ship center
+        ctx.rotate(shipBody.angle); // Rotate to ship orientation
+        ctx.moveTo(-radius*0.6,-radius);
+        ctx.lineTo(0,radius);
+        ctx.lineTo( radius*0.6,-radius);
+        ctx.moveTo(-radius*0.5, -radius*0.5);
+        ctx.lineTo( radius*0.5, -radius*0.5);
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      function drawAsteroids(){
+        for(var i=0; i!==asteroids.length; i++){
+          ctx.beginPath();
+          var a = asteroids[i],
+              x = a.position[0],
+              y = a.position[1],
+              radius = a.shapes[0].radius;
+          ctx.save();
+          ctx.translate(x,y);  // Translate to the center
+          ctx.rotate(a.angle);
+
+          for(var j=0; j!==numAsteroidVerts; j++){
+            var xv = a.verts[j][0],
+                yv = a.verts[j][1];
+            if(j==0) ctx.moveTo(xv,yv);
+            else     ctx.lineTo(xv,yv);
+          }
+
+          ctx.closePath();
+          ctx.stroke();
+          ctx.restore();
+        }
+      }
+
+      function drawBullets(){
+        for(var i=0; i!==bulletBodies.length; i++){
+          var bulletBody=bulletBodies[i],
+              x = bulletBody.position[0],
+              y = bulletBody.position[1];
+          ctx.beginPath();
+          ctx.arc(x,y,bulletRadius,0,2*Math.PI);
+          //ctx.closePath();
+          ctx.fill();
+        }
+      }
+
+      function drawBounds(){
+        ctx.moveTo(-spaceWidth/2, -spaceHeight/2);
+        ctx.lineTo(-spaceWidth/2,  spaceHeight/2);
+        ctx.lineTo( spaceWidth/2,  spaceHeight/2);
+        ctx.lineTo( spaceWidth/2, -spaceHeight/2);
+        ctx.lineTo(-spaceWidth/2, -spaceHeight/2);
+        ctx.stroke();
+      }
+
+      function updateLevel(){
+        var el = document.getElementById("level");
+        el.innerHTML = "Level "+level;
+      }
+
+      function updateLives(){
+        var el = document.getElementById("lives");
+        el.innerHTML = "Lives "+lives;
+      }
+
+      // Returns a random number between -0.5 and 0.5
+      function rand(){
+        return Math.random()-0.5;
+      }
+
+      // Adds some asteroids to the scene.
+      function addAsteroids(){
+        for(var i=0; i<level; i++){
+          var x = rand() * spaceWidth,
+              y = rand() * spaceHeight,
+              vx = rand() * maxAsteroidSpeed,
+              vy = rand() * maxAsteroidSpeed,
+              va = rand() * maxAsteroidSpeed;
+
+          // Aviod the ship!
+          if(Math.abs(x-shipBody.position[0]) < initSpace){
+            if(y-shipBody.position[1] > 0){
+              y += initSpace;
+            } else {
+              y -= initSpace;
+            }
+          }
+
+          // Create asteroid body
+          var asteroidBody = new p2.Body({
+            mass:10,
+            position:[x,y],
+            velocity:[vx,vy],
+            angularVelocity : va,
+          });
+          asteroidBody.addShape(asteroidShapes[0]);
+          asteroids.push(asteroidBody);
+          world.addBody(asteroidBody);
+          asteroidBody.level = 1;
+          addAsteroidVerts(asteroidBody);
+        }
+      }
+
+      // Adds random .verts to an asteroid body
+      function addAsteroidVerts(asteroidBody){
+          asteroidBody.verts = [];
+          var radius = asteroidBody.shapes[0].radius;
+          for(var j=0; j!==numAsteroidVerts; j++){
+            var angle = j*2*Math.PI / numAsteroidVerts,
+                xv = radius*Math.cos(angle) + rand()*radius*0.5,
+                yv = radius*Math.sin(angle) + rand()*radius*0.5;
+            asteroidBody.verts.push([xv,yv]);
+          }
+      }
+
       // Catch key down events
       window.onkeydown = function(evt) {
         handleKey(evt.keyCode,true);
@@ -332,14 +341,29 @@
         }
       }
 
-      // If the body is out of space bounds, warp it to the other side
-      function warp(body){
-        var p = body.position;
-        if(p[0] >  spaceWidth /2) p[0] = -spaceWidth/2;
-        if(p[1] >  spaceHeight/2) p[1] = -spaceHeight/2;
-        if(p[0] < -spaceWidth /2) p[0] =  spaceWidth/2;
-        if(p[1] < -spaceHeight/2) p[1] =  spaceHeight/2;
-      }
+      // Catch impacts in the world
+      world.on("impact",function(evt){
+        var bodyA = evt.bodyA,
+            bodyB = evt.bodyB;
+
+        if(bodyA.id == shipBody.id || bodyB.id == shipBody.id){
+          // Ship collided with something
+          var s = bodyA.shapes[0].collisionGroup == SHIP ? bodyA : bodyB,
+              otherBody = bodyB==s ? bodyA : bodyB;
+          if(otherBody.shapes[0].collisionGroup == ASTEROID){
+            console.log("Game over!");
+          }
+
+        } else if(bodyA.shapes[0].collisionGroup == BULLET || bodyB.shapes[0].collisionGroup == BULLET){
+          // Bullet collided with something
+          var bulletBody = bodyA.shapes[0].collisionGroup == BULLET ? bodyA : bodyB,
+              otherBody = bodyB==bulletBody ? bodyA : bodyB;
+
+          if(otherBody.shapes[0].collisionGroup == ASTEROID){
+            explode(otherBody,bulletBody);
+          }
+        }
+      });
 
       function explode(asteroidBody,bulletBody){
         // Remove asteroid
@@ -377,29 +401,6 @@
           addAsteroids();
         }
       }
-
-      world.on("impact",function(evt){
-        var bodyA = evt.bodyA,
-            bodyB = evt.bodyB;
-
-        if(bodyA.id == shipBody.id || bodyB.id == shipBody.id){
-          // Ship collided with something
-          var s = bodyA.shapes[0].collisionGroup == SHIP ? bodyA : bodyB,
-              otherBody = bodyB==s ? bodyA : bodyB;
-          if(otherBody.shapes[0].collisionGroup == ASTEROID){
-            console.log("Game over!");
-          }
-
-        } else if(bodyA.shapes[0].collisionGroup == BULLET || bodyB.shapes[0].collisionGroup == BULLET){
-          // Bullet collided with something
-          var bulletBody = bodyA.shapes[0].collisionGroup == BULLET ? bodyA : bodyB,
-              otherBody = bodyB==bulletBody ? bodyA : bodyB;
-
-          if(otherBody.shapes[0].collisionGroup == ASTEROID){
-            explode(otherBody,bulletBody);
-          }
-        }
-      });
     </script>
 
   </body>
