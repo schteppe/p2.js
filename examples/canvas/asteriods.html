@@ -16,7 +16,7 @@
     <script>
       var canvas, ctx, w, h, shipSize=0.3, spaceWidth=16, spaceHeight=9,
           world, shipShape, shipBody, shipReloadTime=0.1, shipTurnSpeed=4,
-          bulletBodies=[], bulletShape, bulletRadius=0.03,
+          bulletBodies=[], bulletShape, bulletRadius=0.03, bulletLifeTime=2,
           asteroidShapes=[], numAsteroidLevels=4, asteroidRadius=0.9, maxAsteroidSpeed=2,asteroids=[], numAsteroidVerts=10,asteroidXVerts=[], asteroidYVerts=[],
           SHIP=Math.pow(2,1),
           BULLET=Math.pow(2,2),
@@ -119,19 +119,19 @@
       }
 
       function drawShip(){
-        ctx.beginPath();
         var x = shipBody.position[0],
             y = shipBody.position[1],
             radius = shipShape.radius;
         ctx.save();
-        ctx.translate(x,y);  // Translate to the center
-        ctx.rotate(shipBody.angle);
-        ctx.arc(0,0,radius,0,2*Math.PI);
-        ctx.moveTo(0,0);
+        ctx.translate(x,y);         // Translate to the ship center
+        ctx.rotate(shipBody.angle); // Rotate to ship orientation
+        ctx.moveTo(-radius*0.6,-radius);
         ctx.lineTo(0,radius);
+        ctx.lineTo( radius*0.6,-radius);
+        ctx.moveTo(-radius*0.5, -radius*0.5);
+        ctx.lineTo( radius*0.5, -radius*0.5);
         ctx.stroke();
         ctx.restore();
-        ctx.closePath();
       }
 
       function drawAsteroids(){
@@ -166,7 +166,6 @@
           ctx.beginPath();
           ctx.arc(x,y,bulletRadius,0,2*Math.PI);
           ctx.fill();
-          ctx.stroke();
           ctx.closePath();
         }
       }
@@ -241,13 +240,15 @@
           // Give it initial velocity in the ship direction
           bulletBody.velocity[0] += magnitude*Math.cos(angle) + shipBody.velocity[0];
           bulletBody.velocity[1] += magnitude*Math.sin(angle) + shipBody.velocity[1];
+          bulletBody.position[0] =  shipShape.radius*Math.cos(angle) + shipBody.position[0];
+          bulletBody.position[1] =  shipShape.radius*Math.sin(angle) + shipBody.position[1];
           world.addBody(bulletBody);
 
           // Keep track of the last time we shot
           lastShootTime = world.time;
 
           // Remember when we should delete this bullet
-          bulletBody.dieTime = world.time + 2;
+          bulletBody.dieTime = world.time + bulletLifeTime;
         }
 
         for(var i=0; i!==bulletBodies.length; i++){
