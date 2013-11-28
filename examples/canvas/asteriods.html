@@ -20,21 +20,24 @@
       }
       .textBox {
         margin:10px;
+        display: inline-block;
       }
     </style>
   </head>
   <body>
     <div id="level" class="textBox"></div>
+    <div id="lives" class="textBox"></div>
     <script>
-      var canvas, ctx, w, h, shipSize=0.3, spaceWidth=16, spaceHeight=9,
+      var canvas, ctx, w, h, zoom=50,
+          shipSize=0.3, spaceWidth=16, spaceHeight=9,
           world, shipShape, shipBody, shipReloadTime=0.1, shipTurnSpeed=4,
           bulletBodies=[], bulletShape, bulletRadius=0.03, bulletLifeTime=2,
-          asteroidShapes=[], numAsteroidLevels=4, asteroidRadius=0.9, maxAsteroidSpeed=2,asteroids=[], numAsteroidVerts=10,asteroidXVerts=[], asteroidYVerts=[],
+          asteroidShapes=[], numAsteroidLevels=4, asteroidRadius=0.9, maxAsteroidSpeed=2,asteroids=[], numAsteroidVerts=10,
           SHIP=Math.pow(2,1),
           BULLET=Math.pow(2,2),
           ASTEROID=Math.pow(2,3),
           initSpace=asteroidRadius*3,
-          level=1;
+          level=1, lives=3;
 
       init();
       animate();
@@ -49,8 +52,11 @@
         w = canvas.width;
         h = canvas.height;
 
+        zoom = h / spaceHeight;
+        if(w / spaceWidth < zoom) zoom = w / spaceWidth;
+
         ctx = canvas.getContext("2d");
-        ctx.lineWidth = 0.02;
+        ctx.lineWidth = 1/zoom; // Yields 1px lines for all zoom values
         ctx.strokeStyle = ctx.fillStyle = 'white';
 
         // Init p2.js
@@ -79,13 +85,19 @@
         }
         addAsteroids();
 
-        // Update the level text box
+        // Update the text boxes
         updateLevel();
+        updateLives();
       }
 
       function updateLevel(){
         var el = document.getElementById("level");
         el.innerHTML = "Level "+level;
+      }
+
+      function updateLives(){
+        var el = document.getElementById("lives");
+        el.innerHTML = "Lives "+lives;
       }
 
       // Returns a random number between -0.5 and 0.5
@@ -185,8 +197,8 @@
               y = bulletBody.position[1];
           ctx.beginPath();
           ctx.arc(x,y,bulletRadius,0,2*Math.PI);
+          //ctx.closePath();
           ctx.fill();
-          ctx.closePath();
         }
       }
 
@@ -208,7 +220,7 @@
         // goes from top to bottom, while physics does the opposite.
         ctx.save();
         ctx.translate(w/2, h/2);  // Translate to the center
-        ctx.scale(50, -50);       // Zoom in and flip y axis
+        ctx.scale(zoom, -zoom);       // Zoom in and flip y axis
 
         // Draw all things
         drawShip();
