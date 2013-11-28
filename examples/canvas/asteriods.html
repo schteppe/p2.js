@@ -15,12 +15,14 @@
   <body>
     <script>
       var canvas, ctx, w, h, shipSize=0.3, spaceWidth=16, spaceHeight=9,
-          world, shipShape, shipBody,
+          world, shipShape, shipBody, shipReloadTime=0.1, shipTurnSpeed=4,
           bulletBodies=[], bulletShape, bulletRadius=0.03,
-          asteroidShapes=[], numAsteroidLevels=4, asteroidRadius=0.9, asteroids=[],
+          asteroidShapes=[], numAsteroidLevels=4, asteroidRadius=0.9, maxAsteroidSpeed=2,asteroids=[], numAsteroidVerts=10,asteroidXVerts=[], asteroidYVerts=[],
           SHIP=Math.pow(2,1),
           BULLET=Math.pow(2,2),
-          ASTEROID=Math.pow(2,3);
+          ASTEROID=Math.pow(2,3),
+          initSpace=asteroidRadius*3,
+          level=1;
 
       init();
       animate();
@@ -57,24 +59,63 @@
         bulletShape.collisionGroup = BULLET;
         bulletShape.collisionMask = ASTEROID;
 
-        // Add some asteroids
+        // Init asteroid shapes
         for(var i=0; i<numAsteroidLevels; i++){
-          console.log(asteroidRadius*(numAsteroidLevels-i)/numAsteroidLevels)
           asteroidShapes[i] = new p2.Circle(asteroidRadius*(numAsteroidLevels-i)/numAsteroidLevels);
           asteroidShapes[i].collisionGroup = ASTEROID;
           asteroidShapes[i].collisionMask = BULLET | SHIP;
         }
-        for(var i=0; i<10; i++){
-          var x = (Math.random()-0.5) * spaceWidth/2,
-              y = (Math.random()-0.5) * spaceHeight/2,
-              vx = (Math.random()-0.5) * 1,
-              vy = (Math.random()-0.5) * 1;
-          var asteroidBody = new p2.Body({mass:10,position:[x,y],velocity:[vx,vy]});
-          asteroidBody.level = 1;
+        addAsteroids();
+      }
+
+      // Returns a random number between -0.5 and 0.5
+      function rand(){
+        return Math.random()-0.5;
+      }
+
+      // Adds some asteroids to the scene.
+      function addAsteroids(){
+        for(var i=0; i<level; i++){
+          var x = rand() * spaceWidth,
+              y = rand() * spaceHeight,
+              vx = rand() * maxAsteroidSpeed,
+              vy = rand() * maxAsteroidSpeed,
+              va = rand() * maxAsteroidSpeed;
+
+          // Aviod the ship!
+          if(Math.abs(x-shipBody.position[0]) < initSpace){
+            if(y-shipBody.position[1] > 0){
+              y += initSpace;
+            } else {
+              y -= initSpace;
+            }
+          }
+
+          // Create asteroid body
+          var asteroidBody = new p2.Body({
+            mass:10,
+            position:[x,y],
+            velocity:[vx,vy],
+            angularVelocity : va,
+          });
           asteroidBody.addShape(asteroidShapes[0]);
           asteroids.push(asteroidBody);
           world.addBody(asteroidBody);
+          asteroidBody.level = 1;
+          addAsteroidVerts(asteroidBody);
         }
+      }
+
+      // Adds random .verts to an asteroid body
+      function addAsteroidVerts(asteroidBody){
+          asteroidBody.verts = [];
+          var radius = asteroidBody.shapes[0].radius;
+          for(var j=0; j!==numAsteroidVerts; j++){
+            var angle = j*2*Math.PI / numAsteroidVerts,
+                xv = radius*Math.cos(angle) + rand()*radius*0.5,
+                yv = radius*Math.sin(angle) + rand()*radius*0.5;
+            asteroidBody.verts.push([xv,yv]);
+          }
       }
 
       function drawShip(){
@@ -103,12 +144,17 @@
           ctx.save();
           ctx.translate(x,y);  // Translate to the center
           ctx.rotate(a.angle);
-          ctx.arc(0,0,radius,0,2*Math.PI);
-          ctx.moveTo(0,0);
-          ctx.lineTo(0,radius);
+
+          for(var j=0; j!==numAsteroidVerts; j++){
+            var xv = a.verts[j][0],
+                yv = a.verts[j][1];
+            if(j==0) ctx.moveTo(xv,yv);
+            else     ctx.lineTo(xv,yv);
+          }
+
+          ctx.closePath();
           ctx.stroke();
           ctx.restore();
-          ctx.closePath();
         }
       }
 
@@ -145,7 +191,7 @@
         ctx.translate(w/2, h/2);  // Translate to the center
         ctx.scale(50, -50);       // Zoom in and flip y axis
 
-        // Draw all bodies
+        // Draw all things
         drawShip();
         drawBullets();
         drawBounds();
@@ -170,11 +216,11 @@
       function updatePhysics(){
 
         // Set velocities
-        if(keyLeft)       shipBody.angularVelocity =  3;
-        else if(keyRight) shipBody.angularVelocity = -3;
+        if(keyLeft)       shipBody.angularVelocity =  shipTurnSpeed;
+        else if(keyRight) shipBody.angularVelocity = -shipTurnSpeed;
         else              shipBody.angularVelocity =  0;
 
-        // Thrust
+        // Thrust: add some force in the ship direction
         if(keyUp){
           var magnitude = 2,
               angle = shipBody.angle + Math.PI / 2;
@@ -183,16 +229,24 @@
         }
 
         // Shoot
-        if(keyShoot && world.time - lastShootTime > 0.2){
+        if(keyShoot && world.time - lastShootTime > shipReloadTime){
+
+          // Create a bullet body
           var bulletBody = new p2.Body({ mass:0.05, position:shipBody.position });
           bulletBody.addShape(bulletShape);
           bulletBodies.push(bulletBody);
           var magnitude = 2,
               angle = shipBody.angle + Math.PI / 2;
+
+          // Give it initial velocity in the ship direction
           bulletBody.velocity[0] += magnitude*Math.cos(angle) + shipBody.velocity[0];
           bulletBody.velocity[1] += magnitude*Math.sin(angle) + shipBody.velocity[1];
           world.addBody(bulletBody);
+
+          // Keep track of the last time we shot
           lastShootTime = world.time;
+
+          // Remember when we should delete this bullet
           bulletBody.dieTime = world.time + 2;
         }
 
@@ -211,6 +265,7 @@
           warp(b);
         }
 
+        // Warp all asteroids
         for(var i=0; i!==asteroids.length; i++){
           var a=asteroids[i];
           warp(a);
@@ -223,14 +278,17 @@
         world.step(1/60);
       }
 
+      // Catch key down events
       window.onkeydown = function(evt) {
         handleKey(evt.keyCode,true);
       }
 
+      // Catch key up events
       window.onkeyup = function(evt) {
         handleKey(evt.keyCode,false);
       }
 
+      // Handle key up or down
       function handleKey(code,isDown){
         switch(code){
           case 32: keyShoot = isDown; break;
@@ -241,11 +299,13 @@
         }
       }
 
+      // If the body is out of space bounds, warp it to the other side
       function warp(body){
-        if(body.position[0] >  spaceWidth /2) body.position[0] = -spaceWidth/2;
-        if(body.position[1] >  spaceHeight/2) body.position[1] = -spaceHeight/2;
-        if(body.position[0] < -spaceWidth /2) body.position[0] =  spaceWidth/2;
-        if(body.position[1] < -spaceHeight/2) body.position[1] =  spaceHeight/2;
+        var p = body.position;
+        if(p[0] >  spaceWidth /2) p[0] = -spaceWidth/2;
+        if(p[1] >  spaceHeight/2) p[1] = -spaceHeight/2;
+        if(p[0] < -spaceWidth /2) p[0] =  spaceWidth/2;
+        if(p[1] < -spaceHeight/2) p[1] =  spaceHeight/2;
       }
 
       function explode(asteroidBody,bulletBody){
@@ -257,7 +317,7 @@
         world.removeBody(bulletBody);
         bulletBodies.splice(bulletBodies.indexOf(bulletBody),1);
 
-        // Add new asteroids
+        // Add new sub-asteroids
         var x = asteroidBody.position[0],
             y = asteroidBody.position[1];
         if(asteroidBody.level < 4){
@@ -268,13 +328,19 @@
             var subAsteroidBody = new p2.Body({
               mass : 10,
               position:[x+r*Math.cos(angle),y+r*Math.sin(angle)],
-              velocity : [Math.random()-0.5,Math.random()-0.5],
+              velocity : [rand(),rand()],
             });
             subAsteroidBody.addShape(asteroidShapes[asteroidBody.level]);
             subAsteroidBody.level = asteroidBody.level + 1;
             world.addBody(subAsteroidBody);
+            addAsteroidVerts(subAsteroidBody);
             asteroids.push(subAsteroidBody);
           }
+        }
+
+        if(asteroids.length == 0){
+          level++;
+          addAsteroids();
         }
       }
 
