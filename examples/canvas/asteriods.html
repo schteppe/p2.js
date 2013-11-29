@@ -55,8 +55,8 @@
     <div id="instructions" class="textBox centered">ARROW KEYS = CONTROL SHIP<br/>SPACE = SHOOT</div>
     <script>
       var canvas, ctx, w, h, zoom,
-          shipSize=0.3, spaceWidth=16, spaceHeight=9, hideShip=false,
-          world, shipShape, shipBody, shipReloadTime=0.1, shipTurnSpeed=4,
+          shipSize=0.3, spaceWidth=16, spaceHeight=9, hideShip=false, allowShipCollision=true,
+          world, shipShape, shipBody, shipReloadTime=0.0, shipTurnSpeed=4,
           bulletBodies=[], bulletShape, bulletRadius=0.03, bulletLifeTime=2,
           asteroidShapes=[], numAsteroidLevels=4, asteroidRadius=0.9, maxAsteroidSpeed=2,asteroids=[], numAsteroidVerts=10,
           SHIP=Math.pow(2,1),
@@ -129,6 +129,8 @@
       }
 
       function updatePhysics(){
+
+        allowShipCollision = true;
 
         // Set velocities
         if(keyLeft)       shipBody.angularVelocity =  shipTurnSpeed;
@@ -379,8 +381,10 @@
         var bodyA = evt.bodyA,
             bodyB = evt.bodyB;
 
-        if(bodyA.id == shipBody.id || bodyB.id == shipBody.id){
+        if(!hideShip && allowShipCollision && (bodyA.id == shipBody.id || bodyB.id == shipBody.id)){
           // Ship collided with something
+          allowShipCollision = false;
+
           var s = bodyA.shapes[0].collisionGroup == SHIP ? bodyA : bodyB,
               otherBody = bodyB==s ? bodyA : bodyB;
           if(otherBody.shapes[0].collisionGroup == ASTEROID){
@@ -431,14 +435,16 @@
       });
 
       function explode(asteroidBody,bulletBody){
-        // Remove asteroid
-        world.removeBody(asteroidBody);
-        asteroids.splice(asteroids.indexOf(asteroidBody),1);
-
-        // Remove bullet
-        world.removeBody(bulletBody);
+        var aidx = asteroids.indexOf(asteroidBody);
         var idx = bulletBodies.indexOf(bulletBody);
-        if(idx != -1){
+        if(aidx != -1 && idx != -1){
+          // Remove asteroid
+          world.removeBody(asteroidBody);
+          asteroids.splice(aidx,1);
+
+          // Remove bullet
+          world.removeBody(bulletBody);
+
           bulletBodies.splice(idx,1);
 
           // Add new sub-asteroids
