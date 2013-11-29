@@ -173,7 +173,6 @@
 
 <div class="box intro">
     <p>Base class for broadphase implementations.</p>
-
 </div>
 
 
@@ -243,6 +242,8 @@
             <li class="api-class-tab methods"><a href="#methods">Methods</a></li>
         
         
+            <li class="api-class-tab properties"><a href="#properties">Properties</a></li>
+        
         
         
     </ul>
@@ -275,6 +276,21 @@
                 </div>
             
 
+            
+                <div class="index-section properties">
+                    <h3>Properties</h3>
+
+                    <ul class="index-list properties">
+                        
+                            <li class="index-item property">
+                                <a href="#property_result">result</a>
+
+                                
+                                
+                            </li>
+                        
+                    </ul>
+                </div>
             
 
             
@@ -339,7 +355,7 @@
             
         
         
-        <a href="../files/src_collision_Broadphase.js.html#l26"><code>src&#x2F;collision&#x2F;Broadphase.js:26</code></a>
+        <a href="../files/src_collision_Broadphase.js.html#l32"><code>src&#x2F;collision&#x2F;Broadphase.js:32</code></a>
         
         </p>
 
@@ -351,7 +367,6 @@
 
     <div class="description">
         <p>Check whether the bounding radius of two bodies overlap.</p>
-
     </div>
 
     
@@ -458,7 +473,7 @@
             
         
         
-        <a href="../files/src_collision_Broadphase.js.html#l14"><code>src&#x2F;collision&#x2F;Broadphase.js:14</code></a>
+        <a href="../files/src_collision_Broadphase.js.html#l20"><code>src&#x2F;collision&#x2F;Broadphase.js:20</code></a>
         
         </p>
 
@@ -470,7 +485,6 @@
 
     <div class="description">
         <p>Get all potential intersecting body pairs.</p>
-
     </div>
 
     
@@ -489,7 +503,6 @@
 
                     <div class="param-description">
                         <p>The world to search in.</p>
-
                     </div>
 
                     
@@ -508,8 +521,7 @@
                     
                         <span class="type">Array</span>:
                     
-                    <p>An array of the bodies, ordered in pairs. Example: A result of [a,b,c,d] means that the potential pairs are: (a,b), (c,d).</p>
-
+                    An array of the bodies, ordered in pairs. Example: A result of [a,b,c,d] means that the potential pairs are: (a,b), (c,d).
                 
             </div>
         </div>
@@ -522,6 +534,56 @@
             </div>
         
 
+        
+            <div id="properties" class="api-class-tabpanel">
+                <h2 class="off-left">Properties</h2>
+
+                
+                    <div id="property_result" class="property item">
+    <h3 class="name"><code>result</code></h3>
+    <span class="type">Array</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_collision_Broadphase.js.html#l12"><code>src&#x2F;collision&#x2F;Broadphase.js:12</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The resulting overlapping pairs. Will be filled with results during .getCollisionPairs().</p>
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+            </div>
         
 
         

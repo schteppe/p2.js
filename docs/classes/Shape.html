@@ -173,7 +173,6 @@
 
 <div class="box intro">
     <p>Base class for shapes.</p>
-
 </div>
 
 
@@ -396,8 +395,7 @@
     </div>
 
     <div class="description">
-        <p>Should return the moment of inertia around the Z axis of the body given the total mass. See <a href="http://en.wikipedia.org/wiki/List_of_moments_of_inertia">Wikipedia&#39;s list of moments of inertia</a>.</p>
-
+        <p>Should return the moment of inertia around the Z axis of the body given the total mass. See <a href="http://en.wikipedia.org/wiki/List_of_moments_of_inertia">Wikipedia's list of moments of inertia</a>.</p>
     </div>
 
     
@@ -434,8 +432,7 @@
                     
                         <span class="type">Number</span>:
                     
-                    <p>If the inertia is infinity or if the object simply isn&#39;t possible to rotate, return 0.</p>
-
+                    If the inertia is infinity or if the object simply isn't possible to rotate, return 0.
                 
             </div>
         </div>
@@ -489,7 +486,6 @@
 
     <div class="description">
         <p>Update the .area property of the shape.</p>
-
     </div>
 
     
@@ -548,7 +544,6 @@
 
     <div class="description">
         <p>Returns the bounding circle radius of this shape.</p>
-
     </div>
 
     
@@ -613,7 +608,6 @@
 
     <div class="description">
         <p>Area of this shape.</p>
-
     </div>
 
     
@@ -658,7 +652,6 @@
 
     <div class="description">
         <p>Bounding circle radius of this shape</p>
-
     </div>
 
     
@@ -703,7 +696,6 @@
 
     <div class="description">
         <p>Collision group that this shape belongs to (bit mask). See <a href="http://www.aurelienribon.com/blog/2011/07/box2d-tutorial-collision-filtering/">this tutorial</a>.</p>
-
     </div>
 
     
@@ -729,12 +721,12 @@ groundShape .collisionGroup = GROUND;
 player1Shape.collisionMask = ENEMY | GROUND;
 player2Shape.collisionMask = ENEMY | GROUND;
 enemyShape  .collisionMask = PLAYER | GROUND;
-groundShape .collisionMask = PLAYER | ENEMY;</code></pre>
-<pre class="code prettyprint"><code>// How collision check is done
+groundShape .collisionMask = PLAYER | ENEMY;
+</code></pre><pre class="code prettyprint"><code>// How collision check is done
 if(shapeA.collisionGroup &amp; shapeB.collisionMask)!=0 &amp;&amp; (shapeB.collisionGroup &amp; shapeA.collisionMask)!=0){
     // The shapes will collide
-}</code></pre>
-
+}
+</code></pre>
             </div>
         </div>
     
@@ -777,7 +769,6 @@ if(shapeA.collisionGroup &amp; shapeB.collisionMask)!=0 &amp;&amp; (shapeB.colli
 
     <div class="description">
         <p>Collision mask of this shape. See .collisionGroup.</p>
-
     </div>
 
     
@@ -822,7 +813,6 @@ if(shapeA.collisionGroup &amp; shapeB.collisionMask)!=0 &amp;&amp; (shapeB.colli
 
     <div class="description">
         <p>Material to use in collisions for this Shape. If this is set to null, the world will use default material properties instead.</p>
-
     </div>
 
     

@@ -177,7 +177,6 @@
 
 <div class="box intro">
     <p>Sweep and prune broadphase along one axis.</p>
-
 </div>
 
 
@@ -303,6 +302,15 @@
                                 
                             </li>
                         
+                            <li class="index-item method">
+                                <a href="#method_checkBounds">checkBounds</a>
+
+                                
+                                    <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
                             <li class="index-item method inherited">
                                 <a href="#method_getCollisionPairs">getCollisionPairs</a>
 
@@ -343,6 +351,13 @@
                         
                             <li class="index-item property">
                                 <a href="#property_axisList">axisList</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_result">result</a>
 
                                 
                                 
@@ -418,7 +433,7 @@
             
         
         
-        <a href="../files/src_collision_Broadphase.js.html#l26"><code>src&#x2F;collision&#x2F;Broadphase.js:26</code></a>
+        <a href="../files/src_collision_Broadphase.js.html#l32"><code>src&#x2F;collision&#x2F;Broadphase.js:32</code></a>
         
         </p>
 
@@ -430,7 +445,6 @@
 
     <div class="description">
         <p>Check whether the bounding radius of two bodies overlap.</p>
-
     </div>
 
     
@@ -464,6 +478,153 @@
 
                     <div class="param-description">
                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Boolean</span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_checkBounds" class="method item">
+    <h3 class="name"><code>checkBounds</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>bi</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>bj</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>axisIndex</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Boolean</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_collision_SAP1DBroadphase.js.html#l112"><code>src&#x2F;collision&#x2F;SAP1DBroadphase.js:112</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Check if the bounds of two bodies overlap, along the given SAP axis.</p>
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">bi</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">bj</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">axisIndex</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
                     </div>
 
                     
@@ -549,7 +710,6 @@
 
     <div class="description">
         <p>Get the colliding pairs</p>
-
     </div>
 
     
@@ -659,7 +819,6 @@
 
     <div class="description">
         <p>Function for sorting bodies along the X axis. To be passed to array.sort()</p>
-
     </div>
 
     
@@ -784,7 +943,6 @@
 
     <div class="description">
         <p>Function for sorting bodies along the Y axis. To be passed to array.sort()</p>
-
     </div>
 
     
@@ -887,7 +1045,6 @@
 
     <div class="description">
         <p>Axis to sort the bodies along. Set to 0 for x axis, and 1 for y axis. For best performance, choose an axis that the bodies are spread out more on.</p>
-
     </div>
 
     
@@ -932,7 +1089,47 @@
 
     <div class="description">
         <p>List of bodies currently in the broadphase.</p>
+    </div>
 
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_result" class="property item inherited">
+    <h3 class="name"><code>result</code></h3>
+    <span class="type">Array</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Broadphase.html#property_result">Broadphase</a>:
+            
+        
+        
+        <a href="../files/src_collision_Broadphase.js.html#l12"><code>src&#x2F;collision&#x2F;Broadphase.js:12</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The resulting overlapping pairs. Will be filled with results during .getCollisionPairs().</p>
     </div>
 
     
@@ -977,7 +1174,6 @@
 
     <div class="description">
         <p>The world to search in.</p>
-
     </div>
 
     

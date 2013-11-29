@@ -177,7 +177,6 @@
 
 <div class="box intro">
     <p>Iterative Gauss-Seidel constraint equation solver.</p>
-
 </div>
 
 
@@ -539,7 +538,6 @@
 
     <div class="description">
         <p>Add an equation to be solved.</p>
-
     </div>
 
     
@@ -624,7 +622,6 @@
 
     <div class="description">
         <p>Add equations. Same as .addEquation, but this time the argument is an array of Equations</p>
-
     </div>
 
     
@@ -699,7 +696,6 @@
 
     <div class="description">
         <p>Remove all currently added equations.</p>
-
     </div>
 
     
@@ -761,7 +757,6 @@
 
     <div class="description">
         <p>Remove an equation.</p>
-
     </div>
 
     
@@ -855,7 +850,6 @@
 
     <div class="description">
         <p>Solve the system of equations</p>
-
     </div>
 
     
@@ -874,7 +868,6 @@
 
                     <div class="param-description">
                         <p>Time step</p>
-
                     </div>
 
                     
@@ -890,7 +883,6 @@
 
                     <div class="param-description">
                         <p>World to solve</p>
-
                     </div>
 
                     
@@ -947,7 +939,6 @@
 
     <div class="description">
         <p>Sort all equations using the .equationSortFunction. Should be called by subclasses before solving.</p>
-
     </div>
 
     
@@ -997,7 +988,6 @@
 
     <div class="description">
         <p>Current equations in the solver.</p>
-
     </div>
 
     
@@ -1039,7 +1029,6 @@
 
     <div class="description">
         <p>Function that is used to sort all equations before each solve.</p>
-
     </div>
 
     
@@ -1084,7 +1073,6 @@
 
     <div class="description">
         <p>The number of iterations to do when solving. More gives better results, but is more expensive.</p>
-
     </div>
 
     
@@ -1129,7 +1117,6 @@
 
     <div class="description">
         <p>Global equation relaxation. This is the number of timesteps required for a constraint to be resolved. Larger number will give softer contacts. Set to around 3 or 4 for good enough results.</p>
-
     </div>
 
     
@@ -1174,7 +1161,6 @@
 
     <div class="description">
         <p>Global equation stiffness. Larger number gives harder contacts, etc, but may also be more expensive to compute, or it will make your simulation explode.</p>
-
     </div>
 
     
@@ -1219,7 +1205,6 @@
 
     <div class="description">
         <p>The error tolerance. If the total error is below this limit, the solver will stop. Set to zero for as good solution as possible.</p>
-
     </div>
 
     
@@ -1264,7 +1249,6 @@
 
     <div class="description">
         <p>Whether to use .stiffness and .relaxation parameters from the Solver instead of each Equation individually.</p>
-
     </div>
 
     
@@ -1309,7 +1293,6 @@
 
     <div class="description">
         <p>Set to true to set all right hand side terms to zero when solving. Can be handy for a few applications.</p>
-
     </div>
 
     

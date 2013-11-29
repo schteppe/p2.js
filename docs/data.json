@@ -1366,7 +1366,16 @@
     "classitems": [
         {
             "file": "src/collision/Broadphase.js",
-            "line": 14,
+            "line": 12,
+            "description": "The resulting overlapping pairs. Will be filled with results during .getCollisionPairs().",
+            "itemtype": "property",
+            "name": "result",
+            "type": "{Array}",
+            "class": "Broadphase"
+        },
+        {
+            "file": "src/collision/Broadphase.js",
+            "line": 20,
             "description": "Get all potential intersecting body pairs.",
             "itemtype": "method",
             "name": "getCollisionPairs",
@@ -1385,7 +1394,7 @@
         },
         {
             "file": "src/collision/Broadphase.js",
-            "line": 26,
+            "line": 32,
             "description": "Check whether the bounding radius of two bodies overlap.",
             "itemtype": "method",
             "name": "boundingRadiusCheck",
@@ -1471,8 +1480,53 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
+            "line": 41,
+            "itemtype": "property",
+            "name": "contactEquations",
+            "type": "{Array}",
+            "class": "Narrowphase"
+        },
+        {
+            "file": "src/collision/Narrowphase.js",
+            "line": 47,
+            "itemtype": "property",
+            "name": "frictionEquations",
+            "type": "{Array}",
+            "class": "Narrowphase"
+        },
+        {
+            "file": "src/collision/Narrowphase.js",
             "line": 53,
+            "description": "Whether to make friction equations in the upcoming contacts.",
+            "itemtype": "property",
+            "name": "enableFriction",
+            "type": "{Boolean}",
+            "class": "Narrowphase"
+        },
+        {
+            "file": "src/collision/Narrowphase.js",
+            "line": 60,
+            "description": "The friction slip force to use when creating friction equations.",
+            "itemtype": "property",
+            "name": "slipForce",
+            "type": "{Number}",
+            "class": "Narrowphase"
+        },
+        {
+            "file": "src/collision/Narrowphase.js",
+            "line": 71,
+            "description": "The restitution value to use in the next contact equations.",
+            "itemtype": "property",
+            "name": "restitution",
+            "type": "{Number}",
+            "class": "Narrowphase"
+        },
+        {
+            "file": "src/collision/Narrowphase.js",
+            "line": 82,
             "description": "Check if the bodies were in contact since the last reset().",
+            "itemtype": "method",
+            "name": "collidedLastStep",
             "params": [
                 {
                     "name": "bi",
@@ -1493,7 +1547,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 70,
+            "line": 100,
             "description": "Throws away the old equatons and gets ready to create new",
             "itemtype": "method",
             "name": "reset",
@@ -1501,7 +1555,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 104,
+            "line": 134,
             "description": "Creates a ContactEquation, either by reusing an existing object or creating a new one.",
             "itemtype": "method",
             "name": "createContactEquation",
@@ -1525,7 +1579,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 120,
+            "line": 150,
             "description": "Creates a FrictionEquation, either by reusing an existing object or creating a new one.",
             "itemtype": "method",
             "name": "createFrictionEquation",
@@ -1549,7 +1603,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 135,
+            "line": 165,
             "description": "Creates a FrictionEquation given the data in the ContactEquation. Uses same offset vectors ri and rj, but the tangent vector will be constructed from the collision normal.",
             "itemtype": "method",
             "name": "createFrictionFromContact",
@@ -1568,7 +1622,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 149,
+            "line": 179,
             "description": "Plane/line Narrowphase",
             "itemtype": "method",
             "name": "planeLine",
@@ -1618,7 +1672,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 246,
+            "line": 276,
             "description": "Circle/line Narrowphase",
             "itemtype": "method",
             "name": "circleLine",
@@ -1683,7 +1737,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 402,
+            "line": 432,
             "description": "Circle/capsule Narrowphase",
             "itemtype": "method",
             "name": "circleCapsule",
@@ -1733,7 +1787,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 418,
+            "line": 448,
             "description": "Circle/convex Narrowphase",
             "itemtype": "method",
             "name": "circleConvex",
@@ -1783,7 +1837,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 667,
+            "line": 697,
             "description": "Particle/convex Narrowphase",
             "itemtype": "method",
             "name": "particleConvex",
@@ -1836,7 +1890,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 811,
+            "line": 841,
             "description": "Circle/circle Narrowphase",
             "itemtype": "method",
             "name": "circleCircle",
@@ -1886,7 +1940,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 861,
+            "line": 891,
             "description": "Convex/Plane Narrowphase",
             "itemtype": "method",
             "name": "convexPlane",
@@ -1936,7 +1990,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 934,
+            "line": 964,
             "description": "Narrowphase for particle vs plane",
             "itemtype": "method",
             "name": "particlePlane",
@@ -1986,7 +2040,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 989,
+            "line": 1019,
             "description": "Circle/Particle Narrowphase",
             "itemtype": "method",
             "name": "circleParticle",
@@ -2036,7 +2090,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 1061,
+            "line": 1091,
             "description": "Creates ContactEquations and FrictionEquations for a collision.",
             "itemtype": "method",
             "name": "circlePlane",
@@ -2081,7 +2135,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 1125,
+            "line": 1155,
             "description": "Convex/convex Narrowphase.See <a href=\"http://www.altdevblogaday.com/2011/05/13/contact-generation-between-3d-convex-meshes/\">this article</a> for more info.",
             "itemtype": "method",
             "name": "convexConvex",
@@ -2131,7 +2185,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 1269,
+            "line": 1299,
             "description": "Project a Convex onto a world-oriented axis",
             "itemtype": "method",
             "name": "projectConvexOntoAxis",
@@ -2167,7 +2221,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 1317,
+            "line": 1347,
             "description": "Find a separating axis between the shapes, that maximizes the separating distance between them.",
             "itemtype": "method",
             "name": "findSeparatingAxis",
@@ -2217,7 +2271,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 1394,
+            "line": 1424,
             "description": "Get the edge that has a normal closest to an axis.",
             "itemtype": "method",
             "name": "getClosestEdge",
@@ -2388,6 +2442,36 @@
             "return": {
                 "description": "",
                 "type": "Array"
+            },
+            "class": "SAP1DBroadphase"
+        },
+        {
+            "file": "src/collision/SAP1DBroadphase.js",
+            "line": 112,
+            "description": "Check if the bounds of two bodies overlap, along the given SAP axis.",
+            "static": 1,
+            "itemtype": "method",
+            "name": "checkBounds",
+            "params": [
+                {
+                    "name": "bi",
+                    "description": "",
+                    "type": "Body"
+                },
+                {
+                    "name": "bj",
+                    "description": "",
+                    "type": "Body"
+                },
+                {
+                    "name": "axisIndex",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Boolean"
             },
             "class": "SAP1DBroadphase"
         },
@@ -4838,10 +4922,5 @@
             "class": "World"
         }
     ],
-    "warnings": [
-        {
-            "message": "Missing item type\nCheck if the bodies were in contact since the last reset().",
-            "line": " src/collision/Narrowphase.js:53"
-        }
-    ]
+    "warnings": []
 }

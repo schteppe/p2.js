@@ -177,7 +177,6 @@
 
 <div class="box intro">
     <p>The dynamics world, where all bodies and constraints lives.</p>
-
 </div>
 
 
@@ -269,7 +268,6 @@
 
                                 <div class="param-description">
                                     <p>Defaults to GSSolver.</p>
-
                                 </div>
 
                                 
@@ -283,7 +281,6 @@
 
                                 <div class="param-description">
                                     <p>Defaults to [0,-9.78]</p>
-
                                 </div>
 
                                 
@@ -297,7 +294,6 @@
 
                                 <div class="param-description">
                                     <p>Defaults to NaiveBroadphase</p>
-
                                 </div>
 
                                 
@@ -694,7 +690,6 @@
 
     <div class="description">
         <p>Add a body to the simulation</p>
-
     </div>
 
     
@@ -731,8 +726,8 @@
             <div class="example-content">
                 <pre class="code prettyprint"><code>var world = new World(),
     body = new Body();
-world.addBody(body);</code></pre>
-
+world.addBody(body);
+</code></pre>
             </div>
         </div>
     
@@ -793,7 +788,6 @@ world.addBody(body);</code></pre>
 
     <div class="description">
         <p>Add a constraint to the simulation.</p>
-
     </div>
 
     
@@ -881,7 +875,6 @@ world.addBody(body);</code></pre>
 
     <div class="description">
         <p>Add a ContactMaterial to the simulation.</p>
-
     </div>
 
     
@@ -969,7 +962,6 @@ world.addBody(body);</code></pre>
 
     <div class="description">
         <p>Add a spring to the simulation</p>
-
     </div>
 
     
@@ -1047,7 +1039,6 @@ world.addBody(body);</code></pre>
 
     <div class="description">
         <p>Resets the World, removes all bodies, constraints and springs.</p>
-
     </div>
 
     
@@ -1106,7 +1097,6 @@ world.addBody(body);</code></pre>
 
     <div class="description">
         <p>Get a copy of this World instance</p>
-
     </div>
 
     
@@ -1187,7 +1177,6 @@ world.addBody(body);</code></pre>
 
     <div class="description">
         <p>Load a scene from a serialized state in JSON format.</p>
-
     </div>
 
     
@@ -1224,8 +1213,7 @@ world.addBody(body);</code></pre>
                     
                         <span class="type">Boolean</span>:
                     
-                    <p>True on success, else false.</p>
-
+                    True on success, else false.
                 
             </div>
         </div>
@@ -1299,7 +1287,6 @@ world.addBody(body);</code></pre>
 
     <div class="description">
         <p>Get a contact material given two materials</p>
-
     </div>
 
     
@@ -1351,8 +1338,7 @@ world.addBody(body);</code></pre>
                     
                         <span class="type"><a href="../classes/ContactMaterial.html" class="crosslink">ContactMaterial</a></span>:
                     
-                    <p>The matching ContactMaterial, or false on fail.</p>
-
+                    The matching ContactMaterial, or false on fail.
                 
             </div>
         </div>
@@ -1432,7 +1418,6 @@ world.addBody(body);</code></pre>
 
     <div class="description">
         <p>Test if a world point overlaps bodies</p>
-
     </div>
 
     
@@ -1451,7 +1436,6 @@ world.addBody(body);</code></pre>
 
                     <div class="param-description">
                         <p>Point to use for intersection tests</p>
-
                     </div>
 
                     
@@ -1467,7 +1451,6 @@ world.addBody(body);</code></pre>
 
                     <div class="param-description">
                         <p>A list of objects to check for intersection</p>
-
                     </div>
 
                     
@@ -1483,7 +1466,6 @@ world.addBody(body);</code></pre>
 
                     <div class="param-description">
                         <p>Used for matching against particles and lines. Adds some margin to these infinitesimal objects.</p>
-
                     </div>
 
                     
@@ -1502,8 +1484,7 @@ world.addBody(body);</code></pre>
                     
                         <span class="type">Array</span>:
                     
-                    <p>Array of bodies that overlap the point</p>
-
+                    Array of bodies that overlap the point
                 
             </div>
         </div>
@@ -1575,7 +1556,6 @@ world.addBody(body);</code></pre>
 
     <div class="description">
         <p>Move a body forward in time.</p>
-
     </div>
 
     
@@ -1678,7 +1658,6 @@ world.addBody(body);</code></pre>
 
     <div class="description">
         <p>Remove a body from the simulation</p>
-
     </div>
 
     
@@ -1766,7 +1745,6 @@ world.addBody(body);</code></pre>
 
     <div class="description">
         <p>Removes a constraint</p>
-
     </div>
 
     
@@ -1854,7 +1832,6 @@ world.addBody(body);</code></pre>
 
     <div class="description">
         <p>Remove a spring</p>
-
     </div>
 
     
@@ -2004,7 +1981,6 @@ world.addBody(body);</code></pre>
 
     <div class="description">
         <p>Runs narrowphase for the shape pair i and j.</p>
-
     </div>
 
     
@@ -2242,7 +2218,6 @@ world.addBody(body);</code></pre>
 
     <div class="description">
         <p>Step the physics world forward in time.</p>
-
     </div>
 
     
@@ -2261,7 +2236,6 @@ world.addBody(body);</code></pre>
 
                     <div class="param-description">
                         <p>The time step size to use.</p>
-
                     </div>
 
                     
@@ -2279,8 +2253,8 @@ world.addBody(body);</code></pre>
 
             <div class="example-content">
                 <pre class="code prettyprint"><code>var world = new World();
-world.step(0.01);</code></pre>
-
+world.step(0.01);
+</code></pre>
             </div>
         </div>
     
@@ -2335,7 +2309,6 @@ world.step(0.01);</code></pre>
 
     <div class="description">
         <p>Convert the world to a JSON-serializable Object.</p>
-
     </div>
 
     
@@ -2416,7 +2389,6 @@ world.step(0.01);</code></pre>
 
     <div class="description">
         <p>Upgrades a JSON object to current version</p>
-
     </div>
 
     
@@ -2453,8 +2425,7 @@ world.step(0.01);</code></pre>
                     
                         <span class="type">Object | Boolean</span>:
                     
-                    <p>New json object, or false on failure.</p>
-
+                    New json object, or false on failure.
                 
             </div>
         </div>
@@ -2506,7 +2477,6 @@ world.step(0.01);</code></pre>
 
     <div class="description">
         <p>Enable to automatically apply spring forces each step.</p>
-
     </div>
 
     
@@ -2551,7 +2521,6 @@ world.step(0.01);</code></pre>
 
     <div class="description">
         <p>All bodies in the world.</p>
-
     </div>
 
     
@@ -2596,7 +2565,6 @@ world.step(0.01);</code></pre>
 
     <div class="description">
         <p>The broadphase algorithm to use.</p>
-
     </div>
 
     
@@ -2641,7 +2609,6 @@ world.step(0.01);</code></pre>
 
     <div class="description">
         <p>User-added constraints.</p>
-
     </div>
 
     
@@ -2686,7 +2653,6 @@ world.step(0.01);</code></pre>
 
     <div class="description">
         <p>The ContactMaterials added to the World.</p>
-
     </div>
 
     
@@ -2731,7 +2697,6 @@ world.step(0.01);</code></pre>
 
     <div class="description">
         <p>Friction between colliding bodies. This value is used if no matching ContactMaterial is found for the body pair.</p>
-
     </div>
 
     
@@ -2776,7 +2741,6 @@ world.step(0.01);</code></pre>
 
     <div class="description">
         <p>Whether to do timing measurements during the step() or not.</p>
-
     </div>
 
     
@@ -2821,7 +2785,6 @@ world.step(0.01);</code></pre>
 
     <div class="description">
         <p>How many millisecconds the last step() took. This is updated each step if .doProfiling is set to true.</p>
-
     </div>
 
     
@@ -2866,7 +2829,6 @@ world.step(0.01);</code></pre>
 
     <div class="description">
         <p>For keeping track of what time step size we used last step</p>
-
     </div>
 
     
@@ -2911,7 +2873,6 @@ world.step(0.01);</code></pre>
 
     <div class="description">
         <p>The narrowphase to use to generate contacts.</p>
-
     </div>
 
     
@@ -2956,7 +2917,6 @@ world.step(0.01);</code></pre>
 
     <div class="description">
         <p>Enable/disable constraint solving in each step.</p>
-
     </div>
 
     
@@ -3001,7 +2961,6 @@ world.step(0.01);</code></pre>
 
     <div class="description">
         <p>The solver used to satisfy constraints and contacts.</p>
-
     </div>
 
     
@@ -3046,7 +3005,6 @@ world.step(0.01);</code></pre>
 
     <div class="description">
         <p>Gravity in the world. This is applied on all bodies in the beginning of each step().</p>
-
     </div>
 
     
@@ -3091,7 +3049,6 @@ world.step(0.01);</code></pre>
 
     <div class="description">
         <p>All springs in the world.</p>
-
     </div>
 
     
@@ -3136,7 +3093,6 @@ world.step(0.01);</code></pre>
 
     <div class="description">
         <p>World time.</p>
-
     </div>
 
     
@@ -3257,7 +3213,6 @@ world.step(0.01);</code></pre>
 
     <div class="description">
         <p>Fired when a spring is added to the world.</p>
-
     </div>
 
     
@@ -3324,7 +3279,6 @@ world.step(0.01);</code></pre>
 
     <div class="description">
         <p>Fired when a first contact is created between two bodies. This event is fired after the step has been done.</p>
-
     </div>
 
     
@@ -3406,7 +3360,6 @@ world.step(0.01);</code></pre>
 
     <div class="description">
         <p>Fired after the step().</p>
-
     </div>
 
     
