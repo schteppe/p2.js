@@ -16,6 +16,8 @@
       }
       a {
         color:white;
+        text-decoration: none;
+        font-weight: bold;
       }
       canvas {
         position:absolute;
@@ -37,9 +39,14 @@
         vertical-align: middle;
         text-align: center;
       }
-      .textBox.bottom {
+      .textBox.bottomRight {
         position:absolute;
         right:0;
+        bottom:0;
+      }
+      .textBox.bottomLeft {
+        position:absolute;
+        left:0;
         bottom:0;
       }
       .hidden {
@@ -48,7 +55,8 @@
     </style>
   </head>
   <body>
-    <div id="logo" class="textBox bottom right">POWERED BY <a href="https://github.com/schteppe/p2.js">P2.JS</a> PHYSICS</div>
+    <div id="logo" class="textBox bottomRight">POWERED BY <a href="https://github.com/schteppe/p2.js">P2.JS</a> PHYSICS</div>
+    <div id="logo" class="textBox bottomLeft">GAME BY <a href="https://twitter.com/schteppe">@SCHTEPPE</a></div>
     <div id="level" class="textBox"></div>
     <div id="lives" class="textBox"></div>
     <div id="gameover" class="textBox centered hidden">GAME OVER</div>
@@ -56,7 +64,7 @@
     <script>
       var canvas, ctx, w, h, zoom,
           shipSize=0.3, spaceWidth=16, spaceHeight=9, hideShip=false, allowShipCollision=true,
-          world, shipShape, shipBody, shipReloadTime=0.0, shipTurnSpeed=4,
+          world, shipShape, shipBody, shipReloadTime=0.1, shipTurnSpeed=4,
           bulletBodies=[], bulletShape, bulletRadius=0.03, bulletLifeTime=2,
           asteroidShapes=[], numAsteroidLevels=4, asteroidRadius=0.9, maxAsteroidSpeed=2,asteroids=[], numAsteroidVerts=10,
           SHIP=Math.pow(2,1),
