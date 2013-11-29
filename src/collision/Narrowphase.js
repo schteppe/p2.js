@@ -37,13 +37,42 @@ var tmp1 = vec2.fromValues(0,0)
  * @constructor
  */
 function Narrowphase(){
+
+    /**
+     * @property contactEquations
+     * @type {Array}
+     */
     this.contactEquations = [];
+
+    /**
+     * @property frictionEquations
+     * @type {Array}
+     */
     this.frictionEquations = [];
+
+    /**
+     * Whether to make friction equations in the upcoming contacts.
+     * @property enableFriction
+     * @type {Boolean}
+     */
     this.enableFriction = true;
+
+    /**
+     * The friction slip force to use when creating friction equations.
+     * @property slipForce
+     * @type {Number}
+     */
     this.slipForce = 10.0;
+
     this.reuseObjects = true;
     this.reusableContactEquations = [];
     this.reusableFrictionEquations = [];
+
+    /**
+     * The restitution value to use in the next contact equations.
+     * @property restitution
+     * @type {Number}
+     */
     this.restitution = 0; // For contact constraints
 
     // Keep track of the colliding bodies last step
@@ -52,6 +81,7 @@ function Narrowphase(){
 
 /**
  * Check if the bodies were in contact since the last reset().
+ * @method collidedLastStep
  * @param  {Body} bi
  * @param  {Body} bj
  * @return {Boolean}

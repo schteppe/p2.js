@@ -109,7 +109,15 @@ SAP1DBroadphase.prototype.getCollisionPairs = function(world){
     return result;
 };
 
-// Returns true if bounds overlap
+/**
+ * Check if the bounds of two bodies overlap, along the given SAP axis.
+ * @static
+ * @method checkBounds
+ * @param  {Body} bi
+ * @param  {Body} bj
+ * @param  {Number} axisIndex
+ * @return {Boolean}
+ */
 SAP1DBroadphase.checkBounds = function(bi,bj,axisIndex){
     var biPos = bi.position[axisIndex],
         ri = bi.boundingRadius,
