@@ -82,7 +82,7 @@ Note that concave polygon shapes can be created using ```Body.prototype.fromPoly
 
 ### Change log
 
-##### Current dev version
+##### 0.3.1
 * Added method ```Narrowphase.prototype.collidedLastStep```
 * Added property ```.firstImpact``` to ```ContactEquation``` and changed the way it handles restitution.
 * ```Solver``` now inherits from ```EventEmitter```.
