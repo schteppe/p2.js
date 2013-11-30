@@ -1,19 +1,9 @@
 p2.js
 =====
 
-JavaScript 2D rigid body physics engine.
+2D rigid body physics engine written in JavaScript. Includes collision detection, contacts, friction, restitution, motors, springs, advanced constraints and various shape types.
 
-### Features
-* Rigid body physics
-* Written in pure JavaScript for Node.js and browser
-* Detailed documentation
-* Collision detection
-* Contacts, friction
-* Stiff constraints: Distance, Revolute, Prismatic
-* Motors
-* Springs
-* Dynamic, kinematic, static bodies
-* Many supported shapes (see table below)
+[Demos](#demos) | [Examples](#examples) | [Documentation](http://schteppe.github.io/p2.js/docs/) | [Download](https://raw.github.com/schteppe/p2.js/master/build/p2.js)
 
 ### Demos
 * [Car](http://schteppe.github.io/p2.js/demos/car.html)
