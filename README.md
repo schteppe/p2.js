@@ -4,17 +4,35 @@ p2.js
 JavaScript 2D rigid body physics engine.
 
 ### Features
-* Written in pure JavaScript
-* For Node.js and browser
-* Detailed documentation
 * Rigid body physics
-* Collision detection (no CCD)
+* Written in pure JavaScript for Node.js and browser
+* Detailed documentation
+* Collision detection
 * Contacts, friction
 * Stiff constraints: Distance, Revolute, Prismatic
 * Motors
 * Springs
 * Dynamic, kinematic, static bodies
 * Many supported shapes (see table below)
+
+### Demos
+* [Car](http://schteppe.github.io/p2.js/demos/car.html)
+* [Circle container](http://schteppe.github.io/p2.js/demos/circles.html)
+* [Collision tests](http://schteppe.github.io/p2.js/demos/collisions.html)
+* [Compound objects](http://schteppe.github.io/p2.js/demos/compound.html)
+* [Concave objects](http://schteppe.github.io/p2.js/demos/concave.html)
+* [Constraints](http://schteppe.github.io/p2.js/demos/constraints.html)
+* [Friction](http://schteppe.github.io/p2.js/demos/friction.html)
+* [Island solver](http://schteppe.github.io/p2.js/demos/islandSolver.html)
+* [Lock constraint](http://schteppe.github.io/p2.js/demos/lock.html)
+* [Restitution](http://schteppe.github.io/p2.js/demos/restitution.html)
+* [Springs](http://schteppe.github.io/p2.js/demos/springs.html)
+
+### Examples
+Examples showing how to use p2.js with your favorite renderer.
+* [Canvas: Circle on plane](http://schteppe.github.io/p2.js/examples/canvas/circle.html)
+* [Canvas: Asteroids game](http://schteppe.github.io/p2.js/examples/canvas/asteroids.html)
+More examples coming soon.
 
 ### Install
 ##### Browser
