@@ -62,7 +62,8 @@ function RevoluteConstraint(bodyA, pivotA, bodyB, pivotB, maxForce){
     y.minForce = x.minForce = -maxForce;
     y.maxForce = x.maxForce =  maxForce;
 
-    this.motorEquation = null;
+    this.motorEquation = new RotationalVelocityEquation(bodyA,bodyB);
+    this.motorEnabled = false;
 }
 RevoluteConstraint.prototype = new Constraint();
 
@@ -126,9 +127,9 @@ RevoluteConstraint.prototype.update = function(){
  * @todo Should reuse the equation object when enabling/disabling the motor
  */
 RevoluteConstraint.prototype.enableMotor = function(){
-    if(this.motorEquation) return;
-    this.motorEquation = new RotationalVelocityEquation(this.bodyA,this.bodyB);
+    if(this.motorEnabled) return;
     this.equations.push(this.motorEquation);
+    this.motorEnabled = true;
 };
 
 /**
@@ -136,10 +137,10 @@ RevoluteConstraint.prototype.enableMotor = function(){
  * @method disableMotor
  */
 RevoluteConstraint.prototype.disableMotor = function(){
-    if(!this.motorEquation) return;
+    if(!this.motorEnabled) return;
     var i = this.equations.indexOf(this.motorEquation);
-    this.motorEquation = null;
     this.equations.splice(i,1);
+    this.motorEnabled = false;
 };
 
 /**
@@ -148,7 +149,7 @@ RevoluteConstraint.prototype.disableMotor = function(){
  * @return {Boolean}
  */
 RevoluteConstraint.prototype.motorIsEnabled = function(){
-    return !!this.motorEquation;
+    return !!this.motorEnabled;
 };
 
 /**
@@ -157,7 +158,7 @@ RevoluteConstraint.prototype.motorIsEnabled = function(){
  * @param  {Number} speed
  */
 RevoluteConstraint.prototype.setMotorSpeed = function(speed){
-    if(!this.motorEquation) return;
+    if(!this.motorEnabled) return;
     var i = this.equations.indexOf(this.motorEquation);
     this.equations[i].relativeVelocity = speed;
 };
@@ -168,6 +169,6 @@ RevoluteConstraint.prototype.setMotorSpeed = function(speed){
  * @return  {Number} The current speed, or false if the motor is not enabled.
  */
 RevoluteConstraint.prototype.getMotorSpeed = function(){
-    if(!this.motorEquation) return false;
+    if(!this.motorEnabled) return false;
     return this.motorEquation.relativeVelocity;
 };
