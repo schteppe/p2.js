@@ -34,8 +34,8 @@ function RevoluteConstraint(bodyA, pivotA, bodyB, pivotB, maxForce){
 
     // Equations to be fed to the solver
     var eqs = this.equations = [
-        new Equation(bodyA,bodyB,-maxForce,maxForce), // Normal
-        new Equation(bodyA,bodyB,-maxForce,maxForce), // Tangent
+        new Equation(bodyA,bodyB,-maxForce,maxForce),
+        new Equation(bodyA,bodyB,-maxForce,maxForce),
     ];
 
     var x =  eqs[0];
@@ -77,6 +77,31 @@ RevoluteConstraint.prototype.update = function(){
         x = eqs[0],
         y = eqs[1];
 
+    /*
+
+    The constraint violation is
+
+        g = xj + rj - xi - ri
+
+    ...where xi and xj are the body positions and ri and rj world-oriented offset vectors. Differentiate:
+
+        gdot = vj + wj x rj - vi - wi x ri
+
+    We split this into x and y directions. (let x and y be unit vectors along the respective axes)
+
+        gdot * x = ( vj + wj x rj - vi - wi x ri ) * x
+                 = ( vj*x + (wj x rj)*x -vi*x -(wi x ri)*x
+                 = ( vj*x + (rj x x)*wj -vi*x -(ri x x)*wi
+                 = [ -x   -(ri x x)   x   (rj x x)] * [vi wi vj wj]
+                 = G*W
+
+    ...and similar for y. We have then identified the jacobian entries for x and y directions:
+
+        Gx = [ x   (rj x x)   -x   -(ri x x)]
+        Gy = [ y   (rj x y)   -y   -(ri x y)]
+
+     */
+
     vec2.rotate(worldPivotA, pivotA, bodyA.angle);
     vec2.rotate(worldPivotB, pivotB, bodyB.angle);
 
@@ -98,6 +123,7 @@ RevoluteConstraint.prototype.update = function(){
 /**
  * Enable the rotational motor
  * @method enableMotor
+ * @todo Should reuse the equation object when enabling/disabling the motor
  */
 RevoluteConstraint.prototype.enableMotor = function(){
     if(this.motorEquation) return;
