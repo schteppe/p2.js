@@ -30,8 +30,10 @@ JavaScript 2D rigid body physics engine.
 
 ### Examples
 Examples showing how to use p2.js with your favorite renderer.
+
 * [Canvas: Circle on plane](http://schteppe.github.io/p2.js/examples/canvas/circle.html)
 * [Canvas: Asteroids game](http://schteppe.github.io/p2.js/examples/canvas/asteroids.html)
+
 More examples coming soon.
 
 ### Install
