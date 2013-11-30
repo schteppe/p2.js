@@ -124,7 +124,6 @@ RevoluteConstraint.prototype.update = function(){
 /**
  * Enable the rotational motor
  * @method enableMotor
- * @todo Should reuse the equation object when enabling/disabling the motor
  */
 RevoluteConstraint.prototype.enableMotor = function(){
     if(this.motorEnabled) return;
