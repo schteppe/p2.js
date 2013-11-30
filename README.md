@@ -93,6 +93,10 @@ Note that concave polygon shapes can be created using [Body.fromPolygon](http://
 
 ### Change log
 
+##### Current dev version
+* Added properties ```.damping``` and ```.angularDamping``` to ```Body```.
+* Added property ```.applyDamping``` to ```World```.
+
 ##### 0.3.1
 * Added method ```Narrowphase.prototype.collidedLastStep```
 * Added property ```.firstImpact``` to ```ContactEquation``` and changed the way it handles restitution.
