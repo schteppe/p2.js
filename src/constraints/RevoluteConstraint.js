@@ -1,6 +1,7 @@
 var Constraint = require('./Constraint')
 ,   Equation = require('./Equation')
 ,   RotationalVelocityEquation = require('./RotationalVelocityEquation')
+,   RotationalLockEquation = require('./RotationalLockEquation')
 ,   vec2 = require('../math/vec2')
 
 module.exports = RevoluteConstraint;
@@ -64,6 +65,16 @@ function RevoluteConstraint(bodyA, pivotA, bodyB, pivotB, maxForce){
 
     this.motorEquation = new RotationalVelocityEquation(bodyA,bodyB);
     this.motorEnabled = false;
+
+    // Angle limits
+    this.lowerLimitEnabled = false;
+    this.upperLimitEnabled = false;
+    this.lowerLimit = 0;
+    this.upperLimit = 0;
+    this.upperLimitEquation = new RotationalLockEquation(bodyA,bodyB);
+    this.lowerLimitEquation = new RotationalLockEquation(bodyA,bodyB);
+    this.upperLimitEquation.minForce = 0;
+    this.lowerLimitEquation.maxForce = 0;
 }
 RevoluteConstraint.prototype = new Constraint();
 
@@ -76,7 +87,31 @@ RevoluteConstraint.prototype.update = function(){
         normal = eqs[0],
         tangent= eqs[1],
         x = eqs[0],
-        y = eqs[1];
+        y = eqs[1],
+        upperLimit = this.upperLimit,
+        lowerLimit = this.lowerLimit,
+        upperLimitEquation = this.upperLimitEquation,
+        lowerLimitEquation = this.lowerLimitEquation;
+
+    var relAngle = this.angle = bodyB.angle - bodyA.angle;
+
+    if(this.upperLimitEnabled && relAngle > upperLimit){
+        upperLimitEquation.angle = upperLimit;
+        if(eqs.indexOf(upperLimitEquation)==-1)
+            eqs.push(upperLimitEquation);
+    } else {
+        var idx = eqs.indexOf(upperLimitEquation);
+        if(idx != -1) eqs.splice(idx,1);
+    }
+
+    if(this.lowerLimitEnabled && relAngle < lowerLimit){
+        lowerLimitEquation.angle = lowerLimit;
+        if(eqs.indexOf(lowerLimitEquation)==-1)
+            eqs.push(lowerLimitEquation);
+    } else {
+        var idx = eqs.indexOf(lowerLimitEquation);
+        if(idx != -1) eqs.splice(idx,1);
+    }
 
     /*
 
