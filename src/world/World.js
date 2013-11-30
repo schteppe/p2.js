@@ -145,6 +145,13 @@ function World(options){
     this.applySpringForces = true;
 
     /**
+     * Enable to automatically apply body damping each step.
+     * @property applyDamping
+     * @type {Boolean}
+     */
+    this.applyDamping = true;
+
+    /**
      * Enable/disable constraint solving in each step.
      * @property solveConstraints
      * @type {Boolean}
@@ -334,6 +341,13 @@ World.prototype.step = function(dt){
         for(var i=0; i!==Nsprings; i++){
             var s = springs[i];
             s.applyForce();
+        }
+    }
+
+    if(this.applyDamping){
+        for(var i=0; i!==Nbodies; i++){
+            var b = bodies[i];
+            b.applyDamping(dt);
         }
     }
 
