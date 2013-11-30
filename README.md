@@ -50,7 +50,8 @@ Then require it like so:
 var p2 = require('p2');
 ```
 
-### Example
+### Sample code
+The following example uses the [World](http://schteppe.github.io/p2.js/docs/classes/World.html), [Circle](http://schteppe.github.io/p2.js/docs/classes/Circle.html), [Body](http://schteppe.github.io/p2.js/docs/classes/Body.html) and [Plane](http://schteppe.github.io/p2.js/docs/classes/Plane.html) classes to set up a simple physics scene with a ball on a plane.
 ```js
 // Setup our world
 var world = new p2.World({ gravity:[0,-9.82] });
@@ -78,17 +79,17 @@ setInterval(function(){
 ```
 
 ### Supported collision pairs
-|           | Circle | Plane | Rectangle | Convex | Particle | Line   | Capsule |
-| :-------: |:------:|:-----:|:---------:|:------:|:--------:|:------:|:-------:|
-| Circle    | Yes    | Yes   | Yes       | Yes    | Yes      | Yes    | Yes     |
-| Plane     | -      | -     | Yes       | Yes    | Yes      | Yes    | Yes     |
-| Rectangle | -      | -     | Yes       | Yes    | Yes      | (todo) | (todo)  |
-| Convex    | -      | -     | -         | Yes    | Yes      | (todo) | (todo)  |
-| Particle  | -      | -     | -         | -      | -        | -      | Yes     |
-| Line      | -      | -     | -         | -      | -        | (todo) | (todo)  |
-| Capsule   | -      | -     | -         | -      | -        | -      | (todo)  |
+|                                                                          | Circle | Plane | Rectangle | Convex | Particle | Line   | Capsule |
+| :----------------------------------------------------------------------: |:------:|:-----:|:---------:|:------:|:--------:|:------:|:-------:|
+| [Circle](http://schteppe.github.io/p2.js/docs/classes/Circle.html)       | Yes    | Yes   | Yes       | Yes    | Yes      | Yes    | Yes     |
+| [Plane](http://schteppe.github.io/p2.js/docs/classes/Plane.html)         | -      | -     | Yes       | Yes    | Yes      | Yes    | Yes     |
+| [Rectangle](http://schteppe.github.io/p2.js/docs/classes/Rectangle.html) | -      | -     | Yes       | Yes    | Yes      | (todo) | (todo)  |
+| [Convex](http://schteppe.github.io/p2.js/docs/classes/Convex.html)       | -      | -     | -         | Yes    | Yes      | (todo) | (todo)  |
+| [Particle](http://schteppe.github.io/p2.js/docs/classes/Particle.html)   | -      | -     | -         | -      | -        | -      | Yes     |
+| [Line](http://schteppe.github.io/p2.js/docs/classes/Line.html)           | -      | -     | -         | -      | -        | (todo) | (todo)  |
+| [Capsule](http://schteppe.github.io/p2.js/docs/classes/Capsule.html)     | -      | -     | -         | -      | -        | -      | (todo)  |
 
-Note that concave polygon shapes can be created using ```Body.prototype.fromPolygon```.
+Note that concave polygon shapes can be created using [Body.fromPolygon](http://schteppe.github.io/p2.js/docs/classes/Body.html#method_fromPolygon).
 
 ### Change log
 
