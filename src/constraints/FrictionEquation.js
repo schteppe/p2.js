@@ -73,6 +73,11 @@ function FrictionEquation(bi,bj,slipForce){
      */
     this.shapeB = null;
 
+    /**
+     * The friction coefficient to use.
+     * @property frictionCoefficient
+     * @type {Number}
+     */
     this.frictionCoefficient = 0.3;
 };
 FrictionEquation.prototype = new Equation();
@@ -83,6 +88,7 @@ FrictionEquation.prototype.constructor = FrictionEquation;
  * larger than this value.
  * @method setSlipForce
  * @param  {Number} slipForce
+ * @deprecated Use .frictionCoefficient instead
  */
 FrictionEquation.prototype.setSlipForce = function(slipForce){
     this.maxForce = slipForce;
