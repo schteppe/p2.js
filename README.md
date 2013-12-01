@@ -100,6 +100,7 @@ Note that concave polygon shapes can be created using [Body.fromPolygon](http://
 * Added property ```.contactEquation``` to ```FrictionEquation```.
 * Added property ```.multiplier``` to ```Equation```.
 * Added properties ```.lowerLimitEnabled```, ```.lowerLimit```, ```.upperLimitEnabled```, ```.upperLimit``` to ```RevoluteConstraint```.
+* Added property ```.frictionCoefficient``` to ```FrictionEquation``` and ```Narrowphase```. The solver now updates the friction force bounds dynamically in the solver from this value. ```FrictionEquation.setSlipForce()``` is thus deprecated.
 
 ##### 0.3.1
 * Added method ```Narrowphase.prototype.collidedLastStep```
