@@ -128,7 +128,7 @@ function World(options){
      * @property defaultFriction
      * @type {Number}
      */
-    this.defaultFriction = 0.1;
+    this.defaultFriction = 0.3;
 
     /**
      * For keeping track of what time step size we used last step
@@ -507,6 +507,7 @@ World.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,mu,glen,restitution){
     // Run narrowphase
     np.enableFriction = mu > 0;
     np.slipForce = mug;
+    np.frictionCoefficient = mu;
     np.restitution = restitution;
     if(si instanceof Circle){
              if(sj instanceof Circle)       np.circleCircle  (bi,si,xiw,aiw, bj,sj,xjw,ajw);

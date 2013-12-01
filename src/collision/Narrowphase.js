@@ -41,6 +41,7 @@ function Narrowphase(){
     this.frictionEquations = [];
     this.enableFriction = true;
     this.slipForce = 10.0;
+    this.frictionCoefficient = 0.3;
     this.reuseObjects = true;
     this.reusableContactEquations = [];
     this.reusableFrictionEquations = [];
@@ -133,6 +134,7 @@ Narrowphase.prototype.createFrictionEquation = function(bodyA,bodyB,shapeA,shape
     c.shapeA = shapeA;
     c.shapeB = shapeB;
     c.setSlipForce(this.slipForce);
+    c.frictionCoefficient = this.frictionCoefficient;
     return c;
 };
 

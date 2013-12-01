@@ -72,6 +72,8 @@ function FrictionEquation(bi,bj,slipForce){
      * @type {Shape}
      */
     this.shapeB = null;
+
+    this.frictionCoefficient = 0.3;
 };
 FrictionEquation.prototype = new Equation();
 FrictionEquation.prototype.constructor = FrictionEquation;
