@@ -159,6 +159,11 @@ GSSolver.prototype.solve = function(dt,world){
         }
     }
     errorTot = deltalambdaTot;
+
+    // Store multipliers / lambda
+    for(var j=0; j!==Neq; j++){
+        equations[j].multiplier = lambda[j] / dt;
+    }
 };
 
 GSSolver.iterateEquation = function(j,eq,eps,Bs,invCs,lambda,useZeroRHS){
