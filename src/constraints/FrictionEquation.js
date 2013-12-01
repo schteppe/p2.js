@@ -58,6 +58,20 @@ function FrictionEquation(bi,bj,slipForce){
      * @type {ContactEquation}
      */
     this.contactEquation = null;
+
+    /**
+     * The shape in body i that triggered this friction.
+     * @property shapeA
+     * @type {Shape}
+     */
+    this.shapeA = null;
+
+    /**
+     * The shape in body j that triggered this friction.
+     * @property shapeB
+     * @type {Shape}
+     */
+    this.shapeB = null;
 };
 FrictionEquation.prototype = new Equation();
 FrictionEquation.prototype.constructor = FrictionEquation;
