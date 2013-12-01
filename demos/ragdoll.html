@@ -214,7 +214,7 @@
         // Create ground
         var planeShape = new p2.Plane();
         var plane = new p2.Body({
-            position:[0,0],
+            position:[0,-1],
         });
         plane.addShape(planeShape);
         planeShape.collisionGroup = GROUND;
