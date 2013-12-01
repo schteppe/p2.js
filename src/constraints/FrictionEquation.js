@@ -51,6 +51,13 @@ function FrictionEquation(bi,bj,slipForce){
      * @type {Float32Array}
      */
     this.t = vec2.create();
+
+    /**
+     * A ContactEquation connected to this friction. The contact equation can be used to rescale the max force for the friction.
+     * @property contactEquation
+     * @type {ContactEquation}
+     */
+    this.contactEquation = null;
 };
 FrictionEquation.prototype = new Equation();
 FrictionEquation.prototype.constructor = FrictionEquation;
