@@ -64,7 +64,13 @@ function Narrowphase(){
      */
     this.slipForce = 10.0;
 
+    /**
+     * The friction value to use in the upcoming friction equations.
+     * @property frictionCoefficient
+     * @type {Number}
+     */
     this.frictionCoefficient = 0.3;
+
     this.reuseObjects = true;
     this.reusableContactEquations = [];
     this.reusableFrictionEquations = [];
@@ -74,7 +80,7 @@ function Narrowphase(){
      * @property restitution
      * @type {Number}
      */
-    this.restitution = 0; // For contact constraints
+    this.restitution = 0;
 
     // Keep track of the colliding bodies last step
     this.collidingBodiesLastStep = {};
