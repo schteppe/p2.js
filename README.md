@@ -26,30 +26,6 @@ Examples showing how to use p2.js with your favorite renderer.
 
 More examples coming soon.
 
-### Install
-##### Browser
-Download either [p2.js](build/p2.js) or the minified [p2.min.js](build/p2.min.js) and include the script in your HTML:
-```html
-<script src="p2.js" type="text/javascript"></script>
-```
-##### Node.js
-Until the code gets somewhat more stable, use the git url to install:
-```
-npm install git://github.com/schteppe/p2.js
-```
-Or add the dependency to your ```package.json```:
-```
-    ...
-    "dependencies" : {
-        "p2" : "git://github.com/schteppe/p2.js"
-    }
-    ...
-```
-Then require it like so:
-```js
-var p2 = require('p2');
-```
-
 ### Sample code
 The following example uses the [World](http://schteppe.github.io/p2.js/docs/classes/World.html), [Circle](http://schteppe.github.io/p2.js/docs/classes/Circle.html), [Body](http://schteppe.github.io/p2.js/docs/classes/Body.html) and [Plane](http://schteppe.github.io/p2.js/docs/classes/Plane.html) classes to set up a simple physics scene with a ball on a plane.
 ```js
@@ -76,6 +52,30 @@ setInterval(function(){
     world.step(1.0/60.0);
     console.log("Circle y position: " + circleBody.position[1]);
 }, 1000.0/60.0);
+```
+
+### Install
+##### Browser
+Download either [p2.js](build/p2.js) or the minified [p2.min.js](build/p2.min.js) and include the script in your HTML:
+```html
+<script src="p2.js" type="text/javascript"></script>
+```
+##### Node.js
+Until the code gets somewhat more stable, use the git url to install:
+```
+npm install git://github.com/schteppe/p2.js
+```
+Or add the dependency to your ```package.json```:
+```
+    ...
+    "dependencies" : {
+        "p2" : "git://github.com/schteppe/p2.js"
+    }
+    ...
+```
+Then require it like so:
+```js
+var p2 = require('p2');
 ```
 
 ### Supported collision pairs
