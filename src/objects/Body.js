@@ -147,6 +147,20 @@ function Body(options){
     this.angularForce = options.angularForce || 0;
 
     /**
+     * The linear damping acting on the body in the velocity direction
+     * @property damping
+     * @type {Number}
+     */
+    this.damping = options.damping || 0;
+
+    /**
+     * The angular force acting on the body
+     * @property angularDamping
+     * @type {Number}
+     */
+    this.angularDamping = options.angularDamping || 0;
+
+    /**
      * The type of motion this body has. Should be one of: Body.STATIC (the body
      * does not move), Body.DYNAMIC (body can move and respond to collisions)
      * and Body.KINEMATIC (only moves according to its .velocity).
@@ -482,6 +496,23 @@ Body.prototype.addConstraintVelocity = function(){
         v = b.velocity;
     vec2.add( v, v, b.vlambda);
     b.angularVelocity += b.wlambda;
+};
+
+/**
+ * Apply damping, see <a href="http://code.google.com/p/bullet/issues/detail?id=74">this</a> for details.
+ * @method applyDamping
+ * @param  {number} dt Current time step
+ */
+Body.prototype.applyDamping = function(dt){
+    if(this.motionState & Body.DYNAMIC){ // Only for dynamic bodies
+        var ld = Math.pow(1.0 - this.damping,dt),
+            v = this.velocity;
+        vec2.scale(v,v,ld);
+
+        var av = this.angularVelocity,
+            ad = Math.pow(1.0 - this.angularDamping,dt);
+        this.angularVelocity *= ad;
+    }
 };
 
 /**

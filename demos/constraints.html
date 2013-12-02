@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>p2.js</title>
+    <title>Constraints demo - p2.js physics engine</title>
     <script src="../build/p2.js"></script>
     <script src="js/jquery.js"></script>
     <script src="js/pixi.js"></script>
@@ -65,7 +65,7 @@
         var bodyA = new p2.Body({
             mass: 1,
             position: [3,0],
-            angularVelocity: 10
+            angularVelocity: 30
         });
         bodyA.addShape(new p2.Circle(1));
         world.addBody(bodyA);
@@ -77,8 +77,12 @@
         world.addBody(bodyB);
         var pivotA = [0,2];
         var pivotB = [0,-2];
-        var c = new p2.RevoluteConstraint(bodyA, pivotA, bodyB, pivotB);
-        world.addConstraint(c);
+        var cr = new p2.RevoluteConstraint(bodyA, pivotA, bodyB, pivotB);
+        cr.upperLimitEnabled = true;
+        cr.upperLimit = Math.PI / 4;
+        cr.lowerLimitEnabled = true;
+        cr.lowerLimit = -Math.PI / 4;
+        world.addConstraint(cr);
 
 
         // Create PrismaticConstraint

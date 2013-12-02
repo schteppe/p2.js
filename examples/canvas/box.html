@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>p2.js Canvas example</title>
+    <title>p2.js Canvas Box example</title>
     <meta charset="utf-8">
     <script src="../../build/p2.js"></script>
   </head>
@@ -12,7 +12,7 @@
 
     <script>
       var canvas, ctx, w, h,
-          world, circleBody, planeBody;
+          world, boxBody, planeBody;
 
       init();
       animate();
@@ -30,11 +30,11 @@
         // Init p2.js
         world = new p2.World();
 
-        // Add a circle
-        circleShape = new p2.Circle(1);
-        circleBody = new p2.Body({ mass:1, position:[0,3] });
-        circleBody.addShape(circleShape);
-        world.addBody(circleBody);
+        // Add a box
+        boxShape = new p2.Rectangle(2,1);
+        boxBody = new p2.Body({ mass:1, position:[0,3],angularVelocity:1 });
+        boxBody.addShape(boxShape);
+        world.addBody(boxBody);
 
         // Add a plane
         planeShape = new p2.Plane();
@@ -43,13 +43,16 @@
         world.addBody(planeBody);
       }
 
-      function drawCircle(){
+      function drawbox(){
         ctx.beginPath();
-        var x = circleBody.position[0],
-            y = circleBody.position[1],
-            radius = circleShape.radius;
-        ctx.arc(x,y,radius,0,2*Math.PI);
+        var x = boxBody.position[0],
+            y = boxBody.position[1];
+        ctx.save();
+        ctx.translate(x, y);        // Translate to the center of the box
+        ctx.rotate(boxBody.angle);  // Rotate to the box body frame
+        ctx.rect(-boxShape.width/2, -boxShape.height/2, boxShape.width, boxShape.height);
         ctx.stroke();
+        ctx.restore();
       }
 
       function drawPlane(){
@@ -71,7 +74,7 @@
         ctx.scale(50, -50);       // Zoom in and flip y axis
 
         // Draw all bodies
-        drawCircle();
+        drawbox();
         drawPlane();
 
         // Restore transform

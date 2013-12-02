@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>p2.js</title>
+    <title>Car demo - p2.js physics engine</title>
     <script src="../build/p2.js"></script>
     <script src="js/jquery.js"></script>
     <script src="js/pixi.js"></script>
@@ -25,6 +25,9 @@
 
         world.broadphase = new p2.SAP1DBroadphase(world);
 
+        // Set high friction so the wheels don't slip
+        world.defaultFriction = 100;
+
         // Create ground
         var planeShape = new p2.Plane();
         var plane = new p2.Body();
@@ -35,7 +38,6 @@
         var bump = new p2.Body({ position:[0, -1] });
         bump.addShape(bumpShape);
         world.addBody(bump);
-
 
         // Create chassis
         var chassisBody = new p2.Body({ mass : 1, position:[-4,1] }),

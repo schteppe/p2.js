@@ -1,6 +1,7 @@
 var vec2 = require('../math/vec2')
 ,   Solver = require('./Solver')
 ,   Utils = require('../utils/Utils')
+,   FrictionEquation = require('../constraints/FrictionEquation')
 
 module.exports = GSSolver;
 
@@ -145,7 +146,7 @@ GSSolver.prototype.solve = function(dt,world){
                 c = equations[j];
                 var _eps = useGlobalParams ? eps : c.eps;
 
-                var deltalambda = GSSolver.iterateEquation(j,c,_eps,Bs,invCs,lambda,useZeroRHS);
+                var deltalambda = GSSolver.iterateEquation(j,c,_eps,Bs,invCs,lambda,useZeroRHS,dt);
                 if(tolSquared !== 0) deltalambdaTot += Math.abs(deltalambda);
             }
 
@@ -161,14 +162,21 @@ GSSolver.prototype.solve = function(dt,world){
     errorTot = deltalambdaTot;
 };
 
-GSSolver.iterateEquation = function(j,eq,eps,Bs,invCs,lambda,useZeroRHS){
+GSSolver.iterateEquation = function(j,eq,eps,Bs,invCs,lambda,useZeroRHS,dt){
     // Compute iteration
-    var maxForce = eq.maxForce,
-        minForce = eq.minForce,
-        B = Bs[j],
+    var B = Bs[j],
         invC = invCs[j],
         lambdaj = lambda[j],
         GWlambda = eq.computeGWlambda(eps);
+
+    if(eq instanceof FrictionEquation){
+        // Rescale the max friction force according to the normal force
+        eq.maxForce =  eq.contactEquation.multiplier * eq.frictionCoefficient * dt;
+        eq.minForce = -eq.contactEquation.multiplier * eq.frictionCoefficient * dt;
+    }
+
+    var maxForce = eq.maxForce,
+        minForce = eq.minForce;
 
     if(useZeroRHS) B = 0;
 
@@ -182,7 +190,7 @@ GSSolver.iterateEquation = function(j,eq,eps,Bs,invCs,lambda,useZeroRHS){
         deltalambda = maxForce - lambdaj;
     }
     lambda[j] += deltalambda;
-
+    eq.multiplier = lambda[j] / dt;
     eq.addToWlambda(deltalambda);
 
     return deltalambda;

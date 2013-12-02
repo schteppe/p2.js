@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tearable constraints demo - p2.js physics engine</title>
+    <script src="../build/p2.js"></script>
+    <script src="js/jquery.js"></script>
+    <script src="js/pixi.js"></script>
+    <script src="js/Demo.js"></script>
+    <script src="js/PixiDemo.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <link href="css/demo.css" rel="stylesheet"/>
+    <link href="css/bootstrap.min.css" rel="stylesheet"/>
+</head>
+<body>
+    <script>
+        var N=10, r=0.1;
+
+        var world = new p2.World({
+            doProfiling:true,
+            gravity : [0,-15],
+        });
+        world.solver.iterations = 30;
+
+        // Create circle rope
+        var shape = new p2.Circle(r),
+            lastBody,
+            constraints = [];
+        for(var i=N-1; i>=0; i--){
+            var x = 0;
+            var y = (N-i - N/2)*r*2.1;
+            var p = new p2.Body({
+                mass: i==0 ? 0 : 1,
+                position: [x,y],
+                angularDamping:0.5,
+            });
+            p.addShape(shape);
+            if(lastBody){
+                var dist = Math.abs(p.position[1]-lastBody.position[1]);
+                var c = new p2.DistanceConstraint(p,lastBody,dist);
+                world.addConstraint(c);
+                constraints.push(c);
+            } else {
+                p.velocity[0] = 1;
+            }
+            lastBody = p;
+            world.addBody(p);
+        }
+
+        // Create ground
+        var planeShape = new p2.Plane();
+        var plane = new p2.Body({
+            position:[0,(-N/2)*r*2.1],
+        });
+        plane.addShape(planeShape);
+        world.addBody(plane);
+
+        world.on("postStep",function(evt){
+            for(var i=0; i<constraints.length; i++){
+                var c = constraints[i],
+                    eqs = c.equations;
+                if(Math.abs(eqs[0].multiplier) > 1500){
+                    world.removeConstraint(c);
+                    constraints.splice(constraints.indexOf(c),1);
+                }
+            }
+        });
+
+        var demo = new PixiDemo(world);
+
+        function update(){
+            if(!demo.paused)
+                world.step(1/60);
+            demo.render();
+            requestAnimationFrame(update);
+        }
+        requestAnimationFrame(update);
+
+    </script>
+</body>
+</html>

@@ -51,6 +51,20 @@ function ContactEquation(bi,bj){
      * @type {Boolean}
      */
     this.firstImpact = false;
+
+    /**
+     * The shape in body i that triggered this contact.
+     * @property shapeA
+     * @type {Shape}
+     */
+    this.shapeA = null;
+
+    /**
+     * The shape in body j that triggered this contact.
+     * @property shapeB
+     * @type {Shape}
+     */
+    this.shapeB = null;
 };
 ContactEquation.prototype = new Equation();
 ContactEquation.prototype.constructor = ContactEquation;

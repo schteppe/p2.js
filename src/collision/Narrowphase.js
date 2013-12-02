@@ -64,6 +64,7 @@ function Narrowphase(){
      */
     this.slipForce = 10.0;
 
+    this.frictionCoefficient = 0.3;
     this.reuseObjects = true;
     this.reusableContactEquations = [];
     this.reusableFrictionEquations = [];
@@ -138,10 +139,12 @@ Narrowphase.prototype.reset = function(){
  * @param  {Body} bodyB
  * @return {ContactEquation}
  */
-Narrowphase.prototype.createContactEquation = function(bodyA,bodyB){
+Narrowphase.prototype.createContactEquation = function(bodyA,bodyB,shapeA,shapeB){
     var c = this.reusableContactEquations.length ? this.reusableContactEquations.pop() : new ContactEquation(bodyA,bodyB);
     c.bi = bodyA;
     c.bj = bodyB;
+    c.shapeA = shapeA;
+    c.shapeB = shapeB;
     c.restitution = this.restitution;
     c.firstImpact = !this.collidedLastStep(bodyA,bodyB);
     return c;
@@ -154,11 +157,14 @@ Narrowphase.prototype.createContactEquation = function(bodyA,bodyB){
  * @param  {Body} bodyB
  * @return {FrictionEquation}
  */
-Narrowphase.prototype.createFrictionEquation = function(bodyA,bodyB){
+Narrowphase.prototype.createFrictionEquation = function(bodyA,bodyB,shapeA,shapeB){
     var c = this.reusableFrictionEquations.length ? this.reusableFrictionEquations.pop() : new FrictionEquation(bodyA,bodyB);
     c.bi = bodyA;
     c.bj = bodyB;
+    c.shapeA = shapeA;
+    c.shapeB = shapeB;
     c.setSlipForce(this.slipForce);
+    c.frictionCoefficient = this.frictionCoefficient;
     return c;
 };
 
@@ -173,6 +179,7 @@ Narrowphase.prototype.createFrictionFromContact = function(c){
     vec2.copy(eq.ri, c.ri);
     vec2.copy(eq.rj, c.rj);
     vec2.rotate(eq.t, c.ni, -Math.PI / 2);
+    eq.contactEquation = c;
     return eq;
 }
 
@@ -242,7 +249,7 @@ Narrowphase.prototype.planeLine = function(bi,si,xi,ai, bj,sj,xj,aj){
 
         if(d < 0){
 
-            var c = this.createContactEquation(planeBody,lineBody);
+            var c = this.createContactEquation(planeBody,lineBody,si,sj);
 
             vec2.copy(c.ni, worldNormal);
             vec2.normalize(c.ni,c.ni);
@@ -365,7 +372,7 @@ Narrowphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj, justTest, 
 
             if(justTest) return true;
 
-            var c = this.createContactEquation(circleBody,lineBody);
+            var c = this.createContactEquation(circleBody,lineBody,si,sj);
 
             vec2.scale(c.ni, orthoDist, -1);
             vec2.normalize(c.ni, c.ni);
@@ -400,7 +407,7 @@ Narrowphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj, justTest, 
 
             if(justTest) return true;
 
-            var c = this.createContactEquation(circleBody,lineBody);
+            var c = this.createContactEquation(circleBody,lineBody,si,sj);
 
             vec2.copy(c.ni, dist);
             vec2.normalize(c.ni,c.ni);
@@ -571,7 +578,7 @@ Narrowphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
     }
 
     if(found){
-        var c = this.createContactEquation(circleBody,convexBody);
+        var c = this.createContactEquation(circleBody,convexBody,si,sj);
         vec2.sub(c.ni, minCandidate, circleOffset)
         vec2.normalize(c.ni, c.ni);
 
@@ -627,7 +634,7 @@ Narrowphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
 
                 if(justTest) return true;
 
-                var c = this.createContactEquation(circleBody,convexBody);
+                var c = this.createContactEquation(circleBody,convexBody,si,sj);
 
                 vec2.copy(c.ni, dist);
                 vec2.normalize(c.ni,c.ni);
@@ -811,7 +818,7 @@ Narrowphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, just
     }
 
     if(found){
-        var c = this.createContactEquation(particleBody,convexBody);
+        var c = this.createContactEquation(particleBody,convexBody,si,sj);
 
         vec2.scale(c.ni, minEdgeNormal, -1);
         vec2.normalize(c.ni, c.ni);
@@ -867,7 +874,7 @@ Narrowphase.prototype.circleCircle = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
 
     if(justTest) return true;
 
-    var c = this.createContactEquation(bodyA,bodyB);
+    var c = this.createContactEquation(bodyA,bodyB,si,sj);
     sub(c.ni, offsetB, offsetA);
     vec2.normalize(c.ni,c.ni);
 
@@ -929,7 +936,7 @@ Narrowphase.prototype.convexPlane = function( bi,si,xi,ai, bj,sj,xj,aj ){
             // Found vertex
             numReported++;
 
-            var c = this.createContactEquation(planeBody,convexBody);
+            var c = this.createContactEquation(planeBody,convexBody,sj,si);
 
             sub(dist, worldVertex, planeOffset);
 
@@ -995,7 +1002,7 @@ Narrowphase.prototype.particlePlane = function( bi,si,xi,ai, bj,sj,xj,aj, justTe
     if(d > 0) return false;
     if(justTest) return true;
 
-    var c = this.createContactEquation(planeBody,particleBody);
+    var c = this.createContactEquation(planeBody,particleBody,sj,si);
 
     vec2.copy(c.ni, worldNormal);
     vec2.scale( dist, c.ni, d );
@@ -1041,7 +1048,7 @@ Narrowphase.prototype.circleParticle = function(   bi,si,xi,ai, bj,sj,xj,aj, jus
     if(vec2.squaredLength(dist) > circleShape.radius*circleShape.radius) return false;
     if(justTest) return true;
 
-    var c = this.createContactEquation(circleBody,particleBody);
+    var c = this.createContactEquation(circleBody,particleBody,si,sj);
     vec2.copy(c.ni, dist);
     vec2.normalize(c.ni,c.ni);
 
@@ -1126,7 +1133,7 @@ Narrowphase.prototype.circlePlane = function(   bi,si,xi,ai, bj,sj,xj,aj ){
     if(d > circleShape.radius) return false; // No overlap. Abort.
 
     // Create contact
-    var contact = this.createContactEquation(planeBody,circleBody);
+    var contact = this.createContactEquation(planeBody,circleBody,sj,si);
 
     // ni is the plane world normal
     vec2.copy(contact.ni, worldNormal);
@@ -1252,7 +1259,7 @@ Narrowphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj ){
                 // Project it to the center edge and use the projection direction as normal
 
                 // Create contact
-                var c = this.createContactEquation(bodyA,bodyB);
+                var c = this.createContactEquation(bodyA,bodyB,si,sj);
 
                 // Get center edge from body A
                 var v0 = shapeA.vertices[(closestEdgeA)   % shapeA.vertices.length],

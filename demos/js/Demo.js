@@ -372,7 +372,13 @@ Demo.prototype.createMenu = function(){
         pauseHtml = "<b class='icon-pause'></b>";
 
     // Insert logo
-    $("body").append($("<div id='logo'><h1><a href='http://github.com/schteppe/p2.js'>p2.js</a></h1><p>Physics Engine</p></div>").disableSelection());
+    $("body").append($([
+        "<div id='logo'>",
+        "<h1><a href='http://github.com/schteppe/p2.js'>p2.js</a></h1>",
+        "<p>Physics Engine</p>",
+        '<a href="https://twitter.com/share" class="twitter-share-button" data-via="schteppe" data-count="none" data-hashtags="p2js">Tweet</a>',
+        "<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>",
+        "</div>"].join("")).disableSelection());
 
     // Insert menu
     var $menucontainer = $([

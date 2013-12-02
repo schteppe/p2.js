@@ -78,6 +78,13 @@ function Equation(bi,bj,minForce,maxForce){
     this.eps = 0;
     this.h = 0;
     this.updateSpookParams(1/60);
+
+    /**
+     * The resulting constraint multiplier from the last solve. This is mostly equivalent to the force produced by the constraint.
+     * @property multiplier
+     * @type {Number}
+     */
+    this.multiplier = 0;
 };
 Equation.prototype.constructor = Equation;
 

@@ -128,7 +128,7 @@ function World(options){
      * @property defaultFriction
      * @type {Number}
      */
-    this.defaultFriction = 0.1;
+    this.defaultFriction = 0.3;
 
     /**
      * For keeping track of what time step size we used last step
@@ -143,6 +143,13 @@ function World(options){
      * @type {Boolean}
      */
     this.applySpringForces = true;
+
+    /**
+     * Enable to automatically apply body damping each step.
+     * @property applyDamping
+     * @type {Boolean}
+     */
+    this.applyDamping = true;
 
     /**
      * Enable/disable constraint solving in each step.
@@ -337,6 +344,13 @@ World.prototype.step = function(dt){
         }
     }
 
+    if(this.applyDamping){
+        for(var i=0; i!==Nbodies; i++){
+            var b = bodies[i];
+            b.applyDamping(dt);
+        }
+    }
+
     // Broadphase
     var result = broadphase.getCollisionPairs(this);
 
@@ -493,6 +507,7 @@ World.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,mu,glen,restitution){
     // Run narrowphase
     np.enableFriction = mu > 0;
     np.slipForce = mug;
+    np.frictionCoefficient = mu;
     np.restitution = restitution;
     if(si instanceof Circle){
              if(sj instanceof Circle)       np.circleCircle  (bi,si,xiw,aiw, bj,sj,xjw,ajw);
@@ -651,6 +666,10 @@ World.prototype.toJSON = function(){
             jc.pivotB = v2a(c.pivotB);
             jc.maxForce = c.maxForce;
             jc.motorSpeed = c.getMotorSpeed(); // False if motor is disabled, otherwise number.
+            jc.lowerLimit = c.lowerLimit;
+            jc.lowerLimitEnabled = c.lowerLimitEnabled;
+            jc.upperLimit = c.upperLimit;
+            jc.upperLimitEnabled = c.upperLimitEnabled;
         } else if(c instanceof PrismaticConstraint){
             jc.type = "PrismaticConstraint";
             jc.localAxisA = v2a(c.localAxisA);
@@ -779,9 +798,13 @@ World.upgradeJSON = function(json){
             return json;
 
         case "0.3":
-            // Changes since 0.2:
+            // Changes:
             // - Started caring about versioning
+
             // - Added LockConstraint type
+            // Can't do much about that now though. Ignore.
+
+            // Upgrade version number
             json.p2 = "0.4";
             break;
     }
@@ -808,6 +831,8 @@ World.prototype.fromJSON = function(json){
 
     // Set gravity
     vec2.copy(this.gravity, json.gravity);
+
+    var bodies = this.bodies;
 
     // Load bodies
     var id2material = {};
@@ -860,7 +885,7 @@ World.prototype.fromJSON = function(json){
     // Load springs
     for(var i=0; i<json.springs.length; i++){
         var js = json.springs[i];
-        var s = new Spring(this.bodies[js.bodyA], this.bodies[js.bodyB], {
+        var s = new Spring(bodies[js.bodyA], bodies[js.bodyB], {
             stiffness : js.stiffness,
             damping : js.damping,
             restLength : js.restLength,
@@ -891,24 +916,28 @@ World.prototype.fromJSON = function(json){
             c;
         switch(jc.type){
             case "DistanceConstraint":
-                c = new DistanceConstraint(this.bodies[jc.bodyA], this.bodies[jc.bodyB], jc.distance, jc.maxForce);
+                c = new DistanceConstraint(bodies[jc.bodyA], bodies[jc.bodyB], jc.distance, jc.maxForce);
                 break;
             case "RevoluteConstraint":
-                c = new RevoluteConstraint(this.bodies[jc.bodyA], jc.pivotA, this.bodies[jc.bodyB], jc.pivotB, jc.maxForce);
+                c = new RevoluteConstraint(bodies[jc.bodyA], jc.pivotA, bodies[jc.bodyB], jc.pivotB, jc.maxForce);
                 if(jc.motorSpeed){
                     c.enableMotor();
                     c.setMotorSpeed(jc.motorSpeed);
                 }
+                c.lowerLimit = jc.lowerLimit || 0;
+                c.upperLimit = jc.upperLimit || 0;
+                c.lowerLimitEnabled = jc.lowerLimitEnabled || false;
+                c.upperLimitEnabled = jc.upperLimitEnabled || false;
                 break;
             case "PrismaticConstraint":
-                c = new PrismaticConstraint(this.bodies[jc.bodyA], this.bodies[jc.bodyB], {
+                c = new PrismaticConstraint(bodies[jc.bodyA], bodies[jc.bodyB], {
                     maxForce : jc.maxForce,
                     localAxisA : jc.localAxisA,
                     localAxisB : jc.localAxisB,
                 });
                 break;
             case "LockConstraint":
-                c = new LockConstraint(this.bodies[jc.bodyA], this.bodies[jc.bodyB], {
+                c = new LockConstraint(bodies[jc.bodyA], bodies[jc.bodyB], {
                     maxForce :     jc.maxForce,
                     localOffsetB : jc.localOffsetB,
                     localAngleB :  jc.localAngleB,

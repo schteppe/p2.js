@@ -1,46 +1,33 @@
 p2.js
 =====
 
-JavaScript 2D rigid body physics engine.
+2D rigid body physics engine written in JavaScript. Includes collision detection, contacts, friction, restitution, motors, springs, advanced constraints and various shape types.
 
-### Features
-* Written in pure JavaScript
-* For Node.js and browser
-* Detailed documentation
-* Rigid body physics
-* Collision detection (no CCD)
-* Contacts, friction
-* Stiff constraints: Distance, Revolute, Prismatic
-* Motors
-* Springs
-* Dynamic, kinematic, static bodies
-* Many supported shapes (see table below)
+[Demos](#demos) | [Examples](#examples) | [Documentation](http://schteppe.github.io/p2.js/docs/) | [Download](https://raw.github.com/schteppe/p2.js/master/build/p2.js)
 
-### Install
-##### Browser
-Download either [p2.js](build/p2.js) or the minified [p2.min.js](build/p2.min.js) and include the script in your HTML:
-```html
-<script src="p2.js" type="text/javascript"></script>
-```
-##### Node.js
-Until the code gets somewhat more stable, use the git url to install:
-```
-npm install git://github.com/schteppe/p2.js
-```
-Or add the dependency to your ```package.json```:
-```
-    ...
-    "dependencies" : {
-        "p2" : "git://github.com/schteppe/p2.js"
-    }
-    ...
-```
-Then require it like so:
-```js
-var p2 = require('p2');
-```
+### Demos
+* [Car](http://schteppe.github.io/p2.js/demos/car.html)
+* [Circle container](http://schteppe.github.io/p2.js/demos/circles.html)
+* [Collision tests](http://schteppe.github.io/p2.js/demos/collisions.html)
+* [Compound objects](http://schteppe.github.io/p2.js/demos/compound.html)
+* [Concave objects](http://schteppe.github.io/p2.js/demos/concave.html)
+* [Constraints](http://schteppe.github.io/p2.js/demos/constraints.html)
+* [Friction](http://schteppe.github.io/p2.js/demos/friction.html)
+* [Island solver](http://schteppe.github.io/p2.js/demos/islandSolver.html)
+* [Lock constraint](http://schteppe.github.io/p2.js/demos/lock.html)
+* [Restitution](http://schteppe.github.io/p2.js/demos/restitution.html)
+* [Springs](http://schteppe.github.io/p2.js/demos/springs.html)
 
-### Example
+### Examples
+Examples showing how to use p2.js with your favorite renderer.
+
+* [Canvas: Circle on plane](http://schteppe.github.io/p2.js/examples/canvas/circle.html)
+* [Canvas: Asteroids game](http://schteppe.github.io/p2.js/examples/canvas/asteroids.html)
+
+More examples coming soon.
+
+### Sample code
+The following example uses the [World](http://schteppe.github.io/p2.js/docs/classes/World.html), [Circle](http://schteppe.github.io/p2.js/docs/classes/Circle.html), [Body](http://schteppe.github.io/p2.js/docs/classes/Body.html) and [Plane](http://schteppe.github.io/p2.js/docs/classes/Plane.html) classes to set up a simple physics scene with a ball on a plane.
 ```js
 // Setup our world
 var world = new p2.World({ gravity:[0,-9.82] });
@@ -67,22 +54,55 @@ setInterval(function(){
 }, 1000.0/60.0);
 ```
 
-### Supported collision pairs
-|           | Circle | Plane | Rectangle | Convex | Particle | Line   | Capsule |
-| :-------: |:------:|:-----:|:---------:|:------:|:--------:|:------:|:-------:|
-| Circle    | Yes    | Yes   | Yes       | Yes    | Yes      | Yes    | Yes     |
-| Plane     | -      | -     | Yes       | Yes    | Yes      | Yes    | Yes     |
-| Rectangle | -      | -     | Yes       | Yes    | Yes      | (todo) | (todo)  |
-| Convex    | -      | -     | -         | Yes    | Yes      | (todo) | (todo)  |
-| Particle  | -      | -     | -         | -      | -        | -      | Yes     |
-| Line      | -      | -     | -         | -      | -        | (todo) | (todo)  |
-| Capsule   | -      | -     | -         | -      | -        | -      | (todo)  |
+### Install
+##### Browser
+Download either [p2.js](build/p2.js) or the minified [p2.min.js](build/p2.min.js) and include the script in your HTML:
+```html
+<script src="p2.js" type="text/javascript"></script>
+```
+##### Node.js
+Until the code gets somewhat more stable, use the git url to install:
+```
+npm install git://github.com/schteppe/p2.js
+```
+Or add the dependency to your ```package.json```:
+```
+    ...
+    "dependencies" : {
+        "p2" : "git://github.com/schteppe/p2.js"
+    }
+    ...
+```
+Then require it like so:
+```js
+var p2 = require('p2');
+```
 
-Note that concave polygon shapes can be created using ```Body.prototype.fromPolygon```.
+### Supported collision pairs
+|                                                                          | Circle | Plane | Rectangle | Convex | Particle | Line   | Capsule |
+| :----------------------------------------------------------------------: |:------:|:-----:|:---------:|:------:|:--------:|:------:|:-------:|
+| [Circle](http://schteppe.github.io/p2.js/docs/classes/Circle.html)       | Yes    | Yes   | Yes       | Yes    | Yes      | Yes    | Yes     |
+| [Plane](http://schteppe.github.io/p2.js/docs/classes/Plane.html)         | -      | -     | Yes       | Yes    | Yes      | Yes    | Yes     |
+| [Rectangle](http://schteppe.github.io/p2.js/docs/classes/Rectangle.html) | -      | -     | Yes       | Yes    | Yes      | (todo) | (todo)  |
+| [Convex](http://schteppe.github.io/p2.js/docs/classes/Convex.html)       | -      | -     | -         | Yes    | Yes      | (todo) | (todo)  |
+| [Particle](http://schteppe.github.io/p2.js/docs/classes/Particle.html)   | -      | -     | -         | -      | -        | -      | Yes     |
+| [Line](http://schteppe.github.io/p2.js/docs/classes/Line.html)           | -      | -     | -         | -      | -        | (todo) | (todo)  |
+| [Capsule](http://schteppe.github.io/p2.js/docs/classes/Capsule.html)     | -      | -     | -         | -      | -        | -      | (todo)  |
+
+Note that concave polygon shapes can be created using [Body.fromPolygon](http://schteppe.github.io/p2.js/docs/classes/Body.html#method_fromPolygon).
 
 ### Change log
 
 ##### Current dev version
+* Added properties ```.damping``` and ```.angularDamping``` to ```Body```.
+* Added property ```.applyDamping``` to ```World```.
+* Added properties ```.shapeA``` and ```.shapeB``` to ```ContactEquation``` and ```FrictionEquation```.
+* Added property ```.contactEquation``` to ```FrictionEquation```.
+* Added property ```.multiplier``` to ```Equation```.
+* Added properties ```.lowerLimitEnabled```, ```.lowerLimit```, ```.upperLimitEnabled```, ```.upperLimit``` to ```RevoluteConstraint```.
+* Added property ```.frictionCoefficient``` to ```FrictionEquation``` and ```Narrowphase```. The solver now updates the friction force bounds dynamically in the solver from this value. ```FrictionEquation.setSlipForce()``` is thus deprecated.
+
+##### 0.3.1
 * Added method ```Narrowphase.prototype.collidedLastStep```
 * Added property ```.firstImpact``` to ```ContactEquation``` and changed the way it handles restitution.
 * ```Solver``` now inherits from ```EventEmitter```.
