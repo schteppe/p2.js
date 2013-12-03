@@ -246,6 +246,18 @@ World.prototype.addContactMaterial = function(contactMaterial){
 };
 
 /**
+ * Removes a contact material
+ *
+ * @method removeContactMaterial
+ * @param {ContactMaterial} cm
+ */
+World.prototype.removeContactMaterial = function(cm){
+    var idx = this.contactMaterials.indexOf(cm);
+    if(idx!==-1)
+        this.contactMaterials.splice(idx,1);
+};
+
+/**
  * Get a contact material given two materials
  * @method getContactMaterial
  * @param {Material} materialA
@@ -959,6 +971,12 @@ World.prototype.fromJSON = function(json){
  */
 World.prototype.clear = function(){
 
+    this.time = 0;
+
+    // Remove all solver equations
+    if(this.solver && this.solver.equations.length)
+        this.solver.removeAllEquations();
+
     // Remove all constraints
     var cs = this.constraints;
     for(var i=cs.length-1; i>=0; i--){
@@ -975,6 +993,12 @@ World.prototype.clear = function(){
     var springs = this.springs;
     for(var i=springs.length-1; i>=0; i--){
         this.removeSpring(springs[i]);
+    }
+
+    // Remove all contact materials
+    var cms = this.contactMaterials;
+    for(var i=cms.length-1; i>=0; i--){
+        this.removeContactMaterial(cms[i]);
     }
 };
 
