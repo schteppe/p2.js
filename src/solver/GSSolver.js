@@ -69,6 +69,13 @@ function GSSolver(options){
      * @type {Boolean}
      */
     this.useZeroRHS = false;
+
+    /**
+     * Number of friction iterations to skip. If .skipFrictionIterations=2, then no FrictionEquations will be iterated until the third iteration.
+     * @property skipFrictionIterations
+     * @type {Number}
+     */
+    this.skipFrictionIterations = 2;
 };
 GSSolver.prototype = new Solver();
 
@@ -84,6 +91,7 @@ GSSolver.prototype.solve = function(dt,world){
 
     var iter = 0,
         maxIter = this.iterations,
+        skipFrictionIter = this.skipFrictionIterations,
         tolSquared = this.tolerance*this.tolerance,
         equations = this.equations,
         Neq = equations.length,
@@ -144,6 +152,10 @@ GSSolver.prototype.solve = function(dt,world){
 
             for(j=0; j!==Neq; j++){
                 c = equations[j];
+
+                if(c instanceof FrictionEquation && iter < skipFrictionIter)
+                    continue;
+
                 var _eps = useGlobalParams ? eps : c.eps;
 
                 var deltalambda = GSSolver.iterateEquation(j,c,_eps,Bs,invCs,lambda,useZeroRHS,dt);
