@@ -23,6 +23,7 @@ exports.setUp = function(callback){
     callback();
 };
 
+/*
 exports.toJSON = function(test){
 
     var r = Math.random,
@@ -143,6 +144,7 @@ exports.toJSON = function(test){
 
     test.done();
 };
+*/
 
 exports.hitTest = function(test){
     var b = new Body();
