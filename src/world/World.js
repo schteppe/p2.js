@@ -630,6 +630,20 @@ World.prototype.removeBody = function(body){
 };
 
 /**
+ * Get a body by its id.
+ * @return {Body|Boolean} The body, or false if it was not found.
+ */
+World.prototype.getBodyById = function(id){
+    var bodies = this.bodies;
+    for(var i=0; i<bodies.length; i++){
+        var b = bodies[i];
+        if(b.id === id)
+            return b;
+    }
+    return false;
+};
+
+/**
  * Convert the world to a JSON-serializable Object.
  *
  * @method toJSON
