@@ -15,6 +15,7 @@ var World = require("../src/world/World")
 ,   PrismaticConstraint = require("../src/constraints/PrismaticConstraint")
 ,   vec2 = require("../src/math/vec2")
 ,   _ = require('underscore')
+,   Validator = require('jsonschema').Validator
 
 var world;
 
@@ -23,7 +24,6 @@ exports.setUp = function(callback){
     callback();
 };
 
-/*
 exports.toJSON = function(test){
 
     var r = Math.random,
@@ -140,11 +140,10 @@ exports.toJSON = function(test){
         }
     }
 
-    test.deepEqual(world.constraints[0],world2.constraints[0],"World should be the same after a JSON roundtrip");
+    //test.deepEqual(world.constraints[0],world2.constraints[0],"World should be the same after a JSON roundtrip");
 
     test.done();
 };
-*/
 
 exports.hitTest = function(test){
     var b = new Body();
