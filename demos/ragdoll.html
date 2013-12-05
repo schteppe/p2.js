@@ -15,6 +15,7 @@
     <script>
         var BODYPARTS = Math.pow(2,1),
             GROUND = Math.pow(2,2),
+            OTHER = Math.pow(2,3),
             bodyPartShapes = [];
 
         var shouldersDistance = 0.5,
@@ -50,7 +51,7 @@
         for(var i=0; i<bodyPartShapes.length; i++){
             var s = bodyPartShapes[i];
             s.collisionGroup = BODYPARTS;
-            s.collisionMask =  GROUND;
+            s.collisionMask =  GROUND|OTHER;
         }
 
         var world = new p2.World({
@@ -202,7 +203,7 @@
         // Elbow joint
         var leftElbowJoint = new p2.RevoluteConstraint(lowerLeftArm,  [lowerArmLength/2, 0],
                                                        upperLeftArm,  [-upperArmLength/2,0]);
-        var rightElbowJoint= new p2.RevoluteConstraint(lowerRightArm,  [-lowerArmLength/2,0],
+        var rightElbowJoint= new p2.RevoluteConstraint(lowerRightArm, [-lowerArmLength/2,0],
                                                        upperRightArm, [upperArmLength/2,0]);
         leftElbowJoint .upperLimitEnabled = rightElbowJoint.upperLimitEnabled =  true;
         leftElbowJoint.upperLimit =         rightElbowJoint.upperLimit =         Math.PI / 8;
@@ -218,8 +219,17 @@
         });
         plane.addShape(planeShape);
         planeShape.collisionGroup = GROUND;
-        planeShape.collisionMask =  BODYPARTS;
+        planeShape.collisionMask =  BODYPARTS|OTHER;
         world.addBody(plane);
+
+        world.on("addBody",function(evt){
+          var b = evt.body;
+          for(var i=0; i<b.shapes.length; i++){
+            var s = b.shapes[i];
+            s.collisionMask=BODYPARTS|GROUND|OTHER;
+            s.collisionGroup=OTHER;
+          }
+        });
 
         var demo = new PixiDemo(world);
 
