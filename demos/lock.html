@@ -14,9 +14,10 @@
 <body>
     <script>
 
-        var BOX = Math.pow(2,1);
-        var PLANE = Math.pow(2,2);
-        var CIRCLE = Math.pow(2,3);
+        var BOX =       Math.pow(2,1),
+            PLANE =     Math.pow(2,2),
+            CIRCLE =    Math.pow(2,3),
+            OTHER =     Math.pow(2,4);
 
         var world = new p2.World({
             doProfiling:true,
@@ -26,7 +27,7 @@
 
         var circleShape = new p2.Circle(0.5);
         circleShape.collisionGroup = CIRCLE;
-        circleShape.collisionMask = BOX | PLANE;
+        circleShape.collisionMask = BOX | PLANE | OTHER;
         var bodyA = new p2.Body({
             mass: 1,
             position: [-1, 1],
@@ -46,7 +47,7 @@
         // Create a beam
         var boxShape = new p2.Rectangle(0.5,0.5);
         boxShape.collisionGroup = BOX;
-        boxShape.collisionMask = CIRCLE | PLANE;
+        boxShape.collisionMask = CIRCLE | PLANE | OTHER;
         var r = 1,
             lastBody,
             N = 10;
@@ -63,7 +64,7 @@
         // Create ground
         var planeShape = new p2.Plane();
         planeShape.collisionGroup = PLANE;
-        planeShape.collisionMask = BOX | CIRCLE;
+        planeShape.collisionMask = BOX | CIRCLE | OTHER;
         var plane = new p2.Body({
             position : [0,-1],
         });
@@ -71,6 +72,9 @@
         world.addBody(plane);
 
         var demo = new PixiDemo(world);
+
+        demo.newShapeCollisionGroup = OTHER;
+        demo.newShapeCollisionMask =  BOX|CIRCLE|OTHER|PLANE;
 
         function update(){
             if(!demo.paused)

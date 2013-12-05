@@ -57,16 +57,17 @@
         // Disable collisions between chassis and wheels
         var WHEELS =  1, // Define bits for each shape type
             CHASSIS = 2,
-            GROUND =  4;
+            GROUND =  4,
+            OTHER =   8;
 
         wheelShape  .collisionGroup =   WHEELS; // Assign groups
         chassisShape.collisionGroup =   CHASSIS;
         planeShape  .collisionGroup =   GROUND;
         bumpShape   .collisionGroup =   GROUND;
 
-        wheelShape  .collisionMask =    GROUND;             // Wheels can only collide with ground
-        chassisShape.collisionMask =    GROUND;             // Chassis can only collide with ground
-        planeShape  .collisionMask =    WHEELS | CHASSIS;   // Ground can collide with wheels and chassis
+        wheelShape  .collisionMask =    GROUND | OTHER;             // Wheels can only collide with ground
+        chassisShape.collisionMask =    GROUND | OTHER;             // Chassis can only collide with ground
+        planeShape  .collisionMask =    WHEELS | CHASSIS | OTHER;   // Ground can collide with wheels and chassis
         bumpShape   .collisionMask =    planeShape.collisionMask;
 
         // Constrain wheels to chassis
@@ -80,6 +81,9 @@
         c1.setMotorSpeed(10);
 
         var demo = new PixiDemo(world);
+
+        demo.newShapeCollisionGroup = OTHER;
+        demo.newShapeCollisionMask =  GROUND|WHEELS|CHASSIS|OTHER;
 
         function update(){
             if(!demo.paused)

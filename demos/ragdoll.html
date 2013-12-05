@@ -13,9 +13,10 @@
 </head>
 <body>
     <script>
-        var BODYPARTS = Math.pow(2,1),
-            GROUND = Math.pow(2,2),
-            OTHER = Math.pow(2,3),
+        var OTHER =     Math.pow(2,1),
+            BODYPARTS = Math.pow(2,2),
+            GROUND =    Math.pow(2,3),
+            OTHER =     Math.pow(2,4),
             bodyPartShapes = [];
 
         var shouldersDistance = 0.5,
@@ -222,16 +223,10 @@
         planeShape.collisionMask =  BODYPARTS|OTHER;
         world.addBody(plane);
 
-        world.on("addBody",function(evt){
-          var b = evt.body;
-          for(var i=0; i<b.shapes.length; i++){
-            var s = b.shapes[i];
-            s.collisionMask=BODYPARTS|GROUND|OTHER;
-            s.collisionGroup=OTHER;
-          }
-        });
-
         var demo = new PixiDemo(world);
+
+        demo.newShapeCollisionGroup = OTHER;
+        demo.newShapeCollisionMask =  BODYPARTS|OTHER|GROUND;
 
         function update(){
             if(!demo.paused)

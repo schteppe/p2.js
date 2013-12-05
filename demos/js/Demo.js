@@ -73,6 +73,10 @@ function Demo(world){
 
     this.stateChangeEvent = { type : "stateChange", state:null };
 
+    // Default collision masks for new shapCs
+    this.newShapecollisionMask = 1;
+    this.newShapeCollisionGroup = 1;
+
     // If contacts should be drawn
     this.drawContacts = false;
 
@@ -236,6 +240,9 @@ Demo.prototype.handleMouseMove = function(physicsPosition){
  * Should be called by subclasses whenever there's a mouseup event
  */
 Demo.prototype.handleMouseUp = function(physicsPosition){
+
+    var b;
+
     switch(this.state){
 
         case DemoStates.DEFAULT:
@@ -256,7 +263,7 @@ Demo.prototype.handleMouseUp = function(physicsPosition){
             this.setState(DemoStates.DRAWPOLYGON);
             if(this.drawPoints.length > 3){
                 // Create polygon
-                var b = new Body({ mass : 1 });
+                b = new Body({ mass : 1 });
                 if(b.fromPolygon(this.drawPoints,{
                     removeCollinearPoints : 0.01,
                 })){
@@ -273,13 +280,22 @@ Demo.prototype.handleMouseUp = function(physicsPosition){
             var R = vec2.dist(this.drawCircleCenter,this.drawCirclePoint);
             if(R > 0){
                 // Create circle
-                var b = new Body({ mass : 1, position : this.drawCircleCenter });
-                b.addShape(new Circle(R));
+                b = new Body({ mass : 1, position : this.drawCircleCenter });
+                var circle = new Circle(R);
+                b.addShape(circle);
                 this.world.addBody(b);
             }
             vec2.copy(this.drawCircleCenter,this.drawCirclePoint);
             this.emit(this.drawCircleChangeEvent);
             break;
+    }
+
+    if(b){
+        for(var i=0; i<b.shapes.length; i++){
+            var s = b.shapes[i];
+            s.collisionMask =  this.newShapeCollisionMask;
+            s.collisionGroup = this.newShapeCollisionGroup;
+        }
     }
 };
 
