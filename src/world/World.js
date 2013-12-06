@@ -522,12 +522,12 @@ World.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,mu,glen,restitution){
     np.frictionCoefficient = mu;
     np.restitution = restitution;
 
-    var resolver = si.type | sj.type;
-    if (typeof np[resolver] === 'function') {
+    var resolver = np[si.type | sj.type];
+    if (resolver) {
         if (si.type < sj.type) {
-            np[resolver](bi,si,xiw,aiw, bj,sj,xjw,ajw);
+            resolver.call(np, bi,si,xiw,aiw, bj,sj,xjw,ajw);
         } else {
-            np[resolver](bj,sj,xjw,ajw, bi,si,xiw,aiw);
+            resolver.call(np, bj,sj,xjw,ajw, bi,si,xiw,aiw);
         }
     }
 };
