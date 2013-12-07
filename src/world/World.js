@@ -172,6 +172,13 @@ function World(options){
      */
     this.time = 0.0;
 
+    /**
+     * Set to true if you want to the world to emit the "impact" event. Turning this off could improve performance.
+     * @property emitImpactEvent
+     * @type {Boolean}
+     */
+    this.emitImpactEvent = true;
+
     // Id counters
     this._constraintIdCounter = 0;
     this._bodyIdCounter = 0;
@@ -437,13 +444,15 @@ World.prototype.step = function(dt){
     }
 
     // Emit impact event
-    var ev = this.impactEvent;
-    for(var i=0; i!==np.contactEquations.length; i++){
-        var eq = np.contactEquations[i];
-        if(eq.firstImpact){
-            ev.bodyA = eq.bi;
-            ev.bodyB = eq.bj;
-            this.emit(ev);
+    if(this.emitImpactEvent){
+        var ev = this.impactEvent;
+        for(var i=0; i!==np.contactEquations.length; i++){
+            var eq = np.contactEquations[i];
+            if(eq.firstImpact){
+                ev.bodyA = eq.bi;
+                ev.bodyB = eq.bj;
+                this.emit(ev);
+            }
         }
     }
 
