@@ -74,7 +74,7 @@ function Demo(world){
     this.stateChangeEvent = { type : "stateChange", state:null };
 
     // Default collision masks for new shapCs
-    this.newShapecollisionMask = 1;
+    this.newShapeCollisionMask = 1;
     this.newShapeCollisionGroup = 1;
 
     // If contacts should be drawn
