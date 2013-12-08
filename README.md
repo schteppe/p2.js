@@ -15,14 +15,19 @@ p2.js
 * [Friction](http://schteppe.github.io/p2.js/demos/friction.html)
 * [Island solver](http://schteppe.github.io/p2.js/demos/islandSolver.html)
 * [Lock constraint](http://schteppe.github.io/p2.js/demos/lock.html)
+* [Prismatic constraint](http://schteppe.github.io/p2.js/demos/prismatic.html)
+* [Ragdoll](http://schteppe.github.io/p2.js/demos/ragdoll.html)
 * [Restitution](http://schteppe.github.io/p2.js/demos/restitution.html)
 * [Springs](http://schteppe.github.io/p2.js/demos/springs.html)
+* [Tearable constraints](http://schteppe.github.io/p2.js/demos/tearable.html)
 
 ### Examples
 Examples showing how to use p2.js with your favorite renderer.
 
 * [Canvas: Circle on plane](http://schteppe.github.io/p2.js/examples/canvas/circle.html)
+* [Canvas: Box on plane](http://schteppe.github.io/p2.js/examples/canvas/box.html)
 * [Canvas: Asteroids game](http://schteppe.github.io/p2.js/examples/canvas/asteroids.html)
+* [Pixi.js: Box on plane](http://schteppe.github.io/p2.js/examples/pixijs/box.html)
 
 More examples coming soon.
 
@@ -93,7 +98,7 @@ Note that concave polygon shapes can be created using [Body.fromPolygon](http://
 
 ### Change log
 
-##### Current dev version
+##### 0.4.0
 * Added properties ```.damping``` and ```.angularDamping``` to ```Body```.
 * Added property ```.applyDamping``` to ```World```.
 * Added properties ```.shapeA``` and ```.shapeB``` to ```ContactEquation``` and ```FrictionEquation```.
