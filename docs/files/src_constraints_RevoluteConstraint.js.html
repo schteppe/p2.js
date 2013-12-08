@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.3.1</em>
+            <em>API Docs for: 0.4.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -97,6 +97,8 @@
             
                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
             
+                <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
+            
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
                 <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
@@ -159,6 +161,7 @@
 var Constraint = require(&#x27;./Constraint&#x27;)
 ,   Equation = require(&#x27;./Equation&#x27;)
 ,   RotationalVelocityEquation = require(&#x27;./RotationalVelocityEquation&#x27;)
+,   RotationalLockEquation = require(&#x27;./RotationalLockEquation&#x27;)
 ,   vec2 = require(&#x27;../math/vec2&#x27;)
 
 module.exports = RevoluteConstraint;
@@ -192,8 +195,8 @@ function RevoluteConstraint(bodyA, pivotA, bodyB, pivotB, maxForce){
 
     // Equations to be fed to the solver
     var eqs = this.equations = [
-        new Equation(bodyA,bodyB,-maxForce,maxForce), // Normal
-        new Equation(bodyA,bodyB,-maxForce,maxForce), // Tangent
+        new Equation(bodyA,bodyB,-maxForce,maxForce),
+        new Equation(bodyA,bodyB,-maxForce,maxForce),
     ];
 
     var x =  eqs[0];
@@ -220,7 +223,18 @@ function RevoluteConstraint(bodyA, pivotA, bodyB, pivotB, maxForce){
     y.minForce = x.minForce = -maxForce;
     y.maxForce = x.maxForce =  maxForce;
 
-    this.motorEquation = null;
+    this.motorEquation = new RotationalVelocityEquation(bodyA,bodyB);
+    this.motorEnabled = false;
+
+    // Angle limits
+    this.lowerLimitEnabled = false;
+    this.upperLimitEnabled = false;
+    this.lowerLimit = 0;
+    this.upperLimit = 0;
+    this.upperLimitEquation = new RotationalLockEquation(bodyA,bodyB);
+    this.lowerLimitEquation = new RotationalLockEquation(bodyA,bodyB);
+    this.upperLimitEquation.minForce = 0;
+    this.lowerLimitEquation.maxForce = 0;
 }
 RevoluteConstraint.prototype = new Constraint();
 
@@ -233,7 +247,56 @@ RevoluteConstraint.prototype.update = function(){
         normal = eqs[0],
         tangent= eqs[1],
         x = eqs[0],
-        y = eqs[1];
+        y = eqs[1],
+        upperLimit = this.upperLimit,
+        lowerLimit = this.lowerLimit,
+        upperLimitEquation = this.upperLimitEquation,
+        lowerLimitEquation = this.lowerLimitEquation;
+
+    var relAngle = this.angle = bodyB.angle - bodyA.angle;
+
+    if(this.upperLimitEnabled &amp;&amp; relAngle &gt; upperLimit){
+        upperLimitEquation.angle = upperLimit;
+        if(eqs.indexOf(upperLimitEquation)==-1)
+            eqs.push(upperLimitEquation);
+    } else {
+        var idx = eqs.indexOf(upperLimitEquation);
+        if(idx != -1) eqs.splice(idx,1);
+    }
+
+    if(this.lowerLimitEnabled &amp;&amp; relAngle &lt; lowerLimit){
+        lowerLimitEquation.angle = lowerLimit;
+        if(eqs.indexOf(lowerLimitEquation)==-1)
+            eqs.push(lowerLimitEquation);
+    } else {
+        var idx = eqs.indexOf(lowerLimitEquation);
+        if(idx != -1) eqs.splice(idx,1);
+    }
+
+    /*
+
+    The constraint violation is
+
+        g = xj + rj - xi - ri
+
+    ...where xi and xj are the body positions and ri and rj world-oriented offset vectors. Differentiate:
+
+        gdot = vj + wj x rj - vi - wi x ri
+
+    We split this into x and y directions. (let x and y be unit vectors along the respective axes)
+
+        gdot * x = ( vj + wj x rj - vi - wi x ri ) * x
+                 = ( vj*x + (wj x rj)*x -vi*x -(wi x ri)*x
+                 = ( vj*x + (rj x x)*wj -vi*x -(ri x x)*wi
+                 = [ -x   -(ri x x)   x   (rj x x)] * [vi wi vj wj]
+                 = G*W
+
+    ...and similar for y. We have then identified the jacobian entries for x and y directions:
+
+        Gx = [ x   (rj x x)   -x   -(ri x x)]
+        Gy = [ y   (rj x y)   -y   -(ri x y)]
+
+     */
 
     vec2.rotate(worldPivotA, pivotA, bodyA.angle);
     vec2.rotate(worldPivotB, pivotB, bodyB.angle);
@@ -258,9 +321,9 @@ RevoluteConstraint.prototype.update = function(){
  * @method enableMotor
  */
 RevoluteConstraint.prototype.enableMotor = function(){
-    if(this.motorEquation) return;
-    this.motorEquation = new RotationalVelocityEquation(this.bodyA,this.bodyB);
+    if(this.motorEnabled) return;
     this.equations.push(this.motorEquation);
+    this.motorEnabled = true;
 };
 
 /**
@@ -268,10 +331,10 @@ RevoluteConstraint.prototype.enableMotor = function(){
  * @method disableMotor
  */
 RevoluteConstraint.prototype.disableMotor = function(){
-    if(!this.motorEquation) return;
+    if(!this.motorEnabled) return;
     var i = this.equations.indexOf(this.motorEquation);
-    this.motorEquation = null;
     this.equations.splice(i,1);
+    this.motorEnabled = false;
 };
 
 /**
@@ -280,7 +343,7 @@ RevoluteConstraint.prototype.disableMotor = function(){
  * @return {Boolean}
  */
 RevoluteConstraint.prototype.motorIsEnabled = function(){
-    return !!this.motorEquation;
+    return !!this.motorEnabled;
 };
 
 /**
@@ -289,7 +352,7 @@ RevoluteConstraint.prototype.motorIsEnabled = function(){
  * @param  {Number} speed
  */
 RevoluteConstraint.prototype.setMotorSpeed = function(speed){
-    if(!this.motorEquation) return;
+    if(!this.motorEnabled) return;
     var i = this.equations.indexOf(this.motorEquation);
     this.equations[i].relativeVelocity = speed;
 };
@@ -300,7 +363,7 @@ RevoluteConstraint.prototype.setMotorSpeed = function(speed){
  * @return  {Number} The current speed, or false if the motor is not enabled.
  */
 RevoluteConstraint.prototype.getMotorSpeed = function(){
-    if(!this.motorEquation) return false;
+    if(!this.motorEnabled) return false;
     return this.motorEquation.relativeVelocity;
 };
 

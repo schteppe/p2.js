@@ -28,6 +28,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "QuadTree",
         "Rectangle",
         "RevoluteConstraint",
+        "RotationalLockEquation",
         "RotationalVelocityEquation",
         "SAP1DBroadphase",
         "Shape",

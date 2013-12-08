@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>RotationalVelocityEquation - p2.js</title>
+    <title>RotationalLockEquation - p2.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -154,7 +154,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>RotationalVelocityEquation Class</h1>
+                        <h1>RotationalLockEquation Class</h1>
 <div class="box meta">
     
 
@@ -166,7 +166,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_constraints_RotationalVelocityEquation.js.html#l6"><code>src&#x2F;constraints&#x2F;RotationalVelocityEquation.js:6</code></a>
+            Defined in: <a href="../files/src_constraints_RotationalLockEquation.js.html#l6"><code>src&#x2F;constraints&#x2F;RotationalLockEquation.js:6</code></a>
         </div>
     
 
@@ -178,15 +178,15 @@
 
 
 <div class="box intro">
-    <p>Syncs rotational velocity of two bodies, or sets a relative velocity (motor).</p>
+    <p>Locks the relative angle between two bodies. The constraint tries to keep the dot product between two vectors, local in each body, to zero. The local angle in body i is a parameter.</p>
 
 </div>
 
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_RotationalVelocityEquation" class="method item">
-    <h3 class="name"><code>RotationalVelocityEquation</code></h3>
+        <div id="method_RotationalLockEquation" class="method item">
+    <h3 class="name"><code>RotationalLockEquation</code></h3>
 
     
         <div class="args">
@@ -201,6 +201,12 @@
                 <li class="arg">
                     
                         <code>bj</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>options</code>
                     
                 </li>
             
@@ -233,7 +239,7 @@
             
         
         
-        <a href="../files/src_constraints_RotationalVelocityEquation.js.html#l6"><code>src&#x2F;constraints&#x2F;RotationalVelocityEquation.js:6</code></a>
+        <a href="../files/src_constraints_RotationalLockEquation.js.html#l6"><code>src&#x2F;constraints&#x2F;RotationalLockEquation.js:6</code></a>
         
         </p>
 
@@ -280,6 +286,39 @@
                          
                     </div>
 
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">options</code>
+                        <span class="type">Object</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                        <ul class="params-list">
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name">angle</code>
+                                    <span class="type">Number</span>
+                                
+
+                                <div class="param-description">
+                                    <p>Angle to add to the local vector in body i.</p>
+
+                                </div>
+
+                                
+                            </li>
+                            
+                        </ul>
                     
                 </li>
             
@@ -531,7 +570,7 @@
                     
 
                     <div class="param-description">
-                        
+                         
                     </div>
 
                     
@@ -688,7 +727,7 @@
                     
 
                     <div class="param-description">
-                        
+                         
                     </div>
 
                     
@@ -1125,7 +1164,7 @@
                     
 
                     <div class="param-description">
-                        
+                         
                     </div>
 
                     

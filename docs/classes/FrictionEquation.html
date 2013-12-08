@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.3.1</em>
+            <em>API Docs for: 0.4.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -97,6 +97,8 @@
             
                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
             
+                <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
+            
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
                 <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
@@ -164,7 +166,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_constraints_FrictionEquation.js.html#l21"><code>src&#x2F;constraints&#x2F;FrictionEquation.js:21</code></a>
+            Defined in: <a href="../files/src_constraints_FrictionEquation.js.html#l8"><code>src&#x2F;constraints&#x2F;FrictionEquation.js:8</code></a>
         </div>
     
 
@@ -177,6 +179,7 @@
 
 <div class="box intro">
     <p>Constrains the slipping in a contact along a tangent</p>
+
 </div>
 
 
@@ -236,7 +239,7 @@
             
         
         
-        <a href="../files/src_constraints_FrictionEquation.js.html#l21"><code>src&#x2F;constraints&#x2F;FrictionEquation.js:21</code></a>
+        <a href="../files/src_constraints_FrictionEquation.js.html#l8"><code>src&#x2F;constraints&#x2F;FrictionEquation.js:8</code></a>
         
         </p>
 
@@ -337,10 +340,12 @@
 
                     <ul class="index-list methods extends">
                         
-                            <li class="index-item method">
+                            <li class="index-item method deprecated">
                                 <a href="#method_setSlipForce">setSlipForce</a>
 
                                 
+                                
+                                    <span class="flag deprecated">deprecated</span>
                                 
                             </li>
                         
@@ -355,6 +360,20 @@
                     <ul class="index-list properties extends">
                         
                             <li class="index-item property">
+                                <a href="#property_contactEquation">contactEquation</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_frictionCoefficient">frictionCoefficient</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
                                 <a href="#property_ri">ri</a>
 
                                 
@@ -363,6 +382,20 @@
                         
                             <li class="index-item property">
                                 <a href="#property_rj">rj</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_shapeA">shapeA</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_shapeB">shapeB</a>
 
                                 
                                 
@@ -389,7 +422,7 @@
                 <h2 class="off-left">Methods</h2>
 
                 
-                    <div id="method_setSlipForce" class="method item">
+                    <div id="method_setSlipForce" class="method item deprecated">
     <h3 class="name"><code>setSlipForce</code></h3>
 
     
@@ -408,6 +441,8 @@
 
     
 
+    
+        <span class="flag deprecated" title="Use .frictionCoefficient instead">deprecated</span>
     
 
     
@@ -431,11 +466,13 @@
             
         
         
-        <a href="../files/src_constraints_FrictionEquation.js.html#l58"><code>src&#x2F;constraints&#x2F;FrictionEquation.js:58</code></a>
+        <a href="../files/src_constraints_FrictionEquation.js.html#l73"><code>src&#x2F;constraints&#x2F;FrictionEquation.js:73</code></a>
         
         </p>
 
 
+        
+            <p>Deprecated: Use .frictionCoefficient instead</p>
         
 
         
@@ -444,6 +481,7 @@
     <div class="description">
         <p>Set the slipping condition for the constraint. The friction force cannot be
 larger than this value.</p>
+
     </div>
 
     
@@ -485,6 +523,96 @@ larger than this value.</p>
                 <h2 class="off-left">Properties</h2>
 
                 
+                    <div id="property_contactEquation" class="property item">
+    <h3 class="name"><code>contactEquation</code></h3>
+    <span class="type"><a href="../classes/ContactEquation.html" class="crosslink">ContactEquation</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_constraints_FrictionEquation.js.html#l42"><code>src&#x2F;constraints&#x2F;FrictionEquation.js:42</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>A ContactEquation connected to this friction. The contact equation can be used to rescale the max force for the friction.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_frictionCoefficient" class="property item">
+    <h3 class="name"><code>frictionCoefficient</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_constraints_FrictionEquation.js.html#l63"><code>src&#x2F;constraints&#x2F;FrictionEquation.js:63</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The friction coefficient to use.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
                     <div id="property_ri" class="property item">
     <h3 class="name"><code>ri</code></h3>
     <span class="type">Float32Array</span>
@@ -508,7 +636,7 @@ larger than this value.</p>
             
         
         
-        <a href="../files/src_constraints_FrictionEquation.js.html#l34"><code>src&#x2F;constraints&#x2F;FrictionEquation.js:34</code></a>
+        <a href="../files/src_constraints_FrictionEquation.js.html#l21"><code>src&#x2F;constraints&#x2F;FrictionEquation.js:21</code></a>
         
         </p>
 
@@ -519,6 +647,7 @@ larger than this value.</p>
 
     <div class="description">
         <p>Relative vector from center of body i to the contact point, in world coords.</p>
+
     </div>
 
     
@@ -552,7 +681,7 @@ larger than this value.</p>
             
         
         
-        <a href="../files/src_constraints_FrictionEquation.js.html#l41"><code>src&#x2F;constraints&#x2F;FrictionEquation.js:41</code></a>
+        <a href="../files/src_constraints_FrictionEquation.js.html#l28"><code>src&#x2F;constraints&#x2F;FrictionEquation.js:28</code></a>
         
         </p>
 
@@ -563,6 +692,97 @@ larger than this value.</p>
 
     <div class="description">
         <p>Relative vector from center of body j to the contact point, in world coords.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_shapeA" class="property item">
+    <h3 class="name"><code>shapeA</code></h3>
+    <span class="type"><a href="../classes/Shape.html" class="crosslink">Shape</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_constraints_FrictionEquation.js.html#l49"><code>src&#x2F;constraints&#x2F;FrictionEquation.js:49</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The shape in body i that triggered this friction.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_shapeB" class="property item">
+    <h3 class="name"><code>shapeB</code></h3>
+    <span class="type"><a href="../classes/Shape.html" class="crosslink">Shape</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_constraints_FrictionEquation.js.html#l56"><code>src&#x2F;constraints&#x2F;FrictionEquation.js:56</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The shape in body j that triggered this friction.</p>
+
     </div>
 
     
@@ -596,7 +816,7 @@ larger than this value.</p>
             
         
         
-        <a href="../files/src_constraints_FrictionEquation.js.html#l48"><code>src&#x2F;constraints&#x2F;FrictionEquation.js:48</code></a>
+        <a href="../files/src_constraints_FrictionEquation.js.html#l35"><code>src&#x2F;constraints&#x2F;FrictionEquation.js:35</code></a>
         
         </p>
 
@@ -607,6 +827,7 @@ larger than this value.</p>
 
     <div class="description">
         <p>Tangent vector that the friction force will act along, in world coords.</p>
+
     </div>
 
     

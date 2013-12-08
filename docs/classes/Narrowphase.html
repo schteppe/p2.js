@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.3.1</em>
+            <em>API Docs for: 0.4.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -97,6 +97,8 @@
             
                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
             
+                <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
+            
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
                 <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
@@ -160,7 +162,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_collision_Narrowphase.js.html#l34"><code>src&#x2F;collision&#x2F;Narrowphase.js:34</code></a>
+            Defined in: <a href="../files/src_collision_Narrowphase.js.html#l35"><code>src&#x2F;collision&#x2F;Narrowphase.js:35</code></a>
         </div>
     
 
@@ -173,6 +175,7 @@
 
 <div class="box intro">
     <p>Narrowphase. Creates contacts and friction given shapes and transforms.</p>
+
 </div>
 
 
@@ -210,7 +213,7 @@
             
         
         
-        <a href="../files/src_collision_Narrowphase.js.html#l34"><code>src&#x2F;collision&#x2F;Narrowphase.js:34</code></a>
+        <a href="../files/src_collision_Narrowphase.js.html#l35"><code>src&#x2F;collision&#x2F;Narrowphase.js:35</code></a>
         
         </p>
 
@@ -257,6 +260,15 @@
                     <h3>Methods</h3>
 
                     <ul class="index-list methods">
+                        
+                            <li class="index-item method deprecated">
+                                <a href="#method_capsulePlane">capsulePlane</a>
+
+                                
+                                
+                                    <span class="flag deprecated">deprecated</span>
+                                
+                            </li>
                         
                             <li class="index-item method">
                                 <a href="#method_circleCapsule">circleCapsule</a>
@@ -314,10 +326,12 @@
                                 
                             </li>
                         
-                            <li class="index-item method">
+                            <li class="index-item method deprecated">
                                 <a href="#method_convexPlane">convexPlane</a>
 
                                 
+                                
+                                    <span class="flag deprecated">deprecated</span>
                                 
                             </li>
                         
@@ -375,6 +389,13 @@
                             </li>
                         
                             <li class="index-item method">
+                                <a href="#method_planeConvex">planeConvex</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
                                 <a href="#method_planeLine">planeLine</a>
 
                                 
@@ -422,6 +443,13 @@
                             </li>
                         
                             <li class="index-item property">
+                                <a href="#property_frictionCoefficient">frictionCoefficient</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
                                 <a href="#property_frictionEquations">frictionEquations</a>
 
                                 
@@ -454,6 +482,64 @@
         
             <div id="methods" class="api-class-tabpanel">
                 <h2 class="off-left">Methods</h2>
+
+                
+                    <div id="method_capsulePlane" class="method item deprecated">
+    <h3 class="name"><code>capsulePlane</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+        <span class="flag deprecated" title="Use .planeCapsule() instead!">deprecated</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_collision_Narrowphase.js.html#l1126"><code>src&#x2F;collision&#x2F;Narrowphase.js:1126</code></a>
+        
+        </p>
+
+
+        
+            <p>Deprecated: Use .planeCapsule() instead!</p>
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+
+    
+
+    
+</div>
 
                 
                     <div id="method_circleCapsule" class="method item">
@@ -540,7 +626,7 @@
             
         
         
-        <a href="../files/src_collision_Narrowphase.js.html#l432"><code>src&#x2F;collision&#x2F;Narrowphase.js:432</code></a>
+        <a href="../files/src_collision_Narrowphase.js.html#l449"><code>src&#x2F;collision&#x2F;Narrowphase.js:449</code></a>
         
         </p>
 
@@ -552,6 +638,7 @@
 
     <div class="description">
         <p>Circle/capsule Narrowphase</p>
+
     </div>
 
     
@@ -774,7 +861,7 @@
             
         
         
-        <a href="../files/src_collision_Narrowphase.js.html#l841"><code>src&#x2F;collision&#x2F;Narrowphase.js:841</code></a>
+        <a href="../files/src_collision_Narrowphase.js.html#l861"><code>src&#x2F;collision&#x2F;Narrowphase.js:861</code></a>
         
         </p>
 
@@ -786,6 +873,7 @@
 
     <div class="description">
         <p>Circle/circle Narrowphase</p>
+
     </div>
 
     
@@ -1008,7 +1096,7 @@
             
         
         
-        <a href="../files/src_collision_Narrowphase.js.html#l448"><code>src&#x2F;collision&#x2F;Narrowphase.js:448</code></a>
+        <a href="../files/src_collision_Narrowphase.js.html#l466"><code>src&#x2F;collision&#x2F;Narrowphase.js:466</code></a>
         
         </p>
 
@@ -1020,6 +1108,7 @@
 
     <div class="description">
         <p>Circle/convex Narrowphase</p>
+
     </div>
 
     
@@ -1260,7 +1349,7 @@
             
         
         
-        <a href="../files/src_collision_Narrowphase.js.html#l276"><code>src&#x2F;collision&#x2F;Narrowphase.js:276</code></a>
+        <a href="../files/src_collision_Narrowphase.js.html#l292"><code>src&#x2F;collision&#x2F;Narrowphase.js:292</code></a>
         
         </p>
 
@@ -1272,6 +1361,7 @@
 
     <div class="description">
         <p>Circle/line Narrowphase</p>
+
     </div>
 
     
@@ -1410,6 +1500,7 @@
 
                     <div class="param-description">
                         <p>If set to true, this function will return the result (intersection or not) without adding equations.</p>
+
                     </div>
 
                     
@@ -1425,6 +1516,7 @@
 
                     <div class="param-description">
                         <p>Radius to add to the line. Can be used to test Capsules.</p>
+
                     </div>
 
                     
@@ -1440,6 +1532,7 @@
 
                     <div class="param-description">
                         <p>If set, this value overrides the circle shape radius.</p>
+
                     </div>
 
                     
@@ -1539,7 +1632,7 @@
             
         
         
-        <a href="../files/src_collision_Narrowphase.js.html#l1019"><code>src&#x2F;collision&#x2F;Narrowphase.js:1019</code></a>
+        <a href="../files/src_collision_Narrowphase.js.html#l1051"><code>src&#x2F;collision&#x2F;Narrowphase.js:1051</code></a>
         
         </p>
 
@@ -1551,6 +1644,7 @@
 
     <div class="description">
         <p>Circle/Particle Narrowphase</p>
+
     </div>
 
     
@@ -1767,7 +1861,7 @@
             
         
         
-        <a href="../files/src_collision_Narrowphase.js.html#l1091"><code>src&#x2F;collision&#x2F;Narrowphase.js:1091</code></a>
+        <a href="../files/src_collision_Narrowphase.js.html#l1135"><code>src&#x2F;collision&#x2F;Narrowphase.js:1135</code></a>
         
         </p>
 
@@ -1779,6 +1873,7 @@
 
     <div class="description">
         <p>Creates ContactEquations and FrictionEquations for a collision.</p>
+
     </div>
 
     
@@ -1797,6 +1892,7 @@
 
                     <div class="param-description">
                         <p>The first body that should be connected to the equations.</p>
+
                     </div>
 
                     
@@ -1812,6 +1908,7 @@
 
                     <div class="param-description">
                         <p>The circle shape participating in the collision.</p>
+
                     </div>
 
                     
@@ -1827,6 +1924,7 @@
 
                     <div class="param-description">
                         <p>Extra offset to take into account for the Shape, in addition to the one in circleBody.position. Will <em>not</em> be rotated by circleBody.angle (maybe it should, for sake of homogenity?). Set to null if none.</p>
+
                     </div>
 
                     
@@ -1842,6 +1940,7 @@
 
                     <div class="param-description">
                         <p>The second body that should be connected to the equations.</p>
+
                     </div>
 
                     
@@ -1857,6 +1956,7 @@
 
                     <div class="param-description">
                         <p>The Plane shape that is participating</p>
+
                     </div>
 
                     
@@ -1872,6 +1972,7 @@
 
                     <div class="param-description">
                         <p>Extra offset for the plane shape.</p>
+
                     </div>
 
                     
@@ -1887,6 +1988,7 @@
 
                     <div class="param-description">
                         <p>Extra angle to apply to the plane</p>
+
                     </div>
 
                     
@@ -1954,7 +2056,7 @@
             
         
         
-        <a href="../files/src_collision_Narrowphase.js.html#l82"><code>src&#x2F;collision&#x2F;Narrowphase.js:82</code></a>
+        <a href="../files/src_collision_Narrowphase.js.html#l90"><code>src&#x2F;collision&#x2F;Narrowphase.js:90</code></a>
         
         </p>
 
@@ -1966,6 +2068,7 @@
 
     <div class="description">
         <p>Check if the bodies were in contact since the last reset().</p>
+
     </div>
 
     
@@ -2110,7 +2213,7 @@
             
         
         
-        <a href="../files/src_collision_Narrowphase.js.html#l1155"><code>src&#x2F;collision&#x2F;Narrowphase.js:1155</code></a>
+        <a href="../files/src_collision_Narrowphase.js.html#l1200"><code>src&#x2F;collision&#x2F;Narrowphase.js:1200</code></a>
         
         </p>
 
@@ -2122,6 +2225,7 @@
 
     <div class="description">
         <p>Convex/convex Narrowphase.See <a href="http://www.altdevblogaday.com/2011/05/13/contact-generation-between-3d-convex-meshes/">this article</a> for more info.</p>
+
     </div>
 
     
@@ -2260,67 +2364,17 @@
 </div>
 
                 
-                    <div id="method_convexPlane" class="method item">
+                    <div id="method_convexPlane" class="method item deprecated">
     <h3 class="name"><code>convexPlane</code></h3>
 
     
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>bi</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>si</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>xi</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>ai</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>bj</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>sj</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>xj</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>aj</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
+        <span class="paren">()</span>
     
 
     
 
+    
+        <span class="flag deprecated" title="Use .planeConvex() instead!">deprecated</span>
     
 
     
@@ -2344,148 +2398,22 @@
             
         
         
-        <a href="../files/src_collision_Narrowphase.js.html#l891"><code>src&#x2F;collision&#x2F;Narrowphase.js:891</code></a>
+        <a href="../files/src_collision_Narrowphase.js.html#l986"><code>src&#x2F;collision&#x2F;Narrowphase.js:986</code></a>
         
         </p>
 
 
+        
+            <p>Deprecated: Use .planeConvex() instead!</p>
         
 
         
     </div>
 
     <div class="description">
-        <p>Convex/Plane Narrowphase</p>
+        
     </div>
 
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">bi</code>
-                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">si</code>
-                        <span class="type"><a href="../classes/Convex.html" class="crosslink">Convex</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">xi</code>
-                        <span class="type">Array</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">ai</code>
-                        <span class="type">Number</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">bj</code>
-                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">sj</code>
-                        <span class="type"><a href="../classes/Plane.html" class="crosslink">Plane</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">xj</code>
-                        <span class="type">Array</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">aj</code>
-                        <span class="type">Number</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
     
 
     
@@ -2546,7 +2474,7 @@
             
         
         
-        <a href="../files/src_collision_Narrowphase.js.html#l134"><code>src&#x2F;collision&#x2F;Narrowphase.js:134</code></a>
+        <a href="../files/src_collision_Narrowphase.js.html#l142"><code>src&#x2F;collision&#x2F;Narrowphase.js:142</code></a>
         
         </p>
 
@@ -2558,6 +2486,7 @@
 
     <div class="description">
         <p>Creates a ContactEquation, either by reusing an existing object or creating a new one.</p>
+
     </div>
 
     
@@ -2670,7 +2599,7 @@
             
         
         
-        <a href="../files/src_collision_Narrowphase.js.html#l150"><code>src&#x2F;collision&#x2F;Narrowphase.js:150</code></a>
+        <a href="../files/src_collision_Narrowphase.js.html#l160"><code>src&#x2F;collision&#x2F;Narrowphase.js:160</code></a>
         
         </p>
 
@@ -2682,6 +2611,7 @@
 
     <div class="description">
         <p>Creates a FrictionEquation, either by reusing an existing object or creating a new one.</p>
+
     </div>
 
     
@@ -2788,7 +2718,7 @@
             
         
         
-        <a href="../files/src_collision_Narrowphase.js.html#l165"><code>src&#x2F;collision&#x2F;Narrowphase.js:165</code></a>
+        <a href="../files/src_collision_Narrowphase.js.html#l178"><code>src&#x2F;collision&#x2F;Narrowphase.js:178</code></a>
         
         </p>
 
@@ -2800,6 +2730,7 @@
 
     <div class="description">
         <p>Creates a FrictionEquation given the data in the ContactEquation. Uses same offset vectors ri and rj, but the tangent vector will be constructed from the collision normal.</p>
+
     </div>
 
     
@@ -2929,7 +2860,7 @@
             
         
         
-        <a href="../files/src_collision_Narrowphase.js.html#l1347"><code>src&#x2F;collision&#x2F;Narrowphase.js:1347</code></a>
+        <a href="../files/src_collision_Narrowphase.js.html#l1393"><code>src&#x2F;collision&#x2F;Narrowphase.js:1393</code></a>
         
         </p>
 
@@ -2941,6 +2872,7 @@
 
     <div class="description">
         <p>Find a separating axis between the shapes, that maximizes the separating distance between them.</p>
+
     </div>
 
     
@@ -3049,6 +2981,7 @@
 
                     <div class="param-description">
                         <p>The resulting axis</p>
+
                     </div>
 
                     
@@ -3067,7 +3000,8 @@
                     
                         <span class="type">Boolean</span>:
                     
-                    Whether the axis could be found.
+                    <p>Whether the axis could be found.</p>
+
                 
             </div>
         </div>
@@ -3143,7 +3077,7 @@
             
         
         
-        <a href="../files/src_collision_Narrowphase.js.html#l1424"><code>src&#x2F;collision&#x2F;Narrowphase.js:1424</code></a>
+        <a href="../files/src_collision_Narrowphase.js.html#l1470"><code>src&#x2F;collision&#x2F;Narrowphase.js:1470</code></a>
         
         </p>
 
@@ -3155,6 +3089,7 @@
 
     <div class="description">
         <p>Get the edge that has a normal closest to an axis.</p>
+
     </div>
 
     
@@ -3236,7 +3171,8 @@
                     
                         <span class="type">Number</span>:
                     
-                    Index of the edge that is closest. This index and the next spans the resulting edge. Returns -1 if failed.
+                    <p>Index of the edge that is closest. This index and the next spans the resulting edge. Returns -1 if failed.</p>
+
                 
             </div>
         </div>
@@ -3330,7 +3266,7 @@
             
         
         
-        <a href="../files/src_collision_Narrowphase.js.html#l697"><code>src&#x2F;collision&#x2F;Narrowphase.js:697</code></a>
+        <a href="../files/src_collision_Narrowphase.js.html#l716"><code>src&#x2F;collision&#x2F;Narrowphase.js:716</code></a>
         
         </p>
 
@@ -3342,6 +3278,7 @@
 
     <div class="description">
         <p>Particle/convex Narrowphase</p>
+
     </div>
 
     
@@ -3564,7 +3501,7 @@
             
         
         
-        <a href="../files/src_collision_Narrowphase.js.html#l964"><code>src&#x2F;collision&#x2F;Narrowphase.js:964</code></a>
+        <a href="../files/src_collision_Narrowphase.js.html#l995"><code>src&#x2F;collision&#x2F;Narrowphase.js:995</code></a>
         
         </p>
 
@@ -3576,6 +3513,7 @@
 
     <div class="description">
         <p>Narrowphase for particle vs plane</p>
+
     </div>
 
     
@@ -3594,6 +3532,7 @@
 
                     <div class="param-description">
                         <p>The particle body</p>
+
                     </div>
 
                     
@@ -3609,6 +3548,7 @@
 
                     <div class="param-description">
                         <p>Particle shape</p>
+
                     </div>
 
                     
@@ -3624,6 +3564,7 @@
 
                     <div class="param-description">
                         <p>World position for the particle</p>
+
                     </div>
 
                     
@@ -3639,6 +3580,7 @@
 
                     <div class="param-description">
                         <p>World angle for the particle</p>
+
                     </div>
 
                     
@@ -3654,6 +3596,7 @@
 
                     <div class="param-description">
                         <p>Plane body</p>
+
                     </div>
 
                     
@@ -3669,6 +3612,7 @@
 
                     <div class="param-description">
                         <p>Plane shape</p>
+
                     </div>
 
                     
@@ -3684,6 +3628,7 @@
 
                     <div class="param-description">
                         <p>World position for the plane</p>
+
                     </div>
 
                     
@@ -3699,6 +3644,242 @@
 
                     <div class="param-description">
                         <p>World angle for the plane</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_planeConvex" class="method item">
+    <h3 class="name"><code>planeConvex</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>bi</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>si</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>xi</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>ai</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>bj</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>sj</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>xj</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>aj</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_collision_Narrowphase.js.html#l912"><code>src&#x2F;collision&#x2F;Narrowphase.js:912</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Plane/Convex Narrowphase</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">bi</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">si</code>
+                        <span class="type"><a href="../classes/Plane.html" class="crosslink">Plane</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">xi</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">ai</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">bj</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">sj</code>
+                        <span class="type"><a href="../classes/Convex.html" class="crosslink">Convex</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">xj</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">aj</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
                     </div>
 
                     
@@ -3798,7 +3979,7 @@
             
         
         
-        <a href="../files/src_collision_Narrowphase.js.html#l179"><code>src&#x2F;collision&#x2F;Narrowphase.js:179</code></a>
+        <a href="../files/src_collision_Narrowphase.js.html#l193"><code>src&#x2F;collision&#x2F;Narrowphase.js:193</code></a>
         
         </p>
 
@@ -3810,6 +3991,7 @@
 
     <div class="description">
         <p>Plane/line Narrowphase</p>
+
     </div>
 
     
@@ -4016,7 +4198,7 @@
             
         
         
-        <a href="../files/src_collision_Narrowphase.js.html#l1299"><code>src&#x2F;collision&#x2F;Narrowphase.js:1299</code></a>
+        <a href="../files/src_collision_Narrowphase.js.html#l1345"><code>src&#x2F;collision&#x2F;Narrowphase.js:1345</code></a>
         
         </p>
 
@@ -4028,6 +4210,7 @@
 
     <div class="description">
         <p>Project a Convex onto a world-oriented axis</p>
+
     </div>
 
     
@@ -4153,7 +4336,7 @@
             
         
         
-        <a href="../files/src_collision_Narrowphase.js.html#l100"><code>src&#x2F;collision&#x2F;Narrowphase.js:100</code></a>
+        <a href="../files/src_collision_Narrowphase.js.html#l108"><code>src&#x2F;collision&#x2F;Narrowphase.js:108</code></a>
         
         </p>
 
@@ -4165,6 +4348,7 @@
 
     <div class="description">
         <p>Throws away the old equatons and gets ready to create new</p>
+
     </div>
 
     
@@ -4206,7 +4390,7 @@
             
         
         
-        <a href="../files/src_collision_Narrowphase.js.html#l41"><code>src&#x2F;collision&#x2F;Narrowphase.js:41</code></a>
+        <a href="../files/src_collision_Narrowphase.js.html#l42"><code>src&#x2F;collision&#x2F;Narrowphase.js:42</code></a>
         
         </p>
 
@@ -4250,7 +4434,7 @@
             
         
         
-        <a href="../files/src_collision_Narrowphase.js.html#l53"><code>src&#x2F;collision&#x2F;Narrowphase.js:53</code></a>
+        <a href="../files/src_collision_Narrowphase.js.html#l54"><code>src&#x2F;collision&#x2F;Narrowphase.js:54</code></a>
         
         </p>
 
@@ -4261,6 +4445,52 @@
 
     <div class="description">
         <p>Whether to make friction equations in the upcoming contacts.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_frictionCoefficient" class="property item">
+    <h3 class="name"><code>frictionCoefficient</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_collision_Narrowphase.js.html#l68"><code>src&#x2F;collision&#x2F;Narrowphase.js:68</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The friction value to use in the upcoming friction equations.</p>
+
     </div>
 
     
@@ -4294,7 +4524,7 @@
             
         
         
-        <a href="../files/src_collision_Narrowphase.js.html#l47"><code>src&#x2F;collision&#x2F;Narrowphase.js:47</code></a>
+        <a href="../files/src_collision_Narrowphase.js.html#l48"><code>src&#x2F;collision&#x2F;Narrowphase.js:48</code></a>
         
         </p>
 
@@ -4338,7 +4568,7 @@
             
         
         
-        <a href="../files/src_collision_Narrowphase.js.html#l71"><code>src&#x2F;collision&#x2F;Narrowphase.js:71</code></a>
+        <a href="../files/src_collision_Narrowphase.js.html#l79"><code>src&#x2F;collision&#x2F;Narrowphase.js:79</code></a>
         
         </p>
 
@@ -4349,6 +4579,7 @@
 
     <div class="description">
         <p>The restitution value to use in the next contact equations.</p>
+
     </div>
 
     
@@ -4382,7 +4613,7 @@
             
         
         
-        <a href="../files/src_collision_Narrowphase.js.html#l60"><code>src&#x2F;collision&#x2F;Narrowphase.js:60</code></a>
+        <a href="../files/src_collision_Narrowphase.js.html#l61"><code>src&#x2F;collision&#x2F;Narrowphase.js:61</code></a>
         
         </p>
 
@@ -4393,6 +4624,7 @@
 
     <div class="description">
         <p>The friction slip force to use when creating friction equations.</p>
+
     </div>
 
     

@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.3.1</em>
+            <em>API Docs for: 0.4.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -97,6 +97,8 @@
             
                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
             
+                <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
+            
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
                 <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
@@ -164,6 +166,7 @@ var vec2 = require(&#x27;../math/vec2&#x27;)
 ,   ContactEquation = require(&#x27;../constraints/ContactEquation&#x27;)
 ,   FrictionEquation = require(&#x27;../constraints/FrictionEquation&#x27;)
 ,   Circle = require(&#x27;../shapes/Circle&#x27;)
+,   Shape = require(&#x27;../shapes/Shape&#x27;)
 
 module.exports = Narrowphase;
 
@@ -222,6 +225,13 @@ function Narrowphase(){
      */
     this.slipForce = 10.0;
 
+    /**
+     * The friction value to use in the upcoming friction equations.
+     * @property frictionCoefficient
+     * @type {Number}
+     */
+    this.frictionCoefficient = 0.3;
+
     this.reuseObjects = true;
     this.reusableContactEquations = [];
     this.reusableFrictionEquations = [];
@@ -231,7 +241,7 @@ function Narrowphase(){
      * @property restitution
      * @type {Number}
      */
-    this.restitution = 0; // For contact constraints
+    this.restitution = 0;
 
     // Keep track of the colliding bodies last step
     this.collidingBodiesLastStep = {};
@@ -296,10 +306,12 @@ Narrowphase.prototype.reset = function(){
  * @param  {Body} bodyB
  * @return {ContactEquation}
  */
-Narrowphase.prototype.createContactEquation = function(bodyA,bodyB){
+Narrowphase.prototype.createContactEquation = function(bodyA,bodyB,shapeA,shapeB){
     var c = this.reusableContactEquations.length ? this.reusableContactEquations.pop() : new ContactEquation(bodyA,bodyB);
     c.bi = bodyA;
     c.bj = bodyB;
+    c.shapeA = shapeA;
+    c.shapeB = shapeB;
     c.restitution = this.restitution;
     c.firstImpact = !this.collidedLastStep(bodyA,bodyB);
     return c;
@@ -312,11 +324,14 @@ Narrowphase.prototype.createContactEquation = function(bodyA,bodyB){
  * @param  {Body} bodyB
  * @return {FrictionEquation}
  */
-Narrowphase.prototype.createFrictionEquation = function(bodyA,bodyB){
+Narrowphase.prototype.createFrictionEquation = function(bodyA,bodyB,shapeA,shapeB){
     var c = this.reusableFrictionEquations.length ? this.reusableFrictionEquations.pop() : new FrictionEquation(bodyA,bodyB);
     c.bi = bodyA;
     c.bj = bodyB;
+    c.shapeA = shapeA;
+    c.shapeB = shapeB;
     c.setSlipForce(this.slipForce);
+    c.frictionCoefficient = this.frictionCoefficient;
     return c;
 };
 
@@ -331,6 +346,7 @@ Narrowphase.prototype.createFrictionFromContact = function(c){
     vec2.copy(eq.ri, c.ri);
     vec2.copy(eq.rj, c.rj);
     vec2.rotate(eq.t, c.ni, -Math.PI / 2);
+    eq.contactEquation = c;
     return eq;
 }
 
@@ -346,6 +362,7 @@ Narrowphase.prototype.createFrictionFromContact = function(c){
  * @param  {Array} xj
  * @param  {Number} aj
  */
+Narrowphase.prototype[Shape.PLANE | Shape.LINE] =
 Narrowphase.prototype.planeLine = function(bi,si,xi,ai, bj,sj,xj,aj){
     var lineShape = sj,
         lineAngle = aj,
@@ -400,7 +417,7 @@ Narrowphase.prototype.planeLine = function(bi,si,xi,ai, bj,sj,xj,aj){
 
         if(d &lt; 0){
 
-            var c = this.createContactEquation(planeBody,lineBody);
+            var c = this.createContactEquation(planeBody,lineBody,si,sj);
 
             vec2.copy(c.ni, worldNormal);
             vec2.normalize(c.ni,c.ni);
@@ -427,6 +444,7 @@ Narrowphase.prototype.planeLine = function(bi,si,xi,ai, bj,sj,xj,aj){
     }
 };
 
+Narrowphase.prototype[Shape.PARTICLE | Shape.CAPSULE] =
 Narrowphase.prototype.particleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTest){
     return this.circleLine(bi,si,xi,ai, bj,sj,xj,aj, justTest, sj.radius, 0);
 };
@@ -446,6 +464,7 @@ Narrowphase.prototype.particleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justT
  * @param {Number} lineRadius Radius to add to the line. Can be used to test Capsules.
  * @param {Number} circleRadius If set, this value overrides the circle shape radius.
  */
+Narrowphase.prototype[Shape.CIRCLE | Shape.LINE] =
 Narrowphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj, justTest, lineRadius, circleRadius){
     var lineShape = sj,
         lineAngle = aj,
@@ -523,7 +542,7 @@ Narrowphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj, justTest, 
 
             if(justTest) return true;
 
-            var c = this.createContactEquation(circleBody,lineBody);
+            var c = this.createContactEquation(circleBody,lineBody,si,sj);
 
             vec2.scale(c.ni, orthoDist, -1);
             vec2.normalize(c.ni, c.ni);
@@ -558,7 +577,7 @@ Narrowphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj, justTest, 
 
             if(justTest) return true;
 
-            var c = this.createContactEquation(circleBody,lineBody);
+            var c = this.createContactEquation(circleBody,lineBody,si,sj);
 
             vec2.copy(c.ni, dist);
             vec2.normalize(c.ni,c.ni);
@@ -599,6 +618,7 @@ Narrowphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj, justTest, 
  * @param  {Array}  xj
  * @param  {Number} aj
  */
+Narrowphase.prototype[Shape.CIRCLE | Shape.CAPSULE] =
 Narrowphase.prototype.circleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTest){
     return this.circleLine(bi,si,xi,ai, bj,sj,xj,aj, justTest, sj.radius);
 };
@@ -615,6 +635,7 @@ Narrowphase.prototype.circleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTes
  * @param  {Array} xj
  * @param  {Number} aj
  */
+Narrowphase.prototype[Shape.CIRCLE | Shape.CONVEX] =
 Narrowphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTest, circleRadius){
     var convexShape = sj,
         convexAngle = aj,
@@ -729,7 +750,7 @@ Narrowphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
     }
 
     if(found){
-        var c = this.createContactEquation(circleBody,convexBody);
+        var c = this.createContactEquation(circleBody,convexBody,si,sj);
         vec2.sub(c.ni, minCandidate, circleOffset)
         vec2.normalize(c.ni, c.ni);
 
@@ -785,7 +806,7 @@ Narrowphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
 
                 if(justTest) return true;
 
-                var c = this.createContactEquation(circleBody,convexBody);
+                var c = this.createContactEquation(circleBody,convexBody,si,sj);
 
                 vec2.copy(c.ni, dist);
                 vec2.normalize(c.ni,c.ni);
@@ -865,6 +886,7 @@ function pointInConvex(worldPoint,convexShape,convexOffset,convexAngle){
  * @param  {Number} aj
  * @todo use pointInConvex and code more similar to circleConvex
  */
+Narrowphase.prototype[Shape.PARTICLE | Shape.CONVEX] =
 Narrowphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTest ){
     var convexShape = sj,
         convexAngle = aj,
@@ -969,7 +991,7 @@ Narrowphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, just
     }
 
     if(found){
-        var c = this.createContactEquation(particleBody,convexBody);
+        var c = this.createContactEquation(particleBody,convexBody,si,sj);
 
         vec2.scale(c.ni, minEdgeNormal, -1);
         vec2.normalize(c.ni, c.ni);
@@ -1008,6 +1030,7 @@ Narrowphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, just
  * @param  {Array} xj
  * @param  {Number} aj
  */
+Narrowphase.prototype[Shape.CIRCLE] =
 Narrowphase.prototype.circleCircle = function(  bi,si,xi,ai, bj,sj,xj,aj, justTest){
     var bodyA = bi,
         shapeA = si,
@@ -1025,7 +1048,7 @@ Narrowphase.prototype.circleCircle = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
 
     if(justTest) return true;
 
-    var c = this.createContactEquation(bodyA,bodyB);
+    var c = this.createContactEquation(bodyA,bodyB,si,sj);
     sub(c.ni, offsetB, offsetA);
     vec2.normalize(c.ni,c.ni);
 
@@ -1047,26 +1070,27 @@ Narrowphase.prototype.circleCircle = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
 };
 
 /**
- * Convex/Plane Narrowphase
- * @method convexPlane
+ * Plane/Convex Narrowphase
+ * @method planeConvex
  * @param  {Body} bi
- * @param  {Convex} si
+ * @param  {Plane} si
  * @param  {Array} xi
  * @param  {Number} ai
  * @param  {Body} bj
- * @param  {Plane} sj
+ * @param  {Convex} sj
  * @param  {Array} xj
  * @param  {Number} aj
  */
-Narrowphase.prototype.convexPlane = function( bi,si,xi,ai, bj,sj,xj,aj ){
-    var convexBody = bi,
-        convexOffset = xi,
-        convexShape = si,
-        convexAngle = ai,
-        planeBody = bj,
-        planeShape = sj,
-        planeOffset = xj,
-        planeAngle = aj;
+Narrowphase.prototype[Shape.PLANE | Shape.CONVEX] =
+Narrowphase.prototype.planeConvex = function( bi,si,xi,ai, bj,sj,xj,aj ){
+    var convexBody = bj,
+        convexOffset = xj,
+        convexShape = sj,
+        convexAngle = aj,
+        planeBody = bi,
+        planeShape = si,
+        planeOffset = xi,
+        planeAngle = ai;
 
     var worldVertex = tmp1,
         worldNormal = tmp2,
@@ -1075,8 +1099,8 @@ Narrowphase.prototype.convexPlane = function( bi,si,xi,ai, bj,sj,xj,aj ){
     var numReported = 0;
     vec2.rotate(worldNormal, yAxis, planeAngle);
 
-    for(var i=0; i&lt;si.vertices.length; i++){
-        var v = si.vertices[i];
+    for(var i=0; i&lt;convexShape.vertices.length; i++){
+        var v = convexShape.vertices[i];
         vec2.rotate(worldVertex, v, convexAngle);
         add(worldVertex, worldVertex, convexOffset);
 
@@ -1087,7 +1111,7 @@ Narrowphase.prototype.convexPlane = function( bi,si,xi,ai, bj,sj,xj,aj ){
             // Found vertex
             numReported++;
 
-            var c = this.createContactEquation(planeBody,convexBody);
+            var c = this.createContactEquation(planeBody,convexBody,planeShape,convexShape);
 
             sub(dist, worldVertex, planeOffset);
 
@@ -1120,6 +1144,15 @@ Narrowphase.prototype.convexPlane = function( bi,si,xi,ai, bj,sj,xj,aj ){
 };
 
 /**
+ * @method convexPlane
+ * @deprecated Use .planeConvex() instead!
+ */
+Narrowphase.prototype.convexPlane = function( bi,si,xi,ai, bj,sj,xj,aj ){
+    console.warn(&quot;Narrowphase.prototype.convexPlane is deprecated. Use planeConvex instead!&quot;);
+    return this.planeConvex( bj,sj,xj,aj, bi,si,xi,ai );
+}
+
+/**
  * Narrowphase for particle vs plane
  * @method particlePlane
  * @param  {Body}       bi The particle body
@@ -1131,6 +1164,7 @@ Narrowphase.prototype.convexPlane = function( bi,si,xi,ai, bj,sj,xj,aj ){
  * @param  {Array}      xj World position for the plane
  * @param  {Number}     aj World angle for the plane
  */
+Narrowphase.prototype[Shape.PARTICLE | Shape.PLANE] =
 Narrowphase.prototype.particlePlane = function( bi,si,xi,ai, bj,sj,xj,aj, justTest ){
     var particleBody = bi,
         particleShape = si,
@@ -1153,7 +1187,7 @@ Narrowphase.prototype.particlePlane = function( bi,si,xi,ai, bj,sj,xj,aj, justTe
     if(d &gt; 0) return false;
     if(justTest) return true;
 
-    var c = this.createContactEquation(planeBody,particleBody);
+    var c = this.createContactEquation(planeBody,particleBody,sj,si);
 
     vec2.copy(c.ni, worldNormal);
     vec2.scale( dist, c.ni, d );
@@ -1186,6 +1220,7 @@ Narrowphase.prototype.particlePlane = function( bi,si,xi,ai, bj,sj,xj,aj, justTe
  * @param  {Array} xj
  * @param  {Number} aj
  */
+Narrowphase.prototype[Shape.CIRCLE | Shape.PARTICLE] =
 Narrowphase.prototype.circleParticle = function(   bi,si,xi,ai, bj,sj,xj,aj, justTest ){
     var circleBody = bi,
         circleShape = si,
@@ -1199,7 +1234,7 @@ Narrowphase.prototype.circleParticle = function(   bi,si,xi,ai, bj,sj,xj,aj, jus
     if(vec2.squaredLength(dist) &gt; circleShape.radius*circleShape.radius) return false;
     if(justTest) return true;
 
-    var c = this.createContactEquation(circleBody,particleBody);
+    var c = this.createContactEquation(circleBody,particleBody,si,sj);
     vec2.copy(c.ni, dist);
     vec2.normalize(c.ni,c.ni);
 
@@ -1224,27 +1259,38 @@ var capsulePlane_tmpCircle = new Circle(1),
     capsulePlane_tmp1 = vec2.create(),
     capsulePlane_tmp2 = vec2.create(),
     capsulePlane_tmp3 = vec2.create();
-Narrowphase.prototype.capsulePlane = function( bi,si,xi,ai, bj,sj,xj,aj ){
+
+Narrowphase.prototype[Shape.PLANE | Shape.CAPSULE] =
+Narrowphase.prototype.planeCapsule = function( bi,si,xi,ai, bj,sj,xj,aj ){
     var end1 = capsulePlane_tmp1,
         end2 = capsulePlane_tmp2,
         circle = capsulePlane_tmpCircle,
         dst = capsulePlane_tmp3;
 
     // Compute world end positions
-    vec2.set(end1, -si.length/2, 0);
-    vec2.rotate(end1,end1,ai);
-    add(end1,end1,xi);
+    vec2.set(end1, -sj.length/2, 0);
+    vec2.rotate(end1,end1,aj);
+    add(end1,end1,xj);
 
-    vec2.set(end2,  si.length/2, 0);
-    vec2.rotate(end2,end2,ai);
-    add(end2,end2,xi);
+    vec2.set(end2,  sj.length/2, 0);
+    vec2.rotate(end2,end2,aj);
+    add(end2,end2,xj);
 
-    circle.radius = si.radius;
+    circle.radius = sj.radius;
 
     // Do Narrowphase as two circles
-    this.circlePlane(bi,circle,end1,0, bj,sj,xj,aj);
-    this.circlePlane(bi,circle,end2,0, bj,sj,xj,aj);
+    this.circlePlane(bj,circle,end1,0, bi,si,xi,ai);
+    this.circlePlane(bj,circle,end2,0, bi,si,xi,ai);
 };
+
+/**
+ * @method capsulePlane
+ * @deprecated Use .planeCapsule() instead!
+ */
+Narrowphase.prototype.capsulePlane = function( bi,si,xi,ai, bj,sj,xj,aj ){
+    console.warn(&quot;Narrowphase.prototype.capsulePlane() is deprecated. Use .planeCapsule() instead!&quot;);
+    return this.planeCapsule( bj,sj,xj,aj, bi,si,xi,ai );
+}
 
 /**
  * Creates ContactEquations and FrictionEquations for a collision.
@@ -1257,6 +1303,7 @@ Narrowphase.prototype.capsulePlane = function( bi,si,xi,ai, bj,sj,xj,aj ){
  * @param  {Array}   xj     Extra offset for the plane shape.
  * @param  {Number}  aj     Extra angle to apply to the plane
  */
+Narrowphase.prototype[Shape.CIRCLE | Shape.PLANE] =
 Narrowphase.prototype.circlePlane = function(   bi,si,xi,ai, bj,sj,xj,aj ){
     var circleBody = bi,
         circleShape = si,
@@ -1284,7 +1331,7 @@ Narrowphase.prototype.circlePlane = function(   bi,si,xi,ai, bj,sj,xj,aj ){
     if(d &gt; circleShape.radius) return false; // No overlap. Abort.
 
     // Create contact
-    var contact = this.createContactEquation(planeBody,circleBody);
+    var contact = this.createContactEquation(planeBody,circleBody,sj,si);
 
     // ni is the plane world normal
     vec2.copy(contact.ni, worldNormal);
@@ -1322,6 +1369,7 @@ Narrowphase.prototype.circlePlane = function(   bi,si,xi,ai, bj,sj,xj,aj ){
  * @param  {Array} xj
  * @param  {Number} aj
  */
+Narrowphase.prototype[Shape.CONVEX] =
 Narrowphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj ){
     var sepAxis = tmp1,
         worldPoint = tmp2,
@@ -1410,7 +1458,7 @@ Narrowphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj ){
                 // Project it to the center edge and use the projection direction as normal
 
                 // Create contact
-                var c = this.createContactEquation(bodyA,bodyB);
+                var c = this.createContactEquation(bodyA,bodyB,si,sj);
 
                 // Get center edge from body A
                 var v0 = shapeA.vertices[(closestEdgeA)   % shapeA.vertices.length],

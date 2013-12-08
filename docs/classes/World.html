@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.3.1</em>
+            <em>API Docs for: 0.4.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -96,6 +96,8 @@
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
+            
+                <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
             
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
@@ -177,6 +179,7 @@
 
 <div class="box intro">
     <p>The dynamics world, where all bodies and constraints lives.</p>
+
 </div>
 
 
@@ -268,6 +271,7 @@
 
                                 <div class="param-description">
                                     <p>Defaults to GSSolver.</p>
+
                                 </div>
 
                                 
@@ -281,6 +285,7 @@
 
                                 <div class="param-description">
                                     <p>Defaults to [0,-9.78]</p>
+
                                 </div>
 
                                 
@@ -294,6 +299,7 @@
 
                                 <div class="param-description">
                                     <p>Defaults to NaiveBroadphase</p>
+
                                 </div>
 
                                 
@@ -391,6 +397,13 @@
                             </li>
                         
                             <li class="index-item method">
+                                <a href="#method_getBodyById">getBodyById</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
                                 <a href="#method_getContactMaterial">getContactMaterial</a>
 
                                 
@@ -422,6 +435,13 @@
                         
                             <li class="index-item method">
                                 <a href="#method_removeConstraint">removeConstraint</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_removeContactMaterial">removeContactMaterial</a>
 
                                 
                                 
@@ -475,6 +495,13 @@
                     <ul class="index-list properties extends">
                         
                             <li class="index-item property">
+                                <a href="#property_applyDamping">applyDamping</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
                                 <a href="#property_applySpringForces">applySpringForces</a>
 
                                 
@@ -524,6 +551,20 @@
                             </li>
                         
                             <li class="index-item property">
+                                <a href="#property_"></a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_emitImpactEvent">emitImpactEvent</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
                                 <a href="#property_lastStepTime">lastStepTime</a>
 
                                 
@@ -553,13 +594,6 @@
                         
                             <li class="index-item property">
                                 <a href="#property_solver">solver</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_"></a>
 
                                 
                                 
@@ -678,7 +712,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l571"><code>src&#x2F;world&#x2F;World.js:571</code></a>
+        <a href="../files/src_world_World.js.html#l568"><code>src&#x2F;world&#x2F;World.js:568</code></a>
         
         </p>
 
@@ -690,6 +724,7 @@
 
     <div class="description">
         <p>Add a body to the simulation</p>
+
     </div>
 
     
@@ -726,8 +761,8 @@
             <div class="example-content">
                 <pre class="code prettyprint"><code>var world = new World(),
     body = new Body();
-world.addBody(body);
-</code></pre>
+world.addBody(body);</code></pre>
+
             </div>
         </div>
     
@@ -776,7 +811,7 @@ world.addBody(body);
             
         
         
-        <a href="../files/src_world_World.js.html#l222"><code>src&#x2F;world&#x2F;World.js:222</code></a>
+        <a href="../files/src_world_World.js.html#l236"><code>src&#x2F;world&#x2F;World.js:236</code></a>
         
         </p>
 
@@ -788,6 +823,7 @@ world.addBody(body);
 
     <div class="description">
         <p>Add a constraint to the simulation.</p>
+
     </div>
 
     
@@ -863,7 +899,7 @@ world.addBody(body);
             
         
         
-        <a href="../files/src_world_World.js.html#l232"><code>src&#x2F;world&#x2F;World.js:232</code></a>
+        <a href="../files/src_world_World.js.html#l246"><code>src&#x2F;world&#x2F;World.js:246</code></a>
         
         </p>
 
@@ -875,6 +911,7 @@ world.addBody(body);
 
     <div class="description">
         <p>Add a ContactMaterial to the simulation.</p>
+
     </div>
 
     
@@ -950,7 +987,7 @@ world.addBody(body);
             
         
         
-        <a href="../files/src_world_World.js.html#l547"><code>src&#x2F;world&#x2F;World.js:547</code></a>
+        <a href="../files/src_world_World.js.html#l544"><code>src&#x2F;world&#x2F;World.js:544</code></a>
         
         </p>
 
@@ -962,6 +999,7 @@ world.addBody(body);
 
     <div class="description">
         <p>Add a spring to the simulation</p>
+
     </div>
 
     
@@ -1027,7 +1065,7 @@ world.addBody(body);
             
         
         
-        <a href="../files/src_world_World.js.html#l926"><code>src&#x2F;world&#x2F;World.js:926</code></a>
+        <a href="../files/src_world_World.js.html#l970"><code>src&#x2F;world&#x2F;World.js:970</code></a>
         
         </p>
 
@@ -1039,6 +1077,7 @@ world.addBody(body);
 
     <div class="description">
         <p>Resets the World, removes all bodies, constraints and springs.</p>
+
     </div>
 
     
@@ -1085,7 +1124,7 @@ world.addBody(body);
             
         
         
-        <a href="../files/src_world_World.js.html#l952"><code>src&#x2F;world&#x2F;World.js:952</code></a>
+        <a href="../files/src_world_World.js.html#l1008"><code>src&#x2F;world&#x2F;World.js:1008</code></a>
         
         </p>
 
@@ -1097,6 +1136,7 @@ world.addBody(body);
 
     <div class="description">
         <p>Get a copy of this World instance</p>
+
     </div>
 
     
@@ -1165,7 +1205,7 @@ world.addBody(body);
             
         
         
-        <a href="../files/src_world_World.js.html#l792"><code>src&#x2F;world&#x2F;World.js:792</code></a>
+        <a href="../files/src_world_World.js.html#l829"><code>src&#x2F;world&#x2F;World.js:829</code></a>
         
         </p>
 
@@ -1177,6 +1217,7 @@ world.addBody(body);
 
     <div class="description">
         <p>Load a scene from a serialized state in JSON format.</p>
+
     </div>
 
     
@@ -1213,7 +1254,81 @@ world.addBody(body);
                     
                         <span class="type">Boolean</span>:
                     
-                    True on success, else false.
+                    <p>True on success, else false.</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_getBodyById" class="method item">
+    <h3 class="name"><code>getBodyById</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a> | Boolean</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_World.js.html#l602"><code>src&#x2F;world&#x2F;World.js:602</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Get a body by its id.</p>
+
+    </div>
+
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a> | Boolean</span>:
+                    
+                    <p>The body, or false if it was not found.</p>
+
                 
             </div>
         </div>
@@ -1275,7 +1390,7 @@ world.addBody(body);
             
         
         
-        <a href="../files/src_world_World.js.html#l241"><code>src&#x2F;world&#x2F;World.js:241</code></a>
+        <a href="../files/src_world_World.js.html#l267"><code>src&#x2F;world&#x2F;World.js:267</code></a>
         
         </p>
 
@@ -1287,6 +1402,7 @@ world.addBody(body);
 
     <div class="description">
         <p>Get a contact material given two materials</p>
+
     </div>
 
     
@@ -1338,7 +1454,8 @@ world.addBody(body);
                     
                         <span class="type"><a href="../classes/ContactMaterial.html" class="crosslink">ContactMaterial</a></span>:
                     
-                    The matching ContactMaterial, or false on fail.
+                    <p>The matching ContactMaterial, or false on fail.</p>
+
                 
             </div>
         </div>
@@ -1406,7 +1523,7 @@ world.addBody(body);
             
         
         
-        <a href="../files/src_world_World.js.html#l967"><code>src&#x2F;world&#x2F;World.js:967</code></a>
+        <a href="../files/src_world_World.js.html#l1023"><code>src&#x2F;world&#x2F;World.js:1023</code></a>
         
         </p>
 
@@ -1418,6 +1535,7 @@ world.addBody(body);
 
     <div class="description">
         <p>Test if a world point overlaps bodies</p>
+
     </div>
 
     
@@ -1436,6 +1554,7 @@ world.addBody(body);
 
                     <div class="param-description">
                         <p>Point to use for intersection tests</p>
+
                     </div>
 
                     
@@ -1451,6 +1570,7 @@ world.addBody(body);
 
                     <div class="param-description">
                         <p>A list of objects to check for intersection</p>
+
                     </div>
 
                     
@@ -1466,6 +1586,7 @@ world.addBody(body);
 
                     <div class="param-description">
                         <p>Used for matching against particles and lines. Adds some margin to these infinitesimal objects.</p>
+
                     </div>
 
                     
@@ -1484,7 +1605,8 @@ world.addBody(body);
                     
                         <span class="type">Array</span>:
                     
-                    Array of bodies that overlap the point
+                    <p>Array of bodies that overlap the point</p>
+
                 
             </div>
         </div>
@@ -1544,7 +1666,7 @@ world.addBody(body);
             
         
         
-        <a href="../files/src_world_World.js.html#l433"><code>src&#x2F;world&#x2F;World.js:433</code></a>
+        <a href="../files/src_world_World.js.html#l468"><code>src&#x2F;world&#x2F;World.js:468</code></a>
         
         </p>
 
@@ -1556,6 +1678,7 @@ world.addBody(body);
 
     <div class="description">
         <p>Move a body forward in time.</p>
+
     </div>
 
     
@@ -1646,7 +1769,7 @@ world.addBody(body);
             
         
         
-        <a href="../files/src_world_World.js.html#l589"><code>src&#x2F;world&#x2F;World.js:589</code></a>
+        <a href="../files/src_world_World.js.html#l586"><code>src&#x2F;world&#x2F;World.js:586</code></a>
         
         </p>
 
@@ -1658,6 +1781,7 @@ world.addBody(body);
 
     <div class="description">
         <p>Remove a body from the simulation</p>
+
     </div>
 
     
@@ -1733,7 +1857,7 @@ world.addBody(body);
             
         
         
-        <a href="../files/src_world_World.js.html#l260"><code>src&#x2F;world&#x2F;World.js:260</code></a>
+        <a href="../files/src_world_World.js.html#l286"><code>src&#x2F;world&#x2F;World.js:286</code></a>
         
         </p>
 
@@ -1745,6 +1869,7 @@ world.addBody(body);
 
     <div class="description">
         <p>Removes a constraint</p>
+
     </div>
 
     
@@ -1757,6 +1882,94 @@ world.addBody(body);
                     
                         <code class="param-name">c</code>
                         <span class="type"><a href="../classes/Constraint.html" class="crosslink">Constraint</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_removeContactMaterial" class="method item">
+    <h3 class="name"><code>removeContactMaterial</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>cm</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_World.js.html#l255"><code>src&#x2F;world&#x2F;World.js:255</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Removes a contact material</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">cm</code>
+                        <span class="type"><a href="../classes/ContactMaterial.html" class="crosslink">ContactMaterial</a></span>
                     
 
                     
@@ -1820,7 +2033,7 @@ world.addBody(body);
             
         
         
-        <a href="../files/src_world_World.js.html#l559"><code>src&#x2F;world&#x2F;World.js:559</code></a>
+        <a href="../files/src_world_World.js.html#l556"><code>src&#x2F;world&#x2F;World.js:556</code></a>
         
         </p>
 
@@ -1832,6 +2045,7 @@ world.addBody(body);
 
     <div class="description">
         <p>Remove a spring</p>
+
     </div>
 
     
@@ -1969,7 +2183,7 @@ world.addBody(body);
             
         
         
-        <a href="../files/src_world_World.js.html#l457"><code>src&#x2F;world&#x2F;World.js:457</code></a>
+        <a href="../files/src_world_World.js.html#l492"><code>src&#x2F;world&#x2F;World.js:492</code></a>
         
         </p>
 
@@ -1981,6 +2195,7 @@ world.addBody(body);
 
     <div class="description">
         <p>Runs narrowphase for the shape pair i and j.</p>
+
     </div>
 
     
@@ -2206,7 +2421,7 @@ world.addBody(body);
             
         
         
-        <a href="../files/src_world_World.js.html#l284"><code>src&#x2F;world&#x2F;World.js:284</code></a>
+        <a href="../files/src_world_World.js.html#l310"><code>src&#x2F;world&#x2F;World.js:310</code></a>
         
         </p>
 
@@ -2218,6 +2433,7 @@ world.addBody(body);
 
     <div class="description">
         <p>Step the physics world forward in time.</p>
+
     </div>
 
     
@@ -2236,6 +2452,7 @@ world.addBody(body);
 
                     <div class="param-description">
                         <p>The time step size to use.</p>
+
                     </div>
 
                     
@@ -2253,8 +2470,8 @@ world.addBody(body);
 
             <div class="example-content">
                 <pre class="code prettyprint"><code>var world = new World();
-world.step(0.01);
-</code></pre>
+world.step(0.01);</code></pre>
+
             </div>
         </div>
     
@@ -2297,7 +2514,7 @@ world.step(0.01);
             
         
         
-        <a href="../files/src_world_World.js.html#l605"><code>src&#x2F;world&#x2F;World.js:605</code></a>
+        <a href="../files/src_world_World.js.html#l617"><code>src&#x2F;world&#x2F;World.js:617</code></a>
         
         </p>
 
@@ -2309,6 +2526,7 @@ world.step(0.01);
 
     <div class="description">
         <p>Convert the world to a JSON-serializable Object.</p>
+
     </div>
 
     
@@ -2377,7 +2595,7 @@ world.step(0.01);
             
         
         
-        <a href="../files/src_world_World.js.html#l761"><code>src&#x2F;world&#x2F;World.js:761</code></a>
+        <a href="../files/src_world_World.js.html#l778"><code>src&#x2F;world&#x2F;World.js:778</code></a>
         
         </p>
 
@@ -2389,6 +2607,7 @@ world.step(0.01);
 
     <div class="description">
         <p>Upgrades a JSON object to current version</p>
+
     </div>
 
     
@@ -2425,7 +2644,8 @@ world.step(0.01);
                     
                         <span class="type">Object | Boolean</span>:
                     
-                    New json object, or false on failure.
+                    <p>New json object, or false on failure.</p>
+
                 
             </div>
         </div>
@@ -2441,6 +2661,51 @@ world.step(0.01);
         
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
+
+                
+                    <div id="property_applyDamping" class="property item">
+    <h3 class="name"><code>applyDamping</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_World.js.html#l147"><code>src&#x2F;world&#x2F;World.js:147</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Enable to automatically apply body damping each step.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
 
                 
                     <div id="property_applySpringForces" class="property item">
@@ -2477,6 +2742,7 @@ world.step(0.01);
 
     <div class="description">
         <p>Enable to automatically apply spring forces each step.</p>
+
     </div>
 
     
@@ -2521,6 +2787,7 @@ world.step(0.01);
 
     <div class="description">
         <p>All bodies in the world.</p>
+
     </div>
 
     
@@ -2565,6 +2832,7 @@ world.step(0.01);
 
     <div class="description">
         <p>The broadphase algorithm to use.</p>
+
     </div>
 
     
@@ -2609,6 +2877,7 @@ world.step(0.01);
 
     <div class="description">
         <p>User-added constraints.</p>
+
     </div>
 
     
@@ -2642,7 +2911,7 @@ world.step(0.01);
             
         
         
-        <a href="../files/src_world_World.js.html#l154"><code>src&#x2F;world&#x2F;World.js:154</code></a>
+        <a href="../files/src_world_World.js.html#l161"><code>src&#x2F;world&#x2F;World.js:161</code></a>
         
         </p>
 
@@ -2653,6 +2922,7 @@ world.step(0.01);
 
     <div class="description">
         <p>The ContactMaterials added to the World.</p>
+
     </div>
 
     
@@ -2697,6 +2967,7 @@ world.step(0.01);
 
     <div class="description">
         <p>Friction between colliding bodies. This value is used if no matching ContactMaterial is found for the body pair.</p>
+
     </div>
 
     
@@ -2741,226 +3012,7 @@ world.step(0.01);
 
     <div class="description">
         <p>Whether to do timing measurements during the step() or not.</p>
-    </div>
 
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_lastStepTime" class="property item">
-    <h3 class="name"><code>lastStepTime</code></h3>
-    <span class="type">Number</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_world_World.js.html#l102"><code>src&#x2F;world&#x2F;World.js:102</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>How many millisecconds the last step() took. This is updated each step if .doProfiling is set to true.</p>
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_lastTimeStep" class="property item">
-    <h3 class="name"><code>lastTimeStep</code></h3>
-    <span class="type">Number</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_world_World.js.html#l133"><code>src&#x2F;world&#x2F;World.js:133</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>For keeping track of what time step size we used last step</p>
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_narrowphase" class="property item">
-    <h3 class="name"><code>narrowphase</code></h3>
-    <span class="type"><a href="../classes/Narrowphase.html" class="crosslink">Narrowphase</a></span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_world_World.js.html#l78"><code>src&#x2F;world&#x2F;World.js:78</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>The narrowphase to use to generate contacts.</p>
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_solveConstraints" class="property item">
-    <h3 class="name"><code>solveConstraints</code></h3>
-    <span class="type">Boolean</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_world_World.js.html#l147"><code>src&#x2F;world&#x2F;World.js:147</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Enable/disable constraint solving in each step.</p>
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_solver" class="property item">
-    <h3 class="name"><code>solver</code></h3>
-    <span class="type"><a href="../classes/Solver.html" class="crosslink">Solver</a></span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_world_World.js.html#l70"><code>src&#x2F;world&#x2F;World.js:70</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>The solver used to satisfy constraints and contacts.</p>
     </div>
 
     
@@ -3005,6 +3057,277 @@ world.step(0.01);
 
     <div class="description">
         <p>Gravity in the world. This is applied on all bodies in the beginning of each step().</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_emitImpactEvent" class="property item">
+    <h3 class="name"><code>emitImpactEvent</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_World.js.html#l175"><code>src&#x2F;world&#x2F;World.js:175</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Set to true if you want to the world to emit the &quot;impact&quot; event. Turning this off could improve performance.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_lastStepTime" class="property item">
+    <h3 class="name"><code>lastStepTime</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_World.js.html#l102"><code>src&#x2F;world&#x2F;World.js:102</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>How many millisecconds the last step() took. This is updated each step if .doProfiling is set to true.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_lastTimeStep" class="property item">
+    <h3 class="name"><code>lastTimeStep</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_World.js.html#l133"><code>src&#x2F;world&#x2F;World.js:133</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>For keeping track of what time step size we used last step</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_narrowphase" class="property item">
+    <h3 class="name"><code>narrowphase</code></h3>
+    <span class="type"><a href="../classes/Narrowphase.html" class="crosslink">Narrowphase</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_World.js.html#l78"><code>src&#x2F;world&#x2F;World.js:78</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The narrowphase to use to generate contacts.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_solveConstraints" class="property item">
+    <h3 class="name"><code>solveConstraints</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_World.js.html#l154"><code>src&#x2F;world&#x2F;World.js:154</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Enable/disable constraint solving in each step.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_solver" class="property item">
+    <h3 class="name"><code>solver</code></h3>
+    <span class="type"><a href="../classes/Solver.html" class="crosslink">Solver</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_World.js.html#l70"><code>src&#x2F;world&#x2F;World.js:70</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The solver used to satisfy constraints and contacts.</p>
+
     </div>
 
     
@@ -3049,6 +3372,7 @@ world.step(0.01);
 
     <div class="description">
         <p>All springs in the world.</p>
+
     </div>
 
     
@@ -3082,7 +3406,7 @@ world.step(0.01);
             
         
         
-        <a href="../files/src_world_World.js.html#l161"><code>src&#x2F;world&#x2F;World.js:161</code></a>
+        <a href="../files/src_world_World.js.html#l168"><code>src&#x2F;world&#x2F;World.js:168</code></a>
         
         </p>
 
@@ -3093,6 +3417,7 @@ world.step(0.01);
 
     <div class="description">
         <p>World time.</p>
+
     </div>
 
     
@@ -3136,7 +3461,7 @@ world.step(0.01);
             
         
         
-        <a href="../files/src_world_World.js.html#l180"><code>src&#x2F;world&#x2F;World.js:180</code></a>
+        <a href="../files/src_world_World.js.html#l194"><code>src&#x2F;world&#x2F;World.js:194</code></a>
         
         </p>
 
@@ -3202,7 +3527,7 @@ world.step(0.01);
             
         
         
-        <a href="../files/src_world_World.js.html#l198"><code>src&#x2F;world&#x2F;World.js:198</code></a>
+        <a href="../files/src_world_World.js.html#l212"><code>src&#x2F;world&#x2F;World.js:212</code></a>
         
         </p>
 
@@ -3213,6 +3538,7 @@ world.step(0.01);
 
     <div class="description">
         <p>Fired when a spring is added to the world.</p>
+
     </div>
 
     
@@ -3268,7 +3594,7 @@ world.step(0.01);
             
         
         
-        <a href="../files/src_world_World.js.html#l208"><code>src&#x2F;world&#x2F;World.js:208</code></a>
+        <a href="../files/src_world_World.js.html#l222"><code>src&#x2F;world&#x2F;World.js:222</code></a>
         
         </p>
 
@@ -3279,6 +3605,7 @@ world.step(0.01);
 
     <div class="description">
         <p>Fired when a first contact is created between two bodies. This event is fired after the step has been done.</p>
+
     </div>
 
     
@@ -3349,7 +3676,7 @@ world.step(0.01);
             
         
         
-        <a href="../files/src_world_World.js.html#l172"><code>src&#x2F;world&#x2F;World.js:172</code></a>
+        <a href="../files/src_world_World.js.html#l186"><code>src&#x2F;world&#x2F;World.js:186</code></a>
         
         </p>
 
@@ -3360,6 +3687,7 @@ world.step(0.01);
 
     <div class="description">
         <p>Fired after the step().</p>
+
     </div>
 
     
@@ -3392,7 +3720,7 @@ world.step(0.01);
             
         
         
-        <a href="../files/src_world_World.js.html#l189"><code>src&#x2F;world&#x2F;World.js:189</code></a>
+        <a href="../files/src_world_World.js.html#l203"><code>src&#x2F;world&#x2F;World.js:203</code></a>
         
         </p>
 

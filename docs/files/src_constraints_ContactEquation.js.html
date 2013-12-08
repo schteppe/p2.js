@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.3.1</em>
+            <em>API Docs for: 0.4.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -96,6 +96,8 @@
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
+            
+                <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
             
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
@@ -209,6 +211,20 @@ function ContactEquation(bi,bj){
      * @type {Boolean}
      */
     this.firstImpact = false;
+
+    /**
+     * The shape in body i that triggered this contact.
+     * @property shapeA
+     * @type {Shape}
+     */
+    this.shapeA = null;
+
+    /**
+     * The shape in body j that triggered this contact.
+     * @property shapeB
+     * @type {Shape}
+     */
+    this.shapeB = null;
 };
 ContactEquation.prototype = new Equation();
 ContactEquation.prototype.constructor = ContactEquation;

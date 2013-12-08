@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.3.1</em>
+            <em>API Docs for: 0.4.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -97,6 +97,8 @@
             
                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
             
+                <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
+            
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
                 <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
@@ -164,7 +166,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_constraints_PrismaticConstraint.js.html#l7"><code>src&#x2F;constraints&#x2F;PrismaticConstraint.js:7</code></a>
+            Defined in: <a href="../files/src_constraints_PrismaticConstraint.js.html#l9"><code>src&#x2F;constraints&#x2F;PrismaticConstraint.js:9</code></a>
         </div>
     
 
@@ -176,7 +178,8 @@
 
 
 <div class="box intro">
-    <p>Constraint that only allows translation along a line between the bodies, no rotation</p>
+    <p>Constraint that only allows bodies to move along a line, relative to each other. See <a href="http://www.iforce2d.net/b2dtut/joints-prismatic">this tutorial</a>.</p>
+
 </div>
 
 
@@ -236,7 +239,7 @@
             
         
         
-        <a href="../files/src_constraints_PrismaticConstraint.js.html#l7"><code>src&#x2F;constraints&#x2F;PrismaticConstraint.js:7</code></a>
+        <a href="../files/src_constraints_PrismaticConstraint.js.html#l9"><code>src&#x2F;constraints&#x2F;PrismaticConstraint.js:9</code></a>
         
         </p>
 
@@ -308,7 +311,8 @@
                                 
 
                                 <div class="param-description">
-                                    
+                                    <p>Max force to be applied by the constraint</p>
+
                                 </div>
 
                                 
@@ -316,12 +320,27 @@
                             
                             <li class="param">
                                 
-                                    <code class="param-name">worldAxis</code>
+                                    <code class="param-name">localAnchorA</code>
                                     <span class="type">Array</span>
                                 
 
                                 <div class="param-description">
-                                    
+                                    <p>Body A&#39;s anchor point, defined in its own local frame.</p>
+
+                                </div>
+
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name">localAnchorB</code>
+                                    <span class="type">Array</span>
+                                
+
+                                <div class="param-description">
+                                    <p>Body B&#39;s anchor point, defined in its own local frame.</p>
+
                                 </div>
 
                                 
@@ -334,20 +353,8 @@
                                 
 
                                 <div class="param-description">
-                                    
-                                </div>
+                                    <p>An axis, defined in body A frame, that body B&#39;s anchor point may slide along.</p>
 
-                                
-                            </li>
-                            
-                            <li class="param">
-                                
-                                    <code class="param-name">localAxisB</code>
-                                    <span class="type">Array</span>
-                                
-
-                                <div class="param-description">
-                                    
                                 </div>
 
                                 
@@ -377,6 +384,8 @@
             <li class="api-class-tab methods"><a href="#methods">Methods</a></li>
         
         
+            <li class="api-class-tab properties"><a href="#properties">Properties</a></li>
+        
         
         
     </ul>
@@ -402,6 +411,35 @@
                 </div>
             
 
+            
+                <div class="index-section properties">
+                    <h3>Properties</h3>
+
+                    <ul class="index-list properties extends">
+                        
+                            <li class="index-item property">
+                                <a href="#property_localAnchorA">localAnchorA</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_localAnchorB">localAnchorB</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_localAxisA">localAxisA</a>
+
+                                
+                                
+                            </li>
+                        
+                    </ul>
+                </div>
             
 
             
@@ -446,7 +484,7 @@
             
         
         
-        <a href="../files/src_constraints_PrismaticConstraint.js.html#l79"><code>src&#x2F;constraints&#x2F;PrismaticConstraint.js:79</code></a>
+        <a href="../files/src_constraints_PrismaticConstraint.js.html#l109"><code>src&#x2F;constraints&#x2F;PrismaticConstraint.js:109</code></a>
         
         </p>
 
@@ -458,6 +496,7 @@
 
     <div class="description">
         <p>Update the constraint equations. Should be done if any of the bodies changed position, before solving.</p>
+
     </div>
 
     
@@ -471,6 +510,144 @@
             </div>
         
 
+        
+            <div id="properties" class="api-class-tabpanel">
+                <h2 class="off-left">Properties</h2>
+
+                
+                    <div id="property_localAnchorA" class="property item">
+    <h3 class="name"><code>localAnchorA</code></h3>
+    <span class="type">Array</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_constraints_PrismaticConstraint.js.html#l36"><code>src&#x2F;constraints&#x2F;PrismaticConstraint.js:36</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_localAnchorB" class="property item">
+    <h3 class="name"><code>localAnchorB</code></h3>
+    <span class="type">Array</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_constraints_PrismaticConstraint.js.html#l42"><code>src&#x2F;constraints&#x2F;PrismaticConstraint.js:42</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_localAxisA" class="property item">
+    <h3 class="name"><code>localAxisA</code></h3>
+    <span class="type">Array</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_constraints_PrismaticConstraint.js.html#l48"><code>src&#x2F;constraints&#x2F;PrismaticConstraint.js:48</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+            </div>
         
 
         

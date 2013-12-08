@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.3.1</em>
+            <em>API Docs for: 0.4.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -96,6 +96,8 @@
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
+            
+                <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
             
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
@@ -174,6 +176,7 @@
 <div class="box intro">
     <p>A rigid body. Has got a center of mass, position, velocity and a number of
 shapes that are used for collisions.</p>
+
 </div>
 
 
@@ -265,7 +268,8 @@ shapes that are used for collisions.</p>
                                 
 
                                 <div class="param-description">
-                                    <p>A number >= 0. If zero, the .motionState will be set to Body.STATIC.</p>
+                                    <p>A number &gt;= 0. If zero, the .motionState will be set to Body.STATIC.</p>
+
                                 </div>
 
                                 
@@ -410,6 +414,13 @@ shapes that are used for collisions.</p>
                             </li>
                         
                             <li class="index-item method">
+                                <a href="#method_applyDamping">applyDamping</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
                                 <a href="#method_applyForce">applyForce</a>
 
                                 
@@ -483,6 +494,13 @@ shapes that are used for collisions.</p>
                             </li>
                         
                             <li class="index-item property">
+                                <a href="#property_angularDamping">angularDamping</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
                                 <a href="#property_angularForce">angularForce</a>
 
                                 
@@ -498,6 +516,13 @@ shapes that are used for collisions.</p>
                         
                             <li class="index-item property">
                                 <a href="#property_boundingRadius">boundingRadius</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_damping">damping</a>
 
                                 
                                 
@@ -696,7 +721,7 @@ shapes that are used for collisions.</p>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l208"><code>src&#x2F;objects&#x2F;Body.js:208</code></a>
+        <a href="../files/src_objects_Body.js.html#l222"><code>src&#x2F;objects&#x2F;Body.js:222</code></a>
         
         </p>
 
@@ -710,6 +735,7 @@ shapes that are used for collisions.</p>
         <p>Add a shape to the body. You can pass a local transform when adding a shape,
 so that the shape gets an offset and angle relative to the body center of mass.
 Will automatically update the mass properties and bounding radius.</p>
+
     </div>
 
     
@@ -744,6 +770,7 @@ Will automatically update the mass properties and bounding radius.</p>
 
                     <div class="param-description">
                         <p>Local body offset of the shape.</p>
+
                     </div>
 
                     
@@ -760,6 +787,7 @@ Will automatically update the mass properties and bounding radius.</p>
 
                     <div class="param-description">
                         <p>Local body angle.</p>
+
                     </div>
 
                     
@@ -786,8 +814,8 @@ body.addShape(shape);
 body.addShape(shape,[1,0]);
 
 // Add another shape to the body, positioned 1 unit length from the body center of mass along the local y-axis, and rotated 90 degrees CCW.
-body.addShape(shape,[0,1],Math.PI/2);
-</code></pre>
+body.addShape(shape,[0,1],Math.PI/2);</code></pre>
+
             </div>
         </div>
     
@@ -826,7 +854,7 @@ body.addShape(shape,[0,1],Math.PI/2);
             
         
         
-        <a href="../files/src_objects_Body.js.html#l416"><code>src&#x2F;objects&#x2F;Body.js:416</code></a>
+        <a href="../files/src_objects_Body.js.html#l430"><code>src&#x2F;objects&#x2F;Body.js:430</code></a>
         
         </p>
 
@@ -838,8 +866,98 @@ body.addShape(shape,[0,1],Math.PI/2);
 
     <div class="description">
         <p>Moves the shape offsets so their center of mass becomes the body center of mass.</p>
+
     </div>
 
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_applyDamping" class="method item">
+    <h3 class="name"><code>applyDamping</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>dt</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Body.js.html#l501"><code>src&#x2F;objects&#x2F;Body.js:501</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Apply damping, see <a href="http://code.google.com/p/bullet/issues/detail?id=74">this</a> for details.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">dt</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>Current time step</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
     
 
     
@@ -896,7 +1014,7 @@ body.addShape(shape,[0,1],Math.PI/2);
             
         
         
-        <a href="../files/src_objects_Body.js.html#l298"><code>src&#x2F;objects&#x2F;Body.js:298</code></a>
+        <a href="../files/src_objects_Body.js.html#l312"><code>src&#x2F;objects&#x2F;Body.js:312</code></a>
         
         </p>
 
@@ -908,6 +1026,7 @@ body.addShape(shape,[0,1],Math.PI/2);
 
     <div class="description">
         <p>Apply force to a world point. This could for example be a point on the RigidBody surface. Applying force this way will add to Body.force and Body.angularForce.</p>
+
     </div>
 
     
@@ -926,6 +1045,7 @@ body.addShape(shape,[0,1],Math.PI/2);
 
                     <div class="param-description">
                         <p>The force to add.</p>
+
                     </div>
 
                     
@@ -941,6 +1061,7 @@ body.addShape(shape,[0,1],Math.PI/2);
 
                     <div class="param-description">
                         <p>A world point to apply the force on.</p>
+
                     </div>
 
                     
@@ -1008,7 +1129,7 @@ body.addShape(shape,[0,1],Math.PI/2);
             
         
         
-        <a href="../files/src_objects_Body.js.html#l339"><code>src&#x2F;objects&#x2F;Body.js:339</code></a>
+        <a href="../files/src_objects_Body.js.html#l353"><code>src&#x2F;objects&#x2F;Body.js:353</code></a>
         
         </p>
 
@@ -1020,6 +1141,7 @@ body.addShape(shape,[0,1],Math.PI/2);
 
     <div class="description">
         <p>Reads a polygon shape path, and assembles convex shapes from that and puts them at proper offset points.</p>
+
     </div>
 
     
@@ -1038,6 +1160,7 @@ body.addShape(shape,[0,1],Math.PI/2);
 
                     <div class="param-description">
                         <p>An array of 2d vectors, e.g. [[0,0],[0,1],...] that resembles a concave or convex polygon. The shape must be simple and without holes.</p>
+
                     </div>
 
                     
@@ -1068,6 +1191,7 @@ body.addShape(shape,[0,1],Math.PI/2);
 
                                 <div class="param-description">
                                     <p>Set to true if you need optimal decomposition. Warning: very slow for polygons with more than 10 vertices.</p>
+
                                 </div>
 
                                 
@@ -1082,6 +1206,7 @@ body.addShape(shape,[0,1],Math.PI/2);
 
                                 <div class="param-description">
                                     <p>Set to true if you already know that the path is not intersecting itself.</p>
+
                                 </div>
 
                                 
@@ -1096,6 +1221,7 @@ body.addShape(shape,[0,1],Math.PI/2);
 
                                 <div class="param-description">
                                     <p>Set to a number (angle threshold value) to remove collinear points, or false to keep all points.</p>
+
                                 </div>
 
                                 
@@ -1118,7 +1244,8 @@ body.addShape(shape,[0,1],Math.PI/2);
                     
                         <span class="type">Boolean</span>:
                     
-                    True on success, else false.
+                    <p>True on success, else false.</p>
+
                 
             </div>
         </div>
@@ -1174,7 +1301,7 @@ body.addShape(shape,[0,1],Math.PI/2);
             
         
         
-        <a href="../files/src_objects_Body.js.html#l248"><code>src&#x2F;objects&#x2F;Body.js:248</code></a>
+        <a href="../files/src_objects_Body.js.html#l262"><code>src&#x2F;objects&#x2F;Body.js:262</code></a>
         
         </p>
 
@@ -1186,6 +1313,7 @@ body.addShape(shape,[0,1],Math.PI/2);
 
     <div class="description">
         <p>Remove a shape</p>
+
     </div>
 
     
@@ -1222,7 +1350,8 @@ body.addShape(shape,[0,1],Math.PI/2);
                     
                         <span class="type">Boolean</span>:
                     
-                    True if the shape was found and removed, else false.
+                    <p>True if the shape was found and removed, else false.</p>
+
                 
             </div>
         </div>
@@ -1264,7 +1393,7 @@ body.addShape(shape,[0,1],Math.PI/2);
             
         
         
-        <a href="../files/src_objects_Body.js.html#l464"><code>src&#x2F;objects&#x2F;Body.js:464</code></a>
+        <a href="../files/src_objects_Body.js.html#l478"><code>src&#x2F;objects&#x2F;Body.js:478</code></a>
         
         </p>
 
@@ -1276,6 +1405,7 @@ body.addShape(shape,[0,1],Math.PI/2);
 
     <div class="description">
         <p>Sets the force on the body to zero.</p>
+
     </div>
 
     
@@ -1334,7 +1464,7 @@ body.addShape(shape,[0,1],Math.PI/2);
             
         
         
-        <a href="../files/src_objects_Body.js.html#l319"><code>src&#x2F;objects&#x2F;Body.js:319</code></a>
+        <a href="../files/src_objects_Body.js.html#l333"><code>src&#x2F;objects&#x2F;Body.js:333</code></a>
         
         </p>
 
@@ -1346,6 +1476,7 @@ body.addShape(shape,[0,1],Math.PI/2);
 
     <div class="description">
         <p>Transform a world point to local body frame.</p>
+
     </div>
 
     
@@ -1364,6 +1495,7 @@ body.addShape(shape,[0,1],Math.PI/2);
 
                     <div class="param-description">
                         <p>The vector to store the result in</p>
+
                     </div>
 
                     
@@ -1379,6 +1511,7 @@ body.addShape(shape,[0,1],Math.PI/2);
 
                     <div class="param-description">
                         <p>The input world vector</p>
+
                     </div>
 
                     
@@ -1442,7 +1575,7 @@ body.addShape(shape,[0,1],Math.PI/2);
             
         
         
-        <a href="../files/src_objects_Body.js.html#l329"><code>src&#x2F;objects&#x2F;Body.js:329</code></a>
+        <a href="../files/src_objects_Body.js.html#l343"><code>src&#x2F;objects&#x2F;Body.js:343</code></a>
         
         </p>
 
@@ -1454,6 +1587,7 @@ body.addShape(shape,[0,1],Math.PI/2);
 
     <div class="description">
         <p>Transform a local point to world frame.</p>
+
     </div>
 
     
@@ -1472,6 +1606,7 @@ body.addShape(shape,[0,1],Math.PI/2);
 
                     <div class="param-description">
                         <p>The vector to store the result in</p>
+
                     </div>
 
                     
@@ -1487,6 +1622,7 @@ body.addShape(shape,[0,1],Math.PI/2);
 
                     <div class="param-description">
                         <p>The input local vector</p>
+
                     </div>
 
                     
@@ -1534,7 +1670,7 @@ body.addShape(shape,[0,1],Math.PI/2);
             
         
         
-        <a href="../files/src_objects_Body.js.html#l186"><code>src&#x2F;objects&#x2F;Body.js:186</code></a>
+        <a href="../files/src_objects_Body.js.html#l200"><code>src&#x2F;objects&#x2F;Body.js:200</code></a>
         
         </p>
 
@@ -1547,6 +1683,7 @@ body.addShape(shape,[0,1],Math.PI/2);
     <div class="description">
         <p>Update the bounding radius of the body. Should be done if any of the shapes
 are changed.</p>
+
     </div>
 
     
@@ -1589,7 +1726,7 @@ are changed.</p>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l266"><code>src&#x2F;objects&#x2F;Body.js:266</code></a>
+        <a href="../files/src_objects_Body.js.html#l280"><code>src&#x2F;objects&#x2F;Body.js:280</code></a>
         
         </p>
 
@@ -1602,6 +1739,7 @@ are changed.</p>
     <div class="description">
         <p>Updates .inertia, .invMass, .invInertia for this Body. Should be called when
 changing the structure or mass of the Body.</p>
+
     </div>
 
     
@@ -1614,8 +1752,8 @@ changing the structure or mass of the Body.</p>
 
             <div class="example-content">
                 <pre class="code prettyprint"><code>body.mass += 1;
-body.updateMassProperties();
-</code></pre>
+body.updateMassProperties();</code></pre>
+
             </div>
         </div>
     
@@ -1664,6 +1802,52 @@ body.updateMassProperties();
 
     <div class="description">
         <p>The angle of the body</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_angularDamping" class="property item">
+    <h3 class="name"><code>angularDamping</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Body.js.html#l156"><code>src&#x2F;objects&#x2F;Body.js:156</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The angular force acting on the body</p>
+
     </div>
 
     
@@ -1708,6 +1892,7 @@ body.updateMassProperties();
 
     <div class="description">
         <p>The angular force acting on the body</p>
+
     </div>
 
     
@@ -1752,6 +1937,7 @@ body.updateMassProperties();
 
     <div class="description">
         <p>The angular velocity of the body</p>
+
     </div>
 
     
@@ -1785,7 +1971,7 @@ body.updateMassProperties();
             
         
         
-        <a href="../files/src_objects_Body.js.html#l174"><code>src&#x2F;objects&#x2F;Body.js:174</code></a>
+        <a href="../files/src_objects_Body.js.html#l188"><code>src&#x2F;objects&#x2F;Body.js:188</code></a>
         
         </p>
 
@@ -1796,6 +1982,52 @@ body.updateMassProperties();
 
     <div class="description">
         <p>Bounding circle radius</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_damping" class="property item">
+    <h3 class="name"><code>damping</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Body.js.html#l149"><code>src&#x2F;objects&#x2F;Body.js:149</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The linear damping acting on the body in the velocity direction</p>
+
     </div>
 
     
@@ -1831,7 +2063,7 @@ body.updateMassProperties();
             
         
         
-        <a href="../files/src_objects_Body.js.html#l487"><code>src&#x2F;objects&#x2F;Body.js:487</code></a>
+        <a href="../files/src_objects_Body.js.html#l518"><code>src&#x2F;objects&#x2F;Body.js:518</code></a>
         
         </p>
 
@@ -1842,6 +2074,7 @@ body.updateMassProperties();
 
     <div class="description">
         <p>Dynamic body.</p>
+
     </div>
 
     
@@ -1886,6 +2119,7 @@ body.updateMassProperties();
 
     <div class="description">
         <p>The force acting on the body</p>
+
     </div>
 
     
@@ -1930,6 +2164,7 @@ body.updateMassProperties();
 
     <div class="description">
         <p>The body identifyer</p>
+
     </div>
 
     
@@ -1974,6 +2209,7 @@ body.updateMassProperties();
 
     <div class="description">
         <p>The inertia of the body around the Z axis.</p>
+
     </div>
 
     
@@ -2018,6 +2254,7 @@ body.updateMassProperties();
 
     <div class="description">
         <p>The inverse inertia of the body.</p>
+
     </div>
 
     
@@ -2062,6 +2299,7 @@ body.updateMassProperties();
 
     <div class="description">
         <p>The inverse mass of the body.</p>
+
     </div>
 
     
@@ -2097,7 +2335,7 @@ body.updateMassProperties();
             
         
         
-        <a href="../files/src_objects_Body.js.html#l503"><code>src&#x2F;objects&#x2F;Body.js:503</code></a>
+        <a href="../files/src_objects_Body.js.html#l534"><code>src&#x2F;objects&#x2F;Body.js:534</code></a>
         
         </p>
 
@@ -2108,6 +2346,7 @@ body.updateMassProperties();
 
     <div class="description">
         <p>Kinematic body.</p>
+
     </div>
 
     
@@ -2152,6 +2391,7 @@ body.updateMassProperties();
 
     <div class="description">
         <p>The mass of the body.</p>
+
     </div>
 
     
@@ -2185,7 +2425,7 @@ body.updateMassProperties();
             
         
         
-        <a href="../files/src_objects_Body.js.html#l149"><code>src&#x2F;objects&#x2F;Body.js:149</code></a>
+        <a href="../files/src_objects_Body.js.html#l163"><code>src&#x2F;objects&#x2F;Body.js:163</code></a>
         
         </p>
 
@@ -2198,6 +2438,7 @@ body.updateMassProperties();
         <p>The type of motion this body has. Should be one of: Body.STATIC (the body
 does not move), Body.DYNAMIC (body can move and respond to collisions)
 and Body.KINEMATIC (only moves according to its .velocity).</p>
+
     </div>
 
     
@@ -2209,14 +2450,14 @@ and Body.KINEMATIC (only moves according to its .velocity).</p>
             <div class="example-content">
                 <pre class="code prettyprint"><code>// This body will move and interact with other bodies
 var dynamicBody = new Body();
-dynamicBody.motionState = Body.DYNAMIC;
-</code></pre><pre class="code prettyprint"><code>// This body will not move at all
+dynamicBody.motionState = Body.DYNAMIC;</code></pre>
+<pre class="code prettyprint"><code>// This body will not move at all
 var staticBody = new Body();
-staticBody.motionState = Body.STATIC;
-</code></pre><pre class="code prettyprint"><code>// This body will only move if you change its velocity
+staticBody.motionState = Body.STATIC;</code></pre>
+<pre class="code prettyprint"><code>// This body will only move if you change its velocity
 var kinematicBody = new Body();
-kinematicBody.motionState = Body.KINEMATIC;
-</code></pre>
+kinematicBody.motionState = Body.KINEMATIC;</code></pre>
+
             </div>
         </div>
     
@@ -2259,6 +2500,7 @@ kinematicBody.motionState = Body.KINEMATIC;
 
     <div class="description">
         <p>The position of the body</p>
+
     </div>
 
     
@@ -2303,6 +2545,7 @@ kinematicBody.motionState = Body.KINEMATIC;
 
     <div class="description">
         <p>The body-local shape angle transforms. This is an array of numbers (angles).</p>
+
     </div>
 
     
@@ -2348,6 +2591,7 @@ kinematicBody.motionState = Body.KINEMATIC;
     <div class="description">
         <p>The local shape offsets, relative to the body center of mass. This is an
 array of Float32Array.</p>
+
     </div>
 
     
@@ -2393,6 +2637,7 @@ array of Float32Array.</p>
     <div class="description">
         <p>The shapes of the body. The local transform of the shape in .shapes[i] is
 defined by .shapeOffsets[i] and .shapeAngles[i].</p>
+
     </div>
 
     
@@ -2428,7 +2673,7 @@ defined by .shapeOffsets[i] and .shapeAngles[i].</p>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l495"><code>src&#x2F;objects&#x2F;Body.js:495</code></a>
+        <a href="../files/src_objects_Body.js.html#l526"><code>src&#x2F;objects&#x2F;Body.js:526</code></a>
         
         </p>
 
@@ -2439,6 +2684,7 @@ defined by .shapeOffsets[i] and .shapeAngles[i].</p>
 
     <div class="description">
         <p>Static body.</p>
+
     </div>
 
     
@@ -2483,6 +2729,7 @@ defined by .shapeOffsets[i] and .shapeAngles[i].</p>
 
     <div class="description">
         <p>The velocity of the body</p>
+
     </div>
 
     
@@ -2527,6 +2774,7 @@ defined by .shapeOffsets[i] and .shapeAngles[i].</p>
 
     <div class="description">
         <p>Constraint velocity that was added to the body during the last step.</p>
+
     </div>
 
     
@@ -2571,6 +2819,7 @@ defined by .shapeOffsets[i] and .shapeAngles[i].</p>
 
     <div class="description">
         <p>Angular constraint velocity that was added to the body during last step.</p>
+
     </div>
 
     

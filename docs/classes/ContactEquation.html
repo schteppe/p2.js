@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.3.1</em>
+            <em>API Docs for: 0.4.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -96,6 +96,8 @@
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
+            
+                <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
             
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
@@ -177,6 +179,7 @@
 
 <div class="box intro">
     <p>Non-penetration constraint equation. Tries to make the ri and rj vectors the same point.</p>
+
 </div>
 
 
@@ -431,6 +434,13 @@
                                 
                             </li>
                         
+                            <li class="index-item property inherited">
+                                <a href="#property_multiplier">multiplier</a>
+
+                                
+                                
+                            </li>
+                        
                             <li class="index-item property">
                                 <a href="#property_ni">ni</a>
 
@@ -461,6 +471,20 @@
                         
                             <li class="index-item property">
                                 <a href="#property_rj">rj</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_shapeA">shapeA</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_shapeB">shapeB</a>
 
                                 
                                 
@@ -526,7 +550,7 @@
             
         
         
-        <a href="../files/src_constraints_Equation.js.html#l253"><code>src&#x2F;constraints&#x2F;Equation.js:253</code></a>
+        <a href="../files/src_constraints_Equation.js.html#l260"><code>src&#x2F;constraints&#x2F;Equation.js:260</code></a>
         
         </p>
 
@@ -538,6 +562,7 @@
 
     <div class="description">
         <p>Add constraint velocity to the bodies.</p>
+
     </div>
 
     
@@ -604,7 +629,7 @@
             
         
         
-        <a href="../files/src_constraints_Equation.js.html#l108"><code>src&#x2F;constraints&#x2F;Equation.js:108</code></a>
+        <a href="../files/src_constraints_Equation.js.html#l115"><code>src&#x2F;constraints&#x2F;Equation.js:115</code></a>
         
         </p>
 
@@ -616,6 +641,7 @@
 
     <div class="description">
         <p>Computes the RHS of the SPOOK equation</p>
+
     </div>
 
     
@@ -681,7 +707,7 @@
             
         
         
-        <a href="../files/src_constraints_Equation.js.html#l301"><code>src&#x2F;constraints&#x2F;Equation.js:301</code></a>
+        <a href="../files/src_constraints_Equation.js.html#l308"><code>src&#x2F;constraints&#x2F;Equation.js:308</code></a>
         
         </p>
 
@@ -692,7 +718,8 @@
     </div>
 
     <div class="description">
-        <p>Compute the denominator part of the SPOOK equation: C = G<em>inv(M)</em>G' + eps</p>
+        <p>Compute the denominator part of the SPOOK equation: C = G<em>inv(M)</em>G&#39; + eps</p>
+
     </div>
 
     
@@ -771,7 +798,7 @@
             
         
         
-        <a href="../files/src_constraints_Equation.js.html#l197"><code>src&#x2F;constraints&#x2F;Equation.js:197</code></a>
+        <a href="../files/src_constraints_Equation.js.html#l204"><code>src&#x2F;constraints&#x2F;Equation.js:204</code></a>
         
         </p>
 
@@ -783,6 +810,7 @@
 
     <div class="description">
         <p>Computes G<em>inv(M)</em>f, where M is the mass matrix with diagonal blocks for each body, and f are the forces on the bodies.</p>
+
     </div>
 
     
@@ -838,7 +866,7 @@
             
         
         
-        <a href="../files/src_constraints_Equation.js.html#l223"><code>src&#x2F;constraints&#x2F;Equation.js:223</code></a>
+        <a href="../files/src_constraints_Equation.js.html#l230"><code>src&#x2F;constraints&#x2F;Equation.js:230</code></a>
         
         </p>
 
@@ -849,7 +877,8 @@
     </div>
 
     <div class="description">
-        <p>Computes G<em>inv(M)</em>G'</p>
+        <p>Computes G<em>inv(M)</em>G&#39;</p>
+
     </div>
 
     
@@ -905,7 +934,7 @@
             
         
         
-        <a href="../files/src_constraints_Equation.js.html#l120"><code>src&#x2F;constraints&#x2F;Equation.js:120</code></a>
+        <a href="../files/src_constraints_Equation.js.html#l127"><code>src&#x2F;constraints&#x2F;Equation.js:127</code></a>
         
         </p>
 
@@ -917,6 +946,7 @@
 
     <div class="description">
         <p>Computes G*q, where q are the generalized body coordinates</p>
+
     </div>
 
     
@@ -972,7 +1002,7 @@
             
         
         
-        <a href="../files/src_constraints_Equation.js.html#l165"><code>src&#x2F;constraints&#x2F;Equation.js:165</code></a>
+        <a href="../files/src_constraints_Equation.js.html#l172"><code>src&#x2F;constraints&#x2F;Equation.js:172</code></a>
         
         </p>
 
@@ -984,6 +1014,7 @@
 
     <div class="description">
         <p>Computes G*W, where W are the body velocities</p>
+
     </div>
 
     
@@ -1039,7 +1070,7 @@
             
         
         
-        <a href="../files/src_constraints_Equation.js.html#l181"><code>src&#x2F;constraints&#x2F;Equation.js:181</code></a>
+        <a href="../files/src_constraints_Equation.js.html#l188"><code>src&#x2F;constraints&#x2F;Equation.js:188</code></a>
         
         </p>
 
@@ -1051,6 +1082,7 @@
 
     <div class="description">
         <p>Computes G*Wlambda, where W are the body velocities</p>
+
     </div>
 
     
@@ -1112,7 +1144,7 @@
             
         
         
-        <a href="../files/src_constraints_Equation.js.html#l84"><code>src&#x2F;constraints&#x2F;Equation.js:84</code></a>
+        <a href="../files/src_constraints_Equation.js.html#l91"><code>src&#x2F;constraints&#x2F;Equation.js:91</code></a>
         
         </p>
 
@@ -1124,6 +1156,7 @@
 
     <div class="description">
         <p>Update SPOOK parameters .a, .b and .eps according to the given time step. See equations 9, 10 and 11 in the <a href="http://www8.cs.umu.se/kurser/5DV058/VT09/lectures/spooknotes.pdf">SPOOK notes</a>.</p>
+
     </div>
 
     
@@ -1196,6 +1229,7 @@
 
     <div class="description">
         <p>First body participating in the constraint</p>
+
     </div>
 
     
@@ -1237,6 +1271,7 @@
 
     <div class="description">
         <p>Second body participating in the constraint</p>
+
     </div>
 
     
@@ -1281,6 +1316,7 @@
 
     <div class="description">
         <p>Set to true if this is the first impact between the bodies (not persistant contact).</p>
+
     </div>
 
     
@@ -1322,6 +1358,7 @@
 
     <div class="description">
         <p>The Jacobian entry of this equation. 6 numbers, 3 per body (x,y,angle).</p>
+
     </div>
 
     
@@ -1363,6 +1400,7 @@
 
     <div class="description">
         <p>Max force to apply when solving</p>
+
     </div>
 
     
@@ -1404,6 +1442,49 @@
 
     <div class="description">
         <p>Minimum force to apply when solving</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_multiplier" class="property item inherited">
+    <h3 class="name"><code>multiplier</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Equation.html#property_multiplier">Equation</a>:
+            
+        
+        
+        <a href="../files/src_constraints_Equation.js.html#l82"><code>src&#x2F;constraints&#x2F;Equation.js:82</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The resulting constraint multiplier from the last solve. This is mostly equivalent to the force produced by the constraint.</p>
+
     </div>
 
     
@@ -1448,6 +1529,7 @@
 
     <div class="description">
         <p>The normal vector, pointing out of body i</p>
+
     </div>
 
     
@@ -1489,6 +1571,7 @@
 
     <div class="description">
         <p>The number of time steps needed to stabilize the constraint equation. Typically between 3 and 5 time steps.</p>
+
     </div>
 
     
@@ -1533,6 +1616,7 @@
 
     <div class="description">
         <p>The restitution to use. 0=no bounciness, 1=max bounciness.</p>
+
     </div>
 
     
@@ -1577,6 +1661,7 @@
 
     <div class="description">
         <p>Vector from body i center of mass to the contact point.</p>
+
     </div>
 
     
@@ -1621,6 +1706,97 @@
 
     <div class="description">
         <p>Vector from body j center of mass to the contact point.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_shapeA" class="property item">
+    <h3 class="name"><code>shapeA</code></h3>
+    <span class="type"><a href="../classes/Shape.html" class="crosslink">Shape</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_constraints_ContactEquation.js.html#l55"><code>src&#x2F;constraints&#x2F;ContactEquation.js:55</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The shape in body i that triggered this contact.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_shapeB" class="property item">
+    <h3 class="name"><code>shapeB</code></h3>
+    <span class="type"><a href="../classes/Shape.html" class="crosslink">Shape</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_constraints_ContactEquation.js.html#l62"><code>src&#x2F;constraints&#x2F;ContactEquation.js:62</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The shape in body j that triggered this contact.</p>
+
     </div>
 
     
@@ -1662,6 +1838,7 @@
 
     <div class="description">
         <p>The stiffness of this equation. Typically chosen to a large number (~1e7), but can be chosen somewhat freely to get a stable simulation.</p>
+
     </div>
 
     

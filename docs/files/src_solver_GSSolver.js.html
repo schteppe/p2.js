@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.3.1</em>
+            <em>API Docs for: 0.4.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -97,6 +97,8 @@
             
                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
             
+                <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
+            
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
                 <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
@@ -159,6 +161,7 @@
 var vec2 = require(&#x27;../math/vec2&#x27;)
 ,   Solver = require(&#x27;./Solver&#x27;)
 ,   Utils = require(&#x27;../utils/Utils&#x27;)
+,   FrictionEquation = require(&#x27;../constraints/FrictionEquation&#x27;)
 
 module.exports = GSSolver;
 
@@ -226,6 +229,13 @@ function GSSolver(options){
      * @type {Boolean}
      */
     this.useZeroRHS = false;
+
+    /**
+     * Number of friction iterations to skip. If .skipFrictionIterations=2, then no FrictionEquations will be iterated until the third iteration.
+     * @property skipFrictionIterations
+     * @type {Number}
+     */
+    this.skipFrictionIterations = 2;
 };
 GSSolver.prototype = new Solver();
 
@@ -241,6 +251,7 @@ GSSolver.prototype.solve = function(dt,world){
 
     var iter = 0,
         maxIter = this.iterations,
+        skipFrictionIter = this.skipFrictionIterations,
         tolSquared = this.tolerance*this.tolerance,
         equations = this.equations,
         Neq = equations.length,
@@ -301,9 +312,13 @@ GSSolver.prototype.solve = function(dt,world){
 
             for(j=0; j!==Neq; j++){
                 c = equations[j];
+
+                if(c instanceof FrictionEquation &amp;&amp; iter &lt; skipFrictionIter)
+                    continue;
+
                 var _eps = useGlobalParams ? eps : c.eps;
 
-                var deltalambda = GSSolver.iterateEquation(j,c,_eps,Bs,invCs,lambda,useZeroRHS);
+                var deltalambda = GSSolver.iterateEquation(j,c,_eps,Bs,invCs,lambda,useZeroRHS,dt);
                 if(tolSquared !== 0) deltalambdaTot += Math.abs(deltalambda);
             }
 
@@ -319,14 +334,21 @@ GSSolver.prototype.solve = function(dt,world){
     errorTot = deltalambdaTot;
 };
 
-GSSolver.iterateEquation = function(j,eq,eps,Bs,invCs,lambda,useZeroRHS){
+GSSolver.iterateEquation = function(j,eq,eps,Bs,invCs,lambda,useZeroRHS,dt){
     // Compute iteration
-    var maxForce = eq.maxForce,
-        minForce = eq.minForce,
-        B = Bs[j],
+    var B = Bs[j],
         invC = invCs[j],
         lambdaj = lambda[j],
         GWlambda = eq.computeGWlambda(eps);
+
+    if(eq instanceof FrictionEquation){
+        // Rescale the max friction force according to the normal force
+        eq.maxForce =  eq.contactEquation.multiplier * eq.frictionCoefficient * dt;
+        eq.minForce = -eq.contactEquation.multiplier * eq.frictionCoefficient * dt;
+    }
+
+    var maxForce = eq.maxForce,
+        minForce = eq.minForce;
 
     if(useZeroRHS) B = 0;
 
@@ -340,7 +362,7 @@ GSSolver.iterateEquation = function(j,eq,eps,Bs,invCs,lambda,useZeroRHS){
         deltalambda = maxForce - lambdaj;
     }
     lambda[j] += deltalambda;
-
+    eq.multiplier = lambda[j] / dt;
     eq.addToWlambda(deltalambda);
 
     return deltalambda;

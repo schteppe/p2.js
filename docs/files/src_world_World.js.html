@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.3.1</em>
+            <em>API Docs for: 0.4.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -96,6 +96,8 @@
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
+            
+                <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
             
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
@@ -286,7 +288,7 @@ function World(options){
      * @property defaultFriction
      * @type {Number}
      */
-    this.defaultFriction = 0.1;
+    this.defaultFriction = 0.3;
 
     /**
      * For keeping track of what time step size we used last step
@@ -301,6 +303,13 @@ function World(options){
      * @type {Boolean}
      */
     this.applySpringForces = true;
+
+    /**
+     * Enable to automatically apply body damping each step.
+     * @property applyDamping
+     * @type {Boolean}
+     */
+    this.applyDamping = true;
 
     /**
      * Enable/disable constraint solving in each step.
@@ -322,6 +331,13 @@ function World(options){
      * @type {Number}
      */
     this.time = 0.0;
+
+    /**
+     * Set to true if you want to the world to emit the &quot;impact&quot; event. Turning this off could improve performance.
+     * @property emitImpactEvent
+     * @type {Boolean}
+     */
+    this.emitImpactEvent = true;
 
     // Id counters
     this._constraintIdCounter = 0;
@@ -394,6 +410,18 @@ World.prototype.addConstraint = function(c){
  */
 World.prototype.addContactMaterial = function(contactMaterial){
     this.contactMaterials.push(contactMaterial);
+};
+
+/**
+ * Removes a contact material
+ *
+ * @method removeContactMaterial
+ * @param {ContactMaterial} cm
+ */
+World.prototype.removeContactMaterial = function(cm){
+    var idx = this.contactMaterials.indexOf(cm);
+    if(idx!==-1)
+        this.contactMaterials.splice(idx,1);
 };
 
 /**
@@ -495,6 +523,13 @@ World.prototype.step = function(dt){
         }
     }
 
+    if(this.applyDamping){
+        for(var i=0; i!==Nbodies; i++){
+            var b = bodies[i];
+            b.applyDamping(dt);
+        }
+    }
+
     // Broadphase
     var result = broadphase.getCollisionPairs(this);
 
@@ -569,13 +604,15 @@ World.prototype.step = function(dt){
     }
 
     // Emit impact event
-    var ev = this.impactEvent;
-    for(var i=0; i!==np.contactEquations.length; i++){
-        var eq = np.contactEquations[i];
-        if(eq.firstImpact){
-            ev.bodyA = eq.bi;
-            ev.bodyB = eq.bj;
-            this.emit(ev);
+    if(this.emitImpactEvent){
+        var ev = this.impactEvent;
+        for(var i=0; i!==np.contactEquations.length; i++){
+            var eq = np.contactEquations[i];
+            if(eq.firstImpact){
+                ev.bodyA = eq.bi;
+                ev.bodyB = eq.bj;
+                this.emit(ev);
+            }
         }
     }
 
@@ -651,54 +688,16 @@ World.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,mu,glen,restitution){
     // Run narrowphase
     np.enableFriction = mu &gt; 0;
     np.slipForce = mug;
+    np.frictionCoefficient = mu;
     np.restitution = restitution;
-    if(si instanceof Circle){
-             if(sj instanceof Circle)       np.circleCircle  (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-        else if(sj instanceof Particle)     np.circleParticle(bi,si,xiw,aiw, bj,sj,xjw,ajw);
-        else if(sj instanceof Plane)        np.circlePlane   (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-        else if(sj instanceof Rectangle)    np.circleConvex  (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-        else if(sj instanceof Convex)       np.circleConvex  (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-        else if(sj instanceof Line)         np.circleLine    (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-        else if(sj instanceof Capsule)      np.circleCapsule (bi,si,xiw,aiw, bj,sj,xjw,ajw);
 
-    } else if(si instanceof Particle){
-             if(sj instanceof Circle)       np.circleParticle   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-        else if(sj instanceof Plane)        np.particlePlane    (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-        else if(sj instanceof Rectangle)    np.particleConvex   (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-        else if(sj instanceof Convex)       np.particleConvex   (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-        else if(sj instanceof Capsule)      np.particleCapsule  (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-
-    } else if(si instanceof Plane){
-             if(sj instanceof Circle)       np.circlePlane   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-        else if(sj instanceof Particle)     np.particlePlane (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-        else if(sj instanceof Rectangle)    np.convexPlane   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-        else if(sj instanceof Convex)       np.convexPlane   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-        else if(sj instanceof Line)         np.planeLine     (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-        else if(sj instanceof Capsule)      np.capsulePlane  (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-
-    } else if(si instanceof Rectangle){
-             if(sj instanceof Plane)        np.convexPlane    (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-        else if(sj instanceof Circle)       np.circleConvex   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-        else if(sj instanceof Rectangle)    np.convexConvex   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-        else if(sj instanceof Convex)       np.convexConvex   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-        else if(sj instanceof Particle)     np.particleConvex (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-
-    } else if(si instanceof Convex){
-             if(sj instanceof Plane)        np.convexPlane    (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-        else if(sj instanceof Circle)       np.circleConvex   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-        else if(sj instanceof Rectangle)    np.convexConvex   (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-        else if(sj instanceof Convex)       np.convexConvex   (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-        else if(sj instanceof Particle)     np.particleConvex (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-
-    } else if(si instanceof Line){
-             if(sj instanceof Circle)       np.circleLine     (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-        else if(sj instanceof Plane)        np.planeLine      (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-
-    } else if(si instanceof Capsule){
-             if(sj instanceof Plane)        np.capsulePlane   (bi,si,xiw,aiw, bj,sj,xjw,ajw);
-             if(sj instanceof Circle)       np.circleCapsule  (bj,sj,xjw,ajw, bi,si,xiw,aiw);
-             if(sj instanceof Particle)     np.particleCapsule(bj,sj,xjw,ajw, bi,si,xiw,aiw);
-
+    var resolver = np[si.type | sj.type];
+    if (resolver) {
+        if (si.type &lt; sj.type) {
+            resolver.call(np, bi,si,xiw,aiw, bj,sj,xjw,ajw);
+        } else {
+            resolver.call(np, bj,sj,xjw,ajw, bi,si,xiw,aiw);
+        }
     }
 };
 
@@ -761,6 +760,21 @@ World.prototype.removeBody = function(body){
 };
 
 /**
+ * Get a body by its id.
+ * @method getBodyById
+ * @return {Body|Boolean} The body, or false if it was not found.
+ */
+World.prototype.getBodyById = function(id){
+    var bodies = this.bodies;
+    for(var i=0; i&lt;bodies.length; i++){
+        var b = bodies[i];
+        if(b.id === id)
+            return b;
+    }
+    return false;
+};
+
+/**
  * Convert the world to a JSON-serializable Object.
  *
  * @method toJSON
@@ -809,10 +823,15 @@ World.prototype.toJSON = function(){
             jc.pivotB = v2a(c.pivotB);
             jc.maxForce = c.maxForce;
             jc.motorSpeed = c.getMotorSpeed(); // False if motor is disabled, otherwise number.
+            jc.lowerLimit = c.lowerLimit;
+            jc.lowerLimitEnabled = c.lowerLimitEnabled;
+            jc.upperLimit = c.upperLimit;
+            jc.upperLimitEnabled = c.upperLimitEnabled;
         } else if(c instanceof PrismaticConstraint){
             jc.type = &quot;PrismaticConstraint&quot;;
             jc.localAxisA = v2a(c.localAxisA);
-            jc.localAxisB = v2a(c.localAxisB);
+            jc.localAnchorA = v2a(c.localAnchorA);
+            jc.localAnchorB = v2a(c.localAnchorB);
             jc.maxForce = c.maxForce;
         } else if(c instanceof LockConstraint){
             jc.type = &quot;LockConstraint&quot;;
@@ -937,9 +956,29 @@ World.upgradeJSON = function(json){
             return json;
 
         case &quot;0.3&quot;:
-            // Changes since 0.2:
+            // Changes:
             // - Started caring about versioning
+
             // - Added LockConstraint type
+            // Can&#x27;t do much about that now though. Ignore.
+
+            // Changed PrismaticConstraint arguments...
+            for(var i=0; i&lt;json.constraints.length; i++){
+                var jc = json.constraints[i];
+                if(jc.type==&quot;PrismaticConstraint&quot;){
+
+                    // ...from these...
+                    delete jc.localAxisA;
+                    delete jc.localAxisB;
+
+                    // ...to these. We cant make up anything good here, just do something
+                    jc.localAxisA = [1,0];
+                    jc.localAnchorA = [0,0];
+                    jc.localAnchorB = [0,0];
+                }
+            }
+
+            // Upgrade version number
             json.p2 = &quot;0.4&quot;;
             break;
     }
@@ -966,6 +1005,8 @@ World.prototype.fromJSON = function(json){
 
     // Set gravity
     vec2.copy(this.gravity, json.gravity);
+
+    var bodies = this.bodies;
 
     // Load bodies
     var id2material = {};
@@ -1018,7 +1059,7 @@ World.prototype.fromJSON = function(json){
     // Load springs
     for(var i=0; i&lt;json.springs.length; i++){
         var js = json.springs[i];
-        var s = new Spring(this.bodies[js.bodyA], this.bodies[js.bodyB], {
+        var s = new Spring(bodies[js.bodyA], bodies[js.bodyB], {
             stiffness : js.stiffness,
             damping : js.damping,
             restLength : js.restLength,
@@ -1049,24 +1090,29 @@ World.prototype.fromJSON = function(json){
             c;
         switch(jc.type){
             case &quot;DistanceConstraint&quot;:
-                c = new DistanceConstraint(this.bodies[jc.bodyA], this.bodies[jc.bodyB], jc.distance, jc.maxForce);
+                c = new DistanceConstraint(bodies[jc.bodyA], bodies[jc.bodyB], jc.distance, jc.maxForce);
                 break;
             case &quot;RevoluteConstraint&quot;:
-                c = new RevoluteConstraint(this.bodies[jc.bodyA], jc.pivotA, this.bodies[jc.bodyB], jc.pivotB, jc.maxForce);
+                c = new RevoluteConstraint(bodies[jc.bodyA], jc.pivotA, bodies[jc.bodyB], jc.pivotB, jc.maxForce);
                 if(jc.motorSpeed){
                     c.enableMotor();
                     c.setMotorSpeed(jc.motorSpeed);
                 }
+                c.lowerLimit = jc.lowerLimit || 0;
+                c.upperLimit = jc.upperLimit || 0;
+                c.lowerLimitEnabled = jc.lowerLimitEnabled || false;
+                c.upperLimitEnabled = jc.upperLimitEnabled || false;
                 break;
             case &quot;PrismaticConstraint&quot;:
-                c = new PrismaticConstraint(this.bodies[jc.bodyA], this.bodies[jc.bodyB], {
+                c = new PrismaticConstraint(bodies[jc.bodyA], bodies[jc.bodyB], {
                     maxForce : jc.maxForce,
                     localAxisA : jc.localAxisA,
-                    localAxisB : jc.localAxisB,
+                    localAnchorA : jc.localAnchorA,
+                    localAnchorB : jc.localAnchorB,
                 });
                 break;
             case &quot;LockConstraint&quot;:
-                c = new LockConstraint(this.bodies[jc.bodyA], this.bodies[jc.bodyB], {
+                c = new LockConstraint(bodies[jc.bodyA], bodies[jc.bodyB], {
                     maxForce :     jc.maxForce,
                     localOffsetB : jc.localOffsetB,
                     localAngleB :  jc.localAngleB,
@@ -1088,6 +1134,12 @@ World.prototype.fromJSON = function(json){
  */
 World.prototype.clear = function(){
 
+    this.time = 0;
+
+    // Remove all solver equations
+    if(this.solver &amp;&amp; this.solver.equations.length)
+        this.solver.removeAllEquations();
+
     // Remove all constraints
     var cs = this.constraints;
     for(var i=cs.length-1; i&gt;=0; i--){
@@ -1104,6 +1156,12 @@ World.prototype.clear = function(){
     var springs = this.springs;
     for(var i=springs.length-1; i&gt;=0; i--){
         this.removeSpring(springs[i]);
+    }
+
+    // Remove all contact materials
+    var cms = this.contactMaterials;
+    for(var i=cms.length-1; i&gt;=0; i--){
+        this.removeContactMaterial(cms[i]);
     }
 };
 

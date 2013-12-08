@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.3.1</em>
+            <em>API Docs for: 0.4.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -96,6 +96,8 @@
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
+            
+                <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
             
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
@@ -303,6 +305,20 @@ function Body(options){
      * @type {number}
      */
     this.angularForce = options.angularForce || 0;
+
+    /**
+     * The linear damping acting on the body in the velocity direction
+     * @property damping
+     * @type {Number}
+     */
+    this.damping = typeof(options.damping)==&quot;number&quot; ? options.damping : 0.1;
+
+    /**
+     * The angular force acting on the body
+     * @property angularDamping
+     * @type {Number}
+     */
+    this.angularDamping = typeof(options.angularDamping)==&quot;number&quot; ? options.angularDamping : 0.1;
 
     /**
      * The type of motion this body has. Should be one of: Body.STATIC (the body
@@ -640,6 +656,23 @@ Body.prototype.addConstraintVelocity = function(){
         v = b.velocity;
     vec2.add( v, v, b.vlambda);
     b.angularVelocity += b.wlambda;
+};
+
+/**
+ * Apply damping, see &lt;a href=&quot;http://code.google.com/p/bullet/issues/detail?id=74&quot;&gt;this&lt;/a&gt; for details.
+ * @method applyDamping
+ * @param  {number} dt Current time step
+ */
+Body.prototype.applyDamping = function(dt){
+    if(this.motionState &amp; Body.DYNAMIC){ // Only for dynamic bodies
+        var ld = Math.pow(1.0 - this.damping,dt),
+            v = this.velocity;
+        vec2.scale(v,v,ld);
+
+        var av = this.angularVelocity,
+            ad = Math.pow(1.0 - this.angularDamping,dt);
+        this.angularVelocity *= ad;
+    }
 };
 
 /**

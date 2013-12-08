@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.3.1</em>
+            <em>API Docs for: 0.4.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -97,6 +97,8 @@
             
                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
             
+                <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
+            
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
                 <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
@@ -164,7 +166,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_solver_GSSolver.js.html#l7"><code>src&#x2F;solver&#x2F;GSSolver.js:7</code></a>
+            Defined in: <a href="../files/src_solver_GSSolver.js.html#l8"><code>src&#x2F;solver&#x2F;GSSolver.js:8</code></a>
         </div>
     
 
@@ -177,6 +179,7 @@
 
 <div class="box intro">
     <p>Iterative Gauss-Seidel constraint equation solver.</p>
+
 </div>
 
 
@@ -224,7 +227,7 @@
             
         
         
-        <a href="../files/src_solver_GSSolver.js.html#l7"><code>src&#x2F;solver&#x2F;GSSolver.js:7</code></a>
+        <a href="../files/src_solver_GSSolver.js.html#l8"><code>src&#x2F;solver&#x2F;GSSolver.js:8</code></a>
         
         </p>
 
@@ -446,6 +449,13 @@
                             </li>
                         
                             <li class="index-item property">
+                                <a href="#property_skipFrictionIterations">skipFrictionIterations</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
                                 <a href="#property_stiffness">stiffness</a>
 
                                 
@@ -538,6 +548,7 @@
 
     <div class="description">
         <p>Add an equation to be solved.</p>
+
     </div>
 
     
@@ -622,6 +633,7 @@
 
     <div class="description">
         <p>Add equations. Same as .addEquation, but this time the argument is an array of Equations</p>
+
     </div>
 
     
@@ -696,6 +708,7 @@
 
     <div class="description">
         <p>Remove all currently added equations.</p>
+
     </div>
 
     
@@ -757,6 +770,7 @@
 
     <div class="description">
         <p>Remove an equation.</p>
+
     </div>
 
     
@@ -838,7 +852,7 @@
             
         
         
-        <a href="../files/src_solver_GSSolver.js.html#l74"><code>src&#x2F;solver&#x2F;GSSolver.js:74</code></a>
+        <a href="../files/src_solver_GSSolver.js.html#l82"><code>src&#x2F;solver&#x2F;GSSolver.js:82</code></a>
         
         </p>
 
@@ -850,6 +864,7 @@
 
     <div class="description">
         <p>Solve the system of equations</p>
+
     </div>
 
     
@@ -868,6 +883,7 @@
 
                     <div class="param-description">
                         <p>Time step</p>
+
                     </div>
 
                     
@@ -883,6 +899,7 @@
 
                     <div class="param-description">
                         <p>World to solve</p>
+
                     </div>
 
                     
@@ -939,6 +956,7 @@
 
     <div class="description">
         <p>Sort all equations using the .equationSortFunction. Should be called by subclasses before solving.</p>
+
     </div>
 
     
@@ -988,6 +1006,7 @@
 
     <div class="description">
         <p>Current equations in the solver.</p>
+
     </div>
 
     
@@ -1029,6 +1048,7 @@
 
     <div class="description">
         <p>Function that is used to sort all equations before each solve.</p>
+
     </div>
 
     
@@ -1062,7 +1082,7 @@
             
         
         
-        <a href="../files/src_solver_GSSolver.js.html#l24"><code>src&#x2F;solver&#x2F;GSSolver.js:24</code></a>
+        <a href="../files/src_solver_GSSolver.js.html#l25"><code>src&#x2F;solver&#x2F;GSSolver.js:25</code></a>
         
         </p>
 
@@ -1073,6 +1093,7 @@
 
     <div class="description">
         <p>The number of iterations to do when solving. More gives better results, but is more expensive.</p>
+
     </div>
 
     
@@ -1106,7 +1127,7 @@
             
         
         
-        <a href="../files/src_solver_GSSolver.js.html#l58"><code>src&#x2F;solver&#x2F;GSSolver.js:58</code></a>
+        <a href="../files/src_solver_GSSolver.js.html#l59"><code>src&#x2F;solver&#x2F;GSSolver.js:59</code></a>
         
         </p>
 
@@ -1117,6 +1138,52 @@
 
     <div class="description">
         <p>Global equation relaxation. This is the number of timesteps required for a constraint to be resolved. Larger number will give softer contacts. Set to around 3 or 4 for good enough results.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_skipFrictionIterations" class="property item">
+    <h3 class="name"><code>skipFrictionIterations</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_solver_GSSolver.js.html#l73"><code>src&#x2F;solver&#x2F;GSSolver.js:73</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Number of friction iterations to skip. If .skipFrictionIterations=2, then no FrictionEquations will be iterated until the third iteration.</p>
+
     </div>
 
     
@@ -1150,7 +1217,7 @@
             
         
         
-        <a href="../files/src_solver_GSSolver.js.html#l51"><code>src&#x2F;solver&#x2F;GSSolver.js:51</code></a>
+        <a href="../files/src_solver_GSSolver.js.html#l52"><code>src&#x2F;solver&#x2F;GSSolver.js:52</code></a>
         
         </p>
 
@@ -1161,6 +1228,7 @@
 
     <div class="description">
         <p>Global equation stiffness. Larger number gives harder contacts, etc, but may also be more expensive to compute, or it will make your simulation explode.</p>
+
     </div>
 
     
@@ -1194,7 +1262,7 @@
             
         
         
-        <a href="../files/src_solver_GSSolver.js.html#l31"><code>src&#x2F;solver&#x2F;GSSolver.js:31</code></a>
+        <a href="../files/src_solver_GSSolver.js.html#l32"><code>src&#x2F;solver&#x2F;GSSolver.js:32</code></a>
         
         </p>
 
@@ -1205,6 +1273,7 @@
 
     <div class="description">
         <p>The error tolerance. If the total error is below this limit, the solver will stop. Set to zero for as good solution as possible.</p>
+
     </div>
 
     
@@ -1238,7 +1307,7 @@
             
         
         
-        <a href="../files/src_solver_GSSolver.js.html#l44"><code>src&#x2F;solver&#x2F;GSSolver.js:44</code></a>
+        <a href="../files/src_solver_GSSolver.js.html#l45"><code>src&#x2F;solver&#x2F;GSSolver.js:45</code></a>
         
         </p>
 
@@ -1249,6 +1318,7 @@
 
     <div class="description">
         <p>Whether to use .stiffness and .relaxation parameters from the Solver instead of each Equation individually.</p>
+
     </div>
 
     
@@ -1282,7 +1352,7 @@
             
         
         
-        <a href="../files/src_solver_GSSolver.js.html#l65"><code>src&#x2F;solver&#x2F;GSSolver.js:65</code></a>
+        <a href="../files/src_solver_GSSolver.js.html#l66"><code>src&#x2F;solver&#x2F;GSSolver.js:66</code></a>
         
         </p>
 
@@ -1293,6 +1363,7 @@
 
     <div class="description">
         <p>Set to true to set all right hand side terms to zero when solving. Can be handy for a few applications.</p>
+
     </div>
 
     
