@@ -151,14 +151,14 @@ function Body(options){
      * @property damping
      * @type {Number}
      */
-    this.damping = typeof(options.damping)=="number" ? options.damping : 0.01;
+    this.damping = typeof(options.damping)=="number" ? options.damping : 0.1;
 
     /**
      * The angular force acting on the body
      * @property angularDamping
      * @type {Number}
      */
-    this.angularDamping = typeof(options.angularDamping)=="number" ? options.angularDamping : 0.01;
+    this.angularDamping = typeof(options.angularDamping)=="number" ? options.angularDamping : 0.1;
 
     /**
      * The type of motion this body has. Should be one of: Body.STATIC (the body
