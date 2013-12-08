@@ -670,7 +670,8 @@ World.prototype.toJSON = function(){
         } else if(c instanceof PrismaticConstraint){
             jc.type = "PrismaticConstraint";
             jc.localAxisA = v2a(c.localAxisA);
-            jc.localAxisB = v2a(c.localAxisB);
+            jc.localAnchorA = v2a(c.localAnchorA);
+            jc.localAnchorB = v2a(c.localAnchorB);
             jc.maxForce = c.maxForce;
         } else if(c instanceof LockConstraint){
             jc.type = "LockConstraint";
@@ -801,6 +802,22 @@ World.upgradeJSON = function(json){
             // - Added LockConstraint type
             // Can't do much about that now though. Ignore.
 
+            // Changed PrismaticConstraint arguments...
+            for(var i=0; i<json.constraints.length; i++){
+                var jc = json.constraints[i];
+                if(jc.type=="PrismaticConstraint"){
+
+                    // ...from these...
+                    delete jc.localAxisA;
+                    delete jc.localAxisB;
+
+                    // ...to these. We cant make up anything good here, just do something
+                    jc.localAxisA = [1,0];
+                    jc.localAnchorA = [0,0];
+                    jc.localAnchorB = [0,0];
+                }
+            }
+
             // Upgrade version number
             json.p2 = "0.4";
             break;
@@ -930,7 +947,8 @@ World.prototype.fromJSON = function(json){
                 c = new PrismaticConstraint(bodies[jc.bodyA], bodies[jc.bodyB], {
                     maxForce : jc.maxForce,
                     localAxisA : jc.localAxisA,
-                    localAxisB : jc.localAxisB,
+                    localAnchorA : jc.localAnchorA,
+                    localAnchorB : jc.localAnchorB,
                 });
                 break;
             case "LockConstraint":
