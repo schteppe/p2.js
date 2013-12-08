@@ -46,7 +46,7 @@ function LockConstraint(bodyA,bodyB,options){
     //
     // The last constraint gives
     // GW = (vi - vj + wj x r) * that
-    //    = [  1   0  -1  (r x t) ]
+    //    = [  that   0  -that  (r x t) ]
 
     var x =     new Equation(bodyA,bodyB,-maxForce,maxForce),
         y =     new Equation(bodyA,bodyB,-maxForce,maxForce),
