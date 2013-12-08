@@ -27,7 +27,7 @@
         });
         world.solver.stiffness = 1e5;
         world.solver.relaxation = 3;
-        world.solver.iterations = 50;
+        world.solver.iterations = 20;
 
         // Use a Sweep And Prune (SAP) broadphase
         world.broadphase = new p2.SAP1DBroadphase(world);
