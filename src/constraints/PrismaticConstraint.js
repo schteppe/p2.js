@@ -33,6 +33,24 @@ function PrismaticConstraint(bodyA,bodyB,options){
     if(options.localAxisA)   vec2.copy(localAxisA,   options.localAxisA);
     if(options.localAnchorB) vec2.copy(localAnchorB, options.localAnchorB);
 
+    /**
+     * @property localAnchorA
+     * @type {Array}
+     */
+    this.localAnchorA = localAnchorA;
+
+    /**
+     * @property localAnchorB
+     * @type {Array}
+     */
+    this.localAnchorB = localAnchorB;
+
+    /**
+     * @property localAxisA
+     * @type {Array}
+     */
+    this.localAxisA = localAxisA;
+
     /*
 
     The constraint violation for the common axis point is

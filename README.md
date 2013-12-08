@@ -107,6 +107,7 @@ Note that concave polygon shapes can be created using [Body.fromPolygon](http://
 * Added method ```.getBodyById``` to ```World```.
 * Added property ```.skipFrictionIterations``` to ```GSSolver```.
 * Changed parameter names for ```PrismaticConstraint```. This breaks backwards compatibility.
+* Added properties ```.localAxisA```, ```.localAnchorA```, ```.localAnchorB```, to ```PrismaticConstraint```.
 * Changed default values for ```Body``` properties ```.damping``` and ```.angularDamping``` to ```0.01```.
 
 ##### 0.3.1
