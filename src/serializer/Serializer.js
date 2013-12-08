@@ -2,7 +2,7 @@ var World = require('../world/World')
 
 var num = { type:"number", required:true };
 
-/**
+/*
  * Serialize a World instance to JSON
  * @method serialize
  * @param  {World} world
@@ -12,7 +12,7 @@ exports.serialize = function(world){
     return {};
 };
 
-/**
+/*
  * Load a World instance from JSON
  * @param  {Object} json
  * @return {World}

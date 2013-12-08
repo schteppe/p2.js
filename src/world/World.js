@@ -601,6 +601,7 @@ World.prototype.removeBody = function(body){
 
 /**
  * Get a body by its id.
+ * @method getBodyById
  * @return {Body|Boolean} The body, or false if it was not found.
  */
 World.prototype.getBodyById = function(id){
