@@ -85,24 +85,6 @@
         world.addConstraint(cr);
 
 
-        // Create PrismaticConstraint
-        var bodyA = new p2.Body({
-            mass: 1,
-            position: [-3,-0.5],
-            angularVelocity: 10
-        });
-        bodyA.addShape(new p2.Circle(0.5));
-        world.addBody(bodyA);
-        var bodyB = new p2.Body({
-            mass: 0,
-            position: [-5,0.1-0.5],
-        });
-        bodyB.addShape(new p2.Circle(0.5));
-        world.addBody(bodyB);
-        var c = new p2.PrismaticConstraint(bodyA, bodyB);
-        world.addConstraint(c);
-
-
         var demo = new PixiDemo(world);
 
         function update(){
