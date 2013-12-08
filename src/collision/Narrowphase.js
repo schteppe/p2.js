@@ -984,6 +984,15 @@ Narrowphase.prototype.planeConvex = function( bi,si,xi,ai, bj,sj,xj,aj ){
 };
 
 /**
+ * @method convexPlane
+ * @deprecated Use .planeConvex() instead!
+ */
+Narrowphase.prototype.convexPlane = function( bi,si,xi,ai, bj,sj,xj,aj ){
+    console.warn("Narrowphase.prototype.convexPlane is deprecated. Use planeConvex instead!");
+    return this.planeConvex( bj,sj,xj,aj, bi,si,xi,ai );
+}
+
+/**
  * Narrowphase for particle vs plane
  * @method particlePlane
  * @param  {Body}       bi The particle body
@@ -1113,6 +1122,15 @@ Narrowphase.prototype.planeCapsule = function( bi,si,xi,ai, bj,sj,xj,aj ){
     this.circlePlane(bj,circle,end1,0, bi,si,xi,ai);
     this.circlePlane(bj,circle,end2,0, bi,si,xi,ai);
 };
+
+/**
+ * @method capsulePlane
+ * @deprecated Use .planeCapsule() instead!
+ */
+Narrowphase.prototype.capsulePlane = function( bi,si,xi,ai, bj,sj,xj,aj ){
+    console.warn("Narrowphase.prototype.capsulePlane() is deprecated. Use .planeCapsule() instead!");
+    return this.planeCapsule( bj,sj,xj,aj, bi,si,xi,ai );
+}
 
 /**
  * Creates ContactEquations and FrictionEquations for a collision.
