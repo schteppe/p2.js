@@ -62,7 +62,7 @@ module.exports = {
     version :                       require('../package.json').version,
 };
 
-},{"../package.json":2,"./objects/Body":3,"./collision/Broadphase":4,"./shapes/Capsule":5,"./shapes/Circle":6,"./constraints/Constraint":7,"./constraints/ContactEquation":8,"./material/ContactMaterial":9,"./shapes/Convex":10,"./constraints/DistanceConstraint":11,"./constraints/Equation":12,"./events/EventEmitter":13,"./constraints/FrictionEquation":14,"./collision/GridBroadphase":15,"./solver/GSSolver":16,"./solver/IslandSolver":17,"./shapes/Line":18,"./constraints/LockConstraint":19,"./material/Material":20,"./collision/NaiveBroadphase":21,"./shapes/Particle":22,"./shapes/Plane":23,"./constraints/RevoluteConstraint":24,"./constraints/PrismaticConstraint":25,"./shapes/Rectangle":26,"./constraints/RotationalVelocityEquation":27,"./collision/SAP1DBroadphase":28,"./shapes/Shape":29,"./solver/Solver":30,"./objects/Spring":31,"./utils/Utils":32,"./world/World":33,"./collision/QuadTree":34,"./math/vec2":35}],2:[function(require,module,exports){
+},{"../package.json":2,"./objects/Body":3,"./collision/Broadphase":4,"./shapes/Capsule":5,"./shapes/Circle":6,"./constraints/Constraint":7,"./constraints/ContactEquation":8,"./material/ContactMaterial":9,"./shapes/Convex":10,"./constraints/DistanceConstraint":11,"./constraints/Equation":12,"./events/EventEmitter":13,"./constraints/FrictionEquation":14,"./collision/GridBroadphase":15,"./solver/GSSolver":16,"./solver/IslandSolver":17,"./shapes/Line":18,"./constraints/LockConstraint":19,"./material/Material":20,"./collision/NaiveBroadphase":21,"./shapes/Plane":22,"./shapes/Particle":23,"./constraints/RevoluteConstraint":24,"./constraints/PrismaticConstraint":25,"./shapes/Rectangle":26,"./constraints/RotationalVelocityEquation":27,"./collision/SAP1DBroadphase":28,"./shapes/Shape":29,"./solver/Solver":30,"./objects/Spring":31,"./utils/Utils":32,"./world/World":33,"./collision/QuadTree":34,"./math/vec2":35}],2:[function(require,module,exports){
 module.exports={
     "name": "p2",
     "version": "0.3.1",
@@ -1400,7 +1400,7 @@ GridBroadphase.prototype.getCollisionPairs = function(world){
     return result;
 };
 
-},{"../shapes/Circle":6,"../shapes/Plane":23,"../shapes/Particle":22,"../collision/Broadphase":4,"../math/vec2":35}],16:[function(require,module,exports){
+},{"../shapes/Circle":6,"../shapes/Plane":22,"../shapes/Particle":23,"../collision/Broadphase":4,"../math/vec2":35}],16:[function(require,module,exports){
 var vec2 = require('../math/vec2')
 ,   Solver = require('./Solver')
 ,   Utils = require('../utils/Utils')
@@ -1994,31 +1994,7 @@ NaiveBroadphase.prototype.getCollisionPairs = function(world){
     return result;
 };
 
-},{"../shapes/Circle":6,"../shapes/Plane":23,"../shapes/Shape":29,"../shapes/Particle":22,"../collision/Broadphase":4,"../math/vec2":35}],22:[function(require,module,exports){
-var Shape = require('./Shape');
-
-module.exports = Particle;
-
-/**
- * Particle shape class.
- * @class Particle
- * @constructor
- * @extends {Shape}
- */
-function Particle(){
-    Shape.call(this,Shape.PARTICLE);
-};
-Particle.prototype = new Shape();
-Particle.prototype.computeMomentOfInertia = function(mass){
-    return 0; // Can't rotate a particle
-};
-
-Particle.prototype.updateBoundingRadius = function(){
-    this.boundingRadius = 0;
-};
-
-
-},{"./Shape":29}],23:[function(require,module,exports){
+},{"../shapes/Circle":6,"../shapes/Plane":22,"../shapes/Shape":29,"../shapes/Particle":23,"../collision/Broadphase":4,"../math/vec2":35}],22:[function(require,module,exports){
 var Shape = require('./Shape');
 
 module.exports = Plane;
@@ -2048,6 +2024,30 @@ Plane.prototype.computeMomentOfInertia = function(mass){
  */
 Plane.prototype.updateBoundingRadius = function(){
     this.boundingRadius = Number.MAX_VALUE;
+};
+
+
+},{"./Shape":29}],23:[function(require,module,exports){
+var Shape = require('./Shape');
+
+module.exports = Particle;
+
+/**
+ * Particle shape class.
+ * @class Particle
+ * @constructor
+ * @extends {Shape}
+ */
+function Particle(){
+    Shape.call(this,Shape.PARTICLE);
+};
+Particle.prototype = new Shape();
+Particle.prototype.computeMomentOfInertia = function(mass){
+    return 0; // Can't rotate a particle
+};
+
+Particle.prototype.updateBoundingRadius = function(){
+    this.boundingRadius = 0;
 };
 
 
@@ -2296,6 +2296,24 @@ function PrismaticConstraint(bodyA,bodyB,options){
     if(options.localAnchorA) vec2.copy(localAnchorA, options.localAnchorA);
     if(options.localAxisA)   vec2.copy(localAxisA,   options.localAxisA);
     if(options.localAnchorB) vec2.copy(localAnchorB, options.localAnchorB);
+
+    /**
+     * @property localAnchorA
+     * @type {Array}
+     */
+    this.localAnchorA = localAnchorA;
+
+    /**
+     * @property localAnchorB
+     * @type {Array}
+     */
+    this.localAnchorB = localAnchorB;
+
+    /**
+     * @property localAxisA
+     * @type {Array}
+     */
+    this.localAxisA = localAxisA;
 
     /*
 
@@ -2592,7 +2610,7 @@ SAP1DBroadphase.checkBounds = function(bi,bj,axisIndex){
     return boundB1 < boundA2;
 };
 
-},{"../shapes/Circle":6,"../shapes/Plane":23,"../shapes/Shape":29,"../shapes/Particle":22,"../collision/Broadphase":4,"../math/vec2":35}],30:[function(require,module,exports){
+},{"../shapes/Circle":6,"../shapes/Plane":22,"../shapes/Shape":29,"../shapes/Particle":23,"../collision/Broadphase":4,"../math/vec2":35}],30:[function(require,module,exports){
 var Utils = require('../utils/Utils')
 ,   EventEmitter = require('../events/EventEmitter')
 
@@ -3474,6 +3492,7 @@ World.prototype.removeBody = function(body){
 
 /**
  * Get a body by its id.
+ * @method getBodyById
  * @return {Body|Boolean} The body, or false if it was not found.
  */
 World.prototype.getBodyById = function(id){
@@ -3542,7 +3561,8 @@ World.prototype.toJSON = function(){
         } else if(c instanceof PrismaticConstraint){
             jc.type = "PrismaticConstraint";
             jc.localAxisA = v2a(c.localAxisA);
-            jc.localAxisB = v2a(c.localAxisB);
+            jc.localAnchorA = v2a(c.localAnchorA);
+            jc.localAnchorB = v2a(c.localAnchorB);
             jc.maxForce = c.maxForce;
         } else if(c instanceof LockConstraint){
             jc.type = "LockConstraint";
@@ -3673,6 +3693,22 @@ World.upgradeJSON = function(json){
             // - Added LockConstraint type
             // Can't do much about that now though. Ignore.
 
+            // Changed PrismaticConstraint arguments...
+            for(var i=0; i<json.constraints.length; i++){
+                var jc = json.constraints[i];
+                if(jc.type=="PrismaticConstraint"){
+
+                    // ...from these...
+                    delete jc.localAxisA;
+                    delete jc.localAxisB;
+
+                    // ...to these. We cant make up anything good here, just do something
+                    jc.localAxisA = [1,0];
+                    jc.localAnchorA = [0,0];
+                    jc.localAnchorB = [0,0];
+                }
+            }
+
             // Upgrade version number
             json.p2 = "0.4";
             break;
@@ -3802,7 +3838,8 @@ World.prototype.fromJSON = function(json){
                 c = new PrismaticConstraint(bodies[jc.bodyA], bodies[jc.bodyB], {
                     maxForce : jc.maxForce,
                     localAxisA : jc.localAxisA,
-                    localAxisB : jc.localAxisB,
+                    localAnchorA : jc.localAnchorA,
+                    localAnchorB : jc.localAnchorB,
                 });
                 break;
             case "LockConstraint":
@@ -3925,7 +3962,7 @@ World.prototype.hitTest = function(worldPoint,bodies,precision){
     return result;
 };
 
-},{"../../package.json":2,"../solver/GSSolver":16,"../collision/NaiveBroadphase":21,"../math/vec2":35,"../shapes/Circle":6,"../shapes/Line":18,"../shapes/Convex":10,"../shapes/Rectangle":26,"../shapes/Plane":23,"../shapes/Capsule":5,"../shapes/Particle":22,"../events/EventEmitter":13,"../objects/Body":3,"../objects/Spring":31,"../material/Material":20,"../material/ContactMaterial":9,"../constraints/DistanceConstraint":11,"../constraints/LockConstraint":19,"../constraints/RevoluteConstraint":24,"../constraints/PrismaticConstraint":25,"../collision/Broadphase":4,"../collision/Narrowphase":39}],34:[function(require,module,exports){
+},{"../../package.json":2,"../solver/GSSolver":16,"../collision/NaiveBroadphase":21,"../math/vec2":35,"../shapes/Circle":6,"../shapes/Rectangle":26,"../shapes/Convex":10,"../shapes/Line":18,"../shapes/Plane":22,"../shapes/Capsule":5,"../shapes/Particle":23,"../events/EventEmitter":13,"../objects/Body":3,"../objects/Spring":31,"../material/Material":20,"../material/ContactMaterial":9,"../constraints/DistanceConstraint":11,"../constraints/LockConstraint":19,"../constraints/RevoluteConstraint":24,"../constraints/PrismaticConstraint":25,"../collision/Broadphase":4,"../collision/Narrowphase":39}],34:[function(require,module,exports){
 var Plane = require("../shapes/Plane");
 var Broadphase = require("../collision/Broadphase");
 
@@ -4303,7 +4340,7 @@ BoundsNode.prototype.clear = function(){
 }
 
 
-},{"../shapes/Plane":23,"../collision/Broadphase":4}],35:[function(require,module,exports){
+},{"../shapes/Plane":22,"../collision/Broadphase":4}],35:[function(require,module,exports){
 /**
  * The vec2 object from glMatrix, extended with the functions documented here. See http://glmatrix.net for full doc.
  * @class vec2
@@ -6987,7 +7024,7 @@ Narrowphase.getClosestEdge = function(c,angle,axis,flip){
 };
 
 
-},{"../math/vec2":35,"../utils/Utils":32,"../constraints/FrictionEquation":14,"../constraints/ContactEquation":8,"../shapes/Circle":6,"../shapes/Shape":29}],3:[function(require,module,exports){
+},{"../math/vec2":35,"../utils/Utils":32,"../constraints/ContactEquation":8,"../constraints/FrictionEquation":14,"../shapes/Circle":6,"../shapes/Shape":29}],3:[function(require,module,exports){
 var vec2 = require('../math/vec2')
 ,   decomp = require('poly-decomp')
 ,   Convex = require('../shapes/Convex')
@@ -7141,14 +7178,14 @@ function Body(options){
      * @property damping
      * @type {Number}
      */
-    this.damping = typeof(options.damping)=="number" ? options.damping : 0.01;
+    this.damping = typeof(options.damping)=="number" ? options.damping : 0.1;
 
     /**
      * The angular force acting on the body
      * @property angularDamping
      * @type {Number}
      */
-    this.angularDamping = typeof(options.angularDamping)=="number" ? options.angularDamping : 0.01;
+    this.angularDamping = typeof(options.angularDamping)=="number" ? options.angularDamping : 0.1;
 
     /**
      * The type of motion this body has. Should be one of: Body.STATIC (the body
