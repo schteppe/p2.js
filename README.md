@@ -102,6 +102,7 @@ Note that concave polygon shapes can be created using [Body.fromPolygon](http://
 * Added properties ```.lowerLimitEnabled```, ```.lowerLimit```, ```.upperLimitEnabled```, ```.upperLimit``` to ```RevoluteConstraint```.
 * Added property ```.frictionCoefficient``` to ```FrictionEquation``` and ```Narrowphase```. The solver now updates the friction force bounds dynamically in the solver from this value. ```FrictionEquation.setSlipForce()``` is thus deprecated.
 * Changed name of ```Narrowphase.convexPlane``` to ```Narrowphase.planeConvex```.
+* Changed name of ```Narrowphase.capsulePlane``` to ```Narrowphase.planeCapsule```.
 * Added property ```.emitImpactEvent``` to ```World```.
 * Added method ```.getBodyById``` to ```World```.
 * Added property ```.skipFrictionIterations``` to ```GSSolver```.
