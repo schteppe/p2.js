@@ -343,6 +343,7 @@ World.prototype.step = function(dt){
         t0 = now();
     }
 
+    // Todo: remove. This is actually not needed any more
     var glen = vec2.length(g);
 
     // add gravity to bodies
