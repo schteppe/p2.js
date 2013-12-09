@@ -18,6 +18,7 @@
             doProfiling:true,
             gravity : [0,-10],
         });
+        world.solver.stiffness = 1e4;
 
         world.broadphase = new p2.SAP1DBroadphase(world);
 
