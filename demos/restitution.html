@@ -14,15 +14,27 @@
 <body>
     <script>
 
+        // Create a World
         var world = new p2.World({
             doProfiling:true,
             gravity : [0,-10],
         });
 
+        // We need infinite solver stiffness to get exact restitution
+        world.solver.stiffness = Number.MAX_VALUE;
+
         var circle =   new p2.Circle(0.5),
             body = new p2.Body({ position: [0,1], mass:1 });
+
+        // Create a material for the circle shape
         circle.material = new p2.Material();
         body.addShape(circle);
+
+        // Remove damping from the body, so it does not lose energy
+        body.damping = 0;
+        body.angularDamping = 0;
+
+        // Add body to world
         world.addBody(body);
 
         // Create ground
@@ -30,12 +42,18 @@
             plane = new p2.Body({
             position:[0,-1],
         });
+
+        // Create material for the plane shape
         planeShape.material = new p2.Material();
+
         plane.addShape(planeShape);
         world.addBody(plane);
 
+        // Create contact material between the two materials.
+        // The ContactMaterial defines what happens when the two materials meet
+        // In this case, we use some restitution
         world.addContactMaterial(new p2.ContactMaterial(planeShape.material, circle.material, {
-            restitution : 0.8,
+            restitution : 1.0,
         }));
 
         var demo = new PixiDemo(world);
