@@ -193,6 +193,10 @@ function Body(options){
     this.boundingRadius = 0;
 
     this.concavePath = null;
+
+    this.lastDampingScale = 1;
+    this.lastAngularDampingScale = 1;
+    this.lastDampingTimeStep = -1;
 };
 
 Body._idCounter = 0;
@@ -505,13 +509,17 @@ Body.prototype.addConstraintVelocity = function(){
  */
 Body.prototype.applyDamping = function(dt){
     if(this.motionState & Body.DYNAMIC){ // Only for dynamic bodies
-        var ld = Math.pow(1.0 - this.damping,dt),
-            v = this.velocity;
-        vec2.scale(v,v,ld);
 
-        var av = this.angularVelocity,
-            ad = Math.pow(1.0 - this.angularDamping,dt);
-        this.angularVelocity *= ad;
+        // Since Math.pow generates garbage we check if we can reuse the scaling coefficient from last step
+        if(dt != this.lastDampingTimeStep){
+            this.lastDampingScale =         Math.pow(1.0 - this.damping,dt);
+            this.lastAngularDampingScale =  Math.pow(1.0 - this.angularDamping,dt);
+            this.lastDampingTimeStep = dt;
+        }
+
+        var v = this.velocity;
+        vec2.scale(v,v,this.lastDampingScale);
+        this.angularVelocity *= this.lastAngularDampingScale;
     }
 };
 
