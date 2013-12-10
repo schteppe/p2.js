@@ -103,6 +103,7 @@
         // Add ship physics
         shipShape = new p2.Circle(shipSize);
         shipBody = new p2.Body({ mass:1, position:[0,0],angularVelocity:1 });
+        turnOffDamping(shipBody);
         shipBody.addShape(shipShape);
         shipShape.collisionGroup = SHIP;
         shipShape.collisionMask = ASTEROID;
@@ -158,6 +159,7 @@
 
           // Create a bullet body
           var bulletBody = new p2.Body({ mass:0.05, position:shipBody.position });
+          turnOffDamping(bulletBody);
           bulletBody.addShape(bulletShape);
           bulletBodies.push(bulletBody);
           var magnitude = 2,
@@ -203,6 +205,10 @@
 
         // Move physics bodies forward in time
         world.step(1/60);
+      }
+
+      function turnOffDamping(body){
+        body.damping = body.angularDamping = 0;
       }
 
       // If the body is out of space bounds, warp it to the other side
@@ -339,6 +345,7 @@
             velocity:[vx,vy],
             angularVelocity : va,
           });
+          turnOffDamping(asteroidBody);
           asteroidBody.addShape(asteroidShapes[0]);
           asteroids.push(asteroidBody);
           world.addBody(asteroidBody);
@@ -468,6 +475,7 @@
                 position:[x+r*Math.cos(angle),y+r*Math.sin(angle)],
                 velocity : [rand(),rand()],
               });
+              turnOffDamping(subAsteroidBody);
               subAsteroidBody.addShape(asteroidShapes[asteroidBody.level]);
               subAsteroidBody.level = asteroidBody.level + 1;
               world.addBody(subAsteroidBody);
