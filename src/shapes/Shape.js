@@ -105,3 +105,14 @@ Shape.prototype.updateBoundingRadius = function(){
 Shape.prototype.updateArea = function(){
     // To be implemented in all subclasses
 };
+
+/**
+ * Compute the world axis-aligned bounding box (AABB) of this shape.
+ * @method computeAABB
+ * @param  {AABB}   out      The resulting AABB.
+ * @param  {Array}  position
+ * @param  {Number} angle
+ */
+Shape.prototype.computeAABB = function(out, position, angle){
+    // To be implemented in each subclass
+};
