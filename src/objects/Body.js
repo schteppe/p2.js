@@ -20,6 +20,7 @@ var zero = vec2.fromValues(0,0);
  * @param {Number}              [options.angularVelocity=0]
  * @param {Float32Array|Array}  [options.force]
  * @param {Number}              [options.angularForce=0]
+ * @param {Number}              [options.fixedRotation=false]
  *
  * @todo Should not take mass as argument to Body, but as density to each Shape
  */
@@ -84,6 +85,13 @@ function Body(options){
      * @type {number}
      */
     this.invInertia = 0;
+
+    /**
+     * Set to true if you want to fix the rotation of the body.
+     * @property fixedRotation
+     * @type {Boolean}
+     */
+    this.fixedRotation = !!options.fixedRotation || false;
 
     this.updateMassProperties();
 
@@ -297,11 +305,13 @@ Body.prototype.updateMassProperties = function(){
         m = this.mass / N,
         I = 0;
 
-    for(var i=0; i<N; i++){
-        var shape = shapes[i],
-            r2 = vec2.squaredLength(this.shapeOffsets[i] || zero),
-            Icm = shape.computeMomentOfInertia(m);
-        I += Icm + m*r2;
+    if(!this.fixedRotation){
+        for(var i=0; i<N; i++){
+            var shape = shapes[i],
+                r2 = vec2.squaredLength(this.shapeOffsets[i] || zero),
+                Icm = shape.computeMomentOfInertia(m);
+            I += Icm + m*r2;
+        }
     }
 
     this.inertia = I;

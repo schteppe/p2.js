@@ -480,8 +480,10 @@ World.integrateBody = function(body,dt){
         velo = body.velocity;
 
     // Angular step
-    body.angularVelocity += body.angularForce * body.invInertia * dt;
-    body.angle += body.angularVelocity * dt;
+    if(!body.fixedRotation){
+        body.angularVelocity += body.angularForce * body.invInertia * dt;
+        body.angle += body.angularVelocity * dt;
+    }
 
     // Linear step
     vec2.scale(ib_fhMinv,f,dt*minv);
