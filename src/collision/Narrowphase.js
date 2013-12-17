@@ -31,6 +31,7 @@ var tmp1 = vec2.fromValues(0,0)
 ,   tmp16 = vec2.fromValues(0,0)
 ,   tmp17 = vec2.fromValues(0,0)
 ,   tmp18 = vec2.fromValues(0,0)
+,   tmpArray = []
 
 /**
  * Narrowphase. Creates contacts and friction given shapes and transforms.
@@ -204,6 +205,8 @@ Narrowphase.prototype.createFrictionFromContact = function(c){
     return eq;
 }
 
+
+
 /**
  * Plane/line Narrowphase
  * @method planeLine
@@ -235,7 +238,8 @@ Narrowphase.prototype.planeLine = function(bi,si,xi,ai, bj,sj,xj,aj){
         worldEdgeUnit = tmp6,
         dist = tmp7,
         worldNormal = tmp8,
-        worldTangent = tmp9;
+        worldTangent = tmp9,
+        verts = tmpArray;
 
     // Get start and end points
     vec2.set(worldVertex0, -lineShape.length/2, 0);
@@ -261,7 +265,8 @@ Narrowphase.prototype.planeLine = function(bi,si,xi,ai, bj,sj,xj,aj){
     vec2.rotate(worldNormal, yAxis, planeAngle);
 
     // Check line ends
-    var verts = [worldVertex0, worldVertex1];
+    verts[0] = worldVertex0;
+    verts[1] = worldVertex1;
     for(var i=0; i<verts.length; i++){
         var v = verts[i];
 
@@ -344,7 +349,9 @@ Narrowphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj, justTest, 
         worldVertex11 = tmp11,
         dist = tmp12,
         lineToCircle = tmp13,
-        lineEndToLineRadius = tmp14;
+        lineEndToLineRadius = tmp14,
+
+        verts = tmpArray;
 
     // Get start and end points
     vec2.set(worldVertex0, -lineShape.length/2, 0);
@@ -420,7 +427,9 @@ Narrowphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj, justTest, 
     }
 
     // Add corner
-    var verts = [worldVertex0, worldVertex1];
+    // @todo reuse array object
+    verts[0] = worldVertex0;
+    verts[1] = worldVertex1;
 
     for(var i=0; i<verts.length; i++){
         var v = verts[i];
