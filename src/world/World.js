@@ -344,17 +344,12 @@ World.prototype.step = function(dt){
         t0 = now();
     }
 
-    // Todo: remove. This is actually not needed any more
-    var glen = vec2.length(g);
-
     // add gravity to bodies
-    if(glen !== 0){
-        for(var i=0; i!==Nbodies; i++){
-            var b = bodies[i],
-                fi = b.force;
-            vec2.scale(mg,g,b.mass);
-            add(fi,fi,mg);
-        }
+    for(var i=0; i!==Nbodies; i++){
+        var b = bodies[i],
+            fi = b.force;
+        vec2.scale(mg,g,b.mass);
+        add(fi,fi,mg);
     }
 
     // Add spring forces
@@ -404,7 +399,7 @@ World.prototype.step = function(dt){
                     }
                 }
 
-                World.runNarrowphase(np,bi,si,xi,ai,bj,sj,xj,aj,mu,glen,restitution);
+                World.runNarrowphase(np,bi,si,xi,ai,bj,sj,xj,aj,mu,restitution);
             }
         }
     }
@@ -507,9 +502,8 @@ World.integrateBody = function(body,dt){
  * @param  {Array} xj
  * @param  {Number} aj
  * @param  {Number} mu
- * @param  {Number} glen
  */
-World.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,mu,glen,restitution){
+World.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,mu,restitution){
 
     if(!((si.collisionGroup & sj.collisionMask) !== 0 && (sj.collisionGroup & si.collisionMask) !== 0))
         return;
@@ -517,9 +511,6 @@ World.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,mu,glen,restitution){
     var reducedMass = bi.invMass + bj.invMass;
     if(reducedMass > 0)
         reducedMass = 1/reducedMass;
-
-    var mug = mu * glen * reducedMass,
-        doFriction = mu > 0;
 
     // Get world position and angle of each shape
     vec2.rotate(xiw, xi, bi.angle);
@@ -531,7 +522,6 @@ World.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,mu,glen,restitution){
 
     // Run narrowphase
     np.enableFriction = mu > 0;
-    np.slipForce = mug;
     np.frictionCoefficient = mu;
     np.restitution = restitution;
 
