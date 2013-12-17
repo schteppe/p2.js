@@ -98,6 +98,17 @@ Note that concave polygon shapes can be created using [Body.fromPolygon](http://
 
 ### Change log
 
+##### Current dev version
+* Added property ```.interpolatedPosition``` to ``Body```.
+* Added method ```.internalStep``` to ```World```.
+* Added property ```.defaultRestitution``` to ```World```.
+* Added property ```.applyGravity``` to ```World```.
+* Renamed method ```.computeC``` to ```.computeInvC``` in ```Equation```, and made it compute the inverse.
+* Added static method ```Utils.splice```.
+* Added property ```.world``` to ```Body```.
+* Added property ```.fixedRotation``` to ```Body```.
+* Added class ```AABB```.
+
 ##### 0.4.0
 * Added properties ```.damping``` and ```.angularDamping``` to ```Body```.
 * Added property ```.applyDamping``` to ```World```.
