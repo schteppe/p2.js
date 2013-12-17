@@ -31,6 +31,7 @@ var tmp1 = vec2.fromValues(0,0)
 ,   tmp16 = vec2.fromValues(0,0)
 ,   tmp17 = vec2.fromValues(0,0)
 ,   tmp18 = vec2.fromValues(0,0)
+,   tmpArray = []
 
 /**
  * Narrowphase. Creates contacts and friction given shapes and transforms.
@@ -84,7 +85,7 @@ function Narrowphase(){
     this.restitution = 0;
 
     // Keep track of the colliding bodies last step
-    this.collidingBodiesLastStep = {};
+    this.collidingBodiesLastStep = { keys:[] };
 };
 
 /**
@@ -105,6 +106,19 @@ Narrowphase.prototype.collidedLastStep = function(bi,bj){
     return !!this.collidingBodiesLastStep[id1 + " " + id2];
 };
 
+// "for in" loops aren't optimised in chrome... is there a better way to handle last-step collision memory?
+// Maybe do this: http://jsperf.com/reflection-vs-array-of-keys
+function clearObject(obj){
+    for(var i = 0, l = obj.keys.length; i < l; i++) {
+        delete obj[obj.keys[i]];
+    }
+    obj.keys.length = 0;
+    /*
+    for(var key in this.collidingBodiesLastStep)
+        delete this.collidingBodiesLastStep[key];
+    */
+}
+
 /**
  * Throws away the old equatons and gets ready to create new
  * @method reset
@@ -112,8 +126,7 @@ Narrowphase.prototype.collidedLastStep = function(bi,bj){
 Narrowphase.prototype.reset = function(){
 
     // Save the colliding bodies data
-    for(var key in this.collidingBodiesLastStep)
-        delete this.collidingBodiesLastStep[key];
+    clearObject(this.collidingBodiesLastStep);
     for(var i=0; i!==this.contactEquations.length; i++){
         var eq = this.contactEquations[i],
             id1 = eq.bi.id,
@@ -123,7 +136,9 @@ Narrowphase.prototype.reset = function(){
             id1 = id2;
             id2 = tmp;
         }
-        this.collidingBodiesLastStep[id1 + " " + id2] = true;
+        var key = id1 + " " + id2;
+        this.collidingBodiesLastStep[key] = true;
+        this.collidingBodiesLastStep.keys.push(key);
     }
 
     if(this.reuseObjects){
@@ -190,6 +205,8 @@ Narrowphase.prototype.createFrictionFromContact = function(c){
     return eq;
 }
 
+
+
 /**
  * Plane/line Narrowphase
  * @method planeLine
@@ -221,7 +238,8 @@ Narrowphase.prototype.planeLine = function(bi,si,xi,ai, bj,sj,xj,aj){
         worldEdgeUnit = tmp6,
         dist = tmp7,
         worldNormal = tmp8,
-        worldTangent = tmp9;
+        worldTangent = tmp9,
+        verts = tmpArray;
 
     // Get start and end points
     vec2.set(worldVertex0, -lineShape.length/2, 0);
@@ -247,7 +265,8 @@ Narrowphase.prototype.planeLine = function(bi,si,xi,ai, bj,sj,xj,aj){
     vec2.rotate(worldNormal, yAxis, planeAngle);
 
     // Check line ends
-    var verts = [worldVertex0, worldVertex1];
+    verts[0] = worldVertex0;
+    verts[1] = worldVertex1;
     for(var i=0; i<verts.length; i++){
         var v = verts[i];
 
@@ -330,7 +349,9 @@ Narrowphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj, justTest, 
         worldVertex11 = tmp11,
         dist = tmp12,
         lineToCircle = tmp13,
-        lineEndToLineRadius = tmp14;
+        lineEndToLineRadius = tmp14,
+
+        verts = tmpArray;
 
     // Get start and end points
     vec2.set(worldVertex0, -lineShape.length/2, 0);
@@ -406,7 +427,9 @@ Narrowphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj, justTest, 
     }
 
     // Add corner
-    var verts = [worldVertex0, worldVertex1];
+    // @todo reuse array object
+    verts[0] = worldVertex0;
+    verts[1] = worldVertex1;
 
     for(var i=0; i<verts.length; i++){
         var v = verts[i];

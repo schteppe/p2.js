@@ -198,7 +198,7 @@ Equation.prototype.computeGWlambda = function(){
         vj = bj.vlambda,
         wi = bi.wlambda,
         wj = bj.wlambda;
-    return this.transformedGmult(G,vi,wi,vj,wj);
+    return Gmult(G,vi,wi,vj,wj);
 };
 
 /**
@@ -253,7 +253,8 @@ var addToWlambda_temp = vec2.create(),
     addToWlambda_Gi = vec2.create(),
     addToWlambda_Gj = vec2.create(),
     addToWlambda_ri = vec2.create(),
-    addToWlambda_rj = vec2.create();
+    addToWlambda_rj = vec2.create(),
+    addToWlambda_Mdiag = vec2.create();
 var tmpMat1 = mat2.create(),
     tmpMat2 = mat2.create();
 
@@ -272,6 +273,7 @@ Equation.prototype.addToWlambda = function(deltalambda){
         Gj = addToWlambda_Gj,
         ri = addToWlambda_ri,
         rj = addToWlambda_rj,
+        Mdiag = addToWlambda_Mdiag,
         G = this.G;
 
     Gi[0] = G[0];
@@ -279,10 +281,13 @@ Equation.prototype.addToWlambda = function(deltalambda){
     Gj[0] = G[3];
     Gj[1] = G[4];
 
+    /*
     mat2.identity(imMat1);
     mat2.identity(imMat2);
     imMat1[0] = imMat1[3] = bi.invMass;
     imMat2[0] = imMat2[3] = bj.invMass;
+    */
+
 
     /*
     vec2.rotate(ri,this.xi,bi.angle);
@@ -290,13 +295,18 @@ Equation.prototype.addToWlambda = function(deltalambda){
     */
 
     // Add to linear velocity
-    vec2.scale(temp,vec2.transformMat2(temp,Gi,imMat1),deltalambda);
+    // v_lambda += inv(M) * delta_lamba * G
+    //vec2.set(Mdiag,bi.invMass,bi.invMass);
+    //vec2.scale(temp,vec2.transformMat2(temp,Gi,imMat1),deltalambda);
+    vec2.scale(temp,Gi,bi.invMass*deltalambda);
     vec2.add( bi.vlambda, bi.vlambda, temp);
     // This impulse is in the offset frame
     // Also add contribution to angular
     //bi.wlambda -= vec2.crossLength(temp,ri);
 
-    vec2.scale(temp,vec2.transformMat2(temp,Gj,imMat2),deltalambda);
+    //vec2.set(Mdiag,bj.invMass,bj.invMass);
+    //vec2.scale(temp,vec2.transformMat2(temp,Gj,imMat2),deltalambda);
+    vec2.scale(temp,Gj,bj.invMass*deltalambda);
     vec2.add( bj.vlambda, bj.vlambda, temp);
     //bj.wlambda -= vec2.crossLength(temp,rj);
 
@@ -305,12 +315,18 @@ Equation.prototype.addToWlambda = function(deltalambda){
     bj.wlambda += bj.invInertia * G[5] * deltalambda;
 };
 
+function massMatVecMultiply(out, m, v) {
+    out[0] = v[0] * m;
+    out[1] = v[1] * m;
+    return out;
+}
+
 /**
  * Compute the denominator part of the SPOOK equation: C = G*inv(M)*G' + eps
- * @method computeC
+ * @method computeInvC
  * @param  {Number} eps
  * @return {Number}
  */
-Equation.prototype.computeC = function(eps){
-    return this.computeGiMGt() + eps;
+Equation.prototype.computeInvC = function(eps){
+    return 1.0 / (this.computeGiMGt() + eps);
 };

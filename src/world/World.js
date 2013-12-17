@@ -20,6 +20,7 @@ var  GSSolver = require('../solver/GSSolver')
 ,    pkg = require('../../package.json')
 ,    Broadphase = require('../collision/Broadphase')
 ,    Narrowphase = require('../collision/Narrowphase')
+,    Utils = require('../utils/Utils')
 
 module.exports = World;
 
@@ -124,11 +125,18 @@ function World(options){
     this.constraints = [];
 
     /**
-     * Friction between colliding bodies. This value is used if no matching ContactMaterial is found for the body pair.
+     * Friction between colliding bodies. This value is used if no matching ContactMaterial is found for a Material pair.
      * @property defaultFriction
      * @type {Number}
      */
     this.defaultFriction = 0.3;
+
+    /**
+     * Default coefficient of restitution between colliding bodies. This value is used if no matching ContactMaterial is found for a Material pair.
+     * @property defaultRestitution
+     * @type {Number}
+     */
+    this.defaultRestitution = 0.0;
 
     /**
      * For keeping track of what time step size we used last step
@@ -150,6 +158,13 @@ function World(options){
      * @type {Boolean}
      */
     this.applyDamping = true;
+
+    /**
+     * Enable to automatically apply gravity each step.
+     * @property applyGravity
+     * @type {Boolean}
+     */
+    this.applyGravity = true;
 
     /**
      * Enable/disable constraint solving in each step.
@@ -263,7 +278,7 @@ World.prototype.addContactMaterial = function(contactMaterial){
 World.prototype.removeContactMaterial = function(cm){
     var idx = this.contactMaterials.indexOf(cm);
     if(idx!==-1)
-        this.contactMaterials.splice(idx,1);
+        Utils.splice(this.contactMaterials,idx,1);
 };
 
 /**
@@ -294,7 +309,7 @@ World.prototype.getContactMaterial = function(materialA,materialB){
 World.prototype.removeConstraint = function(c){
     var idx = this.constraints.indexOf(c);
     if(idx!==-1){
-        this.constraints.splice(idx,1);
+        Utils.splice(this.constraints,idx,1);
     }
 };
 
@@ -390,15 +405,12 @@ World.prototype.internalStep = function(dt){
         t0 = now();
     }
 
-    // Todo: remove. This is actually not needed any more
-    var glen = vec2.length(g);
-
-    // add gravity to bodies
-    if(glen !== 0){
+    // Add gravity to bodies
+    if(this.applyGravity){
         for(var i=0; i!==Nbodies; i++){
             var b = bodies[i],
                 fi = b.force;
-            vec2.scale(mg,g,b.mass);
+            vec2.scale(mg,g,b.mass); // F=m*g
             add(fi,fi,mg);
         }
     }
@@ -428,19 +440,19 @@ World.prototype.internalStep = function(dt){
             bj = result[i+1];
 
         // Loop over all shapes of body i
-        for(var k=0; k!==bi.shapes.length; k++){
+        for(var k=0, Nshapesi=bi.shapes.length; k!==Nshapesi; k++){
             var si = bi.shapes[k],
-                xi = bi.shapeOffsets[k] || zero,
-                ai = bi.shapeAngles[k] || 0;
+                xi = bi.shapeOffsets[k],
+                ai = bi.shapeAngles[k];
 
             // All shapes of body j
-            for(var l=0; l!==bj.shapes.length; l++){
+            for(var l=0, Nshapesj=bj.shapes.length; l!==Nshapesj; l++){
                 var sj = bj.shapes[l],
-                    xj = bj.shapeOffsets[l] || zero,
-                    aj = bj.shapeAngles[l] || 0;
+                    xj = bj.shapeOffsets[l],
+                    aj = bj.shapeAngles[l];
 
                 var mu = this.defaultFriction,
-                    restitution = 0.0;
+                    restitution = this.defaultRestitution;
 
                 if(si.material && sj.material){
                     var cm = this.getContactMaterial(si.material,sj.material);
@@ -450,7 +462,7 @@ World.prototype.internalStep = function(dt){
                     }
                 }
 
-                World.runNarrowphase(np,bi,si,xi,ai,bj,sj,xj,aj,mu,glen,restitution);
+                World.runNarrowphase(np,bi,si,xi,ai,bj,sj,xj,aj,mu,restitution);
             }
         }
     }
@@ -550,9 +562,8 @@ World.integrateBody = function(body,dt){
  * @param  {Array} xj
  * @param  {Number} aj
  * @param  {Number} mu
- * @param  {Number} glen
  */
-World.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,mu,glen,restitution){
+World.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,mu,restitution){
 
     if(!((si.collisionGroup & sj.collisionMask) !== 0 && (sj.collisionGroup & si.collisionMask) !== 0))
         return;
@@ -560,9 +571,6 @@ World.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,mu,glen,restitution){
     var reducedMass = bi.invMass + bj.invMass;
     if(reducedMass > 0)
         reducedMass = 1/reducedMass;
-
-    var mug = mu * glen * reducedMass,
-        doFriction = mu > 0;
 
     // Get world position and angle of each shape
     vec2.rotate(xiw, xi, bi.angle);
@@ -574,7 +582,6 @@ World.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,mu,glen,restitution){
 
     // Run narrowphase
     np.enableFriction = mu > 0;
-    np.slipForce = mug;
     np.frictionCoefficient = mu;
     np.restitution = restitution;
 
@@ -609,7 +616,7 @@ World.prototype.addSpring = function(s){
 World.prototype.removeSpring = function(s){
     var idx = this.springs.indexOf(s);
     if(idx===-1)
-        this.springs.splice(idx,1);
+        Utils.splice(this.springs,idx,1);
 };
 
 /**
@@ -625,7 +632,11 @@ World.prototype.removeSpring = function(s){
  *
  */
 World.prototype.addBody = function(body){
+    if(body.world)
+        throw new Error("This body is already added to a World.");
+
     this.bodies.push(body);
+    body.world = this;
     this.addBodyEvent.body = body;
     this.emit(this.addBodyEvent);
 };
@@ -637,9 +648,13 @@ World.prototype.addBody = function(body){
  * @param {Body} body
  */
 World.prototype.removeBody = function(body){
+    if(body.world !== this)
+        throw new Error("The body was never added to this World, cannot remove it.");
+
+    body.world = null;
     var idx = this.bodies.indexOf(body);
     if(idx!==-1){
-        this.bodies.splice(idx,1);
+        Utils.splice(this.bodies,idx,1);
         this.removeBodyEvent.body = body;
         body.resetConstraintVelocity();
         this.emit(this.removeBodyEvent);
