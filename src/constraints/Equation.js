@@ -323,10 +323,10 @@ function massMatVecMultiply(out, m, v) {
 
 /**
  * Compute the denominator part of the SPOOK equation: C = G*inv(M)*G' + eps
- * @method computeC
+ * @method computeInvC
  * @param  {Number} eps
  * @return {Number}
  */
-Equation.prototype.computeC = function(eps){
-    return this.computeGiMGt() + eps;
+Equation.prototype.computeInvC = function(eps){
+    return 1.0 / (this.computeGiMGt() + eps);
 };

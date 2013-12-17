@@ -79,13 +79,19 @@ function GSSolver(options){
 };
 GSSolver.prototype = new Solver();
 
+function setArrayZero(array){
+    for(var i=0; i!==array.length; i++){
+        array[i] = 0.0;
+    }
+}
+
 /**
  * Solve the system of equations
  * @method solve
- * @param  {Number}  dt       Time step
+ * @param  {Number}  h       Time step
  * @param  {World}   world    World to solve
  */
-GSSolver.prototype.solve = function(dt,world){
+GSSolver.prototype.solve = function(h,world){
 
     this.sortEquations();
 
@@ -97,7 +103,6 @@ GSSolver.prototype.solve = function(dt,world){
         Neq = equations.length,
         bodies = world.bodies,
         Nbodies = world.bodies.length,
-        h = dt,
         d = this.relaxation,
         k = this.stiffness,
         eps = 4.0 / (h * h * k * (1 + 4 * d)),
@@ -106,38 +111,36 @@ GSSolver.prototype.solve = function(dt,world){
         useGlobalParams = this.useGlobalEquationParameters,
         add = vec2.add,
         set = vec2.set,
-        useZeroRHS = this.useZeroRHS;
+        useZeroRHS = this.useZeroRHS,
+        lambda = this.lambda;
 
     // Things that does not change during iteration can be computed once
-    if(this.lambda.length < Neq){
-        this.lambda = new Utils.ARRAY_TYPE(Neq + this.arrayStep);
-        this.Bs =     new Utils.ARRAY_TYPE(Neq + this.arrayStep);
-        this.invCs =  new Utils.ARRAY_TYPE(Neq + this.arrayStep);
+    if(lambda.length < Neq){
+        lambda = this.lambda =  new Utils.ARRAY_TYPE(Neq + this.arrayStep);
+        this.Bs =               new Utils.ARRAY_TYPE(Neq + this.arrayStep);
+        this.invCs =            new Utils.ARRAY_TYPE(Neq + this.arrayStep);
+    } else {
+        setArrayZero(lambda);
     }
     var invCs = this.invCs,
         Bs = this.Bs,
         lambda = this.lambda;
-    for(var i=0; i!==Neq; i++){
-        var c = equations[i];
-        lambda[i] = 0.0;
-
-        var _a = a,
-            _b = b,
-            _eps = eps;
-        if(!useGlobalParams){
+    if(!useGlobalParams){
+        for(var i=0, c; c = equations[i]; i++){
             if(h !== c.h) c.updateSpookParams(h);
-            _a = c.a;
-            _b = c.b;
-            _eps = c.eps;
+            Bs[i] =     c.computeB(c.a,c.b,h);
+            invCs[i] =  c.computeInvC(c.eps);
         }
-        Bs[i] = c.computeB(_a,_b,h);
-        invCs[i] = 1.0 / c.computeC(_eps);
+    } else {
+        for(var i=0, c; c = equations[i]; i++){
+            Bs[i] =     c.computeB(a,b,h);
+            invCs[i] =  c.computeInvC(eps);
+        }
     }
 
-    var q, B, c, invC, deltalambda, deltalambdaTot, GWlambda, lambdaj;
+    var q, B, c, deltalambdaTot,i,j;
 
     if(Neq !== 0){
-        var i,j, minForce, maxForce, lambdaj_plus_deltalambda;
 
         // Reset vlambda
         for(i=0; i!==Nbodies; i++){
@@ -158,12 +161,12 @@ GSSolver.prototype.solve = function(dt,world){
 
                 var _eps = useGlobalParams ? eps : c.eps;
 
-                var deltalambda = GSSolver.iterateEquation(j,c,_eps,Bs,invCs,lambda,useZeroRHS,dt);
-                if(tolSquared !== 0) deltalambdaTot += Math.abs(deltalambda);
+                var deltalambda = GSSolver.iterateEquation(j,c,_eps,Bs,invCs,lambda,useZeroRHS,h);
+                deltalambdaTot += Math.abs(deltalambda);
             }
 
             // If the total error is small enough - stop iterate
-            if(tolSquared !== 0 && deltalambdaTot*deltalambdaTot <= tolSquared) break;
+            if(deltalambdaTot*deltalambdaTot <= tolSquared) break;
         }
 
         // Add result to velocity
@@ -171,7 +174,6 @@ GSSolver.prototype.solve = function(dt,world){
             bodies[i].addConstraintVelocity();
         }
     }
-    errorTot = deltalambdaTot;
 };
 
 GSSolver.iterateEquation = function(j,eq,eps,Bs,invCs,lambda,useZeroRHS,dt){
