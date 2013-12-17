@@ -357,11 +357,13 @@ World.prototype.step = function(dt,timeSinceLastCalled,maxSubSteps){
 
         for(var i=0; i<internalSteps; i++){
             this.internalStep(dt);
+            /*
             for(var j=0; j!==this.bodies.length; j++){
                 // Store state for interpolation
                 // Todo
                 var b = this.bodies[j];
             }
+            */
         }
 
         // Increment time
@@ -371,10 +373,10 @@ World.prototype.step = function(dt,timeSinceLastCalled,maxSubSteps){
         // Compute the interpolation data
         var h = this.time - this.fixedStepTime - dt;
         for(var j=0; j!==this.bodies.length; j++){
-            // Store state for interpolation
+            // Store interpolated state
             var b = this.bodies[j];
-            b.interpX = b.position[0] + b.velocity[0]*h;
-            b.interpY = b.position[1] + b.velocity[1]*h;
+            b.interpolatedPosition[0] = b.position[0] + b.velocity[0]*h;
+            b.interpolatedPosition[1] = b.position[1] + b.velocity[1]*h;
         }
     }
 };

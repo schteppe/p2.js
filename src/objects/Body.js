@@ -105,10 +105,17 @@ function Body(options){
     /**
      * The position of the body
      * @property position
-     * @type {Float32Array}
+     * @type {Array}
      */
     this.position = vec2.fromValues(0,0);
     if(options.position) vec2.copy(this.position, options.position);
+
+    /**
+     * The interpolated position of the body.
+     * @property interpolatedPosition
+     * @type {Array}
+     */
+    this.interpolatedPosition = vec2.fromValues(0,0);
 
     /**
      * The velocity of the body
