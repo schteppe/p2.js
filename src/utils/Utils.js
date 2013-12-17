@@ -25,6 +25,19 @@ Utils.appendArray = function(a,b){
 };
 
 /**
+ * Garbage free Array.splice(). Does not allocate a new array.
+ * @param  {Array} array
+ * @param  {Number} index
+ * @param  {Number} howmany
+ */
+Utils.splice = function(array,index,howmany){
+    howmany = howmany || 1;
+    for (var i=index, len=array.length-howmany; i < len; i++)
+        array[i] = array[i + howmany];
+    array.length = len;
+};
+
+/**
  * The array type to use for internal numeric computations.
  * @type {Array}
  * @static

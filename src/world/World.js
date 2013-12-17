@@ -20,6 +20,7 @@ var  GSSolver = require('../solver/GSSolver')
 ,    pkg = require('../../package.json')
 ,    Broadphase = require('../collision/Broadphase')
 ,    Narrowphase = require('../collision/Narrowphase')
+,    Utils = require('../utils/Utils')
 
 module.exports = World;
 
@@ -261,7 +262,7 @@ World.prototype.addContactMaterial = function(contactMaterial){
 World.prototype.removeContactMaterial = function(cm){
     var idx = this.contactMaterials.indexOf(cm);
     if(idx!==-1)
-        this.contactMaterials.splice(idx,1);
+        Utils.splice(this.contactMaterials,idx,1);
 };
 
 /**
@@ -292,7 +293,7 @@ World.prototype.getContactMaterial = function(materialA,materialB){
 World.prototype.removeConstraint = function(c){
     var idx = this.constraints.indexOf(c);
     if(idx!==-1){
-        this.constraints.splice(idx,1);
+        Utils.splice(this.constraints,idx,1);
     }
 };
 
@@ -565,7 +566,7 @@ World.prototype.addSpring = function(s){
 World.prototype.removeSpring = function(s){
     var idx = this.springs.indexOf(s);
     if(idx===-1)
-        this.springs.splice(idx,1);
+        Utils.splice(this.springs,idx,1);
 };
 
 /**
@@ -603,7 +604,7 @@ World.prototype.removeBody = function(body){
     body.world = null;
     var idx = this.bodies.indexOf(body);
     if(idx!==-1){
-        this.bodies.splice(idx,1);
+        Utils.splice(this.bodies,idx,1);
         this.removeBodyEvent.body = body;
         body.resetConstraintVelocity();
         this.emit(this.removeBodyEvent);
