@@ -105,6 +105,12 @@ Narrowphase.prototype.collidedLastStep = function(bi,bj){
     return !!this.collidingBodiesLastStep[id1 + " " + id2];
 };
 
+// "for in" loops aren't optimised in chrome... is there a better way to handle last-step collision memory?
+function clearObject(obj){
+    for(var key in this.collidingBodiesLastStep)
+        delete this.collidingBodiesLastStep[key];
+}
+
 /**
  * Throws away the old equatons and gets ready to create new
  * @method reset
@@ -112,8 +118,7 @@ Narrowphase.prototype.collidedLastStep = function(bi,bj){
 Narrowphase.prototype.reset = function(){
 
     // Save the colliding bodies data
-    for(var key in this.collidingBodiesLastStep)
-        delete this.collidingBodiesLastStep[key];
+    clearObject(this.collidingBodiesLastStep);
     for(var i=0; i!==this.contactEquations.length; i++){
         var eq = this.contactEquations[i],
             id1 = eq.bi.id,
