@@ -35,6 +35,13 @@ function Body(options){
     this.id = ++Body._idCounter;
 
     /**
+     * The world that this body is added to. This property is set to NULL if the body is not added to any world.
+     * @property world
+     * @type {World}
+     */
+    this.world = null;
+
+    /**
      * The shapes of the body. The local transform of the shape in .shapes[i] is
      * defined by .shapeOffsets[i] and .shapeAngles[i].
      *

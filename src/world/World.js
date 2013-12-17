@@ -581,7 +581,11 @@ World.prototype.removeSpring = function(s){
  *
  */
 World.prototype.addBody = function(body){
+    if(body.world)
+        throw new Error("This body is already added to a World.");
+
     this.bodies.push(body);
+    body.world = this;
     this.addBodyEvent.body = body;
     this.emit(this.addBodyEvent);
 };
@@ -593,6 +597,10 @@ World.prototype.addBody = function(body){
  * @param {Body} body
  */
 World.prototype.removeBody = function(body){
+    if(body.world !== this)
+        throw new Error("The body was never added to this World, cannot remove it.");
+
+    body.world = null;
     var idx = this.bodies.indexOf(body);
     if(idx!==-1){
         this.bodies.splice(idx,1);
