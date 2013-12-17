@@ -26,6 +26,8 @@ Utils.appendArray = function(a,b){
 
 /**
  * Garbage free Array.splice(). Does not allocate a new array.
+ * @method splice
+ * @static
  * @param  {Array} array
  * @param  {Number} index
  * @param  {Number} howmany
