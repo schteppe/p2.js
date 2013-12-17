@@ -11,8 +11,7 @@
     <canvas width="500" height="220" id="myCanvas"></canvas>
 
     <script>
-      var w,h,fixedTimeStep=0.5,maxSubSteps=10,
-          canvas, ctx, world, circleBody;
+      var w, h, canvas, ctx, world, circleBody;
 
       init();
       animate();
@@ -23,11 +22,10 @@
         canvas = document.getElementById("myCanvas");
         w = canvas.width;
         h = canvas.height;
-
         ctx = canvas.getContext("2d");
         ctx.lineWidth = 0.05;
 
-        // Init p2.js
+        // Init world
         world = new p2.World({ gravity:[0,0] });
 
         // Add a circle
@@ -40,49 +38,55 @@
         world.addBody(circleBody);
       }
 
-      function drawCircle(ctx,circleBody){
+      function drawCircles(ctx,circleBody){
         ctx.beginPath();
-        var x = circleBody.interpolatedPosition[0],
-            y = circleBody.interpolatedPosition[1],
-            radius = circleShape.radius;
-        ctx.arc(x,y-radius*1.1,radius,0,2*Math.PI);
+        var radius = circleShape.radius;
+
+        // Draw the circle at the interpolated position
+        ctx.arc(circleBody.interpolatedPosition[0],
+                circleBody.interpolatedPosition[1]-radius*1.1,
+                radius,0,2*Math.PI);
         ctx.stroke();
         ctx.beginPath();
 
-        ctx.arc(circleBody.position[0],y+radius*1.1,radius,0,2*Math.PI);
+        // Draw the circle at the fixed step position
+        ctx.arc(circleBody.position[0],
+                circleBody.position[1]+radius*1.1,
+                radius,0,2*Math.PI);
         ctx.stroke();
       }
 
       function render(ctx,circleBody){
-        // Clear the canvas
         ctx.clearRect(0,0,w,h);
-
-        // Transform the canvas
-        // Note that we need to flip the y axis since Canvas pixel coordinates
-        // goes from top to bottom, while physics does the opposite.
         ctx.save();
-        ctx.translate(w/2, h/2);  // Translate to the center
-        ctx.scale(50, -50);       // Zoom in and flip y axis
-
-        // Draw all bodies
-        drawCircle(ctx,circleBody);
-
-        // Restore transform
+        ctx.translate(w/2, h/2);
+        ctx.scale(50, -50);
+        drawCircles(ctx,circleBody);
         ctx.restore();
       }
 
-      // Animation loop
       var lastCallTime = time();
-      function animate(){
 
+      // Animation loop
+      function animate(){
         requestAnimationFrame(animate);
 
-        // Move physics bodies forward in time
+        // Compute time since last time we called the .step() method
         var timeSinceLastCall = time()-lastCallTime;
-        world.step(fixedTimeStep,timeSinceLastCall,maxSubSteps);
         lastCallTime = time();
 
-        // Render scene
+        // Fixed time step to use for physics. We use a huge timestep to see what's going on.
+        var fixedTimeStep=0.5; // seconds
+
+        // Max number of fixed physics timesteps to do in one .step()
+        var maxSubSteps=10;
+
+        // Now step the world.
+        // This will do integration at a fixed time step, but compute interpolated positions
+        // which are stored in body.interpolatedPosition.
+        world.step(fixedTimeStep,timeSinceLastCall,maxSubSteps);
+
+        // Render both interpolated and fixed-step positions
         render(ctx,circleBody);
       }
 
