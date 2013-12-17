@@ -369,7 +369,7 @@ World.prototype.step = function(dt,timeSinceLastCalled,maxSubSteps){
         this.fixedStepTime += internalSteps * dt;
 
         // Compute the interpolation data
-        var h = this.time - this.fixedStepTime;
+        var h = this.time - this.fixedStepTime - dt;
         for(var j=0; j!==this.bodies.length; j++){
             // Store state for interpolation
             var b = this.bodies[j];
