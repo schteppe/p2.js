@@ -125,11 +125,18 @@ function World(options){
     this.constraints = [];
 
     /**
-     * Friction between colliding bodies. This value is used if no matching ContactMaterial is found for the body pair.
+     * Friction between colliding bodies. This value is used if no matching ContactMaterial is found for a Material pair.
      * @property defaultFriction
      * @type {Number}
      */
     this.defaultFriction = 0.3;
+
+    /**
+     * Default coefficient of restitution between colliding bodies. This value is used if no matching ContactMaterial is found for a Material pair.
+     * @property defaultRestitution
+     * @type {Number}
+     */
+    this.defaultRestitution = 0.0;
 
     /**
      * For keeping track of what time step size we used last step
@@ -398,7 +405,7 @@ World.prototype.step = function(dt){
                     aj = bj.shapeAngles[l];
 
                 var mu = this.defaultFriction,
-                    restitution = 0.0;
+                    restitution = this.defaultRestitution;
 
                 if(si.material && sj.material){
                     var cm = this.getContactMaterial(si.material,sj.material);
