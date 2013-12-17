@@ -172,6 +172,8 @@ function World(options){
      */
     this.time = 0.0;
 
+    this.fixedStepTime = 0.0;
+
     /**
      * Set to true if you want to the world to emit the "impact" event. Turning this off could improve performance.
      * @property emitImpactEvent
@@ -310,14 +312,59 @@ var step_r = vec2.create(),
 /**
  * Step the physics world forward in time.
  *
+ * There are two modes. The simple mode is fixed timestepping without interpolation. In this case you only use the first argument. The second case uses interpolation. In that you also provide the time since the function was last used, as well as the maximum fixed timesteps to take.
+ *
  * @method step
- * @param {Number} dt The time step size to use.
+ * @param {Number} dt                       The fixed time step size to use.
+ * @param {Number} [timeSinceLastCalled=0]  The time elapsed since the function was last called.
+ * @param {Number} [maxSubSteps=10]         Maximum number of fixed steps to take per function call.
  *
  * @example
+ *     // fixed timestepping without interpolation
  *     var world = new World();
  *     world.step(0.01);
  */
-World.prototype.step = function(dt){
+World.prototype.step = function(dt,timeSinceLastCalled,maxSubSteps){
+    maxSubSteps = maxSubSteps || 10;
+    timeSinceLastCalled = timeSinceLastCalled || 0;
+
+    if(timeSinceLastCalled == 0){ // Fixed, simple stepping
+
+        this.internalStep(dt);
+
+        // Increment time
+        this.time += dt;
+
+    } else {
+
+        var internalSteps = Math.floor( (this.time+timeSinceLastCalled) / dt) - Math.floor(this.time / dt);
+        internalSteps = Math.min(internalSteps,maxSubSteps);
+
+        for(var i=0; i<internalSteps; i++){
+            this.internalStep(dt);
+            for(var j=0; j!==this.bodies.length; j++){
+                // Store state for interpolation
+                // Todo
+                var b = this.bodies[j];
+            }
+        }
+
+        // Increment time
+        this.time += timeSinceLastCalled;
+        this.fixedStepTime += internalSteps * dt;
+
+        // Compute the interpolation data
+        var h = this.time - this.fixedStepTime;
+        for(var j=0; j!==this.bodies.length; j++){
+            // Store state for interpolation
+            var b = this.bodies[j];
+            b.interpX = b.position[0] + b.velocity[0]*h;
+            b.interpY = b.position[1] + b.velocity[1]*h;
+        }
+    }
+};
+
+World.prototype.internalStep = function(dt){
     var that = this,
         doProfiling = this.doProfiling,
         Nsprings = this.springs.length,
@@ -456,9 +503,6 @@ World.prototype.step = function(dt){
             }
         }
     }
-
-    // Increment time
-    this.time += dt;
 
     this.emit(this.postStepEvent);
 };
