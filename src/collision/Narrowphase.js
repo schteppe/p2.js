@@ -84,7 +84,7 @@ function Narrowphase(){
     this.restitution = 0;
 
     // Keep track of the colliding bodies last step
-    this.collidingBodiesLastStep = {};
+    this.collidingBodiesLastStep = { keys:[] };
 };
 
 /**
@@ -106,9 +106,16 @@ Narrowphase.prototype.collidedLastStep = function(bi,bj){
 };
 
 // "for in" loops aren't optimised in chrome... is there a better way to handle last-step collision memory?
+// Maybe do this: http://jsperf.com/reflection-vs-array-of-keys
 function clearObject(obj){
+    for(var i = 0, l = obj.keys.length; i < l; i++) {
+        delete obj[obj.keys[i]];
+    }
+    obj.keys.length = 0;
+    /*
     for(var key in this.collidingBodiesLastStep)
         delete this.collidingBodiesLastStep[key];
+    */
 }
 
 /**
@@ -128,7 +135,9 @@ Narrowphase.prototype.reset = function(){
             id1 = id2;
             id2 = tmp;
         }
-        this.collidingBodiesLastStep[id1 + " " + id2] = true;
+        var key = id1 + " " + id2;
+        this.collidingBodiesLastStep[key] = true;
+        this.collidingBodiesLastStep.keys.push(key);
     }
 
     if(this.reuseObjects){
