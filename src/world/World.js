@@ -386,16 +386,16 @@ World.prototype.step = function(dt){
             bj = result[i+1];
 
         // Loop over all shapes of body i
-        for(var k=0; k!==bi.shapes.length; k++){
+        for(var k=0, Nshapesi=bi.shapes.length; k!==Nshapesi; k++){
             var si = bi.shapes[k],
-                xi = bi.shapeOffsets[k] || zero,
-                ai = bi.shapeAngles[k] || 0;
+                xi = bi.shapeOffsets[k],
+                ai = bi.shapeAngles[k];
 
             // All shapes of body j
-            for(var l=0; l!==bj.shapes.length; l++){
+            for(var l=0, Nshapesj=bj.shapes.length; l!==Nshapesj; l++){
                 var sj = bj.shapes[l],
-                    xj = bj.shapeOffsets[l] || zero,
-                    aj = bj.shapeAngles[l] || 0;
+                    xj = bj.shapeOffsets[l],
+                    aj = bj.shapeAngles[l];
 
                 var mu = this.defaultFriction,
                     restitution = 0.0;
