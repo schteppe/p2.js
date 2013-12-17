@@ -153,6 +153,13 @@ function World(options){
     this.applyDamping = true;
 
     /**
+     * Enable to automatically apply gravity each step.
+     * @property applyGravity
+     * @type {Boolean}
+     */
+    this.applyGravity = true;
+
+    /**
      * Enable/disable constraint solving in each step.
      * @property solveConstraints
      * @type {Boolean}
@@ -344,12 +351,14 @@ World.prototype.step = function(dt){
         t0 = now();
     }
 
-    // add gravity to bodies
-    for(var i=0; i!==Nbodies; i++){
-        var b = bodies[i],
-            fi = b.force;
-        vec2.scale(mg,g,b.mass);
-        add(fi,fi,mg);
+    // Add gravity to bodies
+    if(this.applyGravity){
+        for(var i=0; i!==Nbodies; i++){
+            var b = bodies[i],
+                fi = b.force;
+            vec2.scale(mg,g,b.mass); // F=m*g
+            add(fi,fi,mg);
+        }
     }
 
     // Add spring forces
