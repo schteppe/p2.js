@@ -205,7 +205,131 @@ Narrowphase.prototype.createFrictionFromContact = function(c){
     return eq;
 }
 
+/**
+ * Convex/line narrowphase
+ * @method convexLine
+ * @param  {Body}       bi
+ * @param  {Convex}     si
+ * @param  {Array}      xi
+ * @param  {Number}     ai
+ * @param  {Body}       bj
+ * @param  {Line}       sj
+ * @param  {Array}      xj
+ * @param  {Number}     aj
+ * @todo Implement me!
+ */
+Narrowphase.prototype[Shape.LINE | Shape.CONVEX] =
+Narrowphase.prototype.convexLine = function(bi,si,xi,ai, bj,sj,xj,aj){
+    // TODO
+};
 
+/**
+ * Line/rectangle narrowphase
+ * @method lineRectangle
+ * @param  {Body}       bi
+ * @param  {Line}       si
+ * @param  {Array}      xi
+ * @param  {Number}     ai
+ * @param  {Body}       bj
+ * @param  {Rectangle}  sj
+ * @param  {Array}      xj
+ * @param  {Number}     aj
+ * @todo Implement me!
+ */
+Narrowphase.prototype[Shape.LINE | Shape.RECTANGLE] =
+Narrowphase.prototype.lineRectangle = function(bi,si,xi,ai, bj,sj,xj,aj){
+    // TODO
+};
+
+/**
+ * Rectangle/capsule narrowphase
+ * @method rectangleCapsule
+ * @param  {Body}       bi
+ * @param  {Rectangle}  si
+ * @param  {Array}      xi
+ * @param  {Number}     ai
+ * @param  {Body}       bj
+ * @param  {Capsule}    sj
+ * @param  {Array}      xj
+ * @param  {Number}     aj
+ * @todo Implement me!
+ */
+Narrowphase.prototype[Shape.CAPSULE | Shape.RECTANGLE] =
+Narrowphase.prototype.rectangleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj){
+    // TODO
+};
+
+/**
+ * Convex/capsule narrowphase
+ * @method convexCapsule
+ * @param  {Body}       bi
+ * @param  {Convex}     si
+ * @param  {Array}      xi
+ * @param  {Number}     ai
+ * @param  {Body}       bj
+ * @param  {Capsule}    sj
+ * @param  {Array}      xj
+ * @param  {Number}     aj
+ * @todo Implement me!
+ */
+Narrowphase.prototype[Shape.CAPSULE | Shape.CONVEX] =
+Narrowphase.prototype.convexCapsule = function(bi,si,xi,ai, bj,sj,xj,aj){
+    // TODO
+};
+
+/**
+ * Capsule/line narrowphase
+ * @method lineCapsule
+ * @param  {Body}       bi
+ * @param  {Line}       si
+ * @param  {Array}      xi
+ * @param  {Number}     ai
+ * @param  {Body}       bj
+ * @param  {Capsule}    sj
+ * @param  {Array}      xj
+ * @param  {Number}     aj
+ * @todo Implement me!
+ */
+Narrowphase.prototype[Shape.CAPSULE | Shape.LINE] =
+Narrowphase.prototype.lineCapsule = function(bi,si,xi,ai, bj,sj,xj,aj){
+    // TODO
+};
+
+/**
+ * Capsule/capsule narrowphase
+ * @method capsuleCapsule
+ * @param  {Body}       bi
+ * @param  {Capsule}    si
+ * @param  {Array}      xi
+ * @param  {Number}     ai
+ * @param  {Body}       bj
+ * @param  {Capsule}    sj
+ * @param  {Array}      xj
+ * @param  {Number}     aj
+ * @todo Implement me!
+ */
+Narrowphase.prototype[Shape.CAPSULE | Shape.CAPSULE] =
+Narrowphase.prototype.capsuleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj){
+    // TODO
+};
+
+/**
+ * Line/line narrowphase
+ * @method lineLine
+ * @param  {Body}       bi
+ * @param  {Line}       si
+ * @param  {Array}      xi
+ * @param  {Number}     ai
+ * @param  {Body}       bj
+ * @param  {Line}       sj
+ * @param  {Array}      xj
+ * @param  {Number}     aj
+ * @todo Implement me!
+ */
+Narrowphase.prototype[Shape.LINE | Shape.LINE] =
+Narrowphase.prototype.lineLine = function(bi,si,xi,ai, bj,sj,xj,aj){
+    // TODO
+};
 
 /**
  * Plane/line Narrowphase
