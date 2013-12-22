@@ -1,5 +1,5 @@
 var Constraint = require('./Constraint')
-,   Equation = require('./Equation')
+,   Equation = require('../equations/Equation')
 ,   vec2 = require('../math/vec2')
 
 module.exports = DistanceConstraint;

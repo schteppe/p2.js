@@ -1,6 +1,6 @@
 var Constraint = require('./Constraint')
 ,   vec2 = require('../math/vec2')
-,   Equation = require('./Equation')
+,   Equation = require('../equations/Equation')
 
 module.exports = LockConstraint;
 

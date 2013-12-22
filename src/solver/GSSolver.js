@@ -1,7 +1,7 @@
 var vec2 = require('../math/vec2')
 ,   Solver = require('./Solver')
 ,   Utils = require('../utils/Utils')
-,   FrictionEquation = require('../constraints/FrictionEquation')
+,   FrictionEquation = require('../equations/FrictionEquation')
 
 module.exports = GSSolver;
 

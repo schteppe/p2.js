@@ -3,8 +3,8 @@ var vec2 = require('../math/vec2')
 ,   add = vec2.add
 ,   dot = vec2.dot
 ,   Utils = require('../utils/Utils')
-,   ContactEquation = require('../constraints/ContactEquation')
-,   FrictionEquation = require('../constraints/FrictionEquation')
+,   ContactEquation = require('../equations/ContactEquation')
+,   FrictionEquation = require('../equations/FrictionEquation')
 ,   Circle = require('../shapes/Circle')
 ,   Shape = require('../shapes/Shape')
 

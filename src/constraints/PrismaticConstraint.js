@@ -1,8 +1,8 @@
 var Constraint = require('./Constraint')
-,   ContactEquation = require('./ContactEquation')
-,   Equation = require('./Equation')
+,   ContactEquation = require('../equations/ContactEquation')
+,   Equation = require('../equations/Equation')
 ,   vec2 = require('../math/vec2')
-,   RotationalLockEquation = require('./RotationalLockEquation')
+,   RotationalLockEquation = require('../equations/RotationalLockEquation')
 
 module.exports = PrismaticConstraint;
 

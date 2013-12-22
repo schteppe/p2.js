@@ -1,7 +1,7 @@
 var Constraint = require('./Constraint')
-,   Equation = require('./Equation')
-,   RotationalVelocityEquation = require('./RotationalVelocityEquation')
-,   RotationalLockEquation = require('./RotationalLockEquation')
+,   Equation = require('../equations/Equation')
+,   RotationalVelocityEquation = require('../equations/RotationalVelocityEquation')
+,   RotationalLockEquation = require('../equations/RotationalLockEquation')
 ,   vec2 = require('../math/vec2')
 
 module.exports = RevoluteConstraint;
