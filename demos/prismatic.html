@@ -41,6 +41,11 @@
         });
         world.addConstraint(c);
 
+        c.upperLimitEnabled = true;
+        c.upperLimit = 0.5;
+        c.lowerLimitEnabled = true;
+        c.lowerLimit = -0.5;
+
         // Create ground
         var planeShape = new p2.Plane();
         var plane = new p2.Body({
