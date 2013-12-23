@@ -102,9 +102,24 @@ function PrismaticConstraint(bodyA,bodyB,options){
     var rot = new RotationalLockEquation(bodyA,bodyB,-maxForce,maxForce);
 
     this.equations.push(trans,rot);
+
+    // limits
+    this.lowerLimitEnabled = false;
+    this.upperLimitEnabled = false;
+    this.lowerLimit = 0;
+    this.upperLimit = 1;
+    this.upperLimitEquation = new ContactEquation(bodyA,bodyB);
+    this.lowerLimitEquation = new ContactEquation(bodyA,bodyB);
+    this.upperLimitEquation.minForce = this.lowerLimitEquation.minForce = 0;
+    this.upperLimitEquation.maxForce = this.lowerLimitEquation.maxForce = maxForce;
 }
 
 PrismaticConstraint.prototype = new Constraint();
+
+var worldAxisA = vec2.create(),
+    worldAnchorA = vec2.create(),
+    worldAnchorB = vec2.create(),
+    tmp = vec2.create();
 
 /**
  * Update the constraint equations. Should be done if any of the bodies changed position, before solving.
@@ -112,6 +127,53 @@ PrismaticConstraint.prototype = new Constraint();
  */
 PrismaticConstraint.prototype.update = function(){
     var eqs = this.equations,
-        trans = eqs[0];
+        trans = eqs[0],
+        upperLimit = this.upperLimit,
+        lowerLimit = this.lowerLimit,
+        upperLimitEquation = this.upperLimitEquation,
+        lowerLimitEquation = this.lowerLimitEquation,
+        bodyA = this.bodyA,
+        bodyB = this.bodyB,
+        localAxisA = this.localAxisA,
+        localAnchorA = this.localAnchorA,
+        localAnchorB = this.localAnchorB;
+
     trans.update();
+
+    // Transform local things to world
+    vec2.rotate(worldAxisA, localAxisA, bodyA.angle);
+    vec2.rotate(worldAnchorA, localAnchorA, bodyA.angle);
+    vec2.add(worldAnchorA, worldAnchorA, bodyA.position);
+    vec2.rotate(worldAnchorB, localAnchorB, bodyB.angle);
+    vec2.add(worldAnchorB, worldAnchorB, bodyB.position);
+
+    var relPosition = this.position = vec2.dot(worldAnchorB,worldAxisA) - vec2.dot(worldAnchorA,worldAxisA);
+
+    if(this.upperLimitEnabled && relPosition > upperLimit){
+        // Update contact constraint normal, etc
+        vec2.scale(upperLimitEquation.ni, worldAxisA, -1);
+        vec2.sub(upperLimitEquation.ri, worldAnchorA, bodyA.position);
+        vec2.sub(upperLimitEquation.rj, worldAnchorB, bodyB.position);
+        vec2.scale(tmp,worldAxisA,upperLimit);
+        vec2.add(upperLimitEquation.ri,upperLimitEquation.ri,tmp);
+        if(eqs.indexOf(upperLimitEquation)==-1)
+            eqs.push(upperLimitEquation);
+    } else {
+        var idx = eqs.indexOf(upperLimitEquation);
+        if(idx != -1) eqs.splice(idx,1);
+    }
+
+    if(this.lowerLimitEnabled && relPosition < lowerLimit){
+        // Update contact constraint normal, etc
+        vec2.scale(lowerLimitEquation.ni, worldAxisA, 1);
+        vec2.sub(lowerLimitEquation.ri, worldAnchorA, bodyA.position);
+        vec2.sub(lowerLimitEquation.rj, worldAnchorB, bodyB.position);
+        vec2.scale(tmp,worldAxisA,lowerLimit);
+        vec2.sub(lowerLimitEquation.rj,lowerLimitEquation.rj,tmp);
+        if(eqs.indexOf(lowerLimitEquation)==-1)
+            eqs.push(lowerLimitEquation);
+    } else {
+        var idx = eqs.indexOf(lowerLimitEquation);
+        if(idx != -1) eqs.splice(idx,1);
+    }
 };
