@@ -147,8 +147,20 @@ function Demo(world){
         that.updateTools();
     });
     this.updateTools();
+    this.run();
 }
 Demo.prototype = new EventEmitter();
+
+Demo.prototype.run = function(){
+    var demo = this;
+    function update(){
+        if(!demo.paused)
+            demo.world.step(1/60);
+        demo.render();
+        requestAnimationFrame(update);
+    }
+    requestAnimationFrame(update);
+};
 
 Demo.prototype.setState = function(s){
     this.state = s;

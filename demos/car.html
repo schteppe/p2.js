@@ -81,14 +81,6 @@
         demo.newShapeCollisionGroup = OTHER;
         demo.newShapeCollisionMask =  GROUND|WHEELS|CHASSIS|OTHER;
 
-        function update(){
-            if(!demo.paused)
-                world.step(1/60);
-            demo.render();
-            requestAnimationFrame(update);
-        }
-        requestAnimationFrame(update);
-
     </script>
 </body>
 </html>
