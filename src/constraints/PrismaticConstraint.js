@@ -103,13 +103,46 @@ function PrismaticConstraint(bodyA,bodyB,options){
 
     this.equations.push(trans,rot);
 
-    // limits
+    /**
+     * The position of anchor A relative to anchor B, along the constraint axis.
+     * @property position
+     * @type {Number}
+     */
+    this.position = 0;
+
+    /**
+     * Set to true to enable lower limit.
+     * @property lowerLimitEnabled
+     * @type {Boolean}
+     */
     this.lowerLimitEnabled = false;
+
+    /**
+     * Set to true to enable upper limit.
+     * @property upperLimitEnabled
+     * @type {Boolean}
+     */
     this.upperLimitEnabled = false;
+
+    /**
+     * Lower constraint limit. The constraint position is forced to be larger than this value.
+     * @property lowerLimit
+     * @type {Number}
+     */
     this.lowerLimit = 0;
+
+    /**
+     * Upper constraint limit. The constraint position is forced to be smaller than this value.
+     * @property upperLimit
+     * @type {Number}
+     */
     this.upperLimit = 1;
+
+    // Equations used for limits
     this.upperLimitEquation = new ContactEquation(bodyA,bodyB);
     this.lowerLimitEquation = new ContactEquation(bodyA,bodyB);
+
+    // Set max/min forces
     this.upperLimitEquation.minForce = this.lowerLimitEquation.minForce = 0;
     this.upperLimitEquation.maxForce = this.lowerLimitEquation.maxForce = maxForce;
 }
@@ -148,6 +181,27 @@ PrismaticConstraint.prototype.update = function(){
     vec2.add(worldAnchorB, worldAnchorB, bodyB.position);
 
     var relPosition = this.position = vec2.dot(worldAnchorB,worldAxisA) - vec2.dot(worldAnchorA,worldAxisA);
+
+    /*
+        Limits strategy:
+        Add contact equation, with normal along the constraint axis.
+        min/maxForce is set so the constraint is repulsive in the correct direction.
+        Some offset is added to either equation.ri or .rj to get the correct upper/lower limit.
+
+                 ^
+                 |
+      upperLimit x
+                 |    ------
+         anchorB x<---|  B |
+                 |    |    |
+        ------   |    ------
+        |    |   |
+        |  A |-->x anchorA
+        ------   |
+                 x lowerLimit
+                 |
+                axis
+     */
 
     if(this.upperLimitEnabled && relPosition > upperLimit){
         // Update contact constraint normal, etc
