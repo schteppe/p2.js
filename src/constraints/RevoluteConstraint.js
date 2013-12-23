@@ -66,11 +66,41 @@ function RevoluteConstraint(bodyA, pivotA, bodyB, pivotB, maxForce){
     this.motorEquation = new RotationalVelocityEquation(bodyA,bodyB);
     this.motorEnabled = false;
 
-    // Angle limits
+    /**
+     * The constraint position
+     * @property angle
+     * @type {Number}
+     */
+    this.angle = 0;
+
+    /**
+     * Set to true to enable lower limit
+     * @property lowerLimitEnabled
+     * @type {Boolean}
+     */
     this.lowerLimitEnabled = false;
+
+    /**
+     * Set to true to enable upper limit
+     * @property upperLimitEnabled
+     * @type {Boolean}
+     */
     this.upperLimitEnabled = false;
+
+    /**
+     * The lower limit on the constraint angle.
+     * @property lowerLimit
+     * @type {Boolean}
+     */
     this.lowerLimit = 0;
+
+    /**
+     * The upper limit on the constraint angle.
+     * @property upperLimit
+     * @type {Boolean}
+     */
     this.upperLimit = 0;
+
     this.upperLimitEquation = new RotationalLockEquation(bodyA,bodyB);
     this.lowerLimitEquation = new RotationalLockEquation(bodyA,bodyB);
     this.upperLimitEquation.minForce = 0;
@@ -140,6 +170,8 @@ RevoluteConstraint.prototype.update = function(){
 
     vec2.rotate(worldPivotA, pivotA, bodyA.angle);
     vec2.rotate(worldPivotB, pivotB, bodyB.angle);
+
+    // todo: these are a bit sparse. We could save some computations on making custom eq.computeGW functions, etc
 
     x.G[0] = -1;
     x.G[1] =  0;
