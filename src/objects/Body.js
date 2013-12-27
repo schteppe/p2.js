@@ -238,7 +238,8 @@ function Body(options){
 
 Body._idCounter = 0;
 
-var shapeAABB = new AABB();
+var shapeAABB = new AABB(),
+    tmp = vec2.create();
 
 /**
  * Updates the AABB of the Body
@@ -252,8 +253,12 @@ Body.prototype.updateAABB = function() {
 
     for(var i=0; i!==N; i++){
         var shape = shapes[i],
-            offset = shapeOffsets[i],
+            offset = tmp,
             angle = shapeAngles[i] + this.angle;
+
+        // Get shape world offset
+        vec2.rotate(offset,shapeOffsets[i],angle);
+        vec2.add(offset,offset,this.position);
 
         // Get shape AABB
         shape.computeAABB(shapeAABB,offset,angle);
@@ -263,10 +268,6 @@ Body.prototype.updateAABB = function() {
         else
             this.aabb.extend(shapeAABB);
     }
-
-    // Add world offset
-    vec2.add(this.aabb.lowerBound, this.aabb.lowerBound, this.position);
-    vec2.add(this.aabb.upperBound, this.aabb.upperBound, this.position);
 
     this.aabbNeedsUpdate = false;
 };
