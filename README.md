@@ -108,6 +108,10 @@ Note that concave polygon shapes can be created using [Body.fromPolygon](http://
 * Added property ```.world``` to ```Body```.
 * Added property ```.fixedRotation``` to ```Body```.
 * Added class ```AABB```.
+* Added properties ```.aabb``` and ```.aabbNeedsUpdate``` to ```Body```, as well as a method ```.updateAABB```.
+* Added property ```.useBoundingBoxes``` to ```NaiveBroadphase```.
+* Added static method ```Broadphase.aabbCheck```.
+* Added method ```.computeAABB``` to ```Shape```.
 
 ##### 0.4.0
 * Added properties ```.damping``` and ```.angularDamping``` to ```Body```.
