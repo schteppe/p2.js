@@ -1,4 +1,5 @@
-var vec2 = require('../math/vec2');
+var vec2 = require('../math/vec2')
+,   Utils = require('../utils/Utils')
 
 module.exports = AABB;
 
@@ -52,7 +53,8 @@ AABB.prototype.setFromPoints = function(points,position,angle){
         for(var j=0; j<2; j++){
             if(p[j] > u[j]){
                 u[j] = p[j];
-            } else if(p[j] < l[j]){
+            }
+            if(p[j] < l[j]){
                 l[j] = p[j];
             }
         }
@@ -101,8 +103,14 @@ AABB.prototype.extend = function(aabb){
 AABB.prototype.overlaps = function(aabb){
     var l1 = this.lowerBound,
         u1 = this.upperBound,
-        l2 = this.lowerBound,
-        u2 = this.upperBound;
-    return (l2[0] < u1[0] && u1[0] < u2[0]) && (l2[1] < u1[1] && u1[1] < u2[1]) ||
-           (l1[0] < u2[0] && u2[0] < u1[0]) && (l1[1] < u2[1] && u2[1] < u1[1]);
+        l2 = aabb.lowerBound,
+        u2 = aabb.upperBound;
+
+    //      l2        u2
+    //      |---------|
+    // |--------|
+    // l1       u1
+
+    return ((l2[0] <= u1[0] && u1[0] <= u2[0]) || (l1[0] <= u2[0] && u2[0] <= u1[0])) &&
+           ((l2[1] <= u1[1] && u1[1] <= u2[1]) || (l1[1] <= u2[1] && u2[1] <= u1[1]));
 };
