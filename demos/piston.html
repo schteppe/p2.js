@@ -55,7 +55,7 @@
         world.addBody(armBody);
 
         // Constrain arm to circle
-        var c2 = new p2.RevoluteConstraint(circleBody, [R,0], armBody, [L/2,0], 1e7);
+        var c2 = new p2.RevoluteConstraint(circleBody, [R*0.7,0], armBody, [L/2,0], 1e7);
         world.addConstraint(c2);
 
         // Piston
