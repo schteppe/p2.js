@@ -29,3 +29,17 @@ Circle.prototype.computeMomentOfInertia = function(mass){
 Circle.prototype.updateBoundingRadius = function(){
     this.boundingRadius = this.radius;
 };
+
+/**
+ * @method computeAABB
+ * @param  {AABB}   out      The resulting AABB.
+ * @param  {Array}  position
+ * @param  {Number} angle
+ */
+Circle.prototype.computeAABB = function(out, position, angle){
+    var r = this.radius;
+    vec2.set(out.upperBound,  r,  r);
+    vec2.set(out.lowerBound, -r, -r);
+    vec2.add(out.lowerBound, out.lowerBound, position);
+    vec2.add(out.upperBound, out.upperBound, position);
+};

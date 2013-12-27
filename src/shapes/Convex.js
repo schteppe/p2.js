@@ -253,3 +253,12 @@ Convex.prototype.updateArea = function(){
     }
 };
 
+/**
+ * @method computeAABB
+ * @param  {AABB}   out
+ * @param  {Array}  position
+ * @param  {Number} angle
+ */
+Convex.prototype.computeAABB = function(out, position, angle){
+   out.setFromPoints(this.vertices,position,angle);
+};

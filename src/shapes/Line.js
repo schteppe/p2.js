@@ -1,4 +1,5 @@
-var Shape = require('./Shape');
+var Shape = require('./Shape')
+,   vec2 = require('../math/vec2')
 
 module.exports = Line;
 
@@ -29,3 +30,17 @@ Line.prototype.updateBoundingRadius = function(){
     this.boundingRadius = this.length/2;
 };
 
+var points = [vec2.create(),vec2.create()];
+
+/**
+ * @method computeAABB
+ * @param  {AABB}   out      The resulting AABB.
+ * @param  {Array}  position
+ * @param  {Number} angle
+ */
+Line.prototype.computeAABB = function(out, position, angle){
+    var l = this.length;
+    vec2.set(points[0], -l/2,  0);
+    vec2.set(points[1],  l/2,  0);
+    out.setFromPoints(points,position,angle);
+};

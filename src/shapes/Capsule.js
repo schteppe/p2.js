@@ -37,3 +37,29 @@ Capsule.prototype.computeMomentOfInertia = function(mass){
 Capsule.prototype.updateBoundingRadius = function(){
     this.boundingRadius = this.radius + this.length/2;
 };
+
+var r = vec2.create();
+
+/**
+ * @method computeAABB
+ * @param  {AABB}   out      The resulting AABB.
+ * @param  {Array}  position
+ * @param  {Number} angle
+ */
+Capsule.prototype.computeAABB = function(out, position, angle){
+    var radius = this.radius;
+
+    // Compute center position of one of the the circles, world oriented, but with local offset
+    vec2.set(r,this.length,0);
+    vec2.rotate(r,r,angle);
+
+    // Get bounds
+    vec2.set(out.upperBound,  Math.max(r[0]+radius, -r[0]+radius),
+                              Math.max(r[1]+radius, -r[1]+radius));
+    vec2.set(out.lowerBound,  Math.min(r[0]-radius, -r[0]-radius),
+                              Math.min(r[1]-radius, -r[1]-radius));
+
+    // Add offset
+    vec2.add(out.lowerBound, out.lowerBound, position);
+    vec2.add(out.upperBound, out.upperBound, position);
+};
