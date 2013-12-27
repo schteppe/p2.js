@@ -42,3 +42,16 @@ Broadphase.boundingRadiusCheck = function(bodyA, bodyB){
         r = bodyA.boundingRadius + bodyB.boundingRadius;
     return d2 <= r*r;
 };
+
+/**
+ * Check whether the bounding radius of two bodies overlap.
+ * @method  boundingRadiusCheck
+ * @param  {Body} bodyA
+ * @param  {Body} bodyB
+ * @return {Boolean}
+ */
+Broadphase.aabbCheck = function(bodyA, bodyB){
+    if(bodyA.aabbNeedsUpdate) bodyA.updateAABB();
+    if(bodyB.aabbNeedsUpdate) bodyB.updateAABB();
+    return bodyA.aabb.overlaps(bodyB.aabb);
+};

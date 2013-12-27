@@ -16,6 +16,13 @@ module.exports = NaiveBroadphase;
  */
 function NaiveBroadphase(){
     Broadphase.apply(this);
+
+    /**
+     * Set to true to use bounding box checks instead of bounding radius.
+     * @property useBoundingBoxes
+     * @type {Boolean}
+     */
+    this.useBoundingBoxes = false;
 };
 NaiveBroadphase.prototype = new Broadphase();
 
@@ -28,7 +35,8 @@ NaiveBroadphase.prototype = new Broadphase();
 NaiveBroadphase.prototype.getCollisionPairs = function(world){
     var bodies = world.bodies,
         result = this.result,
-        i, j, bi, bj;
+        i, j, bi, bj,
+        check = this.useBoundingBoxes ? Broadphase.aabbCheck : Broadphase.boundingRadiusCheck;
 
     result.length = 0;
 
@@ -38,7 +46,7 @@ NaiveBroadphase.prototype.getCollisionPairs = function(world){
         for(j=0; j<i; j++){
             bj = bodies[j];
 
-            if(Broadphase.boundingRadiusCheck(bi,bj))
+            if(check(bi,bj))
                 result.push(bi,bj);
         }
     }

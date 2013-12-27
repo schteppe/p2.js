@@ -548,6 +548,8 @@ World.integrateBody = function(body,dt){
     vec2.add(velo,ib_fhMinv,velo);
     vec2.scale(ib_velodt,velo,dt);
     vec2.add(pos,pos,ib_velodt);
+
+    body.aabbNeedsUpdate = true;
 };
 
 /**
