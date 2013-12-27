@@ -18,7 +18,7 @@ function AABB(options){
      * @type {Array}
      */
     this.lowerBound = vec2.create();
-    if(options.lowerBound) vec2.copy(options.lowerBound, this.lowerBound);
+    if(options && options.lowerBound) vec2.copy(this.lowerBound, options.lowerBound);
 
     /**
      * The upper bound of the bounding box.
@@ -26,5 +26,77 @@ function AABB(options){
      * @type {Array}
      */
     this.upperBound = vec2.create();
-    if(options.upperBound) vec2.copy(options.upperBound, this.upperBound);
+    if(options && options.upperBound) vec2.copy(this.upperBound, options.upperBound);
 }
+
+var tmp = vec2.create();
+
+/**
+ * Set the AABB bounds from a set of points.
+ * @method setFromPoints
+ * @param {Array} points An array of vec2's.
+ */
+AABB.prototype.setFromPoints = function(points,position,angle){
+    var l = this.lowerBound,
+        u = this.upperBound;
+    vec2.set(l,  Number.MAX_VALUE,  Number.MAX_VALUE);
+    vec2.set(u, -Number.MAX_VALUE, -Number.MAX_VALUE);
+    for(var i=0; i<points.length; i++){
+        var p = points[i];
+
+        if(typeof(angle) =="number")
+            p = vec2.rotate(tmp,p,angle);
+
+        for(var j=0; j<2; j++){
+            if(p[j] > u[j]){
+                u[j] = p[j];
+            } else if(p[j] < l[j]){
+                l[j] = p[j];
+            }
+        }
+    }
+
+    // Add offset
+    if(position){
+        vec2.add(out.lowerBound, out.lowerBound, position);
+        vec2.add(out.upperBound, out.upperBound, position);
+    }
+};
+
+/**
+ * Copy bounds from an AABB to this AABB
+ * @method copy
+ * @param  {AABB} aabb
+ */
+AABB.prototype.copy = function(aabb){
+    vec2.copy(this.lowerBound, aabb.lowerBound);
+    vec2.copy(this.upperBound, aabb.upperBound);
+};
+
+/**
+ * Extend this AABB so that it covers the given AABB too.
+ * @method extend
+ * @param  {AABB} aabb
+ */
+AABB.prototype.extend = function(aabb){
+    for(var i=0; i<2; i++){
+        if(aabb.lowerBound[i] < this.lowerBound[i])
+            this.lowerBound[i] = aabb.lowerBound[i];
+        if(aabb.upperBound[i] > this.upperBound[i])
+            this.upperBound[i] = aabb.upperBound[i];
+    }
+};
+
+/**
+ * Returns true if the given AABB overlaps this AABB.
+ * @param  {AABB} aabb
+ * @return {Boolean}
+ */
+AABB.prototype.overlaps = function(aabb){
+    var l1 = this.lowerBound,
+        u1 = this.upperBound,
+        l2 = this.lowerBound,
+        u2 = this.upperBound;
+    return (l2[0] < u1[0] && u1[0] < u2[0]) && (l2[1] < u1[1] && u1[1] < u2[1]) ||
+           (l1[0] < u2[0] && u2[0] < u1[0]) && (l1[1] < u2[1] && u2[1] < u1[1]);
+};
