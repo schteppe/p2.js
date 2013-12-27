@@ -44,8 +44,10 @@ AABB.prototype.setFromPoints = function(points,position,angle){
     for(var i=0; i<points.length; i++){
         var p = points[i];
 
-        if(typeof(angle) =="number")
-            p = vec2.rotate(tmp,p,angle);
+        if(typeof(angle) =="number"){
+            vec2.rotate(tmp,p,angle);
+            p = tmp;
+        }
 
         for(var j=0; j<2; j++){
             if(p[j] > u[j]){
@@ -58,8 +60,8 @@ AABB.prototype.setFromPoints = function(points,position,angle){
 
     // Add offset
     if(position){
-        vec2.add(out.lowerBound, out.lowerBound, position);
-        vec2.add(out.upperBound, out.upperBound, position);
+        vec2.add(this.lowerBound, this.lowerBound, position);
+        vec2.add(this.upperBound, this.upperBound, position);
     }
 };
 
@@ -79,9 +81,13 @@ AABB.prototype.copy = function(aabb){
  * @param  {AABB} aabb
  */
 AABB.prototype.extend = function(aabb){
+    // Loop over x and y
     for(var i=0; i<2; i++){
+        // Extend lower bound
         if(aabb.lowerBound[i] < this.lowerBound[i])
             this.lowerBound[i] = aabb.lowerBound[i];
+
+        // Upper
         if(aabb.upperBound[i] > this.upperBound[i])
             this.upperBound[i] = aabb.upperBound[i];
     }
