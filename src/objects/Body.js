@@ -253,7 +253,7 @@ Body.prototype.updateAABB = function() {
     for(var i=0; i!==N; i++){
         var shape = shapes[i],
             offset = shapeOffsets[i],
-            angle = shapeAngles[i];
+            angle = shapeAngles[i] + this.angle;
 
         // Get shape AABB
         shape.computeAABB(shapeAABB,offset,angle);
