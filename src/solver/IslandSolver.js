@@ -36,6 +36,8 @@ function IslandSolver(subsolver,options){
     // Pooling of node objects saves some GC load
     this._nodePool = [];
 
+    this._islandPool = [];
+
     /**
      * Fires before an island is solved.
      * @event beforeSolveIsland
@@ -59,22 +61,39 @@ function getUnvisitedNode(nodes){
     return false;
 }
 
-function bfs(root,visitFunc){
-    var queue = [];
+function visitFunc(node,bds,eqs){
+    bds.push(node.body);
+    var Neqs = node.eqs.length;
+    for(var i=0; i!==Neqs; i++){
+        var eq = node.eqs[i];
+        if(eqs.indexOf(eq) === -1){
+            eqs.push(eq);
+        }
+    }
+}
+
+var queue = [];
+function bfs(root,visitFunc,bds,eqs){
+    queue.length = 0;
     queue.push(root);
     root.visited = true;
-    visitFunc(root);
+    visitFunc(root,bds,eqs);
     while(queue.length) {
         var node = queue.pop();
         // Loop over unvisited child nodes
         var child;
         while((child = getUnvisitedNode(node.children))) {
             child.visited = true;
-            visitFunc(child);
+            visitFunc(child,bds,eqs);
             queue.push(child);
         }
     }
 }
+
+var tmpArray = [],
+    tmpArray2 = [],
+    tmpArray3 = [],
+    tmpArray4 = [];
 
 /**
  * Solves the full system.
@@ -83,7 +102,7 @@ function bfs(root,visitFunc){
  * @param  {World} world
  */
 IslandSolver.prototype.solve = function(dt,world){
-    var nodes = [],
+    var nodes = tmpArray,
         bodies=world.bodies,
         equations=this.equations,
         Neq=equations.length,
@@ -91,7 +110,10 @@ IslandSolver.prototype.solve = function(dt,world){
         subsolver=this.subsolver,
         workers = this._workers,
         workerData = this._workerData,
-        workerIslandGroups = this._workerIslandGroups;
+        workerIslandGroups = this._workerIslandGroups,
+        islandPool = this._islandPool;
+
+    tmpArray.length = 0;
 
     // Create needed nodes, reuse if possible
     for(var i=0; i!==Nbodies; i++){
@@ -130,25 +152,18 @@ IslandSolver.prototype.solve = function(dt,world){
     }
 
     // The BFS search algorithm needs a traversal function. What we do is gather all bodies and equations connected.
-    var child, n=0, eqs=[], bds=[];
-    function visitFunc(node){
-        bds.push(node.body);
-        var Neqs = node.eqs.length;
-        for(var i=0; i!==Neqs; i++){
-            var eq = node.eqs[i];
-            if(eqs.indexOf(eq) === -1){
-                eqs.push(eq);
-            }
-        }
-    }
+    var child, n=0, eqs=tmpArray2, bds=tmpArray3;
+    eqs.length = 0;
+    bds.length = 0;
 
     // Get islands
-    var islands = [];
+    var islands = tmpArray4;
+    islands.length = 0;
     while((child = getUnvisitedNode(nodes))){
-        var island = new Island(); // @todo Should be reused from somewhere
+        var island = islandPool.length ? islandPool.pop() : new Island();
         eqs.length = 0;
         bds.length = 0;
-        bfs(child,visitFunc); // run search algo to gather an island of bodies
+        bfs(child,visitFunc,bds,eqs); // run search algo to gather an island of bodies
 
         // Add equations to island
         var Neqs = eqs.length;
@@ -170,5 +185,9 @@ IslandSolver.prototype.solve = function(dt,world){
         e.island = island;
         this.emit(e);
         island.solve(dt,this.subsolver);
+
+        // Turn it back to the pool
+        island.reset();
+        islandPool.push(island);
     }
 };
