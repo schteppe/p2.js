@@ -41,6 +41,8 @@ Circle.prototype.computeAABB = function(out, position, angle){
     var r = this.radius;
     vec2.set(out.upperBound,  r,  r);
     vec2.set(out.lowerBound, -r, -r);
-    vec2.add(out.lowerBound, out.lowerBound, position);
-    vec2.add(out.upperBound, out.upperBound, position);
+    if(position){
+        vec2.add(out.lowerBound, out.lowerBound, position);
+        vec2.add(out.upperBound, out.upperBound, position);
+    }
 };
