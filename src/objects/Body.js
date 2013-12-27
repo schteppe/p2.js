@@ -1,6 +1,7 @@
 var vec2 = require('../math/vec2')
 ,   decomp = require('poly-decomp')
 ,   Convex = require('../shapes/Convex')
+,   AABB = require('../collision/AABB')
 
 module.exports = Body;
 
@@ -214,6 +215,20 @@ function Body(options){
      */
     this.boundingRadius = 0;
 
+    /**
+     * Bounding box of this body
+     * @property aabb
+     * @type {AABB}
+     */
+    this.aabb = new AABB();
+
+    /**
+     * Indicates if the AABB needs update. Update it with .updateAABB()
+     * @property aabbNeedsUpdate
+     * @type {Boolean}
+     */
+    this.aabbNeedsUpdate = true;
+
     this.concavePath = null;
 
     this.lastDampingScale = 1;
@@ -222,6 +237,39 @@ function Body(options){
 };
 
 Body._idCounter = 0;
+
+var shapeAABB = new AABB();
+
+/**
+ * Updates the AABB of the Body
+ * @method updateAABB
+ */
+Body.prototype.updateAABB = function() {
+    var shapes = this.shapes,
+        shapeOffsets = this.shapeOffsets,
+        shapeAngles = this.shapeAngles,
+        N = shapes.length;
+
+    for(var i=0; i!==N; i++){
+        var shape = shapes[i],
+            offset = shapeOffsets[i],
+            angle = shapeAngles[i];
+
+        // Get shape AABB
+        shape.computeAABB(shapeAABB,offset,angle);
+
+        if(i===0)
+            this.aabb.copy(shapeAABB);
+        else
+            this.aabb.extend(shapeAABB);
+    }
+
+    // Add world offset
+    vec2.add(this.aabb.lowerBound, this.aabb.lowerBound, this.position);
+    vec2.add(this.aabb.upperBound, this.aabb.upperBound, this.position);
+
+    this.aabbNeedsUpdate = false;
+};
 
 /**
  * Update the bounding radius of the body. Should be done if any of the shapes
@@ -283,6 +331,8 @@ Body.prototype.addShape = function(shape,offset,angle){
     this.shapeAngles .push(angle);
     this.updateMassProperties();
     this.updateBoundingRadius();
+
+    this.aabbNeedsUpdate = true;
 };
 
 /**
@@ -298,9 +348,11 @@ Body.prototype.removeShape = function(shape){
         this.shapes.splice(idx,1);
         this.shapeOffsets.splice(idx,1);
         this.shapeAngles.splice(idx,1);
+        this.aabbNeedsUpdate = true;
         return true;
     } else
         return false;
+
 };
 
 /**
@@ -446,6 +498,8 @@ Body.prototype.fromPolygon = function(path,options){
     }
 
     this.adjustCenterOfMass();
+
+    this.aabbNeedsUpdate = true;
 
     return true;
 };
