@@ -117,6 +117,7 @@ Note that concave polygon shapes can be created using [Body.fromPolygon](http://
 * Added properties ```.allowSleep```, ```.sleepState```, ```.sleepSpeedLimit```, ```.sleepTimeLimit```, ```.lastTimeSleepy``` as well as methods ```.sleep```, ```.wakeUp()``` and ```.sleepTick``` to ```Body```.
 * Added enums ```Body.AWAKE```, ```Body.SLEEPY```, ```Body.SLEEPING```.
 * Added property ```.enableBodySleeping``` to ```World```.
+* Added option ```.disableRotationalLock``` to ```PrismaticConstraint``` constructor.
 
 ##### 0.4.0
 * Added properties ```.damping``` and ```.angularDamping``` to ```Body```.
