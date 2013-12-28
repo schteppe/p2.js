@@ -1,5 +1,6 @@
 // Export p2 classes
 module.exports = {
+    AngleLockEquation :             require('./equations/AngleLockEquation'),
     Body :                          require('./objects/Body'),
     Broadphase :                    require('./collision/Broadphase'),
     Capsule :                       require('./shapes/Capsule'),
@@ -12,6 +13,7 @@ module.exports = {
     Equation :                      require('./equations/Equation'),
     EventEmitter :                  require('./events/EventEmitter'),
     FrictionEquation :              require('./equations/FrictionEquation'),
+    GearConstraint :                require('./constraints/GearConstraint'),
     GridBroadphase :                require('./collision/GridBroadphase'),
     GSSolver :                      require('./solver/GSSolver'),
     Island :                        require('./solver/IslandSolver'),

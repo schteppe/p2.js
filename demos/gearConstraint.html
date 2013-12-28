@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GearConstraint demo - p2.js physics engine</title>
+    <script src="../build/p2.js"></script>
+    <script src="js/jquery.js"></script>
+    <script src="js/pixi.js"></script>
+    <script src="js/Demo.js"></script>
+    <script src="js/PixiDemo.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <link href="css/demo.css" rel="stylesheet"/>
+    <link href="css/bootstrap.min.css" rel="stylesheet"/>
+</head>
+<body>
+    <script>
+
+        var shape = new p2.Circle(1);
+
+        var world = new p2.World({
+            doProfiling:true,
+            gravity : [0,-10],
+        });
+
+        // Create first circle
+        var bodyA = new p2.Body({
+            mass: 1,
+            position: [-2,0],
+            angularVelocity : -5,
+        });
+        bodyA.addShape(shape);
+        world.addBody(bodyA);
+
+        // Create second circle
+        var bodyB = new p2.Body({
+            mass: 1,
+            position: [2,0],
+        });
+        bodyB.addShape(shape);
+        world.addBody(bodyB);
+
+        // Create a dummy body that we can hinge them to
+        var dummyBody = new p2.Body();
+        world.addBody(dummyBody);
+
+        // Hinge em
+        var c1 = new p2.RevoluteConstraint(dummyBody,[-2,0],bodyA,[0,0]),
+            c2 = new p2.RevoluteConstraint(dummyBody,[ 2,0],bodyB,[0,0]);
+        world.addConstraint(c1);
+        world.addConstraint(c2);
+
+        // Add gear
+        var gear = new p2.GearConstraint(bodyA,bodyB,{ ratio: 2 });
+        world.addConstraint(gear);
+
+        var demo = new PixiDemo(world);
+
+    </script>
+</body>
+</html>
