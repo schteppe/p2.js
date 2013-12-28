@@ -16,10 +16,11 @@ module.exports = PrismaticConstraint;
  * @param {Body}    bodyA
  * @param {Body}    bodyB
  * @param {Object}  options
- * @param {Number}  options.maxForce        Max force to be applied by the constraint
- * @param {Array}   options.localAnchorA    Body A's anchor point, defined in its own local frame.
- * @param {Array}   options.localAnchorB    Body B's anchor point, defined in its own local frame.
- * @param {Array}   options.localAxisA      An axis, defined in body A frame, that body B's anchor point may slide along.
+ * @param {Number}  options.maxForce                Max force to be applied by the constraint
+ * @param {Array}   options.localAnchorA            Body A's anchor point, defined in its own local frame.
+ * @param {Array}   options.localAnchorB            Body B's anchor point, defined in its own local frame.
+ * @param {Array}   options.localAxisA              An axis, defined in body A frame, that body B's anchor point may slide along.
+ * @param {Boolean} options.disableRotationalLock   If set to true, bodyB will be free to rotate around its anchor point.
  */
 function PrismaticConstraint(bodyA,bodyB,options){
     options = options || {};
@@ -99,9 +100,13 @@ function PrismaticConstraint(bodyA,bodyB,options){
         G[4] = t[1];
         G[5] = vec2.crossLength(rj,t);
     }
-    var rot = new RotationalLockEquation(bodyA,bodyB,-maxForce,maxForce);
+    this.equations.push(trans);
 
-    this.equations.push(trans,rot);
+    // Rotational part
+    if(!options.disableRotationalLock){
+        var rot = new RotationalLockEquation(bodyA,bodyB,-maxForce,maxForce);
+        this.equations.push(rot);
+    }
 
     /**
      * The position of anchor A relative to anchor B, along the constraint axis.
