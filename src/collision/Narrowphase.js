@@ -169,6 +169,12 @@ Narrowphase.prototype.createContactEquation = function(bodyA,bodyB,shapeA,shapeB
     c.shapeB = shapeB;
     c.restitution = this.restitution;
     c.firstImpact = !this.collidedLastStep(bodyA,bodyB);
+
+    if(bodyA.allowSleep && (bodyA.motionState & Body.DYNAMIC) && !(bodyB.motionState & Body.STATIC || bodyB.sleepState === Body.SLEEPY))
+        bodyA.wakeUp();
+    if(bodyB.allowSleep && (bodyB.motionState & Body.DYNAMIC) && !(bodyA.motionState & Body.STATIC || bodyA.sleepState === Body.SLEEPY))
+        bodyB.wakeUp();
+
     return c;
 };
 

@@ -247,6 +247,13 @@ function World(options){
         bodyA : null,
         bodyB : null,
     };
+
+    /**
+     * Enable / disable automatic body sleeping
+     * @property allowSleep
+     * @type {Boolean}
+     */
+    this.enableBodySleeping = false;
 };
 World.prototype = new Object(EventEmitter.prototype);
 
@@ -490,7 +497,7 @@ World.prototype.internalStep = function(dt){
     for(var i=0; i!==Nbodies; i++){
         var body = bodies[i];
 
-        if(body.mass>0){
+        if(body.sleepState !== Body.SLEEPING && body.mass>0){
             World.integrateBody(body,dt);
         }
     }
@@ -515,6 +522,13 @@ World.prototype.internalStep = function(dt){
                 ev.bodyB = eq.bj;
                 this.emit(ev);
             }
+        }
+    }
+
+    // Sleeping update
+    if(this.enableBodySleeping){
+        for(i=0; i!==Nbodies; i++){
+            bodies[i].sleepTick(this.time);
         }
     }
 

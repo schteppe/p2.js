@@ -46,7 +46,7 @@ NaiveBroadphase.prototype.getCollisionPairs = function(world){
         for(j=0; j<i; j++){
             bj = bodies[j];
 
-            if(check(bi,bj))
+            if(Broadphase.canCollide(bi,bj) && check(bi,bj))
                 result.push(bi,bj);
         }
     }

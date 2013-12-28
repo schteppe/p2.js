@@ -2,6 +2,7 @@ var vec2 = require('../math/vec2')
 ,   decomp = require('poly-decomp')
 ,   Convex = require('../shapes/Convex')
 ,   AABB = require('../collision/AABB')
+,   EventEmitter = require('../events/EventEmitter')
 
 module.exports = Body;
 
@@ -27,6 +28,8 @@ var zero = vec2.fromValues(0,0);
  */
 function Body(options){
     options = options || {};
+
+    EventEmitter.call(this);
 
     /**
      * The body identifyer
@@ -229,12 +232,44 @@ function Body(options){
      */
     this.aabbNeedsUpdate = true;
 
+    /**
+     * If true, the body will automatically fall to sleep.
+     * @property allowSleep
+     * @type {Boolean}
+     */
+    this.allowSleep = false;
+
+    /**
+     * One of Body.AWAKE, Body.SLEEPY, Body.SLEEPING
+     * @property sleepState
+     * @type {Number}
+     */
+    this.sleepState = Body.AWAKE;
+
+    /**
+     * If the speed (the norm of the velocity) is smaller than this value, the body is considered sleepy.
+     * @property sleepSpeedLimit
+     * @type {Number}
+     */
+    this.sleepSpeedLimit = 0.1;
+
+    /**
+     * If the body has been sleepy for this sleepTimeLimit seconds, it is considered sleeping.
+     * @property sleepTimeLimit
+     * @type {Number}
+     */
+    this.sleepTimeLimit = 1;
+
+    this.timeLastSleepy = 0;
+
     this.concavePath = null;
 
     this.lastDampingScale = 1;
     this.lastAngularDampingScale = 1;
     this.lastDampingTimeStep = -1;
 };
+
+Body.prototype = new EventEmitter();
 
 Body._idCounter = 0;
 
@@ -603,6 +638,62 @@ Body.prototype.applyDamping = function(dt){
 };
 
 /**
+ * @method wakeUp
+ * @brief Wake the body up.
+ */
+Body.prototype.wakeUp = function(){
+    var s = this.sleepState;
+    this.sleepState = Body.AWAKE;
+    if(s !== Body.AWAKE){
+        this.emit(Body.wakeUpEvent);
+    }
+};
+
+/**
+ * @method sleep
+ * @brief Force body sleep
+ */
+Body.prototype.sleep = function(){
+    this.sleepState = Body.SLEEPING;
+    this.emit(Body.sleepEvent);
+};
+
+/**
+ * @method sleepTick
+ * @param float time The world time in seconds
+ * @brief Called every timestep to update internal sleep timer and change sleep state if needed.
+ */
+Body.prototype.sleepTick = function(time){
+    if(!this.allowSleep)
+        return;
+
+    var sleepState = this.sleepState,
+        speedSquared = vec2.squaredLength(this.velocity) + Math.pow(this.angularVelocity,2),
+        speedLimitSquared = Math.pow(this.sleepSpeedLimit,2);
+    if(sleepState===Body.AWAKE && speedSquared < speedLimitSquared){
+        this.sleepState = Body.SLEEPY; // Sleepy
+        this.timeLastSleepy = time;
+        this.emit(Body.sleepyEvent);
+    } else if(sleepState===Body.SLEEPY && speedSquared > speedLimitSquared){
+        this.wakeUp(); // Wake up
+    } else if(sleepState===Body.SLEEPY && (time - this.timeLastSleepy ) > this.sleepTimeLimit){
+        this.sleep();
+    }
+};
+
+Body.sleepyEvent = {
+    type: "sleepy"
+};
+
+Body.sleepEvent = {
+    type: "sleep"
+};
+
+Body.wakeUpEvent = {
+    type: "wakeup"
+};
+
+/**
  * Dynamic body.
  * @property DYNAMIC
  * @type {Number}
@@ -625,3 +716,25 @@ Body.STATIC = 2;
  * @static
  */
 Body.KINEMATIC = 4;
+
+/**
+ * @property AWAKE
+ * @type {Number}
+ * @static
+ */
+Body.AWAKE = 0;
+
+/**
+ * @property SLEEPY
+ * @type {Number}
+ * @static
+ */
+Body.SLEEPY = 1;
+
+/**
+ * @property SLEEPING
+ * @type {Number}
+ * @static
+ */
+Body.SLEEPING = 2;
+

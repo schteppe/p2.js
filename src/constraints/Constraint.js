@@ -31,6 +31,9 @@ function Constraint(bodyA,bodyB){
      * @type {Body}
      */
     this.bodyB = bodyB;
+
+    if(bodyA) bodyA.wakeUp();
+    if(bodyB) bodyB.wakeUp();
 };
 
 /**

@@ -55,3 +55,22 @@ Broadphase.aabbCheck = function(bodyA, bodyB){
     if(bodyB.aabbNeedsUpdate) bodyB.updateAABB();
     return bodyA.aabb.overlaps(bodyB.aabb);
 };
+
+/**
+ * Check whether two bodies are allowed to collide at all.
+ * @method  canCollide
+ * @param  {Body} bodyA
+ * @param  {Body} bodyB
+ * @return {Boolean}
+ */
+Broadphase.canCollide = function(bodyA, bodyB){
+    // Cannot collide static bodies
+    if(bodyA.motionState & Body.STATIC && bodyB.motionState & Body.STATIC)
+        return false;
+
+    // Cannot collide sleeping bodies
+    if(bodyA.sleepState & Body.SLEEPING && bodyB.sleepState & Body.SLEEPING)
+        return false;
+
+    return true;
+};
