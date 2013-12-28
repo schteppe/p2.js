@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sleep demo - p2.js physics engine</title>
+    <script src="../build/p2.js"></script>
+    <script src="js/jquery.js"></script>
+    <script src="js/pixi.js"></script>
+    <script src="js/Demo.js"></script>
+    <script src="js/PixiDemo.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <link href="css/demo.css" rel="stylesheet"/>
+    <link href="css/bootstrap.min.css" rel="stylesheet"/>
+</head>
+<body>
+    <script>
+
+        var world = new p2.World({
+            doProfiling:true,
+            gravity : [0,-10],
+        });
+
+        var circleBody = new p2.Body({
+            mass: 1,
+            position: [0,0],
+        });
+        circleBody.addShape(new p2.Circle(0.5));
+        world.addBody(circleBody);
+
+        var circleBody2 = new p2.Body({
+            mass: 1,
+            position: [0,2],
+        });
+        circleBody2.addShape(new p2.Circle(0.5));
+        world.addBody(circleBody2);
+
+        // Create ground
+        var planeShape = new p2.Plane();
+        var plane = new p2.Body({
+            position:[0,-1],
+        });
+        plane.addShape(planeShape);
+        world.addBody(plane);
+
+        // Allow sleeping
+        world.enableBodySleeping = true;
+        circleBody.allowSleep = true;
+        circleBody2.allowSleep = true;
+
+        // Sleep parameters
+        circleBody.sleepSpeedLimit = 0.1; // Body will feel sleepy if speed<1 (speed is the norm of velocity)
+        circleBody.sleepTimeLimit =    1; // Body falls asleep after 1s of sleepiness
+
+        circleBody.on("sleepy",function(event){
+          console.log("The circle is feeling sleepy...");
+        });
+
+        circleBody.on("sleep",function(event){
+          console.log("The circle fell asleep!");
+        });
+
+        var demo = new PixiDemo(world);
+
+    </script>
+</body>
+</html>
