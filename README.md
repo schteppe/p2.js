@@ -112,6 +112,11 @@ Note that concave polygon shapes can be created using [Body.fromPolygon](http://
 * Added property ```.useBoundingBoxes``` to ```NaiveBroadphase```.
 * Added static method ```Broadphase.aabbCheck```.
 * Added method ```.computeAABB``` to ```Shape```.
+* Added static method ```Broadphase.canCollide```.
+* ```Body``` now inherits from ```EventEmitter```, and dispatches events ```'sleep'```,```'sleepy'``` and ```'wakeup'```.
+* Added properties ```.allowSleep```, ```.sleepState```, ```.sleepSpeedLimit```, ```.sleepTimeLimit```, ```.lastTimeSleepy``` as well as methods ```.sleep```, ```.wakeUp()``` and ```.sleepTick``` to ```Body```.
+* Added enums ```Body.AWAKE```, ```Body.SLEEPY```, ```Body.SLEEPING```.
+* Added property ```.enableBodySleeping``` to ```World```.
 
 ##### 0.4.0
 * Added properties ```.damping``` and ```.angularDamping``` to ```Body```.
