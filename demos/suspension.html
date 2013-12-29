@@ -101,6 +101,27 @@
         demo.newShapeCollisionGroup = OTHER;
         demo.newShapeCollisionMask =  GROUND|WHEELS|CHASSIS|OTHER;
 
+        var torque = 0;
+        world.on("postStep",function(evt){
+            var max = 100;
+            if(wheelBody1.angularVelocity*torque < max) wheelBody1.angularForce += torque;
+            if(wheelBody2.angularVelocity*torque < max) wheelBody2.angularForce += torque;
+        });
+        demo.on("keydown",function(evt){
+            t = 5;
+            switch(evt.keyCode){
+                case 39: // right
+                    torque = -t;
+                    break;
+                case 37: // left
+                    torque = t;
+                    break;
+            }
+        });
+        demo.on("keyup",function(){
+            torque = 0;
+        });
+
     </script>
 </body>
 </html>

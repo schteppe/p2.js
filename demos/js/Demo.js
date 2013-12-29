@@ -73,6 +73,17 @@ function Demo(world){
 
     this.stateChangeEvent = { type : "stateChange", state:null };
 
+    this.keydownEvent = {
+        type:"keydown",
+        originalEvent : null,
+        keyCode : 0,
+    };
+    this.keyupEvent = {
+        type:"keyup",
+        originalEvent : null,
+        keyCode : 0,
+    };
+
     // Default collision masks for new shapCs
     this.newShapeCollisionMask = 1;
     this.newShapeCollisionGroup = 1;
@@ -110,28 +121,43 @@ function Demo(world){
         that.resize($(window).width(), $(window).height());
     });
 
-    document.addEventListener('keypress',function(e){
+    $(document).keydown(function(e){
         if(e.keyCode){
             var s = that.state;
             switch(String.fromCharCode(e.keyCode)){
-                case "p": // pause
+                case "P": // pause
                     that.paused = !that.paused;
                     break;
-                case "s": // step
+                case "S": // step
                     that.world.step(that.world.lastTimeStep);
                     break;
-                case "r": // restart
+                case "R": // restart
                     that.removeAllVisuals();
                     that.world.fromJSON(that.initialState);
                     break;
-                case "c": // toggle draw contacts
+                case "C": // toggle draw contacts
                     that.drawContacts = !that.drawContacts;
                     break;
-                case "d": // toggle draw polygon mode
+                case "D": // toggle draw polygon mode
                     that.setState(s == DemoStates.DRAWPOLYGON ? DemoStates.DEFAULT : s = DemoStates.DRAWPOLYGON);
                     break;
-                case "a": // toggle draw circle mode
+                case "A": // toggle draw circle mode
                     that.setState(s == DemoStates.DRAWCIRCLE ? DemoStates.DEFAULT : s = DemoStates.DRAWCIRCLE);
+                    break;
+                default:
+                    that.keydownEvent.keyCode = e.keyCode;
+                    that.keydownEvent.originalEvent = e;
+                    that.emit(that.keydownEvent);
+                    break;
+            }
+        }
+    }).keyup(function(e){
+        if(e.keyCode){
+            switch(String.fromCharCode(e.keyCode)){
+                default:
+                    that.keyupEvent.keyCode = e.keyCode;
+                    that.keyupEvent.originalEvent = e;
+                    that.emit(that.keyupEvent);
                     break;
             }
         }
