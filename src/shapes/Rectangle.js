@@ -87,3 +87,8 @@ Rectangle.prototype.computeAABB = function(out, position, angle){
     */
    out.setFromPoints(this.vertices,position,angle);
 };
+
+Rectangle.prototype.updateArea = function(){
+    this.area = this.width * this.height;
+};
+

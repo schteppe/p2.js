@@ -68,3 +68,8 @@ Plane.prototype.computeAABB = function(out, position, angle){
     vec2.add(out.lowerBound, out.lowerBound, position);
     vec2.add(out.upperBound, out.upperBound, position);
 };
+
+Plane.prototype.updateArea = function(){
+    this.area = Number.MAX_VALUE;
+};
+

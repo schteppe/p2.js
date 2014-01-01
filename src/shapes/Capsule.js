@@ -38,6 +38,10 @@ Capsule.prototype.updateBoundingRadius = function(){
     this.boundingRadius = this.radius + this.length/2;
 };
 
+Capsule.prototype.updateArea = function(){
+    this.area = Math.PI * this.radius * this.radius + this.radius * 2 * this.length;
+};
+
 var r = vec2.create();
 
 /**

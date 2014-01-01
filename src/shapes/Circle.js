@@ -31,6 +31,10 @@ Circle.prototype.updateBoundingRadius = function(){
     this.boundingRadius = this.radius;
 };
 
+Circle.prototype.updateArea = function(){
+    this.area = Math.PI * this.radius * this.radius;
+};
+
 /**
  * @method computeAABB
  * @param  {AABB}   out      The resulting AABB.

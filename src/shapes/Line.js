@@ -44,3 +44,4 @@ Line.prototype.computeAABB = function(out, position, angle){
     vec2.set(points[1],  l/2,  0);
     out.setFromPoints(points,position,angle);
 };
+
