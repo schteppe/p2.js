@@ -273,6 +273,28 @@ Body.prototype = new EventEmitter();
 
 Body._idCounter = 0;
 
+/**
+ * Set the total density of the body
+ * @method setDensity
+ */
+Body.prototype.setDensity = function(density) {
+    var totalArea = this.getArea();
+    this.mass = totalArea * density;
+    this.updateMassProperties();
+};
+
+/**
+ * Get the total area of all shapes in the body
+ * @method setDensity
+ */
+Body.prototype.getArea = function() {
+    var totalArea = 0;
+    for(var i=0; i<this.shapes.length; i++){
+        totalArea += this.shapes[i].area;
+    }
+    return totalArea;
+};
+
 var shapeAABB = new AABB(),
     tmp = vec2.create();
 
