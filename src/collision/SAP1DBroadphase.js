@@ -2,6 +2,7 @@ var Circle = require('../shapes/Circle')
 ,   Plane = require('../shapes/Plane')
 ,   Shape = require('../shapes/Shape')
 ,   Particle = require('../shapes/Particle')
+,   Utils = require('../utils/Utils')
 ,   Broadphase = require('../collision/Broadphase')
 ,   vec2 = require('../math/vec2')
 
@@ -13,9 +14,8 @@ module.exports = SAP1DBroadphase;
  * @class SAP1DBroadphase
  * @constructor
  * @extends Broadphase
- * @param {World} world
  */
-function SAP1DBroadphase(world){
+function SAP1DBroadphase(){
     Broadphase.apply(this);
 
     /**
@@ -23,7 +23,7 @@ function SAP1DBroadphase(world){
      * @property axisList
      * @type {Array}
      */
-    this.axisList = world.bodies.slice(0);
+    this.axisList = [];
 
     /**
      * The world to search in.
@@ -39,8 +39,20 @@ function SAP1DBroadphase(world){
      */
     this.axisIndex = 0;
 
-    // Add listeners to update the list of bodies.
     var axisList = this.axisList;
+
+    this._addBodyHandler = function(e){
+        axisList.push(e.body);
+    };
+
+    this._removeBodyHandler = function(e){
+        var idx = axisList.indexOf(e.body);
+        if(idx !== -1)
+            axisList.splice(idx,1);
+    }
+
+    /*
+    // Add listeners to update the list of bodies.
     world.on("addBody",function(e){
         axisList.push(e.body);
     }).on("removeBody",function(e){
@@ -48,8 +60,32 @@ function SAP1DBroadphase(world){
         if(idx !== -1)
             axisList.splice(idx,1);
     });
+    */
 };
 SAP1DBroadphase.prototype = new Broadphase();
+
+/**
+ * Change the world
+ * @method setWorld
+ * @param  {World} world
+ */
+SAP1DBroadphase.prototype.setWorld = function(world){
+    // Clear the old axis array
+    this.axisList.length = 0;
+
+    // Add all bodies from the new world
+    Utils.appendArray(this.axisList,world.bodies);
+
+    // Remove old handlers, if any
+    world
+        .off("addBody",this._addBodyHandler)
+        .off("removeBody",this._removeBodyHandler);
+
+    // Add handlers to update the list of bodies.
+    world.on("addBody",this._addBodyHandler).on("removeBody",this._removeBodyHandler);
+
+    this.world = world;
+};
 
 /**
  * Function for sorting bodies along the X axis. To be passed to array.sort()

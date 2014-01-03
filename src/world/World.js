@@ -116,6 +116,8 @@ function World(options){
      */
     this.broadphase = options.broadphase || new NaiveBroadphase();
 
+    this.broadphase.setWorld(this);
+
     /**
      * User-added constraints.
      *

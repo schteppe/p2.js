@@ -15,6 +15,22 @@ function Broadphase(){
      * @type {Array}
      */
     this.result = [];
+
+    /**
+     * The world to search for collision pairs in. To change it, use .setWorld()
+     * @property world
+     * @type {World}
+     */
+    this.world = null;
+};
+
+/**
+ * Set the world that we are searching for collision pairs in
+ * @method setWorld
+ * @param  {World} world
+ */
+Broadphase.prototype.setWorld = function(world){
+    this.world = world;
 };
 
 /**
