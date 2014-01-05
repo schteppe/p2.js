@@ -434,12 +434,34 @@ Demo.prototype.createMenu = function(){
         "<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>",
         "</div>"].join("")).disableSelection());
 
+    // Get title
+    var title = "Untitled demo";
+    $title = $(document).find("title");
+    if($title)
+        title = $title.text();
+    title = title
+        .replace(/\s\-\s.*$/,"")
+        .replace(/\s+demo$/,"");
+
+    // Get description
+    var description = "";
+    $desc = $("meta[name=description]");
+    if($desc)
+        description = $desc.attr("content");
+
+    var info = "";
+    if(title && description)
+        info  = ("<h4>"+title+"</h4>"+
+                 "<p>"+description+"</p>");
+
     // Insert menu
     var $menucontainer = $([
         "<div id='menu-container'>",
             "<button class='btn' id='menu-container-open'>Open menu</button>",
             "<div id='menu' class='well'>",
                 "<button class='btn' id='menu-hide'>Hide menu</button>",
+
+                info,
 
                 "<fieldset id='menu-controls-container'>",
                     "<h4>Simulation control</h4>",
