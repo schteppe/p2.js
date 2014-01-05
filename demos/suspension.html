@@ -14,6 +14,7 @@
 <body>
     <script>
 
+        // Create the physics world
         var world = new p2.World({
             doProfiling:true,
             gravity : [0,-10],
@@ -81,6 +82,7 @@
         var stiffness = 100,
             damping = 5,
             restLength = 0.5;
+        // Left spring
         world.addSpring(new p2.Spring(chassisBody, wheelBody1, {
             restLength : restLength,
             stiffness : stiffness,
@@ -88,6 +90,7 @@
             localAnchorA : [-0.5,0],
             localAnchorB : [0,0],
         }));
+        // Right spring
         world.addSpring(new p2.Spring(chassisBody, wheelBody2, {
             restLength : restLength,
             stiffness : stiffness,
@@ -101,12 +104,15 @@
         demo.newShapeCollisionGroup = OTHER;
         demo.newShapeCollisionMask =  GROUND|WHEELS|CHASSIS|OTHER;
 
+        // Apply current engine torque after each step
         var torque = 0;
         world.on("postStep",function(evt){
             var max = 100;
             if(wheelBody1.angularVelocity*torque < max) wheelBody1.angularForce += torque;
             if(wheelBody2.angularVelocity*torque < max) wheelBody2.angularForce += torque;
         });
+
+        // Change the current engine torque with the left/right keys
         demo.on("keydown",function(evt){
             t = 5;
             switch(evt.keyCode){

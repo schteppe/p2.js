@@ -30,7 +30,7 @@
             l=0.35,
             m=1;
 
-        // Create bodies
+        // Create particle bodies
         var particleShape = new p2.Particle();
         for(var i=0; i<N; i++){
             bodies.push([]);
@@ -45,7 +45,7 @@
             }
         }
 
-        // Vertical
+        // Vertical springs
         for(var i=0; i<N; i++){
             for(var j=0; j<M-1; j++){
                 var bodyA = bodies[i][j];
@@ -59,7 +59,7 @@
             }
         }
 
-        // Horizontal
+        // Horizontal springs
         for(var i=0; i<N-1; i++){
             for(var j=0; j<M; j++){
                 var bodyA = bodies[i][j];
@@ -73,7 +73,7 @@
             }
         }
 
-        // Diagonal right/down
+        // Diagonal right/down springs
         for(var i=0; i<N-1; i++){
             for(var j=0; j<M-1; j++){
                 var a = bodies[i][j];
@@ -85,7 +85,7 @@
                 world.addSpring(spring);
             }
         }
-        // Diagonal left/down
+        // Diagonal left/down springs
         for(var i=0; i<N-1; i++){
             for(var j=0; j<M-1; j++){
                 var a = bodies[i+1][j];
