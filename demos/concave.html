@@ -17,10 +17,9 @@
         var world = new p2.World({
             doProfiling:true,
             gravity : [0,-10],
+            broadphase : new p2.SAP1DBroadphase(),
         });
         world.solver.stiffness = 1e4;
-
-        world.broadphase = new p2.SAP1DBroadphase(world);
 
         // Create ground
         var planeShape = new p2.Plane();

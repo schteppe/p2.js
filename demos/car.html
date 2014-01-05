@@ -14,30 +14,31 @@
 <body>
     <script>
 
+        // Create a World
         var world = new p2.World({
-            doProfiling:true,
-            gravity : [0,-10],
+            doProfiling:true,                       // Enable stats
+            gravity : [0,-10],                      // Set gravity
+            broadphase : new p2.SAP1DBroadphase(),  // Broadphase algorithm
         });
-
-        world.broadphase = new p2.SAP1DBroadphase(world);
 
         // Set high friction so the wheels don't slip
         world.defaultFriction = 100;
 
         // Create ground
-        var planeShape = new p2.Plane();
-        var plane = new p2.Body();
+        var planeShape = new p2.Plane(),
+            plane = new p2.Body();
         plane.addShape(planeShape);
         world.addBody(plane);
-        // Add bump
-        var bumpShape = new p2.Circle(2);
-        var bump = new p2.Body({ position:[0, -1] });
+
+        // Add circle bump
+        var bumpShape = new p2.Circle(2),               // Circle of radius 2
+            bump = new p2.Body({ position:[0, -1] });   // Create body at (0,-1)
         bump.addShape(bumpShape);
         world.addBody(bump);
 
         // Create chassis
         var chassisBody = new p2.Body({ mass : 1, position:[-4,1] }),
-            chassisShape = new p2.Rectangle(1,0.5);
+            chassisShape = new p2.Rectangle(1,0.5);                     // Chassis shape is a rectangle
         chassisBody.addShape(chassisShape);
         world.addBody(chassisBody);
 
@@ -61,14 +62,14 @@
         planeShape  .collisionGroup =   GROUND;
         bumpShape   .collisionGroup =   GROUND;
 
-        wheelShape  .collisionMask =    GROUND | OTHER;             // Wheels can only collide with ground
-        chassisShape.collisionMask =    GROUND | OTHER;             // Chassis can only collide with ground
-        planeShape  .collisionMask =    WHEELS | CHASSIS | OTHER;   // Ground can collide with wheels and chassis
-        bumpShape   .collisionMask =    planeShape.collisionMask;
+        wheelShape  .collisionMask =    GROUND | OTHER;             // Wheels can only collide with ground & other
+        chassisShape.collisionMask =    GROUND | OTHER;             // Chassis can only collide with ground & other
+        planeShape  .collisionMask =    WHEELS | CHASSIS | OTHER;   // Ground can collide with wheels & chassis & other
+        bumpShape   .collisionMask =    planeShape.collisionMask;   // Same for bump
 
         // Constrain wheels to chassis
-        var c1 = new p2.RevoluteConstraint(chassisBody,[-0.5,-0.3],wheelBody1,[0,0]);
-        var c2 = new p2.RevoluteConstraint(chassisBody,[ 0.5,-0.3],wheelBody2,[0,0]);
+        var c1 = new p2.RevoluteConstraint(chassisBody,[-0.5,-0.3],wheelBody1,[0,0]),
+            c2 = new p2.RevoluteConstraint(chassisBody,[ 0.5,-0.3],wheelBody2,[0,0]);
         world.addConstraint(c1);
         world.addConstraint(c2);
 
