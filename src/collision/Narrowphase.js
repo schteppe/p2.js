@@ -7,6 +7,7 @@ var vec2 = require('../math/vec2')
 ,   FrictionEquation = require('../equations/FrictionEquation')
 ,   Circle = require('../shapes/Circle')
 ,   Shape = require('../shapes/Shape')
+,   Body = require('../objects/Body')
 
 module.exports = Narrowphase;
 

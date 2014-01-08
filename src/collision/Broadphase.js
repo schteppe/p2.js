@@ -1,4 +1,5 @@
 var vec2 = require('../math/vec2')
+var Body = require('../objects/Body')
 
 module.exports = Broadphase;
 
