@@ -113,7 +113,7 @@ PixiDemo.prototype.init = function(){
 
     var lastX, lastY, lastMoveX, lastMoveY, startX, startY, down=false;
 
-    container.mousedown = function(e){
+    container.mousedown = container.touchstart = function(e){
         lastX = e.global.x;
         lastY = e.global.y;
         startX = stage.position.x;
@@ -129,7 +129,7 @@ PixiDemo.prototype.init = function(){
         that.stagePositionToPhysics(init_physicsPosition, init_stagePosition);
         that.handleMouseDown(init_physicsPosition);
     };
-    container.mousemove = function(e){
+    container.mousemove = container.touchmove = function(e){
         if(down && that.state == DemoStates.PANNING){
             stage.position.x = e.global.x-lastX+startX;
             stage.position.y = e.global.y-lastY+startY;
@@ -144,7 +144,7 @@ PixiDemo.prototype.init = function(){
         that.stagePositionToPhysics(init_physicsPosition, init_stagePosition);
         that.handleMouseMove(init_physicsPosition);
     };
-    container.mouseup = function(e){
+    container.mouseup = container.touchend = function(e){
         down = false;
         lastMoveX = e.global.x;
         lastMoveY = e.global.y;
@@ -156,6 +156,11 @@ PixiDemo.prototype.init = function(){
         that.stagePositionToPhysics(init_physicsPosition, init_stagePosition);
         that.handleMouseUp(init_physicsPosition);
     };
+
+    // http://stackoverflow.com/questions/7691551/touchend-event-in-ios-webkit-not-firing
+    $(document).bind("touchmove",function(e){
+        e.preventDefault();
+    })
 
     $(window).bind('mousewheel', function(e){
         var scrollFactor = that.scrollFactor,

@@ -10172,7 +10172,7 @@ PIXI.ImageLoader.prototype.onLoaded = function()
  * @method loadFramedSpriteSheet
  * @param frameWidth {Number} with of each frame
  * @param frameHeight {Number} height of each frame
- * @param textureName {String} if given, the frames will be cached in <textureName>-<ord> format 
+ * @param textureName {String} if given, the frames will be cached in <textureName>-<ord> format
  */
 PIXI.ImageLoader.prototype.loadFramedSpriteSheet = function(frameWidth, frameHeight, textureName)
 {
