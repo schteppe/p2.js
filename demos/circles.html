@@ -30,6 +30,7 @@
         world.solver.stiffness = 1e5;
         world.solver.relaxation = 3;
         world.solver.iterations = 20;
+        world.solver.skipFrictionIterations = 5;
 
         // Create circle bodies
         var shape = new p2.Circle(r);
@@ -45,7 +46,6 @@
                 world.addBody(p);
             }
         }
-
 
         // Create ground
         var planeShape = new p2.Plane();
