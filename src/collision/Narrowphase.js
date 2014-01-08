@@ -341,26 +341,18 @@ Narrowphase.prototype.lineLine = function(bi,si,xi,ai, bj,sj,xj,aj){
 /**
  * Plane/line Narrowphase
  * @method planeLine
- * @param  {Body} bi
- * @param  {Plane} si
- * @param  {Array} xi
- * @param  {Number} ai
- * @param  {Body} bj
- * @param  {Line} sj
- * @param  {Array} xj
- * @param  {Number} aj
+ * @param  {Body}   planeBody
+ * @param  {Plane}  planeShape
+ * @param  {Array}  planeOffset
+ * @param  {Number} planeAngle
+ * @param  {Body}   lineBody
+ * @param  {Line}   lineShape
+ * @param  {Array}  lineOffset
+ * @param  {Number} lineAngle
  */
 Narrowphase.prototype[Shape.PLANE | Shape.LINE] =
-Narrowphase.prototype.planeLine = function(bi,si,xi,ai, bj,sj,xj,aj){
-    var lineShape = sj,
-        lineAngle = aj,
-        lineBody = bj,
-        lineOffset = xj,
-        planeOffset = xi,
-        planeAngle = ai,
-        planeBody = bi,
-        planeShape = si;
-
+Narrowphase.prototype.planeLine = function(planeBody, planeShape, planeOffset, planeAngle,
+                                           lineBody,  lineShape,  lineOffset,  lineAngle){
     var worldVertex0 = tmp1,
         worldVertex1 = tmp2,
         worldVertex01 = tmp3,
@@ -407,7 +399,7 @@ Narrowphase.prototype.planeLine = function(bi,si,xi,ai, bj,sj,xj,aj){
 
         if(d < 0){
 
-            var c = this.createContactEquation(planeBody,lineBody,si,sj);
+            var c = this.createContactEquation(planeBody,lineBody,planeShape,lineShape);
 
             vec2.copy(c.ni, worldNormal);
             vec2.normalize(c.ni,c.ni);
