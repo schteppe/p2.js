@@ -50,6 +50,7 @@ function FrictionEquation(bi,bj,slipForce){
      * The shape in body i that triggered this friction.
      * @property shapeA
      * @type {Shape}
+     * @todo Needed? The shape can be looked up via contactEquation.shapeA...
      */
     this.shapeA = null;
 
@@ -57,6 +58,7 @@ function FrictionEquation(bi,bj,slipForce){
      * The shape in body j that triggered this friction.
      * @property shapeB
      * @type {Shape}
+     * @todo Needed? The shape can be looked up via contactEquation.shapeB...
      */
     this.shapeB = null;
 
