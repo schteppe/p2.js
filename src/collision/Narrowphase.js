@@ -1452,7 +1452,7 @@ Narrowphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj ){
                 // Project it to the center edge and use the projection direction as normal
 
                 // Create contact
-                var c = this.createContactEquation(bodyA,bodyB,si,sj);
+                var c = this.createContactEquation(bodyA,bodyB,shapeA,shapeB);
 
                 // Get center edge from body A
                 var v0 = shapeA.vertices[(closestEdgeA)   % shapeA.vertices.length],
