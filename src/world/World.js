@@ -522,6 +522,8 @@ World.prototype.internalStep = function(dt){
             if(eq.firstImpact){
                 ev.bodyA = eq.bi;
                 ev.bodyB = eq.bj;
+                ev.shapeA = eq.shapeA;
+                ev.shapeB = eq.shapeB;
                 this.emit(ev);
             }
         }
