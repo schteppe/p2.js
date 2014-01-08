@@ -75,7 +75,7 @@ function GSSolver(options){
      * @property skipFrictionIterations
      * @type {Number}
      */
-    this.skipFrictionIterations = 2;
+    this.skipFrictionIterations = 0;
 };
 GSSolver.prototype = new Solver();
 
