@@ -547,10 +547,10 @@ PixiDemo.prototype.addRenderable = function(obj){
                 angle = angle || 0;
 
                 if(child instanceof Circle){
-                    PixiDemo.drawCircle(sprite,offset[0]*ppu,offset[1]*ppu,angle,child.radius*ppu,color,lw);
+                    PixiDemo.drawCircle(sprite,offset[0]*ppu,-offset[1]*ppu,angle,child.radius*ppu,color,lw);
 
                 } else if(child instanceof Particle){
-                    PixiDemo.drawCircle(sprite,offset[0]*ppu,offset[1]*ppu,angle,2*lw,lineColor,0);
+                    PixiDemo.drawCircle(sprite,offset[0]*ppu,-offset[1]*ppu,angle,2*lw,lineColor,0);
 
                 } else if(child instanceof Plane){
                     // TODO use shape angle
@@ -560,10 +560,10 @@ PixiDemo.prototype.addRenderable = function(obj){
                     PixiDemo.drawLine(sprite, child.length*ppu, lineColor, lw);
 
                 } else if(child instanceof Rectangle){
-                    PixiDemo.drawRectangle(sprite, offset[0]*ppu, offset[1]*ppu, angle, child.width*ppu, child.height*ppu, lineColor, color, lw);
+                    PixiDemo.drawRectangle(sprite, offset[0]*ppu, -offset[1]*ppu, angle, child.width*ppu, child.height*ppu, lineColor, color, lw);
 
                 } else if(child instanceof Capsule){
-                    PixiDemo.drawCapsule(sprite, offset[0]*ppu, offset[1]*ppu, angle, child.length*ppu, child.radius*ppu, lineColor, color,lw);
+                    PixiDemo.drawCapsule(sprite, offset[0]*ppu, -offset[1]*ppu, angle, child.length*ppu, child.radius*ppu, lineColor, color,lw);
 
                 } else if(child instanceof Convex){
                     // Scale verts
