@@ -22,7 +22,7 @@ function PixiDemo(world,options){
         pixelsPerLengthUnit : 128,
         width : 1280, // Pixi screen resolution
         height : 720,
-        useDeviceAspect : true,
+        useDeviceAspect : false,
     };
     for(var key in options)
         settings[key] = options[key];
@@ -94,6 +94,9 @@ PixiDemo.prototype.init = function(){
     var stage =     this.stage =        new PIXI.DisplayObjectContainer();
     var container = this.container =    new PIXI.Stage(0xFFFFFF,true);
     document.body.appendChild(this.renderer.view);
+
+    this.element = this.renderer.view;
+
     $(this.renderer.view).on("contextmenu",function(e){
         return false;
     });
@@ -608,9 +611,9 @@ PixiDemo.prototype.removeRenderable = function(obj){
 };
 
 PixiDemo.prototype.resize = function(w,h){
+    /*
     var renderer = this.renderer;
     var view = renderer.view;
-    view.style.position = "absolute";
 
     var ratio = w / h;
     var pixiRatio = renderer.width / renderer.height;
@@ -624,4 +627,5 @@ PixiDemo.prototype.resize = function(w,h){
         view.style.width = w + "px";
         view.style.top = ( (h - w / pixiRatio) / 2 ) +"px";
     }
+    */
 };

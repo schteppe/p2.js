@@ -471,6 +471,8 @@ Demo.prototype.createMenu = function(){
             "<div id='menu' class='well'>",
                 "<button class='btn' id='menu-hide'>Hide menu</button>",
 
+                "<button class='btn' id='menu-fullscreen'>Full screen</button>",
+
                 info,
 
                 "<fieldset id='menu-controls-container'>",
@@ -548,6 +550,19 @@ Demo.prototype.createMenu = function(){
     }).tooltip({
         title : "Restart simulation [r]",
     }),
+
+    $("#menu-fullscreen").click(function(evt){
+        var elem = document.body;
+        if (elem.requestFullscreen) {
+          elem.requestFullscreen();
+        } else if (elem.msRequestFullscreen) {
+          elem.msRequestFullscreen();
+        } else if (elem.mozRequestFullScreen) {
+          elem.mozRequestFullScreen();
+        } else if (elem.webkitRequestFullscreen) {
+          elem.webkitRequestFullscreen();
+        }
+    });
 
     $("#menu-solver-relaxation").change(function(e){
         that.world.solver.relaxation = parseFloat($(this).val());
