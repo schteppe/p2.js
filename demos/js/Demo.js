@@ -177,11 +177,21 @@ function Demo(world){
 }
 Demo.prototype = new EventEmitter();
 
+Demo.time = function(){
+    return new Date().getTime() / 1000;
+};
+
 Demo.prototype.run = function(){
-    var demo = this;
+    var demo = this,
+        lastCallTime = Demo.time(),
+        maxSubSteps=10;
+
     function update(){
-        if(!demo.paused)
-            demo.world.step(1/60);
+        if(!demo.paused){
+            var timeSinceLastCall = Demo.time()-lastCallTime;
+            lastCallTime = Demo.time();
+            demo.world.step(1/60,timeSinceLastCall,maxSubSteps);
+        }
         demo.render();
         requestAnimationFrame(update);
     }
