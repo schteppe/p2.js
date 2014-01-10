@@ -25,18 +25,20 @@
 return (function(e,t,n){function i(n,s){if(!t[n]){if(!e[n]){var o=typeof require=="function"&&require;if(!s&&o)return o(n,!0);if(r)return r(n,!0);throw new Error("Cannot find module '"+n+"'")}var u=t[n]={exports:{}};e[n][0].call(u.exports,function(t){var r=e[n][1][t];return i(r?r:t)},u,u.exports)}return t[n].exports}var r=typeof require=="function"&&require;for(var s=0;s<n.length;s++)i(n[s]);return i})({1:[function(require,module,exports){
 // Export p2 classes
 module.exports = {
+    AngleLockEquation :             require('./equations/AngleLockEquation'),
     Body :                          require('./objects/Body'),
     Broadphase :                    require('./collision/Broadphase'),
     Capsule :                       require('./shapes/Capsule'),
     Circle :                        require('./shapes/Circle'),
     Constraint :                    require('./constraints/Constraint'),
-    ContactEquation :               require('./constraints/ContactEquation'),
+    ContactEquation :               require('./equations/ContactEquation'),
     ContactMaterial :               require('./material/ContactMaterial'),
     Convex :                        require('./shapes/Convex'),
     DistanceConstraint :            require('./constraints/DistanceConstraint'),
-    Equation :                      require('./constraints/Equation'),
+    Equation :                      require('./equations/Equation'),
     EventEmitter :                  require('./events/EventEmitter'),
-    FrictionEquation :              require('./constraints/FrictionEquation'),
+    FrictionEquation :              require('./equations/FrictionEquation'),
+    GearConstraint :                require('./constraints/GearConstraint'),
     GridBroadphase :                require('./collision/GridBroadphase'),
     GSSolver :                      require('./solver/GSSolver'),
     Island :                        require('./solver/IslandSolver'),
@@ -50,7 +52,7 @@ module.exports = {
     RevoluteConstraint :            require('./constraints/RevoluteConstraint'),
     PrismaticConstraint :           require('./constraints/PrismaticConstraint'),
     Rectangle :                     require('./shapes/Rectangle'),
-    RotationalVelocityEquation :    require('./constraints/RotationalVelocityEquation'),
+    RotationalVelocityEquation :    require('./equations/RotationalVelocityEquation'),
     SAP1DBroadphase :               require('./collision/SAP1DBroadphase'),
     Shape :                         require('./shapes/Shape'),
     Solver :                        require('./solver/Solver'),
@@ -62,7 +64,7 @@ module.exports = {
     version :                       require('../package.json').version,
 };
 
-},{"../package.json":2,"./objects/Body":3,"./collision/Broadphase":4,"./shapes/Capsule":5,"./shapes/Circle":6,"./constraints/Constraint":7,"./constraints/ContactEquation":8,"./material/ContactMaterial":9,"./shapes/Convex":10,"./constraints/DistanceConstraint":11,"./constraints/Equation":12,"./events/EventEmitter":13,"./constraints/FrictionEquation":14,"./collision/GridBroadphase":15,"./solver/GSSolver":16,"./solver/IslandSolver":17,"./shapes/Line":18,"./constraints/LockConstraint":19,"./material/Material":20,"./collision/NaiveBroadphase":21,"./shapes/Particle":22,"./shapes/Plane":23,"./constraints/RevoluteConstraint":24,"./constraints/PrismaticConstraint":25,"./shapes/Rectangle":26,"./constraints/RotationalVelocityEquation":27,"./collision/SAP1DBroadphase":28,"./shapes/Shape":29,"./solver/Solver":30,"./objects/Spring":31,"./utils/Utils":32,"./world/World":33,"./collision/QuadTree":34,"./math/vec2":35}],2:[function(require,module,exports){
+},{"../package.json":2,"./equations/AngleLockEquation":3,"./objects/Body":4,"./collision/Broadphase":5,"./shapes/Capsule":6,"./shapes/Circle":7,"./constraints/Constraint":8,"./equations/ContactEquation":9,"./material/ContactMaterial":10,"./shapes/Convex":11,"./constraints/DistanceConstraint":12,"./equations/Equation":13,"./events/EventEmitter":14,"./equations/FrictionEquation":15,"./constraints/GearConstraint":16,"./collision/GridBroadphase":17,"./solver/GSSolver":18,"./solver/IslandSolver":19,"./shapes/Line":20,"./constraints/LockConstraint":21,"./material/Material":22,"./collision/NaiveBroadphase":23,"./shapes/Particle":24,"./shapes/Plane":25,"./constraints/RevoluteConstraint":26,"./constraints/PrismaticConstraint":27,"./shapes/Rectangle":28,"./equations/RotationalVelocityEquation":29,"./collision/SAP1DBroadphase":30,"./shapes/Shape":31,"./solver/Solver":32,"./objects/Spring":33,"./utils/Utils":34,"./world/World":35,"./collision/QuadTree":36,"./math/vec2":37}],2:[function(require,module,exports){
 module.exports={
     "name": "p2",
     "version": "0.4.0",
@@ -110,7 +112,7 @@ module.exports={
     }
 }
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 module.exports = Constraint;
 
 /**
@@ -144,6 +146,9 @@ function Constraint(bodyA,bodyB){
      * @type {Body}
      */
     this.bodyB = bodyB;
+
+    if(bodyA) bodyA.wakeUp();
+    if(bodyB) bodyB.wakeUp();
 };
 
 /**
@@ -154,7 +159,7 @@ function Constraint(bodyA,bodyB){
     throw new Error("method update() not implmemented in this Constraint subclass!");
 };*/
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 module.exports = ContactMaterial;
 
 var idCounter = 0;
@@ -237,7 +242,7 @@ function ContactMaterial(materialA, materialB, options){
     this.frictionRelaxation =   typeof(options.frictionRelaxation)  !== "undefined" ?   Number(options.frictionRelaxation)  : 3;
 };
 
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 /**
  * Base class for objects that dispatches events.
  * @class EventEmitter
@@ -293,7 +298,7 @@ EventEmitter.prototype = {
      * @return {EventEmitter} The self object, for chainability.
      */
     off: function ( type, listener ) {
-        if ( this._listeners === undefined ) return;
+        if ( this._listeners === undefined ) return this;
         var listeners = this._listeners;
         var index = listeners[ type ].indexOf( listener );
         if ( index !== - 1 ) {
@@ -310,7 +315,7 @@ EventEmitter.prototype = {
      * @return {EventEmitter} The self object, for chainability.
      */
     emit: function ( event ) {
-        if ( this._listeners === undefined ) return;
+        if ( this._listeners === undefined ) return this;
         var listeners = this._listeners;
         var listenerArray = listeners[ event.type ];
         if ( listenerArray !== undefined ) {
@@ -323,7 +328,7 @@ EventEmitter.prototype = {
     }
 };
 
-},{}],20:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 module.exports = Material;
 
 var idCounter = 0;
@@ -344,7 +349,7 @@ function Material(){
     this.id = idCounter++;
 };
 
-},{}],29:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 module.exports = Shape;
 
 /**
@@ -453,7 +458,18 @@ Shape.prototype.updateArea = function(){
     // To be implemented in all subclasses
 };
 
-},{}],32:[function(require,module,exports){
+/**
+ * Compute the world axis-aligned bounding box (AABB) of this shape.
+ * @method computeAABB
+ * @param  {AABB}   out      The resulting AABB.
+ * @param  {Array}  position
+ * @param  {Number} angle
+ */
+Shape.prototype.computeAABB = function(out, position, angle){
+    // To be implemented in each subclass
+};
+
+},{}],34:[function(require,module,exports){
 module.exports = Utils;
 
 /**
@@ -481,6 +497,21 @@ Utils.appendArray = function(a,b){
 };
 
 /**
+ * Garbage free Array.splice(). Does not allocate a new array.
+ * @method splice
+ * @static
+ * @param  {Array} array
+ * @param  {Number} index
+ * @param  {Number} howmany
+ */
+Utils.splice = function(array,index,howmany){
+    howmany = howmany || 1;
+    for (var i=index, len=array.length-howmany; i < len; i++)
+        array[i] = array[i + howmany];
+    array.length = len;
+};
+
+/**
  * The array type to use for internal numeric computations.
  * @type {Array}
  * @static
@@ -488,8 +519,48 @@ Utils.appendArray = function(a,b){
  */
 Utils.ARRAY_TYPE = Float32Array || Array;
 
-},{}],4:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
+var Equation = require("./Equation"),
+    vec2 = require('../math/vec2');
+
+module.exports = AngleLockEquation;
+
+/**
+ * Locks the relative angle between two bodies. The constraint tries to keep the dot product between two vectors, local in each body, to zero. The local angle in body i is a parameter.
+ *
+ * @class AngleLockEquation
+ * @constructor
+ * @extends Equation
+ * @param {Body} bi
+ * @param {Body} bj
+ * @param {Object} options
+ * @param {Number} options.angle Angle to add to the local vector in body i.
+ * @param {Number} options.ratio Gear ratio
+ */
+function AngleLockEquation(bi,bj,options){
+    options = options || {};
+    Equation.call(this,bi,bj,-Number.MAX_VALUE,Number.MAX_VALUE);
+    this.angle = options.angle || 0;
+    this.ratio = typeof(options.ratio)=="number" ? options.ratio : 1;
+    this.setRatio(this.ratio);
+};
+AngleLockEquation.prototype = new Equation();
+AngleLockEquation.prototype.constructor = AngleLockEquation;
+
+AngleLockEquation.prototype.computeGq = function(){
+    return this.ratio*this.bi.angle - this.bj.angle + this.angle;
+};
+
+AngleLockEquation.prototype.setRatio = function(ratio){
+    var G = this.G;
+    G[2] =  ratio;
+    G[5] = -1;
+    this.ratio = ratio;
+};
+
+},{"./Equation":13,"../math/vec2":37}],5:[function(require,module,exports){
 var vec2 = require('../math/vec2')
+var Body = require('../objects/Body')
 
 module.exports = Broadphase;
 
@@ -506,6 +577,22 @@ function Broadphase(){
      * @type {Array}
      */
     this.result = [];
+
+    /**
+     * The world to search for collision pairs in. To change it, use .setWorld()
+     * @property world
+     * @type {World}
+     */
+    this.world = null;
+};
+
+/**
+ * Set the world that we are searching for collision pairs in
+ * @method setWorld
+ * @param  {World} world
+ */
+Broadphase.prototype.setWorld = function(world){
+    this.world = world;
 };
 
 /**
@@ -534,7 +621,39 @@ Broadphase.boundingRadiusCheck = function(bodyA, bodyB){
     return d2 <= r*r;
 };
 
-},{"../math/vec2":35}],5:[function(require,module,exports){
+/**
+ * Check whether the bounding radius of two bodies overlap.
+ * @method  boundingRadiusCheck
+ * @param  {Body} bodyA
+ * @param  {Body} bodyB
+ * @return {Boolean}
+ */
+Broadphase.aabbCheck = function(bodyA, bodyB){
+    if(bodyA.aabbNeedsUpdate) bodyA.updateAABB();
+    if(bodyB.aabbNeedsUpdate) bodyB.updateAABB();
+    return bodyA.aabb.overlaps(bodyB.aabb);
+};
+
+/**
+ * Check whether two bodies are allowed to collide at all.
+ * @method  canCollide
+ * @param  {Body} bodyA
+ * @param  {Body} bodyB
+ * @return {Boolean}
+ */
+Broadphase.canCollide = function(bodyA, bodyB){
+    // Cannot collide static bodies
+    if(bodyA.motionState & Body.STATIC && bodyB.motionState & Body.STATIC)
+        return false;
+
+    // Cannot collide sleeping bodies
+    if(bodyA.sleepState & Body.SLEEPING && bodyB.sleepState & Body.SLEEPING)
+        return false;
+
+    return true;
+};
+
+},{"../math/vec2":37,"../objects/Body":4}],6:[function(require,module,exports){
 var Shape = require('./Shape')
 ,   vec2 = require('../math/vec2')
 
@@ -575,8 +694,39 @@ Capsule.prototype.updateBoundingRadius = function(){
     this.boundingRadius = this.radius + this.length/2;
 };
 
-},{"./Shape":29,"../math/vec2":35}],6:[function(require,module,exports){
-var Shape = require('./Shape');
+Capsule.prototype.updateArea = function(){
+    this.area = Math.PI * this.radius * this.radius + this.radius * 2 * this.length;
+};
+
+var r = vec2.create();
+
+/**
+ * @method computeAABB
+ * @param  {AABB}   out      The resulting AABB.
+ * @param  {Array}  position
+ * @param  {Number} angle
+ */
+Capsule.prototype.computeAABB = function(out, position, angle){
+    var radius = this.radius;
+
+    // Compute center position of one of the the circles, world oriented, but with local offset
+    vec2.set(r,this.length,0);
+    vec2.rotate(r,r,angle);
+
+    // Get bounds
+    vec2.set(out.upperBound,  Math.max(r[0]+radius, -r[0]+radius),
+                              Math.max(r[1]+radius, -r[1]+radius));
+    vec2.set(out.lowerBound,  Math.min(r[0]-radius, -r[0]-radius),
+                              Math.min(r[1]-radius, -r[1]-radius));
+
+    // Add offset
+    vec2.add(out.lowerBound, out.lowerBound, position);
+    vec2.add(out.upperBound, out.upperBound, position);
+};
+
+},{"./Shape":31,"../math/vec2":37}],7:[function(require,module,exports){
+var Shape = require('./Shape')
+,    vec2 = require('../math/vec2')
 
 module.exports = Circle;
 
@@ -608,7 +758,27 @@ Circle.prototype.updateBoundingRadius = function(){
     this.boundingRadius = this.radius;
 };
 
-},{"./Shape":29}],8:[function(require,module,exports){
+Circle.prototype.updateArea = function(){
+    this.area = Math.PI * this.radius * this.radius;
+};
+
+/**
+ * @method computeAABB
+ * @param  {AABB}   out      The resulting AABB.
+ * @param  {Array}  position
+ * @param  {Number} angle
+ */
+Circle.prototype.computeAABB = function(out, position, angle){
+    var r = this.radius;
+    vec2.set(out.upperBound,  r,  r);
+    vec2.set(out.lowerBound, -r, -r);
+    if(position){
+        vec2.add(out.lowerBound, out.lowerBound, position);
+        vec2.add(out.upperBound, out.upperBound, position);
+    }
+};
+
+},{"./Shape":31,"../math/vec2":37}],9:[function(require,module,exports){
 var Equation = require("./Equation"),
     vec2 = require('../math/vec2'),
     mat2 = require('../math/mat2');
@@ -724,9 +894,9 @@ ContactEquation.prototype.computeB = function(a,b,h){
     return B;
 };
 
-},{"./Equation":12,"../math/vec2":35,"../math/mat2":36}],11:[function(require,module,exports){
+},{"./Equation":13,"../math/vec2":37,"../math/mat2":38}],12:[function(require,module,exports){
 var Constraint = require('./Constraint')
-,   Equation = require('./Equation')
+,   Equation = require('../equations/Equation')
 ,   vec2 = require('../math/vec2')
 
 module.exports = DistanceConstraint;
@@ -811,7 +981,7 @@ DistanceConstraint.prototype.getMaxForce = function(f){
     return normal.maxForce;
 };
 
-},{"./Constraint":7,"./Equation":12,"../math/vec2":35}],12:[function(require,module,exports){
+},{"./Constraint":8,"../equations/Equation":13,"../math/vec2":37}],13:[function(require,module,exports){
 module.exports = Equation;
 
 var vec2 = require('../math/vec2'),
@@ -1012,7 +1182,7 @@ Equation.prototype.computeGWlambda = function(){
         vj = bj.vlambda,
         wi = bi.wlambda,
         wj = bj.wlambda;
-    return this.transformedGmult(G,vi,wi,vj,wj);
+    return Gmult(G,vi,wi,vj,wj);
 };
 
 /**
@@ -1067,7 +1237,8 @@ var addToWlambda_temp = vec2.create(),
     addToWlambda_Gi = vec2.create(),
     addToWlambda_Gj = vec2.create(),
     addToWlambda_ri = vec2.create(),
-    addToWlambda_rj = vec2.create();
+    addToWlambda_rj = vec2.create(),
+    addToWlambda_Mdiag = vec2.create();
 var tmpMat1 = mat2.create(),
     tmpMat2 = mat2.create();
 
@@ -1086,6 +1257,7 @@ Equation.prototype.addToWlambda = function(deltalambda){
         Gj = addToWlambda_Gj,
         ri = addToWlambda_ri,
         rj = addToWlambda_rj,
+        Mdiag = addToWlambda_Mdiag,
         G = this.G;
 
     Gi[0] = G[0];
@@ -1093,10 +1265,13 @@ Equation.prototype.addToWlambda = function(deltalambda){
     Gj[0] = G[3];
     Gj[1] = G[4];
 
+    /*
     mat2.identity(imMat1);
     mat2.identity(imMat2);
     imMat1[0] = imMat1[3] = bi.invMass;
     imMat2[0] = imMat2[3] = bj.invMass;
+    */
+
 
     /*
     vec2.rotate(ri,this.xi,bi.angle);
@@ -1104,13 +1279,18 @@ Equation.prototype.addToWlambda = function(deltalambda){
     */
 
     // Add to linear velocity
-    vec2.scale(temp,vec2.transformMat2(temp,Gi,imMat1),deltalambda);
+    // v_lambda += inv(M) * delta_lamba * G
+    //vec2.set(Mdiag,bi.invMass,bi.invMass);
+    //vec2.scale(temp,vec2.transformMat2(temp,Gi,imMat1),deltalambda);
+    vec2.scale(temp,Gi,bi.invMass*deltalambda);
     vec2.add( bi.vlambda, bi.vlambda, temp);
     // This impulse is in the offset frame
     // Also add contribution to angular
     //bi.wlambda -= vec2.crossLength(temp,ri);
 
-    vec2.scale(temp,vec2.transformMat2(temp,Gj,imMat2),deltalambda);
+    //vec2.set(Mdiag,bj.invMass,bj.invMass);
+    //vec2.scale(temp,vec2.transformMat2(temp,Gj,imMat2),deltalambda);
+    vec2.scale(temp,Gj,bj.invMass*deltalambda);
     vec2.add( bj.vlambda, bj.vlambda, temp);
     //bj.wlambda -= vec2.crossLength(temp,rj);
 
@@ -1119,17 +1299,23 @@ Equation.prototype.addToWlambda = function(deltalambda){
     bj.wlambda += bj.invInertia * G[5] * deltalambda;
 };
 
+function massMatVecMultiply(out, m, v) {
+    out[0] = v[0] * m;
+    out[1] = v[1] * m;
+    return out;
+}
+
 /**
  * Compute the denominator part of the SPOOK equation: C = G*inv(M)*G' + eps
- * @method computeC
+ * @method computeInvC
  * @param  {Number} eps
  * @return {Number}
  */
-Equation.prototype.computeC = function(eps){
-    return this.computeGiMGt() + eps;
+Equation.prototype.computeInvC = function(eps){
+    return 1.0 / (this.computeGiMGt() + eps);
 };
 
-},{"../math/vec2":35,"../math/mat2":36,"../utils/Utils":32}],14:[function(require,module,exports){
+},{"../math/vec2":37,"../math/mat2":38,"../utils/Utils":34}],15:[function(require,module,exports){
 var mat2 = require('../math/mat2')
 ,   vec2 = require('../math/vec2')
 ,   Equation = require('./Equation')
@@ -1182,6 +1368,7 @@ function FrictionEquation(bi,bj,slipForce){
      * The shape in body i that triggered this friction.
      * @property shapeA
      * @type {Shape}
+     * @todo Needed? The shape can be looked up via contactEquation.shapeA...
      */
     this.shapeA = null;
 
@@ -1189,6 +1376,7 @@ function FrictionEquation(bi,bj,slipForce){
      * The shape in body j that triggered this friction.
      * @property shapeB
      * @type {Shape}
+     * @todo Needed? The shape can be looked up via contactEquation.shapeB...
      */
     this.shapeB = null;
 
@@ -1239,7 +1427,57 @@ FrictionEquation.prototype.computeB = function(a,b,h){
     return B;
 };
 
-},{"../math/mat2":36,"../math/vec2":35,"./Equation":12,"../utils/Utils":32}],15:[function(require,module,exports){
+},{"../math/mat2":38,"../math/vec2":37,"./Equation":13,"../utils/Utils":34}],16:[function(require,module,exports){
+var Constraint = require('./Constraint')
+,   Equation = require('../equations/Equation')
+,   AngleLockEquation = require('../equations/AngleLockEquation')
+,   vec2 = require('../math/vec2')
+
+module.exports = GearConstraint;
+
+/**
+ * Connects two bodies at given offset points, letting them rotate relative to each other around this point.
+ * @class GearConstraint
+ * @constructor
+ * @author schteppe
+ * @param {Body}            bodyA
+ * @param {Body}            bodyB
+ * @param {Number}          maxForce The maximum force that should be applied to constrain the bodies.
+ * @extends {Constraint}
+ * @todo Ability to specify world points
+ */
+function GearConstraint(bodyA, bodyB, options){
+    Constraint.call(this,bodyA,bodyB);
+
+    // Equations to be fed to the solver
+    var eqs = this.equations = [
+        new AngleLockEquation(bodyA,bodyB,options),
+    ];
+
+    /**
+     * The relative angle
+     * @property angle
+     * @type {Number}
+     */
+    this.angle = typeof(options.angle) == "number" ? options.angle : 0;
+
+    /**
+     * The gear ratio
+     * @property ratio
+     * @type {Number}
+     */
+    this.ratio = typeof(options.ratio) == "number" ? options.ratio : 1;
+}
+GearConstraint.prototype = new Constraint();
+
+GearConstraint.prototype.update = function(){
+    var eq = this.equations[0];
+    if(eq.ratio != this.ratio)
+        eq.setRatio(this.ratio);
+    eq.angle = this.angle;
+};
+
+},{"./Constraint":8,"../equations/Equation":13,"../equations/AngleLockEquation":3,"../math/vec2":37}],17:[function(require,module,exports){
 var Circle = require('../shapes/Circle')
 ,   Plane = require('../shapes/Plane')
 ,   Particle = require('../shapes/Particle')
@@ -1400,11 +1638,11 @@ GridBroadphase.prototype.getCollisionPairs = function(world){
     return result;
 };
 
-},{"../shapes/Circle":6,"../shapes/Plane":23,"../shapes/Particle":22,"../collision/Broadphase":4,"../math/vec2":35}],16:[function(require,module,exports){
+},{"../shapes/Circle":7,"../shapes/Plane":25,"../shapes/Particle":24,"../collision/Broadphase":5,"../math/vec2":37}],18:[function(require,module,exports){
 var vec2 = require('../math/vec2')
 ,   Solver = require('./Solver')
 ,   Utils = require('../utils/Utils')
-,   FrictionEquation = require('../constraints/FrictionEquation')
+,   FrictionEquation = require('../equations/FrictionEquation')
 
 module.exports = GSSolver;
 
@@ -1478,17 +1716,23 @@ function GSSolver(options){
      * @property skipFrictionIterations
      * @type {Number}
      */
-    this.skipFrictionIterations = 2;
+    this.skipFrictionIterations = 0;
 };
 GSSolver.prototype = new Solver();
+
+function setArrayZero(array){
+    for(var i=0; i!==array.length; i++){
+        array[i] = 0.0;
+    }
+}
 
 /**
  * Solve the system of equations
  * @method solve
- * @param  {Number}  dt       Time step
+ * @param  {Number}  h       Time step
  * @param  {World}   world    World to solve
  */
-GSSolver.prototype.solve = function(dt,world){
+GSSolver.prototype.solve = function(h,world){
 
     this.sortEquations();
 
@@ -1500,7 +1744,6 @@ GSSolver.prototype.solve = function(dt,world){
         Neq = equations.length,
         bodies = world.bodies,
         Nbodies = world.bodies.length,
-        h = dt,
         d = this.relaxation,
         k = this.stiffness,
         eps = 4.0 / (h * h * k * (1 + 4 * d)),
@@ -1509,38 +1752,36 @@ GSSolver.prototype.solve = function(dt,world){
         useGlobalParams = this.useGlobalEquationParameters,
         add = vec2.add,
         set = vec2.set,
-        useZeroRHS = this.useZeroRHS;
+        useZeroRHS = this.useZeroRHS,
+        lambda = this.lambda;
 
     // Things that does not change during iteration can be computed once
-    if(this.lambda.length < Neq){
-        this.lambda = new Utils.ARRAY_TYPE(Neq + this.arrayStep);
-        this.Bs =     new Utils.ARRAY_TYPE(Neq + this.arrayStep);
-        this.invCs =  new Utils.ARRAY_TYPE(Neq + this.arrayStep);
+    if(lambda.length < Neq){
+        lambda = this.lambda =  new Utils.ARRAY_TYPE(Neq + this.arrayStep);
+        this.Bs =               new Utils.ARRAY_TYPE(Neq + this.arrayStep);
+        this.invCs =            new Utils.ARRAY_TYPE(Neq + this.arrayStep);
+    } else {
+        setArrayZero(lambda);
     }
     var invCs = this.invCs,
         Bs = this.Bs,
         lambda = this.lambda;
-    for(var i=0; i!==Neq; i++){
-        var c = equations[i];
-        lambda[i] = 0.0;
-
-        var _a = a,
-            _b = b,
-            _eps = eps;
-        if(!useGlobalParams){
+    if(!useGlobalParams){
+        for(var i=0, c; c = equations[i]; i++){
             if(h !== c.h) c.updateSpookParams(h);
-            _a = c.a;
-            _b = c.b;
-            _eps = c.eps;
+            Bs[i] =     c.computeB(c.a,c.b,h);
+            invCs[i] =  c.computeInvC(c.eps);
         }
-        Bs[i] = c.computeB(_a,_b,h);
-        invCs[i] = 1.0 / c.computeC(_eps);
+    } else {
+        for(var i=0, c; c = equations[i]; i++){
+            Bs[i] =     c.computeB(a,b,h);
+            invCs[i] =  c.computeInvC(eps);
+        }
     }
 
-    var q, B, c, invC, deltalambda, deltalambdaTot, GWlambda, lambdaj;
+    var q, B, c, deltalambdaTot,i,j;
 
     if(Neq !== 0){
-        var i,j, minForce, maxForce, lambdaj_plus_deltalambda;
 
         // Reset vlambda
         for(i=0; i!==Nbodies; i++){
@@ -1561,12 +1802,12 @@ GSSolver.prototype.solve = function(dt,world){
 
                 var _eps = useGlobalParams ? eps : c.eps;
 
-                var deltalambda = GSSolver.iterateEquation(j,c,_eps,Bs,invCs,lambda,useZeroRHS,dt);
-                if(tolSquared !== 0) deltalambdaTot += Math.abs(deltalambda);
+                var deltalambda = GSSolver.iterateEquation(j,c,_eps,Bs,invCs,lambda,useZeroRHS,h);
+                deltalambdaTot += Math.abs(deltalambda);
             }
 
             // If the total error is small enough - stop iterate
-            if(tolSquared !== 0 && deltalambdaTot*deltalambdaTot <= tolSquared) break;
+            if(deltalambdaTot*deltalambdaTot <= tolSquared) break;
         }
 
         // Add result to velocity
@@ -1574,7 +1815,6 @@ GSSolver.prototype.solve = function(dt,world){
             bodies[i].addConstraintVelocity();
         }
     }
-    errorTot = deltalambdaTot;
 };
 
 GSSolver.iterateEquation = function(j,eq,eps,Bs,invCs,lambda,useZeroRHS,dt){
@@ -1611,7 +1851,7 @@ GSSolver.iterateEquation = function(j,eq,eps,Bs,invCs,lambda,useZeroRHS,dt){
     return deltalambda;
 };
 
-},{"../math/vec2":35,"./Solver":30,"../utils/Utils":32,"../constraints/FrictionEquation":14}],17:[function(require,module,exports){
+},{"../math/vec2":37,"./Solver":32,"../utils/Utils":34,"../equations/FrictionEquation":15}],19:[function(require,module,exports){
 var Solver = require('./Solver')
 ,   vec2 = require('../math/vec2')
 ,   Island = require('../solver/Island')
@@ -1650,6 +1890,8 @@ function IslandSolver(subsolver,options){
     // Pooling of node objects saves some GC load
     this._nodePool = [];
 
+    this._islandPool = [];
+
     /**
      * Fires before an island is solved.
      * @event beforeSolveIsland
@@ -1673,22 +1915,39 @@ function getUnvisitedNode(nodes){
     return false;
 }
 
-function bfs(root,visitFunc){
-    var queue = [];
+function visitFunc(node,bds,eqs){
+    bds.push(node.body);
+    var Neqs = node.eqs.length;
+    for(var i=0; i!==Neqs; i++){
+        var eq = node.eqs[i];
+        if(eqs.indexOf(eq) === -1){
+            eqs.push(eq);
+        }
+    }
+}
+
+var queue = [];
+function bfs(root,visitFunc,bds,eqs){
+    queue.length = 0;
     queue.push(root);
     root.visited = true;
-    visitFunc(root);
+    visitFunc(root,bds,eqs);
     while(queue.length) {
         var node = queue.pop();
         // Loop over unvisited child nodes
         var child;
         while((child = getUnvisitedNode(node.children))) {
             child.visited = true;
-            visitFunc(child);
+            visitFunc(child,bds,eqs);
             queue.push(child);
         }
     }
 }
+
+var tmpArray = [],
+    tmpArray2 = [],
+    tmpArray3 = [],
+    tmpArray4 = [];
 
 /**
  * Solves the full system.
@@ -1697,7 +1956,7 @@ function bfs(root,visitFunc){
  * @param  {World} world
  */
 IslandSolver.prototype.solve = function(dt,world){
-    var nodes = [],
+    var nodes = tmpArray,
         bodies=world.bodies,
         equations=this.equations,
         Neq=equations.length,
@@ -1705,7 +1964,10 @@ IslandSolver.prototype.solve = function(dt,world){
         subsolver=this.subsolver,
         workers = this._workers,
         workerData = this._workerData,
-        workerIslandGroups = this._workerIslandGroups;
+        workerIslandGroups = this._workerIslandGroups,
+        islandPool = this._islandPool;
+
+    tmpArray.length = 0;
 
     // Create needed nodes, reuse if possible
     for(var i=0; i!==Nbodies; i++){
@@ -1744,25 +2006,18 @@ IslandSolver.prototype.solve = function(dt,world){
     }
 
     // The BFS search algorithm needs a traversal function. What we do is gather all bodies and equations connected.
-    var child, n=0, eqs=[], bds=[];
-    function visitFunc(node){
-        bds.push(node.body);
-        var Neqs = node.eqs.length;
-        for(var i=0; i!==Neqs; i++){
-            var eq = node.eqs[i];
-            if(eqs.indexOf(eq) === -1){
-                eqs.push(eq);
-            }
-        }
-    }
+    var child, n=0, eqs=tmpArray2, bds=tmpArray3;
+    eqs.length = 0;
+    bds.length = 0;
 
     // Get islands
-    var islands = [];
+    var islands = tmpArray4;
+    islands.length = 0;
     while((child = getUnvisitedNode(nodes))){
-        var island = new Island(); // @todo Should be reused from somewhere
+        var island = islandPool.length ? islandPool.pop() : new Island();
         eqs.length = 0;
         bds.length = 0;
-        bfs(child,visitFunc); // run search algo to gather an island of bodies
+        bfs(child,visitFunc,bds,eqs); // run search algo to gather an island of bodies
 
         // Add equations to island
         var Neqs = eqs.length;
@@ -1784,11 +2039,16 @@ IslandSolver.prototype.solve = function(dt,world){
         e.island = island;
         this.emit(e);
         island.solve(dt,this.subsolver);
+
+        // Turn it back to the pool
+        island.reset();
+        islandPool.push(island);
     }
 };
 
-},{"./Solver":30,"../math/vec2":35,"../solver/Island":37,"../objects/Body":3}],18:[function(require,module,exports){
-var Shape = require('./Shape');
+},{"./Solver":32,"../math/vec2":37,"../solver/Island":39,"../objects/Body":4}],20:[function(require,module,exports){
+var Shape = require('./Shape')
+,   vec2 = require('../math/vec2')
 
 module.exports = Line;
 
@@ -1819,11 +2079,26 @@ Line.prototype.updateBoundingRadius = function(){
     this.boundingRadius = this.length/2;
 };
 
+var points = [vec2.create(),vec2.create()];
 
-},{"./Shape":29}],19:[function(require,module,exports){
+/**
+ * @method computeAABB
+ * @param  {AABB}   out      The resulting AABB.
+ * @param  {Array}  position
+ * @param  {Number} angle
+ */
+Line.prototype.computeAABB = function(out, position, angle){
+    var l = this.length;
+    vec2.set(points[0], -l/2,  0);
+    vec2.set(points[1],  l/2,  0);
+    out.setFromPoints(points,position,angle);
+};
+
+
+},{"./Shape":31,"../math/vec2":37}],21:[function(require,module,exports){
 var Constraint = require('./Constraint')
 ,   vec2 = require('../math/vec2')
-,   Equation = require('./Equation')
+,   Equation = require('../equations/Equation')
 
 module.exports = LockConstraint;
 
@@ -1945,7 +2220,7 @@ LockConstraint.prototype.update = function(){
     rot.G[5] =  vec2.crossLength(r,t);
 };
 
-},{"./Constraint":7,"../math/vec2":35,"./Equation":12}],21:[function(require,module,exports){
+},{"./Constraint":8,"../math/vec2":37,"../equations/Equation":13}],23:[function(require,module,exports){
 var Circle = require('../shapes/Circle')
 ,   Plane = require('../shapes/Plane')
 ,   Shape = require('../shapes/Shape')
@@ -1964,6 +2239,13 @@ module.exports = NaiveBroadphase;
  */
 function NaiveBroadphase(){
     Broadphase.apply(this);
+
+    /**
+     * Set to true to use bounding box checks instead of bounding radius.
+     * @property useBoundingBoxes
+     * @type {Boolean}
+     */
+    this.useBoundingBoxes = false;
 };
 NaiveBroadphase.prototype = new Broadphase();
 
@@ -1976,7 +2258,8 @@ NaiveBroadphase.prototype = new Broadphase();
 NaiveBroadphase.prototype.getCollisionPairs = function(world){
     var bodies = world.bodies,
         result = this.result,
-        i, j, bi, bj;
+        i, j, bi, bj,
+        check = this.useBoundingBoxes ? Broadphase.aabbCheck : Broadphase.boundingRadiusCheck;
 
     result.length = 0;
 
@@ -1986,7 +2269,7 @@ NaiveBroadphase.prototype.getCollisionPairs = function(world){
         for(j=0; j<i; j++){
             bj = bodies[j];
 
-            if(Broadphase.boundingRadiusCheck(bi,bj))
+            if(Broadphase.canCollide(bi,bj) && check(bi,bj))
                 result.push(bi,bj);
         }
     }
@@ -1994,7 +2277,7 @@ NaiveBroadphase.prototype.getCollisionPairs = function(world){
     return result;
 };
 
-},{"../shapes/Circle":6,"../shapes/Plane":23,"../shapes/Shape":29,"../shapes/Particle":22,"../collision/Broadphase":4,"../math/vec2":35}],22:[function(require,module,exports){
+},{"../shapes/Circle":7,"../shapes/Plane":25,"../shapes/Shape":31,"../shapes/Particle":24,"../collision/Broadphase":5,"../math/vec2":37}],24:[function(require,module,exports){
 var Shape = require('./Shape');
 
 module.exports = Particle;
@@ -2017,9 +2300,22 @@ Particle.prototype.updateBoundingRadius = function(){
     this.boundingRadius = 0;
 };
 
+/**
+ * @method computeAABB
+ * @param  {AABB}   out
+ * @param  {Array}  position
+ * @param  {Number} angle
+ */
+Particle.prototype.computeAABB = function(out, position, angle){
+    var l = this.length;
+    vec2.copy(out.lowerBound, position);
+    vec2.copy(out.upperBound, position);
+};
 
-},{"./Shape":29}],23:[function(require,module,exports){
-var Shape = require('./Shape');
+},{"./Shape":31}],25:[function(require,module,exports){
+var Shape =  require('./Shape')
+,    vec2 =  require('../math/vec2')
+,    Utils = require('../utils/Utils')
 
 module.exports = Plane;
 
@@ -2050,12 +2346,54 @@ Plane.prototype.updateBoundingRadius = function(){
     this.boundingRadius = Number.MAX_VALUE;
 };
 
+/**
+ * @method computeAABB
+ * @param  {AABB}   out
+ * @param  {Array}  position
+ * @param  {Number} angle
+ */
+Plane.prototype.computeAABB = function(out, position, angle){
+    var a = 0,
+        set = vec2.set;
+    if(typeof(angle) == "number")
+        a = angle % (2*Math.PI);
 
-},{"./Shape":29}],24:[function(require,module,exports){
+    if(a == 0){
+        // y goes from -inf to 0
+        set(out.lowerBound, -Number.MAX_VALUE, -Number.MAX_VALUE);
+        set(out.upperBound,  Number.MAX_VALUE,  0);
+    } else if(a == Math.PI / 2){
+        // x goes from 0 to inf
+        set(out.lowerBound,                 0, -Number.MAX_VALUE);
+        set(out.upperBound,  Number.MAX_VALUE,  Number.MAX_VALUE);
+    } else if(a == Math.PI){
+        // y goes from 0 to inf
+        set(out.lowerBound, -Number.MAX_VALUE, 0);
+        set(out.upperBound,  Number.MAX_VALUE, Number.MAX_VALUE);
+    } else if(a == 3*Math.PI/2){
+        // x goes from -inf to 0
+        set(out.lowerBound, -Number.MAX_VALUE, -Number.MAX_VALUE);
+        set(out.upperBound,                 0,  Number.MAX_VALUE);
+    } else {
+        // Set max bounds
+        set(out.lowerBound, -Number.MAX_VALUE, -Number.MAX_VALUE);
+        set(out.upperBound,  Number.MAX_VALUE,  Number.MAX_VALUE);
+    }
+
+    vec2.add(out.lowerBound, out.lowerBound, position);
+    vec2.add(out.upperBound, out.upperBound, position);
+};
+
+Plane.prototype.updateArea = function(){
+    this.area = Number.MAX_VALUE;
+};
+
+
+},{"./Shape":31,"../math/vec2":37,"../utils/Utils":34}],26:[function(require,module,exports){
 var Constraint = require('./Constraint')
-,   Equation = require('./Equation')
-,   RotationalVelocityEquation = require('./RotationalVelocityEquation')
-,   RotationalLockEquation = require('./RotationalLockEquation')
+,   Equation = require('../equations/Equation')
+,   RotationalVelocityEquation = require('../equations/RotationalVelocityEquation')
+,   RotationalLockEquation = require('../equations/RotationalLockEquation')
 ,   vec2 = require('../math/vec2')
 
 module.exports = RevoluteConstraint;
@@ -2120,11 +2458,41 @@ function RevoluteConstraint(bodyA, pivotA, bodyB, pivotB, maxForce){
     this.motorEquation = new RotationalVelocityEquation(bodyA,bodyB);
     this.motorEnabled = false;
 
-    // Angle limits
+    /**
+     * The constraint position
+     * @property angle
+     * @type {Number}
+     */
+    this.angle = 0;
+
+    /**
+     * Set to true to enable lower limit
+     * @property lowerLimitEnabled
+     * @type {Boolean}
+     */
     this.lowerLimitEnabled = false;
+
+    /**
+     * Set to true to enable upper limit
+     * @property upperLimitEnabled
+     * @type {Boolean}
+     */
     this.upperLimitEnabled = false;
+
+    /**
+     * The lower limit on the constraint angle.
+     * @property lowerLimit
+     * @type {Boolean}
+     */
     this.lowerLimit = 0;
+
+    /**
+     * The upper limit on the constraint angle.
+     * @property upperLimit
+     * @type {Boolean}
+     */
     this.upperLimit = 0;
+
     this.upperLimitEquation = new RotationalLockEquation(bodyA,bodyB);
     this.lowerLimitEquation = new RotationalLockEquation(bodyA,bodyB);
     this.upperLimitEquation.minForce = 0;
@@ -2195,6 +2563,8 @@ RevoluteConstraint.prototype.update = function(){
     vec2.rotate(worldPivotA, pivotA, bodyA.angle);
     vec2.rotate(worldPivotB, pivotB, bodyB.angle);
 
+    // todo: these are a bit sparse. We could save some computations on making custom eq.computeGW functions, etc
+
     x.G[0] = -1;
     x.G[1] =  0;
     x.G[2] = -vec2.crossLength(worldPivotA,xAxis);
@@ -2261,12 +2631,12 @@ RevoluteConstraint.prototype.getMotorSpeed = function(){
     return this.motorEquation.relativeVelocity;
 };
 
-},{"./Constraint":7,"./Equation":12,"./RotationalVelocityEquation":27,"./RotationalLockEquation":38,"../math/vec2":35}],25:[function(require,module,exports){
+},{"./Constraint":8,"../equations/Equation":13,"../equations/RotationalVelocityEquation":29,"../equations/RotationalLockEquation":40,"../math/vec2":37}],27:[function(require,module,exports){
 var Constraint = require('./Constraint')
-,   ContactEquation = require('./ContactEquation')
-,   Equation = require('./Equation')
+,   ContactEquation = require('../equations/ContactEquation')
+,   Equation = require('../equations/Equation')
 ,   vec2 = require('../math/vec2')
-,   RotationalLockEquation = require('./RotationalLockEquation')
+,   RotationalLockEquation = require('../equations/RotationalLockEquation')
 
 module.exports = PrismaticConstraint;
 
@@ -2280,10 +2650,11 @@ module.exports = PrismaticConstraint;
  * @param {Body}    bodyA
  * @param {Body}    bodyB
  * @param {Object}  options
- * @param {Number}  options.maxForce        Max force to be applied by the constraint
- * @param {Array}   options.localAnchorA    Body A's anchor point, defined in its own local frame.
- * @param {Array}   options.localAnchorB    Body B's anchor point, defined in its own local frame.
- * @param {Array}   options.localAxisA      An axis, defined in body A frame, that body B's anchor point may slide along.
+ * @param {Number}  options.maxForce                Max force to be applied by the constraint
+ * @param {Array}   options.localAnchorA            Body A's anchor point, defined in its own local frame.
+ * @param {Array}   options.localAnchorB            Body B's anchor point, defined in its own local frame.
+ * @param {Array}   options.localAxisA              An axis, defined in body A frame, that body B's anchor point may slide along.
+ * @param {Boolean} options.disableRotationalLock   If set to true, bodyB will be free to rotate around its anchor point.
  */
 function PrismaticConstraint(bodyA,bodyB,options){
     options = options || {};
@@ -2363,12 +2734,104 @@ function PrismaticConstraint(bodyA,bodyB,options){
         G[4] = t[1];
         G[5] = vec2.crossLength(rj,t);
     }
-    var rot = new RotationalLockEquation(bodyA,bodyB,-maxForce,maxForce);
+    this.equations.push(trans);
 
-    this.equations.push(trans,rot);
+    // Rotational part
+    if(!options.disableRotationalLock){
+        var rot = new RotationalLockEquation(bodyA,bodyB,-maxForce,maxForce);
+        this.equations.push(rot);
+    }
+
+    /**
+     * The position of anchor A relative to anchor B, along the constraint axis.
+     * @property position
+     * @type {Number}
+     */
+    this.position = 0;
+
+    this.velocity = 0;
+
+    /**
+     * Set to true to enable lower limit.
+     * @property lowerLimitEnabled
+     * @type {Boolean}
+     */
+    this.lowerLimitEnabled = false;
+
+    /**
+     * Set to true to enable upper limit.
+     * @property upperLimitEnabled
+     * @type {Boolean}
+     */
+    this.upperLimitEnabled = false;
+
+    /**
+     * Lower constraint limit. The constraint position is forced to be larger than this value.
+     * @property lowerLimit
+     * @type {Number}
+     */
+    this.lowerLimit = 0;
+
+    /**
+     * Upper constraint limit. The constraint position is forced to be smaller than this value.
+     * @property upperLimit
+     * @type {Number}
+     */
+    this.upperLimit = 1;
+
+    // Equations used for limits
+    this.upperLimitEquation = new ContactEquation(bodyA,bodyB);
+    this.lowerLimitEquation = new ContactEquation(bodyA,bodyB);
+
+    // Set max/min forces
+    this.upperLimitEquation.minForce = this.lowerLimitEquation.minForce = 0;
+    this.upperLimitEquation.maxForce = this.lowerLimitEquation.maxForce = maxForce;
+
+    /**
+     * Equation used for the motor.
+     * @property motorEquation
+     * @type {Equation}
+     */
+    this.motorEquation = new Equation(bodyA,bodyB);
+
+    /**
+     * The current motor state. Enable or disable the motor using .enableMotor
+     * @property motorEnabled
+     * @type {Boolean}
+     */
+    this.motorEnabled = false;
+
+    /**
+     * Set the target speed for the motor.
+     * @property motorSpeed
+     * @type {Number}
+     */
+    this.motorSpeed = 0;
+
+    var that = this;
+    var motorEquation = this.motorEquation;
+    var old = motorEquation.computeGW;
+    motorEquation.computeGq = function(){ return 0; };
+    motorEquation.computeGW = function(){
+        var G = this.G,
+            bi = this.bi,
+            bj = this.bj,
+            vi = bi.velocity,
+            vj = bj.velocity,
+            wi = bi.angularVelocity,
+            wj = bj.angularVelocity;
+        return this.transformedGmult(G,vi,wi,vj,wj) + that.motorSpeed;
+    };
 }
 
 PrismaticConstraint.prototype = new Constraint();
+
+var worldAxisA = vec2.create(),
+    worldAnchorA = vec2.create(),
+    worldAnchorB = vec2.create(),
+    orientedAnchorA = vec2.create(),
+    orientedAnchorB = vec2.create(),
+    tmp = vec2.create();
 
 /**
  * Update the constraint equations. Should be done if any of the bodies changed position, before solving.
@@ -2376,11 +2839,112 @@ PrismaticConstraint.prototype = new Constraint();
  */
 PrismaticConstraint.prototype.update = function(){
     var eqs = this.equations,
-        trans = eqs[0];
+        trans = eqs[0],
+        upperLimit = this.upperLimit,
+        lowerLimit = this.lowerLimit,
+        upperLimitEquation = this.upperLimitEquation,
+        lowerLimitEquation = this.lowerLimitEquation,
+        bodyA = this.bodyA,
+        bodyB = this.bodyB,
+        localAxisA = this.localAxisA,
+        localAnchorA = this.localAnchorA,
+        localAnchorB = this.localAnchorB;
+
     trans.update();
+
+    // Transform local things to world
+    vec2.rotate(worldAxisA,      localAxisA,      bodyA.angle);
+    vec2.rotate(orientedAnchorA, localAnchorA,    bodyA.angle);
+    vec2.add(worldAnchorA,       orientedAnchorA, bodyA.position);
+    vec2.rotate(orientedAnchorB, localAnchorB,    bodyB.angle);
+    vec2.add(worldAnchorB,       orientedAnchorB, bodyB.position);
+
+    var relPosition = this.position = vec2.dot(worldAnchorB,worldAxisA) - vec2.dot(worldAnchorA,worldAxisA);
+
+    // Motor
+    if(this.motorEnabled){
+        // G = [ a     a x ri   -a   -a x rj ]
+        var G = this.motorEquation.G;
+        G[0] = worldAxisA[0];
+        G[1] = worldAxisA[1];
+        G[2] = vec2.crossLength(worldAxisA,orientedAnchorB);
+        G[3] = -worldAxisA[0];
+        G[4] = -worldAxisA[1];
+        G[5] = -vec2.crossLength(worldAxisA,orientedAnchorA);
+    }
+
+    /*
+        Limits strategy:
+        Add contact equation, with normal along the constraint axis.
+        min/maxForce is set so the constraint is repulsive in the correct direction.
+        Some offset is added to either equation.ri or .rj to get the correct upper/lower limit.
+
+                 ^
+                 |
+      upperLimit x
+                 |    ------
+         anchorB x<---|  B |
+                 |    |    |
+        ------   |    ------
+        |    |   |
+        |  A |-->x anchorA
+        ------   |
+                 x lowerLimit
+                 |
+                axis
+     */
+
+    if(this.upperLimitEnabled && relPosition > upperLimit){
+        // Update contact constraint normal, etc
+        vec2.scale(upperLimitEquation.ni, worldAxisA, -1);
+        vec2.sub(upperLimitEquation.ri, worldAnchorA, bodyA.position);
+        vec2.sub(upperLimitEquation.rj, worldAnchorB, bodyB.position);
+        vec2.scale(tmp,worldAxisA,upperLimit);
+        vec2.add(upperLimitEquation.ri,upperLimitEquation.ri,tmp);
+        if(eqs.indexOf(upperLimitEquation)==-1)
+            eqs.push(upperLimitEquation);
+    } else {
+        var idx = eqs.indexOf(upperLimitEquation);
+        if(idx != -1) eqs.splice(idx,1);
+    }
+
+    if(this.lowerLimitEnabled && relPosition < lowerLimit){
+        // Update contact constraint normal, etc
+        vec2.scale(lowerLimitEquation.ni, worldAxisA, 1);
+        vec2.sub(lowerLimitEquation.ri, worldAnchorA, bodyA.position);
+        vec2.sub(lowerLimitEquation.rj, worldAnchorB, bodyB.position);
+        vec2.scale(tmp,worldAxisA,lowerLimit);
+        vec2.sub(lowerLimitEquation.rj,lowerLimitEquation.rj,tmp);
+        if(eqs.indexOf(lowerLimitEquation)==-1)
+            eqs.push(lowerLimitEquation);
+    } else {
+        var idx = eqs.indexOf(lowerLimitEquation);
+        if(idx != -1) eqs.splice(idx,1);
+    }
 };
 
-},{"./Constraint":7,"./ContactEquation":8,"./Equation":12,"../math/vec2":35,"./RotationalLockEquation":38}],26:[function(require,module,exports){
+/**
+ * Enable the motor
+ * @method enableMotor
+ */
+PrismaticConstraint.prototype.enableMotor = function(){
+    if(this.motorEnabled) return;
+    this.equations.push(this.motorEquation);
+    this.motorEnabled = true;
+};
+
+/**
+ * Disable the rotational motor
+ * @method disableMotor
+ */
+PrismaticConstraint.prototype.disableMotor = function(){
+    if(!this.motorEnabled) return;
+    var i = this.equations.indexOf(this.motorEquation);
+    this.equations.splice(i,1);
+    this.motorEnabled = false;
+};
+
+},{"./Constraint":8,"../equations/ContactEquation":9,"../equations/Equation":13,"../math/vec2":37,"../equations/RotationalLockEquation":40}],28:[function(require,module,exports){
 var vec2 = require('../math/vec2')
 ,   Shape = require('./Shape')
 ,   Convex = require('./Convex')
@@ -2441,8 +3005,42 @@ Rectangle.prototype.updateBoundingRadius = function(){
     this.boundingRadius = Math.sqrt(w*w + h*h) / 2;
 };
 
+var corner1 = vec2.create(),
+    corner2 = vec2.create(),
+    corner3 = vec2.create(),
+    corner4 = vec2.create();
 
-},{"../math/vec2":35,"./Shape":29,"./Convex":10}],27:[function(require,module,exports){
+/**
+ * @method computeAABB
+ * @param  {AABB}   out      The resulting AABB.
+ * @param  {Array}  position
+ * @param  {Number} angle
+ */
+Rectangle.prototype.computeAABB = function(out, position, angle){
+    /*
+    // Get world corners
+    vec2.rotate(corner1,this.vertices[0],angle);
+    vec2.rotate(corner2,this.vertices[1],angle);
+    vec2.rotate(corner3,this.vertices[2],angle);
+    vec2.rotate(corner4,this.vertices[3],angle);
+    vec2.set(out.upperBound, Math.max(corner1[0],corner2[0],corner3[0],corner4[0]),
+                             Math.max(corner1[1],corner2[1],corner3[1],corner4[1]));
+    vec2.set(out.lowerBound, Math.min(corner1[0],corner2[0],corner3[0],corner4[0]),
+                             Math.min(corner1[1],corner2[1],corner3[1],corner4[1]));
+
+    // Add world offset
+    vec2.add(out.lowerBound, out.lowerBound, position);
+    vec2.add(out.upperBound, out.upperBound, position);
+    */
+   out.setFromPoints(this.vertices,position,angle);
+};
+
+Rectangle.prototype.updateArea = function(){
+    this.area = this.width * this.height;
+};
+
+
+},{"../math/vec2":37,"./Shape":31,"./Convex":11}],29:[function(require,module,exports){
 var Equation = require("./Equation"),
     vec2 = require('../math/vec2');
 
@@ -2476,11 +3074,12 @@ RotationalVelocityEquation.prototype.computeB = function(a,b,h){
     return B;
 };
 
-},{"./Equation":12,"../math/vec2":35}],28:[function(require,module,exports){
+},{"./Equation":13,"../math/vec2":37}],30:[function(require,module,exports){
 var Circle = require('../shapes/Circle')
 ,   Plane = require('../shapes/Plane')
 ,   Shape = require('../shapes/Shape')
 ,   Particle = require('../shapes/Particle')
+,   Utils = require('../utils/Utils')
 ,   Broadphase = require('../collision/Broadphase')
 ,   vec2 = require('../math/vec2')
 
@@ -2492,9 +3091,8 @@ module.exports = SAP1DBroadphase;
  * @class SAP1DBroadphase
  * @constructor
  * @extends Broadphase
- * @param {World} world
  */
-function SAP1DBroadphase(world){
+function SAP1DBroadphase(){
     Broadphase.apply(this);
 
     /**
@@ -2502,7 +3100,7 @@ function SAP1DBroadphase(world){
      * @property axisList
      * @type {Array}
      */
-    this.axisList = world.bodies.slice(0);
+    this.axisList = [];
 
     /**
      * The world to search in.
@@ -2518,8 +3116,20 @@ function SAP1DBroadphase(world){
      */
     this.axisIndex = 0;
 
-    // Add listeners to update the list of bodies.
     var axisList = this.axisList;
+
+    this._addBodyHandler = function(e){
+        axisList.push(e.body);
+    };
+
+    this._removeBodyHandler = function(e){
+        var idx = axisList.indexOf(e.body);
+        if(idx !== -1)
+            axisList.splice(idx,1);
+    }
+
+    /*
+    // Add listeners to update the list of bodies.
     world.on("addBody",function(e){
         axisList.push(e.body);
     }).on("removeBody",function(e){
@@ -2527,8 +3137,32 @@ function SAP1DBroadphase(world){
         if(idx !== -1)
             axisList.splice(idx,1);
     });
+    */
 };
 SAP1DBroadphase.prototype = new Broadphase();
+
+/**
+ * Change the world
+ * @method setWorld
+ * @param  {World} world
+ */
+SAP1DBroadphase.prototype.setWorld = function(world){
+    // Clear the old axis array
+    this.axisList.length = 0;
+
+    // Add all bodies from the new world
+    Utils.appendArray(this.axisList,world.bodies);
+
+    // Remove old handlers, if any
+    world
+        .off("addBody",this._addBodyHandler)
+        .off("removeBody",this._removeBodyHandler);
+
+    // Add handlers to update the list of bodies.
+    world.on("addBody",this._addBodyHandler).on("removeBody",this._removeBodyHandler);
+
+    this.world = world;
+};
 
 /**
  * Function for sorting bodies along the X axis. To be passed to array.sort()
@@ -2610,7 +3244,7 @@ SAP1DBroadphase.checkBounds = function(bi,bj,axisIndex){
     return boundB1 < boundA2;
 };
 
-},{"../shapes/Circle":6,"../shapes/Plane":23,"../shapes/Shape":29,"../shapes/Particle":22,"../collision/Broadphase":4,"../math/vec2":35}],30:[function(require,module,exports){
+},{"../shapes/Circle":7,"../shapes/Plane":25,"../shapes/Shape":31,"../shapes/Particle":24,"../utils/Utils":34,"../collision/Broadphase":5,"../math/vec2":37}],32:[function(require,module,exports){
 var Utils = require('../utils/Utils')
 ,   EventEmitter = require('../events/EventEmitter')
 
@@ -2705,7 +3339,7 @@ Solver.prototype.removeAllEquations = function(){
 };
 
 
-},{"../utils/Utils":32,"../events/EventEmitter":13}],31:[function(require,module,exports){
+},{"../utils/Utils":34,"../events/EventEmitter":14}],33:[function(require,module,exports){
 var vec2 = require('../math/vec2');
 
 module.exports = Spring;
@@ -2888,7 +3522,7 @@ Spring.prototype.applyForce = function(){
     bodyB.angularForce += rj_x_f;
 };
 
-},{"../math/vec2":35}],33:[function(require,module,exports){
+},{"../math/vec2":37}],35:[function(require,module,exports){
 var  GSSolver = require('../solver/GSSolver')
 ,    NaiveBroadphase = require('../collision/NaiveBroadphase')
 ,    vec2 = require('../math/vec2')
@@ -2911,19 +3545,22 @@ var  GSSolver = require('../solver/GSSolver')
 ,    pkg = require('../../package.json')
 ,    Broadphase = require('../collision/Broadphase')
 ,    Narrowphase = require('../collision/Narrowphase')
+,    Utils = require('../utils/Utils')
 
 module.exports = World;
 
 var currentVersion = pkg.version.split(".").slice(0,2).join("."); // "X.Y"
 
-function now(){
-    if(typeof(performance)!="undefined"){
-        if(performance.now)
-            return performance.now();
-        else if(performance.webkitNow)
-            return performance.webkitNow();
-    } else
-        return new Date().getTime();
+if(typeof performance === 'undefined')
+    performance = {};
+if(!performance.now){
+    var nowOffset = Date.now();
+    if (performance.timing && performance.timing.navigationStart){
+      nowOffset = performance.timing.navigationStart
+    }
+    performance.now = function(){
+      return Date.now() - nowOffset;
+    }
 }
 
 /**
@@ -3006,6 +3643,8 @@ function World(options){
      */
     this.broadphase = options.broadphase || new NaiveBroadphase();
 
+    this.broadphase.setWorld(this);
+
     /**
      * User-added constraints.
      *
@@ -3015,11 +3654,18 @@ function World(options){
     this.constraints = [];
 
     /**
-     * Friction between colliding bodies. This value is used if no matching ContactMaterial is found for the body pair.
+     * Friction between colliding bodies. This value is used if no matching ContactMaterial is found for a Material pair.
      * @property defaultFriction
      * @type {Number}
      */
     this.defaultFriction = 0.3;
+
+    /**
+     * Default coefficient of restitution between colliding bodies. This value is used if no matching ContactMaterial is found for a Material pair.
+     * @property defaultRestitution
+     * @type {Number}
+     */
+    this.defaultRestitution = 0.0;
 
     /**
      * For keeping track of what time step size we used last step
@@ -3043,6 +3689,13 @@ function World(options){
     this.applyDamping = true;
 
     /**
+     * Enable to automatically apply gravity each step.
+     * @property applyGravity
+     * @type {Boolean}
+     */
+    this.applyGravity = true;
+
+    /**
      * Enable/disable constraint solving in each step.
      * @property solveConstraints
      * @type {Boolean}
@@ -3062,6 +3715,8 @@ function World(options){
      * @type {Number}
      */
     this.time = 0.0;
+
+    this.fixedStepTime = 0.0;
 
     /**
      * Set to true if you want to the world to emit the "impact" event. Turning this off could improve performance.
@@ -3121,6 +3776,13 @@ function World(options){
         bodyA : null,
         bodyB : null,
     };
+
+    /**
+     * Enable / disable automatic body sleeping
+     * @property allowSleep
+     * @type {Boolean}
+     */
+    this.enableBodySleeping = false;
 };
 World.prototype = new Object(EventEmitter.prototype);
 
@@ -3152,7 +3814,7 @@ World.prototype.addContactMaterial = function(contactMaterial){
 World.prototype.removeContactMaterial = function(cm){
     var idx = this.contactMaterials.indexOf(cm);
     if(idx!==-1)
-        this.contactMaterials.splice(idx,1);
+        Utils.splice(this.contactMaterials,idx,1);
 };
 
 /**
@@ -3183,7 +3845,7 @@ World.prototype.getContactMaterial = function(materialA,materialB){
 World.prototype.removeConstraint = function(c){
     var idx = this.constraints.indexOf(c);
     if(idx!==-1){
-        this.constraints.splice(idx,1);
+        Utils.splice(this.constraints,idx,1);
     }
 };
 
@@ -3201,14 +3863,61 @@ var step_r = vec2.create(),
 /**
  * Step the physics world forward in time.
  *
+ * There are two modes. The simple mode is fixed timestepping without interpolation. In this case you only use the first argument. The second case uses interpolation. In that you also provide the time since the function was last used, as well as the maximum fixed timesteps to take.
+ *
  * @method step
- * @param {Number} dt The time step size to use.
+ * @param {Number} dt                       The fixed time step size to use.
+ * @param {Number} [timeSinceLastCalled=0]  The time elapsed since the function was last called.
+ * @param {Number} [maxSubSteps=10]         Maximum number of fixed steps to take per function call.
  *
  * @example
+ *     // fixed timestepping without interpolation
  *     var world = new World();
  *     world.step(0.01);
  */
-World.prototype.step = function(dt){
+World.prototype.step = function(dt,timeSinceLastCalled,maxSubSteps){
+    maxSubSteps = maxSubSteps || 10;
+    timeSinceLastCalled = timeSinceLastCalled || 0;
+
+    if(timeSinceLastCalled == 0){ // Fixed, simple stepping
+
+        this.internalStep(dt);
+
+        // Increment time
+        this.time += dt;
+
+    } else {
+
+        var internalSteps = Math.floor( (this.time+timeSinceLastCalled) / dt) - Math.floor(this.time / dt);
+        internalSteps = Math.min(internalSteps,maxSubSteps);
+
+        for(var i=0; i<internalSteps; i++){
+            this.internalStep(dt);
+            /*
+            for(var j=0; j!==this.bodies.length; j++){
+                // Store state for interpolation
+                // Todo
+                var b = this.bodies[j];
+            }
+            */
+        }
+
+        // Increment time
+        this.time += timeSinceLastCalled;
+        this.fixedStepTime += internalSteps * dt;
+
+        // Compute the interpolation data
+        var h = this.time - this.fixedStepTime - dt;
+        for(var j=0; j!==this.bodies.length; j++){
+            // Store interpolated state
+            var b = this.bodies[j];
+            b.interpolatedPosition[0] = b.position[0] + b.velocity[0]*h;
+            b.interpolatedPosition[1] = b.position[1] + b.velocity[1]*h;
+        }
+    }
+};
+
+World.prototype.internalStep = function(dt){
     var that = this,
         doProfiling = this.doProfiling,
         Nsprings = this.springs.length,
@@ -3231,17 +3940,15 @@ World.prototype.step = function(dt){
     this.lastTimeStep = dt;
 
     if(doProfiling){
-        t0 = now();
+        t0 = performance.now();
     }
 
-    var glen = vec2.length(g);
-
-    // add gravity to bodies
-    if(glen !== 0){
+    // Add gravity to bodies
+    if(this.applyGravity){
         for(var i=0; i!==Nbodies; i++){
             var b = bodies[i],
                 fi = b.force;
-            vec2.scale(mg,g,b.mass);
+            vec2.scale(mg,g,b.mass); // F=m*g
             add(fi,fi,mg);
         }
     }
@@ -3271,19 +3978,19 @@ World.prototype.step = function(dt){
             bj = result[i+1];
 
         // Loop over all shapes of body i
-        for(var k=0; k!==bi.shapes.length; k++){
+        for(var k=0, Nshapesi=bi.shapes.length; k!==Nshapesi; k++){
             var si = bi.shapes[k],
-                xi = bi.shapeOffsets[k] || zero,
-                ai = bi.shapeAngles[k] || 0;
+                xi = bi.shapeOffsets[k],
+                ai = bi.shapeAngles[k];
 
             // All shapes of body j
-            for(var l=0; l!==bj.shapes.length; l++){
+            for(var l=0, Nshapesj=bj.shapes.length; l!==Nshapesj; l++){
                 var sj = bj.shapes[l],
-                    xj = bj.shapeOffsets[l] || zero,
-                    aj = bj.shapeAngles[l] || 0;
+                    xj = bj.shapeOffsets[l],
+                    aj = bj.shapeAngles[l];
 
                 var mu = this.defaultFriction,
-                    restitution = 0.0;
+                    restitution = this.defaultRestitution;
 
                 if(si.material && sj.material){
                     var cm = this.getContactMaterial(si.material,sj.material);
@@ -3293,7 +4000,7 @@ World.prototype.step = function(dt){
                     }
                 }
 
-                World.runNarrowphase(np,bi,si,xi,ai,bj,sj,xj,aj,mu,glen,restitution);
+                World.runNarrowphase(np,bi,si,xi,ai,bj,sj,xj,aj,mu,restitution);
             }
         }
     }
@@ -3319,7 +4026,7 @@ World.prototype.step = function(dt){
     for(var i=0; i!==Nbodies; i++){
         var body = bodies[i];
 
-        if(body.mass>0){
+        if(body.sleepState !== Body.SLEEPING && body.mass>0){
             World.integrateBody(body,dt);
         }
     }
@@ -3330,7 +4037,7 @@ World.prototype.step = function(dt){
     }
 
     if(doProfiling){
-        t1 = now();
+        t1 = performance.now();
         that.lastStepTime = t1-t0;
     }
 
@@ -3342,13 +4049,19 @@ World.prototype.step = function(dt){
             if(eq.firstImpact){
                 ev.bodyA = eq.bi;
                 ev.bodyB = eq.bj;
+                ev.shapeA = eq.shapeA;
+                ev.shapeB = eq.shapeB;
                 this.emit(ev);
             }
         }
     }
 
-    // Increment time
-    this.time += dt;
+    // Sleeping update
+    if(this.enableBodySleeping){
+        for(i=0; i!==Nbodies; i++){
+            bodies[i].sleepTick(this.time);
+        }
+    }
 
     this.emit(this.postStepEvent);
 };
@@ -3370,14 +4083,18 @@ World.integrateBody = function(body,dt){
         velo = body.velocity;
 
     // Angular step
-    body.angularVelocity += body.angularForce * body.invInertia * dt;
-    body.angle += body.angularVelocity * dt;
+    if(!body.fixedRotation){
+        body.angularVelocity += body.angularForce * body.invInertia * dt;
+        body.angle += body.angularVelocity * dt;
+    }
 
     // Linear step
     vec2.scale(ib_fhMinv,f,dt*minv);
     vec2.add(velo,ib_fhMinv,velo);
     vec2.scale(ib_velodt,velo,dt);
     vec2.add(pos,pos,ib_velodt);
+
+    body.aabbNeedsUpdate = true;
 };
 
 /**
@@ -3394,9 +4111,8 @@ World.integrateBody = function(body,dt){
  * @param  {Array} xj
  * @param  {Number} aj
  * @param  {Number} mu
- * @param  {Number} glen
  */
-World.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,mu,glen,restitution){
+World.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,mu,restitution){
 
     if(!((si.collisionGroup & sj.collisionMask) !== 0 && (sj.collisionGroup & si.collisionMask) !== 0))
         return;
@@ -3404,9 +4120,6 @@ World.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,mu,glen,restitution){
     var reducedMass = bi.invMass + bj.invMass;
     if(reducedMass > 0)
         reducedMass = 1/reducedMass;
-
-    var mug = mu * glen * reducedMass,
-        doFriction = mu > 0;
 
     // Get world position and angle of each shape
     vec2.rotate(xiw, xi, bi.angle);
@@ -3418,7 +4131,6 @@ World.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,mu,glen,restitution){
 
     // Run narrowphase
     np.enableFriction = mu > 0;
-    np.slipForce = mug;
     np.frictionCoefficient = mu;
     np.restitution = restitution;
 
@@ -3453,7 +4165,7 @@ World.prototype.addSpring = function(s){
 World.prototype.removeSpring = function(s){
     var idx = this.springs.indexOf(s);
     if(idx===-1)
-        this.springs.splice(idx,1);
+        Utils.splice(this.springs,idx,1);
 };
 
 /**
@@ -3469,7 +4181,11 @@ World.prototype.removeSpring = function(s){
  *
  */
 World.prototype.addBody = function(body){
+    if(body.world)
+        throw new Error("This body is already added to a World.");
+
     this.bodies.push(body);
+    body.world = this;
     this.addBodyEvent.body = body;
     this.emit(this.addBodyEvent);
 };
@@ -3481,9 +4197,13 @@ World.prototype.addBody = function(body){
  * @param {Body} body
  */
 World.prototype.removeBody = function(body){
+    if(body.world !== this)
+        throw new Error("The body was never added to this World, cannot remove it.");
+
+    body.world = null;
     var idx = this.bodies.indexOf(body);
     if(idx!==-1){
-        this.bodies.splice(idx,1);
+        Utils.splice(this.bodies,idx,1);
         this.removeBodyEvent.body = body;
         body.resetConstraintVelocity();
         this.emit(this.removeBodyEvent);
@@ -3962,7 +4682,7 @@ World.prototype.hitTest = function(worldPoint,bodies,precision){
     return result;
 };
 
-},{"../../package.json":2,"../solver/GSSolver":16,"../collision/NaiveBroadphase":21,"../math/vec2":35,"../shapes/Circle":6,"../shapes/Rectangle":26,"../shapes/Convex":10,"../shapes/Line":18,"../shapes/Plane":23,"../shapes/Capsule":5,"../shapes/Particle":22,"../events/EventEmitter":13,"../objects/Body":3,"../objects/Spring":31,"../material/Material":20,"../material/ContactMaterial":9,"../constraints/DistanceConstraint":11,"../constraints/LockConstraint":19,"../constraints/RevoluteConstraint":24,"../constraints/PrismaticConstraint":25,"../collision/Broadphase":4,"../collision/Narrowphase":39}],34:[function(require,module,exports){
+},{"../../package.json":2,"../solver/GSSolver":18,"../collision/NaiveBroadphase":23,"../math/vec2":37,"../shapes/Circle":7,"../shapes/Rectangle":28,"../shapes/Convex":11,"../shapes/Line":20,"../shapes/Plane":25,"../shapes/Capsule":6,"../shapes/Particle":24,"../events/EventEmitter":14,"../objects/Body":4,"../objects/Spring":33,"../material/Material":22,"../material/ContactMaterial":10,"../constraints/DistanceConstraint":12,"../constraints/LockConstraint":21,"../constraints/RevoluteConstraint":26,"../constraints/PrismaticConstraint":27,"../collision/Broadphase":5,"../collision/Narrowphase":41,"../utils/Utils":34}],36:[function(require,module,exports){
 var Plane = require("../shapes/Plane");
 var Broadphase = require("../collision/Broadphase");
 
@@ -4340,7 +5060,7 @@ BoundsNode.prototype.clear = function(){
 }
 
 
-},{"../shapes/Plane":23,"../collision/Broadphase":4}],35:[function(require,module,exports){
+},{"../shapes/Plane":25,"../collision/Broadphase":5}],37:[function(require,module,exports){
 /**
  * The vec2 object from glMatrix, extended with the functions documented here. See http://glmatrix.net for full doc.
  * @class vec2
@@ -4464,7 +5184,7 @@ vec2.centroid = function(out, a, b, c){
 // Export everything
 module.exports = vec2;
 
-},{"../../node_modules/gl-matrix/src/gl-matrix/vec2":40}],41:[function(require,module,exports){
+},{"../../node_modules/gl-matrix/src/gl-matrix/vec2":42}],43:[function(require,module,exports){
 
     /*
         PolyK library
@@ -4943,7 +5663,7 @@ module.exports = vec2;
 
 module.exports = PolyK;
 
-},{}],37:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 module.exports = Island;
 
 /**
@@ -5026,7 +5746,7 @@ Island.prototype.solve = function(dt,solver){
     solver.solve(dt,{bodies:bodies});
 };
 
-},{}],40:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 /* Copyright (c) 2012, Brandon Jones, Colin MacKenzie IV. All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -5460,7 +6180,125 @@ if(typeof(exports) !== 'undefined') {
     exports.vec2 = vec2;
 }
 
-},{}],36:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
+var vec2 = require('../math/vec2')
+,   Utils = require('../utils/Utils')
+
+module.exports = AABB;
+
+/**
+ * Axis aligned bounding box class.
+ * @class AABB
+ * @constructor
+ * @param {Object} options
+ * @param {Array} upperBound
+ * @param {Array} lowerBound
+ */
+function AABB(options){
+
+    /**
+     * The lower bound of the bounding box.
+     * @property lowerBound
+     * @type {Array}
+     */
+    this.lowerBound = vec2.create();
+    if(options && options.lowerBound) vec2.copy(this.lowerBound, options.lowerBound);
+
+    /**
+     * The upper bound of the bounding box.
+     * @property upperBound
+     * @type {Array}
+     */
+    this.upperBound = vec2.create();
+    if(options && options.upperBound) vec2.copy(this.upperBound, options.upperBound);
+}
+
+var tmp = vec2.create();
+
+/**
+ * Set the AABB bounds from a set of points.
+ * @method setFromPoints
+ * @param {Array} points An array of vec2's.
+ */
+AABB.prototype.setFromPoints = function(points,position,angle){
+    var l = this.lowerBound,
+        u = this.upperBound;
+    vec2.set(l,  Number.MAX_VALUE,  Number.MAX_VALUE);
+    vec2.set(u, -Number.MAX_VALUE, -Number.MAX_VALUE);
+    for(var i=0; i<points.length; i++){
+        var p = points[i];
+
+        if(typeof(angle) =="number"){
+            vec2.rotate(tmp,p,angle);
+            p = tmp;
+        }
+
+        for(var j=0; j<2; j++){
+            if(p[j] > u[j]){
+                u[j] = p[j];
+            }
+            if(p[j] < l[j]){
+                l[j] = p[j];
+            }
+        }
+    }
+
+    // Add offset
+    if(position){
+        vec2.add(this.lowerBound, this.lowerBound, position);
+        vec2.add(this.upperBound, this.upperBound, position);
+    }
+};
+
+/**
+ * Copy bounds from an AABB to this AABB
+ * @method copy
+ * @param  {AABB} aabb
+ */
+AABB.prototype.copy = function(aabb){
+    vec2.copy(this.lowerBound, aabb.lowerBound);
+    vec2.copy(this.upperBound, aabb.upperBound);
+};
+
+/**
+ * Extend this AABB so that it covers the given AABB too.
+ * @method extend
+ * @param  {AABB} aabb
+ */
+AABB.prototype.extend = function(aabb){
+    // Loop over x and y
+    for(var i=0; i<2; i++){
+        // Extend lower bound
+        if(aabb.lowerBound[i] < this.lowerBound[i])
+            this.lowerBound[i] = aabb.lowerBound[i];
+
+        // Upper
+        if(aabb.upperBound[i] > this.upperBound[i])
+            this.upperBound[i] = aabb.upperBound[i];
+    }
+};
+
+/**
+ * Returns true if the given AABB overlaps this AABB.
+ * @param  {AABB} aabb
+ * @return {Boolean}
+ */
+AABB.prototype.overlaps = function(aabb){
+    var l1 = this.lowerBound,
+        u1 = this.upperBound,
+        l2 = aabb.lowerBound,
+        u2 = aabb.upperBound;
+
+    //      l2        u2
+    //      |---------|
+    // |--------|
+    // l1       u1
+
+    return ((l2[0] <= u1[0] && u1[0] <= u2[0]) || (l1[0] <= u2[0] && u2[0] <= u1[0])) &&
+           ((l2[1] <= u1[1] && u1[1] <= u2[1]) || (l1[1] <= u2[1] && u2[1] <= u1[1]));
+};
+
+},{"../math/vec2":37,"../utils/Utils":34}],38:[function(require,module,exports){
 /**
  * The mat2 object from glMatrix, extended with the functions documented here. See http://glmatrix.net for full doc.
  * @class mat2
@@ -5472,7 +6310,7 @@ var mat2 = require('../../node_modules/gl-matrix/src/gl-matrix/mat2').mat2;
 // Export everything
 module.exports = mat2;
 
-},{"../../node_modules/gl-matrix/src/gl-matrix/mat2":42}],38:[function(require,module,exports){
+},{"../../node_modules/gl-matrix/src/gl-matrix/mat2":45}],40:[function(require,module,exports){
 var Equation = require("./Equation"),
     vec2 = require('../math/vec2');
 
@@ -5511,16 +6349,17 @@ RotationalLockEquation.prototype.computeGq = function(){
     return vec2.dot(worldVectorA,worldVectorB);
 };
 
-},{"./Equation":12,"../math/vec2":35}],39:[function(require,module,exports){
+},{"./Equation":13,"../math/vec2":37}],41:[function(require,module,exports){
 var vec2 = require('../math/vec2')
 ,   sub = vec2.sub
 ,   add = vec2.add
 ,   dot = vec2.dot
 ,   Utils = require('../utils/Utils')
-,   ContactEquation = require('../constraints/ContactEquation')
-,   FrictionEquation = require('../constraints/FrictionEquation')
+,   ContactEquation = require('../equations/ContactEquation')
+,   FrictionEquation = require('../equations/FrictionEquation')
 ,   Circle = require('../shapes/Circle')
 ,   Shape = require('../shapes/Shape')
+,   Body = require('../objects/Body')
 
 module.exports = Narrowphase;
 
@@ -5545,6 +6384,7 @@ var tmp1 = vec2.fromValues(0,0)
 ,   tmp16 = vec2.fromValues(0,0)
 ,   tmp17 = vec2.fromValues(0,0)
 ,   tmp18 = vec2.fromValues(0,0)
+,   tmpArray = []
 
 /**
  * Narrowphase. Creates contacts and friction given shapes and transforms.
@@ -5598,7 +6438,7 @@ function Narrowphase(){
     this.restitution = 0;
 
     // Keep track of the colliding bodies last step
-    this.collidingBodiesLastStep = {};
+    this.collidingBodiesLastStep = { keys:[] };
 };
 
 /**
@@ -5619,6 +6459,19 @@ Narrowphase.prototype.collidedLastStep = function(bi,bj){
     return !!this.collidingBodiesLastStep[id1 + " " + id2];
 };
 
+// "for in" loops aren't optimised in chrome... is there a better way to handle last-step collision memory?
+// Maybe do this: http://jsperf.com/reflection-vs-array-of-keys
+function clearObject(obj){
+    for(var i = 0, l = obj.keys.length; i < l; i++) {
+        delete obj[obj.keys[i]];
+    }
+    obj.keys.length = 0;
+    /*
+    for(var key in this.collidingBodiesLastStep)
+        delete this.collidingBodiesLastStep[key];
+    */
+}
+
 /**
  * Throws away the old equatons and gets ready to create new
  * @method reset
@@ -5626,8 +6479,7 @@ Narrowphase.prototype.collidedLastStep = function(bi,bj){
 Narrowphase.prototype.reset = function(){
 
     // Save the colliding bodies data
-    for(var key in this.collidingBodiesLastStep)
-        delete this.collidingBodiesLastStep[key];
+    clearObject(this.collidingBodiesLastStep);
     for(var i=0; i!==this.contactEquations.length; i++){
         var eq = this.contactEquations[i],
             id1 = eq.bi.id,
@@ -5637,7 +6489,9 @@ Narrowphase.prototype.reset = function(){
             id1 = id2;
             id2 = tmp;
         }
-        this.collidingBodiesLastStep[id1 + " " + id2] = true;
+        var key = id1 + " " + id2;
+        this.collidingBodiesLastStep[key] = true;
+        this.collidingBodiesLastStep.keys.push(key);
     }
 
     if(this.reuseObjects){
@@ -5668,6 +6522,12 @@ Narrowphase.prototype.createContactEquation = function(bodyA,bodyB,shapeA,shapeB
     c.shapeB = shapeB;
     c.restitution = this.restitution;
     c.firstImpact = !this.collidedLastStep(bodyA,bodyB);
+
+    if(bodyA.allowSleep && (bodyA.motionState & Body.DYNAMIC) && !(bodyB.motionState & Body.STATIC || bodyB.sleepState === Body.SLEEPY))
+        bodyA.wakeUp();
+    if(bodyB.allowSleep && (bodyB.motionState & Body.DYNAMIC) && !(bodyA.motionState & Body.STATIC || bodyA.sleepState === Body.SLEEPY))
+        bodyB.wakeUp();
+
     return c;
 };
 
@@ -5696,7 +6556,7 @@ Narrowphase.prototype.createFrictionEquation = function(bodyA,bodyB,shapeA,shape
  * @return {FrictionEquation}
  */
 Narrowphase.prototype.createFrictionFromContact = function(c){
-    var eq = this.createFrictionEquation(c.bi,c.bj);
+    var eq = this.createFrictionEquation(c.bi,c.bj,c.shapeA,c.shapeB);
     vec2.copy(eq.ri, c.ri);
     vec2.copy(eq.rj, c.rj);
     vec2.rotate(eq.t, c.ni, -Math.PI / 2);
@@ -5705,28 +6565,146 @@ Narrowphase.prototype.createFrictionFromContact = function(c){
 }
 
 /**
+ * Convex/line narrowphase
+ * @method convexLine
+ * @param  {Body}       bi
+ * @param  {Convex}     si
+ * @param  {Array}      xi
+ * @param  {Number}     ai
+ * @param  {Body}       bj
+ * @param  {Line}       sj
+ * @param  {Array}      xj
+ * @param  {Number}     aj
+ * @todo Implement me!
+ */
+Narrowphase.prototype[Shape.LINE | Shape.CONVEX] =
+Narrowphase.prototype.convexLine = function(bi,si,xi,ai, bj,sj,xj,aj){
+    // TODO
+};
+
+/**
+ * Line/rectangle narrowphase
+ * @method lineRectangle
+ * @param  {Body}       bi
+ * @param  {Line}       si
+ * @param  {Array}      xi
+ * @param  {Number}     ai
+ * @param  {Body}       bj
+ * @param  {Rectangle}  sj
+ * @param  {Array}      xj
+ * @param  {Number}     aj
+ * @todo Implement me!
+ */
+Narrowphase.prototype[Shape.LINE | Shape.RECTANGLE] =
+Narrowphase.prototype.lineRectangle = function(bi,si,xi,ai, bj,sj,xj,aj){
+    // TODO
+};
+
+/**
+ * Rectangle/capsule narrowphase
+ * @method rectangleCapsule
+ * @param  {Body}       bi
+ * @param  {Rectangle}  si
+ * @param  {Array}      xi
+ * @param  {Number}     ai
+ * @param  {Body}       bj
+ * @param  {Capsule}    sj
+ * @param  {Array}      xj
+ * @param  {Number}     aj
+ * @todo Implement me!
+ */
+Narrowphase.prototype[Shape.CAPSULE | Shape.RECTANGLE] =
+Narrowphase.prototype.rectangleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj){
+    // TODO
+};
+
+/**
+ * Convex/capsule narrowphase
+ * @method convexCapsule
+ * @param  {Body}       bi
+ * @param  {Convex}     si
+ * @param  {Array}      xi
+ * @param  {Number}     ai
+ * @param  {Body}       bj
+ * @param  {Capsule}    sj
+ * @param  {Array}      xj
+ * @param  {Number}     aj
+ * @todo Implement me!
+ */
+Narrowphase.prototype[Shape.CAPSULE | Shape.CONVEX] =
+Narrowphase.prototype.convexCapsule = function(bi,si,xi,ai, bj,sj,xj,aj){
+    // TODO
+};
+
+/**
+ * Capsule/line narrowphase
+ * @method lineCapsule
+ * @param  {Body}       bi
+ * @param  {Line}       si
+ * @param  {Array}      xi
+ * @param  {Number}     ai
+ * @param  {Body}       bj
+ * @param  {Capsule}    sj
+ * @param  {Array}      xj
+ * @param  {Number}     aj
+ * @todo Implement me!
+ */
+Narrowphase.prototype[Shape.CAPSULE | Shape.LINE] =
+Narrowphase.prototype.lineCapsule = function(bi,si,xi,ai, bj,sj,xj,aj){
+    // TODO
+};
+
+/**
+ * Capsule/capsule narrowphase
+ * @method capsuleCapsule
+ * @param  {Body}       bi
+ * @param  {Capsule}    si
+ * @param  {Array}      xi
+ * @param  {Number}     ai
+ * @param  {Body}       bj
+ * @param  {Capsule}    sj
+ * @param  {Array}      xj
+ * @param  {Number}     aj
+ * @todo Implement me!
+ */
+Narrowphase.prototype[Shape.CAPSULE | Shape.CAPSULE] =
+Narrowphase.prototype.capsuleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj){
+    // TODO
+};
+
+/**
+ * Line/line narrowphase
+ * @method lineLine
+ * @param  {Body}       bi
+ * @param  {Line}       si
+ * @param  {Array}      xi
+ * @param  {Number}     ai
+ * @param  {Body}       bj
+ * @param  {Line}       sj
+ * @param  {Array}      xj
+ * @param  {Number}     aj
+ * @todo Implement me!
+ */
+Narrowphase.prototype[Shape.LINE | Shape.LINE] =
+Narrowphase.prototype.lineLine = function(bi,si,xi,ai, bj,sj,xj,aj){
+    // TODO
+};
+
+/**
  * Plane/line Narrowphase
  * @method planeLine
- * @param  {Body} bi
- * @param  {Plane} si
- * @param  {Array} xi
- * @param  {Number} ai
- * @param  {Body} bj
- * @param  {Line} sj
- * @param  {Array} xj
- * @param  {Number} aj
+ * @param  {Body}   planeBody
+ * @param  {Plane}  planeShape
+ * @param  {Array}  planeOffset
+ * @param  {Number} planeAngle
+ * @param  {Body}   lineBody
+ * @param  {Line}   lineShape
+ * @param  {Array}  lineOffset
+ * @param  {Number} lineAngle
  */
 Narrowphase.prototype[Shape.PLANE | Shape.LINE] =
-Narrowphase.prototype.planeLine = function(bi,si,xi,ai, bj,sj,xj,aj){
-    var lineShape = sj,
-        lineAngle = aj,
-        lineBody = bj,
-        lineOffset = xj,
-        planeOffset = xi,
-        planeAngle = ai,
-        planeBody = bi,
-        planeShape = si;
-
+Narrowphase.prototype.planeLine = function(planeBody, planeShape, planeOffset, planeAngle,
+                                           lineBody,  lineShape,  lineOffset,  lineAngle){
     var worldVertex0 = tmp1,
         worldVertex1 = tmp2,
         worldVertex01 = tmp3,
@@ -5735,7 +6713,8 @@ Narrowphase.prototype.planeLine = function(bi,si,xi,ai, bj,sj,xj,aj){
         worldEdgeUnit = tmp6,
         dist = tmp7,
         worldNormal = tmp8,
-        worldTangent = tmp9;
+        worldTangent = tmp9,
+        verts = tmpArray;
 
     // Get start and end points
     vec2.set(worldVertex0, -lineShape.length/2, 0);
@@ -5761,7 +6740,8 @@ Narrowphase.prototype.planeLine = function(bi,si,xi,ai, bj,sj,xj,aj){
     vec2.rotate(worldNormal, yAxis, planeAngle);
 
     // Check line ends
-    var verts = [worldVertex0, worldVertex1];
+    verts[0] = worldVertex0;
+    verts[1] = worldVertex1;
     for(var i=0; i<verts.length; i++){
         var v = verts[i];
 
@@ -5771,7 +6751,7 @@ Narrowphase.prototype.planeLine = function(bi,si,xi,ai, bj,sj,xj,aj){
 
         if(d < 0){
 
-            var c = this.createContactEquation(planeBody,lineBody,si,sj);
+            var c = this.createContactEquation(planeBody,lineBody,planeShape,lineShape);
 
             vec2.copy(c.ni, worldNormal);
             vec2.normalize(c.ni,c.ni);
@@ -5844,7 +6824,9 @@ Narrowphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj, justTest, 
         worldVertex11 = tmp11,
         dist = tmp12,
         lineToCircle = tmp13,
-        lineEndToLineRadius = tmp14;
+        lineEndToLineRadius = tmp14,
+
+        verts = tmpArray;
 
     // Get start and end points
     vec2.set(worldVertex0, -lineShape.length/2, 0);
@@ -5920,7 +6902,9 @@ Narrowphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj, justTest, 
     }
 
     // Add corner
-    var verts = [worldVertex0, worldVertex1];
+    // @todo reuse array object
+    verts[0] = worldVertex0;
+    verts[1] = worldVertex1;
 
     for(var i=0; i<verts.length; i++){
         var v = verts[i];
@@ -6812,7 +7796,7 @@ Narrowphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj ){
                 // Project it to the center edge and use the projection direction as normal
 
                 // Create contact
-                var c = this.createContactEquation(bodyA,bodyB,si,sj);
+                var c = this.createContactEquation(bodyA,bodyB,shapeA,shapeB);
 
                 // Get center edge from body A
                 var v0 = shapeA.vertices[(closestEdgeA)   % shapeA.vertices.length],
@@ -7024,10 +8008,12 @@ Narrowphase.getClosestEdge = function(c,angle,axis,flip){
 };
 
 
-},{"../math/vec2":35,"../utils/Utils":32,"../constraints/ContactEquation":8,"../constraints/FrictionEquation":14,"../shapes/Circle":6,"../shapes/Shape":29}],3:[function(require,module,exports){
+},{"../math/vec2":37,"../utils/Utils":34,"../equations/ContactEquation":9,"../equations/FrictionEquation":15,"../shapes/Circle":7,"../shapes/Shape":31,"../objects/Body":4}],4:[function(require,module,exports){
 var vec2 = require('../math/vec2')
 ,   decomp = require('poly-decomp')
 ,   Convex = require('../shapes/Convex')
+,   AABB = require('../collision/AABB')
+,   EventEmitter = require('../events/EventEmitter')
 
 module.exports = Body;
 
@@ -7047,11 +8033,14 @@ var zero = vec2.fromValues(0,0);
  * @param {Number}              [options.angularVelocity=0]
  * @param {Float32Array|Array}  [options.force]
  * @param {Number}              [options.angularForce=0]
+ * @param {Number}              [options.fixedRotation=false]
  *
  * @todo Should not take mass as argument to Body, but as density to each Shape
  */
 function Body(options){
     options = options || {};
+
+    EventEmitter.call(this);
 
     /**
      * The body identifyer
@@ -7059,6 +8048,13 @@ function Body(options){
      * @type {Number}
      */
     this.id = ++Body._idCounter;
+
+    /**
+     * The world that this body is added to. This property is set to NULL if the body is not added to any world.
+     * @property world
+     * @type {World}
+     */
+    this.world = null;
 
     /**
      * The shapes of the body. The local transform of the shape in .shapes[i] is
@@ -7112,15 +8108,29 @@ function Body(options){
      */
     this.invInertia = 0;
 
+    /**
+     * Set to true if you want to fix the rotation of the body.
+     * @property fixedRotation
+     * @type {Boolean}
+     */
+    this.fixedRotation = !!options.fixedRotation || false;
+
     this.updateMassProperties();
 
     /**
      * The position of the body
      * @property position
-     * @type {Float32Array}
+     * @type {Array}
      */
     this.position = vec2.fromValues(0,0);
     if(options.position) vec2.copy(this.position, options.position);
+
+    /**
+     * The interpolated position of the body.
+     * @property interpolatedPosition
+     * @type {Array}
+     */
+    this.interpolatedPosition = vec2.fromValues(0,0);
 
     /**
      * The velocity of the body
@@ -7219,10 +8229,116 @@ function Body(options){
      */
     this.boundingRadius = 0;
 
+    /**
+     * Bounding box of this body
+     * @property aabb
+     * @type {AABB}
+     */
+    this.aabb = new AABB();
+
+    /**
+     * Indicates if the AABB needs update. Update it with .updateAABB()
+     * @property aabbNeedsUpdate
+     * @type {Boolean}
+     */
+    this.aabbNeedsUpdate = true;
+
+    /**
+     * If true, the body will automatically fall to sleep.
+     * @property allowSleep
+     * @type {Boolean}
+     */
+    this.allowSleep = false;
+
+    /**
+     * One of Body.AWAKE, Body.SLEEPY, Body.SLEEPING
+     * @property sleepState
+     * @type {Number}
+     */
+    this.sleepState = Body.AWAKE;
+
+    /**
+     * If the speed (the norm of the velocity) is smaller than this value, the body is considered sleepy.
+     * @property sleepSpeedLimit
+     * @type {Number}
+     */
+    this.sleepSpeedLimit = 0.1;
+
+    /**
+     * If the body has been sleepy for this sleepTimeLimit seconds, it is considered sleeping.
+     * @property sleepTimeLimit
+     * @type {Number}
+     */
+    this.sleepTimeLimit = 1;
+
+    this.timeLastSleepy = 0;
+
     this.concavePath = null;
+
+    this.lastDampingScale = 1;
+    this.lastAngularDampingScale = 1;
+    this.lastDampingTimeStep = -1;
 };
 
+Body.prototype = new EventEmitter();
+
 Body._idCounter = 0;
+
+/**
+ * Set the total density of the body
+ * @method setDensity
+ */
+Body.prototype.setDensity = function(density) {
+    var totalArea = this.getArea();
+    this.mass = totalArea * density;
+    this.updateMassProperties();
+};
+
+/**
+ * Get the total area of all shapes in the body
+ * @method setDensity
+ */
+Body.prototype.getArea = function() {
+    var totalArea = 0;
+    for(var i=0; i<this.shapes.length; i++){
+        totalArea += this.shapes[i].area;
+    }
+    return totalArea;
+};
+
+var shapeAABB = new AABB(),
+    tmp = vec2.create();
+
+/**
+ * Updates the AABB of the Body
+ * @method updateAABB
+ */
+Body.prototype.updateAABB = function() {
+    var shapes = this.shapes,
+        shapeOffsets = this.shapeOffsets,
+        shapeAngles = this.shapeAngles,
+        N = shapes.length;
+
+    for(var i=0; i!==N; i++){
+        var shape = shapes[i],
+            offset = tmp,
+            angle = shapeAngles[i] + this.angle;
+
+        // Get shape world offset
+        vec2.rotate(offset,shapeOffsets[i],angle);
+        vec2.add(offset,offset,this.position);
+
+        // Get shape AABB
+        shape.computeAABB(shapeAABB,offset,angle);
+
+        if(i===0)
+            this.aabb.copy(shapeAABB);
+        else
+            this.aabb.extend(shapeAABB);
+    }
+
+    this.aabbNeedsUpdate = false;
+};
 
 /**
  * Update the bounding radius of the body. Should be done if any of the shapes
@@ -7284,6 +8400,8 @@ Body.prototype.addShape = function(shape,offset,angle){
     this.shapeAngles .push(angle);
     this.updateMassProperties();
     this.updateBoundingRadius();
+
+    this.aabbNeedsUpdate = true;
 };
 
 /**
@@ -7299,9 +8417,11 @@ Body.prototype.removeShape = function(shape){
         this.shapes.splice(idx,1);
         this.shapeOffsets.splice(idx,1);
         this.shapeAngles.splice(idx,1);
+        this.aabbNeedsUpdate = true;
         return true;
     } else
         return false;
+
 };
 
 /**
@@ -7320,11 +8440,13 @@ Body.prototype.updateMassProperties = function(){
         m = this.mass / N,
         I = 0;
 
-    for(var i=0; i<N; i++){
-        var shape = shapes[i],
-            r2 = vec2.squaredLength(this.shapeOffsets[i] || zero),
-            Icm = shape.computeMomentOfInertia(m);
-        I += Icm + m*r2;
+    if(!this.fixedRotation){
+        for(var i=0; i<N; i++){
+            var shape = shapes[i],
+                r2 = vec2.squaredLength(this.shapeOffsets[i] || zero),
+                Icm = shape.computeMomentOfInertia(m);
+            I += Icm + m*r2;
+        }
     }
 
     this.inertia = I;
@@ -7446,6 +8568,8 @@ Body.prototype.fromPolygon = function(path,options){
 
     this.adjustCenterOfMass();
 
+    this.aabbNeedsUpdate = true;
+
     return true;
 };
 
@@ -7532,14 +8656,74 @@ Body.prototype.addConstraintVelocity = function(){
  */
 Body.prototype.applyDamping = function(dt){
     if(this.motionState & Body.DYNAMIC){ // Only for dynamic bodies
-        var ld = Math.pow(1.0 - this.damping,dt),
-            v = this.velocity;
-        vec2.scale(v,v,ld);
 
-        var av = this.angularVelocity,
-            ad = Math.pow(1.0 - this.angularDamping,dt);
-        this.angularVelocity *= ad;
+        // Since Math.pow generates garbage we check if we can reuse the scaling coefficient from last step
+        if(dt != this.lastDampingTimeStep){
+            this.lastDampingScale =         Math.pow(1.0 - this.damping,dt);
+            this.lastAngularDampingScale =  Math.pow(1.0 - this.angularDamping,dt);
+            this.lastDampingTimeStep = dt;
+        }
+
+        var v = this.velocity;
+        vec2.scale(v,v,this.lastDampingScale);
+        this.angularVelocity *= this.lastAngularDampingScale;
     }
+};
+
+/**
+ * @method wakeUp
+ * @brief Wake the body up.
+ */
+Body.prototype.wakeUp = function(){
+    var s = this.sleepState;
+    this.sleepState = Body.AWAKE;
+    if(s !== Body.AWAKE){
+        this.emit(Body.wakeUpEvent);
+    }
+};
+
+/**
+ * @method sleep
+ * @brief Force body sleep
+ */
+Body.prototype.sleep = function(){
+    this.sleepState = Body.SLEEPING;
+    this.emit(Body.sleepEvent);
+};
+
+/**
+ * @method sleepTick
+ * @param float time The world time in seconds
+ * @brief Called every timestep to update internal sleep timer and change sleep state if needed.
+ */
+Body.prototype.sleepTick = function(time){
+    if(!this.allowSleep)
+        return;
+
+    var sleepState = this.sleepState,
+        speedSquared = vec2.squaredLength(this.velocity) + Math.pow(this.angularVelocity,2),
+        speedLimitSquared = Math.pow(this.sleepSpeedLimit,2);
+    if(sleepState===Body.AWAKE && speedSquared < speedLimitSquared){
+        this.sleepState = Body.SLEEPY; // Sleepy
+        this.timeLastSleepy = time;
+        this.emit(Body.sleepyEvent);
+    } else if(sleepState===Body.SLEEPY && speedSquared > speedLimitSquared){
+        this.wakeUp(); // Wake up
+    } else if(sleepState===Body.SLEEPY && (time - this.timeLastSleepy ) > this.sleepTimeLimit){
+        this.sleep();
+    }
+};
+
+Body.sleepyEvent = {
+    type: "sleepy"
+};
+
+Body.sleepEvent = {
+    type: "sleep"
+};
+
+Body.wakeUpEvent = {
+    type: "wakeup"
 };
 
 /**
@@ -7566,7 +8750,29 @@ Body.STATIC = 2;
  */
 Body.KINEMATIC = 4;
 
-},{"../math/vec2":35,"../shapes/Convex":10,"poly-decomp":43}],42:[function(require,module,exports){
+/**
+ * @property AWAKE
+ * @type {Number}
+ * @static
+ */
+Body.AWAKE = 0;
+
+/**
+ * @property SLEEPY
+ * @type {Number}
+ * @static
+ */
+Body.SLEEPY = 1;
+
+/**
+ * @property SLEEPING
+ * @type {Number}
+ * @static
+ */
+Body.SLEEPING = 2;
+
+
+},{"../math/vec2":37,"../shapes/Convex":11,"../collision/AABB":44,"../events/EventEmitter":14,"poly-decomp":46}],45:[function(require,module,exports){
 /* Copyright (c) 2012, Brandon Jones, Colin MacKenzie IV. All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -7809,7 +9015,7 @@ if(typeof(exports) !== 'undefined') {
     exports.mat2 = mat2;
 }
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 var Shape = require('./Shape')
 ,   vec2 = require('../math/vec2')
 ,   polyk = require('../math/polyk')
@@ -8065,14 +9271,23 @@ Convex.prototype.updateArea = function(){
     }
 };
 
+/**
+ * @method computeAABB
+ * @param  {AABB}   out
+ * @param  {Array}  position
+ * @param  {Number} angle
+ */
+Convex.prototype.computeAABB = function(out, position, angle){
+   out.setFromPoints(this.vertices,position,angle);
+};
 
-},{"./Shape":29,"../math/vec2":35,"../math/polyk":41,"poly-decomp":43}],43:[function(require,module,exports){
+},{"./Shape":31,"../math/vec2":37,"../math/polyk":43,"poly-decomp":46}],46:[function(require,module,exports){
 module.exports = {
     Polygon : require("./Polygon"),
     Point : require("./Point"),
 };
 
-},{"./Polygon":44,"./Point":45}],45:[function(require,module,exports){
+},{"./Polygon":47,"./Point":48}],48:[function(require,module,exports){
 module.exports = Point;
 
 /**
@@ -8148,7 +9363,7 @@ Point.sqdist = function(a,b){
     return dx * dx + dy * dy;
 };
 
-},{}],44:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 var Line = require("./Line")
 ,   Point = require("./Point")
 ,   Scalar = require("./Scalar")
@@ -8644,7 +9859,7 @@ Polygon.prototype.removeCollinearPoints = function(precision){
     return num;
 };
 
-},{"./Line":46,"./Point":45,"./Scalar":47}],47:[function(require,module,exports){
+},{"./Line":49,"./Point":48,"./Scalar":50}],50:[function(require,module,exports){
 module.exports = Scalar;
 
 /**
@@ -8667,7 +9882,7 @@ Scalar.eq = function(a,b,precision){
     return Math.abs(a-b) < precision;
 };
 
-},{}],46:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 var Scalar = require('./Scalar');
 
 module.exports = Line;
@@ -8731,6 +9946,6 @@ Line.segmentsIntersect = function(p1, p2, q1, q2){
 };
 
 
-},{"./Scalar":47}]},{},[1])(1)
+},{"./Scalar":50}]},{},[1])(1)
 });
 ;
