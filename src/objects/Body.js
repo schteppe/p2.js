@@ -6,8 +6,6 @@ var vec2 = require('../math/vec2')
 
 module.exports = Body;
 
-var zero = vec2.fromValues(0,0);
-
 /**
  * A rigid body. Has got a center of mass, position, velocity and a number of
  * shapes that are used for collisions.
@@ -342,7 +340,7 @@ Body.prototype.updateBoundingRadius = function(){
 
     for(var i=0; i!==N; i++){
         var shape = shapes[i],
-            offset = vec2.length(shapeOffsets[i] || zero),
+            offset = vec2.length(shapeOffsets[i]),
             r = shape.boundingRadius;
         if(offset + r > radius)
             radius = offset + r;
@@ -432,7 +430,7 @@ Body.prototype.updateMassProperties = function(){
     if(!this.fixedRotation){
         for(var i=0; i<N; i++){
             var shape = shapes[i],
-                r2 = vec2.squaredLength(this.shapeOffsets[i] || zero),
+                r2 = vec2.squaredLength(this.shapeOffsets[i]),
                 Icm = shape.computeMomentOfInertia(m);
             I += Icm + m*r2;
         }
@@ -572,17 +570,15 @@ var adjustCenterOfMass_tmp1 = vec2.fromValues(0,0),
  * @method adjustCenterOfMass
  */
 Body.prototype.adjustCenterOfMass = function(){
-    var zero =              adjustCenterOfMass_tmp1,
-        offset_times_area = adjustCenterOfMass_tmp2,
+    var offset_times_area = adjustCenterOfMass_tmp2,
         sum =               adjustCenterOfMass_tmp3,
         cm =                adjustCenterOfMass_tmp4,
         totalArea =         0;
     vec2.set(sum,0,0);
-    vec2.set(zero,0,0);
 
     for(var i=0; i!==this.shapes.length; i++){
         var s = this.shapes[i],
-            offset = this.shapeOffsets[i] || zero;
+            offset = this.shapeOffsets[i];
         vec2.scale(offset_times_area,offset,s.area);
         vec2.add(sum,sum,offset_times_area);
         totalArea += s.area;
