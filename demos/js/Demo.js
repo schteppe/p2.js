@@ -17,15 +17,6 @@ var requestAnimationFrame =     window.requestAnimationFrame       ||
                                     window.setTimeout(callback, 1000 / 60);
                                 };
 
-function DemoStates(){};
-DemoStates.DEFAULT =            1;
-DemoStates.PANNING =            2;
-DemoStates.DRAGGING =           3;
-DemoStates.DRAWPOLYGON =        4;
-DemoStates.DRAWINGPOLYGON  =    5;
-DemoStates.DRAWCIRCLE =         6;
-DemoStates.DRAWINGCIRCLE  =     7;
-
 /**
  * Base class for rendering of a scene.
  * @class Demo
@@ -40,7 +31,7 @@ function Demo(world){
     this.world = world;
     this.initialState = world.toJSON();
 
-    this.state = DemoStates.DEFAULT;
+    this.state = Demo.DEFAULT;
 
     this.bodies=[];
     this.springs=[];
@@ -125,10 +116,10 @@ function Demo(world){
                     that.drawContacts = !that.drawContacts;
                     break;
                 case "D": // toggle draw polygon mode
-                    that.setState(s == DemoStates.DRAWPOLYGON ? DemoStates.DEFAULT : s = DemoStates.DRAWPOLYGON);
+                    that.setState(s == Demo.DRAWPOLYGON ? Demo.DEFAULT : s = Demo.DRAWPOLYGON);
                     break;
                 case "A": // toggle draw circle mode
-                    that.setState(s == DemoStates.DRAWCIRCLE ? DemoStates.DEFAULT : s = DemoStates.DRAWCIRCLE);
+                    that.setState(s == Demo.DRAWCIRCLE ? Demo.DEFAULT : s = Demo.DRAWCIRCLE);
                     break;
                 default:
                     that.keydownEvent.keyCode = e.keyCode;
@@ -163,6 +154,14 @@ function Demo(world){
 }
 Demo.prototype = new p2.EventEmitter();
 
+Demo.DEFAULT =            1;
+Demo.PANNING =            2;
+Demo.DRAGGING =           3;
+Demo.DRAWPOLYGON =        4;
+Demo.DRAWINGPOLYGON  =    5;
+Demo.DRAWCIRCLE =         6;
+Demo.DRAWINGCIRCLE  =     7;
+
 Demo.time = function(){
     return new Date().getTime() / 1000;
 };
@@ -196,7 +195,7 @@ Demo.prototype.setState = function(s){
 Demo.prototype.handleMouseDown = function(physicsPosition){
     switch(this.state){
 
-        case DemoStates.DEFAULT:
+        case Demo.DEFAULT:
 
             // Check if the clicked point overlaps bodies
             var result = this.world.hitTest(physicsPosition,world.bodies,this.pickPrecision);
@@ -212,7 +211,7 @@ Demo.prototype.handleMouseDown = function(physicsPosition){
             }
 
             if(b){
-                this.setState(DemoStates.DRAGGING);
+                this.setState(Demo.DRAGGING);
                 // Add mouse joint to the body
                 var localPoint = p2.vec2.create();
                 b.toLocalFrame(localPoint,physicsPosition);
@@ -221,13 +220,13 @@ Demo.prototype.handleMouseDown = function(physicsPosition){
                                                                     b,             localPoint);
                 this.world.addConstraint(this.mouseConstraint);
             } else {
-                this.setState(DemoStates.PANNING);
+                this.setState(Demo.PANNING);
             }
             break;
 
-        case DemoStates.DRAWPOLYGON:
+        case Demo.DRAWPOLYGON:
             // Start drawing a polygon
-            this.setState(DemoStates.DRAWINGPOLYGON);
+            this.setState(Demo.DRAWINGPOLYGON);
             this.drawPoints = [];
             var copy = p2.vec2.create();
             p2.vec2.copy(copy,physicsPosition);
@@ -235,9 +234,9 @@ Demo.prototype.handleMouseDown = function(physicsPosition){
             this.emit(this.drawPointsChangeEvent);
             break;
 
-        case DemoStates.DRAWCIRCLE:
+        case Demo.DRAWCIRCLE:
             // Start drawing a circle
-            this.setState(DemoStates.DRAWINGCIRCLE);
+            this.setState(Demo.DRAWINGCIRCLE);
             p2.vec2.copy(this.drawCircleCenter,physicsPosition);
             p2.vec2.copy(this.drawCirclePoint, physicsPosition);
             this.emit(this.drawCircleChangeEvent);
@@ -251,7 +250,7 @@ Demo.prototype.handleMouseDown = function(physicsPosition){
 Demo.prototype.handleMouseMove = function(physicsPosition){
     var sampling = 0.4;
     switch(this.state){
-        case DemoStates.DRAWINGPOLYGON:
+        case Demo.DRAWINGPOLYGON:
             // drawing a polygon - add new point
             var sqdist = p2.vec2.dist(physicsPosition,this.drawPoints[this.drawPoints.length-1]);
             if(sqdist > sampling*sampling){
@@ -262,7 +261,7 @@ Demo.prototype.handleMouseMove = function(physicsPosition){
             }
             break;
 
-        case DemoStates.DRAWINGCIRCLE:
+        case Demo.DRAWINGCIRCLE:
             // drawing a circle - change the circle radius point to current
             p2.vec2.copy(this.drawCirclePoint, physicsPosition);
             this.emit(this.drawCircleChangeEvent);
@@ -279,22 +278,22 @@ Demo.prototype.handleMouseUp = function(physicsPosition){
 
     switch(this.state){
 
-        case DemoStates.DEFAULT:
+        case Demo.DEFAULT:
             break;
 
-        case DemoStates.DRAGGING:
+        case Demo.DRAGGING:
             // Drop constraint
             this.world.removeConstraint(this.mouseConstraint);
             this.mouseConstraint = null;
             this.world.removeBody(this.nullBody);
 
-        case DemoStates.PANNING:
-            this.setState(DemoStates.DEFAULT);
+        case Demo.PANNING:
+            this.setState(Demo.DEFAULT);
             break;
 
-        case DemoStates.DRAWINGPOLYGON:
+        case Demo.DRAWINGPOLYGON:
             // End this drawing state
-            this.setState(DemoStates.DRAWPOLYGON);
+            this.setState(Demo.DRAWPOLYGON);
             if(this.drawPoints.length > 3){
                 // Create polygon
                 b = new p2.Body({ mass : 1 });
@@ -308,9 +307,9 @@ Demo.prototype.handleMouseUp = function(physicsPosition){
             this.emit(this.drawPointsChangeEvent);
             break;
 
-        case DemoStates.DRAWINGCIRCLE:
+        case Demo.DRAWINGCIRCLE:
             // End this drawing state
-            this.setState(DemoStates.DRAWCIRCLE);
+            this.setState(Demo.DRAWCIRCLE);
             var R = p2.vec2.dist(this.drawCircleCenter,this.drawCirclePoint);
             if(R > 0){
                 // Create circle
@@ -567,17 +566,17 @@ Demo.prototype.createMenu = function(){
     });
 
     $("#menu-tools-default").click(function(e){
-        that.setState(DemoStates.DEFAULT);
+        that.setState(Demo.DEFAULT);
     }).tooltip({
         title : "Pick and pan tool",
     });
     $("#menu-tools-polygon").click(function(e){
-        that.setState(DemoStates.DRAWPOLYGON);
+        that.setState(Demo.DRAWPOLYGON);
     }).tooltip({
         title : "Draw polygon [d]",
     });
     $("#menu-tools-circle").click(function(e){
-        that.setState(DemoStates.DRAWCIRCLE);
+        that.setState(Demo.DRAWCIRCLE);
     }).tooltip({
         title : "Draw circle [a]",
     });
@@ -588,13 +587,13 @@ Demo.prototype.updateTools = function(){
     $("#menu-tools button").removeClass("active");
     var id;
     switch(this.state){
-        case DemoStates.PANNING:
-        case DemoStates.DRAGGING:
-        case DemoStates.DEFAULT:        id = "#menu-tools-default"; break;
-        case DemoStates.DRAWINGPOLYGON:
-        case DemoStates.DRAWPOLYGON:    id = "#menu-tools-polygon"; break;
-        case DemoStates.DRAWINGCIRCLE:
-        case DemoStates.DRAWCIRCLE:     id = "#menu-tools-circle";  break;
+        case Demo.PANNING:
+        case Demo.DRAGGING:
+        case Demo.DEFAULT:        id = "#menu-tools-default"; break;
+        case Demo.DRAWINGPOLYGON:
+        case Demo.DRAWPOLYGON:    id = "#menu-tools-polygon"; break;
+        case Demo.DRAWINGCIRCLE:
+        case Demo.DRAWCIRCLE:     id = "#menu-tools-circle";  break;
         default:
             console.warn("Demo: uncaught state: "+this.state);
             break;

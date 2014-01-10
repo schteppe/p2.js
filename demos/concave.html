@@ -44,7 +44,7 @@
         world.addBody(concaveBody);
 
         var demo = new PixiDemo(world);
-        demo.setState(DemoStates.DRAWPOLYGON);
+        demo.setState(Demo.DRAWPOLYGON);
 
         world.on("addBody",function(evt){
             evt.body.setDensity(1);

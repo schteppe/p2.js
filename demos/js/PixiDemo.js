@@ -133,7 +133,7 @@ PixiDemo.prototype.init = function(){
         that.handleMouseDown(init_physicsPosition);
     };
     container.mousemove = container.touchmove = function(e){
-        if(down && that.state == DemoStates.PANNING){
+        if(down && that.state == Demo.PANNING){
             stage.position.x = e.global.x-lastX+startX;
             stage.position.y = e.global.y-lastY+startY;
         }
