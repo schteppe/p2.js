@@ -1,16 +1,11 @@
-var vec2 =      p2.vec2
-,   Spring =    p2.Spring
-,   Body =      p2.Body
-,   Circle =    p2.Circle
-,   Capsule =   p2.Capsule
-,   Convex =    p2.Convex
-,   Compound =  p2.Compound
-,   Plane =     p2.Plane
-,   Rectangle=  p2.Rectangle
-,   Particle =  p2.Particle
-,   Line =      p2.Line
-,   EventEmitter = p2.EventEmitter
-,   RevoluteConstraint = p2.RevoluteConstraint
+(function($){
+    $.fn.disableSelection = function() {
+        return this
+                 .attr('unselectable', 'on')
+                 .css('user-select', 'none')
+                 .on('selectstart', false);
+    };
+})(jQuery);
 
 // shim layer with setTimeout fallback
 var requestAnimationFrame =     window.requestAnimationFrame       ||
@@ -21,15 +16,6 @@ var requestAnimationFrame =     window.requestAnimationFrame       ||
                                 function( callback ){
                                     window.setTimeout(callback, 1000 / 60);
                                 };
-
-(function($){
-    $.fn.disableSelection = function() {
-        return this
-                 .attr('unselectable', 'on')
-                 .css('user-select', 'none')
-                 .on('selectstart', false);
-    };
-})(jQuery);
 
 function DemoStates(){};
 DemoStates.DEFAULT =            1;
@@ -47,7 +33,7 @@ DemoStates.DRAWINGCIRCLE  =     7;
  * @param {World} world
  */
 function Demo(world){
-    EventEmitter.call(this);
+    p2.EventEmitter.call(this);
 
     var that = this;
 
@@ -62,13 +48,13 @@ function Demo(world){
     this.timeStep = 1/60;
 
     this.mouseConstraint = null;
-    this.nullBody = new Body();
+    this.nullBody = new p2.Body();
     this.pickPrecision = 5;
 
     this.drawPoints = [];
     this.drawPointsChangeEvent = { type : "drawPointsChange" };
-    this.drawCircleCenter = vec2.create();
-    this.drawCirclePoint = vec2.create();
+    this.drawCircleCenter = p2.vec2.create();
+    this.drawCirclePoint = p2.vec2.create();
     this.drawCircleChangeEvent = { type : "drawCircleChange" };
 
     this.stateChangeEvent = { type : "stateChange", state:null };
@@ -84,7 +70,7 @@ function Demo(world){
         keyCode : 0,
     };
 
-    // Default collision masks for new shapCs
+    // Default collision masks for new shapes
     this.newShapeCollisionMask = 1;
     this.newShapeCollisionGroup = 1;
 
@@ -175,7 +161,7 @@ function Demo(world){
     this.updateTools();
     this.run();
 }
-Demo.prototype = new EventEmitter();
+Demo.prototype = new p2.EventEmitter();
 
 Demo.time = function(){
     return new Date().getTime() / 1000;
@@ -219,7 +205,7 @@ Demo.prototype.handleMouseDown = function(physicsPosition){
             var b;
             while(result.length > 0){
                 b = result.shift();
-                if(b.motionState == Body.STATIC)
+                if(b.motionState == p2.Body.STATIC)
                     b = null;
                 else
                     break;
@@ -228,10 +214,10 @@ Demo.prototype.handleMouseDown = function(physicsPosition){
             if(b){
                 this.setState(DemoStates.DRAGGING);
                 // Add mouse joint to the body
-                var localPoint = vec2.create();
+                var localPoint = p2.vec2.create();
                 b.toLocalFrame(localPoint,physicsPosition);
                 this.world.addBody(this.nullBody);
-                this.mouseConstraint = new RevoluteConstraint(  this.nullBody, physicsPosition,
+                this.mouseConstraint = new p2.RevoluteConstraint(  this.nullBody, physicsPosition,
                                                                     b,             localPoint);
                 this.world.addConstraint(this.mouseConstraint);
             } else {
@@ -243,8 +229,8 @@ Demo.prototype.handleMouseDown = function(physicsPosition){
             // Start drawing a polygon
             this.setState(DemoStates.DRAWINGPOLYGON);
             this.drawPoints = [];
-            var copy = vec2.create();
-            vec2.copy(copy,physicsPosition);
+            var copy = p2.vec2.create();
+            p2.vec2.copy(copy,physicsPosition);
             this.drawPoints.push(copy);
             this.emit(this.drawPointsChangeEvent);
             break;
@@ -252,8 +238,8 @@ Demo.prototype.handleMouseDown = function(physicsPosition){
         case DemoStates.DRAWCIRCLE:
             // Start drawing a circle
             this.setState(DemoStates.DRAWINGCIRCLE);
-            vec2.copy(this.drawCircleCenter,physicsPosition);
-            vec2.copy(this.drawCirclePoint, physicsPosition);
+            p2.vec2.copy(this.drawCircleCenter,physicsPosition);
+            p2.vec2.copy(this.drawCirclePoint, physicsPosition);
             this.emit(this.drawCircleChangeEvent);
             break;
     }
@@ -267,10 +253,10 @@ Demo.prototype.handleMouseMove = function(physicsPosition){
     switch(this.state){
         case DemoStates.DRAWINGPOLYGON:
             // drawing a polygon - add new point
-            var sqdist = vec2.dist(physicsPosition,this.drawPoints[this.drawPoints.length-1]);
+            var sqdist = p2.vec2.dist(physicsPosition,this.drawPoints[this.drawPoints.length-1]);
             if(sqdist > sampling*sampling){
                 var copy = [0,0];
-                vec2.copy(copy,physicsPosition);
+                p2.vec2.copy(copy,physicsPosition);
                 this.drawPoints.push(copy);
                 this.emit(this.drawPointsChangeEvent);
             }
@@ -278,7 +264,7 @@ Demo.prototype.handleMouseMove = function(physicsPosition){
 
         case DemoStates.DRAWINGCIRCLE:
             // drawing a circle - change the circle radius point to current
-            vec2.copy(this.drawCirclePoint, physicsPosition);
+            p2.vec2.copy(this.drawCirclePoint, physicsPosition);
             this.emit(this.drawCircleChangeEvent);
             break;
     }
@@ -311,7 +297,7 @@ Demo.prototype.handleMouseUp = function(physicsPosition){
             this.setState(DemoStates.DRAWPOLYGON);
             if(this.drawPoints.length > 3){
                 // Create polygon
-                b = new Body({ mass : 1 });
+                b = new p2.Body({ mass : 1 });
                 if(b.fromPolygon(this.drawPoints,{
                     removeCollinearPoints : 0.01,
                 })){
@@ -325,15 +311,15 @@ Demo.prototype.handleMouseUp = function(physicsPosition){
         case DemoStates.DRAWINGCIRCLE:
             // End this drawing state
             this.setState(DemoStates.DRAWCIRCLE);
-            var R = vec2.dist(this.drawCircleCenter,this.drawCirclePoint);
+            var R = p2.vec2.dist(this.drawCircleCenter,this.drawCirclePoint);
             if(R > 0){
                 // Create circle
-                b = new Body({ mass : 1, position : this.drawCircleCenter });
-                var circle = new Circle(R);
+                b = new p2.Body({ mass : 1, position : this.drawCircleCenter });
+                var circle = new p2.Circle(R);
                 b.addShape(circle);
                 this.world.addBody(b);
             }
-            vec2.copy(this.drawCircleCenter,this.drawCirclePoint);
+            p2.vec2.copy(this.drawCircleCenter,this.drawCirclePoint);
             this.emit(this.drawCircleChangeEvent);
             break;
     }
@@ -369,10 +355,10 @@ Demo.prototype.updateStats = function(){
  * @param  {mixed} obj Either Body or Spring
  */
 Demo.prototype.addVisual = function(obj){
-    if(obj instanceof Spring){
+    if(obj instanceof p2.Spring){
         this.springs.push(obj);
         this.addRenderable(obj);
-    } else if(obj instanceof Body){
+    } else if(obj instanceof p2.Body){
         if(obj.shapes.length){ // Only draw things that can be seen
             this.bodies.push(obj);
             this.addRenderable(obj);
@@ -399,11 +385,11 @@ Demo.prototype.removeAllVisuals = function(){
  */
 Demo.prototype.removeVisual = function(obj){
     this.removeRenderable(obj);
-    if(obj instanceof Spring){
+    if(obj instanceof p2.Spring){
         var idx = this.springs.indexOf(obj);
         if(idx != -1)
             this.springs.splice(idx,1);
-    } else if(obj instanceof Body){
+    } else if(obj instanceof p2.Body){
         var idx = this.bodies.indexOf(obj);
         if(idx != -1)
             this.bodies.splice(idx,1);

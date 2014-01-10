@@ -64,7 +64,7 @@ function PixiDemo(world,options){
         var g = that.drawShapeGraphics;
         g.clear();
         var center = that.drawCircleCenter;
-        var R = vec2.dist(center, that.drawCirclePoint);
+        var R = p2.vec2.dist(center, that.drawCirclePoint);
         var h = that.renderer.height;
         PixiDemo.drawCircle(g,center[0]*ppu,h-ppu*center[1],0,ppu*R,false,that.lineWidth);
     });
@@ -74,15 +74,15 @@ PixiDemo.prototype = Object.create(Demo.prototype);
 PixiDemo.prototype.stagePositionToPhysics = function(out,stagePosition){
     var x = stagePosition[0]/this.pixelsPerLengthUnit,
         y = (this.renderer.height - stagePosition[1])/this.pixelsPerLengthUnit;
-    vec2.set(out, x, y);
+    p2.vec2.set(out, x, y);
     return out;
 };
 
 /**
  * Initialize the renderer and stage
  */
-var init_stagePosition = vec2.create(),
-    init_physicsPosition = vec2.create();
+var init_stagePosition = p2.vec2.create(),
+    init_physicsPosition = p2.vec2.create();
 PixiDemo.prototype.init = function(){
     var w = this.w,
         h = this.h,
@@ -128,7 +128,7 @@ PixiDemo.prototype.init = function(){
         that.lastMousePos = e.global;
 
         var pos = e.getLocalPosition(stage);
-        vec2.set(init_stagePosition, pos.x, pos.y);
+        p2.vec2.set(init_stagePosition, pos.x, pos.y);
         that.stagePositionToPhysics(init_physicsPosition, init_stagePosition);
         that.handleMouseDown(init_physicsPosition);
     };
@@ -143,7 +143,7 @@ PixiDemo.prototype.init = function(){
         that.lastMousePos = e.global;
 
         var pos = e.getLocalPosition(stage);
-        vec2.set(init_stagePosition, pos.x, pos.y);
+        p2.vec2.set(init_stagePosition, pos.x, pos.y);
         that.stagePositionToPhysics(init_physicsPosition, init_stagePosition);
         that.handleMouseMove(init_physicsPosition);
     };
@@ -155,7 +155,7 @@ PixiDemo.prototype.init = function(){
         that.lastMousePos = e.global;
 
         var pos = e.getLocalPosition(stage);
-        vec2.set(init_stagePosition, pos.x, pos.y);
+        p2.vec2.set(init_stagePosition, pos.x, pos.y);
         that.stagePositionToPhysics(init_physicsPosition, init_stagePosition);
         that.handleMouseUp(init_physicsPosition);
     };
@@ -247,7 +247,7 @@ PixiDemo.drawSpring = function(g,restLength,color,lineWidth){
  * @param  {Number} diagSize
  * @todo Should consider an angle
  */
-PixiDemo.drawPlane = function(g, x0, x1, color, lineColor, lineWidth, diagMargin, diagSize){
+PixiDemo.drawPlane = function(g, x0, x1, color, lineColor, lineWidth, diagMargin, diagSize, maxLength){
     lineWidth = typeof(lineWidth)=="number" ? lineWidth : 1;
     color = typeof(color)=="undefined" ? 0xffffff : color;
     g.lineStyle(lineWidth, lineColor, 1);
@@ -255,7 +255,7 @@ PixiDemo.drawPlane = function(g, x0, x1, color, lineColor, lineWidth, diagMargin
     // Draw a fill color
     g.lineStyle(0,0,0);
     g.beginFill(color);
-    var max = 1e6;
+    var max = maxLength;
     g.moveTo(-max,0);
     g.lineTo(max,0);
     g.lineTo(max,max);
@@ -413,10 +413,10 @@ PixiDemo.updateSpriteTransform = function(sprite,body,ppu,h){
     sprite.rotation = -body.angle;
 };
 
-var X = vec2.fromValues(1,0),
-    distVec = vec2.fromValues(0,0),
-    worldAnchorA = vec2.fromValues(0,0),
-    worldAnchorB = vec2.fromValues(0,0);
+var X = p2.vec2.fromValues(1,0),
+    distVec = p2.vec2.fromValues(0,0),
+    worldAnchorA = p2.vec2.fromValues(0,0),
+    worldAnchorB = p2.vec2.fromValues(0,0);
 PixiDemo.prototype.render = function(){
     var w = this.renderer.width,
         h = this.renderer.height,
@@ -460,10 +460,10 @@ PixiDemo.prototype.render = function(){
         distVec[1] = syA - syB;
 
         // Compute angle
-        sprite.rotation = -Math.acos( vec2.dot(X, distVec) / vec2.length(distVec) );
+        sprite.rotation = -Math.acos( p2.vec2.dot(X, distVec) / p2.vec2.length(distVec) );
 
         // And scale
-        sprite.scale.x = vec2.length(distVec) / (s.restLength * pixelsPerLengthUnit);
+        sprite.scale.x = p2.vec2.length(distVec) / (s.restLength * pixelsPerLengthUnit);
     }
 
     // Clear contacts
@@ -531,7 +531,7 @@ PixiDemo.prototype.addRenderable = function(obj){
 
     var zero = [0,0];
 
-    if(obj instanceof Body && obj.shapes.length){
+    if(obj instanceof p2.Body && obj.shapes.length){
 
         var sprite = new PIXI.Graphics();
         if(obj.concavePath && !this.debugPolygons){
@@ -549,32 +549,32 @@ PixiDemo.prototype.addRenderable = function(obj){
                 offset = offset || zero;
                 angle = angle || 0;
 
-                if(child instanceof Circle){
+                if(child instanceof p2.Circle){
                     PixiDemo.drawCircle(sprite,offset[0]*ppu,-offset[1]*ppu,angle,child.radius*ppu,color,lw);
 
-                } else if(child instanceof Particle){
+                } else if(child instanceof p2.Particle){
                     PixiDemo.drawCircle(sprite,offset[0]*ppu,-offset[1]*ppu,angle,2*lw,lineColor,0);
 
-                } else if(child instanceof Plane){
+                } else if(child instanceof p2.Plane){
                     // TODO use shape angle
-                    PixiDemo.drawPlane(sprite, -10*ppu, 10*ppu, color, lineColor, lw, lw*10, lw*10);
+                    PixiDemo.drawPlane(sprite, -10*ppu, 10*ppu, color, lineColor, lw, lw*10, lw*10, ppu*100);
 
-                } else if(child instanceof Line){
+                } else if(child instanceof p2.Line){
                     PixiDemo.drawLine(sprite, child.length*ppu, lineColor, lw);
 
-                } else if(child instanceof Rectangle){
+                } else if(child instanceof p2.Rectangle){
                     PixiDemo.drawRectangle(sprite, offset[0]*ppu, -offset[1]*ppu, angle, child.width*ppu, child.height*ppu, lineColor, color, lw);
 
-                } else if(child instanceof Capsule){
+                } else if(child instanceof p2.Capsule){
                     PixiDemo.drawCapsule(sprite, offset[0]*ppu, -offset[1]*ppu, angle, child.length*ppu, child.radius*ppu, lineColor, color,lw);
 
-                } else if(child instanceof Convex){
+                } else if(child instanceof p2.Convex){
                     // Scale verts
                     var verts = [],
-                        vrot = vec2.create();
+                        vrot = p2.vec2.create();
                     for(var j=0; j!==child.vertices.length; j++){
                         var v = child.vertices[j];
-                        vec2.rotate(vrot, v, angle);
+                        p2.vec2.rotate(vrot, v, angle);
                         verts.push([(vrot[0]+offset[0])*ppu, -(vrot[1]+offset[1])*ppu]);
                     }
 
@@ -585,7 +585,7 @@ PixiDemo.prototype.addRenderable = function(obj){
         this.sprites.push(sprite);
         this.stage.addChild(sprite);
 
-    } else if(obj instanceof Spring){
+    } else if(obj instanceof p2.Spring){
         var sprite = new PIXI.Graphics();
         var restLengthPixels = obj.restLength * ppu;
         PixiDemo.drawSpring(sprite,restLengthPixels,0x000000,lw);
@@ -595,13 +595,13 @@ PixiDemo.prototype.addRenderable = function(obj){
 };
 
 PixiDemo.prototype.removeRenderable = function(obj){
-    if(obj instanceof Body){
+    if(obj instanceof p2.Body){
         var i = this.bodies.indexOf(obj);
         if(i!=-1){
             this.stage.removeChild(this.sprites[i]);
             this.sprites.splice(i,1);
         }
-    } else if(obj instanceof Spring){
+    } else if(obj instanceof p2.Spring){
         var i = this.springs.indexOf(obj);
         if(i!=-1){
             this.stage.removeChild(this.springSprites[i]);
