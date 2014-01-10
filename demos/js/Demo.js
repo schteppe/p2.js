@@ -33,6 +33,8 @@ function Demo(world){
 
     this.state = Demo.DEFAULT;
 
+    this.maxSubSteps = 3;
+
     this.bodies=[];
     this.springs=[];
     this.paused = false;
@@ -162,20 +164,16 @@ Demo.DRAWINGPOLYGON  =    5;
 Demo.DRAWCIRCLE =         6;
 Demo.DRAWINGCIRCLE  =     7;
 
-Demo.time = function(){
-    return new Date().getTime() / 1000;
-};
-
 Demo.prototype.run = function(){
     var demo = this,
-        lastCallTime = Demo.time(),
-        maxSubSteps=10;
+        lastCallTime = Date.now() / 1000;
 
     function update(){
         if(!demo.paused){
-            var timeSinceLastCall = Demo.time()-lastCallTime;
-            lastCallTime = Demo.time();
-            demo.world.step(1/60,timeSinceLastCall,maxSubSteps);
+            var now = Date.now() / 1000,
+                timeSinceLastCall = now-lastCallTime;
+            lastCallTime = now;
+            demo.world.step(1/60,timeSinceLastCall,demo.maxSubSteps);
         }
         demo.render();
         requestAnimationFrame(update);
