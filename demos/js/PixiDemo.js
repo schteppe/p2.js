@@ -17,7 +17,7 @@ function PixiDemo(world,options){
     var that = this;
 
     var settings = {
-        lineWidth : 2,
+        lineWidth : 1,
         scrollFactor : 0.1,
         pixelsPerLengthUnit : 128,
         width : 1280, // Pixi screen resolution
@@ -56,7 +56,7 @@ function PixiDemo(world,options){
             path2.push([v[0]*ppu, that.settings.height -v[1]*ppu]);
         }
 
-        PixiDemo.drawPath(g,path2,0xff0000,false,that.lineWidth);
+        PixiDemo.drawPath(g,path2,0xff0000,false,1);
     });
 
     // Update draw circle
@@ -197,7 +197,7 @@ PixiDemo.prototype.init = function(){
  * @param  {Number} lineWidth
  */
 PixiDemo.drawCircle = function(g,x,y,angle,radius,color,lineWidth){
-    lineWidth = lineWidth || 1;
+    lineWidth = typeof(lineWidth)=="number" ? lineWidth : 1;
     color = typeof(color)=="number" ? color : 0xffffff;
     g.lineStyle(lineWidth, 0x000000, 1);
     g.beginFill(color, 1.0);
@@ -211,7 +211,7 @@ PixiDemo.drawCircle = function(g,x,y,angle,radius,color,lineWidth){
 };
 
 PixiDemo.drawSpring = function(g,restLength,color,lineWidth){
-    lineWidth = lineWidth || 1;
+    lineWidth = typeof(lineWidth)=="number" ? lineWidth : 1;
     color = typeof(color)=="undefined" ? 0xffffff : color;
     g.lineStyle(lineWidth, color, 1);
     if(restLength < lineWidth*10){
@@ -248,7 +248,7 @@ PixiDemo.drawSpring = function(g,restLength,color,lineWidth){
  * @todo Should consider an angle
  */
 PixiDemo.drawPlane = function(g, x0, x1, color, lineColor, lineWidth, diagMargin, diagSize){
-    lineWidth = lineWidth || 1;
+    lineWidth = typeof(lineWidth)=="number" ? lineWidth : 1;
     color = typeof(color)=="undefined" ? 0xffffff : color;
     g.lineStyle(lineWidth, lineColor, 1);
 
@@ -277,7 +277,7 @@ PixiDemo.drawPlane = function(g, x0, x1, color, lineColor, lineWidth, diagMargin
 };
 
 PixiDemo.drawLine = function(g, len, color, lineWidth){
-    lineWidth = lineWidth || 1;
+    lineWidth = typeof(lineWidth)=="number" ? lineWidth : 1;
     color = typeof(color)=="undefined" ? 0x000000 : color;
     g.lineStyle(lineWidth, color, 1);
 
@@ -287,7 +287,7 @@ PixiDemo.drawLine = function(g, len, color, lineWidth){
 };
 
 PixiDemo.drawCapsule = function(g, x, y, angle, len, radius, color, fillColor, lineWidth){
-    lineWidth = lineWidth || 1;
+    lineWidth = typeof(lineWidth)=="number" ? lineWidth : 1;
     color = typeof(color)=="undefined" ? 0x000000 : color;
     g.lineStyle(lineWidth, color, 1);
 
@@ -319,7 +319,7 @@ PixiDemo.drawCapsule = function(g, x, y, angle, len, radius, color, fillColor, l
 
 // Todo angle
 PixiDemo.drawRectangle = function(g,x,y,angle,w,h,color,fillColor,lineWidth){
-    lineWidth = lineWidth || 1;
+    lineWidth = typeof(lineWidth)=="number" ? lineWidth : 1;
     color = typeof(color)=="undefined" ? 0x000000 : color;
     g.lineStyle(lineWidth, color, 1);
     g.beginFill(fillColor);
@@ -327,7 +327,7 @@ PixiDemo.drawRectangle = function(g,x,y,angle,w,h,color,fillColor,lineWidth){
 };
 
 PixiDemo.drawConvex = function(g,verts,triangles,color,fillColor,lineWidth,debug,offset){
-    lineWidth = lineWidth || 1;
+    lineWidth = typeof(lineWidth)=="number" ? lineWidth : 1;
     color = typeof(color)=="undefined" ? 0x000000 : color;
     if(!debug){
         g.lineStyle(lineWidth, color, 1);
@@ -367,7 +367,7 @@ PixiDemo.drawConvex = function(g,verts,triangles,color,fillColor,lineWidth,debug
 };
 
 PixiDemo.drawPath = function(g,path,color,fillColor,lineWidth){
-    lineWidth = lineWidth || 1;
+    lineWidth = typeof(lineWidth)=="number" ? lineWidth : 1;
     color = typeof(color)=="undefined" ? 0x000000 : color;
     g.lineStyle(lineWidth, color, 1);
     if(typeof(fillColor)=="number")

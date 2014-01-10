@@ -358,8 +358,10 @@ Demo.prototype.updateStats = function(){
         this.stats_sum = 0.0;
         this.stats_Nsummed = 0;
     }
+    /*
     this.stats_stepdiv.innerHTML = "Physics step: "+(Math.round(this.stats_average*100)/100)+"ms";
     this.stats_contactsdiv.innerHTML = "Contacts: "+this.world.narrowphase.contactEquations.length;
+    */
 };
 
 /**
@@ -412,8 +414,10 @@ Demo.prototype.removeVisual = function(obj){
 
 /**
  * Create the container/divs for stats
+ * @todo  integrate in new menu
  */
 Demo.prototype.createStats = function(){
+    /*
     var stepDiv = document.createElement("div");
     var vecsDiv = document.createElement("div");
     var matsDiv = document.createElement("div");
@@ -428,6 +432,7 @@ Demo.prototype.createStats = function(){
     document.body.appendChild(contactsDiv);
     this.stats_stepdiv = stepDiv;
     this.stats_contactsdiv = contactsDiv;
+    */
 };
 
 Demo.prototype.createMenu = function(){
