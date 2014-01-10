@@ -115,6 +115,8 @@ function PrismaticConstraint(bodyA,bodyB,options){
      */
     this.position = 0;
 
+    this.velocity = 0;
+
     /**
      * Set to true to enable lower limit.
      * @property lowerLimitEnabled
@@ -150,6 +152,42 @@ function PrismaticConstraint(bodyA,bodyB,options){
     // Set max/min forces
     this.upperLimitEquation.minForce = this.lowerLimitEquation.minForce = 0;
     this.upperLimitEquation.maxForce = this.lowerLimitEquation.maxForce = maxForce;
+
+    /**
+     * Equation used for the motor.
+     * @property motorEquation
+     * @type {Equation}
+     */
+    this.motorEquation = new Equation(bodyA,bodyB);
+
+    /**
+     * The current motor state. Enable or disable the motor using .enableMotor
+     * @property motorEnabled
+     * @type {Boolean}
+     */
+    this.motorEnabled = false;
+
+    /**
+     * Set the target speed for the motor.
+     * @property motorSpeed
+     * @type {Number}
+     */
+    this.motorSpeed = 0;
+
+    var that = this;
+    var motorEquation = this.motorEquation;
+    var old = motorEquation.computeGW;
+    motorEquation.computeGq = function(){ return 0; };
+    motorEquation.computeGW = function(){
+        var G = this.G,
+            bi = this.bi,
+            bj = this.bj,
+            vi = bi.velocity,
+            vj = bj.velocity,
+            wi = bi.angularVelocity,
+            wj = bj.angularVelocity;
+        return this.transformedGmult(G,vi,wi,vj,wj) + that.motorSpeed;
+    };
 }
 
 PrismaticConstraint.prototype = new Constraint();
@@ -157,6 +195,8 @@ PrismaticConstraint.prototype = new Constraint();
 var worldAxisA = vec2.create(),
     worldAnchorA = vec2.create(),
     worldAnchorB = vec2.create(),
+    orientedAnchorA = vec2.create(),
+    orientedAnchorB = vec2.create(),
     tmp = vec2.create();
 
 /**
@@ -179,13 +219,25 @@ PrismaticConstraint.prototype.update = function(){
     trans.update();
 
     // Transform local things to world
-    vec2.rotate(worldAxisA, localAxisA, bodyA.angle);
-    vec2.rotate(worldAnchorA, localAnchorA, bodyA.angle);
-    vec2.add(worldAnchorA, worldAnchorA, bodyA.position);
-    vec2.rotate(worldAnchorB, localAnchorB, bodyB.angle);
-    vec2.add(worldAnchorB, worldAnchorB, bodyB.position);
+    vec2.rotate(worldAxisA,      localAxisA,      bodyA.angle);
+    vec2.rotate(orientedAnchorA, localAnchorA,    bodyA.angle);
+    vec2.add(worldAnchorA,       orientedAnchorA, bodyA.position);
+    vec2.rotate(orientedAnchorB, localAnchorB,    bodyB.angle);
+    vec2.add(worldAnchorB,       orientedAnchorB, bodyB.position);
 
     var relPosition = this.position = vec2.dot(worldAnchorB,worldAxisA) - vec2.dot(worldAnchorA,worldAxisA);
+
+    // Motor
+    if(this.motorEnabled){
+        // G = [ a     a x ri   -a   -a x rj ]
+        var G = this.motorEquation.G;
+        G[0] = worldAxisA[0];
+        G[1] = worldAxisA[1];
+        G[2] = vec2.crossLength(worldAxisA,orientedAnchorB);
+        G[3] = -worldAxisA[0];
+        G[4] = -worldAxisA[1];
+        G[5] = -vec2.crossLength(worldAxisA,orientedAnchorA);
+    }
 
     /*
         Limits strategy:
@@ -235,4 +287,25 @@ PrismaticConstraint.prototype.update = function(){
         var idx = eqs.indexOf(lowerLimitEquation);
         if(idx != -1) eqs.splice(idx,1);
     }
+};
+
+/**
+ * Enable the motor
+ * @method enableMotor
+ */
+PrismaticConstraint.prototype.enableMotor = function(){
+    if(this.motorEnabled) return;
+    this.equations.push(this.motorEquation);
+    this.motorEnabled = true;
+};
+
+/**
+ * Disable the rotational motor
+ * @method disableMotor
+ */
+PrismaticConstraint.prototype.disableMotor = function(){
+    if(!this.motorEnabled) return;
+    var i = this.equations.indexOf(this.motorEquation);
+    this.equations.splice(i,1);
+    this.motorEnabled = false;
 };
