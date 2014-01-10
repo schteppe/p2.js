@@ -26,14 +26,16 @@ module.exports = World;
 
 var currentVersion = pkg.version.split(".").slice(0,2).join("."); // "X.Y"
 
-function now(){
-    if(typeof(performance)!="undefined"){
-        if(performance.now)
-            return performance.now();
-        else if(performance.webkitNow)
-            return performance.webkitNow();
-    } else
-        return new Date().getTime();
+if(typeof performance === 'undefined')
+    performance = {};
+if(!performance.now){
+    var nowOffset = Date.now();
+    if (performance.timing && performance.timing.navigationStart){
+      nowOffset = performance.timing.navigationStart
+    }
+    performance.now = function(){
+      return Date.now() - nowOffset;
+    }
 }
 
 /**
@@ -413,7 +415,7 @@ World.prototype.internalStep = function(dt){
     this.lastTimeStep = dt;
 
     if(doProfiling){
-        t0 = now();
+        t0 = performance.now();
     }
 
     // Add gravity to bodies
@@ -510,7 +512,7 @@ World.prototype.internalStep = function(dt){
     }
 
     if(doProfiling){
-        t1 = now();
+        t1 = performance.now();
         that.lastStepTime = t1-t0;
     }
 
