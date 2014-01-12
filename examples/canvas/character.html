@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>p2.js Platformer example</title>
+    <meta charset="utf-8">
+    <script src="../../build/p2.js"></script>
+  </head>
+  <body>
+
+    <!-- The canvas, where we draw stuff -->
+    <canvas width="600" height="400" id="myCanvas"></canvas>
+
+    <script>
+      var canvas, ctx, w, h, zoom=50, jumpSpeed=6, walkSpeed=2,
+          world, boxBody, planeBody, canJump=false, boxes=[];
+
+      var buttons = {
+        space : false,
+        left :  false,
+        right : false,
+      }
+
+      init();
+      animate();
+
+      function init(){
+
+        // Init canvas
+        canvas = document.getElementById("myCanvas");
+        w = canvas.width;
+        h = canvas.height;
+        ctx = canvas.getContext("2d");
+        ctx.lineWidth = 1/zoom;
+
+        // Init world
+        world = new p2.World();
+
+        world.defaultFriction = 0;
+        world.solver.stiffness = 1e20;
+        world.solver.relaxation = 3;
+
+        // Add a character body
+        boxShape = new p2.Rectangle(1,1);
+        boxBody = new p2.Body({
+          mass: 1,
+          position:[0,3],
+          fixedRotation: true,
+        });
+        boxBody.addShape(boxShape);
+        world.addBody(boxBody);
+
+        // Add a ground plane
+        planeShape = new p2.Plane();
+        planeBody = new p2.Body({
+          position:[0,-1]
+        });
+        planeBody.addShape(planeShape);
+        world.addBody(planeBody);
+
+        // Add platforms
+        var platformPositions = [[3,0],[1,1],[-1,2]];
+        for(var i=0; i<platformPositions.length; i++){
+          var platformShape = new p2.Rectangle(1,0.3),
+              platformBody = new p2.Body({
+            mass: 0, // Static
+            position:platformPositions[i],
+          });
+          platformBody.addShape(platformShape);
+          world.addBody(platformBody);
+          boxes.push(platformBody);
+        }
+      }
+
+      function drawbox(body){
+        ctx.beginPath();
+        var x = body.position[0],
+            y = body.position[1],
+            s = body.shapes[0];
+        ctx.save();
+        ctx.translate(x, y);        // Translate to the center of the box
+        ctx.rotate(body.angle);  // Rotate to the box body frame
+        ctx.rect(-boxShape.width/2, -s.height/2, s.width, s.height);
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      function drawPlane(){
+        var y = planeBody.position[1];
+        ctx.moveTo(-w, y);
+        ctx.lineTo( w, y);
+        ctx.stroke();
+      }
+
+      function render(){
+        // Clear the canvas
+        ctx.clearRect(0,0,w,h);
+
+        // Transform the canvas
+        // Note that we need to flip the y axis since Canvas pixel coordinates
+        // goes from top to bottom, while physics does the opposite.
+        ctx.save();
+        ctx.translate(w/2, h/2);  // Translate to the center
+        ctx.scale(zoom, -zoom);   // Zoom in and flip y axis
+
+        // Draw all bodies
+        drawbox(boxBody);
+        drawPlane();
+        for(var i=0; i<boxes.length; i++){
+          drawbox(boxes[i]);
+        }
+
+        // Restore transform
+        ctx.restore();
+      }
+
+      // Animation loop
+      function animate(){
+        requestAnimationFrame(animate);
+
+        // Apply button response
+        if(buttons.right) boxBody.velocity[0] =  walkSpeed;
+        if(buttons.left)  boxBody.velocity[0] = -walkSpeed;
+
+        // Move physics bodies forward in time
+        world.step(1/60);
+
+        // Render scene
+        render();
+      }
+
+      window.onkeydown = function(event){
+        switch(event.keyCode){
+          case 38: // up
+          case 32: // space
+            if(!buttons.space){
+              if(canJump) boxBody.velocity[1] = jumpSpeed;
+              buttons.space = true;
+              canJump = false;
+            }
+            break;
+          case 39: // right
+            buttons.right = true;
+            break;
+          case 37: // left
+            buttons.left = true;
+            break;
+        }
+      }
+
+      window.onkeyup = function(event){
+        switch(event.keyCode){
+          case 38: // up
+          case 32: // space
+            buttons.space = false;
+            break;
+          case 39: // right
+            buttons.right = false;
+            boxBody.velocity[0] = 0;
+            break;
+          case 37: // left
+            buttons.left = false;
+            boxBody.velocity[0] = 0;
+            break;
+        }
+      }
+
+      world.on("impact",function(event){
+        if(event.bodyA === boxBody || event.bodyB == boxBody){
+          canJump = true;
+        }
+      });
+    </script>
+
+  </body>
+</html>
