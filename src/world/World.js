@@ -250,6 +250,9 @@ function World(options){
         type: "impact",
         bodyA : null,
         bodyB : null,
+        shapeA : null,
+        shapeB : null,
+        contactEquation : null,
     };
 
     /**
@@ -526,6 +529,7 @@ World.prototype.internalStep = function(dt){
                 ev.bodyB = eq.bj;
                 ev.shapeA = eq.shapeA;
                 ev.shapeB = eq.shapeB;
+                ev.contactEquation = eq;
                 this.emit(ev);
             }
         }
