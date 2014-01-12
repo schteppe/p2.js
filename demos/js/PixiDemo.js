@@ -183,6 +183,24 @@ PixiDemo.prototype.init = function(){
         }
         stage.updateTransform();
     });
+
+    this.on('zoomin', function(e){
+        var scrollFactor = that.scrollFactor,
+            stage = that.stage;
+        stage.scale.x *= (1+scrollFactor);
+        stage.scale.y *= (1+scrollFactor);
+        stage.position.x += (scrollFactor) * (stage.position.x);
+        stage.position.y += (scrollFactor) * (stage.position.y);
+        stage.updateTransform();
+    }).on('zoomout', function(e){
+        var scrollFactor = that.scrollFactor,
+            stage = that.stage;
+        stage.scale.x *= (1-scrollFactor);
+        stage.scale.y *= (1-scrollFactor);
+        stage.position.x -= (scrollFactor) * (stage.position.x);
+        stage.position.y -= (scrollFactor) * (stage.position.y);
+        stage.updateTransform();
+    });
 };
 
 /**

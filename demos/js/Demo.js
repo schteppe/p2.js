@@ -460,6 +460,8 @@ Demo.prototype.createMenu = function(){
                 "<button class='btn' id='menu-hide'>Hide menu</button>",
 
                 "<button class='btn' id='menu-fullscreen'>Full screen</button>",
+                "<button class='btn' id='menu-zoom-in'><i class='icon-zoom-in'></i></button>",
+                "<button class='btn' id='menu-zoom-out'><i class='icon-zoom-out'></i></button>",
 
                 info,
 
@@ -539,6 +541,14 @@ Demo.prototype.createMenu = function(){
         title : "Restart simulation [r]",
     }),
 
+    // Zoom in
+    $("#menu-zoom-in").click(function(e){
+        that.emit(Demo.zoomInEvent);
+    });
+    $("#menu-zoom-out").click(function(e){
+        that.emit(Demo.zoomOutEvent);
+    });
+
     $("#menu-fullscreen").click(function(evt){
         var elem = document.body;
         if (elem.requestFullscreen) {
@@ -580,6 +590,12 @@ Demo.prototype.createMenu = function(){
     });
 };
 
+Demo.zoomInEvent = {
+    type:"zoomin"
+};
+Demo.zoomOutEvent = {
+    type:"zoomout"
+};
 
 Demo.prototype.updateTools = function(){
     $("#menu-tools button").removeClass("active");
