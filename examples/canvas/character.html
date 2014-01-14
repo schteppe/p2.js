@@ -10,6 +10,8 @@
     <!-- The canvas, where we draw stuff -->
     <canvas width="600" height="400" id="myCanvas"></canvas>
 
+    <p>Use arrow keys to control character</p>
+
     <script>
       var canvas, ctx, w, h, zoom=50, jumpSpeed=6, walkSpeed=2,
           world, characterBody, planeBody, platforms=[], boxes=[];
@@ -91,7 +93,7 @@
           world.addBody(boxBody);
           boxes.push(boxBody);
         }
-        platformShape.material = groundMaterial;
+        boxShape.material = boxMaterial;
 
         // Init contactmaterials
         var groundCharacterCM = new p2.ContactMaterial(groundMaterial, characterMaterial,{
@@ -164,7 +166,8 @@
 
         // Apply button response
         if(buttons.right) characterBody.velocity[0] =  walkSpeed;
-        if(buttons.left)  characterBody.velocity[0] = -walkSpeed;
+        else if(buttons.left)  characterBody.velocity[0] = -walkSpeed;
+        else characterBody.velocity[0] = 0;
 
         // Move physics bodies forward in time
         world.step(1/60);
@@ -213,11 +216,9 @@
             break;
           case 39: // right
             buttons.right = false;
-            characterBody.velocity[0] = 0;
             break;
           case 37: // left
             buttons.left = false;
-            characterBody.velocity[0] = 0;
             break;
         }
       }
