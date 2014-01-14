@@ -12,7 +12,7 @@
 
     <script>
       var canvas, ctx, w, h, zoom=50, jumpSpeed=6, walkSpeed=2,
-          world, boxBody, planeBody, canJump=false, boxes=[];
+          world, characterBody, planeBody, platforms=[], boxes=[];
 
       var buttons = {
         space : false,
@@ -35,19 +35,26 @@
         // Init world
         world = new p2.World();
 
-        world.defaultFriction = 0;
+        world.defaultFriction = 0.5;
         world.solver.stiffness = 1e20;
         world.solver.relaxation = 3;
 
+        // Init materials
+        var groundMaterial = new p2.Material(),
+            characterMaterial = new p2.Material(),
+            boxMaterial = new p2.Material();
+
         // Add a character body
-        boxShape = new p2.Rectangle(1,1);
-        boxBody = new p2.Body({
+        characterShape = new p2.Rectangle(0.5,1);
+        characterBody = new p2.Body({
           mass: 1,
           position:[0,3],
           fixedRotation: true,
         });
-        boxBody.addShape(boxShape);
-        world.addBody(boxBody);
+        characterBody.addShape(characterShape);
+        world.addBody(characterBody);
+        characterShape.material = characterMaterial;
+        characterBody.damping = 0.5;
 
         // Add a ground plane
         planeShape = new p2.Plane();
@@ -56,39 +63,69 @@
         });
         planeBody.addShape(planeShape);
         world.addBody(planeBody);
+        planeShape.material = groundMaterial;
 
         // Add platforms
-        var platformPositions = [[3,0],[1,1],[-1,2]];
+        var platformPositions = [[2,0],[0,1],[-2,2]],
+            platformShape = new p2.Rectangle(1,0.3);
         for(var i=0; i<platformPositions.length; i++){
-          var platformShape = new p2.Rectangle(1,0.3),
-              platformBody = new p2.Body({
+          var platformBody = new p2.Body({
             mass: 0, // Static
             position:platformPositions[i],
           });
           platformBody.addShape(platformShape);
           world.addBody(platformBody);
-          boxes.push(platformBody);
+          platforms.push(platformBody);
         }
+        platformShape.material = groundMaterial;
+
+        // Add movable boxes
+        var boxPositions = [[2,1],[0,2],[-2,3]],
+            boxShape = new p2.Rectangle(0.8,0.8);
+        for(var i=0; i<boxPositions.length; i++){
+          var boxBody = new p2.Body({
+            mass: 1,
+            position:boxPositions[i],
+          });
+          boxBody.addShape(boxShape);
+          world.addBody(boxBody);
+          boxes.push(boxBody);
+        }
+        platformShape.material = groundMaterial;
+
+        // Init contactmaterials
+        var groundCharacterCM = new p2.ContactMaterial(groundMaterial, characterMaterial,{
+          friction : 0.0, // No friction between character and ground
+        });
+        var boxCharacterCM = new p2.ContactMaterial(boxMaterial, characterMaterial,{
+          friction : 0.0, // No friction between character and boxes
+        });
+        var boxGroundCM = new p2.ContactMaterial(boxMaterial, groundMaterial,{
+          friction : 0.6, // Between boxes and ground
+        });
+        world.addContactMaterial(groundCharacterCM);
+        world.addContactMaterial(boxCharacterCM);
+        world.addContactMaterial(boxGroundCM);
       }
 
-      function drawbox(body){
+      function drawBox(body){
         ctx.beginPath();
         var x = body.position[0],
             y = body.position[1],
             s = body.shapes[0];
         ctx.save();
-        ctx.translate(x, y);        // Translate to the center of the box
+        ctx.translate(x, y);     // Translate to the center of the box
         ctx.rotate(body.angle);  // Rotate to the box body frame
-        ctx.rect(-boxShape.width/2, -s.height/2, s.width, s.height);
-        ctx.stroke();
+        ctx.fillRect(-s.width/2, -s.height/2, s.width, s.height);
         ctx.restore();
       }
 
       function drawPlane(){
-        var y = planeBody.position[1];
-        ctx.moveTo(-w, y);
-        ctx.lineTo( w, y);
-        ctx.stroke();
+        var y1 = planeBody.position[1],
+            y0 = -h/zoom/2,
+            x0 = -w/zoom/2,
+            x1 = w/zoom/2;
+        ctx.fillRect(x0, y0, x1-x0, y1-y0);
       }
 
       function render(){
@@ -103,10 +140,18 @@
         ctx.scale(zoom, -zoom);   // Zoom in and flip y axis
 
         // Draw all bodies
-        drawbox(boxBody);
+        ctx.strokeStyle='none';
+
+        ctx.fillStyle='green';
         drawPlane();
+        for(var i=0; i<platforms.length; i++){
+          drawBox(platforms[i]);
+        }
+
+        ctx.fillStyle='red';
+        drawBox(characterBody);
         for(var i=0; i<boxes.length; i++){
-          drawbox(boxes[i]);
+          drawBox(boxes[i]);
         }
 
         // Restore transform
@@ -118,8 +163,8 @@
         requestAnimationFrame(animate);
 
         // Apply button response
-        if(buttons.right) boxBody.velocity[0] =  walkSpeed;
-        if(buttons.left)  boxBody.velocity[0] = -walkSpeed;
+        if(buttons.right) characterBody.velocity[0] =  walkSpeed;
+        if(buttons.left)  characterBody.velocity[0] = -walkSpeed;
 
         // Move physics bodies forward in time
         world.step(1/60);
@@ -128,14 +173,27 @@
         render();
       }
 
+      var yAxis = p2.vec2.fromValues(0,1);
+      function checkIfCanJump(){
+        var result = false;
+        for(var i=0; i<world.narrowphase.contactEquations.length; i++){
+          var c = world.narrowphase.contactEquations[i];
+          if(c.bi === characterBody || c.bj === characterBody){
+            var d = p2.vec2.dot(c.ni,yAxis); // Normal dot Y-axis
+            if(c.bi === characterBody) d *= -1;
+            if(d > 0.5) result = true;
+          }
+        }
+        return result;
+      }
+
       window.onkeydown = function(event){
         switch(event.keyCode){
           case 38: // up
           case 32: // space
             if(!buttons.space){
-              if(canJump) boxBody.velocity[1] = jumpSpeed;
+              if(checkIfCanJump()) characterBody.velocity[1] = jumpSpeed;
               buttons.space = true;
-              canJump = false;
             }
             break;
           case 39: // right
@@ -155,20 +213,15 @@
             break;
           case 39: // right
             buttons.right = false;
-            boxBody.velocity[0] = 0;
+            characterBody.velocity[0] = 0;
             break;
           case 37: // left
             buttons.left = false;
-            boxBody.velocity[0] = 0;
+            characterBody.velocity[0] = 0;
             break;
         }
       }
 
-      world.on("impact",function(event){
-        if(event.bodyA === boxBody || event.bodyB == boxBody){
-          canJump = true;
-        }
-      });
     </script>
 
   </body>
