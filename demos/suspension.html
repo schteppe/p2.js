@@ -129,6 +129,10 @@
             torque = 0;
         });
 
+        world.on("addBody",function(evt){
+            evt.body.setDensity(1);
+        });
+
     </script>
 </body>
 </html>
