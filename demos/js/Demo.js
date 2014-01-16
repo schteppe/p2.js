@@ -84,8 +84,18 @@ function Demo(world){
     this.createStats();
     this.createMenu();
 
+    var iter = -1;
     world.on("postStep",function(e){
         that.updateStats();
+
+        // If the number of iterations changed - update the input value
+        var solver = that.world.solver;
+        if("subsolver" in solver)
+            solver = solver.subsolver;
+        if(iter != solver.iterations){
+            $("#menu-solver-iterations").val(solver.iterations);
+            iter = solver.iterations;
+        }
     }).on("addBody",function(e){
         that.addVisual(e.body);
     }).on("removeBody",function(e){
@@ -485,6 +495,11 @@ Demo.prototype.createMenu = function(){
                     "<h4>Solver</h4>",
 
                     "<div class='input-prepend input-block-level'>",
+                      "<span class='add-on'>Iterations</span>",
+                      "<input id='menu-solver-iterations' type='number' min='1' value='10'>",
+                    "</div>",
+
+                    "<div class='input-prepend input-block-level'>",
                       "<span class='add-on'>Relaxation</span>",
                       "<input id='menu-solver-relaxation' type='number' step='any' min='0' value='4'>",
                     "</div>",
@@ -562,6 +577,14 @@ Demo.prototype.createMenu = function(){
         }
     });
 
+    $("#menu-solver-iterations").change(function(e){
+        var solver = that.world.solver;
+        if("subsolver" in solver)
+            solver = solver.subsolver;
+        solver.iterations = parseInt($(this).val());
+    }).tooltip({
+        title : '# timesteps needed for stabilization'
+    });
     $("#menu-solver-relaxation").change(function(e){
         that.world.solver.relaxation = parseFloat($(this).val());
     }).tooltip({
