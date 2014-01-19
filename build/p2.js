@@ -25,6 +25,7 @@
 return (function(e,t,n){function i(n,s){if(!t[n]){if(!e[n]){var o=typeof require=="function"&&require;if(!s&&o)return o(n,!0);if(r)return r(n,!0);throw new Error("Cannot find module '"+n+"'")}var u=t[n]={exports:{}};e[n][0].call(u.exports,function(t){var r=e[n][1][t];return i(r?r:t)},u,u.exports)}return t[n].exports}var r=typeof require=="function"&&require;for(var s=0;s<n.length;s++)i(n[s]);return i})({1:[function(require,module,exports){
 // Export p2 classes
 module.exports = {
+    AABB :                          require('./collision/AABB'),
     AngleLockEquation :             require('./equations/AngleLockEquation'),
     Body :                          require('./objects/Body'),
     Broadphase :                    require('./collision/Broadphase'),
@@ -64,7 +65,7 @@ module.exports = {
     version :                       require('../package.json').version,
 };
 
-},{"../package.json":2,"./equations/AngleLockEquation":3,"./objects/Body":4,"./collision/Broadphase":5,"./shapes/Capsule":6,"./shapes/Circle":7,"./constraints/Constraint":8,"./equations/ContactEquation":9,"./material/ContactMaterial":10,"./shapes/Convex":11,"./constraints/DistanceConstraint":12,"./equations/Equation":13,"./events/EventEmitter":14,"./equations/FrictionEquation":15,"./constraints/GearConstraint":16,"./collision/GridBroadphase":17,"./solver/GSSolver":18,"./solver/IslandSolver":19,"./shapes/Line":20,"./constraints/LockConstraint":21,"./material/Material":22,"./collision/NaiveBroadphase":23,"./shapes/Particle":24,"./shapes/Plane":25,"./constraints/RevoluteConstraint":26,"./constraints/PrismaticConstraint":27,"./shapes/Rectangle":28,"./equations/RotationalVelocityEquation":29,"./collision/SAP1DBroadphase":30,"./shapes/Shape":31,"./solver/Solver":32,"./objects/Spring":33,"./utils/Utils":34,"./world/World":35,"./collision/QuadTree":36,"./math/vec2":37}],2:[function(require,module,exports){
+},{"../package.json":2,"./collision/AABB":3,"./equations/AngleLockEquation":4,"./objects/Body":5,"./collision/Broadphase":6,"./shapes/Capsule":7,"./shapes/Circle":8,"./constraints/Constraint":9,"./equations/ContactEquation":10,"./material/ContactMaterial":11,"./shapes/Convex":12,"./constraints/DistanceConstraint":13,"./equations/Equation":14,"./events/EventEmitter":15,"./equations/FrictionEquation":16,"./constraints/GearConstraint":17,"./collision/GridBroadphase":18,"./solver/GSSolver":19,"./solver/IslandSolver":20,"./shapes/Line":21,"./constraints/LockConstraint":22,"./material/Material":23,"./collision/NaiveBroadphase":24,"./shapes/Particle":25,"./shapes/Plane":26,"./constraints/RevoluteConstraint":27,"./constraints/PrismaticConstraint":28,"./shapes/Rectangle":29,"./equations/RotationalVelocityEquation":30,"./collision/SAP1DBroadphase":31,"./shapes/Shape":32,"./solver/Solver":33,"./objects/Spring":34,"./utils/Utils":35,"./world/World":36,"./collision/QuadTree":37,"./math/vec2":38}],2:[function(require,module,exports){
 module.exports={
     "name": "p2",
     "version": "0.4.0",
@@ -112,7 +113,7 @@ module.exports={
     }
 }
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 module.exports = Constraint;
 
 /**
@@ -159,7 +160,7 @@ function Constraint(bodyA,bodyB){
     throw new Error("method update() not implmemented in this Constraint subclass!");
 };*/
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 module.exports = ContactMaterial;
 
 var idCounter = 0;
@@ -242,7 +243,7 @@ function ContactMaterial(materialA, materialB, options){
     this.frictionRelaxation =   typeof(options.frictionRelaxation)  !== "undefined" ?   Number(options.frictionRelaxation)  : 3;
 };
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 /**
  * Base class for objects that dispatches events.
  * @class EventEmitter
@@ -328,7 +329,7 @@ EventEmitter.prototype = {
     }
 };
 
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 module.exports = Material;
 
 var idCounter = 0;
@@ -349,7 +350,7 @@ function Material(){
     this.id = idCounter++;
 };
 
-},{}],31:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 module.exports = Shape;
 
 /**
@@ -469,7 +470,7 @@ Shape.prototype.computeAABB = function(out, position, angle){
     // To be implemented in each subclass
 };
 
-},{}],34:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 module.exports = Utils;
 
 /**
@@ -520,6 +521,124 @@ Utils.splice = function(array,index,howmany){
 Utils.ARRAY_TYPE = Float32Array || Array;
 
 },{}],3:[function(require,module,exports){
+var vec2 = require('../math/vec2')
+,   Utils = require('../utils/Utils')
+
+module.exports = AABB;
+
+/**
+ * Axis aligned bounding box class.
+ * @class AABB
+ * @constructor
+ * @param {Object} options
+ * @param {Array} upperBound
+ * @param {Array} lowerBound
+ */
+function AABB(options){
+
+    /**
+     * The lower bound of the bounding box.
+     * @property lowerBound
+     * @type {Array}
+     */
+    this.lowerBound = vec2.create();
+    if(options && options.lowerBound) vec2.copy(this.lowerBound, options.lowerBound);
+
+    /**
+     * The upper bound of the bounding box.
+     * @property upperBound
+     * @type {Array}
+     */
+    this.upperBound = vec2.create();
+    if(options && options.upperBound) vec2.copy(this.upperBound, options.upperBound);
+}
+
+var tmp = vec2.create();
+
+/**
+ * Set the AABB bounds from a set of points.
+ * @method setFromPoints
+ * @param {Array} points An array of vec2's.
+ */
+AABB.prototype.setFromPoints = function(points,position,angle){
+    var l = this.lowerBound,
+        u = this.upperBound;
+    vec2.set(l,  Number.MAX_VALUE,  Number.MAX_VALUE);
+    vec2.set(u, -Number.MAX_VALUE, -Number.MAX_VALUE);
+    for(var i=0; i<points.length; i++){
+        var p = points[i];
+
+        if(typeof(angle) =="number"){
+            vec2.rotate(tmp,p,angle);
+            p = tmp;
+        }
+
+        for(var j=0; j<2; j++){
+            if(p[j] > u[j]){
+                u[j] = p[j];
+            }
+            if(p[j] < l[j]){
+                l[j] = p[j];
+            }
+        }
+    }
+
+    // Add offset
+    if(position){
+        vec2.add(this.lowerBound, this.lowerBound, position);
+        vec2.add(this.upperBound, this.upperBound, position);
+    }
+};
+
+/**
+ * Copy bounds from an AABB to this AABB
+ * @method copy
+ * @param  {AABB} aabb
+ */
+AABB.prototype.copy = function(aabb){
+    vec2.copy(this.lowerBound, aabb.lowerBound);
+    vec2.copy(this.upperBound, aabb.upperBound);
+};
+
+/**
+ * Extend this AABB so that it covers the given AABB too.
+ * @method extend
+ * @param  {AABB} aabb
+ */
+AABB.prototype.extend = function(aabb){
+    // Loop over x and y
+    for(var i=0; i<2; i++){
+        // Extend lower bound
+        if(aabb.lowerBound[i] < this.lowerBound[i])
+            this.lowerBound[i] = aabb.lowerBound[i];
+
+        // Upper
+        if(aabb.upperBound[i] > this.upperBound[i])
+            this.upperBound[i] = aabb.upperBound[i];
+    }
+};
+
+/**
+ * Returns true if the given AABB overlaps this AABB.
+ * @param  {AABB} aabb
+ * @return {Boolean}
+ */
+AABB.prototype.overlaps = function(aabb){
+    var l1 = this.lowerBound,
+        u1 = this.upperBound,
+        l2 = aabb.lowerBound,
+        u2 = aabb.upperBound;
+
+    //      l2        u2
+    //      |---------|
+    // |--------|
+    // l1       u1
+
+    return ((l2[0] <= u1[0] && u1[0] <= u2[0]) || (l1[0] <= u2[0] && u2[0] <= u1[0])) &&
+           ((l2[1] <= u1[1] && u1[1] <= u2[1]) || (l1[1] <= u2[1] && u2[1] <= u1[1]));
+};
+
+},{"../math/vec2":38,"../utils/Utils":35}],4:[function(require,module,exports){
 var Equation = require("./Equation"),
     vec2 = require('../math/vec2');
 
@@ -558,7 +677,7 @@ AngleLockEquation.prototype.setRatio = function(ratio){
     this.ratio = ratio;
 };
 
-},{"./Equation":13,"../math/vec2":37}],5:[function(require,module,exports){
+},{"./Equation":14,"../math/vec2":38}],6:[function(require,module,exports){
 var vec2 = require('../math/vec2')
 var Body = require('../objects/Body')
 
@@ -653,7 +772,7 @@ Broadphase.canCollide = function(bodyA, bodyB){
     return true;
 };
 
-},{"../math/vec2":37,"../objects/Body":4}],6:[function(require,module,exports){
+},{"../math/vec2":38,"../objects/Body":5}],7:[function(require,module,exports){
 var Shape = require('./Shape')
 ,   vec2 = require('../math/vec2')
 
@@ -724,7 +843,7 @@ Capsule.prototype.computeAABB = function(out, position, angle){
     vec2.add(out.upperBound, out.upperBound, position);
 };
 
-},{"./Shape":31,"../math/vec2":37}],7:[function(require,module,exports){
+},{"./Shape":32,"../math/vec2":38}],8:[function(require,module,exports){
 var Shape = require('./Shape')
 ,    vec2 = require('../math/vec2')
 
@@ -778,7 +897,7 @@ Circle.prototype.computeAABB = function(out, position, angle){
     }
 };
 
-},{"./Shape":31,"../math/vec2":37}],9:[function(require,module,exports){
+},{"./Shape":32,"../math/vec2":38}],10:[function(require,module,exports){
 var Equation = require("./Equation"),
     vec2 = require('../math/vec2'),
     mat2 = require('../math/mat2');
@@ -894,7 +1013,7 @@ ContactEquation.prototype.computeB = function(a,b,h){
     return B;
 };
 
-},{"./Equation":13,"../math/vec2":37,"../math/mat2":38}],12:[function(require,module,exports){
+},{"./Equation":14,"../math/vec2":38,"../math/mat2":39}],13:[function(require,module,exports){
 var Constraint = require('./Constraint')
 ,   Equation = require('../equations/Equation')
 ,   vec2 = require('../math/vec2')
@@ -981,7 +1100,7 @@ DistanceConstraint.prototype.getMaxForce = function(f){
     return normal.maxForce;
 };
 
-},{"./Constraint":8,"../equations/Equation":13,"../math/vec2":37}],13:[function(require,module,exports){
+},{"./Constraint":9,"../equations/Equation":14,"../math/vec2":38}],14:[function(require,module,exports){
 module.exports = Equation;
 
 var vec2 = require('../math/vec2'),
@@ -1315,7 +1434,7 @@ Equation.prototype.computeInvC = function(eps){
     return 1.0 / (this.computeGiMGt() + eps);
 };
 
-},{"../math/vec2":37,"../math/mat2":38,"../utils/Utils":34}],15:[function(require,module,exports){
+},{"../math/vec2":38,"../math/mat2":39,"../utils/Utils":35}],16:[function(require,module,exports){
 var mat2 = require('../math/mat2')
 ,   vec2 = require('../math/vec2')
 ,   Equation = require('./Equation')
@@ -1427,7 +1546,7 @@ FrictionEquation.prototype.computeB = function(a,b,h){
     return B;
 };
 
-},{"../math/mat2":38,"../math/vec2":37,"./Equation":13,"../utils/Utils":34}],16:[function(require,module,exports){
+},{"../math/mat2":39,"../math/vec2":38,"./Equation":14,"../utils/Utils":35}],17:[function(require,module,exports){
 var Constraint = require('./Constraint')
 ,   Equation = require('../equations/Equation')
 ,   AngleLockEquation = require('../equations/AngleLockEquation')
@@ -1477,7 +1596,7 @@ GearConstraint.prototype.update = function(){
     eq.angle = this.angle;
 };
 
-},{"./Constraint":8,"../equations/Equation":13,"../equations/AngleLockEquation":3,"../math/vec2":37}],17:[function(require,module,exports){
+},{"./Constraint":9,"../equations/Equation":14,"../equations/AngleLockEquation":4,"../math/vec2":38}],18:[function(require,module,exports){
 var Circle = require('../shapes/Circle')
 ,   Plane = require('../shapes/Plane')
 ,   Particle = require('../shapes/Particle')
@@ -1638,7 +1757,7 @@ GridBroadphase.prototype.getCollisionPairs = function(world){
     return result;
 };
 
-},{"../shapes/Circle":7,"../shapes/Plane":25,"../shapes/Particle":24,"../collision/Broadphase":5,"../math/vec2":37}],18:[function(require,module,exports){
+},{"../shapes/Circle":8,"../shapes/Plane":26,"../shapes/Particle":25,"../collision/Broadphase":6,"../math/vec2":38}],19:[function(require,module,exports){
 var vec2 = require('../math/vec2')
 ,   Solver = require('./Solver')
 ,   Utils = require('../utils/Utils')
@@ -1851,7 +1970,7 @@ GSSolver.iterateEquation = function(j,eq,eps,Bs,invCs,lambda,useZeroRHS,dt){
     return deltalambda;
 };
 
-},{"../math/vec2":37,"./Solver":32,"../utils/Utils":34,"../equations/FrictionEquation":15}],19:[function(require,module,exports){
+},{"../math/vec2":38,"./Solver":33,"../utils/Utils":35,"../equations/FrictionEquation":16}],20:[function(require,module,exports){
 var Solver = require('./Solver')
 ,   vec2 = require('../math/vec2')
 ,   Island = require('../solver/Island')
@@ -2046,7 +2165,7 @@ IslandSolver.prototype.solve = function(dt,world){
     }
 };
 
-},{"./Solver":32,"../math/vec2":37,"../solver/Island":39,"../objects/Body":4}],20:[function(require,module,exports){
+},{"./Solver":33,"../math/vec2":38,"../solver/Island":40,"../objects/Body":5}],21:[function(require,module,exports){
 var Shape = require('./Shape')
 ,   vec2 = require('../math/vec2')
 
@@ -2095,7 +2214,7 @@ Line.prototype.computeAABB = function(out, position, angle){
 };
 
 
-},{"./Shape":31,"../math/vec2":37}],21:[function(require,module,exports){
+},{"./Shape":32,"../math/vec2":38}],22:[function(require,module,exports){
 var Constraint = require('./Constraint')
 ,   vec2 = require('../math/vec2')
 ,   Equation = require('../equations/Equation')
@@ -2220,7 +2339,42 @@ LockConstraint.prototype.update = function(){
     rot.G[5] =  vec2.crossLength(r,t);
 };
 
-},{"./Constraint":8,"../math/vec2":37,"../equations/Equation":13}],23:[function(require,module,exports){
+},{"./Constraint":9,"../math/vec2":38,"../equations/Equation":14}],25:[function(require,module,exports){
+var Shape = require('./Shape');
+
+module.exports = Particle;
+
+/**
+ * Particle shape class.
+ * @class Particle
+ * @constructor
+ * @extends {Shape}
+ */
+function Particle(){
+    Shape.call(this,Shape.PARTICLE);
+};
+Particle.prototype = new Shape();
+Particle.prototype.computeMomentOfInertia = function(mass){
+    return 0; // Can't rotate a particle
+};
+
+Particle.prototype.updateBoundingRadius = function(){
+    this.boundingRadius = 0;
+};
+
+/**
+ * @method computeAABB
+ * @param  {AABB}   out
+ * @param  {Array}  position
+ * @param  {Number} angle
+ */
+Particle.prototype.computeAABB = function(out, position, angle){
+    var l = this.length;
+    vec2.copy(out.lowerBound, position);
+    vec2.copy(out.upperBound, position);
+};
+
+},{"./Shape":32}],24:[function(require,module,exports){
 var Circle = require('../shapes/Circle')
 ,   Plane = require('../shapes/Plane')
 ,   Shape = require('../shapes/Shape')
@@ -2277,119 +2431,7 @@ NaiveBroadphase.prototype.getCollisionPairs = function(world){
     return result;
 };
 
-},{"../shapes/Circle":7,"../shapes/Plane":25,"../shapes/Shape":31,"../shapes/Particle":24,"../collision/Broadphase":5,"../math/vec2":37}],24:[function(require,module,exports){
-var Shape = require('./Shape');
-
-module.exports = Particle;
-
-/**
- * Particle shape class.
- * @class Particle
- * @constructor
- * @extends {Shape}
- */
-function Particle(){
-    Shape.call(this,Shape.PARTICLE);
-};
-Particle.prototype = new Shape();
-Particle.prototype.computeMomentOfInertia = function(mass){
-    return 0; // Can't rotate a particle
-};
-
-Particle.prototype.updateBoundingRadius = function(){
-    this.boundingRadius = 0;
-};
-
-/**
- * @method computeAABB
- * @param  {AABB}   out
- * @param  {Array}  position
- * @param  {Number} angle
- */
-Particle.prototype.computeAABB = function(out, position, angle){
-    var l = this.length;
-    vec2.copy(out.lowerBound, position);
-    vec2.copy(out.upperBound, position);
-};
-
-},{"./Shape":31}],25:[function(require,module,exports){
-var Shape =  require('./Shape')
-,    vec2 =  require('../math/vec2')
-,    Utils = require('../utils/Utils')
-
-module.exports = Plane;
-
-/**
- * Plane shape class. The plane is facing in the Y direction.
- * @class Plane
- * @extends {Shape}
- * @constructor
- */
-function Plane(){
-    Shape.call(this,Shape.PLANE);
-};
-Plane.prototype = new Shape();
-
-/**
- * Compute moment of inertia
- * @method computeMomentOfInertia
- */
-Plane.prototype.computeMomentOfInertia = function(mass){
-    return 0; // Plane is infinite. The inertia should therefore be infinty but by convention we set 0 here
-};
-
-/**
- * Update the bounding radius
- * @method updateBoundingRadius
- */
-Plane.prototype.updateBoundingRadius = function(){
-    this.boundingRadius = Number.MAX_VALUE;
-};
-
-/**
- * @method computeAABB
- * @param  {AABB}   out
- * @param  {Array}  position
- * @param  {Number} angle
- */
-Plane.prototype.computeAABB = function(out, position, angle){
-    var a = 0,
-        set = vec2.set;
-    if(typeof(angle) == "number")
-        a = angle % (2*Math.PI);
-
-    if(a == 0){
-        // y goes from -inf to 0
-        set(out.lowerBound, -Number.MAX_VALUE, -Number.MAX_VALUE);
-        set(out.upperBound,  Number.MAX_VALUE,  0);
-    } else if(a == Math.PI / 2){
-        // x goes from 0 to inf
-        set(out.lowerBound,                 0, -Number.MAX_VALUE);
-        set(out.upperBound,  Number.MAX_VALUE,  Number.MAX_VALUE);
-    } else if(a == Math.PI){
-        // y goes from 0 to inf
-        set(out.lowerBound, -Number.MAX_VALUE, 0);
-        set(out.upperBound,  Number.MAX_VALUE, Number.MAX_VALUE);
-    } else if(a == 3*Math.PI/2){
-        // x goes from -inf to 0
-        set(out.lowerBound, -Number.MAX_VALUE, -Number.MAX_VALUE);
-        set(out.upperBound,                 0,  Number.MAX_VALUE);
-    } else {
-        // Set max bounds
-        set(out.lowerBound, -Number.MAX_VALUE, -Number.MAX_VALUE);
-        set(out.upperBound,  Number.MAX_VALUE,  Number.MAX_VALUE);
-    }
-
-    vec2.add(out.lowerBound, out.lowerBound, position);
-    vec2.add(out.upperBound, out.upperBound, position);
-};
-
-Plane.prototype.updateArea = function(){
-    this.area = Number.MAX_VALUE;
-};
-
-
-},{"./Shape":31,"../math/vec2":37,"../utils/Utils":34}],26:[function(require,module,exports){
+},{"../shapes/Circle":8,"../shapes/Plane":26,"../shapes/Shape":32,"../shapes/Particle":25,"../collision/Broadphase":6,"../math/vec2":38}],27:[function(require,module,exports){
 var Constraint = require('./Constraint')
 ,   Equation = require('../equations/Equation')
 ,   RotationalVelocityEquation = require('../equations/RotationalVelocityEquation')
@@ -2631,7 +2673,84 @@ RevoluteConstraint.prototype.getMotorSpeed = function(){
     return this.motorEquation.relativeVelocity;
 };
 
-},{"./Constraint":8,"../equations/Equation":13,"../equations/RotationalVelocityEquation":29,"../equations/RotationalLockEquation":40,"../math/vec2":37}],27:[function(require,module,exports){
+},{"./Constraint":9,"../equations/Equation":14,"../equations/RotationalVelocityEquation":30,"../equations/RotationalLockEquation":41,"../math/vec2":38}],26:[function(require,module,exports){
+var Shape =  require('./Shape')
+,    vec2 =  require('../math/vec2')
+,    Utils = require('../utils/Utils')
+
+module.exports = Plane;
+
+/**
+ * Plane shape class. The plane is facing in the Y direction.
+ * @class Plane
+ * @extends {Shape}
+ * @constructor
+ */
+function Plane(){
+    Shape.call(this,Shape.PLANE);
+};
+Plane.prototype = new Shape();
+
+/**
+ * Compute moment of inertia
+ * @method computeMomentOfInertia
+ */
+Plane.prototype.computeMomentOfInertia = function(mass){
+    return 0; // Plane is infinite. The inertia should therefore be infinty but by convention we set 0 here
+};
+
+/**
+ * Update the bounding radius
+ * @method updateBoundingRadius
+ */
+Plane.prototype.updateBoundingRadius = function(){
+    this.boundingRadius = Number.MAX_VALUE;
+};
+
+/**
+ * @method computeAABB
+ * @param  {AABB}   out
+ * @param  {Array}  position
+ * @param  {Number} angle
+ */
+Plane.prototype.computeAABB = function(out, position, angle){
+    var a = 0,
+        set = vec2.set;
+    if(typeof(angle) == "number")
+        a = angle % (2*Math.PI);
+
+    if(a == 0){
+        // y goes from -inf to 0
+        set(out.lowerBound, -Number.MAX_VALUE, -Number.MAX_VALUE);
+        set(out.upperBound,  Number.MAX_VALUE,  0);
+    } else if(a == Math.PI / 2){
+        // x goes from 0 to inf
+        set(out.lowerBound,                 0, -Number.MAX_VALUE);
+        set(out.upperBound,  Number.MAX_VALUE,  Number.MAX_VALUE);
+    } else if(a == Math.PI){
+        // y goes from 0 to inf
+        set(out.lowerBound, -Number.MAX_VALUE, 0);
+        set(out.upperBound,  Number.MAX_VALUE, Number.MAX_VALUE);
+    } else if(a == 3*Math.PI/2){
+        // x goes from -inf to 0
+        set(out.lowerBound, -Number.MAX_VALUE, -Number.MAX_VALUE);
+        set(out.upperBound,                 0,  Number.MAX_VALUE);
+    } else {
+        // Set max bounds
+        set(out.lowerBound, -Number.MAX_VALUE, -Number.MAX_VALUE);
+        set(out.upperBound,  Number.MAX_VALUE,  Number.MAX_VALUE);
+    }
+
+    vec2.add(out.lowerBound, out.lowerBound, position);
+    vec2.add(out.upperBound, out.upperBound, position);
+};
+
+Plane.prototype.updateArea = function(){
+    this.area = Number.MAX_VALUE;
+};
+
+
+},{"./Shape":32,"../math/vec2":38,"../utils/Utils":35}],28:[function(require,module,exports){
 var Constraint = require('./Constraint')
 ,   ContactEquation = require('../equations/ContactEquation')
 ,   Equation = require('../equations/Equation')
@@ -2944,7 +3063,7 @@ PrismaticConstraint.prototype.disableMotor = function(){
     this.motorEnabled = false;
 };
 
-},{"./Constraint":8,"../equations/ContactEquation":9,"../equations/Equation":13,"../math/vec2":37,"../equations/RotationalLockEquation":40}],28:[function(require,module,exports){
+},{"./Constraint":9,"../equations/ContactEquation":10,"../equations/Equation":14,"../math/vec2":38,"../equations/RotationalLockEquation":41}],29:[function(require,module,exports){
 var vec2 = require('../math/vec2')
 ,   Shape = require('./Shape')
 ,   Convex = require('./Convex')
@@ -3040,7 +3159,7 @@ Rectangle.prototype.updateArea = function(){
 };
 
 
-},{"../math/vec2":37,"./Shape":31,"./Convex":11}],29:[function(require,module,exports){
+},{"../math/vec2":38,"./Shape":32,"./Convex":12}],30:[function(require,module,exports){
 var Equation = require("./Equation"),
     vec2 = require('../math/vec2');
 
@@ -3074,7 +3193,7 @@ RotationalVelocityEquation.prototype.computeB = function(a,b,h){
     return B;
 };
 
-},{"./Equation":13,"../math/vec2":37}],30:[function(require,module,exports){
+},{"./Equation":14,"../math/vec2":38}],31:[function(require,module,exports){
 var Circle = require('../shapes/Circle')
 ,   Plane = require('../shapes/Plane')
 ,   Shape = require('../shapes/Shape')
@@ -3244,7 +3363,7 @@ SAP1DBroadphase.checkBounds = function(bi,bj,axisIndex){
     return boundB1 < boundA2;
 };
 
-},{"../shapes/Circle":7,"../shapes/Plane":25,"../shapes/Shape":31,"../shapes/Particle":24,"../utils/Utils":34,"../collision/Broadphase":5,"../math/vec2":37}],32:[function(require,module,exports){
+},{"../shapes/Circle":8,"../shapes/Plane":26,"../shapes/Shape":32,"../shapes/Particle":25,"../utils/Utils":35,"../collision/Broadphase":6,"../math/vec2":38}],33:[function(require,module,exports){
 var Utils = require('../utils/Utils')
 ,   EventEmitter = require('../events/EventEmitter')
 
@@ -3339,7 +3458,7 @@ Solver.prototype.removeAllEquations = function(){
 };
 
 
-},{"../utils/Utils":34,"../events/EventEmitter":14}],33:[function(require,module,exports){
+},{"../utils/Utils":35,"../events/EventEmitter":15}],34:[function(require,module,exports){
 var vec2 = require('../math/vec2');
 
 module.exports = Spring;
@@ -3522,7 +3641,7 @@ Spring.prototype.applyForce = function(){
     bodyB.angularForce += rj_x_f;
 };
 
-},{"../math/vec2":37}],35:[function(require,module,exports){
+},{"../math/vec2":38}],36:[function(require,module,exports){
 var  GSSolver = require('../solver/GSSolver')
 ,    NaiveBroadphase = require('../collision/NaiveBroadphase')
 ,    vec2 = require('../math/vec2')
@@ -3775,6 +3894,9 @@ function World(options){
         type: "impact",
         bodyA : null,
         bodyB : null,
+        shapeA : null,
+        shapeB : null,
+        contactEquation : null,
     };
 
     /**
@@ -4051,6 +4173,7 @@ World.prototype.internalStep = function(dt){
                 ev.bodyB = eq.bj;
                 ev.shapeA = eq.shapeA;
                 ev.shapeB = eq.shapeB;
+                ev.contactEquation = eq;
                 this.emit(ev);
             }
         }
@@ -4682,7 +4805,7 @@ World.prototype.hitTest = function(worldPoint,bodies,precision){
     return result;
 };
 
-},{"../../package.json":2,"../solver/GSSolver":18,"../collision/NaiveBroadphase":23,"../math/vec2":37,"../shapes/Circle":7,"../shapes/Rectangle":28,"../shapes/Convex":11,"../shapes/Line":20,"../shapes/Plane":25,"../shapes/Capsule":6,"../shapes/Particle":24,"../events/EventEmitter":14,"../objects/Body":4,"../objects/Spring":33,"../material/Material":22,"../material/ContactMaterial":10,"../constraints/DistanceConstraint":12,"../constraints/LockConstraint":21,"../constraints/RevoluteConstraint":26,"../constraints/PrismaticConstraint":27,"../collision/Broadphase":5,"../collision/Narrowphase":41,"../utils/Utils":34}],36:[function(require,module,exports){
+},{"../../package.json":2,"../solver/GSSolver":19,"../collision/NaiveBroadphase":24,"../math/vec2":38,"../shapes/Circle":8,"../shapes/Rectangle":29,"../shapes/Convex":12,"../shapes/Line":21,"../shapes/Plane":26,"../shapes/Capsule":7,"../shapes/Particle":25,"../events/EventEmitter":15,"../objects/Body":5,"../objects/Spring":34,"../material/Material":23,"../material/ContactMaterial":11,"../constraints/DistanceConstraint":13,"../constraints/LockConstraint":22,"../constraints/RevoluteConstraint":27,"../constraints/PrismaticConstraint":28,"../collision/Broadphase":6,"../collision/Narrowphase":42,"../utils/Utils":35}],37:[function(require,module,exports){
 var Plane = require("../shapes/Plane");
 var Broadphase = require("../collision/Broadphase");
 
@@ -5060,7 +5183,7 @@ BoundsNode.prototype.clear = function(){
 }
 
 
-},{"../shapes/Plane":25,"../collision/Broadphase":5}],37:[function(require,module,exports){
+},{"../shapes/Plane":26,"../collision/Broadphase":6}],38:[function(require,module,exports){
 /**
  * The vec2 object from glMatrix, extended with the functions documented here. See http://glmatrix.net for full doc.
  * @class vec2
@@ -5184,7 +5307,7 @@ vec2.centroid = function(out, a, b, c){
 // Export everything
 module.exports = vec2;
 
-},{"../../node_modules/gl-matrix/src/gl-matrix/vec2":42}],43:[function(require,module,exports){
+},{"../../node_modules/gl-matrix/src/gl-matrix/vec2":43}],44:[function(require,module,exports){
 
     /*
         PolyK library
@@ -5663,7 +5786,7 @@ module.exports = vec2;
 
 module.exports = PolyK;
 
-},{}],39:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 module.exports = Island;
 
 /**
@@ -5746,7 +5869,7 @@ Island.prototype.solve = function(dt,solver){
     solver.solve(dt,{bodies:bodies});
 };
 
-},{}],42:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 /* Copyright (c) 2012, Brandon Jones, Colin MacKenzie IV. All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -6180,125 +6303,7 @@ if(typeof(exports) !== 'undefined') {
     exports.vec2 = vec2;
 }
 
-},{}],44:[function(require,module,exports){
-var vec2 = require('../math/vec2')
-,   Utils = require('../utils/Utils')
-
-module.exports = AABB;
-
-/**
- * Axis aligned bounding box class.
- * @class AABB
- * @constructor
- * @param {Object} options
- * @param {Array} upperBound
- * @param {Array} lowerBound
- */
-function AABB(options){
-
-    /**
-     * The lower bound of the bounding box.
-     * @property lowerBound
-     * @type {Array}
-     */
-    this.lowerBound = vec2.create();
-    if(options && options.lowerBound) vec2.copy(this.lowerBound, options.lowerBound);
-
-    /**
-     * The upper bound of the bounding box.
-     * @property upperBound
-     * @type {Array}
-     */
-    this.upperBound = vec2.create();
-    if(options && options.upperBound) vec2.copy(this.upperBound, options.upperBound);
-}
-
-var tmp = vec2.create();
-
-/**
- * Set the AABB bounds from a set of points.
- * @method setFromPoints
- * @param {Array} points An array of vec2's.
- */
-AABB.prototype.setFromPoints = function(points,position,angle){
-    var l = this.lowerBound,
-        u = this.upperBound;
-    vec2.set(l,  Number.MAX_VALUE,  Number.MAX_VALUE);
-    vec2.set(u, -Number.MAX_VALUE, -Number.MAX_VALUE);
-    for(var i=0; i<points.length; i++){
-        var p = points[i];
-
-        if(typeof(angle) =="number"){
-            vec2.rotate(tmp,p,angle);
-            p = tmp;
-        }
-
-        for(var j=0; j<2; j++){
-            if(p[j] > u[j]){
-                u[j] = p[j];
-            }
-            if(p[j] < l[j]){
-                l[j] = p[j];
-            }
-        }
-    }
-
-    // Add offset
-    if(position){
-        vec2.add(this.lowerBound, this.lowerBound, position);
-        vec2.add(this.upperBound, this.upperBound, position);
-    }
-};
-
-/**
- * Copy bounds from an AABB to this AABB
- * @method copy
- * @param  {AABB} aabb
- */
-AABB.prototype.copy = function(aabb){
-    vec2.copy(this.lowerBound, aabb.lowerBound);
-    vec2.copy(this.upperBound, aabb.upperBound);
-};
-
-/**
- * Extend this AABB so that it covers the given AABB too.
- * @method extend
- * @param  {AABB} aabb
- */
-AABB.prototype.extend = function(aabb){
-    // Loop over x and y
-    for(var i=0; i<2; i++){
-        // Extend lower bound
-        if(aabb.lowerBound[i] < this.lowerBound[i])
-            this.lowerBound[i] = aabb.lowerBound[i];
-
-        // Upper
-        if(aabb.upperBound[i] > this.upperBound[i])
-            this.upperBound[i] = aabb.upperBound[i];
-    }
-};
-
-/**
- * Returns true if the given AABB overlaps this AABB.
- * @param  {AABB} aabb
- * @return {Boolean}
- */
-AABB.prototype.overlaps = function(aabb){
-    var l1 = this.lowerBound,
-        u1 = this.upperBound,
-        l2 = aabb.lowerBound,
-        u2 = aabb.upperBound;
-
-    //      l2        u2
-    //      |---------|
-    // |--------|
-    // l1       u1
-
-    return ((l2[0] <= u1[0] && u1[0] <= u2[0]) || (l1[0] <= u2[0] && u2[0] <= u1[0])) &&
-           ((l2[1] <= u1[1] && u1[1] <= u2[1]) || (l1[1] <= u2[1] && u2[1] <= u1[1]));
-};
-
-},{"../math/vec2":37,"../utils/Utils":34}],38:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 /**
  * The mat2 object from glMatrix, extended with the functions documented here. See http://glmatrix.net for full doc.
  * @class mat2
@@ -6310,7 +6315,7 @@ var mat2 = require('../../node_modules/gl-matrix/src/gl-matrix/mat2').mat2;
 // Export everything
 module.exports = mat2;
 
-},{"../../node_modules/gl-matrix/src/gl-matrix/mat2":45}],40:[function(require,module,exports){
+},{"../../node_modules/gl-matrix/src/gl-matrix/mat2":45}],41:[function(require,module,exports){
 var Equation = require("./Equation"),
     vec2 = require('../math/vec2');
 
@@ -6349,7 +6354,7 @@ RotationalLockEquation.prototype.computeGq = function(){
     return vec2.dot(worldVectorA,worldVectorB);
 };
 
-},{"./Equation":13,"../math/vec2":37}],41:[function(require,module,exports){
+},{"../math/vec2":38,"./Equation":14}],42:[function(require,module,exports){
 var vec2 = require('../math/vec2')
 ,   sub = vec2.sub
 ,   add = vec2.add
@@ -7708,7 +7713,7 @@ Narrowphase.prototype.circlePlane = function(   bi,si,xi,ai, bj,sj,xj,aj ){
  * @param  {Number} aj
  */
 Narrowphase.prototype[Shape.CONVEX] =
-Narrowphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj ){
+Narrowphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, precision ){
     var sepAxis = tmp1,
         worldPoint = tmp2,
         worldPoint0 = tmp3,
@@ -7717,7 +7722,8 @@ Narrowphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj ){
         projected = tmp6,
         penetrationVec = tmp7,
         dist = tmp8,
-        worldNormal = tmp9;
+        worldNormal = tmp9,
+        precision = precision || 1e-10;
 
     var found = Narrowphase.findSeparatingAxis(si,xi,ai,sj,xj,aj,sepAxis);
     if(!found) return false;
@@ -7785,7 +7791,7 @@ Narrowphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj ){
 
                 var d = dot(worldNormal,dist);
 
-                if(d < 0){
+                if(d <= precision){
                     insideNumEdges++;
                 }
             }
@@ -8008,7 +8014,7 @@ Narrowphase.getClosestEdge = function(c,angle,axis,flip){
 };
 
 
-},{"../math/vec2":37,"../utils/Utils":34,"../equations/ContactEquation":9,"../equations/FrictionEquation":15,"../shapes/Circle":7,"../shapes/Shape":31,"../objects/Body":4}],4:[function(require,module,exports){
+},{"../math/vec2":38,"../utils/Utils":35,"../equations/ContactEquation":10,"../equations/FrictionEquation":16,"../shapes/Circle":8,"../shapes/Shape":32,"../objects/Body":5}],5:[function(require,module,exports){
 var vec2 = require('../math/vec2')
 ,   decomp = require('poly-decomp')
 ,   Convex = require('../shapes/Convex')
@@ -8016,8 +8022,6 @@ var vec2 = require('../math/vec2')
 ,   EventEmitter = require('../events/EventEmitter')
 
 module.exports = Body;
-
-var zero = vec2.fromValues(0,0);
 
 /**
  * A rigid body. Has got a center of mass, position, velocity and a number of
@@ -8353,7 +8357,7 @@ Body.prototype.updateBoundingRadius = function(){
 
     for(var i=0; i!==N; i++){
         var shape = shapes[i],
-            offset = vec2.length(shapeOffsets[i] || zero),
+            offset = vec2.length(shapeOffsets[i]),
             r = shape.boundingRadius;
         if(offset + r > radius)
             radius = offset + r;
@@ -8443,7 +8447,7 @@ Body.prototype.updateMassProperties = function(){
     if(!this.fixedRotation){
         for(var i=0; i<N; i++){
             var shape = shapes[i],
-                r2 = vec2.squaredLength(this.shapeOffsets[i] || zero),
+                r2 = vec2.squaredLength(this.shapeOffsets[i]),
                 Icm = shape.computeMomentOfInertia(m);
             I += Icm + m*r2;
         }
@@ -8583,17 +8587,15 @@ var adjustCenterOfMass_tmp1 = vec2.fromValues(0,0),
  * @method adjustCenterOfMass
  */
 Body.prototype.adjustCenterOfMass = function(){
-    var zero =              adjustCenterOfMass_tmp1,
-        offset_times_area = adjustCenterOfMass_tmp2,
+    var offset_times_area = adjustCenterOfMass_tmp2,
         sum =               adjustCenterOfMass_tmp3,
         cm =                adjustCenterOfMass_tmp4,
         totalArea =         0;
     vec2.set(sum,0,0);
-    vec2.set(zero,0,0);
 
     for(var i=0; i!==this.shapes.length; i++){
         var s = this.shapes[i],
-            offset = this.shapeOffsets[i] || zero;
+            offset = this.shapeOffsets[i];
         vec2.scale(offset_times_area,offset,s.area);
         vec2.add(sum,sum,offset_times_area);
         totalArea += s.area;
@@ -8772,7 +8774,7 @@ Body.SLEEPY = 1;
 Body.SLEEPING = 2;
 
 
-},{"../math/vec2":37,"../shapes/Convex":11,"../collision/AABB":44,"../events/EventEmitter":14,"poly-decomp":46}],45:[function(require,module,exports){
+},{"../math/vec2":38,"../shapes/Convex":12,"../collision/AABB":3,"../events/EventEmitter":15,"poly-decomp":46}],45:[function(require,module,exports){
 /* Copyright (c) 2012, Brandon Jones, Colin MacKenzie IV. All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -9015,7 +9017,7 @@ if(typeof(exports) !== 'undefined') {
     exports.mat2 = mat2;
 }
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 var Shape = require('./Shape')
 ,   vec2 = require('../math/vec2')
 ,   polyk = require('../math/polyk')
@@ -9281,7 +9283,7 @@ Convex.prototype.computeAABB = function(out, position, angle){
    out.setFromPoints(this.vertices,position,angle);
 };
 
-},{"./Shape":31,"../math/vec2":37,"../math/polyk":43,"poly-decomp":46}],46:[function(require,module,exports){
+},{"./Shape":32,"../math/vec2":38,"../math/polyk":44,"poly-decomp":46}],46:[function(require,module,exports){
 module.exports = {
     Polygon : require("./Polygon"),
     Point : require("./Point"),
