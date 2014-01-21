@@ -46,10 +46,13 @@
 
         // Create wheels
         var wheelBody1 = new p2.Body({ mass : 1, position:[chassisBody.position[0] - 0.5,0.7] }),
-            wheelBody2 = new p2.Body({ mass : 1, position:[chassisBody.position[0] + 0.5,0.7] }),
-            wheelShape = new p2.Circle(0.2);
-        wheelBody1.addShape(wheelShape);
-        wheelBody2.addShape(wheelShape);
+            wheelBody2 = new p2.Body({ mass : 1, position:[chassisBody.position[0] + 0.5,0.7] });
+            
+        // Since shapes have a state (dimensions, orientaion), they cannot always be shared among bodies
+        var wheelShape1 = new p2.Circle(0.2), wheelShape2 = new p2.Circle(0.2);
+        
+        wheelBody1.addShape(wheelShape1);
+        wheelBody2.addShape(wheelShape2);
         world.addBody(wheelBody1);
         world.addBody(wheelBody2);
 
@@ -59,12 +62,14 @@
             GROUND =  4,
             OTHER =   8;
 
-        wheelShape  .collisionGroup =   WHEELS; // Assign groups
+        wheelShape1  .collisionGroup =   WHEELS; // Assign groups
+        wheelShape2  .collisionGroup =   WHEELS;
         chassisShape.collisionGroup =   CHASSIS;
         planeShape  .collisionGroup =   GROUND;
         bumpShape   .collisionGroup =   GROUND;
 
-        wheelShape  .collisionMask =    GROUND | OTHER;             // Wheels can only collide with ground & other
+        wheelShape1  .collisionMask =    GROUND | OTHER;             // Wheels can only collide with ground & other
+        wheelShape2  .collisionMask =    GROUND | OTHER;
         chassisShape.collisionMask =    GROUND | OTHER;             // Chassis can only collide with ground & other
         planeShape  .collisionMask =    WHEELS | CHASSIS | OTHER;   // Ground can collide with wheels & chassis & other
         bumpShape   .collisionMask =    planeShape.collisionMask;   // Same for bump
