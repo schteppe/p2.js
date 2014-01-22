@@ -281,6 +281,7 @@ function Serializer(){
         pattern:/^\d+.\d+.\d+$/,
     };
 
+    // Latest version
     this.addVersion(pkg.version,{
         type: "object",
         properties: {
