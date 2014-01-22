@@ -70,7 +70,7 @@ function PrismaticConstraint(bodyA,bodyB,options){
 
      */
 
-    var maxForce = this.maxForce = typeof(options.maxForce)==="undefined" ? options.maxForce : Number.MAX_VALUE;
+    var maxForce = this.maxForce = typeof(options.maxForce)!="undefined" ? options.maxForce : Number.MAX_VALUE;
 
     // Translational part
     var trans = new Equation(bodyA,bodyB,-maxForce,maxForce);

@@ -28,7 +28,7 @@ var worldPivotA = vec2.create(),
 function RevoluteConstraint(bodyA, pivotA, bodyB, pivotB, maxForce){
     Constraint.call(this,bodyA,bodyB);
 
-    maxForce = typeof(maxForce)!="undefined" ? maxForce : Number.MAX_VALUE;
+    maxForce = this.maxForce = typeof(maxForce)!="undefined" ? maxForce : Number.MAX_VALUE;
 
     this.pivotA = pivotA;
     this.pivotB = pivotB;
