@@ -27,6 +27,18 @@ function JSONFileFormat(options){
     this.getVersionFunc = settings.getVersionFunc;
 }
 
+JSONFileFormat.prototype.stringify = function(){
+    var obj = this.serialize.apply(this,arguments);
+    if(obj)
+        return JSON.stringify(obj);
+    else
+        return false;
+};
+
+JSONFileFormat.prototype.parse = function(world){
+    return this.deserialize(JSON.parse(world));
+};
+
 /**
  * Add a version
  * @method addVersion
@@ -64,14 +76,22 @@ JSONFileFormat.prototype.addUpgrader = function(fromVersion,toVersion,upgradeFun
  * @return {Object|Boolean} The upgraded JSON, or false if something went wrong.
  */
 JSONFileFormat.prototype.upgrade = function(instance){
-    if(!instance) return false;
+    if(!instance){
+        this.error = "Given instance is null";
+        return false;
+    }
 
     // Get version
     var version = this.getVersionFunc(instance);
-    if(!version) return false;
-
-    if(!this.validate(instance))
+    if(!version){
+        this.error = "Could not get version from instance.";
         return false;
+    }
+
+    if(!this.validate(instance)){
+        this.error = "The instance cannot be validated.";
+        return false;
+    }
 
     // Find upgrader
     var upgraders = this.upgraders;
@@ -110,6 +130,7 @@ JSONFileFormat.prototype.validate = function(instance){
                 return v.validator(instance);
             else {
                 var result = jsonschema.validate(instance,v.validator);
+                this.validateResult = result;
                 return result.errors.length == 0;
             }
         }
@@ -130,19 +151,18 @@ JSONFileFormat.makeSchemaStrict = function makeSchemaStrict(schema){
         }
     } else if(schema instanceof Object && "type" in schema){
         schema.required = true;
-        switch(schema.type){
-        case "array":
+        if(schema.type == "array"){
             schema.additionalItems = false;
             makeSchemaStrict(schema.items);
-            break;
-        case "object":
+        } else if(schema.type == "object"){
             schema.additionalProperties = false;
             if(schema.properties){
                 for(var property in schema.properties){
                     makeSchemaStrict(schema.properties[property]);
                 }
             }
-            break;
+        } else if(schema.type instanceof Array){
+            makeSchemaStrict(schema.type);
         }
     }
     return schema;
