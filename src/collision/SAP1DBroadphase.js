@@ -30,7 +30,7 @@ function SAP1DBroadphase(){
      * @property world
      * @type {World}
      */
-    this.world = world;
+    this.world = null;
 
     /**
      * Axis to sort the bodies along. Set to 0 for x axis, and 1 for y axis. For best performance, choose an axis that the bodies are spread out more on.
