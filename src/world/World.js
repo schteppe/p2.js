@@ -84,7 +84,7 @@ function World(options){
      * @property narrowphase
      * @type {Narrowphase}
      */
-    this.narrowphase = new Narrowphase();
+    this.narrowphase = new Narrowphase(this);
 
     /**
      * Gravity in the world. This is applied on all bodies in the beginning of each step().
@@ -200,6 +200,13 @@ function World(options){
      */
     this.emitImpactEvent = true;
 
+    /**
+     * Set to true if you want to the world to emit the "separation" event. Turning this off could improve performance.
+     * @property emitSeparationEvent
+     * @type {Boolean}
+     */
+    this.emitSeparationEvent = true;
+
     // Id counters
     this._constraintIdCounter = 0;
     this._bodyIdCounter = 0;
@@ -253,6 +260,18 @@ function World(options){
         shapeA : null,
         shapeB : null,
         contactEquation : null,
+    };
+
+    /**
+     * Fired when two bodies stop touching. This event is fired during the narrowphase.
+     * @event impact
+     * @param {Body} bodyA
+     * @param {Body} bodyB
+     */
+    this.separationEvent = {
+        type: "separation",
+        bodyA : null,
+        bodyB : null,
     };
 
     /**
@@ -450,7 +469,7 @@ World.prototype.internalStep = function(dt){
     var result = broadphase.getCollisionPairs(this);
 
     // Narrowphase
-    np.reset();
+    np.reset(this);
     for(var i=0, Nresults=result.length; i!==Nresults; i+=2){
         var bi = result[i],
             bj = result[i+1];
