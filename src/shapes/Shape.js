@@ -9,6 +9,13 @@ function Shape(type){
     this.type = type;
 
     /**
+     * Shape object identifier.
+     * @type {Number}
+     * @property id
+     */
+    this.id = Shape.idCounter++;
+
+    /**
      * Bounding circle radius of this shape
      * @property boundingRadius
      * @type {Number}
@@ -70,6 +77,8 @@ function Shape(type){
 
     this.updateArea();
 };
+
+Shape.idCounter = 0;
 
 Shape.CIRCLE =      1;
 Shape.PARTICLE =    2;
