@@ -126,8 +126,9 @@ function clearObject(obj){
  */
 Narrowphase.prototype.reset = function(){
 
-    // Save the colliding bodies data
     clearObject(this.collidingBodiesLastStep);
+
+    // Save the colliding bodies data
     for(var i=0; i!==this.contactEquations.length; i++){
         var eq = this.contactEquations[i],
             id1 = eq.bi.id,
@@ -138,8 +139,10 @@ Narrowphase.prototype.reset = function(){
             id2 = tmp;
         }
         var key = id1 + " " + id2;
-        this.collidingBodiesLastStep[key] = true;
-        this.collidingBodiesLastStep.keys.push(key);
+        if(!this.collidingBodiesLastStep[key]){
+            this.collidingBodiesLastStep[key] = true;
+            this.collidingBodiesLastStep.keys.push(key);
+        }
     }
 
     if(this.reuseObjects){
