@@ -275,6 +275,18 @@ function World(options){
     };
 
     /**
+     * Fired after the Broadphase has collected collision pairs in the world.
+     * Inside the event handler, you can modify the pairs array as you like, to
+     * prevent collisions between objects that you don't want.
+     * @event postBroadphase
+     * @param {Array} pairs
+     */
+    this.postBroadphaseEvent = {
+        type:"postBroadphase",
+        pairs:null,
+    };
+
+    /**
      * Enable / disable automatic body sleeping
      * @property allowSleep
      * @type {Boolean}
@@ -467,6 +479,10 @@ World.prototype.internalStep = function(dt){
 
     // Broadphase
     var result = broadphase.getCollisionPairs(this);
+
+    // postBroadphase event
+    this.postBroadphaseEvent.pairs = result;
+    this.emit(this.postBroadphaseEvent);
 
     // Narrowphase
     np.reset(this);
