@@ -279,7 +279,7 @@ function World(options){
      * Inside the event handler, you can modify the pairs array as you like, to
      * prevent collisions between objects that you don't want.
      * @event postBroadphase
-     * @param {Array} pairs
+     * @param {Array} pairs An array of collision pairs. If this array is [body1,body2,body3,body4], then the body pairs 1,2 and 3,4 would advance to narrowphase.
      */
     this.postBroadphaseEvent = {
         type:"postBroadphase",
