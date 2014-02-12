@@ -17,7 +17,8 @@ EventEmitter.prototype = {
      * @param  {Function} listener
      * @return {EventEmitter} The self object, for chainability.
      */
-    on: function ( type, listener ) {
+    on: function ( type, listener, context ) {
+        listener.context = context || this;
         if ( this._listeners === undefined ) this._listeners = {};
         var listeners = this._listeners;
         if ( listeners[ type ] === undefined ) {
@@ -76,7 +77,8 @@ EventEmitter.prototype = {
         if ( listenerArray !== undefined ) {
             event.target = this;
             for ( var i = 0, l = listenerArray.length; i < l; i ++ ) {
-                listenerArray[ i ].call( this, event );
+                var listener = listenerArray[ i ];
+                listener.call( listener.context, event );
             }
         }
         return this;
