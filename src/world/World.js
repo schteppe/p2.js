@@ -542,8 +542,8 @@ World.prototype.internalStep = function(dt){
         if(!this.overlappingShapesCurrentState[key]){
             // Not overlapping any more! Emit event.
             var e = this.endContactEvent;
-            // TODO FIND SHAPES
-            //this.emit(e);
+            // TODO: add shapes to the event object
+            this.emit(e);
         }
 
         // Clear old data
@@ -701,8 +701,8 @@ World.prototype.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,mu,restitut
                 var e = this.beginContactEvent;
                 e.shapeA = si;
                 e.shapeB = sj;
-                e.shapeA = bi;
-                e.shapeB = bj;
+                e.bodyA = bi;
+                e.bodyB = bj;
                 this.emit(e);
                 if(!this.overlappingShapesCurrentState[key]){
                     this.overlappingShapesCurrentState[key] = true;

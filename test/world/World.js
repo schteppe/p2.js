@@ -118,3 +118,40 @@ exports.upgradeJSON = function(test){
     test.done();
 };
 
+exports.events = {
+    beginContact : function(test){
+        var world = new World(),
+            bodyA = new Body({ mass:1 }),
+            bodyB = new Body({ mass:1 });
+        world.addBody(bodyA);
+        world.addBody(bodyB);
+        var shapeA = new Circle(1),
+            shapeB = new Circle(1);
+        bodyA.addShape(shapeA);
+        bodyB.addShape(shapeB);
+        var beginContactHits = 0,
+            endContactHits = 0;
+        world.on("beginContact",function(evt){
+            test.ok( evt.shapeA.id == shapeA.id || evt.shapeA.id == shapeB.id );
+            test.ok( evt.shapeB.id == shapeA.id || evt.shapeB.id == shapeB.id );
+            test.ok( evt.bodyA.id == bodyA.id || evt.bodyA.id == bodyB.id );
+            test.ok( evt.bodyB.id == bodyA.id || evt.bodyB.id == bodyB.id );
+            beginContactHits++;
+        });
+        world.on("endContact",function(evt){
+            test.ok( evt.shapeA.id == shapeA.id || evt.shapeA.id == shapeB.id );
+            test.ok( evt.shapeB.id == shapeA.id || evt.shapeB.id == shapeB.id );
+            test.ok( evt.bodyA.id == bodyA.id || evt.bodyA.id == bodyB.id );
+            test.ok( evt.bodyB.id == bodyA.id || evt.bodyB.id == bodyB.id );
+            endContactHits++;
+        });
+        world.step(1/60);
+        bodyA.position[0] = 10;
+        world.step(1/60);
+
+        test.equal(beginContactHits,1);
+        test.equal(endContactHits,1);
+
+        test.done();
+    },
+};
