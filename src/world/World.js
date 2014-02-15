@@ -280,6 +280,24 @@ function World(options){
      * @type {Boolean}
      */
     this.enableBodySleeping = false;
+
+    this.beginContactEvent = {
+        type:"beginContact",
+        shapeA : null,
+        shapeB : null,
+        bodyA : null,
+        bodyB : null,
+    };
+
+    this.endContactEvent = {
+        type:"endContact",
+        shapeA : null,
+        shapeB : null,
+    };
+
+    // For keeping track of overlapping shapes
+    this.overlappingShapesLastState = { keys:[] };
+    this.overlappingShapesCurrentState = { keys:[] };
 };
 World.prototype = new Object(EventEmitter.prototype);
 
@@ -497,10 +515,30 @@ World.prototype.internalStep = function(dt){
                     }
                 }
 
-                World.runNarrowphase(np,bi,si,xi,ai,bj,sj,xj,aj,mu,restitution);
+                this.runNarrowphase(np,bi,si,xi,ai,bj,sj,xj,aj,mu,restitution);
             }
         }
     }
+
+    // Emit shape end overlap events
+    for(var i=0; i<this.overlappingShapesLastState.keys.length; i++){
+        var key = this.overlappingShapesLastState.keys[i];
+        if(!this.overlappingShapesCurrentState[key]){
+            // Not overlapping any more! Emit event.
+            var e = this.endContactEvent;
+            // TODO FIND SHAPES
+            //this.emit(e);
+        }
+
+        // Clear old data
+        delete this.overlappingShapesLastState[key];
+    }
+    this.overlappingShapesLastState.keys.length = 0;
+    // Swap state objects & make sure to reuse them
+    var tmp = this.overlappingShapesLastState;
+    this.overlappingShapesLastState = this.overlappingShapesCurrentState;
+    this.overlappingShapesCurrentState = tmp;
+
 
     // Add contact equations to solver
     solver.addEquations(np.contactEquations);
@@ -597,7 +635,6 @@ World.integrateBody = function(body,dt){
 
 /**
  * Runs narrowphase for the shape pair i and j.
- * @static
  * @method runNarrowphase
  * @param  {Narrowphase} np
  * @param  {Body} bi
@@ -610,7 +647,7 @@ World.integrateBody = function(body,dt){
  * @param  {Number} aj
  * @param  {Number} mu
  */
-World.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,mu,restitution){
+World.prototype.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,mu,restitution){
 
     if(!((si.collisionGroup & sj.collisionMask) !== 0 && (sj.collisionGroup & si.collisionMask) !== 0))
         return;
@@ -632,14 +669,33 @@ World.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,mu,restitution){
     np.frictionCoefficient = mu;
     np.restitution = restitution;
 
-    var resolver = np[si.type | sj.type];
+    var resolver = np[si.type | sj.type],
+        numContacts = 0;
     if (resolver) {
         if (si.type < sj.type) {
-            resolver.call(np, bi,si,xiw,aiw, bj,sj,xjw,ajw);
+            numContacts = resolver.call(np, bi,si,xiw,aiw, bj,sj,xjw,ajw);
         } else {
-            resolver.call(np, bj,sj,xjw,ajw, bi,si,xiw,aiw);
+            numContacts = resolver.call(np, bj,sj,xjw,ajw, bi,si,xiw,aiw);
+        }
+
+        if(numContacts > 0){
+            var key = si.id < sj.id ? si.id+" "+ sj.id : sj.id+" "+ si.id;
+            if(!this.overlappingShapesLastState[key]){
+                // Report new shape overlap
+                var e = this.beginContactEvent;
+                e.shapeA = si;
+                e.shapeB = sj;
+                e.shapeA = bi;
+                e.shapeB = bj;
+                this.emit(e);
+                if(!this.overlappingShapesCurrentState[key]){
+                    this.overlappingShapesCurrentState[key] = true;
+                    this.overlappingShapesCurrentState.keys.push(key);
+                }
+            }
         }
     }
+
 };
 
 /**
