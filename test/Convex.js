@@ -3,6 +3,14 @@ var Convex = require('../src/shapes/Convex')
 
 exports.construct = function(test){
     new Convex();
+
+    test.throws(function(){
+        var c = new Convex([[-1,-1],
+                            [-1, 1],
+                            [ 1, 1],
+                            [ 1,-1]]);
+    },"Should throw exception on non-clockwise winding.");
+
     test.done();
 };
 
@@ -45,5 +53,14 @@ exports.updateArea = function(test){
                         [-1, 1]]);
     c.updateArea();
     test.equal(c.area, 4)
+
+    var c = new Convex([
+        [990, 0],
+        [990, 10],
+        [0, 10],
+        [0, 0]
+    ]);
+    test.equal(c.area,9900);
+
     test.done();
 };

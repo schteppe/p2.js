@@ -53,9 +53,14 @@ function Convex(vertices){
      * @type {Number}
      */
     this.boundingRadius = 0;
-    this.updateBoundingRadius();
+
 
     Shape.call(this,Shape.CONVEX);
+
+    this.updateBoundingRadius();
+    this.updateArea();
+    if(this.area < 0)
+        throw new Error("Convex vertices must be given in conter-clockwise winding.");
 };
 Convex.prototype = new Shape();
 
