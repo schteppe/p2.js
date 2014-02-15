@@ -310,6 +310,7 @@ function World(options){
     // For keeping track of overlapping shapes
     this.overlappingShapesLastState = { keys:[] };
     this.overlappingShapesCurrentState = { keys:[] };
+    this.overlappingShapeLookup = { keys:[] };
 };
 World.prototype = new Object(EventEmitter.prototype);
 
@@ -537,17 +538,29 @@ World.prototype.internalStep = function(dt){
     }
 
     // Emit shape end overlap events
-    for(var i=0; i<this.overlappingShapesLastState.keys.length; i++){
-        var key = this.overlappingShapesLastState.keys[i];
+    var last = this.overlappingShapesLastState;
+    for(var i=0; i<last.keys.length; i++){
+        var key = last.keys[i];
+        if(key.indexOf("shape")!=-1)
+            break;
+
         if(!this.overlappingShapesCurrentState[key]){
             // Not overlapping any more! Emit event.
             var e = this.endContactEvent;
             // TODO: add shapes to the event object
+            e.shapeA = last[key+"_shapeA"];
+            e.shapeB = last[key+"_shapeB"];
+            e.bodyA = last[key+"_bodyA"];
+            e.bodyB = last[key+"_bodyB"];
             this.emit(e);
         }
 
         // Clear old data
-        delete this.overlappingShapesLastState[key];
+        delete last[key];
+        delete last[key+"_shapeA"];
+        delete last[key+"_shapeB"];
+        delete last[key+"_bodyA"];
+        delete last[key+"_bodyB"];
     }
     this.overlappingShapesLastState.keys.length = 0;
     // Swap state objects & make sure to reuse them
@@ -704,9 +717,20 @@ World.prototype.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,mu,restitut
                 e.bodyA = bi;
                 e.bodyB = bj;
                 this.emit(e);
-                if(!this.overlappingShapesCurrentState[key]){
-                    this.overlappingShapesCurrentState[key] = true;
-                    this.overlappingShapesCurrentState.keys.push(key);
+                var current = this.overlappingShapesCurrentState;
+                if(!current[key]){
+                    current[key] = true;
+                    current.keys.push(key);
+
+                    // Also store shape & body data
+                    current[key+"_shapeA"] = si;
+                    current.keys.push(key+"_shapeA");
+                    current[key+"_shapeB"] = sj;
+                    current.keys.push(key+"_shapeB");
+                    current[key+"_bodyA"] = bi;
+                    current.keys.push(key+"_bodyA");
+                    current[key+"_bodyB"] = bj;
+                    current.keys.push(key+"_bodyB");
                 }
             }
         }
