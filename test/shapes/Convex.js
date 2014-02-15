@@ -1,4 +1,5 @@
 var Convex = require(__dirname + '/../../src/shapes/Convex');
+var vec2 =   require(__dirname + '/../../src/math/vec2');
 
 exports.construct = function(test){
     new Convex();
@@ -8,7 +9,7 @@ exports.construct = function(test){
                             [-1, 1],
                             [ 1, 1],
                             [ 1,-1]]);
-    },"Should throw exception on non-clockwise winding.");
+    },"Should throw exception on clockwise winding.");
 
     test.done();
 };
@@ -18,13 +19,24 @@ exports.computeAABB = function(test){
     test.done();
 };
 
-exports.conputeMomentOfInertia = function(test){
-    // STUB
+exports.computeMomentOfInertia = function(test){
+    var w = 2,
+        h = 1;
+    var c = new Convex([
+        [-w/2,-h/2],
+        [ w/2,-h/2],
+        [ w/2, h/2],
+        [-w/2, h/2],
+    ]);
+    var mass = 1;
+    var I = c.computeMomentOfInertia(mass);
+    var boxInertia = mass*(h*h+w*w)/12;
+    test.ok(Math.abs(I-boxInertia) < 0.01,'Convex dont compute square inertia correctly');
     test.done();
 };
 
 exports.triangleArea = function(test){
-    // STUB
+    test.equal( Convex.triangleArea([0, 0], [1, 0], [1, 1]),  1/2);
     test.done();
 };
 

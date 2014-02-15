@@ -147,76 +147,24 @@ Convex.prototype.updateCenterOfMass = function(){
 
 /**
  * Compute the mass moment of inertia of the Convex.
- * @method conputeMomentOfInertia
+ * @method computeMomentOfInertia
  * @param  {Number} mass
  * @return {Number}
- * @todo  should use .triangles
+ * @see http://www.gamedev.net/topic/342822-moment-of-inertia-of-a-polygon-2d/
  */
 Convex.prototype.computeMomentOfInertia = function(mass){
-
-    // In short: Triangulate the Convex, compute centroid and inertia of
-    // each sub-triangle. Add up to total using parallel axis theorem.
-
-    var I = 0;
-
-    // Rewrite on polyk notation, array of numbers
-    var polykVerts = [];
-    for(var i=0; i<this.vertices.length; i++){
-        var v = this.vertices[i];
-        polykVerts.push(v[0],v[1]);
+    var denom = 0.0,
+        numer = 0.0,
+        N = this.vertices.length;
+    for(var j = N-1, i = 0; i < N; j = i, i ++){
+        var p0 = this.vertices[j];
+        var p1 = this.vertices[i];
+        var a = Math.abs(vec2.crossLength(p0,p1));
+        var b = vec2.dot(p1,p1) + vec2.dot(p1,p0) + vec2.dot(p0,p0);
+        denom += a * b;
+        numer += a;
     }
-
-    // Triangulate
-    var triangles = polyk.Triangulate(polykVerts);
-
-    // Get total convex area and density
-    var area = polyk.GetArea(polykVerts);
-    this.updateArea();
-    var density = mass / this.area;
-
-    // Temp vectors
-    var a = vec2.create(),
-        b = vec2.create(),
-        c = vec2.create(),
-        centroid = vec2.create(),
-        n = vec2.create(),
-        ac = vec2.create(),
-        ca = vec2.create(),
-        cb = vec2.create(),
-        centroid_times_mass = vec2.create();
-
-    // Loop over all triangles, add their inertia contributions to I
-    for(var i=0; i<triangles.length; i+=3){
-        var id1 = triangles[i],
-            id2 = triangles[i+1],
-            id3 = triangles[i+2];
-
-        // a,b,c are triangle corners
-        vec2.set(a, polykVerts[2*id1], polykVerts[2*id1+1]);
-        vec2.set(b, polykVerts[2*id2], polykVerts[2*id2+1]);
-        vec2.set(c, polykVerts[2*id3], polykVerts[2*id3+1]);
-
-        vec2.centroid(centroid, a, b, c);
-
-        vec2.sub(ca, c, a);
-        vec2.sub(cb, c, b);
-
-        var area_triangle = Convex.triangleArea(a,b,c)
-        var base = vec2.length(ca);
-        var height = 2*area_triangle / base; // a=b*h/2 => h=2*a/b
-
-        // Get mass for the triangle
-        var m = area_triangle * density;
-
-        // Get inertia for this triangle: http://answers.yahoo.com/question/index?qid=20080721030038AA3oE1m
-        var I_triangle = m*(base * (Math.pow(height,3))) / 36;
-
-        // Add to total inertia using parallel axis theorem
-        var r2 = vec2.squaredLength(centroid);
-        I += I_triangle + m*r2;
-    }
-
-    return I;
+    return (mass / 6.0) * (denom / numer);
 };
 
 /**
