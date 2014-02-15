@@ -1,36 +1,18 @@
-var World = require("../src/world/World")
-,   Serializer = require("../src/serializer/Serializer")
-,   IslandSolver = require("../src/solver/IslandSolver")
-,   GSSolver = require("../src/solver/GSSolver")
-,   SAP1DBroadphase = require("../src/collision/SAP1DBroadphase")
-,   NaiveBroadphase = require("../src/collision/NaiveBroadphase")
-
-var serializer;
+var World = require(__dirname + "/../../src/world/World")
+,   Serializer = require(__dirname + "/../../src/serializer/Serializer")
+,   IslandSolver = require(__dirname + "/../../src/solver/IslandSolver")
+,   GSSolver = require(__dirname + "/../../src/solver/GSSolver")
+,   SAP1DBroadphase = require(__dirname + "/../../src/collision/SAP1DBroadphase")
+,   NaiveBroadphase = require(__dirname + "/../../src/collision/NaiveBroadphase")
 
 function v(a){
     return [a[0],a[1]];
 }
 
-exports.create = function(test){
-    serializer = new Serializer();
-    test.done();
-};
-
-exports.serialize = function(test){
-    var s = Serializer.sample;
-    var world = serializer.deserialize(Serializer.sample);
-    var obj = serializer.serialize(world);
-
-    test.ok(typeof(obj) == "object");
-    test.ok(serializer.validate(obj));
-    test.deepEqual(serializer.validateResult.errors,[])
-    //test.deepEqual(s, obj);
-
-    test.done();
-};
-
 exports.deserialize = function(test){
     var s = Serializer.sample;
+    var serializer = new Serializer();
+
     var world = serializer.deserialize(s);
 
     test.deepEqual(serializer.validateResult.errors, []);
@@ -151,10 +133,25 @@ exports.deserialize = function(test){
     }
 
     test.done();
+}
+
+exports.serialize = function(test){
+    var s = Serializer.sample;
+    var serializer = new Serializer();
+    var world = serializer.deserialize(Serializer.sample);
+    var obj = serializer.serialize(world);
+
+    test.ok(typeof(obj) == "object");
+    test.ok(serializer.validate(obj));
+    test.deepEqual(serializer.validateResult.errors,[])
+    //test.deepEqual(s, obj);
+
+    test.done();
 };
 
 exports.stringify = function(test){
     var world = new World();
+    var serializer = new Serializer();
     var str = serializer.stringify(world);
     test.ok(typeof(str) == "string");
     test.done();
@@ -162,6 +159,7 @@ exports.stringify = function(test){
 
 exports.parse = function(test){
     var str = JSON.stringify(Serializer.sample);
+    var serializer = new Serializer();
     var world = serializer.parse(str);
     test.ok(world instanceof World);
     test.done();

@@ -1,8 +1,17 @@
-var JSONFileFormat = require('../src/serializer/JSONFileFormat');
-var schema;
+var JSONFileFormat = require(__dirname + '/../../src/serializer/JSONFileFormat')
+,   schema
 
-exports.create = function(test){
+exports.construct = function(test){
+    // STUB
+    test.done();
+};
+
+exports.addUpgrader = function(test){
     var f = new JSONFileFormat();
+    f.addVersion(1,validateFunc);
+    f.addVersion(2,validateFunc);
+    f.addVersion(3,schema);
+    f.addUpgrader(1,2,upgrader);
     test.done();
 };
 
@@ -13,12 +22,24 @@ exports.addVersion = function(test){
     test.done();
 };
 
-exports.addUpgrader = function(test){
+exports.makeSchemaStrict = function(test){
+    // STUB
+    test.done();
+};
+
+exports.upgrade = function(test){
     var f = new JSONFileFormat();
     f.addVersion(1,validateFunc);
     f.addVersion(2,validateFunc);
-    f.addVersion(3,schema);
     f.addUpgrader(1,2,upgrader);
+    var instance = {
+        version: 1,
+    };
+    f.upgrade(instance);
+    test.equal(instance.version,2,"Should be able to upgrade a valid instance");
+
+    var invalidInstance = { asdf: 1 };
+    test.equal( f.upgrade(invalidInstance), false, "Should return false if passing an invalid instance.");
     test.done();
 };
 
@@ -39,22 +60,6 @@ exports.validate = function(test){
     test.ok(f.validate(instance1));
     test.ok(f.validate(instance2));
     test.ok(!f.validate(instance3));
-    test.done();
-};
-
-exports.upgrade = function(test){
-    var f = new JSONFileFormat();
-    f.addVersion(1,validateFunc);
-    f.addVersion(2,validateFunc);
-    f.addUpgrader(1,2,upgrader);
-    var instance = {
-        version: 1,
-    };
-    f.upgrade(instance);
-    test.equal(instance.version,2,"Should be able to upgrade a valid instance");
-
-    var invalidInstance = { asdf: 1 };
-    test.equal( f.upgrade(invalidInstance), false, "Should return false if passing an invalid instance.");
     test.done();
 };
 

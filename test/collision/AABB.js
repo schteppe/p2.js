@@ -1,8 +1,17 @@
-var AABB = require('../src/collision/AABB')
-,   vec2 = require('../src/math/vec2')
+var AABB = require(__dirname + '/../../src/collision/AABB');
 
 exports.construct = function(test){
-    new AABB();
+    // STUB
+    test.done();
+};
+
+exports.copy = function(test){
+    // STUB
+    test.done();
+};
+
+exports.extend = function(test){
+    // STUB
     test.done();
 };
 
@@ -41,3 +50,9 @@ exports.overlaps = function(test){
 
     test.done();
 };
+
+exports.setFromPoints = function(test){
+    // STUB
+    test.done();
+};
+

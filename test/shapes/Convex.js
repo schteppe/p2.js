@@ -1,5 +1,4 @@
-var Convex = require('../src/shapes/Convex')
-,   vec2 = require('../src/math/vec2')
+var Convex = require(__dirname + '/../../src/shapes/Convex');
 
 exports.construct = function(test){
     new Convex();
@@ -11,6 +10,45 @@ exports.construct = function(test){
                             [ 1,-1]]);
     },"Should throw exception on non-clockwise winding.");
 
+    test.done();
+};
+
+exports.computeAABB = function(test){
+    // STUB
+    test.done();
+};
+
+exports.conputeMomentOfInertia = function(test){
+    // STUB
+    test.done();
+};
+
+exports.triangleArea = function(test){
+    // STUB
+    test.done();
+};
+
+exports.updateArea = function(test){
+    var c = new Convex([[-1,-1],
+                        [ 1,-1],
+                        [ 1, 1],
+                        [-1, 1]]);
+    c.updateArea();
+    test.equal(c.area, 4)
+
+    var c = new Convex([
+        [990, 0],
+        [990, 10],
+        [0, 10],
+        [0, 0]
+    ]);
+    test.equal(c.area,9900);
+
+    test.done();
+};
+
+exports.updateBoundingRadius = function(test){
+    // STUB
     test.done();
 };
 
@@ -41,26 +79,8 @@ exports.updateCenterOfMass = function(test){
     test.done();
 };
 
-exports.computeMomentOfInertia = function(test){
-    // TODO
+exports.updateTriangles = function(test){
+    // STUB
     test.done();
 };
 
-exports.updateArea = function(test){
-    var c = new Convex([[-1,-1],
-                        [ 1,-1],
-                        [ 1, 1],
-                        [-1, 1]]);
-    c.updateArea();
-    test.equal(c.area, 4)
-
-    var c = new Convex([
-        [990, 0],
-        [990, 10],
-        [0, 10],
-        [0, 0]
-    ]);
-    test.equal(c.area,9900);
-
-    test.done();
-};
