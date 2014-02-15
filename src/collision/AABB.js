@@ -97,6 +97,7 @@ AABB.prototype.extend = function(aabb){
 
 /**
  * Returns true if the given AABB overlaps this AABB.
+ * @method overlaps
  * @param  {AABB} aabb
  * @return {Boolean}
  */

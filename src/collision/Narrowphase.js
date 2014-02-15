@@ -123,6 +123,7 @@ function clearObject(obj){
 /**
  * Throws away the old equations and gets ready to create new
  * @method reset
+ * @param {World} world
  */
 Narrowphase.prototype.reset = function(world){
 
