@@ -32,3 +32,18 @@ exports.updateCenterOfMass = function(test){
 
     test.done();
 };
+
+exports.computeMomentOfInertia = function(test){
+    // TODO
+    test.done();
+};
+
+exports.updateArea = function(test){
+    var c = new Convex([[-1,-1],
+                        [ 1,-1],
+                        [ 1, 1],
+                        [-1, 1]]);
+    c.updateArea();
+    test.equal(c.area, 4)
+    test.done();
+};

@@ -129,7 +129,7 @@ Convex.prototype.updateCenterOfMass = function(){
 
         // Get mass for the triangle (density=1 in this case)
         // http://math.stackexchange.com/questions/80198/area-of-triangle-via-vectors
-        var m = decomp.Point.area(a,b,c)
+        var m = Convex.triangleArea(a,b,c)
         totalArea += m;
 
         // Add to center of mass
@@ -196,7 +196,7 @@ Convex.prototype.computeMomentOfInertia = function(mass){
         vec2.sub(ca, c, a);
         vec2.sub(cb, c, b);
 
-        var area_triangle = decomp.Point.area(a,b,c)
+        var area_triangle = Convex.triangleArea(a,b,c)
         var base = vec2.length(ca);
         var height = 2*area_triangle / base; // a=b*h/2 => h=2*a/b
 
@@ -231,6 +231,19 @@ Convex.prototype.updateBoundingRadius = function(){
 };
 
 /**
+ * Get the area of the triangle spanned by the three points a, b, c. The area is positive if the points are given in counter-clockwise order, otherwise negative.
+ * @static
+ * @method triangleArea
+ * @param {Array} a
+ * @param {Array} b
+ * @param {Array} c
+ * @return {Number}
+ */
+Convex.triangleArea = function(a,b,c){
+    return (((b[0] - a[0])*(c[1] - a[1]))-((c[0] - a[0])*(b[1] - a[1]))) * 0.5;
+}
+
+/**
  * Update the .area
  * @method updateArea
  */
@@ -247,8 +260,7 @@ Convex.prototype.updateArea = function(){
             c = verts[t[2]];
 
         // Get mass for the triangle (density=1 in this case)
-        // http://math.stackexchange.com/questions/80198/area-of-triangle-via-vectors
-        var m = decomp.Point.area(a,b,c)
+        var m = Convex.triangleArea(a,b,c);
         this.area += m;
     }
 };
