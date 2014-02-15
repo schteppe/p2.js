@@ -77,7 +77,16 @@ exports.updateArea = function(test){
 };
 
 exports.updateBoundingRadius = function(test){
-    // STUB
+    var w = 2,
+        h = 1;
+    var c = new Convex([
+        [-w/2,-h/2],
+        [ w/2,-h/2],
+        [ w/2, h/2],
+    ]);
+
+    test.equal(c.boundingRadius, Math.sqrt(w*w/4+h*h/4));
+
     test.done();
 };
 
@@ -109,7 +118,16 @@ exports.updateCenterOfMass = function(test){
 };
 
 exports.updateTriangles = function(test){
-    // STUB
+    var w = 2,
+        h = 1;
+    var c = new Convex([
+        [-w/2,-h/2],
+        [ w/2,-h/2],
+        [ w/2, h/2],
+    ]);
+    c.updateTriangles();
+    test.deepEqual([ [ 0, 1, 2 ] ],c.triangles);
+
     test.done();
 };
 
