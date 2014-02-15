@@ -1,5 +1,6 @@
-var Convex = require(__dirname + '/../../src/shapes/Convex');
-var vec2 =   require(__dirname + '/../../src/math/vec2');
+var Convex = require(__dirname + '/../../src/shapes/Convex')
+,   vec2 =   require(__dirname + '/../../src/math/vec2')
+,   AABB =   require(__dirname + '/../../src/collision/AABB')
 
 exports.construct = function(test){
     new Convex();
@@ -15,7 +16,23 @@ exports.construct = function(test){
 };
 
 exports.computeAABB = function(test){
-    // STUB
+    var w = 2,
+        h = 1;
+    var c = new Convex([
+        [-w/2,-h/2],
+        [ w/2,-h/2],
+        [ w/2, h/2],
+        [-w/2, h/2],
+    ]);
+
+    var aabb = new AABB();
+    c.computeAABB(aabb,[1,2],0);
+
+    test.equal(aabb.lowerBound[0],-w/2 + 1);
+    test.equal(aabb.lowerBound[1],-h/2 + 2);
+    test.equal(aabb.upperBound[0], w/2 + 1);
+    test.equal(aabb.upperBound[1], h/2 + 2);
+
     test.done();
 };
 
