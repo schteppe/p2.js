@@ -312,7 +312,7 @@ Body.prototype.updateAABB = function() {
             angle = shapeAngles[i] + this.angle;
 
         // Get shape world offset
-        vec2.rotate(offset,shapeOffsets[i],angle);
+        vec2.rotate(offset,shapeOffsets[i],this.angle);
         vec2.add(offset,offset,this.position);
 
         // Get shape AABB
