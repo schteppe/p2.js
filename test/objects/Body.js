@@ -3,7 +3,34 @@ var Body = require(__dirname + '/../../src/objects/Body')
     vec2 = require(__dirname + '/../../src/math/vec2')
 
 exports.construct = function(test){
-    // STUB
+
+    // Static via mass=0
+    var body = new Body({
+        mass : 0,
+    });
+    test.equal(body.mass,0);
+    test.equal(body.motionState,Body.STATIC);
+
+    // Setting things via options
+    var o = {
+        position:[0,1],
+        velocity:[1,2],
+        force:[3,4],
+        angularVelocity:5,
+        angularForce:5,
+        angle:Math.PI/2
+    };
+    body = new Body(o);
+    test.equal(vec2.distance(body.position, o.position),0);
+    test.equal(vec2.distance(body.velocity, o.velocity),0);
+    test.equal(vec2.distance(body.force,    o.force   ),0);
+    test.equal(body.angle,                  o.angle);
+    test.equal(body.angularVelocity,        o.angularVelocity);
+    test.equal(body.angularForce,           o.angularForce);
+
+    // id tick
+    test.equal(new Body().id+1, new Body().id);
+
     test.done();
 };
 
@@ -56,7 +83,10 @@ exports.setDensity = function(test){
 };
 
 exports.setZeroForce = function(test){
-    // STUB
+    var b = new Body({ force:[1,2], angularForce:3 });
+    b.setZeroForce();
+    test.equal(vec2.length(b.force),0);
+    test.equal(b.angularForce,0);
     test.done();
 };
 
