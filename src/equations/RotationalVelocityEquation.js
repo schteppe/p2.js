@@ -25,7 +25,7 @@ RotationalVelocityEquation.prototype.computeB = function(a,b,h){
     G[5] = this.ratio;
 
     var GiMf = this.computeGiMf();
-    var GW = this.computeGW() + this.relativeVelocity;
+    var GW = this.computeGW();
     var B = - GW * b - h*GiMf;
 
     return B;

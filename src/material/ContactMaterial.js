@@ -78,4 +78,10 @@ function ContactMaterial(materialA, materialB, options){
      * @type {Number}
      */
     this.frictionRelaxation =   typeof(options.frictionRelaxation)  !== "undefined" ?   Number(options.frictionRelaxation)  : 3;
+
+    /**
+     * Will add surface velocity to this material. If bodyA rests on top if bodyB, and the surface velocity is positive, bodyA will slide to the right.
+     * @property {Number} surfaceVelocity
+     */
+    this.surfaceVelocity = 0;
 };

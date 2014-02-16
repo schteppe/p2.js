@@ -101,8 +101,8 @@ FrictionEquation.prototype.computeB = function(a,b,h){
     G[4] = t[1];
     G[5] = vec2.crossLength(rj,t);
 
-    var GW = this.computeGW();
-    var GiMf = this.computeGiMf();
+    var GW = this.computeGW(),
+        GiMf = this.computeGiMf();
 
     var B = /* - g * a  */ - GW * b - h*GiMf;
 

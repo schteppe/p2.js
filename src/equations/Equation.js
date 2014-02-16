@@ -85,6 +85,12 @@ function Equation(bi,bj,minForce,maxForce){
      * @type {Number}
      */
     this.multiplier = 0;
+
+    /**
+     * Relative velocity.
+     * @property {Number} relativeVelocity
+     */
+    this.relativeVelocity = 0;
 };
 Equation.prototype.constructor = Equation;
 
@@ -182,7 +188,7 @@ Equation.prototype.computeGW = function(){
         vj = bj.velocity,
         wi = bi.angularVelocity,
         wj = bj.angularVelocity;
-    return this.transformedGmult(G,vi,wi,vj,wj);
+    return this.transformedGmult(G,vi,wi,vj,wj) + this.relativeVelocity;
 };
 
 /**

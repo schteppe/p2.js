@@ -504,17 +504,19 @@ World.prototype.internalStep = function(dt){
                     aj = bj.shapeAngles[l];
 
                 var mu = this.defaultFriction,
-                    restitution = this.defaultRestitution;
+                    restitution = this.defaultRestitution,
+                    surfaceVelocity = 0;
 
                 if(si.material && sj.material){
                     var cm = this.getContactMaterial(si.material,sj.material);
                     if(cm){
                         mu = cm.friction;
                         restitution = cm.restitution;
+                        surfaceVelocity = cm.surfaceVelocity;
                     }
                 }
 
-                this.runNarrowphase(np,bi,si,xi,ai,bj,sj,xj,aj,mu,restitution);
+                this.runNarrowphase(np,bi,si,xi,ai,bj,sj,xj,aj,mu,restitution,surfaceVelocity);
             }
         }
     }
@@ -659,7 +661,7 @@ World.integrateBody = function(body,dt){
  * @param  {Number} aj
  * @param  {Number} mu
  */
-World.prototype.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,mu,restitution){
+World.prototype.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,mu,restitution,surfaceVelocity){
 
     if(!((si.collisionGroup & sj.collisionMask) !== 0 && (sj.collisionGroup & si.collisionMask) !== 0))
         return;
@@ -680,6 +682,7 @@ World.prototype.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,mu,restitut
     np.enableFriction = mu > 0;
     np.frictionCoefficient = mu;
     np.restitution = restitution;
+    np.surfaceVelocity = surfaceVelocity;
 
     var resolver = np[si.type | sj.type],
         numContacts = 0;
