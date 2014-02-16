@@ -127,36 +127,6 @@ function clearObject(obj){
  */
 Narrowphase.prototype.reset = function(world){
 
-    // Emit world separation event
-    if(world && world.emitSeparationEvent){
-        for(var i=0; i<this.collidingBodiesLastStep.keys.length; i++){
-            var key = this.collidingBodiesLastStep.keys[i],
-                id1 = parseInt(key),
-                idx = key.indexOf(" "),
-                id2 = parseInt(key.substr(idx+1)),
-                found = false;
-
-            // Find the corresponding contactEquation
-            for(var j=0; j!==this.contactEquations.length; j++){
-                var eq = this.contactEquations[j],
-                    idA = eq.bi.id,
-                    idB = eq.bj.id;
-                if( (id1 == idA && id2 == idB) ||
-                    (id1 == idB && id2 == idA)){
-                    // Found! Bodies are still in contact.
-                    found = true;
-                    break;
-                }
-            }
-
-            if(!found){
-                world.separationEvent.bodyA = world.getBodyById(id1);
-                world.separationEvent.bodyB = world.getBodyById(id2);
-                world.emit(world.separationEvent);
-            }
-        }
-    }
-
     // Save the colliding bodies data
     clearObject(this.collidingBodiesLastStep);
     for(var i=0; i!==this.contactEquations.length; i++){

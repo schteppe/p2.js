@@ -200,13 +200,6 @@ function World(options){
      */
     this.emitImpactEvent = true;
 
-    /**
-     * Set to true if you want to the world to emit the "separation" event. Turning this off could improve performance.
-     * @property emitSeparationEvent
-     * @type {Boolean}
-     */
-    this.emitSeparationEvent = true;
-
     // Id counters
     this._constraintIdCounter = 0;
     this._bodyIdCounter = 0;
@@ -260,18 +253,6 @@ function World(options){
         shapeA : null,
         shapeB : null,
         contactEquation : null,
-    };
-
-    /**
-     * Fired when two bodies stop touching. This event is fired during the narrowphase.
-     * @event impact
-     * @param {Body} bodyA
-     * @param {Body} bodyB
-     */
-    this.separationEvent = {
-        type: "separation",
-        bodyA : null,
-        bodyB : null,
     };
 
     /**
