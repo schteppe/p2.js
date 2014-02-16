@@ -299,6 +299,7 @@ function World(options){
         shapeB : null,
         bodyA : null,
         bodyB : null,
+        contactEquations : [],
     };
 
     this.endContactEvent = {
@@ -541,13 +542,14 @@ World.prototype.internalStep = function(dt){
     var last = this.overlappingShapesLastState;
     for(var i=0; i<last.keys.length; i++){
         var key = last.keys[i];
-        if(key.indexOf("shape")!=-1)
+        if(key.indexOf("shape")!=-1 || key.indexOf("body")!=-1)
             break;
 
         if(!this.overlappingShapesCurrentState[key]){
             // Not overlapping any more! Emit event.
             var e = this.endContactEvent;
-            // TODO: add shapes to the event object
+
+            // Add shapes to the event object
             e.shapeA = last[key+"_shapeA"];
             e.shapeB = last[key+"_shapeB"];
             e.bodyA = last[key+"_bodyA"];
@@ -563,7 +565,7 @@ World.prototype.internalStep = function(dt){
         delete last[key+"_bodyB"];
     }
     this.overlappingShapesLastState.keys.length = 0;
-    // Swap state objects & make sure to reuse them
+    // Swap state objects
     var tmp = this.overlappingShapesLastState;
     this.overlappingShapesLastState = this.overlappingShapesCurrentState;
     this.overlappingShapesCurrentState = tmp;
@@ -707,31 +709,43 @@ World.prototype.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,mu,restitut
             numContacts = resolver.call(np, bj,sj,xjw,ajw, bi,si,xiw,aiw);
         }
 
-        if(numContacts > 0){
+        if(numContacts){
             var key = si.id < sj.id ? si.id+" "+ sj.id : sj.id+" "+ si.id;
             if(!this.overlappingShapesLastState[key]){
+
                 // Report new shape overlap
                 var e = this.beginContactEvent;
                 e.shapeA = si;
                 e.shapeB = sj;
                 e.bodyA = bi;
                 e.bodyB = bj;
-                this.emit(e);
-                var current = this.overlappingShapesCurrentState;
-                if(!current[key]){
-                    current[key] = true;
-                    current.keys.push(key);
 
-                    // Also store shape & body data
-                    current[key+"_shapeA"] = si;
-                    current.keys.push(key+"_shapeA");
-                    current[key+"_shapeB"] = sj;
-                    current.keys.push(key+"_shapeB");
-                    current[key+"_bodyA"] = bi;
-                    current.keys.push(key+"_bodyA");
-                    current[key+"_bodyB"] = bj;
-                    current.keys.push(key+"_bodyB");
+                if(typeof(numContacts)=="number"){
+                    // Add contacts to the event object
+                    e.contactEquations.length = 0;
+                    for(var i=np.contactEquations.length-numContacts; i<np.contactEquations.length; i++)
+                        e.contactEquations.push(np.contactEquations[i]);
                 }
+
+                this.emit(e);
+            }
+
+            // Store current contact state
+            var current = this.overlappingShapesCurrentState;
+            if(!current[key]){
+
+                current[key] = true;
+                current.keys.push(key);
+
+                // Also store shape & body data
+                current[key+"_shapeA"] = si;
+                current.keys.push(key+"_shapeA");
+                current[key+"_shapeB"] = sj;
+                current.keys.push(key+"_shapeB");
+                current[key+"_bodyA"] = bi;
+                current.keys.push(key+"_bodyA");
+                current[key+"_bodyB"] = bj;
+                current.keys.push(key+"_bodyB");
             }
         }
     }
