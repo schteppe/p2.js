@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Surface velocity demo - p2.js physics engine</title>
+    <script src="../build/p2.js"></script>
+    <script src="js/jquery.js"></script>
+    <script src="js/pixi.js"></script>
+    <script src="js/Demo.js"></script>
+    <script src="js/PixiDemo.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <link href="css/demo.css" rel="stylesheet"/>
+    <link href="css/bootstrap.min.css" rel="stylesheet"/>
+    <meta name="description" content="How to create a ContactMaterial with surface velocity.">
+</head>
+<body>
+    <script>
+
+        // Create a World
+        var world = new p2.World({
+            doProfiling:true,                       // Enable stats
+            gravity : [0,-10],                      // Set gravity
+        });
+
+        // Create ground
+        var planeShape = new p2.Plane(),
+            plane = new p2.Body();
+        plane.addShape(planeShape);
+        world.addBody(plane);
+
+        // Create moving box
+        var boxBody = new p2.Body({
+                mass: 1,
+                position: [1,4]
+            }),
+            boxShape = new p2.Rectangle(0.5,0.5);
+        boxShape.material = new p2.Material();
+        boxBody.addShape(boxShape);
+        world.addBody(boxBody);
+
+        // Create static platform box
+        var platformBody1 = new p2.Body({
+                mass: 0, // static
+                position: [-0.5,1]
+            }),
+            platformShape1 = new p2.Rectangle(3,0.2);
+        platformBody1.addShape(platformShape1);
+        world.addBody(platformBody1);
+        platformShape1.material = new p2.Material();
+
+        // Create static platform box
+        var platformBody2 = new p2.Body({
+                mass: 0, // static
+                position: [0.5,2]
+            })
+            platformShape2 = new p2.Rectangle(3,0.2);
+        platformBody2.addShape(platformShape2);
+        world.addBody(platformBody2);
+        platformShape2.material = new p2.Material();
+
+        var contactMaterial1 = new p2.ContactMaterial(boxShape.material,platformShape1.material,{
+            surfaceVelocity:-0.5,
+        });
+        world.addContactMaterial(contactMaterial1);
+
+        var contactMaterial2 = new p2.ContactMaterial(boxShape.material,platformShape2.material,{
+            surfaceVelocity:0.5,
+        });
+        world.addContactMaterial(contactMaterial2);
+
+        var demo = new PixiDemo(world);
+
+    </script>
+</body>
+</html>
