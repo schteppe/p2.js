@@ -83,5 +83,5 @@ function ContactMaterial(materialA, materialB, options){
      * Will add surface velocity to this material. If bodyA rests on top if bodyB, and the surface velocity is positive, bodyA will slide to the right.
      * @property {Number} surfaceVelocity
      */
-    this.surfaceVelocity = 0;
+    this.surfaceVelocity = typeof(options.surfaceVelocity)    !== "undefined" ?   Number(options.surfaceVelocity)    : 0
 };
