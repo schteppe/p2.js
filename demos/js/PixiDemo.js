@@ -116,6 +116,13 @@ PixiDemo.prototype.init = function(){
 
     var lastX, lastY, lastMoveX, lastMoveY, startX, startY, down=false;
 
+    // All controls take the same image so the texture needs to be loaded only once.
+    // This can be further optimized. If there are multiple PixiDemo instances on the same
+    // webpage, this need not be repeated.
+    // We currently use an image for the control, instead of just a plain rectangle because
+    // it needs to be interactive and I could only find examples on the web for interactive textures.
+    PixiDemo.controlTexture = PIXI.Texture.fromImage("img/control.jpg");
+
     container.mousedown = container.touchstart = function(e){
         lastX = e.global.x;
         lastY = e.global.y;
@@ -598,6 +605,12 @@ PixiDemo.prototype.addRenderable = function(obj){
 
                     PixiDemo.drawConvex(sprite, verts, child.triangles, lineColor, color, lw, this.debugPolygons,[offset[0]*ppu,-offset[1]*ppu]);
                 }
+                
+                // The shape ('child') has been drawn on sprite, now let's draw the controls.
+                // Need to pass obj (which is the body) because when a shape changes, the body needs be redrawn
+                // which is done via removeRenderable() and addRenderable().
+                // The information about the controls will be taken from child.controls()
+                this.drawControls(obj, child, sprite, offset[0]*ppu,-offset[1]*ppu, ppu);
             }
         }
         this.sprites.push(sprite);
@@ -646,4 +659,52 @@ PixiDemo.prototype.resize = function(w,h){
         view.style.top = ( (h - w / pixiRatio) / 2 ) +"px";
     }
     */
+};
+
+PixiDemo.prototype.drawControls = function(body, shape, sprite, x, y, ppu){
+  // This gets called from PixiDemo.prototype.addRenderable() so anytime a body is added to the world
+  var demo = this;
+  var controls = shape.controls();
+  
+  for(var i = 0; i < controls.length; i++){
+    var ctrl = controls[i];
+    var b = new PIXI.Sprite(PixiDemo.controlTexture);
+    b.setInteractive(true);
+    
+    // ctrl.coords is the desired position of the control w.r.t the shape
+    // Haven't tested it with multi-shape bodies. This will likely break because the sprite is for the body
+    // so the folliwing will place the control w.r.t. the body.
+    b.position.x = ctrl.coords.x*ppu; 
+    b.position.y = ctrl.coords.y*ppu; 
+    
+    // Handle interaction with the control
+    b.mousedown = b.touchstart = function(data){
+      data.originalEvent.preventDefault();
+      this.data = data;
+      this.dragging = true;
+    };
+    
+    b.mouseup = b.mouseupoutside = b.touchend = b.touchendoutside = function(data){
+      this.dragging = false;
+      this.data = null;
+    };
+    
+    b.mousemove = b.touchmove = function(data){
+      if(this.dragging){
+        data.originalEvent.preventDefault();
+        var newPosition = this.data.getLocalPosition(this.parent);
+        
+        // we have a callback function to process the manipulation of the control
+        ctrl.callback(newPosition.x / ppu, newPosition.y / ppu);
+        
+        // At this point, the shape may have been modified. To update the drawing,
+        // we can remove the entire sprite and add it again.
+        demo.removeRenderable(body);
+        demo.addRenderable(body);
+      }
+    };
+    sprite.addChild(b);
+    //PixiDemo.drawCircle(g, x + h.coords.x*ppu, y + h.coords.y*ppu, 0, 5, 0x000000, 1);
+    
+  }
 };

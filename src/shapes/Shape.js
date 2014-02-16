@@ -89,6 +89,18 @@ Shape.RECTANGLE =   32;
 Shape.CAPSULE =     64;
 
 /**
+ * Each shape specifies what controls are available to manipulate it.
+ * Returns an array of objects with name, local co-ordinates with respect
+ * to the shape and a callback function which updates the shape accordingly
+ * when the control is moved to a new location.
+ * @method controls
+ * @return {Array} of controls which objects with of the form:
+ */
+Shape.prototype.controls = function(){
+  return []; // controls are defined separately in each sub-class of Shape
+};
+
+/**
  * Should return the moment of inertia around the Z axis of the body given the total mass. See <a href="http://en.wikipedia.org/wiki/List_of_moments_of_inertia">Wikipedia's list of moments of inertia</a>.
  * @method computeMomentOfInertia
  * @param  {Number} mass

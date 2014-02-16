@@ -35,6 +35,21 @@ Circle.prototype.updateArea = function(){
     this.area = Math.PI * this.radius * this.radius;
 };
 
+Circle.prototype.controls = function(){
+  var circleShape = this;
+  
+  // For now, we only return one control to adjust the radius
+  // Each control needs a name, local coordinates and a callback function
+  return [{ 
+           name: 'radius',
+           coords: {x: circleShape.radius, y: 0},
+           callback: function(x,y){
+             // set the radius as per control's current local co-ords
+             circleShape.radius = Math.sqrt(x*x + y*y);
+           } 
+         }];
+};
+
 /**
  * @method computeAABB
  * @param  {AABB}   out      The resulting AABB.
