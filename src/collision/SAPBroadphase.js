@@ -20,10 +20,17 @@ function SAPBroadphase(){
 
     /**
      * List of bodies currently in the broadphase.
-     * @property axisList
+     * @property axisListX
      * @type {Array}
      */
-    this.axisList = [];
+    this.axisListX = [];
+
+    /**
+     * List of bodies currently in the broadphase.
+     * @property axisListY
+     * @type {Array}
+     */
+    this.axisListY = [];
 
     /**
      * The world to search in.
@@ -32,35 +39,23 @@ function SAPBroadphase(){
      */
     this.world = null;
 
-    /**
-     * Axis to sort the bodies along. Set to 0 for x axis, and 1 for y axis. For best performance, choose an axis that the bodies are spread out more on.
-     * @property axisIndex
-     * @type {Number}
-     */
-    this.axisIndex = 0;
-
-    var axisList = this.axisList;
+    var axisListX = this.axisListX,
+        axisListY = this.axisListY;
 
     this._addBodyHandler = function(e){
-        axisList.push(e.body);
+        axisListX.push(e.body);
+        axisListY.push(e.body);
     };
 
     this._removeBodyHandler = function(e){
-        var idx = axisList.indexOf(e.body);
-        if(idx !== -1)
-            axisList.splice(idx,1);
-    }
+        // Remove from X list
+        var idx = axisListX.indexOf(e.body);
+        if(idx !== -1) axisListX.splice(idx,1);
 
-    /*
-    // Add listeners to update the list of bodies.
-    world.on("addBody",function(e){
-        axisList.push(e.body);
-    }).on("removeBody",function(e){
-        var idx = axisList.indexOf(e.body);
-        if(idx !== -1)
-            axisList.splice(idx,1);
-    });
-    */
+        // Remove from Y list
+        idx = axisListY.indexOf(e.body);
+        if(idx !== -1) axisListY.splice(idx,1);
+    }
 };
 SAPBroadphase.prototype = new Broadphase();
 
@@ -71,10 +66,11 @@ SAPBroadphase.prototype = new Broadphase();
  */
 SAPBroadphase.prototype.setWorld = function(world){
     // Clear the old axis array
-    this.axisList.length = 0;
+    this.axisListX.length = this.axisListY.length = 0;
 
     // Add all bodies from the new world
-    Utils.appendArray(this.axisList,world.bodies);
+    Utils.appendArray(this.axisListX,world.bodies);
+    Utils.appendArray(this.axisListY,world.bodies);
 
     // Remove old handlers, if any
     world
@@ -88,26 +84,44 @@ SAPBroadphase.prototype.setWorld = function(world){
 };
 
 /**
- * Function for sorting bodies along the X axis. To be passed to array.sort()
+ * Sorts bodies along the X axis.
  * @method sortAxisListX
- * @param  {Body} bodyA
- * @param  {Body} bodyB
- * @return {Number}
+ * @param {Array} a
+ * @return {Array}
  */
-SAPBroadphase.sortAxisListX = function(bodyA,bodyB){
-    return (bodyA.position[0]-bodyA.boundingRadius) - (bodyB.position[0]-bodyB.boundingRadius);
+SAPBroadphase.sortAxisListX = function(a){
+    for(var i=1,l=a.length;i<l;i++) {
+        var v = a[i];
+        for(var j=i - 1;j>=0;j--) {
+            if(a[j].aabb.lowerBound[0] <= v.aabb.lowerBound[0])
+                break;
+            a[j+1] = a[j];
+        }
+        a[j+1] = v;
+    }
+    return a;
 };
 
 /**
- * Function for sorting bodies along the Y axis. To be passed to array.sort()
+ * Sorts bodies along the Y axis.
  * @method sortAxisListY
- * @param  {Body} bodyA
- * @param  {Body} bodyB
- * @return {Number}
+ * @param {Array} a
+ * @return {Array}
  */
-SAPBroadphase.sortAxisListY = function(bodyA,bodyB){
-    return (bodyA.position[1]-bodyA.boundingRadius) - (bodyB.position[1]-bodyB.boundingRadius);
+SAPBroadphase.sortAxisListY = function(a){
+    for(var i=1,l=a.length;i<l;i++) {
+        var v = a[i];
+        for(var j=i - 1;j>=0;j--) {
+            if(a[j].aabb.lowerBound[1] <= v.aabb.lowerBound[1])
+                break;
+            a[j+1] = a[j];
+        }
+        a[j+1] = v;
+    }
+    return a;
 };
+
+var preliminaryList = { keys:[] };
 
 /**
  * Get the colliding pairs
@@ -116,31 +130,65 @@ SAPBroadphase.sortAxisListY = function(bodyA,bodyB){
  * @return {Array}
  */
 SAPBroadphase.prototype.getCollisionPairs = function(world){
-    var bodies = this.axisList,
+    var bodiesX = this.axisListX,
+        bodiesY = this.axisListY,
         result = this.result,
         axisIndex = this.axisIndex,
         i,j;
 
     result.length = 0;
 
-    // Sort the list
-    bodies.sort(axisIndex === 0 ? SAPBroadphase.sortAxisListX : SAPBroadphase.sortAxisListY );
+    // Update all AABBs if needed
+    for(i=0; i!==bodiesX.length; i++){
+        var b = bodiesX[i];
+        if(b.aabbNeedsUpdate) b.updateAABB();
+    }
 
-    // Look through the list
-    for(i=0, N=bodies.length; i!==N; i++){
-        var bi = bodies[i];
+    // Sort the lists
+    SAPBroadphase.sortAxisListX(bodiesX);
+    SAPBroadphase.sortAxisListY(bodiesY);
+
+    // Look through the X list
+    for(i=0, N=bodiesX.length; i!==N; i++){
+        var bi = bodiesX[i];
 
         for(j=i+1; j<N; j++){
-            var bj = bodies[j];
+            var bj = bodiesX[j];
 
-            if(!SAPBroadphase.checkBounds(bi,bj,axisIndex))
+            // Bounds overlap?
+            if(!SAPBroadphase.checkBounds(bi,bj,0))
                 break;
 
-            // If we got overlap, add pair
-            if(Broadphase.boundingRadiusCheck(bi,bj))
+            // add pair to preliminary list
+            var key = bi.id < bj.id ? bi.id+' '+bj.id : bj.id+' '+bi.id;
+            preliminaryList[key] = true;
+            preliminaryList.keys.push(key);
+        }
+    }
+
+    // Look through the Y list
+    for(i=0, N=bodiesY.length; i!==N; i++){
+        var bi = bodiesY[i];
+
+        for(j=i+1; j<N; j++){
+            var bj = bodiesY[j];
+
+            if(!SAPBroadphase.checkBounds(bi,bj,1))
+                break;
+
+            // If in preliminary list, add to final result
+            var key = bi.id < bj.id ? bi.id+' '+bj.id : bj.id+' '+bi.id;
+            if(preliminaryList[key] && Broadphase.boundingRadiusCheck(bi,bj))
                 result.push(bi,bj);
         }
     }
+
+    // Empty prel list
+    var keys = preliminaryList.keys;
+    for(i=0, N=keys.length; i!==N; i++){
+        delete preliminaryList[keys[i]];
+    }
+    keys.length = 0;
 
     return result;
 };
@@ -155,6 +203,7 @@ SAPBroadphase.prototype.getCollisionPairs = function(world){
  * @return {Boolean}
  */
 SAPBroadphase.checkBounds = function(bi,bj,axisIndex){
+    /*
     var biPos = bi.position[axisIndex],
         ri = bi.boundingRadius,
         bjPos = bj.position[axisIndex],
@@ -165,4 +214,6 @@ SAPBroadphase.checkBounds = function(bi,bj,axisIndex){
         boundB2 = bjPos+rj;
 
     return boundB1 < boundA2;
+    */
+    return bj.aabb.lowerBound[axisIndex] < bi.aabb.upperBound[axisIndex];
 };

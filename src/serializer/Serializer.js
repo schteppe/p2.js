@@ -268,11 +268,11 @@ function Serializer(){
                     type:"string",
                     pattern:/^SAPBroadphase$/,
                 },
-                axisIndex : {
+                /*axisIndex : {
                    type : "integer",
                    minimum : 0,
                    maximum : 1,
-               },
+               },*/
             },
         }],
     },
@@ -314,7 +314,7 @@ Serializer.sample = {
     },
     broadphase: {
         type:"SAPBroadphase",
-        axisIndex : 0,
+        //axisIndex : 0,
     },
     bodies: [{
         id :       1,
@@ -508,7 +508,7 @@ Serializer.prototype.serialize = function(world){
         jb.type = "NaiveBroadphase";
     } else if(wb instanceof SAPBroadphase) {
         jb.type = "SAPBroadphase";
-        jb.axisIndex = wb.axisIndex;
+        //jb.axisIndex = wb.axisIndex;
     }
 
     // Serialize springs
