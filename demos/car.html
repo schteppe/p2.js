@@ -19,7 +19,7 @@
         var world = new p2.World({
             doProfiling:true,                       // Enable stats
             gravity : [0,-10],                      // Set gravity
-            broadphase : new p2.SAP1DBroadphase(),  // Broadphase algorithm
+            broadphase : new p2.SAPBroadphase(),    // Broadphase algorithm
         });
 
         // Set high friction so the wheels don't slip

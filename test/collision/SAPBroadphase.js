@@ -1,4 +1,4 @@
-var SAP1DBroadphase = require(__dirname + '/../../src/collision/SAP1DBroadphase');
+var SAPBroadphase = require(__dirname + '/../../src/collision/SAPBroadphase');
 
 exports.construct = function(test){
     // STUB

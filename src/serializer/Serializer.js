@@ -16,7 +16,7 @@ var World = require('../world/World')
 ,   GSSolver = require("../solver/GSSolver")
 ,   IslandSolver = require("../solver/IslandSolver")
 ,   NaiveBroadphase = require("../collision/NaiveBroadphase")
-,   SAP1DBroadphase = require("../collision/SAP1DBroadphase")
+,   SAPBroadphase = require("../collision/SAPBroadphase")
 ,   DistanceConstraint = require("../constraints/DistanceConstraint")
 ,   RevoluteConstraint = require("../constraints/RevoluteConstraint")
 ,   PrismaticConstraint = require("../constraints/PrismaticConstraint")
@@ -266,7 +266,7 @@ function Serializer(){
             properties:{
                 type:{
                     type:"string",
-                    pattern:/^SAP1DBroadphase$/,
+                    pattern:/^SAPBroadphase$/,
                 },
                 axisIndex : {
                    type : "integer",
@@ -313,7 +313,7 @@ Serializer.sample = {
         relaxation: 3,
     },
     broadphase: {
-        type:"SAP1DBroadphase",
+        type:"SAPBroadphase",
         axisIndex : 0,
     },
     bodies: [{
@@ -506,8 +506,8 @@ Serializer.prototype.serialize = function(world){
         wb = world.broadphase;
     if(wb instanceof NaiveBroadphase){
         jb.type = "NaiveBroadphase";
-    } else if(wb instanceof SAP1DBroadphase) {
-        jb.type = "SAP1DBroadphase";
+    } else if(wb instanceof SAPBroadphase) {
+        jb.type = "SAPBroadphase";
         jb.axisIndex = wb.axisIndex;
     }
 
@@ -724,8 +724,8 @@ Serializer.prototype.deserialize = function(json,world){
             w.broadphase = new NaiveBroadphase();
             break;
 
-        case "SAP1DBroadphase":
-            w.broadphase = new SAP1DBroadphase();
+        case "SAPBroadphase":
+            w.broadphase = new SAPBroadphase();
             break;
     }
     w.broadphase.setWorld(w);

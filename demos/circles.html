@@ -25,7 +25,7 @@
         var world = new p2.World({
             doProfiling:true,
             gravity : [0,-10],
-            broadphase : new p2.SAP1DBroadphase(),
+            broadphase : new p2.SAPBroadphase(),
         });
         world.solver.stiffness = 1e5;
         world.solver.relaxation = 3;

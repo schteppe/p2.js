@@ -33,7 +33,7 @@ module.exports = {
     RevoluteConstraint :            require('./constraints/RevoluteConstraint'),
     RotationalLockEquation :        require('./equations/RotationalLockEquation'),
     RotationalVelocityEquation :    require('./equations/RotationalVelocityEquation'),
-    SAP1DBroadphase :               require('./collision/SAP1DBroadphase'),
+    SAPBroadphase :                 require('./collision/SAPBroadphase'),
     Serializer :                    require('./serializer/Serializer'),
     Shape :                         require('./shapes/Shape'),
     Solver :                        require('./solver/Solver'),

@@ -2,7 +2,7 @@ var World = require(__dirname + "/../../src/world/World")
 ,   Serializer = require(__dirname + "/../../src/serializer/Serializer")
 ,   IslandSolver = require(__dirname + "/../../src/solver/IslandSolver")
 ,   GSSolver = require(__dirname + "/../../src/solver/GSSolver")
-,   SAP1DBroadphase = require(__dirname + "/../../src/collision/SAP1DBroadphase")
+,   SAPBroadphase = require(__dirname + "/../../src/collision/SAPBroadphase")
 ,   NaiveBroadphase = require(__dirname + "/../../src/collision/NaiveBroadphase")
 
 function v(a){
@@ -41,8 +41,8 @@ exports.deserialize = function(test){
         case "NaiveBroadphase":
             test.ok(world.broadphase instanceof NaiveBroadphase);
             break;
-        case "SAP1DBroadphase":
-            test.ok(world.broadphase instanceof SAP1DBroadphase);
+        case "SAPBroadphase":
+            test.ok(world.broadphase instanceof SAPBroadphase);
             break;
     }
 

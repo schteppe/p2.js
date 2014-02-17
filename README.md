@@ -99,6 +99,7 @@ Note that concave polygon shapes can be created using [Body.fromPolygon](http://
 ### Change log
 
 ##### Current dev version
+* Renamed class ```SAP1DBroadphase``` to ```SAPBroadphase```.
 * Added property ```.interpolatedPosition``` to ``Body```.
 * Added method ```.internalStep``` to ```World```.
 * Added property ```.defaultRestitution``` to ```World```.
