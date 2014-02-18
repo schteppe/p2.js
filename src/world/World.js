@@ -289,6 +289,18 @@ function World(options){
         shapeB : null,
     };
 
+    /**
+     * Fired just before equations are added to the solver to be solved. Can be used to control what equations goes into the solver.
+     * @event preSolve
+     * @param {Array} contactEquations  An array of contacts to be solved.
+     * @param {Array} frictionEquations An array of friction equations to be solved.
+     */
+    this.preSolveEvent = {
+        type:"preSolve",
+        contactEquations:null,
+        frictionEquations:null,
+    };
+
     // For keeping track of overlapping shapes
     this.overlappingShapesLastState = { keys:[] };
     this.overlappingShapesCurrentState = { keys:[] };
@@ -552,6 +564,11 @@ World.prototype.internalStep = function(dt){
     var tmp = this.overlappingShapesLastState;
     this.overlappingShapesLastState = this.overlappingShapesCurrentState;
     this.overlappingShapesCurrentState = tmp;
+
+    var preSolveEvent = this.preSolveEvent;
+    preSolveEvent.contactEquations = np.contactEquations;
+    preSolveEvent.frictionEquations = np.frictionEquations;
+    this.emit(preSolveEvent);
 
     // Add contact equations to solver
     solver.addEquations(np.contactEquations);
