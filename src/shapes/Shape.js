@@ -75,6 +75,12 @@ function Shape(type){
      */
     this.area = 0;
 
+    /**
+     * Set to true if you want this shape to be a sensor. A sensor does not generate contacts, but it still reports contact events. This is good if you want to know if a shape is overlapping another shape, without them generating contacts.
+     * @property {Boolean} sensor
+     */
+    this.sensor = false;
+
     this.updateArea();
 };
 

@@ -723,10 +723,11 @@ World.prototype.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,mu,restitut
     var resolver = np[si.type | sj.type],
         numContacts = 0;
     if (resolver) {
+        var sensor = si.sensor || sj.sensor;
         if (si.type < sj.type) {
-            numContacts = resolver.call(np, bi,si,xiw,aiw, bj,sj,xjw,ajw);
+            numContacts = resolver.call(np, bi,si,xiw,aiw, bj,sj,xjw,ajw, sensor);
         } else {
-            numContacts = resolver.call(np, bj,sj,xjw,ajw, bi,si,xiw,aiw);
+            numContacts = resolver.call(np, bj,sj,xjw,ajw, bi,si,xiw,aiw, sensor);
         }
 
         if(numContacts){

@@ -238,9 +238,12 @@ Narrowphase.prototype.createFrictionFromContact = function(c){
  * @todo Implement me!
  */
 Narrowphase.prototype[Shape.LINE | Shape.CONVEX] =
-Narrowphase.prototype.convexLine = function(bi,si,xi,ai, bj,sj,xj,aj){
+Narrowphase.prototype.convexLine = function(bi,si,xi,ai, bj,sj,xj,aj, justTest){
     // TODO
-    return 0;
+    if(justTest)
+        return false;
+    else
+        return 0;
 };
 
 /**
@@ -257,9 +260,12 @@ Narrowphase.prototype.convexLine = function(bi,si,xi,ai, bj,sj,xj,aj){
  * @todo Implement me!
  */
 Narrowphase.prototype[Shape.LINE | Shape.RECTANGLE] =
-Narrowphase.prototype.lineRectangle = function(bi,si,xi,ai, bj,sj,xj,aj){
+Narrowphase.prototype.lineRectangle = function(bi,si,xi,ai, bj,sj,xj,aj, justTest){
     // TODO
-    return 0;
+    if(justTest)
+        return false;
+    else
+        return 0;
 };
 
 /**
@@ -276,9 +282,12 @@ Narrowphase.prototype.lineRectangle = function(bi,si,xi,ai, bj,sj,xj,aj){
  * @todo Implement me!
  */
 Narrowphase.prototype[Shape.CAPSULE | Shape.RECTANGLE] =
-Narrowphase.prototype.rectangleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj){
+Narrowphase.prototype.rectangleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTest){
     // TODO
-    return 0;
+    if(justTest)
+        return false;
+    else
+        return 0;
 };
 
 /**
@@ -295,9 +304,12 @@ Narrowphase.prototype.rectangleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj){
  * @todo Implement me!
  */
 Narrowphase.prototype[Shape.CAPSULE | Shape.CONVEX] =
-Narrowphase.prototype.convexCapsule = function(bi,si,xi,ai, bj,sj,xj,aj){
+Narrowphase.prototype.convexCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTest){
     // TODO
-    return 0;
+    if(justTest)
+        return false;
+    else
+        return 0;
 };
 
 /**
@@ -314,9 +326,12 @@ Narrowphase.prototype.convexCapsule = function(bi,si,xi,ai, bj,sj,xj,aj){
  * @todo Implement me!
  */
 Narrowphase.prototype[Shape.CAPSULE | Shape.LINE] =
-Narrowphase.prototype.lineCapsule = function(bi,si,xi,ai, bj,sj,xj,aj){
+Narrowphase.prototype.lineCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTest){
     // TODO
-    return 0;
+    if(justTest)
+        return false;
+    else
+        return 0;
 };
 
 /**
@@ -333,9 +348,12 @@ Narrowphase.prototype.lineCapsule = function(bi,si,xi,ai, bj,sj,xj,aj){
  * @todo Implement me!
  */
 Narrowphase.prototype[Shape.CAPSULE | Shape.CAPSULE] =
-Narrowphase.prototype.capsuleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj){
+Narrowphase.prototype.capsuleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTest){
     // TODO
-    return 0;
+    if(justTest)
+        return false;
+    else
+        return 0;
 };
 
 /**
@@ -352,9 +370,12 @@ Narrowphase.prototype.capsuleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj){
  * @todo Implement me!
  */
 Narrowphase.prototype[Shape.LINE | Shape.LINE] =
-Narrowphase.prototype.lineLine = function(bi,si,xi,ai, bj,sj,xj,aj){
+Narrowphase.prototype.lineLine = function(bi,si,xi,ai, bj,sj,xj,aj, justTest){
     // TODO
-    return 0;
+    if(justTest)
+        return false;
+    else
+        return 0;
 };
 
 /**
@@ -371,7 +392,7 @@ Narrowphase.prototype.lineLine = function(bi,si,xi,ai, bj,sj,xj,aj){
  */
 Narrowphase.prototype[Shape.PLANE | Shape.LINE] =
 Narrowphase.prototype.planeLine = function(planeBody, planeShape, planeOffset, planeAngle,
-                                           lineBody,  lineShape,  lineOffset,  lineAngle){
+                                           lineBody,  lineShape,  lineOffset,  lineAngle, justTest){
     var worldVertex0 = tmp1,
         worldVertex1 = tmp2,
         worldVertex01 = tmp3,
@@ -418,6 +439,9 @@ Narrowphase.prototype.planeLine = function(planeBody, planeShape, planeOffset, p
         var d = dot(dist,worldNormal);
 
         if(d < 0){
+
+            if(justTest)
+                return true;
 
             var c = this.createContactEquation(planeBody,lineBody,planeShape,lineShape);
             numContacts++;
@@ -547,7 +571,7 @@ Narrowphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj, justTest, 
         if(pos > pos0 && pos < pos1){
             // We got contact!
 
-            if(justTest) return 1;
+            if(justTest) return true;
 
             var c = this.createContactEquation(circleBody,lineBody,si,sj);
 
@@ -584,7 +608,7 @@ Narrowphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj, justTest, 
 
         if(vec2.squaredLength(dist) < (circleRadius+lineRadius)*(circleRadius+lineRadius)){
 
-            if(justTest) return 1;
+            if(justTest) return true;
 
             var c = this.createContactEquation(circleBody,lineBody,si,sj);
 
@@ -759,6 +783,10 @@ Narrowphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
     }
 
     if(found){
+
+        if(justTest)
+            return true;
+
         var c = this.createContactEquation(circleBody,convexBody,si,sj);
         vec2.sub(c.ni, minCandidate, circleOffset)
         vec2.normalize(c.ni, c.ni);
@@ -813,7 +841,7 @@ Narrowphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
             sub(dist, worldVertex, circleOffset);
             if(vec2.squaredLength(dist) < circleRadius*circleRadius){
 
-                if(justTest) return 1;
+                if(justTest) return true;
 
                 var c = this.createContactEquation(circleBody,convexBody,si,sj);
 
@@ -934,6 +962,8 @@ Narrowphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, just
     if(!pointInConvex(particleOffset,convexShape,convexOffset,convexAngle))
         return 0;
 
+    if(justTest) return true;
+
     // Check edges first
     var lastCross = null;
     for(var i=0; i!==verts.length+1; i++){
@@ -1051,11 +1081,10 @@ Narrowphase.prototype.circleCircle = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
 
     sub(dist,xi,xj);
     var r = si.radius + sj.radius;
-    if(vec2.squaredLength(dist) > r*r){
+    if(vec2.squaredLength(dist) > r*r)
         return 0;
-    }
 
-    if(justTest) return 1;
+    if(justTest) return true;
 
     var c = this.createContactEquation(bodyA,bodyB,si,sj);
     sub(c.ni, offsetB, offsetA);
@@ -1091,7 +1120,7 @@ Narrowphase.prototype.circleCircle = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
  * @param  {Number} aj
  */
 Narrowphase.prototype[Shape.PLANE | Shape.CONVEX] =
-Narrowphase.prototype.planeConvex = function( bi,si,xi,ai, bj,sj,xj,aj ){
+Narrowphase.prototype.planeConvex = function( bi,si,xi,ai, bj,sj,xj,aj, justTest ){
     var convexBody = bj,
         convexOffset = xj,
         convexShape = sj,
@@ -1116,6 +1145,8 @@ Narrowphase.prototype.planeConvex = function( bi,si,xi,ai, bj,sj,xj,aj ){
         sub(dist, worldVertex, planeOffset);
 
         if(dot(dist,worldNormal) < 0){
+
+            if(justTest) return true;
 
             // Found vertex
             numReported++;
@@ -1157,9 +1188,9 @@ Narrowphase.prototype.planeConvex = function( bi,si,xi,ai, bj,sj,xj,aj ){
  * @method convexPlane
  * @deprecated Use .planeConvex() instead!
  */
-Narrowphase.prototype.convexPlane = function( bi,si,xi,ai, bj,sj,xj,aj ){
+Narrowphase.prototype.convexPlane = function( bi,si,xi,ai, bj,sj,xj,aj, justTest ){
     console.warn("Narrowphase.prototype.convexPlane is deprecated. Use planeConvex instead!");
-    return this.planeConvex( bj,sj,xj,aj, bi,si,xi,ai );
+    return this.planeConvex( bj,sj,xj,aj, bi,si,xi,ai, justTest );
 }
 
 /**
@@ -1195,7 +1226,7 @@ Narrowphase.prototype.particlePlane = function( bi,si,xi,ai, bj,sj,xj,aj, justTe
     var d = dot(dist, worldNormal);
 
     if(d > 0) return 0;
-    if(justTest) return 1;
+    if(justTest) return true;
 
     var c = this.createContactEquation(planeBody,particleBody,sj,si);
 
@@ -1242,7 +1273,7 @@ Narrowphase.prototype.circleParticle = function(   bi,si,xi,ai, bj,sj,xj,aj, jus
 
     sub(dist, particleOffset, circleOffset);
     if(vec2.squaredLength(dist) > circleShape.radius*circleShape.radius) return 0;
-    if(justTest) return 1;
+    if(justTest) return true;
 
     var c = this.createContactEquation(circleBody,particleBody,si,sj);
     vec2.copy(c.ni, dist);
@@ -1271,7 +1302,7 @@ var capsulePlane_tmpCircle = new Circle(1),
     capsulePlane_tmp3 = vec2.create();
 
 Narrowphase.prototype[Shape.PLANE | Shape.CAPSULE] =
-Narrowphase.prototype.planeCapsule = function( bi,si,xi,ai, bj,sj,xj,aj ){
+Narrowphase.prototype.planeCapsule = function( bi,si,xi,ai, bj,sj,xj,aj, justTest ){
     var end1 = capsulePlane_tmp1,
         end2 = capsulePlane_tmp2,
         circle = capsulePlane_tmpCircle,
@@ -1289,19 +1320,22 @@ Narrowphase.prototype.planeCapsule = function( bi,si,xi,ai, bj,sj,xj,aj ){
     circle.radius = sj.radius;
 
     // Do Narrowphase as two circles
-    var numContacts1 = this.circlePlane(bj,circle,end1,0, bi,si,xi,ai),
-        numContacts2 = this.circlePlane(bj,circle,end2,0, bi,si,xi,ai);
+    var numContacts1 = this.circlePlane(bj,circle,end1,0, bi,si,xi,ai, justTest),
+        numContacts2 = this.circlePlane(bj,circle,end2,0, bi,si,xi,ai, justTest);
 
-    return numContacts1 + numContacts2;
+    if(justTest)
+        return numContacts1 || numContacts2;
+    else
+        return numContacts1 + numContacts2;
 };
 
 /**
  * @method capsulePlane
  * @deprecated Use .planeCapsule() instead!
  */
-Narrowphase.prototype.capsulePlane = function( bi,si,xi,ai, bj,sj,xj,aj ){
+Narrowphase.prototype.capsulePlane = function( bi,si,xi,ai, bj,sj,xj,aj, justTest ){
     console.warn("Narrowphase.prototype.capsulePlane() is deprecated. Use .planeCapsule() instead!");
-    return this.planeCapsule( bj,sj,xj,aj, bi,si,xi,ai );
+    return this.planeCapsule( bj,sj,xj,aj, bi,si,xi,ai, justTest );
 }
 
 /**
@@ -1316,7 +1350,7 @@ Narrowphase.prototype.capsulePlane = function( bi,si,xi,ai, bj,sj,xj,aj ){
  * @param  {Number}  aj     Extra angle to apply to the plane
  */
 Narrowphase.prototype[Shape.CIRCLE | Shape.PLANE] =
-Narrowphase.prototype.circlePlane = function(   bi,si,xi,ai, bj,sj,xj,aj ){
+Narrowphase.prototype.circlePlane = function(   bi,si,xi,ai, bj,sj,xj,aj, justTest ){
     var circleBody = bi,
         circleShape = si,
         circleOffset = xi, // Offset from body center, rotated!
@@ -1341,6 +1375,8 @@ Narrowphase.prototype.circlePlane = function(   bi,si,xi,ai, bj,sj,xj,aj ){
     var d = dot(worldNormal, planeToCircle);
 
     if(d > circleShape.radius) return 0; // No overlap. Abort.
+
+    if(justTest) return true;
 
     // Create contact
     var contact = this.createContactEquation(planeBody,circleBody,sj,si);
@@ -1382,7 +1418,7 @@ Narrowphase.prototype.circlePlane = function(   bi,si,xi,ai, bj,sj,xj,aj ){
  * @param  {Number} aj
  */
 Narrowphase.prototype[Shape.CONVEX] =
-Narrowphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, precision ){
+Narrowphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTest, precision ){
     var sepAxis = tmp1,
         worldPoint = tmp2,
         worldPoint0 = tmp3,
@@ -1467,6 +1503,8 @@ Narrowphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, precis
             }
 
             if(insideNumEdges == 3){
+
+                if(justTest) return true;
 
                 // worldPoint was on the "inside" side of each of the 3 checked edges.
                 // Project it to the center edge and use the projection direction as normal
