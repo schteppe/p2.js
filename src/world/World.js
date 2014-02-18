@@ -553,7 +553,6 @@ World.prototype.internalStep = function(dt){
     this.overlappingShapesLastState = this.overlappingShapesCurrentState;
     this.overlappingShapesCurrentState = tmp;
 
-
     // Add contact equations to solver
     solver.addEquations(np.contactEquations);
     solver.addEquations(np.frictionEquations);

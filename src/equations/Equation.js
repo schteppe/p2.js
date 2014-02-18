@@ -91,6 +91,12 @@ function Equation(bi,bj,minForce,maxForce){
      * @property {Number} relativeVelocity
      */
     this.relativeVelocity = 0;
+
+    /**
+     * Whether this equation is enabled or not. If true, it will be added to the solver.
+     * @property {Boolean} enabled
+     */
+    this.enabled = true;
 };
 Equation.prototype.constructor = Equation;
 

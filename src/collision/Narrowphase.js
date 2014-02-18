@@ -179,6 +179,7 @@ Narrowphase.prototype.createContactEquation = function(bodyA,bodyB,shapeA,shapeB
     c.shapeB = shapeB;
     c.restitution = this.restitution;
     c.firstImpact = !this.collidedLastStep(bodyA,bodyB);
+    c.enabled = true;
 
     if(bodyA.allowSleep && (bodyA.motionState & Body.DYNAMIC) && !(bodyB.motionState & Body.STATIC || bodyB.sleepState === Body.SLEEPY))
         bodyA.wakeUp();
@@ -204,6 +205,7 @@ Narrowphase.prototype.createFrictionEquation = function(bodyA,bodyB,shapeA,shape
     c.setSlipForce(this.slipForce);
     c.frictionCoefficient = this.frictionCoefficient;
     c.relativeVelocity = this.surfaceVelocity;
+    c.enabled = true;
     return c;
 };
 
