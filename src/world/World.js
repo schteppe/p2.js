@@ -274,6 +274,15 @@ function World(options){
      */
     this.enableBodySleeping = false;
 
+    /**
+     * Fired when two shapes starts start to touch (and create contacts).
+     * @event beginContact
+     * @param {Shape} shapeA
+     * @param {Shape} shapeB
+     * @param {Body}  bodyA
+     * @param {Body}  bodyB
+     * @param {Array} contactEquations
+     */
     this.beginContactEvent = {
         type:"beginContact",
         shapeA : null,
@@ -283,10 +292,21 @@ function World(options){
         contactEquations : [],
     };
 
+    /**
+     * Fired when two shapes stop touching.
+     * @event endContact
+     * @param {Shape} shapeA
+     * @param {Shape} shapeB
+     * @param {Body}  bodyA
+     * @param {Body}  bodyB
+     * @param {Array} contactEquations
+     */
     this.endContactEvent = {
         type:"endContact",
         shapeA : null,
         shapeB : null,
+        bodyA : null,
+        bodyB : null,
     };
 
     /**
