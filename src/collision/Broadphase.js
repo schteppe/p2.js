@@ -83,20 +83,20 @@ Broadphase.aabbCheck = function(bodyA, bodyB){
 Broadphase.canCollide = function(bodyA, bodyB){
 
     // Cannot collide static bodies
-    if(bodyA.motionState & Body.STATIC && bodyB.motionState & Body.STATIC)
+    if(bodyA.motionState == Body.STATIC && bodyB.motionState == Body.STATIC)
         return false;
 
     // Cannot collide static vs kinematic bodies
-    if( (bodyA.motionState & Body.KINEMATIC && bodyB.motionState & Body.STATIC) ||
-        (bodyA.motionState & Body.STATIC    && bodyB.motionState & Body.KINEMATIC))
+    if( (bodyA.motionState == Body.KINEMATIC && bodyB.motionState == Body.STATIC) ||
+        (bodyA.motionState == Body.STATIC    && bodyB.motionState == Body.KINEMATIC))
         return false;
 
     // Cannot collide kinematic vs kinematic
-    if(bodyA.motionState & Body.KINEMATIC && bodyB.motionState & Body.KINEMATIC)
+    if(bodyA.motionState == Body.KINEMATIC && bodyB.motionState == Body.KINEMATIC)
         return false;
 
     // Cannot collide both sleeping bodies
-    if(bodyA.sleepState & Body.SLEEPING && bodyB.sleepState & Body.SLEEPING)
+    if(bodyA.sleepState == Body.SLEEPING && bodyB.sleepState == Body.SLEEPING)
         return false;
 
     return true;

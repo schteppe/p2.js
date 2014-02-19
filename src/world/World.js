@@ -506,7 +506,8 @@ World.prototype.internalStep = function(dt){
     if(this.applyDamping){
         for(var i=0; i!==Nbodies; i++){
             var b = bodies[i];
-            b.applyDamping(dt);
+            if(b.motionState == Body.DYNAMIC)
+                b.applyDamping(dt);
         }
     }
 

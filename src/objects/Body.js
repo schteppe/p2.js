@@ -646,7 +646,7 @@ Body.prototype.addConstraintVelocity = function(){
  * @param  {number} dt Current time step
  */
 Body.prototype.applyDamping = function(dt){
-    if(this.motionState & Body.DYNAMIC){ // Only for dynamic bodies
+    if(this.motionState == Body.DYNAMIC){ // Only for dynamic bodies
 
         // Since Math.pow generates garbage we check if we can reuse the scaling coefficient from last step
         if(dt != this.lastDampingTimeStep){

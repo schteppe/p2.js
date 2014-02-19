@@ -54,7 +54,7 @@ function getUnvisitedNode(nodes){
     var Nnodes = nodes.length;
     for(var i=0; i!==Nnodes; i++){
         var node = nodes[i];
-        if(!node.visited && !(node.body.motionState & STATIC)){ // correct?
+        if(!node.visited && !(node.body.motionState == STATIC)){ // correct?
             return node;
         }
     }
