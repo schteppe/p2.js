@@ -490,7 +490,7 @@ World.prototype.internalStep = function(dt){
         for(var i=0; i!==Nbodies; i++){
             var b = bodies[i],
                 fi = b.force;
-            vec2.scale(mg,g,b.mass); // F=m*g
+            vec2.scale(mg,g,b.mass*b.gravityScale); // F=m*g
             add(fi,fi,mg);
         }
     }

@@ -258,6 +258,12 @@ function Body(options){
      */
     this.sleepTimeLimit = 1;
 
+    /**
+     * Gravity scaling factor. If you want the body to ignore gravity, set this to zero. If you want to reverse gravity, set it to -1.
+     * @property {Number} gravityScale
+     */
+    this.gravityScale = 1;
+
     this.timeLastSleepy = 0;
 
     this.concavePath = null;
