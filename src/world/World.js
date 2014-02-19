@@ -555,13 +555,14 @@ World.prototype.internalStep = function(dt){
 
     // Emit shape end overlap events
     var last = this.overlappingShapesLastState;
-    for(var i=0; i<last.keys.length; i++){
+    for(var i=0; i!==last.keys.length; i++){
         var key = last.keys[i];
-        if(key.indexOf("shape")!=-1 || key.indexOf("body")!=-1)
-            break;
+
+        if(last[key]!==true)
+            continue;
 
         if(!this.overlappingShapesCurrentState[key]){
-            // Not overlapping any more! Emit event.
+            // Not overlapping in current state, but in last state. Emit event!
             var e = this.endContactEvent;
 
             // Add shapes to the event object
@@ -571,19 +572,24 @@ World.prototype.internalStep = function(dt){
             e.bodyB = last[key+"_bodyB"];
             this.emit(e);
         }
-
-        // Clear old data
-        delete last[key];
-        delete last[key+"_shapeA"];
-        delete last[key+"_shapeB"];
-        delete last[key+"_bodyA"];
-        delete last[key+"_bodyB"];
     }
-    this.overlappingShapesLastState.keys.length = 0;
-    // Swap state objects
-    var tmp = this.overlappingShapesLastState;
-    this.overlappingShapesLastState = this.overlappingShapesCurrentState;
-    this.overlappingShapesCurrentState = tmp;
+
+    // Clear last object
+    for(var i=0; i!==last.keys.length; i++)
+        delete last[last.keys[i]];
+    last.keys.length = 0;
+
+    // Transfer from new object to old
+    var current = this.overlappingShapesCurrentState;
+    for(var i=0; i!==current.keys.length; i++){
+        last[current.keys[i]] = current[current.keys[i]];
+        last.keys.push(current.keys[i]);
+    }
+
+    // Clear current object
+    for(var i=0; i!==current.keys.length; i++)
+        delete current[current.keys[i]];
+    current.keys.length = 0;
 
     var preSolveEvent = this.preSolveEvent;
     preSolveEvent.contactEquations = np.contactEquations;
