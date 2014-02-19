@@ -160,9 +160,11 @@ SAPBroadphase.prototype.getCollisionPairs = function(world){
                 break;
 
             // add pair to preliminary list
-            var key = bi.id < bj.id ? bi.id+' '+bj.id : bj.id+' '+bi.id;
-            preliminaryList[key] = true;
-            preliminaryList.keys.push(key);
+            if(Broadphase.canCollide(bi,bj)){
+                var key = bi.id < bj.id ? bi.id+' '+bj.id : bj.id+' '+bi.id;
+                preliminaryList[key] = true;
+                preliminaryList.keys.push(key);
+            }
         }
     }
 
@@ -177,9 +179,11 @@ SAPBroadphase.prototype.getCollisionPairs = function(world){
                 break;
 
             // If in preliminary list, add to final result
-            var key = bi.id < bj.id ? bi.id+' '+bj.id : bj.id+' '+bi.id;
-            if(preliminaryList[key] && Broadphase.boundingRadiusCheck(bi,bj))
-                result.push(bi,bj);
+            if(Broadphase.canCollide(bi,bj)){
+                var key = bi.id < bj.id ? bi.id+' '+bj.id : bj.id+' '+bi.id;
+                if(preliminaryList[key] && Broadphase.boundingRadiusCheck(bi,bj))
+                    result.push(bi,bj);
+            }
         }
     }
 

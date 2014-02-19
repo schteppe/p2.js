@@ -617,7 +617,7 @@ World.prototype.internalStep = function(dt){
     for(var i=0; i!==Nbodies; i++){
         var body = bodies[i];
 
-        if(body.sleepState !== Body.SLEEPING && body.mass>0){
+        if(body.sleepState !== Body.SLEEPING && body.motionState!=Body.STATIC){
             World.integrateBody(body,dt);
         }
     }
