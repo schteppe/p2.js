@@ -75,6 +75,7 @@
             mass: 0, // Static
             position:platformPositions[i],
           });
+          platformBody.motionState = p2.Body.KINEMATIC;
           platformBody.addShape(platformShape);
           world.addBody(platformBody);
           platforms.push(platformBody);
@@ -161,8 +162,13 @@
       }
 
       // Animation loop
-      function animate(){
+      function animate(t){
+        t = t || 0;
         requestAnimationFrame(animate);
+
+        for(var i=0; i<platforms.length; i++){
+          platforms[i].velocity[0] = Math.sin(t*0.001);
+        }
 
         // Apply button response
         if(buttons.right) characterBody.velocity[0] =  walkSpeed;
