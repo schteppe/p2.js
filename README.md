@@ -99,6 +99,11 @@ Note that concave polygon shapes can be created using [Body.fromPolygon](http://
 ### Change log
 
 ##### Current dev version
+* Added property ```.enabled``` to ```Equation```.
+* Added property ```.surfaceVelocity``` to ```ContactMaterial```.
+* Added property ```.sensor``` to ```Shape```.
+* World now emits events ```'beginContact'```, ```'endContact'``` and ```'preSolve'```.
+* Added property ```.gravityScale``` to ```Body```.
 * Renamed class ```SAP1DBroadphase``` to ```SAPBroadphase```.
 * Added property ```.interpolatedPosition``` to ``Body```.
 * Added method ```.internalStep``` to ```World```.
