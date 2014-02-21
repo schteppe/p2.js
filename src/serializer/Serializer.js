@@ -24,6 +24,11 @@ var World = require('../world/World')
 
 module.exports = Serializer;
 
+/**
+ * @class Serializer
+ * @constructor
+ * @extends {JSONFileFormat}
+ */
 function Serializer(){
     JSONFileFormat.call(this,{
         getVersionFunc : function(instance){
@@ -302,7 +307,11 @@ function Serializer(){
 }
 Serializer.prototype = new JSONFileFormat();
 
-// Sample instance at latest version
+/**
+ * Sample JSON object for the latest version.
+ * @static
+ * @property {Object} sample
+ */
 Serializer.sample = {
     p2: pkg.version,
     gravity: [0,-10],
@@ -314,7 +323,6 @@ Serializer.sample = {
     },
     broadphase: {
         type:"SAPBroadphase",
-        //axisIndex : 0,
     },
     bodies: [{
         id :       1,
@@ -344,7 +352,7 @@ Serializer.sample = {
             material : 1,
         }],
         convexShapes : [{
-            vertices : [[0,1],[1,0],[0,0]],
+            vertices : [[0,1],[0,0],[1,0]],
             offset : [0,0],
             angle : 0,
             collisionGroup:1,
@@ -613,9 +621,7 @@ Serializer.prototype.serialize = function(world){
             jsonShape.angle = b.shapeAngles[j];
             jsonShape.collisionGroup = s.collisionGroup;
             jsonShape.collisionMask = s.collisionMask;
-            jsonShape.material = s.material ? {
-                id : s.material.id,
-            } : null;
+            jsonShape.material = s.material ? s.material.id : null;
 
             // Check type
             if(s instanceof Circle){
@@ -672,6 +678,20 @@ Serializer.prototype.serialize = function(world){
         });
     }
 
+    // Serialize materials
+    var mats = {};
+    // Get unique materials first
+    for(var i=0; i<world.contactMaterials.length; i++){
+        mats[cm.materialA.id+''] = cm.materialA;
+        mats[cm.materialB.id+''] = cm.materialB;
+    }
+    for(var matId in mats){
+        var m = mats[matId];
+        json.materials.push({
+            id : m.id,
+        });
+    }
+
     return json;
 };
 
@@ -693,7 +713,9 @@ function extend(a,b){
 Serializer.prototype.deserialize = function(json,world){
 
     // Upgrade to latest JSON version
-    if(!this.upgrade(json)) return false;
+    if(!this.upgrade(json)){
+        return false;
+    }
 
     // Load
     var w = world || new World();
@@ -791,7 +813,7 @@ Serializer.prototype.deserialize = function(json,world){
         // Convex
         for(var j=0; j<jb.convexShapes.length; j++){
             var s = jb.convexShapes[i];
-            addShape(b, new Convex(s.verts), s);
+            addShape(b, new Convex(s.vertices), s);
         }
 
         // Capsule
@@ -800,13 +822,13 @@ Serializer.prototype.deserialize = function(json,world){
             addShape(b, new Capsule(s.length, s.radius), s);
         }
 
-        function addShape(body, shapeObject, shapeJSON){
-            shapeObject.collisionMask = shapeJSON.collisionMask;
-            shapeObject.collisionGroup = shapeJSON.collisionGroup;
+        function addShape(body, shape, shapeJSON){
+            shape.collisionMask = shapeJSON.collisionMask;
+            shape.collisionGroup = shapeJSON.collisionGroup;
             if(shapeJSON.material){
-                shapeObject.material = id2material[shapeObject.material+""];
+                shape.material = id2material[shapeJSON.material+""];
             }
-            body.addShape(shapeObject, shapeJSON.offset,shapeJSON.angle);
+            body.addShape(shape, shapeJSON.offset, shapeJSON.angle);
         }
 
         if(jb.concavePath)

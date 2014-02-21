@@ -22,6 +22,12 @@ function Circle(radius){
     Shape.call(this,Shape.CIRCLE);
 };
 Circle.prototype = new Shape();
+
+/**
+ * @method computeMomentOfInertia
+ * @param  {Number} mass
+ * @return {Number}
+ */
 Circle.prototype.computeMomentOfInertia = function(mass){
     var r = this.radius;
     return mass * r * r / 2;

@@ -34,7 +34,7 @@ function Rectangle(w,h){
 
     Convex.call(this,verts);
 };
-Rectangle.prototype = new Convex();
+Rectangle.prototype = new Convex([]);
 
 /**
  * Compute moment of inertia
@@ -70,21 +70,6 @@ var corner1 = vec2.create(),
  * @param  {Number} angle
  */
 Rectangle.prototype.computeAABB = function(out, position, angle){
-    /*
-    // Get world corners
-    vec2.rotate(corner1,this.vertices[0],angle);
-    vec2.rotate(corner2,this.vertices[1],angle);
-    vec2.rotate(corner3,this.vertices[2],angle);
-    vec2.rotate(corner4,this.vertices[3],angle);
-    vec2.set(out.upperBound, Math.max(corner1[0],corner2[0],corner3[0],corner4[0]),
-                             Math.max(corner1[1],corner2[1],corner3[1],corner4[1]));
-    vec2.set(out.lowerBound, Math.min(corner1[0],corner2[0],corner3[0],corner4[0]),
-                             Math.min(corner1[1],corner2[1],corner3[1],corner4[1]));
-
-    // Add world offset
-    vec2.add(out.lowerBound, out.lowerBound, position);
-    vec2.add(out.upperBound, out.upperBound, position);
-    */
    out.setFromPoints(this.vertices,position,angle);
 };
 

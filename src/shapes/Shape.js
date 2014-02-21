@@ -86,12 +86,46 @@ function Shape(type){
 
 Shape.idCounter = 0;
 
+/**
+ * @static
+ * @property {Number} CIRCLE
+ */
 Shape.CIRCLE =      1;
+
+/**
+ * @static
+ * @property {Number} PARTICLE
+ */
 Shape.PARTICLE =    2;
+
+/**
+ * @static
+ * @property {Number} PLANE
+ */
 Shape.PLANE =       4;
+
+/**
+ * @static
+ * @property {Number} CONVEX
+ */
 Shape.CONVEX =      8;
+
+/**
+ * @static
+ * @property {Number} LINE
+ */
 Shape.LINE =        16;
+
+/**
+ * @static
+ * @property {Number} RECTANGLE
+ */
 Shape.RECTANGLE =   32;
+
+/**
+ * @static
+ * @property {Number} CAPSULE
+ */
 Shape.CAPSULE =     64;
 
 /**

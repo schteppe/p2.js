@@ -12,7 +12,17 @@ module.exports = Capsule;
  * @param {Number} radius Radius of the capsule
  */
 function Capsule(length,radius){
+
+    /**
+     * The distance between the end points.
+     * @property {Number} length
+     */
     this.length = length || 1;
+
+    /**
+     * The radius of the capsule.
+     * @property {Number} radius
+     */
     this.radius = radius || 1;
 
     Shape.call(this,Shape.CAPSULE);
@@ -34,10 +44,16 @@ Capsule.prototype.computeMomentOfInertia = function(mass){
     return mass * (h*h + w*w) / 12;
 };
 
+/**
+ * @method updateBoundingRadius
+ */
 Capsule.prototype.updateBoundingRadius = function(){
     this.boundingRadius = this.radius + this.length/2;
 };
 
+/**
+ * @method updateArea
+ */
 Capsule.prototype.updateArea = function(){
     this.area = Math.PI * this.radius * this.radius + this.radius * 2 * this.length;
 };

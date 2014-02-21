@@ -44,9 +44,10 @@ if(!performance.now){
  * @class World
  * @constructor
  * @param {Object}          [options]
- * @param {Solver}          options.solver Defaults to GSSolver.
- * @param {Float32Array}    options.gravity Defaults to [0,-9.78]
- * @param {Broadphase}      options.broadphase Defaults to NaiveBroadphase
+ * @param {Solver}          options.solver          Defaults to GSSolver.
+ * @param {Float32Array}    options.gravity         Defaults to [0,-9.78]
+ * @param {Broadphase}      options.broadphase      Defaults to NaiveBroadphase
+ * @param {Boolean}         options.doProfiling
  * @extends {EventEmitter}
  */
 function World(options){
@@ -275,7 +276,7 @@ function World(options){
     this.enableBodySleeping = false;
 
     /**
-     * Fired when two shapes starts start to touch (and create contacts).
+     * Fired when two shapes starts start to overlap. Fired in the narrowphase, during step.
      * @event beginContact
      * @param {Shape} shapeA
      * @param {Shape} shapeB
@@ -293,7 +294,7 @@ function World(options){
     };
 
     /**
-     * Fired when two shapes stop touching.
+     * Fired when two shapes stop overlapping, after the narrowphase (during step).
      * @event endContact
      * @param {Shape} shapeA
      * @param {Shape} shapeB
@@ -866,6 +867,7 @@ World.prototype.getBodyById = function(id){
  *
  * @method toJSON
  * @return {Object}
+ * @deprecated Should use Serializer instead.
  */
 World.prototype.toJSON = function(){
     var json = {

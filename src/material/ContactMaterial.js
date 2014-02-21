@@ -1,27 +1,35 @@
+var Material = require('./Material');
+
 module.exports = ContactMaterial;
 
-var idCounter = 0;
-
 /**
- * Defines a physics material.
+ * Defines what happens when two materials meet, such as what friction coefficient to use. You can also set other things such as restitution, surface velocity and constraint parameters.
  * @class ContactMaterial
  * @constructor
  * @param {Material} materialA
  * @param {Material} materialB
  * @param {Object}   [options]
- * @param {Number}   options.friction
- * @param {Number}   options.restitution
+ * @param {Number}   options.friction           Friction coefficient.
+ * @param {Number}   options.restitution        Restitution coefficient aka "bounciness".
+ * @param {Number}   options.stiffness          ContactEquation stiffness.
+ * @param {Number}   options.relaxation         ContactEquation relaxation.
+ * @param {Number}   options.frictionStiffness  FrictionEquation stiffness.
+ * @param {Number}   options.frictionRelaxation FrictionEquation relaxation.
+ * @param {Number}   options.surfaceVelocity    Surface velocity.
  * @author schteppe
  */
 function ContactMaterial(materialA, materialB, options){
     options = options || {};
+
+    if(!(materialA instanceof Material) || !(materialB instanceof Material))
+        throw new Error("First two arguments must be Material instances.");
 
     /**
      * The contact material identifier
      * @property id
      * @type {Number}
      */
-    this.id = idCounter++;
+    this.id = ContactMaterial.idCounter++;
 
     /**
      * First material participating in the contact material
@@ -85,3 +93,5 @@ function ContactMaterial(materialA, materialB, options){
      */
     this.surfaceVelocity = typeof(options.surfaceVelocity)    !== "undefined" ?   Number(options.surfaceVelocity)    : 0
 };
+
+ContactMaterial.idCounter = 0;

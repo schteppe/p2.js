@@ -12,6 +12,7 @@ module.exports = Body;
  *
  * @class Body
  * @constructor
+ * @extends {EventEmitter}
  * @param {Object}              [options]
  * @param {Number}              [options.mass=0]    A number >= 0. If zero, the .motionState will be set to Body.STATIC.
  * @param {Float32Array|Array}  [options.position]
@@ -21,8 +22,6 @@ module.exports = Body;
  * @param {Float32Array|Array}  [options.force]
  * @param {Number}              [options.angularForce=0]
  * @param {Number}              [options.fixedRotation=false]
- *
- * @todo Should not take mass as argument to Body, but as density to each Shape
  */
 function Body(options){
     options = options || {};
@@ -272,7 +271,6 @@ function Body(options){
     this.lastAngularDampingScale = 1;
     this.lastDampingTimeStep = -1;
 };
-
 Body.prototype = new EventEmitter();
 
 Body._idCounter = 0;
@@ -705,14 +703,23 @@ Body.prototype.sleepTick = function(time){
     }
 };
 
+/**
+ * @event sleepy
+ */
 Body.sleepyEvent = {
     type: "sleepy"
 };
 
+/**
+ * @event sleep
+ */
 Body.sleepEvent = {
     type: "sleep"
 };
 
+/**
+ * @event wakeup
+ */
 Body.wakeUpEvent = {
     type: "wakeup"
 };

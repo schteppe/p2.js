@@ -3,7 +3,7 @@ var Convex = require(__dirname + '/../../src/shapes/Convex')
 ,   AABB =   require(__dirname + '/../../src/collision/AABB')
 
 exports.construct = function(test){
-    new Convex();
+    new Convex([]);
 
     test.throws(function(){
         var c = new Convex([[-1,-1],

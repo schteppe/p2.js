@@ -113,6 +113,7 @@ JSONFileFormat.prototype.upgrade = function(instance){
 
 /**
  * Validate an instance
+ * @method validate
  * @param  {Object} instance
  * @return {Boolean}
  */

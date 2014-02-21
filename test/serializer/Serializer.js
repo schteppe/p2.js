@@ -10,17 +10,16 @@ function v(a){
 }
 
 exports.deserialize = function(test){
-    var s = Serializer.sample;
-    var serializer = new Serializer();
+    var s = Serializer.sample,
+        serializer = new Serializer(),
+        world = serializer.deserialize(s);
 
-    var world = serializer.deserialize(s);
-
+    // Check no errors
     test.deepEqual(serializer.validateResult.errors, []);
 
     test.ok(world instanceof World,'Should return a world instance! '+serializer.error);
 
-    // Gravity
-    test.deepEqual(v(world.gravity),s.gravity);
+    test.deepEqual(v(world.gravity),s.gravity,'gravity wasnt set correctly');
 
     // Solver
     switch(s.solver.type){
@@ -139,12 +138,16 @@ exports.serialize = function(test){
     var s = Serializer.sample;
     var serializer = new Serializer();
     var world = serializer.deserialize(Serializer.sample);
+
+    test.ok(world instanceof World);
+    test.deepEqual(serializer.validateResult.errors,[]);
+
     var obj = serializer.serialize(world);
 
     test.ok(typeof(obj) == "object");
     test.ok(serializer.validate(obj));
     test.deepEqual(serializer.validateResult.errors,[])
-    //test.deepEqual(s, obj);
+    test.deepEqual(s, obj);
 
     test.done();
 };

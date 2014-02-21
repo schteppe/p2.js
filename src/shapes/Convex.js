@@ -19,13 +19,13 @@ function Convex(vertices){
      * @property vertices
      * @type {Array}
      */
-    this.vertices = vertices || [];
+    this.vertices = [];
 
     // Copy the verts
-    for(var i=0; i<this.vertices.length; i++){
-        var v = vec2.fromValues();
-        vec2.copy(v,this.vertices[i]);
-        this.vertices[i] = v;
+    for(var i=0; i<vertices.length; i++){
+        var v = vec2.create();
+        vec2.copy(v,vertices[i]);
+        this.vertices.push(v);
     }
 
     /**

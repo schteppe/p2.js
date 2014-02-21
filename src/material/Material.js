@@ -1,7 +1,5 @@
 module.exports = Material;
 
-var idCounter = 0;
-
 /**
  * Defines a physics material.
  * @class Material
@@ -15,5 +13,7 @@ function Material(){
      * @property id
      * @type {Number}
      */
-    this.id = idCounter++;
+    this.id = Material.idCounter++;
 };
+
+Material.idCounter = 0;
