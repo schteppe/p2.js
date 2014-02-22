@@ -8,7 +8,7 @@ exports.construct = function(test){
     var body = new Body({
         mass : 0,
     });
-    test.equal(body.mass,0);
+    test.equal(body.invMass,0);
     test.equal(body.motionState,Body.STATIC);
 
     // Setting things via options

@@ -101,8 +101,6 @@ function Body(options){
      */
     this.fixedRotation = !!options.fixedRotation || false;
 
-    this.updateMassProperties();
-
     /**
      * The position of the body
      * @property position
@@ -270,6 +268,8 @@ function Body(options){
     this.lastDampingScale = 1;
     this.lastAngularDampingScale = 1;
     this.lastDampingTimeStep = -1;
+
+    this.updateMassProperties();
 };
 Body.prototype = new EventEmitter();
 
@@ -426,25 +426,38 @@ Body.prototype.removeShape = function(shape){
  *     body.updateMassProperties();
  */
 Body.prototype.updateMassProperties = function(){
-    var shapes = this.shapes,
-        N = shapes.length,
-        m = this.mass / N,
-        I = 0;
+    if(this.motionState == Body.STATIC || this.motionState == Body.KINEMATIC){
 
-    if(!this.fixedRotation){
-        for(var i=0; i<N; i++){
-            var shape = shapes[i],
-                r2 = vec2.squaredLength(this.shapeOffsets[i]),
-                Icm = shape.computeMomentOfInertia(m);
-            I += Icm + m*r2;
+        this.mass = Number.MAX_VALUE;
+        this.invMass = 0;
+        this.inertia = Number.MAX_VALUE;
+        this.invInertia = 0;
+
+    } else {
+
+        var shapes = this.shapes,
+            N = shapes.length,
+            m = this.mass / N,
+            I = 0;
+
+        if(!this.fixedRotation){
+            for(var i=0; i<N; i++){
+                var shape = shapes[i],
+                    r2 = vec2.squaredLength(this.shapeOffsets[i]),
+                    Icm = shape.computeMomentOfInertia(m);
+                I += Icm + m*r2;
+            }
+            this.inertia = I;
+            this.invInertia = I>0 ? 1/I : 0;
+
+        } else {
+            this.inertia = Number.MAX_VALUE;
+            this.invInertia = 0;
         }
+
+        // Inverse mass properties are easy
+        this.invMass = 1/this.mass;// > 0 ? 1/this.mass : 0;
     }
-
-    this.inertia = I;
-
-    // Inverse mass properties are easy
-    this.invMass = this.mass > 0 ? 1/this.mass : 0;
-    this.invInertia = I>0 ? 1/I : 0;
 };
 
 var Body_applyForce_r = vec2.create();

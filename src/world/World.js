@@ -134,7 +134,7 @@ function World(options){
      * @property defaultFriction
      * @type {Number}
      */
-    this.defaultFriction = 0.3;
+    this.defaultFriction = 0.02;
 
     /**
      * Default coefficient of restitution between colliding bodies. This value is used if no matching ContactMaterial is found for a Material pair.
@@ -486,6 +486,8 @@ World.prototype.internalStep = function(dt){
         t0 = performance.now();
     }
 
+    var glen = vec2.length(this.gravity);
+
     // Add gravity to bodies
     if(this.applyGravity){
         for(var i=0; i!==Nbodies; i++){
@@ -552,7 +554,7 @@ World.prototype.internalStep = function(dt){
                     }
                 }
 
-                this.runNarrowphase(np,bi,si,xi,ai,bj,sj,xj,aj,mu,restitution,surfaceVelocity);
+                this.runNarrowphase(np,bi,si,xi,ai,bj,sj,xj,aj,mu,restitution,surfaceVelocity,glen);
             }
         }
     }
@@ -707,14 +709,16 @@ World.integrateBody = function(body,dt){
  * @param  {Number} aj
  * @param  {Number} mu
  */
-World.prototype.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,mu,restitution,surfaceVelocity){
+World.prototype.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,mu,restitution,surfaceVelocity,glen){
 
     if(!((si.collisionGroup & sj.collisionMask) !== 0 && (sj.collisionGroup & si.collisionMask) !== 0))
         return;
 
+    /*
     var reducedMass = bi.invMass + bj.invMass;
     if(reducedMass > 0)
         reducedMass = 1/reducedMass;
+    */
 
     // Get world position and angle of each shape
     vec2.rotate(xiw, xi, bi.angle);
@@ -727,6 +731,14 @@ World.prototype.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,mu,restitut
     // Run narrowphase
     np.enableFriction = mu > 0;
     np.frictionCoefficient = mu;
+    var reducedMass;
+    if(bi.motionState == Body.STATIC || bi.motionState == Body.KINEMATIC)
+        reducedMass = bj.mass;
+    else if(bj.motionState == Body.STATIC || bj.motionState == Body.KINEMATIC)
+        reducedMass = bi.mass;
+    else
+        reducedMass = (bi.mass*bj.mass)/(bi.mass+bj.mass);
+    np.slipForce = mu*glen*reducedMass;
     np.restitution = restitution;
     np.surfaceVelocity = surfaceVelocity;
 

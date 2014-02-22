@@ -70,6 +70,8 @@ function GSSolver(options){
      */
     this.useZeroRHS = false;
 
+    this.useNormalForceForFriction = false;
+
     /**
      * Number of friction iterations to skip. If .skipFrictionIterations=2, then no FrictionEquations will be iterated until the third iteration.
      * @property skipFrictionIterations
@@ -119,9 +121,8 @@ GSSolver.prototype.solve = function(h,world){
         lambda = this.lambda =  new Utils.ARRAY_TYPE(Neq + this.arrayStep);
         this.Bs =               new Utils.ARRAY_TYPE(Neq + this.arrayStep);
         this.invCs =            new Utils.ARRAY_TYPE(Neq + this.arrayStep);
-    } else {
-        setArrayZero(lambda);
     }
+    setArrayZero(lambda);
     var invCs = this.invCs,
         Bs = this.Bs,
         lambda = this.lambda;
@@ -161,7 +162,7 @@ GSSolver.prototype.solve = function(h,world){
 
                 var _eps = useGlobalParams ? eps : c.eps;
 
-                var deltalambda = GSSolver.iterateEquation(j,c,_eps,Bs,invCs,lambda,useZeroRHS,h);
+                var deltalambda = GSSolver.iterateEquation(j,c,_eps,Bs,invCs,lambda,useZeroRHS,h,iter,skipFrictionIter,this.useNormalForceForFriction);
                 deltalambdaTot += Math.abs(deltalambda);
             }
 
@@ -176,14 +177,14 @@ GSSolver.prototype.solve = function(h,world){
     }
 };
 
-GSSolver.iterateEquation = function(j,eq,eps,Bs,invCs,lambda,useZeroRHS,dt){
+GSSolver.iterateEquation = function(j,eq,eps,Bs,invCs,lambda,useZeroRHS,dt,iter,skipFrictionIter,useNormal){
     // Compute iteration
     var B = Bs[j],
         invC = invCs[j],
         lambdaj = lambda[j],
-        GWlambda = eq.computeGWlambda(eps);
+        GWlambda = eq.computeGWlambda();
 
-    if(eq instanceof FrictionEquation){
+    if(useNormal && eq instanceof FrictionEquation && iter == skipFrictionIter){
         // Rescale the max friction force according to the normal force
         eq.maxForce =  eq.contactEquation.multiplier * eq.frictionCoefficient * dt;
         eq.minForce = -eq.contactEquation.multiplier * eq.frictionCoefficient * dt;
