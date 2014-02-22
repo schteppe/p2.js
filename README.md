@@ -88,11 +88,11 @@ var p2 = require('p2');
 | :----------------------------------------------------------------------: |:------:|:-----:|:---------:|:------:|:--------:|:------:|:-------:|
 | [Circle](http://schteppe.github.io/p2.js/docs/classes/Circle.html)       | Yes    | Yes   | Yes       | Yes    | Yes      | Yes    | Yes     |
 | [Plane](http://schteppe.github.io/p2.js/docs/classes/Plane.html)         | -      | -     | Yes       | Yes    | Yes      | Yes    | Yes     |
-| [Rectangle](http://schteppe.github.io/p2.js/docs/classes/Rectangle.html) | -      | -     | Yes       | Yes    | Yes      | (todo) | (todo)  |
-| [Convex](http://schteppe.github.io/p2.js/docs/classes/Convex.html)       | -      | -     | -         | Yes    | Yes      | (todo) | (todo)  |
+| [Rectangle](http://schteppe.github.io/p2.js/docs/classes/Rectangle.html) | -      | -     | Yes       | Yes    | Yes      | (todo) | Yes     |
+| [Convex](http://schteppe.github.io/p2.js/docs/classes/Convex.html)       | -      | -     | -         | Yes    | Yes      | (todo) | Yes     |
 | [Particle](http://schteppe.github.io/p2.js/docs/classes/Particle.html)   | -      | -     | -         | -      | -        | -      | Yes     |
 | [Line](http://schteppe.github.io/p2.js/docs/classes/Line.html)           | -      | -     | -         | -      | -        | (todo) | (todo)  |
-| [Capsule](http://schteppe.github.io/p2.js/docs/classes/Capsule.html)     | -      | -     | -         | -      | -        | -      | (todo)  |
+| [Capsule](http://schteppe.github.io/p2.js/docs/classes/Capsule.html)     | -      | -     | -         | -      | -        | -      | Yes     |
 
 Note that concave polygon shapes can be created using [Body.fromPolygon](http://schteppe.github.io/p2.js/docs/classes/Body.html#method_fromPolygon).
 
