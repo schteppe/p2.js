@@ -1461,6 +1461,7 @@ Narrowphase.prototype.circlePlane = function(   bi,si,xi,ai, bj,sj,xj,aj, justTe
     return 1;
 };
 
+Narrowphase.convexPrecision = 1e-10;
 
 /**
  * Convex/convex Narrowphase.See <a href="http://www.altdevblogaday.com/2011/05/13/contact-generation-between-3d-convex-meshes/">this article</a> for more info.
@@ -1488,7 +1489,7 @@ Narrowphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
         dist = tmp8,
         worldNormal = tmp9,
         numContacts = 0,
-        precision = precision || 1e-10;
+        precision = precision || Narrowphase.convexPrecision;
 
     var found = Narrowphase.findSeparatingAxis(si,xi,ai,sj,xj,aj,sepAxis);
     if(!found) return 0;
