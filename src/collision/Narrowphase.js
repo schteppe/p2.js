@@ -1783,3 +1783,177 @@ Narrowphase.getClosestEdge = function(c,angle,axis,flip){
     return closestEdge;
 };
 
+var circleHeightfield_candidate = vec2.create(),
+    circleHeightfield_dist = vec2.create(),
+    circleHeightfield_v0 = vec2.create(),
+    circleHeightfield_v1 = vec2.create(),
+    circleHeightfield_minCandidate = vec2.create(),
+    circleHeightfield_worldNormal = vec2.create(),
+    circleHeightfield_minCandidateNormal = vec2.create();
+
+/**
+ * @method circleHeightfield
+ * @param  {Body}           bi
+ * @param  {Circle}         si
+ * @param  {Array}          xi
+ * @param  {Body}           bj
+ * @param  {Heightfield}    sj
+ * @param  {Array}          xj
+ * @param  {Number}         aj
+ */
+Narrowphase.prototype[Shape.CIRCLE | Shape.HEIGHTFIELD] =
+Narrowphase.prototype.circleHeightfield = function( circleBody,circleShape,circlePos,circleAngle,
+                                                    hfBody,hfShape,hfPos,hfAngle, justTest, radius ){
+    var data = hfShape.data,
+        radius = radius || circleShape.radius,
+        w = hfShape.elementWidth,
+        dist = circleHeightfield_dist,
+        candidate = circleHeightfield_candidate,
+        minCandidate = circleHeightfield_minCandidate,
+        minCandidateNormal = circleHeightfield_minCandidateNormal,
+        worldNormal = circleHeightfield_worldNormal,
+        v0 = circleHeightfield_v0,
+        v1 = circleHeightfield_v1;
+
+    // Get the index of the points to test against
+    var idxA = Math.floor( (circlePos[0] - radius - hfPos[0]) / w ),
+        idxB = Math.ceil(  (circlePos[0] + radius - hfPos[0]) / w );
+
+    /*if(idxB < 0 || idxA >= data.length)
+        return justTest ? false : 0;*/
+
+    if(idxA < 0) idxA = 0;
+    if(idxB >= data.length) idxB = data.length-1;
+
+    // Get max and min
+    var max = data[idxA],
+        min = data[idxB];
+    for(var i=idxA; i<idxB; i++){
+        if(data[i] < min) min = data[i];
+        if(data[i] > max) max = data[i];
+    }
+
+    if(circlePos[1]-radius > max)
+        return justTest ? false : 0;
+
+    if(circlePos[1]+radius < min){
+        // Below the minimum point... We can just guess.
+        // TODO
+    }
+
+    // 1. Check so center of circle is not inside the field. If it is, this wont work...
+    // 2. For each edge
+    // 2. 1. Get point on circle that is closest to the edge (scale normal with -radius)
+    // 2. 2. Check if point is inside.
+
+    var found = false,
+        minDist = false;
+
+    // Check all edges first
+    for(var i=idxA; i<idxB; i++){
+
+        // Get points
+        vec2.set(v0,     i*w, data[i]  );
+        vec2.set(v1, (i+1)*w, data[i+1]);
+        vec2.add(v0,v0,hfPos);
+        vec2.add(v1,v1,hfPos);
+
+        // Get normal
+        vec2.sub(worldNormal, v1, v0);
+        vec2.rotate(worldNormal, worldNormal, Math.PI/2);
+        vec2.normalize(worldNormal,worldNormal);
+
+        // Get point on circle, closest to the edge
+        vec2.scale(candidate,worldNormal,-radius);
+        vec2.add(candidate,candidate,circlePos);
+
+        // Distance from v0 to the candidate point
+        vec2.sub(dist,candidate,v0);
+
+        // Check if it is in the element "stick"
+        var d = vec2.dot(dist,worldNormal);
+        if(candidate[0] >= v0[0] && candidate[0] < v1[0] && d <= 0){
+
+            if(minDist === false || Math.abs(d) < minDist){
+
+                // Store the candidate point, projected to the edge
+                vec2.scale(dist,worldNormal,-d);
+                vec2.add(minCandidate,candidate,dist);
+                vec2.copy(minCandidateNormal,worldNormal);
+
+                found = true;
+                minDist = Math.abs(d);
+
+                if(justTest)
+                    return true;
+            }
+        }
+    }
+
+    if(found){
+
+        var c = this.createContactEquation(hfBody,circleBody,hfShape,circleShape);
+
+        // Normal is out of the heightfield
+        vec2.copy(c.ni, minCandidateNormal);
+
+        // Vector from circle to heightfield
+        vec2.scale(c.rj,  c.ni, -radius);
+        add(c.rj, c.rj, circlePos);
+        sub(c.rj, c.rj, circleBody.position);
+
+        vec2.copy(c.ri, minCandidate);
+        //vec2.sub(c.ri, c.ri, hfPos);
+        vec2.sub(c.ri, c.ri, hfBody.position);
+
+        this.contactEquations.push(c);
+
+        if(this.enableFriction)
+            this.frictionEquations.push( this.createFrictionFromContact(c) );
+
+        return 1;
+    }
+
+
+    // Check all vertices
+    if(radius > 0){
+        for(var i=idxA; i<=idxB; i++){
+
+            // Get point
+            vec2.set(v0, i*w, data[i]);
+            vec2.add(v0,v0,hfPos);
+
+            vec2.sub(dist, circlePos, v0);
+
+            if(vec2.squaredLength(dist) < radius*radius){
+
+                if(justTest) return true;
+
+                var c = this.createContactEquation(hfBody,circleBody,hfShape,circleShape);
+
+                // Construct normal - out of heightfield
+                vec2.copy(c.ni, dist);
+                vec2.normalize(c.ni,c.ni);
+
+                vec2.scale(c.rj, c.ni, -radius);
+                add(c.rj, c.rj, circlePos);
+                sub(c.rj, c.rj, circleBody.position);
+
+                sub(c.ri, v0, hfPos);
+                add(c.ri, c.ri, hfPos);
+                sub(c.ri, c.ri, hfBody.position);
+
+                this.contactEquations.push(c);
+
+                if(this.enableFriction){
+                    this.frictionEquations.push(this.createFrictionFromContact(c));
+                }
+
+                return 1;
+            }
+        }
+    }
+
+    return 0;
+
+};

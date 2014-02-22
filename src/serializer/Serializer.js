@@ -712,7 +712,7 @@ Serializer.prototype.serialize = function(world){
                 break;
 
             default:
-                throw new Error("Shape type not supported yet!");
+                console.error("Shape type not supported yet!");
                 break;
             }
         }

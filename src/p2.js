@@ -17,6 +17,7 @@ module.exports = {
     GearConstraint :                require('./constraints/GearConstraint'),
     GridBroadphase :                require('./collision/GridBroadphase'),
     GSSolver :                      require('./solver/GSSolver'),
+    Heightfield :                   require('./shapes/Heightfield'),
     Island :                        require('./solver/IslandSolver'),
     IslandSolver :                  require('./solver/IslandSolver'),
     Line :                          require('./shapes/Line'),
