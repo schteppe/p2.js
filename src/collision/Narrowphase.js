@@ -8,6 +8,7 @@ var vec2 = require('../math/vec2')
 ,   Circle = require('../shapes/Circle')
 ,   Shape = require('../shapes/Shape')
 ,   Body = require('../objects/Body')
+,   Rectangle = require('../shapes/Rectangle')
 
 module.exports = Narrowphase;
 
@@ -268,27 +269,8 @@ Narrowphase.prototype.lineRectangle = function(bi,si,xi,ai, bj,sj,xj,aj, justTes
         return 0;
 };
 
-/**
- * Rectangle/capsule narrowphase
- * @method rectangleCapsule
- * @param  {Body}       bi
- * @param  {Rectangle}  si
- * @param  {Array}      xi
- * @param  {Number}     ai
- * @param  {Body}       bj
- * @param  {Capsule}    sj
- * @param  {Array}      xj
- * @param  {Number}     aj
- * @todo Implement me!
- */
-Narrowphase.prototype[Shape.CAPSULE | Shape.RECTANGLE] =
-Narrowphase.prototype.rectangleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTest){
-    // TODO
-    if(justTest)
-        return false;
-    else
-        return 0;
-};
+var convexCapsule_tempRect = new Rectangle(1,1),
+    convexCapsule_tempVec = vec2.create();
 
 /**
  * Convex/capsule narrowphase
@@ -304,12 +286,34 @@ Narrowphase.prototype.rectangleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, just
  * @todo Implement me!
  */
 Narrowphase.prototype[Shape.CAPSULE | Shape.CONVEX] =
+Narrowphase.prototype[Shape.CAPSULE | Shape.RECTANGLE] =
 Narrowphase.prototype.convexCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTest){
-    // TODO
-    if(justTest)
-        return false;
-    else
-        return 0;
+
+    // Check the circles
+    // Add offsets!
+    var circlePos = convexCapsule_tempVec;
+    vec2.set(circlePos, sj.length/2,0);
+    vec2.rotate(circlePos,circlePos,aj);
+    vec2.add(circlePos,circlePos,xj);
+    var result1 = this.circleConvex(bj,sj,circlePos,aj, bi,si,xi,ai, justTest, sj.radius);
+
+    vec2.set(circlePos,-sj.length/2, 0);
+    vec2.rotate(circlePos,circlePos,aj);
+    vec2.add(circlePos,circlePos,xj);
+    var result2 = this.circleConvex(bj,sj,circlePos,aj, bi,si,xi,ai, justTest, sj.radius);
+
+    if(justTest && (result1 || result2))
+        return true;
+
+    // Check center rect
+    var r = convexCapsule_tempRect;
+    vec2.set(r.vertices[0], -sj.length * 0.5, -sj.radius);
+    vec2.set(r.vertices[1],  sj.length * 0.5, -sj.radius);
+    vec2.set(r.vertices[2],  sj.length * 0.5,  sj.radius);
+    vec2.set(r.vertices[3], -sj.length * 0.5,  sj.radius);
+    var result = this.convexConvex(bi,si,xi,ai, bj,r,xj,aj, justTest);
+
+    return result + result1 + result2;
 };
 
 /**
