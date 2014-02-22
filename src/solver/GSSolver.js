@@ -19,7 +19,7 @@ module.exports = GSSolver;
  * @param {Number} options.tolerance
  */
 function GSSolver(options){
-    Solver.call(this,options);
+    Solver.call(this,options,Solver.GS);
     options = options || {};
 
     /**

@@ -24,7 +24,7 @@ module.exports = PrismaticConstraint;
  */
 function PrismaticConstraint(bodyA,bodyB,options){
     options = options || {};
-    Constraint.call(this,bodyA,bodyB);
+    Constraint.call(this,bodyA,bodyB,Constraint.PRISMATIC);
 
     // Get anchors
     var localAnchorA = vec2.fromValues(0,0),

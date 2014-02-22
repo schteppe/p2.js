@@ -1,4 +1,4 @@
-var jsonschema = require("jsonschema");
+var jsonschema = require("../../node_modules/jsonschema/lib");
 
 module.exports = JSONFileFormat;
 

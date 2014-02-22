@@ -3,6 +3,7 @@ var World = require('../world/World')
 ,   Body = require('../objects/Body')
 ,   Capsule = require('../shapes/Capsule')
 ,   Circle = require('../shapes/Circle')
+,   Shape = require('../shapes/Shape')
 ,   Plane = require('../shapes/Plane')
 ,   Rectangle = require('../shapes/Rectangle')
 ,   Particle = require('../shapes/Particle')
@@ -13,14 +14,18 @@ var World = require('../world/World')
 ,   JSONFileFormat = require('./JSONFileFormat')
 ,   pkg = require('../../package.json')
 ,   vec2 = require('../math/vec2')
+,   Solver = require("../solver/Solver")
 ,   GSSolver = require("../solver/GSSolver")
 ,   IslandSolver = require("../solver/IslandSolver")
+,   Broadphase = require("../collision/Broadphase")
 ,   NaiveBroadphase = require("../collision/NaiveBroadphase")
 ,   SAPBroadphase = require("../collision/SAPBroadphase")
+,   Constraint = require("../constraints/Constraint")
 ,   DistanceConstraint = require("../constraints/DistanceConstraint")
 ,   RevoluteConstraint = require("../constraints/RevoluteConstraint")
 ,   PrismaticConstraint = require("../constraints/PrismaticConstraint")
 ,   LockConstraint = require("../constraints/LockConstraint")
+,   GearConstraint = require("../constraints/GearConstraint")
 
 module.exports = Serializer;
 
@@ -146,6 +151,7 @@ function Serializer(){
             angularVelocity :   num_v1,
             force :             vec2_v1,
             motionState :       uint_v1,
+            fixedRotation :     bool_v1,
             capsuleShapes :     { type:"array", items:capsuleShape_v1 },
             circleShapes :      { type:"array", items:circleShape_v1 },
             convexShapes :      { type:"array", items:convexShape_v1 },
@@ -245,6 +251,16 @@ function Serializer(){
             maxForce:           num_v1,
         },
     },
+    gearConstraint_v1 = {
+        type:"object",
+        properties:{
+            bodyA:              num_v1,
+            bodyB:              num_v1,
+            angle:              num_v1,
+            ratio:              num_v1,
+            maxForce:           num_v1,
+        },
+    },
     solver_v1 = {
         type:"object",
         properties:{
@@ -300,6 +316,7 @@ function Serializer(){
             revoluteConstraints :   { type:"array", items: revoluteConstraint_v1,   },
             prismaticConstraints :  { type:"array", items: prismaticConstraint_v1,  },
             lockConstraints :       { type:"array", items: lockConstraint_v1,  },
+            gearConstraints :       { type:"array", items: gearConstraint_v1,  },
             contactMaterials :      { type:"array", items: contactMaterial_v1,      },
             materials :             { type:"array", items: material_v1,      },
         }
@@ -307,12 +324,7 @@ function Serializer(){
 }
 Serializer.prototype = new JSONFileFormat();
 
-/**
- * Sample JSON object for the latest version.
- * @static
- * @property {Object} sample
- */
-Serializer.sample = {
+Serializer.samples = [{
     p2: pkg.version,
     gravity: [0,-10],
     solver: {
@@ -333,6 +345,7 @@ Serializer.sample = {
         angularVelocity : 0,
         force : [0,0],
         motionState : 1,
+        fixedRotation : false,
         concavePath : null,
         capsuleShapes : [{
             length : 1,
@@ -399,6 +412,7 @@ Serializer.sample = {
         angularVelocity : 0,
         force : [0,0],
         motionState : 1,
+        fixedRotation : false,
         concavePath : [[0,0],[1,0],[1,1]],
         capsuleShapes :     [],
         circleShapes :      [],
@@ -457,6 +471,13 @@ Serializer.sample = {
         localAngleB:    0,
         maxForce:       1e6,
     }],
+    gearConstraints : [{
+        bodyA:          0,
+        bodyB:          1,
+        angle:          0,
+        ratio:          0,
+        maxForce:       1e6,
+    }],
     contactMaterials : [{
         id:1,
         materialA:1,
@@ -473,7 +494,14 @@ Serializer.sample = {
     },{
         id:2,
     }]
-};
+}];
+
+/**
+ * Sample JSON object for the latest version.
+ * @static
+ * @property {Object} sample
+ */
+Serializer.sample = Serializer.samples[0];
 
 /*
  * Serialize a World instance to JSON
@@ -493,6 +521,7 @@ Serializer.prototype.serialize = function(world){
         revoluteConstraints :   [],
         prismaticConstraints :  [],
         lockConstraints :       [],
+        gearConstraints :       [],
         contactMaterials :      [],
         materials :             [],
     };
@@ -500,23 +529,25 @@ Serializer.prototype.serialize = function(world){
     // Solver
     var js = json.solver,
         s = world.solver;
-    if(s instanceof GSSolver){
+    if(s.type == Solver.GS){
         js.type = "GSSolver";
         js.iterations = s.iterations;
         js.stiffness = s.stiffness;
         js.relaxation = s.relaxation;
-    } else if(s instanceof IslandSolver) {
+    } else if(s.type == Solver.ISLAND) {
         js.type = "IslandSolver";
     }
 
     // Broadphase
     var jb = json.broadphase,
         wb = world.broadphase;
-    if(wb instanceof NaiveBroadphase){
+    if(wb.type == Broadphase.NAIVE){
         jb.type = "NaiveBroadphase";
-    } else if(wb instanceof SAPBroadphase) {
+    } else if(wb.type == Broadphase.SAP) {
         jb.type = "SAPBroadphase";
         //jb.axisIndex = wb.axisIndex;
+    } else {
+        console.error("Broadphase not supported: "+wb.type);
     }
 
     // Serialize springs
@@ -540,14 +571,18 @@ Serializer.prototype.serialize = function(world){
             bodyA : world.bodies.indexOf(c.bodyA),
             bodyB : world.bodies.indexOf(c.bodyB),
         }
-        if(c instanceof DistanceConstraint){
+
+        switch(c.type){
+
+        case Constraint.DISTANCE:
             extend(jc,{
                 distance : c.distance,
                 maxForce : c.getMaxForce(),
             });
             json.distanceConstraints.push(jc);
+            break;
 
-        } else if(c instanceof RevoluteConstraint){
+        case Constraint.REVOLUTE:
             extend(jc,{
                 pivotA :            v2a(c.pivotA),
                 pivotB :            v2a(c.pivotB),
@@ -560,8 +595,9 @@ Serializer.prototype.serialize = function(world){
                 upperLimitEnabled : c.upperLimitEnabled,
             });
             json.revoluteConstraints.push(jc);
+            break;
 
-        } else if(c instanceof PrismaticConstraint){
+        case Constraint.PRISMATIC:
             extend(jc,{
                 localAxisA :    v2a(c.localAxisA),
                 localAnchorA :  v2a(c.localAnchorA),
@@ -575,18 +611,29 @@ Serializer.prototype.serialize = function(world){
                 motorSpeed : c.motorSpeed,
             });
             json.prismaticConstraints.push(jc);
+            break;
 
-        } else if(c instanceof LockConstraint){
+        case Constraint.LOCK:
             extend(jc,{
                 localOffsetB :  v2a(c.localOffsetB),
                 localAngleB :   c.localAngleB,
                 maxForce :      c.maxForce,
             });
             json.lockConstraints.push(jc);
+            break;
 
-        } else {
-            console.error("Constraint not supported yet!");
-            continue;
+        case Constraint.GEAR:
+            extend(jc,{
+                angle :     c.angle,
+                ratio :     c.ratio,
+                maxForce :  c.maxForce || 1e6,
+            });
+            json.gearConstraints.push(jc);
+            break;
+
+        default:
+            console.error("Constraint not supported yet: ",c.type);
+            break;
         }
     }
 
@@ -604,6 +651,7 @@ Serializer.prototype.serialize = function(world){
                 force : v2a(b.force),
                 motionState : b.motionState,
                 concavePath : b.concavePath,
+                fixedRotation : b.fixedRotation,
                 circleShapes :    [],
                 planeShapes :     [],
                 particleShapes :  [],
@@ -624,38 +672,48 @@ Serializer.prototype.serialize = function(world){
             jsonShape.material = s.material ? s.material.id : null;
 
             // Check type
-            if(s instanceof Circle){
+            switch(s.type){
+
+            case Shape.CIRCLE:
                 extend(jsonShape,{ radius : s.radius, });
                 jsonBody.circleShapes.push(jsonShape);
+                break;
 
-            } else if(s instanceof Plane){
+            case Shape.PLANE:
                 jsonBody.planeShapes.push(jsonShape);
+                break;
 
-            } else if(s instanceof Particle){
+            case Shape.PARTICLE:
                 jsonBody.particleShapes.push(jsonShape);
+                break;
 
-            } else if(s instanceof Line){
+            case Shape.LINE:
                 jsonShape.length = s.length;
                 jsonBody.lineShapes.push(jsonShape);
+                break;
 
-            } else if(s instanceof Rectangle){
+            case Shape.RECTANGLE:
                 extend(jsonShape,{   width : s.width,
                                      height : s.height });
                 jsonBody.rectangleShapes.push(jsonShape);
+                break;
 
-            } else if(s instanceof Convex){
+            case Shape.CONVEX:
                 var verts = [];
                 for(var k=0; k<s.vertices.length; k++)
                     verts.push(v2a(s.vertices[k]));
                 extend(jsonShape,{ vertices : verts });
                 jsonBody.convexShapes.push(jsonShape);
+                break;
 
-            } else if(s instanceof Capsule){
+            case Shape.CAPSULE:
                 extend(jsonShape,{ length : s.length, radius : s.radius });
                 jsonBody.capsuleShapes.push(jsonShape);
+                break;
 
-            } else {
+            default:
                 throw new Error("Shape type not supported yet!");
+                break;
             }
         }
 
@@ -682,11 +740,12 @@ Serializer.prototype.serialize = function(world){
     var mats = {};
     // Get unique materials first
     for(var i=0; i<world.contactMaterials.length; i++){
+        var cm = world.contactMaterials[i];
         mats[cm.materialA.id+''] = cm.materialA;
         mats[cm.materialB.id+''] = cm.materialB;
     }
     for(var matId in mats){
-        var m = mats[matId];
+        var m = mats[parseInt(matId)];
         json.materials.push({
             id : m.id,
         });
@@ -710,7 +769,30 @@ function extend(a,b){
  * @param  {Object} json
  * @return {World}
  */
-Serializer.prototype.deserialize = function(json,world){
+Serializer.prototype.deserialize = function(json,world,p2){
+    p2 = p2 || {
+        World : World,
+        GSSolver : GSSolver,
+        IslandSolver : IslandSolver,
+        NaiveBroadphase : NaiveBroadphase,
+        SAPBroadphase : SAPBroadphase,
+        Material : Material,
+        Body : Body,
+        Circle : Circle,
+        Plane : Plane,
+        Particle : Particle,
+        Line : Line,
+        Rectangle : Rectangle,
+        Convex : Convex,
+        Capsule : Capsule,
+        Spring:Spring,
+        ContactMaterial : ContactMaterial,
+        DistanceConstraint : DistanceConstraint,
+        RevoluteConstraint : RevoluteConstraint,
+        PrismaticConstraint : PrismaticConstraint,
+        LockConstraint : LockConstraint,
+        GearConstraint : GearConstraint,
+    };
 
     // Upgrade to latest JSON version
     if(!this.upgrade(json)){
@@ -718,7 +800,7 @@ Serializer.prototype.deserialize = function(json,world){
     }
 
     // Load
-    var w = world || new World();
+    var w = world || new p2.World();
     w.clear();
 
     // Set gravity
@@ -728,7 +810,7 @@ Serializer.prototype.deserialize = function(json,world){
     switch(json.solver.type){
         case "GSSolver":
             var js = json.solver,
-                s = new GSSolver();
+                s = new p2.GSSolver();
             w.solver = s;
             s.iterations = js.iterations;
             s.relaxation = js.relaxation;
@@ -736,18 +818,18 @@ Serializer.prototype.deserialize = function(json,world){
             break;
 
         case "IslandSolver":
-            w.solver = new IslandSolver();
+            w.solver = new p2.IslandSolver();
             break;
     }
 
     // Broadphase
     switch(json.broadphase.type){
         case "NaiveBroadphase":
-            w.broadphase = new NaiveBroadphase();
+            w.broadphase = new p2.NaiveBroadphase();
             break;
 
         case "SAPBroadphase":
-            w.broadphase = new SAPBroadphase();
+            w.broadphase = new p2.SAPBroadphase();
             break;
     }
     w.broadphase.setWorld(w);
@@ -759,7 +841,7 @@ Serializer.prototype.deserialize = function(json,world){
     var id2material = {};
     for(var i=0; i!==json.materials.length; i++){
         var jm = json.materials[i];
-        var m = new Material();
+        var m = new p2.Material();
         id2material[jm.id+""] = m;
         m.id = jm.id;
     }
@@ -769,57 +851,58 @@ Serializer.prototype.deserialize = function(json,world){
         var jb = json.bodies[i];
 
         // Create body
-        var b = new Body({
+        var b = new p2.Body({
             mass :              jb.mass,
             position :          jb.position,
             angle :             jb.angle,
             velocity :          jb.velocity,
             angularVelocity :   jb.angularVelocity,
             force :             jb.force,
+            fixedRotation :     jb.fixedRotation,
         });
         b.id = jb.id;
         b.motionState = jb.motionState;
 
         // Circle
         for(var j=0; j<jb.circleShapes.length; j++){
-            var s = jb.circleShapes[i];
-            addShape(b, new Circle(s.radius), s);
+            var s = jb.circleShapes[j];
+            addShape(b, new p2.Circle(s.radius), s);
         }
 
         // Plane
         for(var j=0; j<jb.planeShapes.length; j++){
-            var s = jb.planeShapes[i];
-            addShape(b, new Plane(), s);
+            var s = jb.planeShapes[j];
+            addShape(b, new p2.Plane(), s);
         }
 
         // Particle
         for(var j=0; j<jb.particleShapes.length; j++){
-            var s = jb.particleShapes[i];
-            addShape(b, new Particle(), s);
+            var s = jb.particleShapes[j];
+            addShape(b, new p2.Particle(), s);
         }
 
         // Line
         for(var j=0; j<jb.lineShapes.length; j++){
-            var s = jb.lineShapes[i];
-            addShape(b, new Line(s.length), s);
+            var s = jb.lineShapes[j];
+            addShape(b, new p2.Line(s.length), s);
         }
 
         // Rectangle
         for(var j=0; j<jb.rectangleShapes.length; j++){
-            var s = jb.rectangleShapes[i];
-            addShape(b, new Rectangle(s.width,s.height), s);
+            var s = jb.rectangleShapes[j];
+            addShape(b, new p2.Rectangle(s.width,s.height), s);
         }
 
         // Convex
         for(var j=0; j<jb.convexShapes.length; j++){
-            var s = jb.convexShapes[i];
-            addShape(b, new Convex(s.vertices), s);
+            var s = jb.convexShapes[j];
+            addShape(b, new p2.Convex(s.vertices), s);
         }
 
         // Capsule
         for(var j=0; j<jb.capsuleShapes.length; j++){
-            var s = jb.capsuleShapes[i];
-            addShape(b, new Capsule(s.length, s.radius), s);
+            var s = jb.capsuleShapes[j];
+            addShape(b, new p2.Capsule(s.length, s.radius), s);
         }
 
         function addShape(body, shape, shapeJSON){
@@ -850,7 +933,7 @@ Serializer.prototype.deserialize = function(json,world){
             this.error = "instance.springs["+i+"] references instance.body["+js.bodyB+"], which does not exist.";
             return false;
         }
-        var s = new Spring(bodyA, bodyB, {
+        var s = new p2.Spring(bodyA, bodyB, {
             stiffness : js.stiffness,
             damping : js.damping,
             restLength : js.restLength,
@@ -875,7 +958,7 @@ Serializer.prototype.deserialize = function(json,world){
             return false;
         }
 
-        var cm = new ContactMaterial(matA, matB, {
+        var cm = new p2.ContactMaterial(matA, matB, {
             friction :              jm.friction,
             restitution :           jm.restitution,
             stiffness :             jm.stiffness,
@@ -890,7 +973,7 @@ Serializer.prototype.deserialize = function(json,world){
     // DistanceConstraint
     for(var i=0; i<json.distanceConstraints.length; i++){
         var c = json.distanceConstraints[i];
-        w.addConstraint(new DistanceConstraint( bodies[c.bodyA],
+        w.addConstraint(new p2.DistanceConstraint( bodies[c.bodyA],
                                                 bodies[c.bodyB],
                                                 c.distance,
                                                 c.maxForce));
@@ -899,7 +982,7 @@ Serializer.prototype.deserialize = function(json,world){
     // RevoluteConstraint
     for(var i=0; i<json.revoluteConstraints.length; i++){
         var c = json.revoluteConstraints[i];
-        var revolute = new RevoluteConstraint(  bodies[c.bodyA],
+        var revolute = new p2.RevoluteConstraint(  bodies[c.bodyA],
                                                 c.pivotA,
                                                 bodies[c.bodyB],
                                                 c.pivotB,
@@ -918,7 +1001,7 @@ Serializer.prototype.deserialize = function(json,world){
     // PrismaticConstraint
     for(var i=0; i<json.prismaticConstraints.length; i++){
         var c = json.prismaticConstraints[i],
-            p = new PrismaticConstraint(bodies[c.bodyA], bodies[c.bodyB], {
+            p = new p2.PrismaticConstraint(bodies[c.bodyA], bodies[c.bodyB], {
                 maxForce : c.maxForce,
                 localAxisA : c.localAxisA,
                 localAnchorA : c.localAnchorA,
@@ -931,10 +1014,20 @@ Serializer.prototype.deserialize = function(json,world){
     // LockConstraint
     for(var i=0; i<json.lockConstraints.length; i++){
         var c = json.lockConstraints[i];
-        w.addConstraint(new LockConstraint(bodies[c.bodyA], bodies[c.bodyB], {
+        w.addConstraint(new p2.LockConstraint(bodies[c.bodyA], bodies[c.bodyB], {
             maxForce :     c.maxForce,
             localOffsetB : c.localOffsetB,
             localAngleB :  c.localAngleB,
+        }));
+    }
+
+    // GearConstraint
+    for(var i=0; i<json.gearConstraints.length; i++){
+        var c = json.gearConstraints[i];
+        w.addConstraint(new p2.GearConstraint(bodies[c.bodyA], bodies[c.bodyB], {
+            maxForce :      c.maxForce,
+            angle :         c.angle,
+            ratio :         c.ratio,
         }));
     }
 

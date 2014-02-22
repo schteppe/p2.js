@@ -49,7 +49,14 @@ exports.deserialize = function(test){
     for(var i=0; i<s.bodies.length; i++){
         var jb = s.bodies[i];
         test.equal(jb.mass,world.bodies[i].mass);
-        // Todo check everything
+        test.equal(jb.fixedRotation,world.bodies[i].fixedRotation);
+        // Todo check all properties
+
+        // Check shapes
+        for(var j=0; j<jb.circleShapes.length; j++){
+            var shape = jb.circleShapes[j];
+            test.equal(shape.radius,world.bodies[i].shapes[j].radius);
+        }
     }
 
     // Springs
@@ -147,7 +154,8 @@ exports.serialize = function(test){
     test.ok(typeof(obj) == "object");
     test.ok(serializer.validate(obj));
     test.deepEqual(serializer.validateResult.errors,[])
-    test.deepEqual(s, obj);
+    for(var key in s) test.deepEqual(s[key], obj[key]);
+    //test.deepEqual(s, obj);
 
     test.done();
 };

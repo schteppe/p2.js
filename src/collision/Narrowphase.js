@@ -669,6 +669,7 @@ Narrowphase.prototype.circleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTes
  * @param  {Number} aj
  */
 Narrowphase.prototype[Shape.CIRCLE | Shape.CONVEX] =
+Narrowphase.prototype[Shape.CIRCLE | Shape.RECTANGLE] =
 Narrowphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTest, circleRadius){
     var convexShape = sj,
         convexAngle = aj,
@@ -924,6 +925,7 @@ function pointInConvex(worldPoint,convexShape,convexOffset,convexAngle){
  * @todo use pointInConvex and code more similar to circleConvex
  */
 Narrowphase.prototype[Shape.PARTICLE | Shape.CONVEX] =
+Narrowphase.prototype[Shape.PARTICLE | Shape.RECTANGLE] =
 Narrowphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTest ){
     var convexShape = sj,
         convexAngle = aj,
@@ -1120,6 +1122,7 @@ Narrowphase.prototype.circleCircle = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
  * @param  {Number} aj
  */
 Narrowphase.prototype[Shape.PLANE | Shape.CONVEX] =
+Narrowphase.prototype[Shape.PLANE | Shape.RECTANGLE] =
 Narrowphase.prototype.planeConvex = function( bi,si,xi,ai, bj,sj,xj,aj, justTest ){
     var convexBody = bj,
         convexOffset = xj,
@@ -1418,6 +1421,8 @@ Narrowphase.prototype.circlePlane = function(   bi,si,xi,ai, bj,sj,xj,aj, justTe
  * @param  {Number} aj
  */
 Narrowphase.prototype[Shape.CONVEX] =
+Narrowphase.prototype[Shape.CONVEX | Shape.RECTANGLE] =
+Narrowphase.prototype[Shape.RECTANGLE] =
 Narrowphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTest, precision ){
     var sepAxis = tmp1,
         worldPoint = tmp2,

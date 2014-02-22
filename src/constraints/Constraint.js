@@ -9,7 +9,9 @@ module.exports = Constraint;
  * @param {Body} bodyA
  * @param {Body} bodyB
  */
-function Constraint(bodyA,bodyB){
+function Constraint(bodyA,bodyB,type){
+
+    this.type = type;
 
     /**
      * Equations to be solved in this constraint
@@ -43,3 +45,9 @@ function Constraint(bodyA,bodyB){
 /*Constraint.prototype.update = function(){
     throw new Error("method update() not implmemented in this Constraint subclass!");
 };*/
+
+Constraint.DISTANCE = 1;
+Constraint.GEAR = 2;
+Constraint.LOCK = 3;
+Constraint.PRISMATIC = 4;
+Constraint.REVOLUTE = 5;

@@ -9,10 +9,12 @@ module.exports = Solver;
  * @constructor
  * @extends {EventEmitter}
  */
-function Solver(options){
+function Solver(options,type){
     options = options || {};
 
     EventEmitter.call(this);
+
+    this.type = type;
 
     /**
      * Current equations in the solver.
@@ -97,3 +99,5 @@ Solver.prototype.removeAllEquations = function(){
     this.equations.length=0;
 };
 
+Solver.GS=1;
+Solver.ISLAND=2;

@@ -15,7 +15,7 @@ module.exports = NaiveBroadphase;
  * @extends Broadphase
  */
 function NaiveBroadphase(){
-    Broadphase.apply(this);
+    Broadphase.call(this,Broadphase.NAIVE);
 
     /**
      * Set to true to use bounding box checks instead of bounding radius.

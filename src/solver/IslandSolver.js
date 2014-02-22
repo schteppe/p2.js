@@ -16,7 +16,7 @@ module.exports = IslandSolver;
  * @extends Solver
  */
 function IslandSolver(subsolver,options){
-    Solver.call(this,options);
+    Solver.call(this,options,Solver.ISLAND);
     var that = this;
 
     /**

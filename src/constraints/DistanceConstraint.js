@@ -17,7 +17,7 @@ module.exports = DistanceConstraint;
  * @extends {Constraint}
  */
 function DistanceConstraint(bodyA,bodyB,distance,maxForce){
-    Constraint.call(this,bodyA,bodyB);
+    Constraint.call(this,bodyA,bodyB,Constraint.DISTANCE);
 
     /**
      * The distance to keep.

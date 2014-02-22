@@ -29,7 +29,8 @@ function Demo(world){
     var that = this;
 
     this.world = world;
-    this.initialState = world.toJSON();
+    var serializer = this.serializer = new p2extras.Serializer();
+    this.initialState = serializer.serialize(world);
 
     this.state = Demo.DEFAULT;
 
@@ -122,7 +123,10 @@ function Demo(world){
                     break;
                 case "R": // restart
                     that.removeAllVisuals();
-                    that.world.fromJSON(that.initialState);
+                    //that.world.fromJSON(that.initialState);
+                    var result = that.serializer.deserialize(that.initialState,that.world,p2);
+                    if(!result)
+                        console.error(that.serializer.error,that.serializer.validateResult);
                     break;
                 case "C": // toggle draw contacts
                     that.drawContacts = !that.drawContacts;
@@ -551,7 +555,8 @@ Demo.prototype.createMenu = function(){
     $("#menu-restart").click(function(e){
         // Until Demo gets a restart() method
         that.removeAllVisuals();
-        that.world.fromJSON(that.initialState);
+        //that.world.fromJSON(that.initialState);
+        that.serializer.deserialize(that.initialState,that.world,p2);
     }).tooltip({
         title : "Restart simulation [r]",
     }),

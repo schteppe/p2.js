@@ -33,6 +33,8 @@ function Rectangle(w,h){
     this.height = h;
 
     Convex.call(this,verts);
+
+    this.type = Shape.RECTANGLE;
 };
 Rectangle.prototype = new Convex([]);
 

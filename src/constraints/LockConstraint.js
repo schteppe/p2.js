@@ -19,7 +19,7 @@ module.exports = LockConstraint;
  * @extends {Constraint}
  */
 function LockConstraint(bodyA,bodyB,options){
-    Constraint.call(this,bodyA,bodyB);
+    Constraint.call(this,bodyA,bodyB,Constraint.LOCK);
     var maxForce = ( typeof(options.maxForce)=="undefined" ? Number.MAX_VALUE : options.maxForce );
     var localOffsetB = options.localOffsetB || vec2.fromValues(0,0);
     localOffsetB = vec2.fromValues(localOffsetB[0],localOffsetB[1]);

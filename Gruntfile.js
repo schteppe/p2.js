@@ -6,13 +6,20 @@ module.exports = function(grunt) {
         pkg: grunt.file.readJSON('package.json'),
 
         browserify : {
-            test : {
+            core : {
                 src : ["src/p2.js"],
                 dest : 'build/p2.js',
                 options : {
                     standalone : "p2"
                 }
-            }
+            },
+            extras : {
+                src : ["src/p2.extras.js"],
+                dest : 'build/p2.extras.js',
+                options : {
+                    standalone : "p2extras"
+                }
+            },
         },
 
         uglify : {

@@ -8,7 +8,9 @@ module.exports = Broadphase;
  * @class Broadphase
  * @constructor
  */
-function Broadphase(){
+function Broadphase(type){
+
+    this.type = type;
 
     /**
      * The resulting overlapping pairs. Will be filled with results during .getCollisionPairs().
@@ -101,3 +103,6 @@ Broadphase.canCollide = function(bodyA, bodyB){
 
     return true;
 };
+
+Broadphase.NAIVE = 1;
+Broadphase.SAP = 2;

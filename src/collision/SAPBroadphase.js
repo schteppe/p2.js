@@ -16,7 +16,7 @@ module.exports = SAPBroadphase;
  * @extends Broadphase
  */
 function SAPBroadphase(){
-    Broadphase.apply(this);
+    Broadphase.call(this,Broadphase.SAP);
 
     /**
      * List of bodies currently in the broadphase.
