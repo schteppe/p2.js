@@ -63,6 +63,7 @@ function Equation(bi,bj,minForce,maxForce){
      * @type {Array}
      */
     this.G = new Utils.ARRAY_TYPE(6);
+    for(var i=0; i<6; i++) this.G[i]=0;
 
     // Constraint frames for body i and j
     /*
