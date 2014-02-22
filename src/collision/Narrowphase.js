@@ -269,6 +269,13 @@ Narrowphase.prototype.lineRectangle = function(bi,si,xi,ai, bj,sj,xj,aj, justTes
         return 0;
 };
 
+function setConvexToCapsuleShapeMiddle(convexShape, capsuleShape){
+    vec2.set(convexShape.vertices[0], -capsuleShape.length * 0.5, -capsuleShape.radius);
+    vec2.set(convexShape.vertices[1],  capsuleShape.length * 0.5, -capsuleShape.radius);
+    vec2.set(convexShape.vertices[2],  capsuleShape.length * 0.5,  capsuleShape.radius);
+    vec2.set(convexShape.vertices[3], -capsuleShape.length * 0.5,  capsuleShape.radius);
+}
+
 var convexCapsule_tempRect = new Rectangle(1,1),
     convexCapsule_tempVec = vec2.create();
 
@@ -307,10 +314,7 @@ Narrowphase.prototype.convexCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTes
 
     // Check center rect
     var r = convexCapsule_tempRect;
-    vec2.set(r.vertices[0], -sj.length * 0.5, -sj.radius);
-    vec2.set(r.vertices[1],  sj.length * 0.5, -sj.radius);
-    vec2.set(r.vertices[2],  sj.length * 0.5,  sj.radius);
-    vec2.set(r.vertices[3], -sj.length * 0.5,  sj.radius);
+    setConvexToCapsuleShapeMiddle(r,sj);
     var result = this.convexConvex(bi,si,xi,ai, bj,r,xj,aj, justTest);
 
     return result + result1 + result2;
@@ -338,6 +342,10 @@ Narrowphase.prototype.lineCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTest)
         return 0;
 };
 
+var capsuleCapsule_tempVec1 = vec2.create();
+var capsuleCapsule_tempVec2 = vec2.create();
+var capsuleCapsule_tempRect1 = new Rectangle(1,1);
+
 /**
  * Capsule/capsule narrowphase
  * @method capsuleCapsule
@@ -353,11 +361,51 @@ Narrowphase.prototype.lineCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTest)
  */
 Narrowphase.prototype[Shape.CAPSULE | Shape.CAPSULE] =
 Narrowphase.prototype.capsuleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTest){
-    // TODO
-    if(justTest)
-        return false;
-    else
-        return 0;
+
+    // Check the circles
+    // Add offsets!
+    var circlePosi = capsuleCapsule_tempVec1,
+        circlePosj = capsuleCapsule_tempVec2;
+
+    var numContacts = 0;
+
+    // Need 4 circle checks, between all
+    for(var i=0; i<2; i++){
+
+        vec2.set(circlePosi,(i==0?-1:1)*si.length/2,0);
+        vec2.rotate(circlePosi,circlePosi,ai);
+        vec2.add(circlePosi,circlePosi,xi);
+
+        for(var j=0; j<2; j++){
+
+            vec2.set(circlePosj,(j==0?-1:1)*sj.length/2, 0);
+            vec2.rotate(circlePosj,circlePosj,aj);
+            vec2.add(circlePosj,circlePosj,xj);
+
+            var result = this.circleCircle(bi,si,circlePosi,ai, bj,sj,circlePosj,aj, justTest, si.radius, sj.radius);
+
+            if(justTest && result)
+                return true;
+
+            numContacts += result;
+        }
+    }
+
+    // Check circles against the center rectangles
+    var rect = capsuleCapsule_tempRect1;
+    setConvexToCapsuleShapeMiddle(rect,si);
+    var result1 = this.convexCapsule(bi,rect,xi,ai, bj,sj,xj,aj, justTest);
+
+    if(justTest && result1) return true;
+    numContacts += result1;
+
+    setConvexToCapsuleShapeMiddle(rect,sj);
+    var result2 = this.convexCapsule(bj,rect,xj,aj, bi,si,xi,ai, justTest);
+
+    if(justTest && result2) return true;
+    numContacts += result2;
+
+    return numContacts;
 };
 
 /**
@@ -718,8 +766,8 @@ Narrowphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
     verts = convexShape.vertices;
 
     // Check all edges first
-    for(var i=0; i!==verts.length; i++){
-        var v0 = verts[i],
+    for(var i=0; i!==verts.length+1; i++){
+        var v0 = verts[i%verts.length],
             v1 = verts[(i+1)%verts.length];
 
         vec2.rotate(worldVertex0, v0, convexAngle);
@@ -1076,17 +1124,19 @@ Narrowphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, just
  * @param  {Number} aj
  */
 Narrowphase.prototype[Shape.CIRCLE] =
-Narrowphase.prototype.circleCircle = function(  bi,si,xi,ai, bj,sj,xj,aj, justTest){
+Narrowphase.prototype.circleCircle = function(  bi,si,xi,ai, bj,sj,xj,aj, justTest, radiusA, radiusB){
     var bodyA = bi,
         shapeA = si,
         offsetA = xi,
         bodyB = bj,
         shapeB = sj,
         offsetB = xj,
-        dist = tmp1;
+        dist = tmp1,
+        radiusA = radiusA || shapeA.radius,
+        radiusB = radiusB || shapeB.radius;
 
     sub(dist,xi,xj);
-    var r = si.radius + sj.radius;
+    var r = radiusA + radiusB;
     if(vec2.squaredLength(dist) > r*r)
         return 0;
 
@@ -1096,8 +1146,8 @@ Narrowphase.prototype.circleCircle = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
     sub(c.ni, offsetB, offsetA);
     vec2.normalize(c.ni,c.ni);
 
-    vec2.scale( c.ri, c.ni,  shapeA.radius);
-    vec2.scale( c.rj, c.ni, -shapeB.radius);
+    vec2.scale( c.ri, c.ni,  radiusA);
+    vec2.scale( c.rj, c.ni, -radiusB);
 
     add(c.ri, c.ri, offsetA);
     sub(c.ri, c.ri, bodyA.position);
