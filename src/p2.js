@@ -22,6 +22,7 @@ module.exports = {
     Line :                          require('./shapes/Line'),
     LockConstraint :                require('./constraints/LockConstraint'),
     Material :                      require('./material/Material'),
+    Narrowphase :                   require('./collision/Narrowphase'),
     NaiveBroadphase :               require('./collision/NaiveBroadphase'),
     Particle :                      require('./shapes/Particle'),
     Plane :                         require('./shapes/Plane'),
