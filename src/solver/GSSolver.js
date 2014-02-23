@@ -199,10 +199,10 @@ GSSolver.iterateEquation = function(j,eq,eps,Bs,invCs,lambda,useZeroRHS,dt,iter,
 
     // Clamp if we are not within the min/max interval
     var lambdaj_plus_deltalambda = lambdaj + deltalambda;
-    if(lambdaj_plus_deltalambda < minForce){
-        deltalambda = minForce - lambdaj;
-    } else if(lambdaj_plus_deltalambda > maxForce){
-        deltalambda = maxForce - lambdaj;
+    if(lambdaj_plus_deltalambda < minForce*dt){
+        deltalambda = minForce*dt - lambdaj;
+    } else if(lambdaj_plus_deltalambda > maxForce*dt){
+        deltalambda = maxForce*dt - lambdaj;
     }
     lambda[j] += deltalambda;
     eq.multiplier = lambda[j] / dt;

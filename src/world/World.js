@@ -134,7 +134,7 @@ function World(options){
      * @property defaultFriction
      * @type {Number}
      */
-    this.defaultFriction = 0.02;
+    this.defaultFriction = 0.3;
 
     /**
      * Default coefficient of restitution between colliding bodies. This value is used if no matching ContactMaterial is found for a Material pair.
