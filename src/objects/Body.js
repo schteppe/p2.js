@@ -139,9 +139,19 @@ function Body(options){
     this.wlambda = 0;
 
     /**
-     * The angle of the body
+     * The angle of the body, in radians.
      * @property angle
      * @type {number}
+     * @example
+     *     // The angle property is not normalized to the interval 0 to 2*pi, it can be any value.
+     *     // If you need a value between 0 and 2*pi, use the following function to normalize it.
+     *     function normalizeAngle(angle){
+     *         angle = angle % (2*Math.PI);
+     *         if(angle < 0){
+     *             angle += (2*Math.PI);
+     *         }
+     *         return angle;
+     *     }
      */
     this.angle = options.angle || 0;
 
