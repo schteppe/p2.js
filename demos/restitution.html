@@ -24,6 +24,7 @@
 
         // We need infinite solver stiffness to get exact restitution
         world.solver.stiffness = Number.MAX_VALUE;
+        world.solver.useGlobalEquationParameters = false;
 
         var circle =   new p2.Circle(0.5),
             body = new p2.Body({ position: [0,1], mass:1 });
@@ -40,7 +41,7 @@
         world.addBody(body);
 
         // Create ground
-        var planeShape = new p2.Plane(),
+        var planeShape = new p2.Rectangle(1,1),
             plane = new p2.Body({
             position:[0,-1],
         });
@@ -56,6 +57,60 @@
         // In this case, we use some restitution
         world.addContactMaterial(new p2.ContactMaterial(planeShape.material, circle.material, {
             restitution : 1.0,
+        }));
+
+
+
+        var body2 = new p2.Body({
+            position: [2,1],
+            mass:1
+        });
+        body2.addShape(circle);
+        body2.damping = 0;
+        body2.angularDamping = 0;
+        world.addBody(body2);
+
+        // Create ground
+        var planeShape2 = new p2.Rectangle(1,1);
+        var plane2 = new p2.Body({
+            position:[2,-1],
+        });
+
+        // Create material for the plane shape
+        planeShape2.material = new p2.Material();
+
+        plane2.addShape(planeShape2);
+        world.addBody(plane2);
+
+        world.addContactMaterial(new p2.ContactMaterial(planeShape2.material, circle.material, {
+            restitution : 0.0,
+        }));
+
+        var body3 = new p2.Body({
+            position: [-2,1],
+            mass:1
+        });
+        body3.addShape(circle);
+        body3.damping = 0;
+        body3.angularDamping = 0;
+        world.addBody(body3);
+
+        // Create ground
+        var planeShape3 = new p2.Rectangle(1,1);
+        var plane3 = new p2.Body({
+            position:[-2,-1],
+        });
+
+        // Create material for the plane shape
+        planeShape3.material = new p2.Material();
+
+        plane3.addShape(planeShape3);
+        world.addBody(plane3);
+
+        world.addContactMaterial(new p2.ContactMaterial(planeShape3.material, circle.material, {
+            restitution : 0.0,
+            stiffness : 200,
+            relaxation:0.1
         }));
 
         var demo = new PixiDemo(world);

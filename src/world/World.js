@@ -143,6 +143,10 @@ function World(options){
      */
     this.defaultRestitution = 0.0;
 
+    this.defaultMaterial = new Material();
+
+    this.defaultContactMaterial = new ContactMaterial(this.defaultMaterial,this.defaultMaterial);
+
     /**
      * For keeping track of what time step size we used last step
      * @property lastTimeStep
@@ -541,20 +545,26 @@ World.prototype.internalStep = function(dt){
                     xj = bj.shapeOffsets[l],
                     aj = bj.shapeAngles[l];
 
+                /*
                 var mu = this.defaultFriction,
                     restitution = this.defaultRestitution,
                     surfaceVelocity = 0;
+                */
 
+                var cm = this.defaultContactMaterial;
                 if(si.material && sj.material){
-                    var cm = this.getContactMaterial(si.material,sj.material);
-                    if(cm){
+                    var tmp = this.getContactMaterial(si.material,sj.material);
+                    if(tmp){
+                        cm = tmp;
+                        /*
                         mu = cm.friction;
                         restitution = cm.restitution;
                         surfaceVelocity = cm.surfaceVelocity;
+                        */
                     }
                 }
 
-                this.runNarrowphase(np,bi,si,xi,ai,bj,sj,xj,aj,mu,restitution,surfaceVelocity,glen);
+                this.runNarrowphase(np,bi,si,xi,ai,bj,sj,xj,aj,cm,glen);
             }
         }
     }
@@ -709,7 +719,7 @@ World.integrateBody = function(body,dt){
  * @param  {Number} aj
  * @param  {Number} mu
  */
-World.prototype.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,mu,restitution,surfaceVelocity,glen){
+World.prototype.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,cm,glen){ /* mu,restitution,surfaceVelocity */
 
     if(!((si.collisionGroup & sj.collisionMask) !== 0 && (sj.collisionGroup & si.collisionMask) !== 0))
         return;
@@ -729,8 +739,8 @@ World.prototype.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,mu,restitut
     var ajw = aj + bj.angle;
 
     // Run narrowphase
-    np.enableFriction = mu > 0;
-    np.frictionCoefficient = mu;
+    np.enableFriction = cm.friction > 0;
+    np.frictionCoefficient = cm.friction;
     var reducedMass;
     if(bi.motionState == Body.STATIC || bi.motionState == Body.KINEMATIC)
         reducedMass = bj.mass;
@@ -738,9 +748,13 @@ World.prototype.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,mu,restitut
         reducedMass = bi.mass;
     else
         reducedMass = (bi.mass*bj.mass)/(bi.mass+bj.mass);
-    np.slipForce = mu*glen*reducedMass;
-    np.restitution = restitution;
-    np.surfaceVelocity = surfaceVelocity;
+    np.slipForce = cm.friction*glen*reducedMass;
+    np.restitution = cm.restitution;
+    np.surfaceVelocity = cm.surfaceVelocity;
+    np.frictionStiffness = cm.frictionStiffness;
+    np.frictionRelaxation = cm.frictionRelaxation;
+    np.stiffness = cm.stiffness;
+    np.relaxation = cm.relaxation;
 
     var resolver = np[si.type | sj.type],
         numContacts = 0;

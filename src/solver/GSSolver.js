@@ -128,7 +128,7 @@ GSSolver.prototype.solve = function(h,world){
         lambda = this.lambda;
     if(!useGlobalParams){
         for(var i=0, c; c = equations[i]; i++){
-            if(h !== c.h) c.updateSpookParams(h);
+            c.updateSpookParams(h);
             Bs[i] =     c.computeB(c.a,c.b,h);
             invCs[i] =  c.computeInvC(c.eps);
         }

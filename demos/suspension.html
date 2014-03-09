@@ -23,7 +23,7 @@
         });
 
         // Set high friction so the wheels don't slip
-        world.defaultFriction = 100;
+        world.defaultContactMaterial.friction = 100;
 
         // Create ground
         var planeShape = new p2.Plane();

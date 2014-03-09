@@ -92,6 +92,33 @@ function Narrowphase(){
      */
     this.restitution = 0;
 
+    /**
+     * The stiffness value to use in the next contact equations.
+     * @property {Number} stiffness
+     */
+    this.stiffness = 1e7;
+
+    /**
+     * The stiffness value to use in the next contact equations.
+     * @property {Number} stiffness
+     */
+    this.relaxation = 3;
+
+    /**
+     * The stiffness value to use in the next friction equations.
+     * @property frictionStiffness
+     * @type {Number}
+     */
+    this.frictionStiffness = 1e7;
+
+    /**
+     * The relaxation value to use in the next friction equations.
+     * @property frictionRelaxation
+     * @type {Number}
+     */
+    this.frictionRelaxation = 3;
+
+
     // Keep track of the colliding bodies last step
     this.collidingBodiesLastStep = { keys:[] };
 };
@@ -180,6 +207,8 @@ Narrowphase.prototype.createContactEquation = function(bodyA,bodyB,shapeA,shapeB
     c.shapeB = shapeB;
     c.restitution = this.restitution;
     c.firstImpact = !this.collidedLastStep(bodyA,bodyB);
+    c.stiffness = this.stiffness;
+    c.relaxation = this.relaxation;
     c.enabled = true;
 
     if(bodyA.allowSleep && (bodyA.motionState == Body.DYNAMIC) && !(bodyB.motionState == Body.STATIC || bodyB.sleepState === Body.SLEEPY))
@@ -207,6 +236,8 @@ Narrowphase.prototype.createFrictionEquation = function(bodyA,bodyB,shapeA,shape
     c.frictionCoefficient = this.frictionCoefficient;
     c.relativeVelocity = this.surfaceVelocity;
     c.enabled = true;
+    c.frictionStiffness = this.frictionStiffness;
+    c.frictionRelaxation = this.frictionRelaxation;
     return c;
 };
 
