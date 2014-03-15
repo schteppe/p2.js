@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>p2.js sensors</title>
+    <meta charset="utf-8">
+    <script src="../../build/p2.js"></script>
+  </head>
+  <body>
+
+    <canvas width="500" height="200" id="myCanvas"></canvas>
+
+    <script>
+      var w, h, canvas, ctx, world, circleBody, sensorBody;
+
+      init();
+      animate();
+
+      function init(){
+
+        // Init canvas
+        canvas = document.getElementById("myCanvas");
+        w = canvas.width;
+        h = canvas.height;
+        ctx = canvas.getContext("2d");
+        ctx.fillStyle='green';
+
+        // Init world
+        world = new p2.World({ gravity:[0,0] });
+
+        // Add a circle
+        circleShape = new p2.Circle(1);
+        circleBody = new p2.Body({ mass:1 });
+        circleBody.damping = 0;
+        circleBody.addShape(circleShape);
+        world.addBody(circleBody);
+
+        // Add a sensor circle
+        sensorShape = new p2.Circle(1);
+        sensorShape.sensor = true;
+        sensorBody = new p2.Body();
+        sensorBody.damping = 0;
+        sensorBody.addShape(sensorShape);
+        world.addBody(sensorBody);
+
+        world.on("beginContact",function(event){
+          ctx.fillStyle = 'red';
+        });
+        world.on("endContact",function(event){
+          ctx.fillStyle = 'green';
+        });
+      }
+
+      function drawCircle(ctx,body){
+        ctx.beginPath();
+        var radius = circleShape.radius;
+        ctx.arc(body.position[0], body.position[1], radius, 0, 2*Math.PI);
+        ctx.fill();
+      }
+
+      function render(){
+        ctx.clearRect(0,0,w,h);
+        ctx.save();
+        ctx.translate(w/2, h/2);
+        ctx.scale(50, -50);
+        drawCircle(ctx,circleBody);
+        drawCircle(ctx,sensorBody);
+        ctx.restore();
+      }
+
+      // Animation loop
+      function animate(){
+        requestAnimationFrame(animate);
+
+        circleBody.position[0] = 3*Math.sin(world.time);
+        world.step(1/60);
+
+        render();
+      }
+
+    </script>
+
+  </body>
+</html>
