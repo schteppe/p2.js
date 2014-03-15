@@ -72,6 +72,12 @@ function World(options){
     this.bodies = [];
 
     /**
+     * Disabled body collision pairs
+     * @property {Array} disabledBodyCollisionPairs
+     */
+    this.disabledBodyCollisionPairs = [];
+
+    /**
      * The solver used to satisfy constraints and contacts.
      *
      * @property solver
@@ -523,6 +529,17 @@ World.prototype.internalStep = function(dt){
     // Broadphase
     var result = broadphase.getCollisionPairs(this);
 
+    // Remove ignored collision pairs
+    var ignoredPairs = this.disabledBodyCollisionPairs;
+    for(var i=ignoredPairs.length-2; i>=0; i-=2){
+        for(var j=result.length-2; j>=0; j-=2){
+            if( (ignoredPairs[i]   == result[j] && ignoredPairs[i+1] == result[j+1]) ||
+                (ignoredPairs[i+1] == result[j] && ignoredPairs[i]   == result[j+1])){
+                result.splice(j,2);
+            }
+        }
+    }
+
     // postBroadphase event
     this.postBroadphaseEvent.pairs = result;
     this.emit(this.postBroadphaseEvent);
@@ -888,6 +905,32 @@ World.prototype.getBodyById = function(id){
             return b;
     }
     return false;
+};
+
+/**
+ * Disable collision between two bodies
+ * @method disableCollision
+ * @param {Body} bodyA
+ * @param {Body} bodyB
+ */
+World.prototype.disableBodyCollision = function(bodyA,bodyB){
+    this.disabledBodyCollisionPairs.push(bodyA,bodyB);
+};
+
+/**
+ * Enable collisions between the given two bodies
+ * @method enableCollision
+ * @param {Body} bodyA
+ * @param {Body} bodyB
+ */
+World.prototype.enableBodyCollision = function(bodyA,bodyB){
+    var pairs = this.disabledBodyCollisionPairs;
+    for(var i=0; i<pairs.length; i+=2){
+        if((pairs[i] == bodyA && pairs[i+1]==bodyB) || (pairs[i+1] == bodyA && pairs[i]==bodyB)){
+            pairs.splice(i,2);
+            return;
+        }
+    }
 };
 
 /**

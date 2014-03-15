@@ -38,6 +38,23 @@ exports.clone = function(test){
     test.done();
 };
 
+exports.disableBodyCollision = function(test){
+    var bodyA = new Body({ mass:1 }),
+        bodyB = new Body({ mass:1 }),
+        world = new World();
+    bodyA.addShape(new Circle(1));
+    bodyB.addShape(new Circle(1));
+    world.addBody(bodyA);
+    world.addBody(bodyB);
+    world.disableBodyCollision(bodyA,bodyB);
+    world.step(1/60);
+    test.equal(world.narrowphase.contactEquations.length,0);
+    world.enableBodyCollision(bodyA,bodyB);
+    world.step(1/60);
+    test.equal(world.narrowphase.contactEquations.length,1);
+    test.done();
+};
+
 exports.fromJSON = function(test){
     // STUB
     test.done();
