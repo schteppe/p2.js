@@ -1,2 +1,2 @@
-var ContactEquation = require(__dirname + '/../../src/constraints/ContactEquation');
+var ContactEquation = require(__dirname + '/../../src/equations/ContactEquation');
 

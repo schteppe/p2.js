@@ -1,4 +1,5 @@
 var AABB = require(__dirname + '/../../src/collision/AABB');
+var vec2 = require(__dirname + '/../../src/math/vec2');
 
 exports.construct = function(test){
     // STUB

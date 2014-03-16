@@ -1,4 +1,4 @@
-var FrictionEquation = require(__dirname + '/../../src/constraints/FrictionEquation');
+var FrictionEquation = require(__dirname + '/../../src/equations/FrictionEquation');
 
 module.exports.setSlipForce = function(test){
     // STUB

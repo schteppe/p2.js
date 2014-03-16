@@ -1,2 +1,2 @@
-var RotationalVelocityEquation = require(__dirname + '/../../src/constraints/RotationalVelocityEquation');
+var RotationalVelocityEquation = require(__dirname + '/../../src/equations/RotationalVelocityEquation');
 

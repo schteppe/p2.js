@@ -27,12 +27,18 @@ module.exports = function(grunt) {
                 src : ['build/p2.js'],
                 dest : 'build/p2.min.js'
             }
+        },
+
+        nodeunit: {
+            all: ['test/**/*.js'],
         }
     });
 
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-browserify');
+    grunt.loadNpmTasks('grunt-contrib-nodeunit');
     grunt.registerTask('default', ['browserify','webworkerify','uglify','addLicense']);
+    grunt.registerTask('test', ['nodeunit']);
 
     grunt.registerTask('webworkerify','Fixes the browserify bundle so it works in Web Workers',function(){
         var src = fs.readFileSync("build/p2.js");

@@ -1,4 +1,4 @@
-var Equation = require(__dirname + '/../../src/constraints/Equation');
+var Equation = require(__dirname + '/../../src/equations/Equation');
 
 module.exports.addToWlambda = function(test){
     // STUB

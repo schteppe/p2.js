@@ -1,2 +1,2 @@
-var RotationalLockEquation = require(__dirname + '/../../src/constraints/RotationalLockEquation');
+var RotationalLockEquation = require(__dirname + '/../../src/equations/RotationalLockEquation');
 
