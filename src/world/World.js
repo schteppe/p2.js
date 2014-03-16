@@ -102,6 +102,18 @@ function World(options){
     this.gravity = options.gravity || vec2.fromValues(0, -9.78);
 
     /**
+     * Set to true if you want .frictionGravity to be automatically set to the length of .gravity.
+     * @property {Boolean} useWorldGravityForFrictionApproximation
+     */
+    this.useWorldGravityForFrictionApproximation = true;
+
+    /**
+     * Gravity to use when approximating the friction max force (mu*mass*gravity).
+     * @property {Number} frictionGravity
+     */
+    this.frictionGravity = vec2.length(this.gravity);
+
+    /**
      * Whether to do timing measurements during the step() or not.
      *
      * @property doPofiling
@@ -504,7 +516,9 @@ World.prototype.internalStep = function(dt){
         t0 = performance.now();
     }
 
-    var glen = vec2.length(this.gravity);
+    // Update friction gravity
+    if(this.useWorldGravityForFrictionApproximation)
+        this.frictionGravity = vec2.length(this.gravity);
 
     // Add gravity to bodies
     if(this.applyGravity){
@@ -575,15 +589,10 @@ World.prototype.internalStep = function(dt){
                     var tmp = this.getContactMaterial(si.material,sj.material);
                     if(tmp){
                         cm = tmp;
-                        /*
-                        mu = cm.friction;
-                        restitution = cm.restitution;
-                        surfaceVelocity = cm.surfaceVelocity;
-                        */
                     }
                 }
 
-                this.runNarrowphase(np,bi,si,xi,ai,bj,sj,xj,aj,cm,glen);
+                this.runNarrowphase(np,bi,si,xi,ai,bj,sj,xj,aj,cm,this.frictionGravity);
             }
         }
     }
@@ -748,16 +757,11 @@ World.integrateBody = function(body,dt){
  * @param  {Number} aj
  * @param  {Number} mu
  */
-World.prototype.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,cm,glen){ /* mu,restitution,surfaceVelocity */
+World.prototype.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,cm,glen){
 
+    // Check collision groups and masks
     if(!((si.collisionGroup & sj.collisionMask) !== 0 && (sj.collisionGroup & si.collisionMask) !== 0))
         return;
-
-    /*
-    var reducedMass = bi.invMass + bj.invMass;
-    if(reducedMass > 0)
-        reducedMass = 1/reducedMass;
-    */
 
     // Get world position and angle of each shape
     vec2.rotate(xiw, xi, bi.angle);
@@ -767,7 +771,6 @@ World.prototype.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,cm,glen){ /
     var aiw = ai + bi.angle;
     var ajw = aj + bj.angle;
 
-    // Run narrowphase
     np.enableFriction = cm.friction > 0;
     np.frictionCoefficient = cm.friction;
     var reducedMass;
