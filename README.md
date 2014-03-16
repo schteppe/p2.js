@@ -84,25 +84,30 @@ var p2 = require('p2');
 ```
 
 ### Supported collision pairs
-|                                                                          | Circle | Plane | Rectangle | Convex | Particle | Line   | Capsule |
-| :----------------------------------------------------------------------: |:------:|:-----:|:---------:|:------:|:--------:|:------:|:-------:|
-| [Circle](http://schteppe.github.io/p2.js/docs/classes/Circle.html)       | Yes    | Yes   | Yes       | Yes    | Yes      | Yes    | Yes     |
-| [Plane](http://schteppe.github.io/p2.js/docs/classes/Plane.html)         | -      | -     | Yes       | Yes    | Yes      | Yes    | Yes     |
-| [Rectangle](http://schteppe.github.io/p2.js/docs/classes/Rectangle.html) | -      | -     | Yes       | Yes    | Yes      | (todo) | Yes     |
-| [Convex](http://schteppe.github.io/p2.js/docs/classes/Convex.html)       | -      | -     | -         | Yes    | Yes      | (todo) | Yes     |
-| [Particle](http://schteppe.github.io/p2.js/docs/classes/Particle.html)   | -      | -     | -         | -      | -        | -      | Yes     |
-| [Line](http://schteppe.github.io/p2.js/docs/classes/Line.html)           | -      | -     | -         | -      | -        | (todo) | (todo)  |
-| [Capsule](http://schteppe.github.io/p2.js/docs/classes/Capsule.html)     | -      | -     | -         | -      | -        | -      | Yes     |
+|                                                                              | Circle | Plane | Rectangle | Convex | Particle | Line   | Capsule | Heightfield |
+| :--------------------------------------------------------------------------: |:------:|:-----:|:---------:|:------:|:--------:|:------:|:-------:|:-----------:|
+| [Circle](http://schteppe.github.io/p2.js/docs/classes/Circle.html)           | Yes    | Yes   | Yes       | Yes    | Yes      | Yes    | Yes     | Yes         |
+| [Plane](http://schteppe.github.io/p2.js/docs/classes/Plane.html)             | -      | -     | Yes       | Yes    | Yes      | Yes    | Yes     | (todo)      |
+| [Rectangle](http://schteppe.github.io/p2.js/docs/classes/Rectangle.html)     | -      | -     | Yes       | Yes    | Yes      | (todo) | Yes     | (todo)      |
+| [Convex](http://schteppe.github.io/p2.js/docs/classes/Convex.html)           | -      | -     | -         | Yes    | Yes      | (todo) | Yes     | (todo)      |
+| [Particle](http://schteppe.github.io/p2.js/docs/classes/Particle.html)       | -      | -     | -         | -      | -        | -      | Yes     | (todo)      |
+| [Line](http://schteppe.github.io/p2.js/docs/classes/Line.html)               | -      | -     | -         | -      | -        | (todo) | (todo)  | (todo)      |
+| [Capsule](http://schteppe.github.io/p2.js/docs/classes/Capsule.html)         | -      | -     | -         | -      | -        | -      | Yes     | (todo)      |
+| [Heightfield](http://schteppe.github.io/p2.js/docs/classes/Heightfield.html) | -      | -     | -         | -      | -        | -      | -       | -           |
 
 Note that concave polygon shapes can be created using [Body.fromPolygon](http://schteppe.github.io/p2.js/docs/classes/Body.html#method_fromPolygon).
 
 ### Change log
 
 ##### Current dev version
+* Added methods ```.disableBodyCollision``` and ```.enableBodyCollision``` to ```World```.
+* Added properties ```.useWorldGravityForFrictionApproximation``` and ```.frictionGravity``` to ```World```.
+* Added ```Heightfield``` class.
+* Removed properties ```.defaultFriction``` and ```.defaultRestitution``` from ```World```.
 * Added property ```.enabled``` to ```Equation```.
 * Added property ```.surfaceVelocity``` to ```ContactMaterial```.
 * Added property ```.sensor``` to ```Shape```.
-* World now emits events ```'beginContact'```, ```'endContact'``` and ```'preSolve'```.
+* ```World``` now emits events ```'beginContact'```, ```'endContact'``` and ```'preSolve'```.
 * Added property ```.gravityScale``` to ```Body```.
 * Renamed class ```SAP1DBroadphase``` to ```SAPBroadphase```.
 * Added property ```.interpolatedPosition``` to ``Body```.
