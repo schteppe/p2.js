@@ -87,7 +87,7 @@ var p2 = require('p2');
 |                                                                              | Circle | Plane | Rectangle | Convex | Particle | Line   | Capsule | Heightfield |
 | :--------------------------------------------------------------------------: |:------:|:-----:|:---------:|:------:|:--------:|:------:|:-------:|:-----------:|
 | [Circle](http://schteppe.github.io/p2.js/docs/classes/Circle.html)           | Yes    | Yes   | Yes       | Yes    | Yes      | Yes    | Yes     | Yes         |
-| [Plane](http://schteppe.github.io/p2.js/docs/classes/Plane.html)             | -      | -     | Yes       | Yes    | Yes      | Yes    | Yes     | (todo)      |
+| [Plane](http://schteppe.github.io/p2.js/docs/classes/Plane.html)             | -      | -     | Yes       | Yes    | Yes      | Yes    | Yes     | -           |
 | [Rectangle](http://schteppe.github.io/p2.js/docs/classes/Rectangle.html)     | -      | -     | Yes       | Yes    | Yes      | (todo) | Yes     | (todo)      |
 | [Convex](http://schteppe.github.io/p2.js/docs/classes/Convex.html)           | -      | -     | -         | Yes    | Yes      | (todo) | Yes     | (todo)      |
 | [Particle](http://schteppe.github.io/p2.js/docs/classes/Particle.html)       | -      | -     | -         | -      | -        | -      | Yes     | (todo)      |
