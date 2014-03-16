@@ -97,6 +97,20 @@ var p2 = require('p2');
 
 Note that concave polygon shapes can be created using [Body.fromPolygon](http://schteppe.github.io/p2.js/docs/classes/Body.html#method_fromPolygon).
 
+### Unit testing
+Tests are written for Nodeunit. Run the tests with the command ```grunt test```.
+
+### Contribute
+Make sure you have git, [Node.js](http://nodejs.org), NPM and [grunt](http://gruntjs.com/) installed.
+```
+git clone https://github.com/schteppe/p2.js.git; # Clone the repo
+cd p2.js;
+npm install;                                     # Install dependencies
+                                                 # (make changes to source)
+grunt;                                           # Builds build/p2.js and build/p2.min.js
+```
+The most recent commits are currently pushed to the ```master``` branch. Thanks for contributing!
+
 ### Change log
 
 ##### Current dev version
@@ -214,13 +228,3 @@ Note that concave polygon shapes can be created using [Body.fromPolygon](http://
 * Moved properties of ```Body.MotionState``` to ```Body```. Usage is now ```Body.STATIC```, ```Body.DYNAMIC```, ```Body.KINEMATIC```.
 * Removed asynchronous behaviour of ```World.step()```.
 
-### Contribute
-Make sure you have git, [Node.js](http://nodejs.org), NPM and [grunt](http://gruntjs.com/) installed.
-```
-git clone https://github.com/schteppe/p2.js.git; # Clone the repo
-cd p2.js;
-npm install;                                     # Install dependencies
-                                                 # (make changes to source)
-grunt;                                           # Builds build/p2.js and build/p2.min.js
-```
-The most recent commits are currently pushed to the ```master``` branch. Thanks for contributing!
