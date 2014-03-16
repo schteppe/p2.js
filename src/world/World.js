@@ -202,6 +202,18 @@ function World(options){
      */
     this.time = 0.0;
 
+    /**
+     * Is true during the step().
+     * @property {Boolean} stepping
+     */
+    this.stepping = false;
+
+    /**
+     * Bodies that are scheduled to be removed at the end of the step.
+     * @property {Array} bodiesToBeRemoved
+     */
+    this.bodiesToBeRemoved = [];
+
     this.fixedStepTime = 0.0;
 
     /**
@@ -471,6 +483,8 @@ World.prototype.step = function(dt,timeSinceLastCalled,maxSubSteps){
 };
 
 World.prototype.internalStep = function(dt){
+    this.stepping = true;
+
     var that = this,
         doProfiling = this.doProfiling,
         Nsprings = this.springs.length,
@@ -688,6 +702,16 @@ World.prototype.internalStep = function(dt){
         }
     }
 
+    this.stepping = false;
+
+    // Remove bodies that are scheduled for removal
+    if(this.bodiesToBeRemoved.length){
+        for(var i=0; i!==this.bodiesToBeRemoved.length; i++){
+            this.removeBody(this.bodiesToBeRemoved[i]);
+        }
+        this.bodiesToBeRemoved.length = 0;
+    }
+
     this.emit(this.postStepEvent);
 };
 
@@ -873,7 +897,7 @@ World.prototype.addBody = function(body){
 };
 
 /**
- * Remove a body from the simulation
+ * Remove a body from the simulation. If this method is called during step(), the body removal is scheduled to after the step.
  *
  * @method removeBody
  * @param {Body} body
@@ -882,13 +906,17 @@ World.prototype.removeBody = function(body){
     if(body.world !== this)
         throw new Error("The body was never added to this World, cannot remove it.");
 
-    body.world = null;
-    var idx = this.bodies.indexOf(body);
-    if(idx!==-1){
-        Utils.splice(this.bodies,idx,1);
-        this.removeBodyEvent.body = body;
-        body.resetConstraintVelocity();
-        this.emit(this.removeBodyEvent);
+    if(this.stepping){
+        this.bodiesToBeRemoved.push(body);
+    } else {
+        body.world = null;
+        var idx = this.bodies.indexOf(body);
+        if(idx!==-1){
+            Utils.splice(this.bodies,idx,1);
+            this.removeBodyEvent.body = body;
+            body.resetConstraintVelocity();
+            this.emit(this.removeBodyEvent);
+        }
     }
 };
 
