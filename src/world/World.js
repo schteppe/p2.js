@@ -136,21 +136,15 @@ function World(options){
     this.constraints = [];
 
     /**
-     * Friction between colliding bodies. This value is used if no matching ContactMaterial is found for a Material pair.
-     * @property defaultFriction
-     * @type {Number}
+     * Dummy default material in the world, used in .defaultContactMaterial
+     * @property {Material} defaultMaterial
      */
-    this.defaultFriction = 0.3;
-
-    /**
-     * Default coefficient of restitution between colliding bodies. This value is used if no matching ContactMaterial is found for a Material pair.
-     * @property defaultRestitution
-     * @type {Number}
-     */
-    this.defaultRestitution = 0.0;
-
     this.defaultMaterial = new Material();
 
+    /**
+     * The default contact material to use, if no contact material was set for the colliding materials.
+     * @property {ContactMaterial} defaultContactMaterial
+     */
     this.defaultContactMaterial = new ContactMaterial(this.defaultMaterial,this.defaultMaterial);
 
     /**
@@ -575,12 +569,6 @@ World.prototype.internalStep = function(dt){
                 var sj = bj.shapes[l],
                     xj = bj.shapeOffsets[l],
                     aj = bj.shapeAngles[l];
-
-                /*
-                var mu = this.defaultFriction,
-                    restitution = this.defaultRestitution,
-                    surfaceVelocity = 0;
-                */
 
                 var cm = this.defaultContactMaterial;
                 if(si.material && sj.material){
