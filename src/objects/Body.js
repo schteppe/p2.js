@@ -178,16 +178,18 @@ function Body(options){
     this.angularForce = options.angularForce || 0;
 
     /**
-     * The linear damping acting on the body in the velocity direction
+     * The linear damping acting on the body in the velocity direction. Should be a value between 0 and 1.
      * @property damping
      * @type {Number}
+     * @default 0.1
      */
     this.damping = typeof(options.damping)=="number" ? options.damping : 0.1;
 
     /**
-     * The angular force acting on the body
+     * The angular force acting on the body. Should be a value between 0 and 1.
      * @property angularDamping
      * @type {Number}
+     * @default 0.1
      */
     this.angularDamping = typeof(options.angularDamping)=="number" ? options.angularDamping : 0.1;
 
