@@ -21,6 +21,7 @@ var  GSSolver = require('../solver/GSSolver')
 ,    Broadphase = require('../collision/Broadphase')
 ,    Narrowphase = require('../collision/Narrowphase')
 ,    Utils = require('../utils/Utils')
+,    IslandManager = require('./IslandManager')
 
 module.exports = World;
 
@@ -92,6 +93,14 @@ function World(options){
      * @type {Narrowphase}
      */
     this.narrowphase = new Narrowphase(this);
+
+    /**
+     * The island manager.
+     *
+     * @property islandManager
+     * @type {IslandManager}
+     */
+    this.islandManager = new IslandManager();
 
     /**
      * Gravity in the world. This is applied on all bodies in the beginning of each step().
@@ -640,16 +649,19 @@ World.prototype.internalStep = function(dt){
     preSolveEvent.frictionEquations = np.frictionEquations;
     this.emit(preSolveEvent);
 
+    // update constraint equations
+    var Nconstraints = constraints.length;
+    for(i=0; i!==Nconstraints; i++){
+        constraints[i].update();
+    }
+
     // Add contact equations to solver
     solver.addEquations(np.contactEquations);
     solver.addEquations(np.frictionEquations);
 
     // Add user-defined constraint equations
-    var Nconstraints = constraints.length;
     for(i=0; i!==Nconstraints; i++){
-        var c = constraints[i];
-        c.update();
-        solver.addEquations(c.equations);
+        solver.addEquations(constraints[i].equations);
     }
 
     if(this.solveConstraints)
