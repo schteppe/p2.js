@@ -30,7 +30,7 @@
         });
         body.addShape(shape);
 
-        // Create ground
+        // Create ground.
         var planeShape = new p2.Plane();
         var plane = new p2.Body({
             position:[0,-1]
@@ -38,8 +38,23 @@
         plane.addShape(planeShape);
         world.addBody(plane);
 
+        // The beginContact event is fired whenever two shapes
+        // starts overlapping, including sensors.
         world.on("beginContact",function(event){
-            world.removeBody(body);
+
+            // Check if our sensor body is involved in this contact event.
+            // This might be false if the user added more bodies via the
+            // GUI, that collides.
+            if(event.bodyA===body || event.bodyB===body){
+
+                // Check if the body is added to the world. This should be
+                // true, but better be safe.
+                if(body.world){
+
+                    // Remove the body from the world.
+                    world.removeBody(body);
+                }
+            }
         });
 
         function spawnBody(){

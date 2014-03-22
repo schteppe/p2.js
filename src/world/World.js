@@ -887,16 +887,15 @@ World.prototype.removeSpring = function(s){
  *     var world = new World(),
  *         body = new Body();
  *     world.addBody(body);
- *
+ * @todo What if this is done during step?
  */
 World.prototype.addBody = function(body){
-    if(body.world)
-        throw new Error("This body is already added to a World.");
-
-    this.bodies.push(body);
-    body.world = this;
-    this.addBodyEvent.body = body;
-    this.emit(this.addBodyEvent);
+    if(this.bodies.indexOf(body) === -1){
+        this.bodies.push(body);
+        body.world = this;
+        this.addBodyEvent.body = body;
+        this.emit(this.addBodyEvent);
+    }
 };
 
 /**
@@ -906,9 +905,6 @@ World.prototype.addBody = function(body){
  * @param {Body} body
  */
 World.prototype.removeBody = function(body){
-    if(body.world !== this)
-        throw new Error("The body was never added to this World, cannot remove it.");
-
     if(this.stepping){
         this.bodiesToBeRemoved.push(body);
     } else {
