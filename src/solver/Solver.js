@@ -53,18 +53,12 @@ var mockWorld = {bodies:[]};
  */
 Solver.prototype.solveIsland = function(dt,island){
 
-    solver.removeAllEquations();
+    this.removeAllEquations();
 
     // Add equations to solver
-    var numEquations = island.equations.length;
-    for(var j=0; j!==numEquations; j++){
-        solver.addEquation(island.equations[j]);
-    }
-    var islandBodies = island.getBodies();
-    var numBodies = islandBodies.length;
-    for(var j=0; j!==numBodies; j++){
-        mockWorld.bodies.push(islandBodies[j]);
-    }
+    this.addEquations(island.equations);
+    mockWorld.bodies.length = 0;
+    mockWorld.bodies = island.getBodies(mockWorld.bodies);
 
     // Solve
     solver.solve(dt,mockWorld);

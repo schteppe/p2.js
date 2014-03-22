@@ -50,3 +50,15 @@ exports.bfs = function(test){
 
     test.done();
 };
+
+exports.split = function(test){
+    var world = new World();
+    var islands = world.islandManager.split(world);
+    test.equal(islands.length,0);
+
+    world.addBody(new Body());
+    islands = world.islandManager.split(world);
+    test.equal(islands.length,1);
+
+    test.done();
+};

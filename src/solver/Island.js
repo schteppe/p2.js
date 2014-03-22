@@ -28,7 +28,7 @@ function Island(){
  */
 Island.prototype.reset = function(){
     this.equations.length = this.bodies.length = 0;
-}
+};
 
 
 /**
@@ -36,8 +36,8 @@ Island.prototype.reset = function(){
  * @method getBodies
  * @return {Array} An array of Body
  */
-Island.prototype.getBodies = function(){
-    var bodies = [],
+Island.prototype.getBodies = function(result){
+    var bodies = result || [],
         bodyIds = [],
         eqs = this.equations;
     for(var i=0; i!==eqs.length; i++){

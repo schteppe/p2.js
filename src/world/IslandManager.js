@@ -69,6 +69,8 @@ IslandManager.prototype.visit = function (node,bds,eqs){
  * @param  {Array} eqs  An array to append resulting Equations to.
  */
 IslandManager.prototype.bfs = function(root,bds,eqs){
+
+    // Reset the visit queue
     var queue = this.queue;
     queue.length = 0;
 
@@ -145,7 +147,7 @@ IslandManager.prototype.split = function(world){
     while((child = IslandManager.getUnvisitedNode(nodes))){
 
         // Create new island
-        var island = islandPool.length ? this._islandPool.pop() : new Island();
+        var island = this._islandPool.length ? this._islandPool.pop() : new Island();
 
         // Get all equations and bodies in this island
         this.bfs(child, island.bodies, island.equations);
