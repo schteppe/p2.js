@@ -47,7 +47,7 @@ if(!performance.now){
  * @constructor
  * @param {Object}          [options]
  * @param {Solver}          options.solver          Defaults to GSSolver.
- * @param {Float32Array}    options.gravity         Defaults to [0,-9.78]
+ * @param {Array}           options.gravity         Defaults to [0,-9.78]
  * @param {Broadphase}      options.broadphase      Defaults to NaiveBroadphase
  * @param {Boolean}         options.doProfiling
  * @extends {EventEmitter}
@@ -58,7 +58,7 @@ function World(options){
     options = options || {};
 
     /**
-     * All springs in the world.
+     * All springs in the world. To add a spring to the world, use {{#crossLink "World/addSpring:method"}}{{/crossLink}}.
      *
      * @property springs
      * @type {Array}
@@ -66,24 +66,21 @@ function World(options){
     this.springs = [];
 
     /**
-     * All bodies in the world.
-     *
-     * @property bodies
-     * @type {Array}
+     * All bodies in the world. To add a body to the world, use {{#crossLink "World/addBody:method"}}{{/crossLink}}.
+     * @property {Array} bodies
      */
     this.bodies = [];
 
     /**
-     * Disabled body collision pairs
+     * Disabled body collision pairs. See {{#crossLink "World/disableBodyCollision:method"}}.
+     * @private
      * @property {Array} disabledBodyCollisionPairs
      */
     this.disabledBodyCollisionPairs = [];
 
     /**
-     * The solver used to satisfy constraints and contacts.
-     *
-     * @property solver
-     * @type {Solver}
+     * The solver used to satisfy constraints and contacts. Default is {{#crossLink "GSSolver"}}{{/crossLink}}.
+     * @property {Solver} solver
      */
     this.solver = options.solver || new GSSolver();
 
@@ -96,18 +93,16 @@ function World(options){
     this.narrowphase = new Narrowphase(this);
 
     /**
-     * The island manager.
-     *
-     * @property islandManager
-     * @type {IslandManager}
+     * The island manager of this world.
+     * @property {IslandManager} islandManager
      */
     this.islandManager = new IslandManager();
 
     /**
      * Gravity in the world. This is applied on all bodies in the beginning of each step().
      *
-     * @property
-     * @type {Float32Array}
+     * @property gravity
+     * @type {Array}
      */
     this.gravity = options.gravity || vec2.fromValues(0, -9.78);
 
@@ -146,7 +141,6 @@ function World(options){
      * @type {Broadphase}
      */
     this.broadphase = options.broadphase || new NaiveBroadphase();
-
     this.broadphase.setWorld(this);
 
     /**
@@ -227,13 +221,14 @@ function World(options){
     /**
      * Bodies that are scheduled to be removed at the end of the step.
      * @property {Array} bodiesToBeRemoved
+     * @private
      */
     this.bodiesToBeRemoved = [];
 
     this.fixedStepTime = 0.0;
 
     /**
-     * Whether to enable island splitting.
+     * Whether to enable island splitting. Island splitting can be an advantage for many things, including solver performance. See {{#crossLink "IslandManager"}}{{/crossLink}}.
      * @property {Boolean} islandSplit
      */
     this.islandSplit = false;
@@ -258,6 +253,7 @@ function World(options){
     };
 
     /**
+     * Fired when a body is added to the world.
      * @event addBody
      * @param {Body} body
      */
@@ -267,6 +263,7 @@ function World(options){
     };
 
     /**
+     * Fired when a body is removed from the world.
      * @event removeBody
      * @param {Body} body
      */
@@ -313,14 +310,14 @@ function World(options){
     };
 
     /**
-     * Enable / disable automatic body sleeping
+     * Enable / disable automatic body sleeping. Sleeping can improve performance, but you might need to {{#crossLink "Body/wakeUp:method"}}wake up{{/crossLink}} the bodies manually sometimes.
      * @property allowSleep
      * @type {Boolean}
      */
     this.enableBodySleeping = false;
 
     /**
-     * Enable or disable island sleeping. Note that you must enable .islandSplit for this to work.
+     * Enable or disable island sleeping. Note that you must enable {{#crossLink "World/islandSplit:property"}}.islandSplit{{/crossLink}} for this to work.
      * @property {Boolean} enableIslandSleeping
      */
     this.enableIslandSleeping = false;
@@ -512,6 +509,12 @@ World.prototype.step = function(dt,timeSinceLastCalled,maxSubSteps){
     }
 };
 
+/**
+ * Make a fixed step.
+ * @method internalStep
+ * @param  {number} dt
+ * @private
+ */
 World.prototype.internalStep = function(dt){
     this.stepping = true;
 
