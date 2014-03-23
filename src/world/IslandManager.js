@@ -23,7 +23,7 @@ function IslandManager(options){
     this.islands = [];
     this.nodes = [];
     this.queue = [];
-};
+}
 
 /**
  * Get an unvisited node from a list of nodes.
@@ -36,12 +36,12 @@ IslandManager.getUnvisitedNode = function(nodes){
     var Nnodes = nodes.length;
     for(var i=0; i!==Nnodes; i++){
         var node = nodes[i];
-        if(!node.visited){
+        if(!node.visited && node.body.motionState === Body.DYNAMIC){
             return node;
         }
     }
     return false;
-}
+};
 
 /**
  * Visit a node.
@@ -92,8 +92,9 @@ IslandManager.prototype.bfs = function(root,bds,eqs){
             this.visit(child,bds,eqs);
 
             // Only visit the children of this node if it's dynamic
-            if( !( node.body.motionState == Body.STATIC || node.body.motionState == Body.KINEMATIC))
+            if(child.body.motionState === Body.DYNAMIC){
                 queue.push(child);
+            }
         }
     }
 };
@@ -108,6 +109,11 @@ IslandManager.prototype.split = function(world){
     var bodies = world.bodies,
         nodes = this.nodes,
         equations = this.equations;
+
+    // Move old nodes to the node pool
+    while(nodes.length){
+        this._nodePool.push(nodes.pop());
+    }
 
     // Create needed nodes, reuse if possible
     for(var i=0; i!==bodies.length; i++){
@@ -129,8 +135,8 @@ IslandManager.prototype.split = function(world){
             ni=nodes[i],
             nj=nodes[j];
         ni.neighbors.push(nj);
-        ni.equations.push(eq);
         nj.neighbors.push(ni);
+        ni.equations.push(eq);
         nj.equations.push(eq);
     }
 

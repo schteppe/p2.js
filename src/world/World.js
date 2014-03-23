@@ -27,16 +27,17 @@ module.exports = World;
 
 var currentVersion = pkg.version.split(".").slice(0,2).join("."); // "X.Y"
 
-if(typeof performance === 'undefined')
+if(typeof performance === 'undefined'){
     performance = {};
+}
 if(!performance.now){
     var nowOffset = Date.now();
     if (performance.timing && performance.timing.navigationStart){
-      nowOffset = performance.timing.navigationStart
+        nowOffset = performance.timing.navigationStart;
     }
     performance.now = function(){
-      return Date.now() - nowOffset;
-    }
+        return Date.now() - nowOffset;
+    };
 }
 
 /**
@@ -232,6 +233,12 @@ function World(options){
     this.fixedStepTime = 0.0;
 
     /**
+     * Whether to enable island splitting.
+     * @property {Boolean} islandSplit
+     */
+    this.islandSplit = false;
+
+    /**
      * Set to true if you want to the world to emit the "impact" event. Turning this off could improve performance.
      * @property emitImpactEvent
      * @type {Boolean}
@@ -363,7 +370,7 @@ function World(options){
     this.overlappingShapesLastState = { keys:[] };
     this.overlappingShapesCurrentState = { keys:[] };
     this.overlappingShapeLookup = { keys:[] };
-};
+}
 World.prototype = new Object(EventEmitter.prototype);
 
 /**
@@ -393,8 +400,9 @@ World.prototype.addContactMaterial = function(contactMaterial){
  */
 World.prototype.removeContactMaterial = function(cm){
     var idx = this.contactMaterials.indexOf(cm);
-    if(idx!==-1)
+    if(idx!==-1){
         Utils.splice(this.contactMaterials,idx,1);
+    }
 };
 
 /**
@@ -410,8 +418,9 @@ World.prototype.getContactMaterial = function(materialA,materialB){
     for(var i=0, N=cmats.length; i!==N; i++){
         var cm = cmats[i];
         if( (cm.materialA === materialA) && (cm.materialB === materialB) ||
-            (cm.materialA === materialB) && (cm.materialB === materialA) )
+            (cm.materialA === materialB) && (cm.materialB === materialA) ){
             return cm;
+        }
     }
     return false;
 };
@@ -459,7 +468,7 @@ World.prototype.step = function(dt,timeSinceLastCalled,maxSubSteps){
     maxSubSteps = maxSubSteps || 10;
     timeSinceLastCalled = timeSinceLastCalled || 0;
 
-    if(timeSinceLastCalled == 0){ // Fixed, simple stepping
+    if(timeSinceLastCalled === 0){ // Fixed, simple stepping
 
         this.internalStep(dt);
 
@@ -517,7 +526,8 @@ World.prototype.internalStep = function(dt){
         mg = step_mg,
         scale = vec2.scale,
         add = vec2.add,
-        rotate = vec2.rotate;
+        rotate = vec2.rotate,
+        islandManager = this.islandManager;
 
     this.lastTimeStep = dt;
 
@@ -526,16 +536,18 @@ World.prototype.internalStep = function(dt){
     }
 
     // Update friction gravity
-    if(this.useWorldGravityForFrictionApproximation)
+    if(this.useWorldGravityForFrictionApproximation){
         this.frictionGravity = vec2.length(this.gravity);
+    }
 
     // Add gravity to bodies
     if(this.applyGravity){
         for(var i=0; i!==Nbodies; i++){
             var b = bodies[i],
                 fi = b.force;
-            if(b.motionState != Body.DYNAMIC)
+            if(b.motionState !== Body.DYNAMIC){
                 continue;
+            }
             vec2.scale(mg,g,b.mass*b.gravityScale); // F=m*g
             add(fi,fi,mg);
         }
@@ -552,8 +564,9 @@ World.prototype.internalStep = function(dt){
     if(this.applyDamping){
         for(var i=0; i!==Nbodies; i++){
             var b = bodies[i];
-            if(b.motionState == Body.DYNAMIC)
+            if(b.motionState === Body.DYNAMIC){
                 b.applyDamping(dt);
+            }
         }
     }
 
@@ -564,8 +577,8 @@ World.prototype.internalStep = function(dt){
     var ignoredPairs = this.disabledBodyCollisionPairs;
     for(var i=ignoredPairs.length-2; i>=0; i-=2){
         for(var j=result.length-2; j>=0; j-=2){
-            if( (ignoredPairs[i]   == result[j] && ignoredPairs[i+1] == result[j+1]) ||
-                (ignoredPairs[i+1] == result[j] && ignoredPairs[i]   == result[j+1])){
+            if( (ignoredPairs[i]   === result[j] && ignoredPairs[i+1] === result[j+1]) ||
+                (ignoredPairs[i+1] === result[j] && ignoredPairs[i]   === result[j+1])){
                 result.splice(j,2);
             }
         }
@@ -611,8 +624,9 @@ World.prototype.internalStep = function(dt){
     for(var i=0; i!==last.keys.length; i++){
         var key = last.keys[i];
 
-        if(last[key]!==true)
+        if(last[key]!==true){
             continue;
+        }
 
         if(!this.overlappingShapesCurrentState[key]){
             // Not overlapping in current state, but in last state. Emit event!
@@ -628,8 +642,9 @@ World.prototype.internalStep = function(dt){
     }
 
     // Clear last object
-    for(var i=0; i!==last.keys.length; i++)
+    for(var i=0; i!==last.keys.length; i++){
         delete last[last.keys[i]];
+    }
     last.keys.length = 0;
 
     // Transfer from new object to old
@@ -640,8 +655,9 @@ World.prototype.internalStep = function(dt){
     }
 
     // Clear current object
-    for(var i=0; i!==current.keys.length; i++)
+    for(var i=0; i!==current.keys.length; i++){
         delete current[current.keys[i]];
+    }
     current.keys.length = 0;
 
     var preSolveEvent = this.preSolveEvent;
@@ -655,25 +671,48 @@ World.prototype.internalStep = function(dt){
         constraints[i].update();
     }
 
-    // Add contact equations to solver
-    solver.addEquations(np.contactEquations);
-    solver.addEquations(np.frictionEquations);
+    if(np.contactEquations.length || np.frictionEquations.length || constraints.length){
+        if(this.islandSplit){
+            // Split into islands
+            islandManager.equations.length = 0;
+            Utils.appendArray(islandManager.equations, np.contactEquations);
+            Utils.appendArray(islandManager.equations, np.frictionEquations);
+            for(i=0; i!==Nconstraints; i++){
+                Utils.appendArray(islandManager.equations, constraints[i].equations);
+            }
+            islandManager.split(this);
 
-    // Add user-defined constraint equations
-    for(i=0; i!==Nconstraints; i++){
-        solver.addEquations(constraints[i].equations);
+            for(var i=0; i!==islandManager.islands.length; i++){
+                var island = islandManager.islands[i];
+                if(island.equations.length){
+                    solver.solveIsland(dt,island);
+                }
+            }
+
+        } else {
+
+            // Add contact equations to solver
+            solver.addEquations(np.contactEquations);
+            solver.addEquations(np.frictionEquations);
+
+            // Add user-defined constraint equations
+            for(i=0; i!==Nconstraints; i++){
+                solver.addEquations(constraints[i].equations);
+            }
+
+            if(this.solveConstraints){
+                solver.solve(dt,this);
+            }
+
+            solver.removeAllEquations();
+        }
     }
-
-    if(this.solveConstraints)
-        solver.solve(dt,this);
-
-    solver.removeAllEquations();
 
     // Step forward
     for(var i=0; i!==Nbodies; i++){
         var body = bodies[i];
 
-        if(body.sleepState !== Body.SLEEPING && body.motionState!=Body.STATIC){
+        if(body.sleepState !== Body.SLEEPING && body.motionState !== Body.STATIC){
             World.integrateBody(body,dt);
         }
     }
@@ -772,8 +811,9 @@ World.integrateBody = function(body,dt){
 World.prototype.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,cm,glen){
 
     // Check collision groups and masks
-    if(!((si.collisionGroup & sj.collisionMask) !== 0 && (sj.collisionGroup & si.collisionMask) !== 0))
+    if(!((si.collisionGroup & sj.collisionMask) !== 0 && (sj.collisionGroup & si.collisionMask) !== 0)){
         return;
+    }
 
     // Get world position and angle of each shape
     vec2.rotate(xiw, xi, bi.angle);
@@ -786,12 +826,13 @@ World.prototype.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,cm,glen){
     np.enableFriction = cm.friction > 0;
     np.frictionCoefficient = cm.friction;
     var reducedMass;
-    if(bi.motionState == Body.STATIC || bi.motionState == Body.KINEMATIC)
+    if(bi.motionState === Body.STATIC || bi.motionState === Body.KINEMATIC){
         reducedMass = bj.mass;
-    else if(bj.motionState == Body.STATIC || bj.motionState == Body.KINEMATIC)
+    } else if(bj.motionState === Body.STATIC || bj.motionState === Body.KINEMATIC){
         reducedMass = bi.mass;
-    else
+    } else {
         reducedMass = (bi.mass*bj.mass)/(bi.mass+bj.mass);
+    }
     np.slipForce = cm.friction*glen*reducedMass;
     np.restitution = cm.restitution;
     np.surfaceVelocity = cm.surfaceVelocity;
@@ -821,11 +862,12 @@ World.prototype.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,cm,glen){
                 e.bodyA = bi;
                 e.bodyB = bj;
 
-                if(typeof(numContacts)=="number"){
+                if(typeof(numContacts)==="number"){
                     // Add contacts to the event object
                     e.contactEquations.length = 0;
-                    for(var i=np.contactEquations.length-numContacts; i<np.contactEquations.length; i++)
+                    for(var i=np.contactEquations.length-numContacts; i<np.contactEquations.length; i++){
                         e.contactEquations.push(np.contactEquations[i]);
+                    }
                 }
 
                 this.emit(e);
@@ -873,8 +915,9 @@ World.prototype.addSpring = function(s){
  */
 World.prototype.removeSpring = function(s){
     var idx = this.springs.indexOf(s);
-    if(idx===-1)
+    if(idx===-1){
         Utils.splice(this.springs,idx,1);
+    }
 };
 
 /**
@@ -928,8 +971,9 @@ World.prototype.getBodyById = function(id){
     var bodies = this.bodies;
     for(var i=0; i<bodies.length; i++){
         var b = bodies[i];
-        if(b.id === id)
+        if(b.id === id){
             return b;
+        }
     }
     return false;
 };
@@ -953,7 +997,7 @@ World.prototype.disableBodyCollision = function(bodyA,bodyB){
 World.prototype.enableBodyCollision = function(bodyA,bodyB){
     var pairs = this.disabledBodyCollisionPairs;
     for(var i=0; i<pairs.length; i+=2){
-        if((pairs[i] == bodyA && pairs[i+1]==bodyB) || (pairs[i+1] == bodyA && pairs[i]==bodyB)){
+        if((pairs[i] === bodyA && pairs[i+1] === bodyB) || (pairs[i+1] === bodyA && pairs[i] === bodyB)){
             pairs.splice(i,2);
             return;
         }
@@ -999,7 +1043,7 @@ World.prototype.toJSON = function(){
         var jc = {
             bodyA : this.bodies.indexOf(c.bodyA),
             bodyB : this.bodies.indexOf(c.bodyB),
-        }
+        };
         if(c instanceof DistanceConstraint){
             jc.type = "DistanceConstraint";
             jc.distance = c.distance;
@@ -1062,8 +1106,9 @@ World.prototype.toJSON = function(){
                                 height : s.height };
             } else if(s instanceof Convex){
                 var verts = [];
-                for(var k=0; k<s.vertices.length; k++)
+                for(var k=0; k<s.vertices.length; k++){
                     verts.push(v2a(s.vertices[k]));
+                }
                 jsonShape = {   type : "Convex",
                                 verts : verts };
             } else if(s instanceof Capsule){
@@ -1117,7 +1162,9 @@ World.prototype.toJSON = function(){
     return json;
 
     function v2a(v){
-        if(!v) return v;
+        if(!v){
+            return v;
+        }
         return [v[0],v[1]];
     }
 };
@@ -1129,8 +1176,9 @@ World.prototype.toJSON = function(){
  * @return {Object|Boolean} New json object, or false on failure.
  */
 World.upgradeJSON = function(json){
-    if(!json || !json.p2)
+    if(!json || !json.p2){
         return false;
+    }
 
     // Clone the json object
     json = JSON.parse(JSON.stringify(json));
@@ -1138,36 +1186,36 @@ World.upgradeJSON = function(json){
     // Check version
     switch(json.p2){
 
-        case currentVersion:
-            // We are at latest json version
-            return json;
+    case currentVersion:
+        // We are at latest json version
+        return json;
 
-        case "0.3":
-            // Changes:
-            // - Started caring about versioning
+    case "0.3":
+        // Changes:
+        // - Started caring about versioning
 
-            // - Added LockConstraint type
-            // Can't do much about that now though. Ignore.
+        // - Added LockConstraint type
+        // Can't do much about that now though. Ignore.
 
-            // Changed PrismaticConstraint arguments...
-            for(var i=0; i<json.constraints.length; i++){
-                var jc = json.constraints[i];
-                if(jc.type=="PrismaticConstraint"){
+        // Changed PrismaticConstraint arguments...
+        for(var i=0; i<json.constraints.length; i++){
+            var jc = json.constraints[i];
+            if(jc.type === "PrismaticConstraint"){
 
-                    // ...from these...
-                    delete jc.localAxisA;
-                    delete jc.localAxisB;
+                // ...from these...
+                delete jc.localAxisA;
+                delete jc.localAxisB;
 
-                    // ...to these. We cant make up anything good here, just do something
-                    jc.localAxisA = [1,0];
-                    jc.localAnchorA = [0,0];
-                    jc.localAnchorB = [0,0];
-                }
+                // ...to these. We cant make up anything good here, just do something
+                jc.localAxisA = [1,0];
+                jc.localAnchorA = [0,0];
+                jc.localAnchorB = [0,0];
             }
+        }
 
-            // Upgrade version number
-            json.p2 = "0.4";
-            break;
+        // Upgrade version number
+        json.p2 = "0.4";
+        break;
     }
 
     return World.upgradeJSON(json);
@@ -1185,10 +1233,13 @@ World.prototype.fromJSON = function(json){
     json = World.upgradeJSON(json);
 
     // Upgrade failed.
-    if(!json) return false;
-
-    if(!json.p2)
+    if(!json){
         return false;
+    }
+
+    if(!json.p2){
+        return false;
+    }
 
     // Set gravity
     vec2.copy(this.gravity, json.gravity);
@@ -1215,16 +1266,15 @@ World.prototype.fromJSON = function(json){
             var shape, js=jss[j];
 
             switch(js.type){
-                case "Circle":      shape = new Circle(js.radius);              break;
-                case "Plane":       shape = new Plane();                        break;
-                case "Particle":    shape = new Particle();                     break;
-                case "Line":        shape = new Line(js.length);                break;
-                case "Rectangle":   shape = new Rectangle(js.width,js.height);  break;
-                case "Convex":      shape = new Convex(js.verts);               break;
-                case "Capsule":     shape = new Capsule(js.length, js.radius);  break;
-                default:
-                    throw new Error("Shape type not supported: "+js.type);
-                    break;
+            case "Circle":      shape = new Circle(js.radius);              break;
+            case "Plane":       shape = new Plane();                        break;
+            case "Particle":    shape = new Particle();                     break;
+            case "Line":        shape = new Line(js.length);                break;
+            case "Rectangle":   shape = new Rectangle(js.width,js.height);  break;
+            case "Convex":      shape = new Convex(js.verts);               break;
+            case "Capsule":     shape = new Capsule(js.length, js.radius);  break;
+            default:
+                throw new Error("Shape type not supported: "+js.type);
             }
             shape.collisionMask = js.collisionMask;
             shape.collisionGroup = js.collisionGroup;
@@ -1237,8 +1287,9 @@ World.prototype.fromJSON = function(json){
             b.addShape(shape,js.offset,js.angle);
         }
 
-        if(jb.concavePath)
+        if(jb.concavePath){
             b.concavePath = jb.concavePath;
+        }
 
         this.addBody(b);
     }
@@ -1276,37 +1327,37 @@ World.prototype.fromJSON = function(json){
         var jc = json.constraints[i],
             c;
         switch(jc.type){
-            case "DistanceConstraint":
-                c = new DistanceConstraint(bodies[jc.bodyA], bodies[jc.bodyB], jc.distance, jc.maxForce);
-                break;
-            case "RevoluteConstraint":
-                c = new RevoluteConstraint(bodies[jc.bodyA], jc.pivotA, bodies[jc.bodyB], jc.pivotB, jc.maxForce);
-                if(jc.motorSpeed){
-                    c.enableMotor();
-                    c.setMotorSpeed(jc.motorSpeed);
-                }
-                c.lowerLimit = jc.lowerLimit || 0;
-                c.upperLimit = jc.upperLimit || 0;
-                c.lowerLimitEnabled = jc.lowerLimitEnabled || false;
-                c.upperLimitEnabled = jc.upperLimitEnabled || false;
-                break;
-            case "PrismaticConstraint":
-                c = new PrismaticConstraint(bodies[jc.bodyA], bodies[jc.bodyB], {
-                    maxForce : jc.maxForce,
-                    localAxisA : jc.localAxisA,
-                    localAnchorA : jc.localAnchorA,
-                    localAnchorB : jc.localAnchorB,
-                });
-                break;
-            case "LockConstraint":
-                c = new LockConstraint(bodies[jc.bodyA], bodies[jc.bodyB], {
-                    maxForce :     jc.maxForce,
-                    localOffsetB : jc.localOffsetB,
-                    localAngleB :  jc.localAngleB,
-                });
-                break;
-            default:
-                throw new Error("Constraint type not recognized: "+jc.type);
+        case "DistanceConstraint":
+            c = new DistanceConstraint(bodies[jc.bodyA], bodies[jc.bodyB], jc.distance, jc.maxForce);
+            break;
+        case "RevoluteConstraint":
+            c = new RevoluteConstraint(bodies[jc.bodyA], jc.pivotA, bodies[jc.bodyB], jc.pivotB, jc.maxForce);
+            if(jc.motorSpeed){
+                c.enableMotor();
+                c.setMotorSpeed(jc.motorSpeed);
+            }
+            c.lowerLimit = jc.lowerLimit || 0;
+            c.upperLimit = jc.upperLimit || 0;
+            c.lowerLimitEnabled = jc.lowerLimitEnabled || false;
+            c.upperLimitEnabled = jc.upperLimitEnabled || false;
+            break;
+        case "PrismaticConstraint":
+            c = new PrismaticConstraint(bodies[jc.bodyA], bodies[jc.bodyB], {
+                maxForce : jc.maxForce,
+                localAxisA : jc.localAxisA,
+                localAnchorA : jc.localAnchorA,
+                localAnchorB : jc.localAnchorB,
+            });
+            break;
+        case "LockConstraint":
+            c = new LockConstraint(bodies[jc.bodyA], bodies[jc.bodyB], {
+                maxForce :     jc.maxForce,
+                localOffsetB : jc.localOffsetB,
+                localAngleB :  jc.localAngleB,
+            });
+            break;
+        default:
+            throw new Error("Constraint type not recognized: "+jc.type);
         }
         this.addConstraint(c);
     }
@@ -1324,8 +1375,9 @@ World.prototype.clear = function(){
     this.time = 0;
 
     // Remove all solver equations
-    if(this.solver && this.solver.equations.length)
+    if(this.solver && this.solver.equations.length){
         this.solver.removeAllEquations();
+    }
 
     // Remove all constraints
     var cs = this.constraints;
