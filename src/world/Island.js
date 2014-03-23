@@ -28,18 +28,19 @@ function Island(){
  */
 Island.prototype.reset = function(){
     this.equations.length = this.bodies.length = 0;
-}
+};
 
+var bodyIds = [];
 
 /**
  * Get all unique bodies in this island.
  * @method getBodies
  * @return {Array} An array of Body
  */
-Island.prototype.getBodies = function(){
-    var bodies = [],
-        bodyIds = [],
+Island.prototype.getBodies = function(result){
+    var bodies = result || [],
         eqs = this.equations;
+    bodyIds.length = 0;
     for(var i=0; i!==eqs.length; i++){
         var eq = eqs[i];
         if(bodyIds.indexOf(eq.bi.id)===-1){
