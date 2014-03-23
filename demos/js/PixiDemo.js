@@ -23,6 +23,7 @@ function PixiDemo(world,options){
         width : 1280, // Pixi screen resolution
         height : 720,
         useDeviceAspect : false,
+        sleepOpacity : 0.2,
     };
     for(var key in options)
         settings[key] = options[key];
@@ -34,6 +35,7 @@ function PixiDemo(world,options){
     var ppu = this.pixelsPerLengthUnit =  settings.pixelsPerLengthUnit;
     this.lineWidth =            settings.lineWidth;
     this.scrollFactor =         settings.scrollFactor;
+    this.sleepOpacity =         settings.sleepOpacity;
 
     this.sprites = [];
     this.springSprites = [];
@@ -56,7 +58,7 @@ function PixiDemo(world,options){
             path2.push([v[0]*ppu, that.settings.height -v[1]*ppu]);
         }
 
-        PixiDemo.drawPath(g,path2,0xff0000,false,1);
+        that.drawPath(g,path2,0xff0000,false,1,false);
     });
 
     // Update draw circle
@@ -66,7 +68,7 @@ function PixiDemo(world,options){
         var center = that.drawCircleCenter;
         var R = p2.vec2.dist(center, that.drawCirclePoint);
         var h = that.renderer.height;
-        PixiDemo.drawCircle(g,center[0]*ppu,h-ppu*center[1],0,ppu*R,false,that.lineWidth);
+        that.drawCircle(g,center[0]*ppu,h-ppu*center[1],0,ppu*R,false,that.lineWidth);
     });
 };
 PixiDemo.prototype = Object.create(Demo.prototype);
@@ -214,11 +216,11 @@ PixiDemo.prototype.init = function(){
  * @param  {Number} color
  * @param  {Number} lineWidth
  */
-PixiDemo.drawCircle = function(g,x,y,angle,radius,color,lineWidth){
+PixiDemo.prototype.drawCircle = function(g,x,y,angle,radius,color,lineWidth,isSleeping){
     lineWidth = typeof(lineWidth)=="number" ? lineWidth : 1;
     color = typeof(color)=="number" ? color : 0xffffff;
     g.lineStyle(lineWidth, 0x000000, 1);
-    g.beginFill(color, 1.0);
+    g.beginFill(color, isSleeping ? this.sleepOpacity : 1.0);
     g.drawCircle(x, y, radius);
     g.endFill();
 
@@ -304,7 +306,7 @@ PixiDemo.drawLine = function(g, len, color, lineWidth){
     g.lineTo( len/2,0);
 };
 
-PixiDemo.drawCapsule = function(g, x, y, angle, len, radius, color, fillColor, lineWidth){
+PixiDemo.prototype.drawCapsule = function(g, x, y, angle, len, radius, color, fillColor, lineWidth, isSleeping){
     lineWidth = typeof(lineWidth)=="number" ? lineWidth : 1;
     color = typeof(color)=="undefined" ? 0x000000 : color;
     g.lineStyle(lineWidth, color, 1);
@@ -312,14 +314,14 @@ PixiDemo.drawCapsule = function(g, x, y, angle, len, radius, color, fillColor, l
     // Draw circles at ends
     var c = Math.cos(angle);
     var s = Math.sin(angle);
-    g.beginFill(fillColor);
+    g.beginFill(fillColor, isSleeping ? this.sleepOpacity : 1.0);
     g.drawCircle(-len/2*c + x, -len/2*s + y, radius);
     g.drawCircle( len/2*c + x,  len/2*s + y, radius);
     g.endFill();
 
     // Draw rectangle
     g.lineStyle(lineWidth, color, 0);
-    g.beginFill(fillColor);
+    g.beginFill(fillColor, isSleeping ? this.sleepOpacity : 1.0);
     g.moveTo(-len/2*c + radius*s + x, -len/2*s + radius*c + y);
     g.lineTo( len/2*c + radius*s + x,  len/2*s + radius*c + y);
     g.lineTo( len/2*c - radius*s + x,  len/2*s - radius*c + y);
@@ -336,20 +338,20 @@ PixiDemo.drawCapsule = function(g, x, y, angle, len, radius, color, fillColor, l
 };
 
 // Todo angle
-PixiDemo.drawRectangle = function(g,x,y,angle,w,h,color,fillColor,lineWidth){
+PixiDemo.prototype.drawRectangle = function(g,x,y,angle,w,h,color,fillColor,lineWidth,isSleeping){
     lineWidth = typeof(lineWidth)=="number" ? lineWidth : 1;
     color = typeof(color)=="undefined" ? 0x000000 : color;
-    g.lineStyle(lineWidth, color, 1);
-    g.beginFill(fillColor);
+    g.lineStyle(lineWidth);
+    g.beginFill(fillColor, isSleeping ? this.sleepOpacity : 1.0);
     g.drawRect(x-w/2,y-h/2,w,h);
 };
 
-PixiDemo.drawConvex = function(g,verts,triangles,color,fillColor,lineWidth,debug,offset){
+PixiDemo.prototype.drawConvex = function(g,verts,triangles,color,fillColor,lineWidth,debug,offset,isSleeping){
     lineWidth = typeof(lineWidth)=="number" ? lineWidth : 1;
     color = typeof(color)=="undefined" ? 0x000000 : color;
     if(!debug){
         g.lineStyle(lineWidth, color, 1);
-        g.beginFill(fillColor);
+        g.beginFill(fillColor, isSleeping ? this.sleepOpacity : 1.0);
         for(var i=0; i!==verts.length; i++){
             var v = verts[i],
                 x = v[0],
@@ -384,12 +386,12 @@ PixiDemo.drawConvex = function(g,verts,triangles,color,fillColor,lineWidth,debug
     }
 };
 
-PixiDemo.drawPath = function(g,path,color,fillColor,lineWidth){
+PixiDemo.prototype.drawPath = function(g,path,color,fillColor,lineWidth,isSleeping){
     lineWidth = typeof(lineWidth)=="number" ? lineWidth : 1;
     color = typeof(color)=="undefined" ? 0x000000 : color;
     g.lineStyle(lineWidth, color, 1);
     if(typeof(fillColor)=="number")
-        g.beginFill(fillColor);
+        g.beginFill(fillColor, isSleeping ? this.sleepOpacity : 1.0);
     var lastx = null,
         lasty = null;
     for(var i=0; i<path.length; i++){
@@ -445,6 +447,17 @@ PixiDemo.prototype.render = function(){
     // Update body transforms
     for(var i=0; i!==this.bodies.length; i++){
         PixiDemo.updateSpriteTransform(this.sprites[i],this.bodies[i],pixelsPerLengthUnit,h);
+    }
+
+    // Update graphics if the body changed sleepState
+    for(var i=0; i!==this.bodies.length; i++){
+        var isSleeping = (this.bodies[i].sleepState===p2.Body.SLEEPING);
+        var sprite = this.sprites[i];
+        var body = this.bodies[i];
+        if(sprite.drawnSleeping !== isSleeping){
+            sprite.clear();
+            this.drawRenderable(body, sprite, sprite.drawnColor, sprite.drawnLineColor);
+        }
     }
 
     // Update spring transforms
@@ -537,7 +550,77 @@ function randomPastelHex(){
     blue =  Math.floor((blue +  3*mix[2]) / 4);
 
     return rgbToHex(red,green,blue);
+    return rgbToHex(red,green,blue);
 }
+
+PixiDemo.prototype.drawRenderable = function(obj, graphics, color, lineColor){
+    var ppu = this.pixelsPerLengthUnit,
+        lw = this.lineWidth;
+
+    var zero = [0,0];
+    graphics.drawnSleeping = false;
+    graphics.drawnColor = color;
+    graphics.drawnLineColor = lineColor;
+
+    if(obj instanceof p2.Body && obj.shapes.length){
+
+        var isSleeping = (obj.sleepState === p2.Body.SLEEPING);
+        graphics.drawnSleeping = isSleeping;
+
+        if(obj.concavePath && !this.debugPolygons){
+            var path = [];
+            for(var j=0; j!==obj.concavePath.length; j++){
+                var v = obj.concavePath[j];
+                path.push([v[0]*ppu, -v[1]*ppu]);
+            }
+            this.drawPath(graphics, path, lineColor, color, lw, isSleeping);
+        } else {
+            for(var i=0; i<obj.shapes.length; i++){
+                var child = obj.shapes[i],
+                    offset = obj.shapeOffsets[i],
+                    angle = obj.shapeAngles[i];
+                offset = offset || zero;
+                angle = angle || 0;
+
+                if(child instanceof p2.Circle){
+                    this.drawCircle(graphics,offset[0]*ppu,-offset[1]*ppu,angle,child.radius*ppu,color,lw,isSleeping);
+
+                } else if(child instanceof p2.Particle){
+                    this.drawCircle(graphics,offset[0]*ppu,-offset[1]*ppu,angle,2*lw,lineColor,0);
+
+                } else if(child instanceof p2.Plane){
+                    // TODO use shape angle
+                    PixiDemo.drawPlane(graphics, -10*ppu, 10*ppu, color, lineColor, lw, lw*10, lw*10, ppu*100);
+
+                } else if(child instanceof p2.Line){
+                    PixiDemo.drawLine(graphics, child.length*ppu, lineColor, lw);
+
+                } else if(child instanceof p2.Rectangle){
+                    this.drawRectangle(graphics, offset[0]*ppu, -offset[1]*ppu, angle, child.width*ppu, child.height*ppu, lineColor, color, lw, isSleeping);
+
+                } else if(child instanceof p2.Capsule){
+                    this.drawCapsule(graphics, offset[0]*ppu, -offset[1]*ppu, angle, child.length*ppu, child.radius*ppu, lineColor, color, lw, isSleeping);
+
+                } else if(child instanceof p2.Convex){
+                    // Scale verts
+                    var verts = [],
+                        vrot = p2.vec2.create();
+                    for(var j=0; j!==child.vertices.length; j++){
+                        var v = child.vertices[j];
+                        p2.vec2.rotate(vrot, v, angle);
+                        verts.push([(vrot[0]+offset[0])*ppu, -(vrot[1]+offset[1])*ppu]);
+                    }
+
+                    this.drawConvex(graphics, verts, child.triangles, lineColor, color, lw, this.debugPolygons,[offset[0]*ppu,-offset[1]*ppu], isSleeping);
+                }
+            }
+        }
+
+    } else if(obj instanceof p2.Spring){
+        var restLengthPixels = obj.restLength * ppu;
+        PixiDemo.drawSpring(graphics,restLengthPixels,0x000000,lw);
+    }
+};
 
 PixiDemo.prototype.addRenderable = function(obj){
     var ppu = this.pixelsPerLengthUnit,
@@ -549,9 +632,11 @@ PixiDemo.prototype.addRenderable = function(obj){
 
     var zero = [0,0];
 
+    var sprite = new PIXI.Graphics();
     if(obj instanceof p2.Body && obj.shapes.length){
 
-        var sprite = new PIXI.Graphics();
+        this.drawRenderable(obj, sprite, color, lineColor);
+        /*
         if(obj.concavePath && !this.debugPolygons){
             var path = [];
             for(var j=0; j!==obj.concavePath.length; j++){
@@ -568,10 +653,10 @@ PixiDemo.prototype.addRenderable = function(obj){
                 angle = angle || 0;
 
                 if(child instanceof p2.Circle){
-                    PixiDemo.drawCircle(sprite,offset[0]*ppu,-offset[1]*ppu,angle,child.radius*ppu,color,lw);
+                    this.drawCircle(sprite,offset[0]*ppu,-offset[1]*ppu,angle,child.radius*ppu,color,lw);
 
                 } else if(child instanceof p2.Particle){
-                    PixiDemo.drawCircle(sprite,offset[0]*ppu,-offset[1]*ppu,angle,2*lw,lineColor,0);
+                    this.drawCircle(sprite,offset[0]*ppu,-offset[1]*ppu,angle,2*lw,lineColor,0);
 
                 } else if(child instanceof p2.Plane){
                     // TODO use shape angle
@@ -581,7 +666,7 @@ PixiDemo.prototype.addRenderable = function(obj){
                     PixiDemo.drawLine(sprite, child.length*ppu, lineColor, lw);
 
                 } else if(child instanceof p2.Rectangle){
-                    PixiDemo.drawRectangle(sprite, offset[0]*ppu, -offset[1]*ppu, angle, child.width*ppu, child.height*ppu, lineColor, color, lw);
+                    this.drawRectangle(sprite, offset[0]*ppu, -offset[1]*ppu, angle, child.width*ppu, child.height*ppu, lineColor, color, lw);
 
                 } else if(child instanceof p2.Capsule){
                     PixiDemo.drawCapsule(sprite, offset[0]*ppu, -offset[1]*ppu, angle, child.length*ppu, child.radius*ppu, lineColor, color,lw);
@@ -596,17 +681,21 @@ PixiDemo.prototype.addRenderable = function(obj){
                         verts.push([(vrot[0]+offset[0])*ppu, -(vrot[1]+offset[1])*ppu]);
                     }
 
-                    PixiDemo.drawConvex(sprite, verts, child.triangles, lineColor, color, lw, this.debugPolygons,[offset[0]*ppu,-offset[1]*ppu]);
+                    this.drawConvex(sprite, verts, child.triangles, lineColor, color, lw, this.debugPolygons,[offset[0]*ppu,-offset[1]*ppu]);
                 }
             }
         }
+        */
         this.sprites.push(sprite);
         this.stage.addChild(sprite);
 
     } else if(obj instanceof p2.Spring){
-        var sprite = new PIXI.Graphics();
+        /*
+        var restLengthPixels = obj.restLength * ppu;
         var restLengthPixels = obj.restLength * ppu;
         PixiDemo.drawSpring(sprite,restLengthPixels,0x000000,lw);
+        */
+        this.drawRenderable(obj, sprite, 0x000000, lineColor);
         this.springSprites.push(sprite);
         this.stage.addChild(sprite);
     }
