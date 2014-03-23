@@ -15,11 +15,11 @@ module.exports = Body;
  * @extends {EventEmitter}
  * @param {Object}              [options]
  * @param {Number}              [options.mass=0]    A number >= 0. If zero, the .motionState will be set to Body.STATIC.
- * @param {Float32Array|Array}  [options.position]
- * @param {Float32Array|Array}  [options.velocity]
+ * @param {Array}               [options.position]
+ * @param {Array}               [options.velocity]
  * @param {Number}              [options.angle=0]
  * @param {Number}              [options.angularVelocity=0]
- * @param {Float32Array|Array}  [options.force]
+ * @param {Array}               [options.force]
  * @param {Number}              [options.angularForce=0]
  * @param {Number}              [options.fixedRotation=false]
  */
@@ -53,7 +53,7 @@ function Body(options){
 
     /**
      * The local shape offsets, relative to the body center of mass. This is an
-     * array of Float32Array.
+     * array of Array.
      * @property shapeOffsets
      * @type {Array}
      */
@@ -119,22 +119,24 @@ function Body(options){
     /**
      * The velocity of the body
      * @property velocity
-     * @type {Float32Array}
+     * @type {Array}
      */
     this.velocity = vec2.fromValues(0,0);
-    if(options.velocity) vec2.copy(this.velocity, options.velocity);
+    if(options.velocity){
+        vec2.copy(this.velocity, options.velocity);
+    }
 
     /**
      * Constraint velocity that was added to the body during the last step.
      * @property vlambda
-     * @type {Float32Array}
+     * @type {Array}
      */
     this.vlambda = vec2.fromValues(0,0);
 
     /**
      * Angular constraint velocity that was added to the body during last step.
      * @property wlambda
-     * @type {Float32Array}
+     * @type {Array}
      */
     this.wlambda = 0;
 
@@ -165,7 +167,7 @@ function Body(options){
     /**
      * The force acting on the body
      * @property force
-     * @type {Float32Array}
+     * @type {Array}
      */
     this.force = vec2.create();
     if(options.force) vec2.copy(this.force, options.force);
@@ -174,6 +176,7 @@ function Body(options){
      * The angular force acting on the body
      * @property angularForce
      * @type {number}
+     * @default 0
      */
     this.angularForce = options.angularForce || 0;
 
@@ -194,64 +197,73 @@ function Body(options){
     this.angularDamping = typeof(options.angularDamping)=="number" ? options.angularDamping : 0.1;
 
     /**
-     * The type of motion this body has. Should be one of: Body.STATIC (the body
-     * does not move), Body.DYNAMIC (body can move and respond to collisions)
-     * and Body.KINEMATIC (only moves according to its .velocity).
+     * The type of motion this body has. Should be one of: {{#crossLink "Body/STATIC:property"}}Body.STATIC{{/crossLink}}, {{#crossLink "Body/DYNAMIC:property"}}Body.DYNAMIC{{/crossLink}} and {{#crossLink "Body/KINEMATIC:property"}}Body.KINEMATIC{{/crossLink}}.
+     *
+     * * Static bodies do not move, and they do not respond to forces or collision.
+     * * Dynamic bodies body can move and respond to collisions and forces.
+     * * Kinematic bodies only moves according to its .velocity, and does not respond to collisions or force.
      *
      * @property motionState
      * @type {number}
      *
      * @example
      *     // This body will move and interact with other bodies
-     *     var dynamicBody = new Body();
-     *     dynamicBody.motionState = Body.DYNAMIC;
+     *     var dynamicBody = new Body({
+     *         mass : 1  // If mass is nonzero, the body becomes dynamic automatically
+     *     });
+     *     dynamicBody.motionState == Body.DYNAMIC // true
      *
      * @example
      *     // This body will not move at all
-     *     var staticBody = new Body();
-     *     staticBody.motionState = Body.STATIC;
+     *     var staticBody = new Body({
+     *         mass : 0 // Will make the body static
+     *     });
+     *     staticBody.motionState == Body.STATIC // true
      *
      * @example
      *     // This body will only move if you change its velocity
      *     var kinematicBody = new Body();
      *     kinematicBody.motionState = Body.KINEMATIC;
      */
-    this.motionState = this.mass == 0 ? Body.STATIC : Body.DYNAMIC;
+    this.motionState = this.mass === 0 ? Body.STATIC : Body.DYNAMIC;
 
     /**
-     * Bounding circle radius
+     * Bounding circle radius.
      * @property boundingRadius
      * @type {Number}
      */
     this.boundingRadius = 0;
 
     /**
-     * Bounding box of this body
+     * Bounding box of this body.
      * @property aabb
      * @type {AABB}
      */
     this.aabb = new AABB();
 
     /**
-     * Indicates if the AABB needs update. Update it with .updateAABB()
+     * Indicates if the AABB needs update. Update it with {{#crossLink "Body/updateAABB:method"}}.updateAABB(){{/crossLink}}.
      * @property aabbNeedsUpdate
+     * @default true
      * @type {Boolean}
      */
     this.aabbNeedsUpdate = true;
 
     /**
-     * If true, the body will automatically fall to sleep.
+     * If true, the body will automatically fall to sleep. Note that you need to enable sleeping in the World before anything will happen.
      * @property allowSleep
      * @type {Boolean}
+     * @default true
      */
     this.allowSleep = true;
 
     this.wantsToSleep = false;
 
     /**
-     * One of Body.AWAKE, Body.SLEEPY, Body.SLEEPING
+     * One of {{#crossLink "Body/AWAKE:property"}}Body.AWAKE{{/crossLink}}, {{#crossLink "Body/SLEEPY:property"}}Body.SLEEPY{{/crossLink}} and {{#crossLink "Body/SLEEPING:property"}}Body.SLEEPING{{/crossLink}}.
      * @property sleepState
      * @type {Number}
+     * @default Body.AWAKE
      */
     this.sleepState = Body.AWAKE;
 
@@ -259,6 +271,7 @@ function Body(options){
      * If the speed (the norm of the velocity) is smaller than this value, the body is considered sleepy.
      * @property sleepSpeedLimit
      * @type {Number}
+     * @default 0.1
      */
     this.sleepSpeedLimit = 0.1;
 
@@ -266,12 +279,14 @@ function Body(options){
      * If the body has been sleepy for this sleepTimeLimit seconds, it is considered sleeping.
      * @property sleepTimeLimit
      * @type {Number}
+     * @default 1
      */
     this.sleepTimeLimit = 1;
 
     /**
      * Gravity scaling factor. If you want the body to ignore gravity, set this to zero. If you want to reverse gravity, set it to -1.
      * @property {Number} gravityScale
+     * @default 1
      */
     this.gravityScale = 1;
 
@@ -374,7 +389,7 @@ Body.prototype.updateBoundingRadius = function(){
  *
  * @method addShape
  * @param  {Shape}              shape
- * @param  {Float32Array|Array} [offset] Local body offset of the shape.
+ * @param  {Array} [offset] Local body offset of the shape.
  * @param  {Number}             [angle]  Local body angle.
  *
  * @example
@@ -479,8 +494,8 @@ var Body_applyForce_r = vec2.create();
 /**
  * Apply force to a world point. This could for example be a point on the RigidBody surface. Applying force this way will add to Body.force and Body.angularForce.
  * @method applyForce
- * @param {Float32Array} force The force to add.
- * @param {Float32Array} worldPoint A world point to apply the force on.
+ * @param {Array} force The force to add.
+ * @param {Array} worldPoint A world point to apply the force on.
  */
 Body.prototype.applyForce = function(force,worldPoint){
     // Compute point position relative to the body center
@@ -500,8 +515,8 @@ Body.prototype.applyForce = function(force,worldPoint){
 /**
  * Transform a world point to local body frame.
  * @method toLocalFrame
- * @param  {Float32Array|Array} out          The vector to store the result in
- * @param  {Float32Array|Array} worldPoint   The input world vector
+ * @param  {Array} out          The vector to store the result in
+ * @param  {Array} worldPoint   The input world vector
  */
 Body.prototype.toLocalFrame = function(out, worldPoint){
     vec2.toLocalFrame(out, worldPoint, this.position, this.angle);

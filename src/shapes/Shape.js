@@ -4,8 +4,24 @@ module.exports = Shape;
  * Base class for shapes.
  * @class Shape
  * @constructor
+ * @param {Number} type
  */
 function Shape(type){
+
+    /**
+     * The type of the shape. One of:
+     *
+     * * {{#crossLink "Shape/CIRCLE:property"}}Shape.CIRCLE{{/crossLink}}
+     * * {{#crossLink "Shape/PARTICLE:property"}}Shape.PARTICLE{{/crossLink}}
+     * * {{#crossLink "Shape/PLANE:property"}}Shape.PLANE{{/crossLink}}
+     * * {{#crossLink "Shape/CONVEX:property"}}Shape.CONVEX{{/crossLink}}
+     * * {{#crossLink "Shape/LINE:property"}}Shape.LINE{{/crossLink}}
+     * * {{#crossLink "Shape/RECTANGLE:property"}}Shape.RECTANGLE{{/crossLink}}
+     * * {{#crossLink "Shape/CAPSULE:property"}}Shape.CAPSULE{{/crossLink}}
+     * * {{#crossLink "Shape/HEIGHTFIELD:property"}}Shape.HEIGHTFIELD{{/crossLink}}
+     *
+     * @property {number} type
+     */
     this.type = type;
 
     /**

@@ -8,7 +8,7 @@ module.exports = Circle;
  * @class Circle
  * @extends {Shape}
  * @constructor
- * @param {number} radius The radius of this circle
+ * @param {number} [radius=1] The radius of this circle
  */
 function Circle(radius){
 
@@ -33,10 +33,18 @@ Circle.prototype.computeMomentOfInertia = function(mass){
     return mass * r * r / 2;
 };
 
+/**
+ * @method updateBoundingRadius
+ * @return {Number}
+ */
 Circle.prototype.updateBoundingRadius = function(){
     this.boundingRadius = this.radius;
 };
 
+/**
+ * @method updateArea
+ * @return {Number}
+ */
 Circle.prototype.updateArea = function(){
     this.area = Math.PI * this.radius * this.radius;
 };
