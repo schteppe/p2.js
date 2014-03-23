@@ -30,7 +30,7 @@ function Solver(options,type){
      * @type {function|boolean}
      */
     this.equationSortFunction = options.equationSortFunction || false;
-};
+}
 Solver.prototype = new EventEmitter();
 
 /**
@@ -55,23 +55,27 @@ Solver.prototype.solveIsland = function(dt,island){
 
     this.removeAllEquations();
 
-    // Add equations to solver
-    this.addEquations(island.equations);
-    mockWorld.bodies.length = 0;
-    mockWorld.bodies = island.getBodies(mockWorld.bodies);
+    if(island.equations.length){
+        // Add equations to solver
+        this.addEquations(island.equations);
+        mockWorld.bodies.length = 0;
+        island.getBodies(mockWorld.bodies);
 
-    // Solve
-    solver.solve(dt,mockWorld);
+        // Solve
+        if(mockWorld.bodies.length){
+            this.solve(dt,mockWorld);
+        }
+    }
 };
-
 
 /**
  * Sort all equations using the .equationSortFunction. Should be called by subclasses before solving.
  * @method sortEquations
  */
 Solver.prototype.sortEquations = function(){
-    if(this.equationSortFunction)
+    if(this.equationSortFunction){
         this.equations.sort(this.equationSortFunction);
+    }
 };
 
 /**
@@ -81,8 +85,9 @@ Solver.prototype.sortEquations = function(){
  * @param {Equation} eq
  */
 Solver.prototype.addEquation = function(eq){
-    if(eq.enabled)
+    if(eq.enabled){
         this.equations.push(eq);
+    }
 };
 
 /**
@@ -95,8 +100,9 @@ Solver.prototype.addEquations = function(eqs){
     //Utils.appendArray(this.equations,eqs);
     for(var i=0, N=eqs.length; i!==N; i++){
         var eq = eqs[i];
-        if(eq.enabled)
+        if(eq.enabled){
             this.equations.push(eq);
+        }
     }
 };
 
@@ -108,8 +114,9 @@ Solver.prototype.addEquations = function(eqs){
  */
 Solver.prototype.removeEquation = function(eq){
     var i = this.equations.indexOf(eq);
-    if(i!=-1)
+    if(i !== -1){
         this.equations.splice(i,1);
+    }
 };
 
 /**
@@ -121,5 +128,5 @@ Solver.prototype.removeAllEquations = function(){
     this.equations.length=0;
 };
 
-Solver.GS=1;
-Solver.ISLAND=2;
+Solver.GS = 1;
+Solver.ISLAND = 2;
