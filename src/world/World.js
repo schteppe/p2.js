@@ -320,6 +320,12 @@ function World(options){
     this.enableBodySleeping = false;
 
     /**
+     * Enable or disable island sleeping. Note that you must enable .islandSplit for this to work.
+     * @property {Boolean} enableIslandSleeping
+     */
+    this.enableIslandSleeping = false;
+
+    /**
      * Fired when two shapes starts start to overlap. Fired in the narrowphase, during step.
      * @event beginContact
      * @param {Shape} shapeA
@@ -545,7 +551,7 @@ World.prototype.internalStep = function(dt){
         for(var i=0; i!==Nbodies; i++){
             var b = bodies[i],
                 fi = b.force;
-            if(b.motionState !== Body.DYNAMIC){
+            if(b.motionState !== Body.DYNAMIC || b.sleepState === Body.SLEEPING){
                 continue;
             }
             vec2.scale(mg,g,b.mass*b.gravityScale); // F=m*g
@@ -747,6 +753,20 @@ World.prototype.internalStep = function(dt){
     if(this.enableBodySleeping){
         for(i=0; i!==Nbodies; i++){
             bodies[i].sleepTick(this.time);
+        }
+    } else if(this.enableIslandSleeping && this.islandSplit){
+
+        // Tell all bodies to sleep tick but dont sleep yet
+        for(i=0; i!==Nbodies; i++){
+            bodies[i].sleepTick(this.time, true);
+        }
+
+        // Sleep islands
+        for(var i=0; i<this.islandManager.islands.length; i++){
+            var island = this.islandManager.islands[i];
+            if(island.wantsToSleep()){
+                island.sleep();
+            }
         }
     }
 

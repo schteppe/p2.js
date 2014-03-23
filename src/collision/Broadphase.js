@@ -101,6 +101,12 @@ Broadphase.canCollide = function(bodyA, bodyB){
     if(bodyA.sleepState == Body.SLEEPING && bodyB.sleepState == Body.SLEEPING)
         return false;
 
+    // Cannot collide if one is static and the other is sleeping
+    if( (bodyA.sleepState == Body.SLEEPING && bodyB.motionState == Body.STATIC) ||
+        (bodyB.sleepState == Body.SLEEPING && bodyA.motionState == Body.STATIC)){
+        return false;
+    }
+
     return true;
 };
 

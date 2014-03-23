@@ -244,7 +244,9 @@ function Body(options){
      * @property allowSleep
      * @type {Boolean}
      */
-    this.allowSleep = false;
+    this.allowSleep = true;
+
+    this.wantsToSleep = false;
 
     /**
      * One of Body.AWAKE, Body.SLEEPY, Body.SLEEPING
@@ -710,9 +712,12 @@ Body.prototype.sleep = function(){
  * @param float time The world time in seconds
  * @brief Called every timestep to update internal sleep timer and change sleep state if needed.
  */
-Body.prototype.sleepTick = function(time){
-    if(!this.allowSleep)
+Body.prototype.sleepTick = function(time, dontSleep){
+    if(!this.allowSleep){
         return;
+    }
+
+    this.wantsToSleep = false;
 
     var sleepState = this.sleepState,
         speedSquared = vec2.squaredLength(this.velocity) + Math.pow(this.angularVelocity,2),
@@ -724,7 +729,10 @@ Body.prototype.sleepTick = function(time){
     } else if(sleepState===Body.SLEEPY && speedSquared > speedLimitSquared){
         this.wakeUp(); // Wake up
     } else if(sleepState===Body.SLEEPY && (time - this.timeLastSleepy ) > this.sleepTimeLimit){
-        this.sleep();
+        this.wantsToSleep = true;
+        if(!dontSleep){
+            this.sleep();
+        }
     }
 };
 

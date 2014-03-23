@@ -1,3 +1,5 @@
+var Body = require('../objects/Body');
+
 module.exports = Island;
 
 /**
@@ -53,4 +55,22 @@ Island.prototype.getBodies = function(result){
         }
     }
     return bodies;
+};
+
+Island.prototype.wantsToSleep = function(){
+    for(var i=0; i<this.bodies.length; i++){
+        var b = this.bodies[i];
+        if(b.motionState === Body.DYNAMIC && !b.wantsToSleep){
+            return false;
+        }
+    }
+    return true;
+};
+
+Island.prototype.sleep = function(){
+    for(var i=0; i<this.bodies.length; i++){
+        var b = this.bodies[i];
+        b.sleep();
+    }
+    return true;
 };
