@@ -223,6 +223,7 @@ Demo.prototype.handleMouseDown = function(physicsPosition){
             }
 
             if(b){
+                b.wakeUp();
                 this.setState(Demo.DRAGGING);
                 // Add mouse joint to the body
                 var localPoint = p2.vec2.create();
@@ -262,6 +263,14 @@ Demo.prototype.handleMouseDown = function(physicsPosition){
 Demo.prototype.handleMouseMove = function(physicsPosition){
     var sampling = 0.4;
     switch(this.state){
+        case Demo.DEFAULT:
+        case Demo.DRAGGING:
+            if(this.mouseConstraint){
+                this.mouseConstraint.bodyA.wakeUp();
+                this.mouseConstraint.bodyB.wakeUp();
+            }
+            break;
+
         case Demo.DRAWINGPOLYGON:
             // drawing a polygon - add new point
             var sqdist = p2.vec2.dist(physicsPosition,this.drawPoints[this.drawPoints.length-1]);
@@ -336,6 +345,7 @@ Demo.prototype.handleMouseUp = function(physicsPosition){
     }
 
     if(b){
+        b.wakeUp();
         for(var i=0; i<b.shapes.length; i++){
             var s = b.shapes[i];
             s.collisionMask =  this.newShapeCollisionMask;
