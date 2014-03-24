@@ -310,7 +310,7 @@ function World(options){
     };
 
     /**
-     * Enable / disable automatic body sleeping. Sleeping can improve performance, but you might need to {{#crossLink "Body/wakeUp:method"}}wake up{{/crossLink}} the bodies manually sometimes.
+     * Enable / disable automatic body sleeping. Sleeping can improve performance. You might need to {{#crossLink "Body/wakeUp:method"}}wake up{{/crossLink}} the bodies if they fall asleep when they shouldn't. If you want to enable sleeping in the world, but want to disable it for a particular body, see {{#crossLink "Body/allowSleep:property"}}Body.allowSleep{{/crossLink}}.
      * @property allowSleep
      * @type {Boolean}
      */

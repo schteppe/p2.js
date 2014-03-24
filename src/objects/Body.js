@@ -158,25 +158,38 @@ function Body(options){
     this.angle = options.angle || 0;
 
     /**
-     * The angular velocity of the body
+     * The angular velocity of the body, in radians per second.
      * @property angularVelocity
      * @type {number}
      */
     this.angularVelocity = options.angularVelocity || 0;
 
     /**
-     * The force acting on the body
+     * The force acting on the body. Since the body force (and {{#crossLink "Body/angularForce:property"}}{{/crossLink}}) will be zeroed after each step, so you need to set the force before each step.
      * @property force
      * @type {Array}
+     *
+     * @example
+     *     // This produces a forcefield of 1 Newton in the positive x direction.
+     *     for(var i=0; i<numSteps; i++){
+     *         body.force[0] = 1;
+     *         world.step(1/60);
+     *     }
+     *
+     * @example
+     *     // This will apply a rotational force on the body
+     *     for(var i=0; i<numSteps; i++){
+     *         body.angularForce = -3;
+     *         world.step(1/60);
+     *     }
      */
     this.force = vec2.create();
     if(options.force) vec2.copy(this.force, options.force);
 
     /**
-     * The angular force acting on the body
+     * The angular force acting on the body. See {{#crossLink "Body/force:property"}}{{/crossLink}}.
      * @property angularForce
      * @type {number}
-     * @default 0
      */
     this.angularForce = options.angularForce || 0;
 
@@ -244,13 +257,19 @@ function Body(options){
     /**
      * Indicates if the AABB needs update. Update it with {{#crossLink "Body/updateAABB:method"}}.updateAABB(){{/crossLink}}.
      * @property aabbNeedsUpdate
-     * @default true
      * @type {Boolean}
+     * @see updateAABB
+     *
+     * @example
+     *     // Force update the AABB
+     *     body.aabbNeedsUpdate = true;
+     *     body.updateAABB();
+     *     console.log(body.aabbNeedsUpdate); // false
      */
     this.aabbNeedsUpdate = true;
 
     /**
-     * If true, the body will automatically fall to sleep. Note that you need to enable sleeping in the World before anything will happen.
+     * If true, the body will automatically fall to sleep. Note that you need to enable sleeping in the {{#crossLink "World"}}{{/crossLink}} before anything will happen.
      * @property allowSleep
      * @type {Boolean}
      * @default true
@@ -261,6 +280,9 @@ function Body(options){
 
     /**
      * One of {{#crossLink "Body/AWAKE:property"}}Body.AWAKE{{/crossLink}}, {{#crossLink "Body/SLEEPY:property"}}Body.SLEEPY{{/crossLink}} and {{#crossLink "Body/SLEEPING:property"}}Body.SLEEPING{{/crossLink}}.
+     *
+     * The body is initially Body.AWAKE. If its velocity norm is below .sleepSpeedLimit, the sleepState will become Body.SLEEPY. If the body continues to be Body.SLEEPY for .sleepTimeLimit seconds, it will fall asleep (Body.SLEEPY).
+     *
      * @property sleepState
      * @type {Number}
      * @default Body.AWAKE
@@ -290,6 +312,11 @@ function Body(options){
      */
     this.gravityScale = 1;
 
+    /**
+     * The last time when the body went to SLEEPY state.
+     * @property {Number} timeLastSleepy
+     * @private
+     */
     this.timeLastSleepy = 0;
 
     this.concavePath = null;
@@ -299,7 +326,7 @@ function Body(options){
     this.lastDampingTimeStep = -1;
 
     this.updateMassProperties();
-};
+}
 Body.prototype = new EventEmitter();
 
 Body._idCounter = 0;
@@ -316,7 +343,8 @@ Body.prototype.setDensity = function(density) {
 
 /**
  * Get the total area of all shapes in the body
- * @method setDensity
+ * @method getArea
+ * @return {Number}
  */
 Body.prototype.getArea = function() {
     var totalArea = 0;
@@ -375,8 +403,9 @@ Body.prototype.updateBoundingRadius = function(){
         var shape = shapes[i],
             offset = vec2.length(shapeOffsets[i]),
             r = shape.boundingRadius;
-        if(offset + r > radius)
+        if(offset + r > radius){
             radius = offset + r;
+        }
     }
 
     this.boundingRadius = radius;
@@ -433,15 +462,15 @@ Body.prototype.addShape = function(shape,offset,angle){
 Body.prototype.removeShape = function(shape){
     var idx = this.shapes.indexOf(shape);
 
-    if(idx != -1){
+    if(idx !== -1){
         this.shapes.splice(idx,1);
         this.shapeOffsets.splice(idx,1);
         this.shapeAngles.splice(idx,1);
         this.aabbNeedsUpdate = true;
         return true;
-    } else
+    } else {
         return false;
-
+    }
 };
 
 /**
@@ -455,7 +484,7 @@ Body.prototype.removeShape = function(shape){
  *     body.updateMassProperties();
  */
 Body.prototype.updateMassProperties = function(){
-    if(this.motionState == Body.STATIC || this.motionState == Body.KINEMATIC){
+    if(this.motionState === Body.STATIC || this.motionState === Body.KINEMATIC){
 
         this.mass = Number.MAX_VALUE;
         this.invMass = 0;
@@ -686,10 +715,10 @@ Body.prototype.addConstraintVelocity = function(){
  * @param  {number} dt Current time step
  */
 Body.prototype.applyDamping = function(dt){
-    if(this.motionState == Body.DYNAMIC){ // Only for dynamic bodies
+    if(this.motionState === Body.DYNAMIC){ // Only for dynamic bodies
 
         // Since Math.pow generates garbage we check if we can reuse the scaling coefficient from last step
-        if(dt != this.lastDampingTimeStep){
+        if(dt !== this.lastDampingTimeStep){
             this.lastDampingScale =         Math.pow(1.0 - this.damping,dt);
             this.lastAngularDampingScale =  Math.pow(1.0 - this.angularDamping,dt);
             this.lastDampingTimeStep = dt;
@@ -702,8 +731,10 @@ Body.prototype.applyDamping = function(dt){
 };
 
 /**
+ * Wake the body up. Normally you should not need this, as the body is automatically awoken at events such as collisions.
+ * Sets the sleepState to {{#crossLink "Body/AWAKE:property"}}Body.AWAKE{{/crossLink}} and emits the wakeUp event if the body wasn't awake before.
  * @method wakeUp
- * @brief Wake the body up.
+ * @fires wakeup
  */
 Body.prototype.wakeUp = function(){
     var s = this.sleepState;
