@@ -18,30 +18,42 @@
 
         // Create a World
         var world = new p2.World({
-            doProfiling:true,                       // Enable stats
-            gravity : [0,-10],                      // Set gravity
-            broadphase : new p2.SAPBroadphase(),    // Broadphase algorithm
+            doProfiling:true,                    // Enable stats
+            gravity : [0,-10],                   // Set gravity to -10 in y direction
+            broadphase : new p2.SAPBroadphase(), // Broadphase algorithm
         });
 
         // Set high friction so the wheels don't slip
         world.defaultContactMaterial.friction = 100;
+
+        // Set solver iterations: this controls contact quality.
+        // Large value = better contacts, but requires more computations.
         world.solver.iterations = 5;
 
-        // Create ground
-        var planeShape = new p2.Plane(),
-            plane = new p2.Body();
-        plane.addShape(planeShape);
-        world.addBody(plane);
+        // Create ground shape (plane)
+        var planeShape = new p2.Plane();
 
-        // Add circle bump
-        var bumpShape = new p2.Circle(2),               // Circle of radius 2
-            bump = new p2.Body({ position:[0, -1] });   // Create body at (0,-1)
+        // Create a body for the ground
+        var planeBody = new p2.Body({
+            mass:0  // Mass == 0 makes the body static
+        });
+        planeBody.addShape(planeShape); // Add the shape to the body
+        world.addBody(planeBody);       // Add the body to the World
+
+        // Add circle bump in the center
+        var bumpShape = new p2.Circle(2); // Circle shape of radius 2
+        var bump = new p2.Body({
+            position:[0, -1] // Set initial position
+        });
         bump.addShape(bumpShape);
         world.addBody(bump);
 
-        // Create chassis
-        var chassisBody = new p2.Body({ mass : 1, position:[-4,1] }),
-            chassisShape = new p2.Rectangle(1,0.5);                     // Chassis shape is a rectangle
+        // Create chassis for our car
+        var chassisBody = new p2.Body({
+            mass : 1,        // Setting mass > 0 makes it dynamic
+            position: [-4,1] // Initial position
+        });
+        var chassisShape = new p2.Rectangle(1,0.5);                     // Chassis shape is a rectangle
         chassisBody.addShape(chassisShape);
         world.addBody(chassisBody);
 
