@@ -17,7 +17,9 @@ module.exports = GearConstraint;
  * @todo Ability to specify world points
  */
 function GearConstraint(bodyA, bodyB, options){
-    Constraint.call(this,bodyA,bodyB,Constraint.GEAR);
+    options = options || {};
+
+    Constraint.call(this, bodyA, bodyB, Constraint.GEAR, options);
 
     // Equations to be fed to the solver
     var eqs = this.equations = [

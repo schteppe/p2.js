@@ -21,12 +21,16 @@ var worldPivotA = vec2.create(),
  * @param {Float32Array}    pivotA The point relative to the center of mass of bodyA which bodyA is constrained to.
  * @param {Body}            bodyB Body that will be constrained in a similar way to the same point as bodyA. We will therefore get sort of a link between bodyA and bodyB. If not specified, bodyA will be constrained to a static point.
  * @param {Float32Array}    pivotB See pivotA.
- * @param {Number}          maxForce The maximum force that should be applied to constrain the bodies.
+ * @param {Object}          [options]
+ * @param {Number}          [options.maxForce] The maximum force that should be applied to constrain the bodies.
  * @extends {Constraint}
  * @todo Ability to specify world points
  */
-function RevoluteConstraint(bodyA, pivotA, bodyB, pivotB, maxForce){
-    Constraint.call(this,bodyA,bodyB,Constraint.REVOLUTE);
+function RevoluteConstraint(bodyA, pivotA, bodyB, pivotB, options){
+    options = options || {};
+    Constraint.call(this,bodyA,bodyB,Constraint.REVOLUTE,options);
+
+    maxForce = options.maxForce;
 
     maxForce = this.maxForce = typeof(maxForce)!="undefined" ? maxForce : Number.MAX_VALUE;
 

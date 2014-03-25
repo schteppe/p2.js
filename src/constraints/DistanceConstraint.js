@@ -16,8 +16,10 @@ module.exports = DistanceConstraint;
  * @param {number} maxForce
  * @extends {Constraint}
  */
-function DistanceConstraint(bodyA,bodyB,distance,maxForce){
-    Constraint.call(this,bodyA,bodyB,Constraint.DISTANCE);
+function DistanceConstraint(bodyA,bodyB,distance,options){
+    options = options || {};
+
+    Constraint.call(this,bodyA,bodyB,Constraint.DISTANCE,options);
 
     /**
      * The distance to keep.
@@ -26,8 +28,11 @@ function DistanceConstraint(bodyA,bodyB,distance,maxForce){
      */
     this.distance = distance;
 
-    if(typeof(maxForce)==="undefined" )
+    var maxForce;
+    if(typeof(options.maxForce)==="undefined" )
         maxForce = Number.MAX_VALUE;
+    else
+        maxForce = options.maxForce;
 
     var normal = new Equation(bodyA,bodyB,-maxForce,maxForce); // Just in the normal direction
     this.equations = [ normal ];

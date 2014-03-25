@@ -22,8 +22,6 @@
         });
         world.solver.iterations = 30;
 
-        var PISTON =    Math.pow(2,1);
-
         // Create static dummy body that we can constrain other bodies to
         var dummyBody = new p2.Body({
             mass: 0,
@@ -36,13 +34,13 @@
                 mass: 1,
                 position: [0,0],
             });
-        shape.collisionGroup = PISTON;
-        shape.collisionMask = 0;
         circleBody.addShape(shape);
         world.addBody(circleBody);
 
         // Constrain it to the world
-        var c = new p2.RevoluteConstraint(circleBody, [0,0], dummyBody, [0,0], 1e7);
+        var c = new p2.RevoluteConstraint(circleBody, [0,0], dummyBody, [0,0], {
+            collideConnected: false
+        });
         c.enableMotor();
         c.setMotorSpeed(5);
         world.addConstraint(c);
@@ -52,13 +50,13 @@
         var armBody = new p2.Body({
             mass:1,
         });
-        armShape.collisionGroup = PISTON;
-        armShape.collisionMask = 0;
         armBody.addShape(armShape);
         world.addBody(armBody);
 
         // Constrain arm to circle
-        var c2 = new p2.RevoluteConstraint(circleBody, [R*0.7,0], armBody, [L/2,0], 1e7);
+        var c2 = new p2.RevoluteConstraint(circleBody, [R*0.7,0], armBody, [L/2,0], {
+            collideConnected: false
+        });
         world.addConstraint(c2);
 
         // Piston
@@ -70,7 +68,9 @@
         world.addBody(pistonBody);
 
         // Connect piston to arm
-        var c3 = new p2.RevoluteConstraint(pistonBody, [0,0], armBody, [-L/2,0], 1e7);
+        var c3 = new p2.RevoluteConstraint(pistonBody, [0,0], armBody, [-L/2,0], {
+            collideConnected: false
+        });
         world.addConstraint(c3);
 
         // Prismatic constraint to keep the piston along a line
@@ -78,6 +78,7 @@
             localAnchorA : [ 0, 0],
             localAnchorB : [ 0, 0],
             localAxisA :   [ 1, 0],
+            collideConnected : false
         });
         world.addConstraint(c4);
 

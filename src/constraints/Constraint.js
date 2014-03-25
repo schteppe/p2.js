@@ -8,8 +8,12 @@ module.exports = Constraint;
  * @author schteppe
  * @param {Body} bodyA
  * @param {Body} bodyB
+ * @param {Number} type
+ * @param {Object} [options]
+ * @param {Object} [options.collideConnected=true]
  */
-function Constraint(bodyA,bodyB,type){
+function Constraint(bodyA, bodyB, type, options){
+    options = options || {};
 
     this.type = type;
 
@@ -33,6 +37,14 @@ function Constraint(bodyA,bodyB,type){
      * @type {Body}
      */
     this.bodyB = bodyB;
+
+    /**
+     * Set to true if you want the connected bodies to collide.
+     * @property collideConnected
+     * @type {Boolean}
+     * @default true
+     */
+    this.collideConnected = typeof(options.collideConnected)!=="undefined" ? options.collideConnected : true;
 
     if(bodyA) bodyA.wakeUp();
     if(bodyB) bodyB.wakeUp();

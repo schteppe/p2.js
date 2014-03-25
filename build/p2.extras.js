@@ -720,7 +720,7 @@ Serializer.prototype.serialize = function(world){
                 break;
 
             default:
-                throw new Error("Shape type not supported yet!");
+                console.error("Shape type not supported yet!");
                 break;
             }
         }
@@ -1098,8 +1098,24 @@ module.exports = Shape;
  * Base class for shapes.
  * @class Shape
  * @constructor
+ * @param {Number} type
  */
 function Shape(type){
+
+    /**
+     * The type of the shape. One of:
+     *
+     * * {{#crossLink "Shape/CIRCLE:property"}}Shape.CIRCLE{{/crossLink}}
+     * * {{#crossLink "Shape/PARTICLE:property"}}Shape.PARTICLE{{/crossLink}}
+     * * {{#crossLink "Shape/PLANE:property"}}Shape.PLANE{{/crossLink}}
+     * * {{#crossLink "Shape/CONVEX:property"}}Shape.CONVEX{{/crossLink}}
+     * * {{#crossLink "Shape/LINE:property"}}Shape.LINE{{/crossLink}}
+     * * {{#crossLink "Shape/RECTANGLE:property"}}Shape.RECTANGLE{{/crossLink}}
+     * * {{#crossLink "Shape/CAPSULE:property"}}Shape.CAPSULE{{/crossLink}}
+     * * {{#crossLink "Shape/HEIGHTFIELD:property"}}Shape.HEIGHTFIELD{{/crossLink}}
+     *
+     * @property {number} type
+     */
     this.type = type;
 
     /**
@@ -1223,6 +1239,12 @@ Shape.RECTANGLE =   32;
 Shape.CAPSULE =     64;
 
 /**
+ * @static
+ * @property {Number} HEIGHTFIELD
+ */
+Shape.HEIGHTFIELD = 128;
+
+/**
  * Should return the moment of inertia around the Z axis of the body given the total mass. See <a href="http://en.wikipedia.org/wiki/List_of_moments_of_inertia">Wikipedia's list of moments of inertia</a>.
  * @method computeMomentOfInertia
  * @param  {Number} mass
@@ -1292,8 +1314,12 @@ module.exports = Constraint;
  * @author schteppe
  * @param {Body} bodyA
  * @param {Body} bodyB
+ * @param {Number} type
+ * @param {Object} [options]
+ * @param {Object} [options.collideConnected=true]
  */
-function Constraint(bodyA,bodyB,type){
+function Constraint(bodyA, bodyB, type, options){
+    options = options || {};
 
     this.type = type;
 
@@ -1318,6 +1344,14 @@ function Constraint(bodyA,bodyB,type){
      */
     this.bodyB = bodyB;
 
+    /**
+     * Set to true if you want the connected bodies to collide.
+     * @property collideConnected
+     * @type {Boolean}
+     * @default true
+     */
+    this.collideConnected = typeof(options.collideConnected)!=="undefined" ? options.collideConnected : true;
+
     if(bodyA) bodyA.wakeUp();
     if(bodyB) bodyB.wakeUp();
 };
@@ -1338,6 +1372,7 @@ Constraint.REVOLUTE = 5;
 
 },{}],4:[function(require,module,exports){
 var  GSSolver = require('../solver/GSSolver')
+,    Solver = require('../solver/Solver')
 ,    NaiveBroadphase = require('../collision/NaiveBroadphase')
 ,    vec2 = require('../math/vec2')
 ,    Circle = require('../shapes/Circle')
@@ -1349,32 +1384,36 @@ var  GSSolver = require('../solver/GSSolver')
 ,    Particle = require('../shapes/Particle')
 ,    EventEmitter = require('../events/EventEmitter')
 ,    Body = require('../objects/Body')
+,    Shape = require('../shapes/Shape')
 ,    Spring = require('../objects/Spring')
 ,    Material = require('../material/Material')
 ,    ContactMaterial = require('../material/ContactMaterial')
 ,    DistanceConstraint = require('../constraints/DistanceConstraint')
+,    Constraint = require('../constraints/Constraint')
 ,    LockConstraint = require('../constraints/LockConstraint')
 ,    RevoluteConstraint = require('../constraints/RevoluteConstraint')
 ,    PrismaticConstraint = require('../constraints/PrismaticConstraint')
+,    GearConstraint = require('../constraints/GearConstraint')
 ,    pkg = require('../../package.json')
 ,    Broadphase = require('../collision/Broadphase')
+,    SAPBroadphase = require('../collision/SAPBroadphase')
 ,    Narrowphase = require('../collision/Narrowphase')
 ,    Utils = require('../utils/Utils')
+,    IslandManager = require('./IslandManager')
 
 module.exports = World;
 
-var currentVersion = pkg.version.split(".").slice(0,2).join("."); // "X.Y"
-
-if(typeof performance === 'undefined')
+if(typeof performance === 'undefined'){
     performance = {};
+}
 if(!performance.now){
     var nowOffset = Date.now();
     if (performance.timing && performance.timing.navigationStart){
-      nowOffset = performance.timing.navigationStart
+        nowOffset = performance.timing.navigationStart;
     }
     performance.now = function(){
-      return Date.now() - nowOffset;
-    }
+        return Date.now() - nowOffset;
+    };
 }
 
 /**
@@ -1384,8 +1423,9 @@ if(!performance.now){
  * @constructor
  * @param {Object}          [options]
  * @param {Solver}          options.solver          Defaults to GSSolver.
- * @param {Float32Array}    options.gravity         Defaults to [0,-9.78]
+ * @param {Array}           options.gravity         Defaults to [0,-9.78]
  * @param {Broadphase}      options.broadphase      Defaults to NaiveBroadphase
+ * @param {Boolean}         options.islandSplit
  * @param {Boolean}         options.doProfiling
  * @extends {EventEmitter}
  */
@@ -1395,7 +1435,7 @@ function World(options){
     options = options || {};
 
     /**
-     * All springs in the world.
+     * All springs in the world. To add a spring to the world, use {{#crossLink "World/addSpring:method"}}{{/crossLink}}.
      *
      * @property springs
      * @type {Array}
@@ -1403,18 +1443,21 @@ function World(options){
     this.springs = [];
 
     /**
-     * All bodies in the world.
-     *
-     * @property bodies
-     * @type {Array}
+     * All bodies in the world. To add a body to the world, use {{#crossLink "World/addBody:method"}}{{/crossLink}}.
+     * @property {Array} bodies
      */
     this.bodies = [];
 
     /**
-     * The solver used to satisfy constraints and contacts.
-     *
-     * @property solver
-     * @type {Solver}
+     * Disabled body collision pairs. See {{#crossLink "World/disableBodyCollision:method"}}.
+     * @private
+     * @property {Array} disabledBodyCollisionPairs
+     */
+    this.disabledBodyCollisionPairs = [];
+
+    /**
+     * The solver used to satisfy constraints and contacts. Default is {{#crossLink "GSSolver"}}{{/crossLink}}.
+     * @property {Solver} solver
      */
     this.solver = options.solver || new GSSolver();
 
@@ -1427,12 +1470,30 @@ function World(options){
     this.narrowphase = new Narrowphase(this);
 
     /**
+     * The island manager of this world.
+     * @property {IslandManager} islandManager
+     */
+    this.islandManager = new IslandManager();
+
+    /**
      * Gravity in the world. This is applied on all bodies in the beginning of each step().
      *
-     * @property
-     * @type {Float32Array}
+     * @property gravity
+     * @type {Array}
      */
     this.gravity = options.gravity || vec2.fromValues(0, -9.78);
+
+    /**
+     * Set to true if you want .frictionGravity to be automatically set to the length of .gravity.
+     * @property {Boolean} useWorldGravityForFrictionApproximation
+     */
+    this.useWorldGravityForFrictionApproximation = true;
+
+    /**
+     * Gravity to use when approximating the friction max force (mu*mass*gravity).
+     * @property {Number} frictionGravity
+     */
+    this.frictionGravity = vec2.length(this.gravity);
 
     /**
      * Whether to do timing measurements during the step() or not.
@@ -1457,7 +1518,6 @@ function World(options){
      * @type {Broadphase}
      */
     this.broadphase = options.broadphase || new NaiveBroadphase();
-
     this.broadphase.setWorld(this);
 
     /**
@@ -1469,18 +1529,16 @@ function World(options){
     this.constraints = [];
 
     /**
-     * Friction between colliding bodies. This value is used if no matching ContactMaterial is found for a Material pair.
-     * @property defaultFriction
-     * @type {Number}
+     * Dummy default material in the world, used in .defaultContactMaterial
+     * @property {Material} defaultMaterial
      */
-    this.defaultFriction = 0.3;
+    this.defaultMaterial = new Material();
 
     /**
-     * Default coefficient of restitution between colliding bodies. This value is used if no matching ContactMaterial is found for a Material pair.
-     * @property defaultRestitution
-     * @type {Number}
+     * The default contact material to use, if no contact material was set for the colliding materials.
+     * @property {ContactMaterial} defaultContactMaterial
      */
-    this.defaultRestitution = 0.0;
+    this.defaultContactMaterial = new ContactMaterial(this.defaultMaterial,this.defaultMaterial);
 
     /**
      * For keeping track of what time step size we used last step
@@ -1531,7 +1589,26 @@ function World(options){
      */
     this.time = 0.0;
 
+    /**
+     * Is true during the step().
+     * @property {Boolean} stepping
+     */
+    this.stepping = false;
+
+    /**
+     * Bodies that are scheduled to be removed at the end of the step.
+     * @property {Array} bodiesToBeRemoved
+     * @private
+     */
+    this.bodiesToBeRemoved = [];
+
     this.fixedStepTime = 0.0;
+
+    /**
+     * Whether to enable island splitting. Island splitting can be an advantage for many things, including solver performance. See {{#crossLink "IslandManager"}}{{/crossLink}}.
+     * @property {Boolean} islandSplit
+     */
+    this.islandSplit = typeof(options.islandSplit)!=="undefined" ? !!options.islandSplit : false;
 
     /**
      * Set to true if you want to the world to emit the "impact" event. Turning this off could improve performance.
@@ -1553,6 +1630,7 @@ function World(options){
     };
 
     /**
+     * Fired when a body is added to the world.
      * @event addBody
      * @param {Body} body
      */
@@ -1562,6 +1640,7 @@ function World(options){
     };
 
     /**
+     * Fired when a body is removed from the world.
      * @event removeBody
      * @param {Body} body
      */
@@ -1608,11 +1687,17 @@ function World(options){
     };
 
     /**
-     * Enable / disable automatic body sleeping
+     * Enable / disable automatic body sleeping. Sleeping can improve performance. You might need to {{#crossLink "Body/wakeUp:method"}}wake up{{/crossLink}} the bodies if they fall asleep when they shouldn't. If you want to enable sleeping in the world, but want to disable it for a particular body, see {{#crossLink "Body/allowSleep:property"}}Body.allowSleep{{/crossLink}}.
      * @property allowSleep
      * @type {Boolean}
      */
     this.enableBodySleeping = false;
+
+    /**
+     * Enable or disable island sleeping. Note that you must enable {{#crossLink "World/islandSplit:property"}}.islandSplit{{/crossLink}} for this to work.
+     * @property {Boolean} enableIslandSleeping
+     */
+    this.enableIslandSleeping = false;
 
     /**
      * Fired when two shapes starts start to overlap. Fired in the narrowphase, during step.
@@ -1665,7 +1750,7 @@ function World(options){
     this.overlappingShapesLastState = { keys:[] };
     this.overlappingShapesCurrentState = { keys:[] };
     this.overlappingShapeLookup = { keys:[] };
-};
+}
 World.prototype = new Object(EventEmitter.prototype);
 
 /**
@@ -1695,8 +1780,9 @@ World.prototype.addContactMaterial = function(contactMaterial){
  */
 World.prototype.removeContactMaterial = function(cm){
     var idx = this.contactMaterials.indexOf(cm);
-    if(idx!==-1)
+    if(idx!==-1){
         Utils.splice(this.contactMaterials,idx,1);
+    }
 };
 
 /**
@@ -1712,8 +1798,9 @@ World.prototype.getContactMaterial = function(materialA,materialB){
     for(var i=0, N=cmats.length; i!==N; i++){
         var cm = cmats[i];
         if( (cm.materialA === materialA) && (cm.materialB === materialB) ||
-            (cm.materialA === materialB) && (cm.materialB === materialA) )
+            (cm.materialA === materialB) && (cm.materialB === materialA) ){
             return cm;
+        }
     }
     return false;
 };
@@ -1761,7 +1848,7 @@ World.prototype.step = function(dt,timeSinceLastCalled,maxSubSteps){
     maxSubSteps = maxSubSteps || 10;
     timeSinceLastCalled = timeSinceLastCalled || 0;
 
-    if(timeSinceLastCalled == 0){ // Fixed, simple stepping
+    if(timeSinceLastCalled === 0){ // Fixed, simple stepping
 
         this.internalStep(dt);
 
@@ -1799,7 +1886,15 @@ World.prototype.step = function(dt,timeSinceLastCalled,maxSubSteps){
     }
 };
 
+/**
+ * Make a fixed step.
+ * @method internalStep
+ * @param  {number} dt
+ * @private
+ */
 World.prototype.internalStep = function(dt){
+    this.stepping = true;
+
     var that = this,
         doProfiling = this.doProfiling,
         Nsprings = this.springs.length,
@@ -1817,7 +1912,8 @@ World.prototype.internalStep = function(dt){
         mg = step_mg,
         scale = vec2.scale,
         add = vec2.add,
-        rotate = vec2.rotate;
+        rotate = vec2.rotate,
+        islandManager = this.islandManager;
 
     this.lastTimeStep = dt;
 
@@ -1825,13 +1921,19 @@ World.prototype.internalStep = function(dt){
         t0 = performance.now();
     }
 
+    // Update friction gravity
+    if(this.useWorldGravityForFrictionApproximation){
+        this.frictionGravity = vec2.length(this.gravity);
+    }
+
     // Add gravity to bodies
     if(this.applyGravity){
         for(var i=0; i!==Nbodies; i++){
             var b = bodies[i],
                 fi = b.force;
-            if(b.motionState != Body.DYNAMIC)
+            if(b.motionState !== Body.DYNAMIC || b.sleepState === Body.SLEEPING){
                 continue;
+            }
             vec2.scale(mg,g,b.mass*b.gravityScale); // F=m*g
             add(fi,fi,mg);
         }
@@ -1848,13 +1950,39 @@ World.prototype.internalStep = function(dt){
     if(this.applyDamping){
         for(var i=0; i!==Nbodies; i++){
             var b = bodies[i];
-            if(b.motionState == Body.DYNAMIC)
+            if(b.motionState === Body.DYNAMIC){
                 b.applyDamping(dt);
+            }
         }
     }
 
     // Broadphase
     var result = broadphase.getCollisionPairs(this);
+
+    // Remove ignored collision pairs
+    var ignoredPairs = this.disabledBodyCollisionPairs;
+    for(var i=ignoredPairs.length-2; i>=0; i-=2){
+        for(var j=result.length-2; j>=0; j-=2){
+            if( (ignoredPairs[i]   === result[j] && ignoredPairs[i+1] === result[j+1]) ||
+                (ignoredPairs[i+1] === result[j] && ignoredPairs[i]   === result[j+1])){
+                result.splice(j,2);
+            }
+        }
+    }
+
+    // Remove constrained pairs with collideConnected == false
+    var Nconstraints = constraints.length;
+    for(i=0; i!==Nconstraints; i++){
+        var c = constraints[i];
+        if(!c.collideConnected){
+            for(var j=result.length-2; j>=0; j-=2){
+                if( (c.bodyA === result[j] && c.bodyB === result[j+1]) ||
+                    (c.bodyB === result[j] && c.bodyA === result[j+1])){
+                    result.splice(j,2);
+                }
+            }
+        }
+    }
 
     // postBroadphase event
     this.postBroadphaseEvent.pairs = result;
@@ -1878,20 +2006,15 @@ World.prototype.internalStep = function(dt){
                     xj = bj.shapeOffsets[l],
                     aj = bj.shapeAngles[l];
 
-                var mu = this.defaultFriction,
-                    restitution = this.defaultRestitution,
-                    surfaceVelocity = 0;
-
+                var cm = this.defaultContactMaterial;
                 if(si.material && sj.material){
-                    var cm = this.getContactMaterial(si.material,sj.material);
-                    if(cm){
-                        mu = cm.friction;
-                        restitution = cm.restitution;
-                        surfaceVelocity = cm.surfaceVelocity;
+                    var tmp = this.getContactMaterial(si.material,sj.material);
+                    if(tmp){
+                        cm = tmp;
                     }
                 }
 
-                this.runNarrowphase(np,bi,si,xi,ai,bj,sj,xj,aj,mu,restitution,surfaceVelocity);
+                this.runNarrowphase(np,bi,si,xi,ai,bj,sj,xj,aj,cm,this.frictionGravity);
             }
         }
     }
@@ -1901,8 +2024,9 @@ World.prototype.internalStep = function(dt){
     for(var i=0; i!==last.keys.length; i++){
         var key = last.keys[i];
 
-        if(last[key]!==true)
+        if(last[key]!==true){
             continue;
+        }
 
         if(!this.overlappingShapesCurrentState[key]){
             // Not overlapping in current state, but in last state. Emit event!
@@ -1918,8 +2042,9 @@ World.prototype.internalStep = function(dt){
     }
 
     // Clear last object
-    for(var i=0; i!==last.keys.length; i++)
+    for(var i=0; i!==last.keys.length; i++){
         delete last[last.keys[i]];
+    }
     last.keys.length = 0;
 
     // Transfer from new object to old
@@ -1930,8 +2055,9 @@ World.prototype.internalStep = function(dt){
     }
 
     // Clear current object
-    for(var i=0; i!==current.keys.length; i++)
+    for(var i=0; i!==current.keys.length; i++){
         delete current[current.keys[i]];
+    }
     current.keys.length = 0;
 
     var preSolveEvent = this.preSolveEvent;
@@ -1939,28 +2065,54 @@ World.prototype.internalStep = function(dt){
     preSolveEvent.frictionEquations = np.frictionEquations;
     this.emit(preSolveEvent);
 
-    // Add contact equations to solver
-    solver.addEquations(np.contactEquations);
-    solver.addEquations(np.frictionEquations);
-
-    // Add user-defined constraint equations
+    // update constraint equations
     var Nconstraints = constraints.length;
     for(i=0; i!==Nconstraints; i++){
-        var c = constraints[i];
-        c.update();
-        solver.addEquations(c.equations);
+        constraints[i].update();
     }
 
-    if(this.solveConstraints)
-        solver.solve(dt,this);
+    if(np.contactEquations.length || np.frictionEquations.length || constraints.length){
+        if(this.islandSplit){
+            // Split into islands
+            islandManager.equations.length = 0;
+            Utils.appendArray(islandManager.equations, np.contactEquations);
+            Utils.appendArray(islandManager.equations, np.frictionEquations);
+            for(i=0; i!==Nconstraints; i++){
+                Utils.appendArray(islandManager.equations, constraints[i].equations);
+            }
+            islandManager.split(this);
 
-    solver.removeAllEquations();
+            for(var i=0; i!==islandManager.islands.length; i++){
+                var island = islandManager.islands[i];
+                if(island.equations.length){
+                    solver.solveIsland(dt,island);
+                }
+            }
+
+        } else {
+
+            // Add contact equations to solver
+            solver.addEquations(np.contactEquations);
+            solver.addEquations(np.frictionEquations);
+
+            // Add user-defined constraint equations
+            for(i=0; i!==Nconstraints; i++){
+                solver.addEquations(constraints[i].equations);
+            }
+
+            if(this.solveConstraints){
+                solver.solve(dt,this);
+            }
+
+            solver.removeAllEquations();
+        }
+    }
 
     // Step forward
     for(var i=0; i!==Nbodies; i++){
         var body = bodies[i];
 
-        if(body.sleepState !== Body.SLEEPING && body.motionState!=Body.STATIC){
+        if(body.sleepState !== Body.SLEEPING && body.motionState !== Body.STATIC){
             World.integrateBody(body,dt);
         }
     }
@@ -1996,6 +2148,30 @@ World.prototype.internalStep = function(dt){
         for(i=0; i!==Nbodies; i++){
             bodies[i].sleepTick(this.time);
         }
+    } else if(this.enableIslandSleeping && this.islandSplit){
+
+        // Tell all bodies to sleep tick but dont sleep yet
+        for(i=0; i!==Nbodies; i++){
+            bodies[i].sleepTick(this.time, true);
+        }
+
+        // Sleep islands
+        for(var i=0; i<this.islandManager.islands.length; i++){
+            var island = this.islandManager.islands[i];
+            if(island.wantsToSleep()){
+                island.sleep();
+            }
+        }
+    }
+
+    this.stepping = false;
+
+    // Remove bodies that are scheduled for removal
+    if(this.bodiesToBeRemoved.length){
+        for(var i=0; i!==this.bodiesToBeRemoved.length; i++){
+            this.removeBody(this.bodiesToBeRemoved[i]);
+        }
+        this.bodiesToBeRemoved.length = 0;
     }
 
     this.emit(this.postStepEvent);
@@ -2046,14 +2222,12 @@ World.integrateBody = function(body,dt){
  * @param  {Number} aj
  * @param  {Number} mu
  */
-World.prototype.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,mu,restitution,surfaceVelocity){
+World.prototype.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,cm,glen){
 
-    if(!((si.collisionGroup & sj.collisionMask) !== 0 && (sj.collisionGroup & si.collisionMask) !== 0))
+    // Check collision groups and masks
+    if(!((si.collisionGroup & sj.collisionMask) !== 0 && (sj.collisionGroup & si.collisionMask) !== 0)){
         return;
-
-    var reducedMass = bi.invMass + bj.invMass;
-    if(reducedMass > 0)
-        reducedMass = 1/reducedMass;
+    }
 
     // Get world position and angle of each shape
     vec2.rotate(xiw, xi, bi.angle);
@@ -2063,11 +2237,23 @@ World.prototype.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,mu,restitut
     var aiw = ai + bi.angle;
     var ajw = aj + bj.angle;
 
-    // Run narrowphase
-    np.enableFriction = mu > 0;
-    np.frictionCoefficient = mu;
-    np.restitution = restitution;
-    np.surfaceVelocity = surfaceVelocity;
+    np.enableFriction = cm.friction > 0;
+    np.frictionCoefficient = cm.friction;
+    var reducedMass;
+    if(bi.motionState === Body.STATIC || bi.motionState === Body.KINEMATIC){
+        reducedMass = bj.mass;
+    } else if(bj.motionState === Body.STATIC || bj.motionState === Body.KINEMATIC){
+        reducedMass = bi.mass;
+    } else {
+        reducedMass = (bi.mass*bj.mass)/(bi.mass+bj.mass);
+    }
+    np.slipForce = cm.friction*glen*reducedMass;
+    np.restitution = cm.restitution;
+    np.surfaceVelocity = cm.surfaceVelocity;
+    np.frictionStiffness = cm.frictionStiffness;
+    np.frictionRelaxation = cm.frictionRelaxation;
+    np.stiffness = cm.stiffness;
+    np.relaxation = cm.relaxation;
 
     var resolver = np[si.type | sj.type],
         numContacts = 0;
@@ -2090,11 +2276,12 @@ World.prototype.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,mu,restitut
                 e.bodyA = bi;
                 e.bodyB = bj;
 
-                if(typeof(numContacts)=="number"){
+                if(typeof(numContacts)==="number"){
                     // Add contacts to the event object
                     e.contactEquations.length = 0;
-                    for(var i=np.contactEquations.length-numContacts; i<np.contactEquations.length; i++)
+                    for(var i=np.contactEquations.length-numContacts; i<np.contactEquations.length; i++){
                         e.contactEquations.push(np.contactEquations[i]);
+                    }
                 }
 
                 this.emit(e);
@@ -2142,8 +2329,9 @@ World.prototype.addSpring = function(s){
  */
 World.prototype.removeSpring = function(s){
     var idx = this.springs.indexOf(s);
-    if(idx===-1)
+    if(idx===-1){
         Utils.splice(this.springs,idx,1);
+    }
 };
 
 /**
@@ -2156,35 +2344,35 @@ World.prototype.removeSpring = function(s){
  *     var world = new World(),
  *         body = new Body();
  *     world.addBody(body);
- *
+ * @todo What if this is done during step?
  */
 World.prototype.addBody = function(body){
-    if(body.world)
-        throw new Error("This body is already added to a World.");
-
-    this.bodies.push(body);
-    body.world = this;
-    this.addBodyEvent.body = body;
-    this.emit(this.addBodyEvent);
+    if(this.bodies.indexOf(body) === -1){
+        this.bodies.push(body);
+        body.world = this;
+        this.addBodyEvent.body = body;
+        this.emit(this.addBodyEvent);
+    }
 };
 
 /**
- * Remove a body from the simulation
+ * Remove a body from the simulation. If this method is called during step(), the body removal is scheduled to after the step.
  *
  * @method removeBody
  * @param {Body} body
  */
 World.prototype.removeBody = function(body){
-    if(body.world !== this)
-        throw new Error("The body was never added to this World, cannot remove it.");
-
-    body.world = null;
-    var idx = this.bodies.indexOf(body);
-    if(idx!==-1){
-        Utils.splice(this.bodies,idx,1);
-        this.removeBodyEvent.body = body;
-        body.resetConstraintVelocity();
-        this.emit(this.removeBodyEvent);
+    if(this.stepping){
+        this.bodiesToBeRemoved.push(body);
+    } else {
+        body.world = null;
+        var idx = this.bodies.indexOf(body);
+        if(idx!==-1){
+            Utils.splice(this.bodies,idx,1);
+            this.removeBodyEvent.body = body;
+            body.resetConstraintVelocity();
+            this.emit(this.removeBodyEvent);
+        }
     }
 };
 
@@ -2197,11 +2385,49 @@ World.prototype.getBodyById = function(id){
     var bodies = this.bodies;
     for(var i=0; i<bodies.length; i++){
         var b = bodies[i];
-        if(b.id === id)
+        if(b.id === id){
             return b;
+        }
     }
     return false;
 };
+
+/**
+ * Disable collision between two bodies
+ * @method disableCollision
+ * @param {Body} bodyA
+ * @param {Body} bodyB
+ */
+World.prototype.disableBodyCollision = function(bodyA,bodyB){
+    this.disabledBodyCollisionPairs.push(bodyA,bodyB);
+};
+
+/**
+ * Enable collisions between the given two bodies
+ * @method enableCollision
+ * @param {Body} bodyA
+ * @param {Body} bodyB
+ */
+World.prototype.enableBodyCollision = function(bodyA,bodyB){
+    var pairs = this.disabledBodyCollisionPairs;
+    for(var i=0; i<pairs.length; i+=2){
+        if((pairs[i] === bodyA && pairs[i+1] === bodyB) || (pairs[i+1] === bodyA && pairs[i] === bodyB)){
+            pairs.splice(i,2);
+            return;
+        }
+    }
+};
+
+
+function v2a(v){
+    if(!v) return v;
+    return [v[0],v[1]];
+}
+
+function extend(a,b){
+    for(var key in b)
+        a[key] = b[key];
+}
 
 /**
  * Convert the world to a JSON-serializable Object.
@@ -2211,139 +2437,220 @@ World.prototype.getBodyById = function(id){
  * @deprecated Should use Serializer instead.
  */
 World.prototype.toJSON = function(){
+    var world = this;
+
     var json = {
-        p2 : currentVersion,
-        bodies : [],
-        springs : [],
-        solver : {},
-        gravity : v2a(this.gravity),
-        broadphase : {},
-        constraints : [],
-        contactMaterials : [],
+        p2 :                    pkg.version,
+        bodies :                [],
+        springs :               [],
+        solver :                {},
+        gravity :               v2a(world.gravity),
+        broadphase :            {},
+        distanceConstraints :   [],
+        revoluteConstraints :   [],
+        prismaticConstraints :  [],
+        lockConstraints :       [],
+        gearConstraints :       [],
+        contactMaterials :      [],
+        materials :             [],
     };
 
+
+    // Solver
+    var js = json.solver,
+        s = world.solver;
+    if(s.type === Solver.GS){
+        js.type = "GSSolver";
+        js.iterations = s.iterations;
+        js.stiffness = s.stiffness;
+        js.relaxation = s.relaxation;
+    }
+
+    // Broadphase
+    var jb = json.broadphase,
+        wb = world.broadphase;
+    if(wb.type === Broadphase.NAIVE){
+        jb.type = "NaiveBroadphase";
+    } else if(wb.type === Broadphase.SAP) {
+        jb.type = "SAPBroadphase";
+        //jb.axisIndex = wb.axisIndex;
+    } else {
+        console.error("Broadphase not supported: "+wb.type);
+    }
+
     // Serialize springs
-    for(var i=0; i!==this.springs.length; i++){
-        var s = this.springs[i];
+    for(var i=0; i!==world.springs.length; i++){
+        var s = world.springs[i];
         json.springs.push({
-            bodyA : this.bodies.indexOf(s.bodyA),
-            bodyB : this.bodies.indexOf(s.bodyB),
-            stiffness : s.stiffness,
-            damping : s.damping,
-            restLength : s.restLength,
-            localAnchorA : v2a(s.localAnchorA),
-            localAnchorB : v2a(s.localAnchorB),
+            bodyA :         world.bodies.indexOf(s.bodyA),
+            bodyB :         world.bodies.indexOf(s.bodyB),
+            stiffness :     s.stiffness,
+            damping :       s.damping,
+            restLength :    s.restLength,
+            localAnchorA :  v2a(s.localAnchorA),
+            localAnchorB :  v2a(s.localAnchorB),
         });
     }
 
     // Serialize constraints
-    for(var i=0; i<this.constraints.length; i++){
-        var c = this.constraints[i];
+    for(var i=0; i<world.constraints.length; i++){
+        var c = world.constraints[i];
         var jc = {
-            bodyA : this.bodies.indexOf(c.bodyA),
-            bodyB : this.bodies.indexOf(c.bodyB),
-        }
-        if(c instanceof DistanceConstraint){
-            jc.type = "DistanceConstraint";
-            jc.distance = c.distance;
-            jc.maxForce = c.getMaxForce();
-        } else if(c instanceof RevoluteConstraint){
-            jc.type = "RevoluteConstraint";
-            jc.pivotA = v2a(c.pivotA);
-            jc.pivotB = v2a(c.pivotB);
-            jc.maxForce = c.maxForce;
-            jc.motorSpeed = c.getMotorSpeed(); // False if motor is disabled, otherwise number.
-            jc.lowerLimit = c.lowerLimit;
-            jc.lowerLimitEnabled = c.lowerLimitEnabled;
-            jc.upperLimit = c.upperLimit;
-            jc.upperLimitEnabled = c.upperLimitEnabled;
-        } else if(c instanceof PrismaticConstraint){
-            jc.type = "PrismaticConstraint";
-            jc.localAxisA = v2a(c.localAxisA);
-            jc.localAnchorA = v2a(c.localAnchorA);
-            jc.localAnchorB = v2a(c.localAnchorB);
-            jc.maxForce = c.maxForce;
-        } else if(c instanceof LockConstraint){
-            jc.type = "LockConstraint";
-            jc.localOffsetB = v2a(c.localOffsetB);
-            jc.localAngleB = c.localAngleB;
-            jc.maxForce = c.maxForce;
-        } else {
-            console.error("Constraint not supported yet!");
-            continue;
-        }
+            bodyA : world.bodies.indexOf(c.bodyA),
+            bodyB : world.bodies.indexOf(c.bodyB),
+        };
 
-        json.constraints.push(jc);
+        switch(c.type){
+
+        case Constraint.DISTANCE:
+            extend(jc,{
+                distance : c.distance,
+                maxForce : c.getMaxForce(),
+            });
+            json.distanceConstraints.push(jc);
+            break;
+
+        case Constraint.REVOLUTE:
+            extend(jc,{
+                pivotA :            v2a(c.pivotA),
+                pivotB :            v2a(c.pivotB),
+                maxForce :          c.maxForce,
+                motorSpeed :        c.getMotorSpeed() || 0,
+                motorEnabled :       !!c.getMotorSpeed(),
+                lowerLimit :        c.lowerLimit,
+                lowerLimitEnabled : c.lowerLimitEnabled,
+                upperLimit :        c.upperLimit,
+                upperLimitEnabled : c.upperLimitEnabled,
+            });
+            json.revoluteConstraints.push(jc);
+            break;
+
+        case Constraint.PRISMATIC:
+            extend(jc,{
+                localAxisA :    v2a(c.localAxisA),
+                localAnchorA :  v2a(c.localAnchorA),
+                localAnchorB :  v2a(c.localAnchorB),
+                maxForce :      c.maxForce,
+                upperLimitEnabled : c.upperLimitEnabled,
+                lowerLimitEnabled : c.lowerLimitEnabled,
+                upperLimit : c.upperLimit,
+                lowerLimit : c.lowerLimit,
+                motorEnabled : c.motorEnabled,
+                motorSpeed : c.motorSpeed,
+            });
+            json.prismaticConstraints.push(jc);
+            break;
+
+        case Constraint.LOCK:
+            extend(jc,{
+                localOffsetB :  v2a(c.localOffsetB),
+                localAngleB :   c.localAngleB,
+                maxForce :      c.maxForce,
+            });
+            json.lockConstraints.push(jc);
+            break;
+
+        case Constraint.GEAR:
+            extend(jc,{
+                angle :     c.angle,
+                ratio :     c.ratio,
+                maxForce :  c.maxForce || 1e6,
+            });
+            json.gearConstraints.push(jc);
+            break;
+
+        default:
+            console.error("Constraint not supported yet: ",c.type);
+            break;
+        }
     }
 
     // Serialize bodies
-    for(var i=0; i!==this.bodies.length; i++){
-        var b = this.bodies[i],
+    for(var i=0; i!==world.bodies.length; i++){
+        var b = world.bodies[i],
             ss = b.shapes,
-            jsonShapes = [];
+            jsonBody = {
+                id : b.id,
+                mass : b.mass,
+                angle : b.angle,
+                position : v2a(b.position),
+                velocity : v2a(b.velocity),
+                angularVelocity : b.angularVelocity,
+                force : v2a(b.force),
+                motionState : b.motionState,
+                concavePath : b.concavePath,
+                fixedRotation : b.fixedRotation,
+                circleShapes :    [],
+                planeShapes :     [],
+                particleShapes :  [],
+                lineShapes :      [],
+                rectangleShapes : [],
+                convexShapes :    [],
+                capsuleShapes :   [],
+            };
 
         for(var j=0; j<ss.length; j++){
             var s = ss[j],
-                jsonShape;
-
-            // Check type
-            if(s instanceof Circle){
-                jsonShape = {
-                    type : "Circle",
-                    radius : s.radius,
-                };
-            } else if(s instanceof Plane){
-                jsonShape = { type : "Plane", };
-            } else if(s instanceof Particle){
-                jsonShape = { type : "Particle", };
-            } else if(s instanceof Line){
-                jsonShape = {   type : "Line",
-                                length : s.length };
-            } else if(s instanceof Rectangle){
-                jsonShape = {   type : "Rectangle",
-                                width : s.width,
-                                height : s.height };
-            } else if(s instanceof Convex){
-                var verts = [];
-                for(var k=0; k<s.vertices.length; k++)
-                    verts.push(v2a(s.vertices[k]));
-                jsonShape = {   type : "Convex",
-                                verts : verts };
-            } else if(s instanceof Capsule){
-                jsonShape = {   type : "Capsule",
-                                length : s.length,
-                                radius : s.radius };
-            } else {
-                throw new Error("Shape type not supported yet!");
-            }
+                jsonShape = {};
 
             jsonShape.offset = v2a(b.shapeOffsets[j]);
             jsonShape.angle = b.shapeAngles[j];
             jsonShape.collisionGroup = s.collisionGroup;
             jsonShape.collisionMask = s.collisionMask;
-            jsonShape.material = s.material && {
-                id : s.material.id,
-            };
+            jsonShape.material = s.material ? s.material.id : null;
 
-            jsonShapes.push(jsonShape);
+            // Check type
+            switch(s.type){
+
+            case Shape.CIRCLE:
+                extend(jsonShape,{ radius : s.radius, });
+                jsonBody.circleShapes.push(jsonShape);
+                break;
+
+            case Shape.PLANE:
+                jsonBody.planeShapes.push(jsonShape);
+                break;
+
+            case Shape.PARTICLE:
+                jsonBody.particleShapes.push(jsonShape);
+                break;
+
+            case Shape.LINE:
+                jsonShape.length = s.length;
+                jsonBody.lineShapes.push(jsonShape);
+                break;
+
+            case Shape.RECTANGLE:
+                extend(jsonShape,{   width : s.width,
+                                     height : s.height });
+                jsonBody.rectangleShapes.push(jsonShape);
+                break;
+
+            case Shape.CONVEX:
+                var verts = [];
+                for(var k=0; k<s.vertices.length; k++)
+                    verts.push(v2a(s.vertices[k]));
+                extend(jsonShape,{ vertices : verts });
+                jsonBody.convexShapes.push(jsonShape);
+                break;
+
+            case Shape.CAPSULE:
+                extend(jsonShape,{ length : s.length, radius : s.radius });
+                jsonBody.capsuleShapes.push(jsonShape);
+                break;
+
+            default:
+                console.error("Shape type not supported yet!");
+                break;
+            }
         }
 
-        json.bodies.push({
-            id : b.id,
-            mass : b.mass,
-            angle : b.angle,
-            position : v2a(b.position),
-            velocity : v2a(b.velocity),
-            angularVelocity : b.angularVelocity,
-            force : v2a(b.force),
-            shapes : jsonShapes,
-            concavePath : b.concavePath,
-        });
+        json.bodies.push(jsonBody);
     }
 
     // Serialize contactmaterials
-    for(var i=0; i<this.contactMaterials.length; i++){
-        var cm = this.contactMaterials[i];
+    for(var i=0; i<world.contactMaterials.length; i++){
+        var cm = world.contactMaterials[i];
         json.contactMaterials.push({
             id : cm.id,
             materialA :             cm.materialA.id, // Note: Reference by id!
@@ -2357,63 +2664,22 @@ World.prototype.toJSON = function(){
         });
     }
 
+    // Serialize materials
+    var mats = {};
+    // Get unique materials first
+    for(var i=0; i<world.contactMaterials.length; i++){
+        var cm = world.contactMaterials[i];
+        mats[cm.materialA.id+''] = cm.materialA;
+        mats[cm.materialB.id+''] = cm.materialB;
+    }
+    for(var matId in mats){
+        var m = mats[parseInt(matId)];
+        json.materials.push({
+            id : m.id,
+        });
+    }
+
     return json;
-
-    function v2a(v){
-        if(!v) return v;
-        return [v[0],v[1]];
-    }
-};
-
-/**
- * Upgrades a JSON object to current version
- * @method upgradeJSON
- * @param  {Object} json
- * @return {Object|Boolean} New json object, or false on failure.
- */
-World.upgradeJSON = function(json){
-    if(!json || !json.p2)
-        return false;
-
-    // Clone the json object
-    json = JSON.parse(JSON.stringify(json));
-
-    // Check version
-    switch(json.p2){
-
-        case currentVersion:
-            // We are at latest json version
-            return json;
-
-        case "0.3":
-            // Changes:
-            // - Started caring about versioning
-
-            // - Added LockConstraint type
-            // Can't do much about that now though. Ignore.
-
-            // Changed PrismaticConstraint arguments...
-            for(var i=0; i<json.constraints.length; i++){
-                var jc = json.constraints[i];
-                if(jc.type=="PrismaticConstraint"){
-
-                    // ...from these...
-                    delete jc.localAxisA;
-                    delete jc.localAxisB;
-
-                    // ...to these. We cant make up anything good here, just do something
-                    jc.localAxisA = [1,0];
-                    jc.localAnchorA = [0,0];
-                    jc.localAnchorB = [0,0];
-                }
-            }
-
-            // Upgrade version number
-            json.p2 = "0.4";
-            break;
-    }
-
-    return World.upgradeJSON(json);
 };
 
 /**
@@ -2425,25 +2691,59 @@ World.upgradeJSON = function(json){
  */
 World.prototype.fromJSON = function(json){
     this.clear();
-    json = World.upgradeJSON(json);
 
-    // Upgrade failed.
-    if(!json) return false;
-
-    if(!json.p2)
+    if(!json.p2){
         return false;
+    }
+
+    var w = this;
 
     // Set gravity
-    vec2.copy(this.gravity, json.gravity);
+    vec2.copy(w.gravity, json.gravity);
 
-    var bodies = this.bodies;
+    // Set solver
+    switch(json.solver.type){
+    case "GSSolver":
+        var js = json.solver,
+            s = new GSSolver();
+        w.solver = s;
+        s.iterations = js.iterations;
+        s.relaxation = js.relaxation;
+        s.stiffness =  js.stiffness;
+        break;
+    default:
+        throw new Error("Solver type not recognized: "+json.solver.type);
+    }
+
+    // Broadphase
+    switch(json.broadphase.type){
+    case "NaiveBroadphase":
+        w.broadphase = new NaiveBroadphase();
+        break;
+
+    case "SAPBroadphase":
+        w.broadphase = new SAPBroadphase();
+        break;
+    }
+    w.broadphase.setWorld(w);
+
+
+    var bodies = w.bodies;
+
+    // Load materials
+    var id2material = {};
+    for(var i=0; i!==json.materials.length; i++){
+        var jm = json.materials[i];
+        var m = new Material();
+        id2material[jm.id+""] = m;
+        m.id = jm.id;
+    }
 
     // Load bodies
-    var id2material = {};
     for(var i=0; i!==json.bodies.length; i++){
-        var jb = json.bodies[i],
-            jss = jb.shapes;
+        var jb = json.bodies[i];
 
+        // Create body
         var b = new Body({
             mass :              jb.mass,
             position :          jb.position,
@@ -2451,58 +2751,107 @@ World.prototype.fromJSON = function(json){
             velocity :          jb.velocity,
             angularVelocity :   jb.angularVelocity,
             force :             jb.force,
+            fixedRotation :     jb.fixedRotation,
         });
         b.id = jb.id;
+        b.motionState = jb.motionState;
 
-        for(var j=0; j<jss.length; j++){
-            var shape, js=jss[j];
+        // Circle
+        for(var j=0; j<jb.circleShapes.length; j++){
+            var s = jb.circleShapes[j];
+            addShape(b, new Circle(s.radius), s);
+        }
 
-            switch(js.type){
-                case "Circle":      shape = new Circle(js.radius);              break;
-                case "Plane":       shape = new Plane();                        break;
-                case "Particle":    shape = new Particle();                     break;
-                case "Line":        shape = new Line(js.length);                break;
-                case "Rectangle":   shape = new Rectangle(js.width,js.height);  break;
-                case "Convex":      shape = new Convex(js.verts);               break;
-                case "Capsule":     shape = new Capsule(js.length, js.radius);  break;
-                default:
-                    throw new Error("Shape type not supported: "+js.type);
-                    break;
+        // Plane
+        for(var j=0; j<jb.planeShapes.length; j++){
+            var s = jb.planeShapes[j];
+            addShape(b, new Plane(), s);
+        }
+
+        // Particle
+        for(var j=0; j<jb.particleShapes.length; j++){
+            var s = jb.particleShapes[j];
+            addShape(b, new Particle(), s);
+        }
+
+        // Line
+        for(var j=0; j<jb.lineShapes.length; j++){
+            var s = jb.lineShapes[j];
+            addShape(b, new Line(s.length), s);
+        }
+
+        // Rectangle
+        for(var j=0; j<jb.rectangleShapes.length; j++){
+            var s = jb.rectangleShapes[j];
+            addShape(b, new Rectangle(s.width,s.height), s);
+        }
+
+        // Convex
+        for(var j=0; j<jb.convexShapes.length; j++){
+            var s = jb.convexShapes[j];
+            addShape(b, new Convex(s.vertices), s);
+        }
+
+        // Capsule
+        for(var j=0; j<jb.capsuleShapes.length; j++){
+            var s = jb.capsuleShapes[j];
+            addShape(b, new Capsule(s.length, s.radius), s);
+        }
+
+        function addShape(body, shape, shapeJSON){
+            shape.collisionMask = shapeJSON.collisionMask;
+            shape.collisionGroup = shapeJSON.collisionGroup;
+            if(shapeJSON.material){
+                shape.material = id2material[shapeJSON.material+""];
             }
-            shape.collisionMask = js.collisionMask;
-            shape.collisionGroup = js.collisionGroup;
-            shape.material = js.material;
-            if(shape.material){
-                shape.material = new Material();
-                shape.material.id = js.material.id;
-                id2material[shape.material.id+""] = shape.material;
-            }
-            b.addShape(shape,js.offset,js.angle);
+            body.addShape(shape, shapeJSON.offset, shapeJSON.angle);
         }
 
         if(jb.concavePath)
             b.concavePath = jb.concavePath;
 
-        this.addBody(b);
+        w.addBody(b);
     }
 
     // Load springs
     for(var i=0; i<json.springs.length; i++){
         var js = json.springs[i];
-        var s = new Spring(bodies[js.bodyA], bodies[js.bodyB], {
+        var bodyA = bodies[js.bodyA],
+            bodyB = bodies[js.bodyB];
+        if(!bodyA){
+            this.error = "instance.springs["+i+"] references instance.body["+js.bodyA+"], which does not exist.";
+            return false;
+        }
+        if(!bodyB){
+            this.error = "instance.springs["+i+"] references instance.body["+js.bodyB+"], which does not exist.";
+            return false;
+        }
+        var s = new Spring(bodyA, bodyB, {
             stiffness : js.stiffness,
             damping : js.damping,
             restLength : js.restLength,
             localAnchorA : js.localAnchorA,
             localAnchorB : js.localAnchorB,
         });
-        this.addSpring(s);
+        w.addSpring(s);
     }
 
     // Load contact materials
     for(var i=0; i<json.contactMaterials.length; i++){
-        var jm = json.contactMaterials[i];
-        var cm = new ContactMaterial(id2material[jm.materialA+""], id2material[jm.materialB+""], {
+        var jm = json.contactMaterials[i],
+            matA = id2material[jm.materialA+""],
+            matB = id2material[jm.materialB+""];
+
+        if(!matA){
+            this.error = "Reference to material id "+jm.materialA+": material not found";
+            return false;
+        }
+        if(!matB){
+            this.error = "Reference to material id "+jm.materialB+": material not found";
+            return false;
+        }
+
+        var cm = new ContactMaterial(matA, matB, {
             friction :              jm.friction,
             restitution :           jm.restitution,
             stiffness :             jm.stiffness,
@@ -2511,47 +2860,68 @@ World.prototype.fromJSON = function(json){
             frictionRelaxation :    jm.frictionRelaxation,
         });
         cm.id = jm.id;
-        this.addContactMaterial(cm);
+        w.addContactMaterial(cm);
     }
 
-    // Load constraints
-    for(var i=0; i<json.constraints.length; i++){
-        var jc = json.constraints[i],
-            c;
-        switch(jc.type){
-            case "DistanceConstraint":
-                c = new DistanceConstraint(bodies[jc.bodyA], bodies[jc.bodyB], jc.distance, jc.maxForce);
-                break;
-            case "RevoluteConstraint":
-                c = new RevoluteConstraint(bodies[jc.bodyA], jc.pivotA, bodies[jc.bodyB], jc.pivotB, jc.maxForce);
-                if(jc.motorSpeed){
-                    c.enableMotor();
-                    c.setMotorSpeed(jc.motorSpeed);
-                }
-                c.lowerLimit = jc.lowerLimit || 0;
-                c.upperLimit = jc.upperLimit || 0;
-                c.lowerLimitEnabled = jc.lowerLimitEnabled || false;
-                c.upperLimitEnabled = jc.upperLimitEnabled || false;
-                break;
-            case "PrismaticConstraint":
-                c = new PrismaticConstraint(bodies[jc.bodyA], bodies[jc.bodyB], {
-                    maxForce : jc.maxForce,
-                    localAxisA : jc.localAxisA,
-                    localAnchorA : jc.localAnchorA,
-                    localAnchorB : jc.localAnchorB,
-                });
-                break;
-            case "LockConstraint":
-                c = new LockConstraint(bodies[jc.bodyA], bodies[jc.bodyB], {
-                    maxForce :     jc.maxForce,
-                    localOffsetB : jc.localOffsetB,
-                    localAngleB :  jc.localAngleB,
-                });
-                break;
-            default:
-                throw new Error("Constraint type not recognized: "+jc.type);
+    // DistanceConstraint
+    for(var i=0; i<json.distanceConstraints.length; i++){
+        var c = json.distanceConstraints[i];
+        w.addConstraint(new DistanceConstraint( bodies[c.bodyA],
+                                                bodies[c.bodyB],
+                                                c.distance,
+                                                c.maxForce));
+    }
+
+    // RevoluteConstraint
+    for(var i=0; i<json.revoluteConstraints.length; i++){
+        var c = json.revoluteConstraints[i];
+        var revolute = new RevoluteConstraint(  bodies[c.bodyA],
+                                                c.pivotA,
+                                                bodies[c.bodyB],
+                                                c.pivotB,
+                                                c.maxForce);
+        if(c.motorEnabled){
+            revolute.enableMotor();
         }
-        this.addConstraint(c);
+        revolute.setMotorSpeed(c.motorSpeed);
+        revolute.lowerLimit = c.lowerLimit;
+        revolute.upperLimit = c.upperLimit;
+        revolute.lowerLimitEnabled = c.lowerLimitEnabled;
+        revolute.upperLimitEnabled = c.upperLimitEnabled;
+        w.addConstraint(revolute);
+    }
+
+    // PrismaticConstraint
+    for(var i=0; i<json.prismaticConstraints.length; i++){
+        var c = json.prismaticConstraints[i],
+            p = new PrismaticConstraint(bodies[c.bodyA], bodies[c.bodyB], {
+                maxForce : c.maxForce,
+                localAxisA : c.localAxisA,
+                localAnchorA : c.localAnchorA,
+                localAnchorB : c.localAnchorB,
+            });
+        p.motorSpeed = c.motorSpeed;
+        w.addConstraint(p);
+    }
+
+    // LockConstraint
+    for(var i=0; i<json.lockConstraints.length; i++){
+        var c = json.lockConstraints[i];
+        w.addConstraint(new LockConstraint(bodies[c.bodyA], bodies[c.bodyB], {
+            maxForce :     c.maxForce,
+            localOffsetB : c.localOffsetB,
+            localAngleB :  c.localAngleB,
+        }));
+    }
+
+    // GearConstraint
+    for(var i=0; i<json.gearConstraints.length; i++){
+        var c = json.gearConstraints[i];
+        w.addConstraint(new GearConstraint(bodies[c.bodyA], bodies[c.bodyB], {
+            maxForce :      c.maxForce,
+            angle :         c.angle,
+            ratio :         c.ratio,
+        }));
     }
 
     return true;
@@ -2567,8 +2937,9 @@ World.prototype.clear = function(){
     this.time = 0;
 
     // Remove all solver equations
-    if(this.solver && this.solver.equations.length)
+    if(this.solver && this.solver.equations.length){
         this.solver.removeAllEquations();
+    }
 
     // Remove all constraints
     var cs = this.constraints;
@@ -2661,7 +3032,7 @@ World.prototype.hitTest = function(worldPoint,bodies,precision){
     return result;
 };
 
-},{"../../package.json":3,"../solver/GSSolver":20,"../collision/NaiveBroadphase":23,"../math/vec2":18,"../shapes/Circle":8,"../shapes/Rectangle":11,"../shapes/Convex":14,"../shapes/Line":13,"../shapes/Plane":10,"../shapes/Capsule":7,"../shapes/Particle":12,"../events/EventEmitter":31,"../objects/Body":6,"../objects/Spring":5,"../material/Material":16,"../material/ContactMaterial":15,"../constraints/DistanceConstraint":26,"../constraints/LockConstraint":29,"../constraints/RevoluteConstraint":27,"../constraints/PrismaticConstraint":28,"../collision/Broadphase":22,"../collision/Narrowphase":32,"../utils/Utils":33}],5:[function(require,module,exports){
+},{"../../package.json":3,"../solver/GSSolver":20,"../solver/Solver":19,"../collision/NaiveBroadphase":23,"../math/vec2":18,"../shapes/Circle":8,"../shapes/Convex":14,"../shapes/Rectangle":11,"../shapes/Line":13,"../shapes/Plane":10,"../shapes/Capsule":7,"../shapes/Particle":12,"../events/EventEmitter":31,"../objects/Body":6,"../shapes/Shape":9,"../objects/Spring":5,"../material/Material":16,"../material/ContactMaterial":15,"../constraints/DistanceConstraint":26,"../constraints/Constraint":25,"../constraints/LockConstraint":29,"../constraints/RevoluteConstraint":27,"../constraints/PrismaticConstraint":28,"../constraints/GearConstraint":30,"../collision/Broadphase":22,"../collision/SAPBroadphase":24,"../collision/Narrowphase":32,"../utils/Utils":33,"./IslandManager":34}],5:[function(require,module,exports){
 var vec2 = require('../math/vec2');
 
 module.exports = Spring;
@@ -2942,7 +3313,7 @@ module.exports = Circle;
  * @class Circle
  * @extends {Shape}
  * @constructor
- * @param {number} radius The radius of this circle
+ * @param {number} [radius=1] The radius of this circle
  */
 function Circle(radius){
 
@@ -2967,10 +3338,18 @@ Circle.prototype.computeMomentOfInertia = function(mass){
     return mass * r * r / 2;
 };
 
+/**
+ * @method updateBoundingRadius
+ * @return {Number}
+ */
 Circle.prototype.updateBoundingRadius = function(){
     this.boundingRadius = this.radius;
 };
 
+/**
+ * @method updateArea
+ * @return {Number}
+ */
 Circle.prototype.updateArea = function(){
     this.area = Math.PI * this.radius * this.radius;
 };
@@ -3236,7 +3615,7 @@ Line.prototype.computeAABB = function(out, position, angle){
 };
 
 
-},{"../math/vec2":18,"./Shape":9}],15:[function(require,module,exports){
+},{"./Shape":9,"../math/vec2":18}],15:[function(require,module,exports){
 var Material = require('./Material');
 
 module.exports = ContactMaterial;
@@ -3459,7 +3838,7 @@ vec2.centroid = function(out, a, b, c){
 // Export everything
 module.exports = vec2;
 
-},{"../../node_modules/gl-matrix/src/gl-matrix/vec2":34}],19:[function(require,module,exports){
+},{"../../node_modules/gl-matrix/src/gl-matrix/vec2":35}],19:[function(require,module,exports){
 var Utils = require('../utils/Utils')
 ,   EventEmitter = require('../events/EventEmitter')
 
@@ -3492,7 +3871,7 @@ function Solver(options,type){
      * @type {function|boolean}
      */
     this.equationSortFunction = options.equationSortFunction || false;
-};
+}
 Solver.prototype = new EventEmitter();
 
 /**
@@ -3505,13 +3884,39 @@ Solver.prototype.solve = function(dt,world){
     throw new Error("Solver.solve should be implemented by subclasses!");
 };
 
+var mockWorld = {bodies:[]};
+
+/**
+ * Solves all constraints in an island.
+ * @method solveIsland
+ * @param  {Number} dt
+ * @param  {Island} island
+ */
+Solver.prototype.solveIsland = function(dt,island){
+
+    this.removeAllEquations();
+
+    if(island.equations.length){
+        // Add equations to solver
+        this.addEquations(island.equations);
+        mockWorld.bodies.length = 0;
+        island.getBodies(mockWorld.bodies);
+
+        // Solve
+        if(mockWorld.bodies.length){
+            this.solve(dt,mockWorld);
+        }
+    }
+};
+
 /**
  * Sort all equations using the .equationSortFunction. Should be called by subclasses before solving.
  * @method sortEquations
  */
 Solver.prototype.sortEquations = function(){
-    if(this.equationSortFunction)
+    if(this.equationSortFunction){
         this.equations.sort(this.equationSortFunction);
+    }
 };
 
 /**
@@ -3521,8 +3926,9 @@ Solver.prototype.sortEquations = function(){
  * @param {Equation} eq
  */
 Solver.prototype.addEquation = function(eq){
-    if(eq.enabled)
+    if(eq.enabled){
         this.equations.push(eq);
+    }
 };
 
 /**
@@ -3535,8 +3941,9 @@ Solver.prototype.addEquations = function(eqs){
     //Utils.appendArray(this.equations,eqs);
     for(var i=0, N=eqs.length; i!==N; i++){
         var eq = eqs[i];
-        if(eq.enabled)
+        if(eq.enabled){
             this.equations.push(eq);
+        }
     }
 };
 
@@ -3548,8 +3955,9 @@ Solver.prototype.addEquations = function(eqs){
  */
 Solver.prototype.removeEquation = function(eq){
     var i = this.equations.indexOf(eq);
-    if(i!=-1)
+    if(i !== -1){
         this.equations.splice(i,1);
+    }
 };
 
 /**
@@ -3561,8 +3969,8 @@ Solver.prototype.removeAllEquations = function(){
     this.equations.length=0;
 };
 
-Solver.GS=1;
-Solver.ISLAND=2;
+Solver.GS = 1;
+Solver.ISLAND = 2;
 
 },{"../utils/Utils":33,"../events/EventEmitter":31}],20:[function(require,module,exports){
 var vec2 = require('../math/vec2')
@@ -3637,6 +4045,8 @@ function GSSolver(options){
      */
     this.useZeroRHS = false;
 
+    this.useNormalForceForFriction = false;
+
     /**
      * Number of friction iterations to skip. If .skipFrictionIterations=2, then no FrictionEquations will be iterated until the third iteration.
      * @property skipFrictionIterations
@@ -3686,15 +4096,14 @@ GSSolver.prototype.solve = function(h,world){
         lambda = this.lambda =  new Utils.ARRAY_TYPE(Neq + this.arrayStep);
         this.Bs =               new Utils.ARRAY_TYPE(Neq + this.arrayStep);
         this.invCs =            new Utils.ARRAY_TYPE(Neq + this.arrayStep);
-    } else {
-        setArrayZero(lambda);
     }
+    setArrayZero(lambda);
     var invCs = this.invCs,
         Bs = this.Bs,
         lambda = this.lambda;
     if(!useGlobalParams){
         for(var i=0, c; c = equations[i]; i++){
-            if(h !== c.h) c.updateSpookParams(h);
+            c.updateSpookParams(h);
             Bs[i] =     c.computeB(c.a,c.b,h);
             invCs[i] =  c.computeInvC(c.eps);
         }
@@ -3728,7 +4137,7 @@ GSSolver.prototype.solve = function(h,world){
 
                 var _eps = useGlobalParams ? eps : c.eps;
 
-                var deltalambda = GSSolver.iterateEquation(j,c,_eps,Bs,invCs,lambda,useZeroRHS,h);
+                var deltalambda = GSSolver.iterateEquation(j,c,_eps,Bs,invCs,lambda,useZeroRHS,h,iter,skipFrictionIter,this.useNormalForceForFriction);
                 deltalambdaTot += Math.abs(deltalambda);
             }
 
@@ -3743,14 +4152,14 @@ GSSolver.prototype.solve = function(h,world){
     }
 };
 
-GSSolver.iterateEquation = function(j,eq,eps,Bs,invCs,lambda,useZeroRHS,dt){
+GSSolver.iterateEquation = function(j,eq,eps,Bs,invCs,lambda,useZeroRHS,dt,iter,skipFrictionIter,useNormal){
     // Compute iteration
     var B = Bs[j],
         invC = invCs[j],
         lambdaj = lambda[j],
-        GWlambda = eq.computeGWlambda(eps);
+        GWlambda = eq.computeGWlambda();
 
-    if(eq instanceof FrictionEquation){
+    if(useNormal && eq instanceof FrictionEquation && iter == skipFrictionIter){
         // Rescale the max friction force according to the normal force
         eq.maxForce =  eq.contactEquation.multiplier * eq.frictionCoefficient * dt;
         eq.minForce = -eq.contactEquation.multiplier * eq.frictionCoefficient * dt;
@@ -3765,10 +4174,10 @@ GSSolver.iterateEquation = function(j,eq,eps,Bs,invCs,lambda,useZeroRHS,dt){
 
     // Clamp if we are not within the min/max interval
     var lambdaj_plus_deltalambda = lambdaj + deltalambda;
-    if(lambdaj_plus_deltalambda < minForce){
-        deltalambda = minForce - lambdaj;
-    } else if(lambdaj_plus_deltalambda > maxForce){
-        deltalambda = maxForce - lambdaj;
+    if(lambdaj_plus_deltalambda < minForce*dt){
+        deltalambda = minForce*dt - lambdaj;
+    } else if(lambdaj_plus_deltalambda > maxForce*dt){
+        deltalambda = maxForce*dt - lambdaj;
     }
     lambda[j] += deltalambda;
     eq.multiplier = lambda[j] / dt;
@@ -3777,7 +4186,7 @@ GSSolver.iterateEquation = function(j,eq,eps,Bs,invCs,lambda,useZeroRHS,dt){
     return deltalambda;
 };
 
-},{"../math/vec2":18,"./Solver":19,"../utils/Utils":33,"../equations/FrictionEquation":35}],21:[function(require,module,exports){
+},{"../math/vec2":18,"./Solver":19,"../utils/Utils":33,"../equations/FrictionEquation":36}],21:[function(require,module,exports){
 var Solver = require('./Solver')
 ,   vec2 = require('../math/vec2')
 ,   Island = require('../solver/Island')
@@ -3972,7 +4381,7 @@ IslandSolver.prototype.solve = function(dt,world){
     }
 };
 
-},{"./Solver":19,"../math/vec2":18,"../solver/Island":36,"../objects/Body":6}],22:[function(require,module,exports){
+},{"./Solver":19,"../math/vec2":18,"../solver/Island":37,"../objects/Body":6}],22:[function(require,module,exports){
 var vec2 = require('../math/vec2')
 var Body = require('../objects/Body')
 
@@ -4075,6 +4484,12 @@ Broadphase.canCollide = function(bodyA, bodyB){
     // Cannot collide both sleeping bodies
     if(bodyA.sleepState == Body.SLEEPING && bodyB.sleepState == Body.SLEEPING)
         return false;
+
+    // Cannot collide if one is static and the other is sleeping
+    if( (bodyA.sleepState == Body.SLEEPING && bodyB.motionState == Body.STATIC) ||
+        (bodyB.sleepState == Body.SLEEPING && bodyA.motionState == Body.STATIC)){
+        return false;
+    }
 
     return true;
 };
@@ -4383,8 +4798,10 @@ module.exports = DistanceConstraint;
  * @param {number} maxForce
  * @extends {Constraint}
  */
-function DistanceConstraint(bodyA,bodyB,distance,maxForce){
-    Constraint.call(this,bodyA,bodyB,Constraint.DISTANCE);
+function DistanceConstraint(bodyA,bodyB,distance,options){
+    options = options || {};
+
+    Constraint.call(this,bodyA,bodyB,Constraint.DISTANCE,options);
 
     /**
      * The distance to keep.
@@ -4393,8 +4810,11 @@ function DistanceConstraint(bodyA,bodyB,distance,maxForce){
      */
     this.distance = distance;
 
-    if(typeof(maxForce)==="undefined" )
+    var maxForce;
+    if(typeof(options.maxForce)==="undefined" )
         maxForce = Number.MAX_VALUE;
+    else
+        maxForce = options.maxForce;
 
     var normal = new Equation(bodyA,bodyB,-maxForce,maxForce); // Just in the normal direction
     this.equations = [ normal ];
@@ -4451,7 +4871,7 @@ DistanceConstraint.prototype.getMaxForce = function(f){
     return normal.maxForce;
 };
 
-},{"./Constraint":25,"../equations/Equation":37,"../math/vec2":18}],27:[function(require,module,exports){
+},{"./Constraint":25,"../equations/Equation":38,"../math/vec2":18}],27:[function(require,module,exports){
 var Constraint = require('./Constraint')
 ,   Equation = require('../equations/Equation')
 ,   RotationalVelocityEquation = require('../equations/RotationalVelocityEquation')
@@ -4475,12 +4895,16 @@ var worldPivotA = vec2.create(),
  * @param {Float32Array}    pivotA The point relative to the center of mass of bodyA which bodyA is constrained to.
  * @param {Body}            bodyB Body that will be constrained in a similar way to the same point as bodyA. We will therefore get sort of a link between bodyA and bodyB. If not specified, bodyA will be constrained to a static point.
  * @param {Float32Array}    pivotB See pivotA.
- * @param {Number}          maxForce The maximum force that should be applied to constrain the bodies.
+ * @param {Object}          [options]
+ * @param {Number}          [options.maxForce] The maximum force that should be applied to constrain the bodies.
  * @extends {Constraint}
  * @todo Ability to specify world points
  */
-function RevoluteConstraint(bodyA, pivotA, bodyB, pivotB, maxForce){
-    Constraint.call(this,bodyA,bodyB,Constraint.REVOLUTE);
+function RevoluteConstraint(bodyA, pivotA, bodyB, pivotB, options){
+    options = options || {};
+    Constraint.call(this,bodyA,bodyB,Constraint.REVOLUTE,options);
+
+    maxForce = options.maxForce;
 
     maxForce = this.maxForce = typeof(maxForce)!="undefined" ? maxForce : Number.MAX_VALUE;
 
@@ -4693,7 +5117,7 @@ RevoluteConstraint.prototype.getMotorSpeed = function(){
     return this.motorEquation.relativeVelocity;
 };
 
-},{"./Constraint":25,"../equations/Equation":37,"../equations/RotationalVelocityEquation":38,"../equations/RotationalLockEquation":39,"../math/vec2":18}],28:[function(require,module,exports){
+},{"./Constraint":25,"../equations/Equation":38,"../equations/RotationalVelocityEquation":39,"../equations/RotationalLockEquation":40,"../math/vec2":18}],28:[function(require,module,exports){
 var Constraint = require('./Constraint')
 ,   ContactEquation = require('../equations/ContactEquation')
 ,   Equation = require('../equations/Equation')
@@ -4718,9 +5142,9 @@ module.exports = PrismaticConstraint;
  * @param {Array}   options.localAxisA              An axis, defined in body A frame, that body B's anchor point may slide along.
  * @param {Boolean} options.disableRotationalLock   If set to true, bodyB will be free to rotate around its anchor point.
  */
-function PrismaticConstraint(bodyA,bodyB,options){
+function PrismaticConstraint(bodyA, bodyB, options){
     options = options || {};
-    Constraint.call(this,bodyA,bodyB,Constraint.PRISMATIC);
+    Constraint.call(this,bodyA,bodyB,Constraint.PRISMATIC,options);
 
     // Get anchors
     var localAnchorA = vec2.fromValues(0,0),
@@ -5006,7 +5430,7 @@ PrismaticConstraint.prototype.disableMotor = function(){
     this.motorEnabled = false;
 };
 
-},{"./Constraint":25,"../equations/ContactEquation":40,"../equations/Equation":37,"../math/vec2":18,"../equations/RotationalLockEquation":39}],29:[function(require,module,exports){
+},{"./Constraint":25,"../equations/ContactEquation":41,"../equations/Equation":38,"../math/vec2":18,"../equations/RotationalLockEquation":40}],29:[function(require,module,exports){
 var Constraint = require('./Constraint')
 ,   vec2 = require('../math/vec2')
 ,   Equation = require('../equations/Equation')
@@ -5027,8 +5451,10 @@ module.exports = LockConstraint;
  * @param {number} [options.maxForce]
  * @extends {Constraint}
  */
-function LockConstraint(bodyA,bodyB,options){
-    Constraint.call(this,bodyA,bodyB,Constraint.LOCK);
+function LockConstraint(bodyA, bodyB, options){
+    options = options || {};
+
+    Constraint.call(this,bodyA,bodyB,Constraint.LOCK,options);
     var maxForce = ( typeof(options.maxForce)=="undefined" ? Number.MAX_VALUE : options.maxForce );
     var localOffsetB = options.localOffsetB || vec2.fromValues(0,0);
     localOffsetB = vec2.fromValues(localOffsetB[0],localOffsetB[1]);
@@ -5131,7 +5557,7 @@ LockConstraint.prototype.update = function(){
     rot.G[5] =  vec2.crossLength(r,t);
 };
 
-},{"./Constraint":25,"../math/vec2":18,"../equations/Equation":37}],30:[function(require,module,exports){
+},{"./Constraint":25,"../math/vec2":18,"../equations/Equation":38}],30:[function(require,module,exports){
 var Constraint = require('./Constraint')
 ,   Equation = require('../equations/Equation')
 ,   AngleLockEquation = require('../equations/AngleLockEquation')
@@ -5151,7 +5577,9 @@ module.exports = GearConstraint;
  * @todo Ability to specify world points
  */
 function GearConstraint(bodyA, bodyB, options){
-    Constraint.call(this,bodyA,bodyB,Constraint.GEAR);
+    options = options || {};
+
+    Constraint.call(this, bodyA, bodyB, Constraint.GEAR, options);
 
     // Equations to be fed to the solver
     var eqs = this.equations = [
@@ -5181,7 +5609,7 @@ GearConstraint.prototype.update = function(){
     eq.angle = this.angle;
 };
 
-},{"./Constraint":25,"../equations/Equation":37,"../equations/AngleLockEquation":41,"../math/vec2":18}],17:[function(require,module,exports){
+},{"./Constraint":25,"../equations/Equation":38,"../equations/AngleLockEquation":42,"../math/vec2":18}],17:[function(require,module,exports){
 var jsonschema = require("../../node_modules/jsonschema/lib");
 
 module.exports = JSONFileFormat;
@@ -5353,7 +5781,7 @@ JSONFileFormat.makeSchemaStrict = function makeSchemaStrict(schema){
     return schema;
 };
 
-},{"../../node_modules/jsonschema/lib":42}],31:[function(require,module,exports){
+},{"../../node_modules/jsonschema/lib":43}],31:[function(require,module,exports){
 /**
  * Base class for objects that dispatches events.
  * @class EventEmitter
@@ -5491,7 +5919,7 @@ Utils.splice = function(array,index,howmany){
  */
 Utils.ARRAY_TYPE = Float32Array || Array;
 
-},{}],43:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 
     /*
         PolyK library
@@ -5970,7 +6398,7 @@ Utils.ARRAY_TYPE = Float32Array || Array;
 
 module.exports = PolyK;
 
-},{}],34:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 /* Copyright (c) 2012, Brandon Jones, Colin MacKenzie IV. All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -6404,7 +6832,7 @@ if(typeof(exports) !== 'undefined') {
     exports.vec2 = vec2;
 }
 
-},{}],36:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 module.exports = Island;
 
 /**
@@ -6435,7 +6863,7 @@ function Island(){
  */
 Island.prototype.reset = function(){
     this.equations.length = this.bodies.length = 0;
-}
+};
 
 
 /**
@@ -6443,8 +6871,8 @@ Island.prototype.reset = function(){
  * @method getBodies
  * @return {Array} An array of Body
  */
-Island.prototype.getBodies = function(){
-    var bodies = [],
+Island.prototype.getBodies = function(result){
+    var bodies = result || [],
         bodyIds = [],
         eqs = this.equations;
     for(var i=0; i!==eqs.length; i++){
@@ -6498,6 +6926,7 @@ var vec2 = require('../math/vec2')
 ,   Circle = require('../shapes/Circle')
 ,   Shape = require('../shapes/Shape')
 ,   Body = require('../objects/Body')
+,   Rectangle = require('../shapes/Rectangle')
 
 module.exports = Narrowphase;
 
@@ -6580,6 +7009,33 @@ function Narrowphase(){
      * @type {Number}
      */
     this.restitution = 0;
+
+    /**
+     * The stiffness value to use in the next contact equations.
+     * @property {Number} stiffness
+     */
+    this.stiffness = 1e7;
+
+    /**
+     * The stiffness value to use in the next contact equations.
+     * @property {Number} stiffness
+     */
+    this.relaxation = 3;
+
+    /**
+     * The stiffness value to use in the next friction equations.
+     * @property frictionStiffness
+     * @type {Number}
+     */
+    this.frictionStiffness = 1e7;
+
+    /**
+     * The relaxation value to use in the next friction equations.
+     * @property frictionRelaxation
+     * @type {Number}
+     */
+    this.frictionRelaxation = 3;
+
 
     // Keep track of the colliding bodies last step
     this.collidingBodiesLastStep = { keys:[] };
@@ -6669,6 +7125,8 @@ Narrowphase.prototype.createContactEquation = function(bodyA,bodyB,shapeA,shapeB
     c.shapeB = shapeB;
     c.restitution = this.restitution;
     c.firstImpact = !this.collidedLastStep(bodyA,bodyB);
+    c.stiffness = this.stiffness;
+    c.relaxation = this.relaxation;
     c.enabled = true;
 
     if(bodyA.allowSleep && (bodyA.motionState == Body.DYNAMIC) && !(bodyB.motionState == Body.STATIC || bodyB.sleepState === Body.SLEEPY))
@@ -6696,6 +7154,8 @@ Narrowphase.prototype.createFrictionEquation = function(bodyA,bodyB,shapeA,shape
     c.frictionCoefficient = this.frictionCoefficient;
     c.relativeVelocity = this.surfaceVelocity;
     c.enabled = true;
+    c.frictionStiffness = this.frictionStiffness;
+    c.frictionRelaxation = this.frictionRelaxation;
     return c;
 };
 
@@ -6758,27 +7218,15 @@ Narrowphase.prototype.lineRectangle = function(bi,si,xi,ai, bj,sj,xj,aj, justTes
         return 0;
 };
 
-/**
- * Rectangle/capsule narrowphase
- * @method rectangleCapsule
- * @param  {Body}       bi
- * @param  {Rectangle}  si
- * @param  {Array}      xi
- * @param  {Number}     ai
- * @param  {Body}       bj
- * @param  {Capsule}    sj
- * @param  {Array}      xj
- * @param  {Number}     aj
- * @todo Implement me!
- */
-Narrowphase.prototype[Shape.CAPSULE | Shape.RECTANGLE] =
-Narrowphase.prototype.rectangleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTest){
-    // TODO
-    if(justTest)
-        return false;
-    else
-        return 0;
-};
+function setConvexToCapsuleShapeMiddle(convexShape, capsuleShape){
+    vec2.set(convexShape.vertices[0], -capsuleShape.length * 0.5, -capsuleShape.radius);
+    vec2.set(convexShape.vertices[1],  capsuleShape.length * 0.5, -capsuleShape.radius);
+    vec2.set(convexShape.vertices[2],  capsuleShape.length * 0.5,  capsuleShape.radius);
+    vec2.set(convexShape.vertices[3], -capsuleShape.length * 0.5,  capsuleShape.radius);
+}
+
+var convexCapsule_tempRect = new Rectangle(1,1),
+    convexCapsule_tempVec = vec2.create();
 
 /**
  * Convex/capsule narrowphase
@@ -6794,12 +7242,31 @@ Narrowphase.prototype.rectangleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, just
  * @todo Implement me!
  */
 Narrowphase.prototype[Shape.CAPSULE | Shape.CONVEX] =
+Narrowphase.prototype[Shape.CAPSULE | Shape.RECTANGLE] =
 Narrowphase.prototype.convexCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTest){
-    // TODO
-    if(justTest)
-        return false;
-    else
-        return 0;
+
+    // Check the circles
+    // Add offsets!
+    var circlePos = convexCapsule_tempVec;
+    vec2.set(circlePos, sj.length/2,0);
+    vec2.rotate(circlePos,circlePos,aj);
+    vec2.add(circlePos,circlePos,xj);
+    var result1 = this.circleConvex(bj,sj,circlePos,aj, bi,si,xi,ai, justTest, sj.radius);
+
+    vec2.set(circlePos,-sj.length/2, 0);
+    vec2.rotate(circlePos,circlePos,aj);
+    vec2.add(circlePos,circlePos,xj);
+    var result2 = this.circleConvex(bj,sj,circlePos,aj, bi,si,xi,ai, justTest, sj.radius);
+
+    if(justTest && (result1 || result2))
+        return true;
+
+    // Check center rect
+    var r = convexCapsule_tempRect;
+    setConvexToCapsuleShapeMiddle(r,sj);
+    var result = this.convexConvex(bi,si,xi,ai, bj,r,xj,aj, justTest);
+
+    return result + result1 + result2;
 };
 
 /**
@@ -6824,6 +7291,10 @@ Narrowphase.prototype.lineCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTest)
         return 0;
 };
 
+var capsuleCapsule_tempVec1 = vec2.create();
+var capsuleCapsule_tempVec2 = vec2.create();
+var capsuleCapsule_tempRect1 = new Rectangle(1,1);
+
 /**
  * Capsule/capsule narrowphase
  * @method capsuleCapsule
@@ -6839,11 +7310,51 @@ Narrowphase.prototype.lineCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTest)
  */
 Narrowphase.prototype[Shape.CAPSULE | Shape.CAPSULE] =
 Narrowphase.prototype.capsuleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTest){
-    // TODO
-    if(justTest)
-        return false;
-    else
-        return 0;
+
+    // Check the circles
+    // Add offsets!
+    var circlePosi = capsuleCapsule_tempVec1,
+        circlePosj = capsuleCapsule_tempVec2;
+
+    var numContacts = 0;
+
+    // Need 4 circle checks, between all
+    for(var i=0; i<2; i++){
+
+        vec2.set(circlePosi,(i==0?-1:1)*si.length/2,0);
+        vec2.rotate(circlePosi,circlePosi,ai);
+        vec2.add(circlePosi,circlePosi,xi);
+
+        for(var j=0; j<2; j++){
+
+            vec2.set(circlePosj,(j==0?-1:1)*sj.length/2, 0);
+            vec2.rotate(circlePosj,circlePosj,aj);
+            vec2.add(circlePosj,circlePosj,xj);
+
+            var result = this.circleCircle(bi,si,circlePosi,ai, bj,sj,circlePosj,aj, justTest, si.radius, sj.radius);
+
+            if(justTest && result)
+                return true;
+
+            numContacts += result;
+        }
+    }
+
+    // Check circles against the center rectangles
+    var rect = capsuleCapsule_tempRect1;
+    setConvexToCapsuleShapeMiddle(rect,si);
+    var result1 = this.convexCapsule(bi,rect,xi,ai, bj,sj,xj,aj, justTest);
+
+    if(justTest && result1) return true;
+    numContacts += result1;
+
+    setConvexToCapsuleShapeMiddle(rect,sj);
+    var result2 = this.convexCapsule(bj,rect,xj,aj, bi,si,xi,ai, justTest);
+
+    if(justTest && result2) return true;
+    numContacts += result2;
+
+    return numContacts;
 };
 
 /**
@@ -7204,8 +7715,8 @@ Narrowphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
     verts = convexShape.vertices;
 
     // Check all edges first
-    for(var i=0; i!==verts.length; i++){
-        var v0 = verts[i],
+    for(var i=0; i!==verts.length+1; i++){
+        var v0 = verts[i%verts.length],
             v1 = verts[(i+1)%verts.length];
 
         vec2.rotate(worldVertex0, v0, convexAngle);
@@ -7562,17 +8073,19 @@ Narrowphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, just
  * @param  {Number} aj
  */
 Narrowphase.prototype[Shape.CIRCLE] =
-Narrowphase.prototype.circleCircle = function(  bi,si,xi,ai, bj,sj,xj,aj, justTest){
+Narrowphase.prototype.circleCircle = function(  bi,si,xi,ai, bj,sj,xj,aj, justTest, radiusA, radiusB){
     var bodyA = bi,
         shapeA = si,
         offsetA = xi,
         bodyB = bj,
         shapeB = sj,
         offsetB = xj,
-        dist = tmp1;
+        dist = tmp1,
+        radiusA = radiusA || shapeA.radius,
+        radiusB = radiusB || shapeB.radius;
 
     sub(dist,xi,xj);
-    var r = si.radius + sj.radius;
+    var r = radiusA + radiusB;
     if(vec2.squaredLength(dist) > r*r)
         return 0;
 
@@ -7582,8 +8095,8 @@ Narrowphase.prototype.circleCircle = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
     sub(c.ni, offsetB, offsetA);
     vec2.normalize(c.ni,c.ni);
 
-    vec2.scale( c.ri, c.ni,  shapeA.radius);
-    vec2.scale( c.rj, c.ni, -shapeB.radius);
+    vec2.scale( c.ri, c.ni,  radiusA);
+    vec2.scale( c.rj, c.ni, -radiusB);
 
     add(c.ri, c.ri, offsetA);
     sub(c.ri, c.ri, bodyA.position);
@@ -7897,6 +8410,7 @@ Narrowphase.prototype.circlePlane = function(   bi,si,xi,ai, bj,sj,xj,aj, justTe
     return 1;
 };
 
+Narrowphase.convexPrecision = 1e-10;
 
 /**
  * Convex/convex Narrowphase.See <a href="http://www.altdevblogaday.com/2011/05/13/contact-generation-between-3d-convex-meshes/">this article</a> for more info.
@@ -7924,7 +8438,7 @@ Narrowphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
         dist = tmp8,
         worldNormal = tmp9,
         numContacts = 0,
-        precision = precision || 1e-10;
+        precision = precision || Narrowphase.convexPrecision;
 
     var found = Narrowphase.findSeparatingAxis(si,xi,ai,sj,xj,aj,sepAxis);
     if(!found) return 0;
@@ -8218,8 +8732,369 @@ Narrowphase.getClosestEdge = function(c,angle,axis,flip){
     return closestEdge;
 };
 
+var circleHeightfield_candidate = vec2.create(),
+    circleHeightfield_dist = vec2.create(),
+    circleHeightfield_v0 = vec2.create(),
+    circleHeightfield_v1 = vec2.create(),
+    circleHeightfield_minCandidate = vec2.create(),
+    circleHeightfield_worldNormal = vec2.create(),
+    circleHeightfield_minCandidateNormal = vec2.create();
 
-},{"../math/vec2":18,"../utils/Utils":33,"../equations/ContactEquation":40,"../equations/FrictionEquation":35,"../shapes/Circle":8,"../shapes/Shape":9,"../objects/Body":6}],44:[function(require,module,exports){
+/**
+ * @method circleHeightfield
+ * @param  {Body}           bi
+ * @param  {Circle}         si
+ * @param  {Array}          xi
+ * @param  {Body}           bj
+ * @param  {Heightfield}    sj
+ * @param  {Array}          xj
+ * @param  {Number}         aj
+ */
+Narrowphase.prototype[Shape.CIRCLE | Shape.HEIGHTFIELD] =
+Narrowphase.prototype.circleHeightfield = function( circleBody,circleShape,circlePos,circleAngle,
+                                                    hfBody,hfShape,hfPos,hfAngle, justTest, radius ){
+    var data = hfShape.data,
+        radius = radius || circleShape.radius,
+        w = hfShape.elementWidth,
+        dist = circleHeightfield_dist,
+        candidate = circleHeightfield_candidate,
+        minCandidate = circleHeightfield_minCandidate,
+        minCandidateNormal = circleHeightfield_minCandidateNormal,
+        worldNormal = circleHeightfield_worldNormal,
+        v0 = circleHeightfield_v0,
+        v1 = circleHeightfield_v1;
+
+    // Get the index of the points to test against
+    var idxA = Math.floor( (circlePos[0] - radius - hfPos[0]) / w ),
+        idxB = Math.ceil(  (circlePos[0] + radius - hfPos[0]) / w );
+
+    /*if(idxB < 0 || idxA >= data.length)
+        return justTest ? false : 0;*/
+
+    if(idxA < 0) idxA = 0;
+    if(idxB >= data.length) idxB = data.length-1;
+
+    // Get max and min
+    var max = data[idxA],
+        min = data[idxB];
+    for(var i=idxA; i<idxB; i++){
+        if(data[i] < min) min = data[i];
+        if(data[i] > max) max = data[i];
+    }
+
+    if(circlePos[1]-radius > max)
+        return justTest ? false : 0;
+
+    if(circlePos[1]+radius < min){
+        // Below the minimum point... We can just guess.
+        // TODO
+    }
+
+    // 1. Check so center of circle is not inside the field. If it is, this wont work...
+    // 2. For each edge
+    // 2. 1. Get point on circle that is closest to the edge (scale normal with -radius)
+    // 2. 2. Check if point is inside.
+
+    var found = false,
+        minDist = false;
+
+    // Check all edges first
+    for(var i=idxA; i<idxB; i++){
+
+        // Get points
+        vec2.set(v0,     i*w, data[i]  );
+        vec2.set(v1, (i+1)*w, data[i+1]);
+        vec2.add(v0,v0,hfPos);
+        vec2.add(v1,v1,hfPos);
+
+        // Get normal
+        vec2.sub(worldNormal, v1, v0);
+        vec2.rotate(worldNormal, worldNormal, Math.PI/2);
+        vec2.normalize(worldNormal,worldNormal);
+
+        // Get point on circle, closest to the edge
+        vec2.scale(candidate,worldNormal,-radius);
+        vec2.add(candidate,candidate,circlePos);
+
+        // Distance from v0 to the candidate point
+        vec2.sub(dist,candidate,v0);
+
+        // Check if it is in the element "stick"
+        var d = vec2.dot(dist,worldNormal);
+        if(candidate[0] >= v0[0] && candidate[0] < v1[0] && d <= 0){
+
+            if(minDist === false || Math.abs(d) < minDist){
+
+                // Store the candidate point, projected to the edge
+                vec2.scale(dist,worldNormal,-d);
+                vec2.add(minCandidate,candidate,dist);
+                vec2.copy(minCandidateNormal,worldNormal);
+
+                found = true;
+                minDist = Math.abs(d);
+
+                if(justTest)
+                    return true;
+            }
+        }
+    }
+
+    if(found){
+
+        var c = this.createContactEquation(hfBody,circleBody,hfShape,circleShape);
+
+        // Normal is out of the heightfield
+        vec2.copy(c.ni, minCandidateNormal);
+
+        // Vector from circle to heightfield
+        vec2.scale(c.rj,  c.ni, -radius);
+        add(c.rj, c.rj, circlePos);
+        sub(c.rj, c.rj, circleBody.position);
+
+        vec2.copy(c.ri, minCandidate);
+        //vec2.sub(c.ri, c.ri, hfPos);
+        vec2.sub(c.ri, c.ri, hfBody.position);
+
+        this.contactEquations.push(c);
+
+        if(this.enableFriction)
+            this.frictionEquations.push( this.createFrictionFromContact(c) );
+
+        return 1;
+    }
+
+
+    // Check all vertices
+    if(radius > 0){
+        for(var i=idxA; i<=idxB; i++){
+
+            // Get point
+            vec2.set(v0, i*w, data[i]);
+            vec2.add(v0,v0,hfPos);
+
+            vec2.sub(dist, circlePos, v0);
+
+            if(vec2.squaredLength(dist) < radius*radius){
+
+                if(justTest) return true;
+
+                var c = this.createContactEquation(hfBody,circleBody,hfShape,circleShape);
+
+                // Construct normal - out of heightfield
+                vec2.copy(c.ni, dist);
+                vec2.normalize(c.ni,c.ni);
+
+                vec2.scale(c.rj, c.ni, -radius);
+                add(c.rj, c.rj, circlePos);
+                sub(c.rj, c.rj, circleBody.position);
+
+                sub(c.ri, v0, hfPos);
+                add(c.ri, c.ri, hfPos);
+                sub(c.ri, c.ri, hfBody.position);
+
+                this.contactEquations.push(c);
+
+                if(this.enableFriction){
+                    this.frictionEquations.push(this.createFrictionFromContact(c));
+                }
+
+                return 1;
+            }
+        }
+    }
+
+    return 0;
+
+};
+
+},{"../math/vec2":18,"../utils/Utils":33,"../equations/ContactEquation":41,"../equations/FrictionEquation":36,"../shapes/Circle":8,"../shapes/Shape":9,"../objects/Body":6,"../shapes/Rectangle":11}],34:[function(require,module,exports){
+var vec2 = require('../math/vec2')
+,   Island = require('./Island')
+,   IslandNode = require('./IslandNode')
+,   Body = require('../objects/Body')
+
+module.exports = IslandManager;
+
+/**
+ * Splits the system of bodies and equations into independent islands
+ *
+ * @class IslandManager
+ * @constructor
+ * @param {Object} [options]
+ * @extends Solver
+ */
+function IslandManager(options){
+
+    // Pooling of node objects saves some GC load
+    this._nodePool = [];
+    this._islandPool = [];
+
+    /**
+     * The equations to split. Manually fill this array before running .split().
+     * @property {Array} equations
+     */
+    this.equations = [];
+
+    /**
+     * The resulting {{#crossLink "Island"}}{{/crossLink}}s.
+     * @property {Array} islands
+     */
+    this.islands = [];
+
+    /**
+     * The resulting graph nodes.
+     * @property {Array} nodes
+     */
+    this.nodes = [];
+
+    /**
+     * The node queue, used when traversing the graph of nodes.
+     * @private
+     * @property {Array} queue
+     */
+    this.queue = [];
+}
+
+/**
+ * Get an unvisited node from a list of nodes.
+ * @static
+ * @method getUnvisitedNode
+ * @param  {Array} nodes
+ * @return {IslandNode|boolean} The node if found, else false.
+ */
+IslandManager.getUnvisitedNode = function(nodes){
+    var Nnodes = nodes.length;
+    for(var i=0; i!==Nnodes; i++){
+        var node = nodes[i];
+        if(!node.visited && node.body.motionState === Body.DYNAMIC){
+            return node;
+        }
+    }
+    return false;
+};
+
+/**
+ * Visit a node.
+ * @method visit
+ * @param  {IslandNode} node
+ * @param  {Array} bds
+ * @param  {Array} eqs
+ */
+IslandManager.prototype.visit = function (node,bds,eqs){
+    bds.push(node.body);
+    var Neqs = node.equations.length;
+    for(var i=0; i!==Neqs; i++){
+        var eq = node.equations[i];
+        if(eqs.indexOf(eq) === -1){ // Already added?
+            eqs.push(eq);
+        }
+    }
+};
+
+/**
+ * Runs the search algorithm, starting at a root node. The resulting bodies and equations will be stored in the provided arrays.
+ * @method bfs
+ * @param  {IslandNode} root The node to start from
+ * @param  {Array} bds  An array to append resulting Bodies to.
+ * @param  {Array} eqs  An array to append resulting Equations to.
+ */
+IslandManager.prototype.bfs = function(root,bds,eqs){
+
+    // Reset the visit queue
+    var queue = this.queue;
+    queue.length = 0;
+
+    // Add root node to queue
+    queue.push(root);
+    root.visited = true;
+    this.visit(root,bds,eqs);
+
+    // Process all queued nodes
+    while(queue.length) {
+
+        // Get next node in the queue
+        var node = queue.pop();
+
+        // Visit unvisited neighboring nodes
+        var child;
+        while((child = IslandManager.getUnvisitedNode(node.neighbors))) {
+            child.visited = true;
+            this.visit(child,bds,eqs);
+
+            // Only visit the children of this node if it's dynamic
+            if(child.body.motionState === Body.DYNAMIC){
+                queue.push(child);
+            }
+        }
+    }
+};
+
+/**
+ * Split the world into independent islands. The result is stored in .islands.
+ * @method split
+ * @param  {World} world
+ * @return {Array} The generated islands
+ */
+IslandManager.prototype.split = function(world){
+    var bodies = world.bodies,
+        nodes = this.nodes,
+        equations = this.equations;
+
+    // Move old nodes to the node pool
+    while(nodes.length){
+        this._nodePool.push(nodes.pop());
+    }
+
+    // Create needed nodes, reuse if possible
+    for(var i=0; i!==bodies.length; i++){
+        if(this._nodePool.length){
+            var node = this._nodePool.pop();
+            node.reset();
+            node.body = bodies[i];
+            nodes.push(node);
+        } else {
+            nodes.push(new IslandNode(bodies[i]));
+        }
+    }
+
+    // Add connectivity data. Each equation connects 2 bodies.
+    for(var k=0; k!==equations.length; k++){
+        var eq=equations[k],
+            i=bodies.indexOf(eq.bi),
+            j=bodies.indexOf(eq.bj),
+            ni=nodes[i],
+            nj=nodes[j];
+        ni.neighbors.push(nj);
+        nj.neighbors.push(ni);
+        ni.equations.push(eq);
+        nj.equations.push(eq);
+    }
+
+    // Move old islands to the island pool
+    var islands = this.islands;
+    while(islands.length){
+        var island = islands.pop();
+        island.reset();
+        this._islandPool.push(island);
+    }
+
+    // Get islands
+    var child;
+    while((child = IslandManager.getUnvisitedNode(nodes))){
+
+        // Create new island
+        var island = this._islandPool.length ? this._islandPool.pop() : new Island();
+
+        // Get all equations and bodies in this island
+        this.bfs(child, island.bodies, island.equations);
+
+        islands.push(island);
+    }
+
+    return islands;
+};
+
+},{"../math/vec2":18,"./Island":45,"./IslandNode":46,"../objects/Body":6}],47:[function(require,module,exports){
 var vec2 = require('../math/vec2')
 ,   Utils = require('../utils/Utils')
 
@@ -8338,7 +9213,7 @@ AABB.prototype.overlaps = function(aabb){
            ((l2[1] <= u1[1] && u1[1] <= u2[1]) || (l1[1] <= u2[1] && u2[1] <= u1[1]));
 };
 
-},{"../math/vec2":18,"../utils/Utils":33}],35:[function(require,module,exports){
+},{"../math/vec2":18,"../utils/Utils":33}],36:[function(require,module,exports){
 var mat2 = require('../math/mat2')
 ,   vec2 = require('../math/vec2')
 ,   Equation = require('./Equation')
@@ -8450,7 +9325,7 @@ FrictionEquation.prototype.computeB = function(a,b,h){
     return B;
 };
 
-},{"../math/mat2":45,"../math/vec2":18,"./Equation":37,"../utils/Utils":33}],37:[function(require,module,exports){
+},{"../math/mat2":48,"../math/vec2":18,"./Equation":38,"../utils/Utils":33}],38:[function(require,module,exports){
 module.exports = Equation;
 
 var vec2 = require('../math/vec2'),
@@ -8516,6 +9391,7 @@ function Equation(bi,bj,minForce,maxForce){
      * @type {Array}
      */
     this.G = new Utils.ARRAY_TYPE(6);
+    for(var i=0; i<6; i++) this.G[i]=0;
 
     // Constraint frames for body i and j
     /*
@@ -8796,7 +9672,7 @@ Equation.prototype.computeInvC = function(eps){
     return 1.0 / (this.computeGiMGt() + eps);
 };
 
-},{"../math/vec2":18,"../math/mat2":45,"../utils/Utils":33}],38:[function(require,module,exports){
+},{"../math/vec2":18,"../math/mat2":48,"../utils/Utils":33}],39:[function(require,module,exports){
 var Equation = require("./Equation"),
     vec2 = require('../math/vec2');
 
@@ -8830,7 +9706,7 @@ RotationalVelocityEquation.prototype.computeB = function(a,b,h){
     return B;
 };
 
-},{"./Equation":37,"../math/vec2":18}],39:[function(require,module,exports){
+},{"./Equation":38,"../math/vec2":18}],40:[function(require,module,exports){
 var Equation = require("./Equation"),
     vec2 = require('../math/vec2');
 
@@ -8869,7 +9745,7 @@ RotationalLockEquation.prototype.computeGq = function(){
     return vec2.dot(worldVectorA,worldVectorB);
 };
 
-},{"./Equation":37,"../math/vec2":18}],40:[function(require,module,exports){
+},{"./Equation":38,"../math/vec2":18}],41:[function(require,module,exports){
 var Equation = require("./Equation"),
     vec2 = require('../math/vec2'),
     mat2 = require('../math/mat2');
@@ -8975,8 +9851,8 @@ ContactEquation.prototype.computeB = function(a,b,h){
         Gq = 0;
         GW = (1/b)*(1+this.restitution) * this.computeGW();
     } else {
-        GW = this.computeGW();
         Gq = vec2.dot(n,penetrationVec);
+        GW = this.computeGW();
     }
 
     var GiMf = this.computeGiMf();
@@ -8985,7 +9861,7 @@ ContactEquation.prototype.computeB = function(a,b,h){
     return B;
 };
 
-},{"./Equation":37,"../math/vec2":18,"../math/mat2":45}],41:[function(require,module,exports){
+},{"./Equation":38,"../math/vec2":18,"../math/mat2":48}],42:[function(require,module,exports){
 var Equation = require("./Equation"),
     vec2 = require('../math/vec2');
 
@@ -9024,7 +9900,7 @@ AngleLockEquation.prototype.setRatio = function(ratio){
     this.ratio = ratio;
 };
 
-},{"./Equation":37,"../math/vec2":18}],42:[function(require,module,exports){
+},{"./Equation":38,"../math/vec2":18}],43:[function(require,module,exports){
 'use strict';
 
 var Validator = module.exports.Validator = require('./validator');
@@ -9038,7 +9914,55 @@ module.exports.validate = function (instance, schema, options) {
   return v.validate(instance, schema, options);
 };
 
-},{"./validator":46,"./helpers":47}],6:[function(require,module,exports){
+},{"./validator":49,"./helpers":50}],46:[function(require,module,exports){
+module.exports = IslandNode;
+
+/**
+ * Holds a body and keeps track of some additional properties needed for graph traversal.
+ * @class IslandNode
+ * @constructor
+ * @param {Body} body
+ */
+function IslandNode(body){
+
+	/**
+	 * The body that is contained in this node.
+	 * @property {Body}
+	 */
+    this.body = body;
+
+    /**
+     * Neighboring IslandNodes
+     * @property {Array} neighbors
+     */
+    this.neighbors = [];
+
+    /**
+     * Equations connected to this node.
+     * @property {Array} equations
+     */
+    this.equations = [];
+
+    /**
+     * If this node was visiting during the graph traversal.
+     * @property visited
+     * @type {Boolean}
+     */
+    this.visited = false;
+}
+
+/**
+ * Clean this node from bodies and equations.
+ * @method reset
+ */
+IslandNode.prototype.reset = function(){
+    this.equations.length = 0;
+    this.neighbors.length = 0;
+    this.visited = false;
+    this.body = null;
+};
+
+},{}],6:[function(require,module,exports){
 var vec2 = require('../math/vec2')
 ,   decomp = require('poly-decomp')
 ,   Convex = require('../shapes/Convex')
@@ -9056,11 +9980,11 @@ module.exports = Body;
  * @extends {EventEmitter}
  * @param {Object}              [options]
  * @param {Number}              [options.mass=0]    A number >= 0. If zero, the .motionState will be set to Body.STATIC.
- * @param {Float32Array|Array}  [options.position]
- * @param {Float32Array|Array}  [options.velocity]
+ * @param {Array}               [options.position]
+ * @param {Array}               [options.velocity]
  * @param {Number}              [options.angle=0]
  * @param {Number}              [options.angularVelocity=0]
- * @param {Float32Array|Array}  [options.force]
+ * @param {Array}               [options.force]
  * @param {Number}              [options.angularForce=0]
  * @param {Number}              [options.fixedRotation=false]
  */
@@ -9094,7 +10018,7 @@ function Body(options){
 
     /**
      * The local shape offsets, relative to the body center of mass. This is an
-     * array of Float32Array.
+     * array of Array.
      * @property shapeOffsets
      * @type {Array}
      */
@@ -9142,8 +10066,6 @@ function Body(options){
      */
     this.fixedRotation = !!options.fixedRotation || false;
 
-    this.updateMassProperties();
-
     /**
      * The position of the body
      * @property position
@@ -9162,125 +10084,173 @@ function Body(options){
     /**
      * The velocity of the body
      * @property velocity
-     * @type {Float32Array}
+     * @type {Array}
      */
     this.velocity = vec2.fromValues(0,0);
-    if(options.velocity) vec2.copy(this.velocity, options.velocity);
+    if(options.velocity){
+        vec2.copy(this.velocity, options.velocity);
+    }
 
     /**
      * Constraint velocity that was added to the body during the last step.
      * @property vlambda
-     * @type {Float32Array}
+     * @type {Array}
      */
     this.vlambda = vec2.fromValues(0,0);
 
     /**
      * Angular constraint velocity that was added to the body during last step.
      * @property wlambda
-     * @type {Float32Array}
+     * @type {Array}
      */
     this.wlambda = 0;
 
     /**
-     * The angle of the body
+     * The angle of the body, in radians.
      * @property angle
      * @type {number}
+     * @example
+     *     // The angle property is not normalized to the interval 0 to 2*pi, it can be any value.
+     *     // If you need a value between 0 and 2*pi, use the following function to normalize it.
+     *     function normalizeAngle(angle){
+     *         angle = angle % (2*Math.PI);
+     *         if(angle < 0){
+     *             angle += (2*Math.PI);
+     *         }
+     *         return angle;
+     *     }
      */
     this.angle = options.angle || 0;
 
     /**
-     * The angular velocity of the body
+     * The angular velocity of the body, in radians per second.
      * @property angularVelocity
      * @type {number}
      */
     this.angularVelocity = options.angularVelocity || 0;
 
     /**
-     * The force acting on the body
+     * The force acting on the body. Since the body force (and {{#crossLink "Body/angularForce:property"}}{{/crossLink}}) will be zeroed after each step, so you need to set the force before each step.
      * @property force
-     * @type {Float32Array}
+     * @type {Array}
+     *
+     * @example
+     *     // This produces a forcefield of 1 Newton in the positive x direction.
+     *     for(var i=0; i<numSteps; i++){
+     *         body.force[0] = 1;
+     *         world.step(1/60);
+     *     }
+     *
+     * @example
+     *     // This will apply a rotational force on the body
+     *     for(var i=0; i<numSteps; i++){
+     *         body.angularForce = -3;
+     *         world.step(1/60);
+     *     }
      */
     this.force = vec2.create();
     if(options.force) vec2.copy(this.force, options.force);
 
     /**
-     * The angular force acting on the body
+     * The angular force acting on the body. See {{#crossLink "Body/force:property"}}{{/crossLink}}.
      * @property angularForce
      * @type {number}
      */
     this.angularForce = options.angularForce || 0;
 
     /**
-     * The linear damping acting on the body in the velocity direction
+     * The linear damping acting on the body in the velocity direction. Should be a value between 0 and 1.
      * @property damping
      * @type {Number}
+     * @default 0.1
      */
     this.damping = typeof(options.damping)=="number" ? options.damping : 0.1;
 
     /**
-     * The angular force acting on the body
+     * The angular force acting on the body. Should be a value between 0 and 1.
      * @property angularDamping
      * @type {Number}
+     * @default 0.1
      */
     this.angularDamping = typeof(options.angularDamping)=="number" ? options.angularDamping : 0.1;
 
     /**
-     * The type of motion this body has. Should be one of: Body.STATIC (the body
-     * does not move), Body.DYNAMIC (body can move and respond to collisions)
-     * and Body.KINEMATIC (only moves according to its .velocity).
+     * The type of motion this body has. Should be one of: {{#crossLink "Body/STATIC:property"}}Body.STATIC{{/crossLink}}, {{#crossLink "Body/DYNAMIC:property"}}Body.DYNAMIC{{/crossLink}} and {{#crossLink "Body/KINEMATIC:property"}}Body.KINEMATIC{{/crossLink}}.
+     *
+     * * Static bodies do not move, and they do not respond to forces or collision.
+     * * Dynamic bodies body can move and respond to collisions and forces.
+     * * Kinematic bodies only moves according to its .velocity, and does not respond to collisions or force.
      *
      * @property motionState
      * @type {number}
      *
      * @example
      *     // This body will move and interact with other bodies
-     *     var dynamicBody = new Body();
-     *     dynamicBody.motionState = Body.DYNAMIC;
+     *     var dynamicBody = new Body({
+     *         mass : 1  // If mass is nonzero, the body becomes dynamic automatically
+     *     });
+     *     dynamicBody.motionState == Body.DYNAMIC // true
      *
      * @example
      *     // This body will not move at all
-     *     var staticBody = new Body();
-     *     staticBody.motionState = Body.STATIC;
+     *     var staticBody = new Body({
+     *         mass : 0 // Will make the body static
+     *     });
+     *     staticBody.motionState == Body.STATIC // true
      *
      * @example
      *     // This body will only move if you change its velocity
      *     var kinematicBody = new Body();
      *     kinematicBody.motionState = Body.KINEMATIC;
      */
-    this.motionState = this.mass == 0 ? Body.STATIC : Body.DYNAMIC;
+    this.motionState = this.mass === 0 ? Body.STATIC : Body.DYNAMIC;
 
     /**
-     * Bounding circle radius
+     * Bounding circle radius.
      * @property boundingRadius
      * @type {Number}
      */
     this.boundingRadius = 0;
 
     /**
-     * Bounding box of this body
+     * Bounding box of this body.
      * @property aabb
      * @type {AABB}
      */
     this.aabb = new AABB();
 
     /**
-     * Indicates if the AABB needs update. Update it with .updateAABB()
+     * Indicates if the AABB needs update. Update it with {{#crossLink "Body/updateAABB:method"}}.updateAABB(){{/crossLink}}.
      * @property aabbNeedsUpdate
      * @type {Boolean}
+     * @see updateAABB
+     *
+     * @example
+     *     // Force update the AABB
+     *     body.aabbNeedsUpdate = true;
+     *     body.updateAABB();
+     *     console.log(body.aabbNeedsUpdate); // false
      */
     this.aabbNeedsUpdate = true;
 
     /**
-     * If true, the body will automatically fall to sleep.
+     * If true, the body will automatically fall to sleep. Note that you need to enable sleeping in the {{#crossLink "World"}}{{/crossLink}} before anything will happen.
      * @property allowSleep
      * @type {Boolean}
+     * @default true
      */
-    this.allowSleep = false;
+    this.allowSleep = true;
+
+    this.wantsToSleep = false;
 
     /**
-     * One of Body.AWAKE, Body.SLEEPY, Body.SLEEPING
+     * One of {{#crossLink "Body/AWAKE:property"}}Body.AWAKE{{/crossLink}}, {{#crossLink "Body/SLEEPY:property"}}Body.SLEEPY{{/crossLink}} and {{#crossLink "Body/SLEEPING:property"}}Body.SLEEPING{{/crossLink}}.
+     *
+     * The body is initially Body.AWAKE. If its velocity norm is below .sleepSpeedLimit, the sleepState will become Body.SLEEPY. If the body continues to be Body.SLEEPY for .sleepTimeLimit seconds, it will fall asleep (Body.SLEEPY).
+     *
      * @property sleepState
      * @type {Number}
+     * @default Body.AWAKE
      */
     this.sleepState = Body.AWAKE;
 
@@ -9288,6 +10258,7 @@ function Body(options){
      * If the speed (the norm of the velocity) is smaller than this value, the body is considered sleepy.
      * @property sleepSpeedLimit
      * @type {Number}
+     * @default 0.1
      */
     this.sleepSpeedLimit = 0.1;
 
@@ -9295,15 +10266,22 @@ function Body(options){
      * If the body has been sleepy for this sleepTimeLimit seconds, it is considered sleeping.
      * @property sleepTimeLimit
      * @type {Number}
+     * @default 1
      */
     this.sleepTimeLimit = 1;
 
     /**
      * Gravity scaling factor. If you want the body to ignore gravity, set this to zero. If you want to reverse gravity, set it to -1.
      * @property {Number} gravityScale
+     * @default 1
      */
     this.gravityScale = 1;
 
+    /**
+     * The last time when the body went to SLEEPY state.
+     * @property {Number} timeLastSleepy
+     * @private
+     */
     this.timeLastSleepy = 0;
 
     this.concavePath = null;
@@ -9311,7 +10289,9 @@ function Body(options){
     this.lastDampingScale = 1;
     this.lastAngularDampingScale = 1;
     this.lastDampingTimeStep = -1;
-};
+
+    this.updateMassProperties();
+}
 Body.prototype = new EventEmitter();
 
 Body._idCounter = 0;
@@ -9328,7 +10308,8 @@ Body.prototype.setDensity = function(density) {
 
 /**
  * Get the total area of all shapes in the body
- * @method setDensity
+ * @method getArea
+ * @return {Number}
  */
 Body.prototype.getArea = function() {
     var totalArea = 0;
@@ -9387,8 +10368,9 @@ Body.prototype.updateBoundingRadius = function(){
         var shape = shapes[i],
             offset = vec2.length(shapeOffsets[i]),
             r = shape.boundingRadius;
-        if(offset + r > radius)
+        if(offset + r > radius){
             radius = offset + r;
+        }
     }
 
     this.boundingRadius = radius;
@@ -9401,7 +10383,7 @@ Body.prototype.updateBoundingRadius = function(){
  *
  * @method addShape
  * @param  {Shape}              shape
- * @param  {Float32Array|Array} [offset] Local body offset of the shape.
+ * @param  {Array} [offset] Local body offset of the shape.
  * @param  {Number}             [angle]  Local body angle.
  *
  * @example
@@ -9445,15 +10427,15 @@ Body.prototype.addShape = function(shape,offset,angle){
 Body.prototype.removeShape = function(shape){
     var idx = this.shapes.indexOf(shape);
 
-    if(idx != -1){
+    if(idx !== -1){
         this.shapes.splice(idx,1);
         this.shapeOffsets.splice(idx,1);
         this.shapeAngles.splice(idx,1);
         this.aabbNeedsUpdate = true;
         return true;
-    } else
+    } else {
         return false;
-
+    }
 };
 
 /**
@@ -9467,25 +10449,38 @@ Body.prototype.removeShape = function(shape){
  *     body.updateMassProperties();
  */
 Body.prototype.updateMassProperties = function(){
-    var shapes = this.shapes,
-        N = shapes.length,
-        m = this.mass / N,
-        I = 0;
+    if(this.motionState === Body.STATIC || this.motionState === Body.KINEMATIC){
 
-    if(!this.fixedRotation){
-        for(var i=0; i<N; i++){
-            var shape = shapes[i],
-                r2 = vec2.squaredLength(this.shapeOffsets[i]),
-                Icm = shape.computeMomentOfInertia(m);
-            I += Icm + m*r2;
+        this.mass = Number.MAX_VALUE;
+        this.invMass = 0;
+        this.inertia = Number.MAX_VALUE;
+        this.invInertia = 0;
+
+    } else {
+
+        var shapes = this.shapes,
+            N = shapes.length,
+            m = this.mass / N,
+            I = 0;
+
+        if(!this.fixedRotation){
+            for(var i=0; i<N; i++){
+                var shape = shapes[i],
+                    r2 = vec2.squaredLength(this.shapeOffsets[i]),
+                    Icm = shape.computeMomentOfInertia(m);
+                I += Icm + m*r2;
+            }
+            this.inertia = I;
+            this.invInertia = I>0 ? 1/I : 0;
+
+        } else {
+            this.inertia = Number.MAX_VALUE;
+            this.invInertia = 0;
         }
+
+        // Inverse mass properties are easy
+        this.invMass = 1/this.mass;// > 0 ? 1/this.mass : 0;
     }
-
-    this.inertia = I;
-
-    // Inverse mass properties are easy
-    this.invMass = this.mass > 0 ? 1/this.mass : 0;
-    this.invInertia = I>0 ? 1/I : 0;
 };
 
 var Body_applyForce_r = vec2.create();
@@ -9493,8 +10488,8 @@ var Body_applyForce_r = vec2.create();
 /**
  * Apply force to a world point. This could for example be a point on the RigidBody surface. Applying force this way will add to Body.force and Body.angularForce.
  * @method applyForce
- * @param {Float32Array} force The force to add.
- * @param {Float32Array} worldPoint A world point to apply the force on.
+ * @param {Array} force The force to add.
+ * @param {Array} worldPoint A world point to apply the force on.
  */
 Body.prototype.applyForce = function(force,worldPoint){
     // Compute point position relative to the body center
@@ -9514,8 +10509,8 @@ Body.prototype.applyForce = function(force,worldPoint){
 /**
  * Transform a world point to local body frame.
  * @method toLocalFrame
- * @param  {Float32Array|Array} out          The vector to store the result in
- * @param  {Float32Array|Array} worldPoint   The input world vector
+ * @param  {Array} out          The vector to store the result in
+ * @param  {Array} worldPoint   The input world vector
  */
 Body.prototype.toLocalFrame = function(out, worldPoint){
     vec2.toLocalFrame(out, worldPoint, this.position, this.angle);
@@ -9685,10 +10680,10 @@ Body.prototype.addConstraintVelocity = function(){
  * @param  {number} dt Current time step
  */
 Body.prototype.applyDamping = function(dt){
-    if(this.motionState == Body.DYNAMIC){ // Only for dynamic bodies
+    if(this.motionState === Body.DYNAMIC){ // Only for dynamic bodies
 
         // Since Math.pow generates garbage we check if we can reuse the scaling coefficient from last step
-        if(dt != this.lastDampingTimeStep){
+        if(dt !== this.lastDampingTimeStep){
             this.lastDampingScale =         Math.pow(1.0 - this.damping,dt);
             this.lastAngularDampingScale =  Math.pow(1.0 - this.angularDamping,dt);
             this.lastDampingTimeStep = dt;
@@ -9701,8 +10696,10 @@ Body.prototype.applyDamping = function(dt){
 };
 
 /**
+ * Wake the body up. Normally you should not need this, as the body is automatically awoken at events such as collisions.
+ * Sets the sleepState to {{#crossLink "Body/AWAKE:property"}}Body.AWAKE{{/crossLink}} and emits the wakeUp event if the body wasn't awake before.
  * @method wakeUp
- * @brief Wake the body up.
+ * @fires wakeup
  */
 Body.prototype.wakeUp = function(){
     var s = this.sleepState;
@@ -9726,9 +10723,12 @@ Body.prototype.sleep = function(){
  * @param float time The world time in seconds
  * @brief Called every timestep to update internal sleep timer and change sleep state if needed.
  */
-Body.prototype.sleepTick = function(time){
-    if(!this.allowSleep)
+Body.prototype.sleepTick = function(time, dontSleep){
+    if(!this.allowSleep){
         return;
+    }
+
+    this.wantsToSleep = false;
 
     var sleepState = this.sleepState,
         speedSquared = vec2.squaredLength(this.velocity) + Math.pow(this.angularVelocity,2),
@@ -9740,7 +10740,10 @@ Body.prototype.sleepTick = function(time){
     } else if(sleepState===Body.SLEEPY && speedSquared > speedLimitSquared){
         this.wakeUp(); // Wake up
     } else if(sleepState===Body.SLEEPY && (time - this.timeLastSleepy ) > this.sleepTimeLimit){
-        this.sleep();
+        this.wantsToSleep = true;
+        if(!dontSleep){
+            this.sleep();
+        }
     }
 };
 
@@ -9811,7 +10814,7 @@ Body.SLEEPY = 1;
 Body.SLEEPING = 2;
 
 
-},{"../math/vec2":18,"../shapes/Convex":14,"../collision/AABB":44,"../events/EventEmitter":31,"poly-decomp":48}],14:[function(require,module,exports){
+},{"../math/vec2":18,"../shapes/Convex":14,"../collision/AABB":47,"../events/EventEmitter":31,"poly-decomp":51}],14:[function(require,module,exports){
 var Shape = require('./Shape')
 ,   vec2 = require('../math/vec2')
 ,   polyk = require('../math/polyk')
@@ -10042,7 +11045,7 @@ Convex.prototype.computeAABB = function(out, position, angle){
    out.setFromPoints(this.vertices,position,angle);
 };
 
-},{"./Shape":9,"../math/vec2":18,"../math/polyk":43,"poly-decomp":48}],47:[function(require,module,exports){
+},{"./Shape":9,"../math/vec2":18,"../math/polyk":44,"poly-decomp":51}],50:[function(require,module,exports){
 'use strict';
 
 var uri = require('url');
@@ -10306,7 +11309,7 @@ exports.encodePath = function encodePointer(a){
 	return a.map(function(v){ return '/'+encodeURIComponent(v).replace(/~/g,'%7E'); }).join('');
 }
 
-},{"url":49}],49:[function(require,module,exports){
+},{"url":52}],52:[function(require,module,exports){
 var punycode = { encode : function (s) { return s } };
 
 exports.parse = urlParse;
@@ -10912,7 +11915,85 @@ function parseHost(host) {
   return out;
 }
 
-},{"querystring":50}],45:[function(require,module,exports){
+},{"querystring":53}],45:[function(require,module,exports){
+var Body = require('../objects/Body');
+
+module.exports = Island;
+
+/**
+ * An island of bodies connected with equations.
+ * @class Island
+ * @constructor
+ */
+function Island(){
+
+    /**
+     * Current equations in this island.
+     * @property equations
+     * @type {Array}
+     */
+    this.equations = [];
+
+    /**
+     * Current bodies in this island.
+     * @property bodies
+     * @type {Array}
+     */
+    this.bodies = [];
+}
+
+/**
+ * Clean this island from bodies and equations.
+ * @method reset
+ */
+Island.prototype.reset = function(){
+    this.equations.length = this.bodies.length = 0;
+};
+
+var bodyIds = [];
+
+/**
+ * Get all unique bodies in this island.
+ * @method getBodies
+ * @return {Array} An array of Body
+ */
+Island.prototype.getBodies = function(result){
+    var bodies = result || [],
+        eqs = this.equations;
+    bodyIds.length = 0;
+    for(var i=0; i!==eqs.length; i++){
+        var eq = eqs[i];
+        if(bodyIds.indexOf(eq.bi.id)===-1){
+            bodies.push(eq.bi);
+            bodyIds.push(eq.bi.id);
+        }
+        if(bodyIds.indexOf(eq.bj.id)===-1){
+            bodies.push(eq.bj);
+            bodyIds.push(eq.bj.id);
+        }
+    }
+    return bodies;
+};
+
+Island.prototype.wantsToSleep = function(){
+    for(var i=0; i<this.bodies.length; i++){
+        var b = this.bodies[i];
+        if(b.motionState === Body.DYNAMIC && !b.wantsToSleep){
+            return false;
+        }
+    }
+    return true;
+};
+
+Island.prototype.sleep = function(){
+    for(var i=0; i<this.bodies.length; i++){
+        var b = this.bodies[i];
+        b.sleep();
+    }
+    return true;
+};
+
+},{"../objects/Body":6}],48:[function(require,module,exports){
 /**
  * The mat2 object from glMatrix, extended with the functions documented here. See http://glmatrix.net for full doc.
  * @class mat2
@@ -10924,7 +12005,7 @@ var mat2 = require('../../node_modules/gl-matrix/src/gl-matrix/mat2').mat2;
 // Export everything
 module.exports = mat2;
 
-},{"../../node_modules/gl-matrix/src/gl-matrix/mat2":51}],46:[function(require,module,exports){
+},{"../../node_modules/gl-matrix/src/gl-matrix/mat2":54}],49:[function(require,module,exports){
 'use strict';
 
 var urilib = require('url');
@@ -11234,7 +12315,7 @@ types.object = function testObject (instance) {
 
 module.exports = Validator;
 
-},{"url":49,"./attribute":52,"./helpers":47}],50:[function(require,module,exports){
+},{"url":52,"./attribute":55,"./helpers":50}],53:[function(require,module,exports){
 
 /**
  * Object#toString() ref for stringify().
@@ -11553,13 +12634,13 @@ function decode(str) {
   }
 }
 
-},{}],48:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 module.exports = {
     Polygon : require("./Polygon"),
     Point : require("./Point"),
 };
 
-},{"./Polygon":53,"./Point":54}],51:[function(require,module,exports){
+},{"./Polygon":56,"./Point":57}],54:[function(require,module,exports){
 /* Copyright (c) 2012, Brandon Jones, Colin MacKenzie IV. All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -11802,7 +12883,7 @@ if(typeof(exports) !== 'undefined') {
     exports.mat2 = mat2;
 }
 
-},{}],54:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 module.exports = Point;
 
 /**
@@ -11878,7 +12959,7 @@ Point.sqdist = function(a,b){
     return dx * dx + dy * dy;
 };
 
-},{}],52:[function(require,module,exports){
+},{}],55:[function(require,module,exports){
 'use strict';
 
 var helpers = require('./helpers');
@@ -12474,7 +13555,7 @@ validators.not = validators.disallow = function validateNot (instance, schema, o
 
 module.exports = attribute;
 
-},{"./helpers":47}],53:[function(require,module,exports){
+},{"./helpers":50}],56:[function(require,module,exports){
 var Line = require("./Line")
 ,   Point = require("./Point")
 ,   Scalar = require("./Scalar")
@@ -12970,7 +14051,7 @@ Polygon.prototype.removeCollinearPoints = function(precision){
     return num;
 };
 
-},{"./Line":55,"./Point":54,"./Scalar":56}],56:[function(require,module,exports){
+},{"./Line":58,"./Point":57,"./Scalar":59}],59:[function(require,module,exports){
 module.exports = Scalar;
 
 /**
@@ -12993,7 +14074,7 @@ Scalar.eq = function(a,b,precision){
     return Math.abs(a-b) < precision;
 };
 
-},{}],55:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 var Scalar = require('./Scalar');
 
 module.exports = Line;
@@ -13057,6 +14138,6 @@ Line.segmentsIntersect = function(p1, p2, q1, q2){
 };
 
 
-},{"./Scalar":56}]},{},[1])(1)
+},{"./Scalar":59}]},{},[1])(1)
 });
 ;

@@ -22,9 +22,9 @@ module.exports = PrismaticConstraint;
  * @param {Array}   options.localAxisA              An axis, defined in body A frame, that body B's anchor point may slide along.
  * @param {Boolean} options.disableRotationalLock   If set to true, bodyB will be free to rotate around its anchor point.
  */
-function PrismaticConstraint(bodyA,bodyB,options){
+function PrismaticConstraint(bodyA, bodyB, options){
     options = options || {};
-    Constraint.call(this,bodyA,bodyB,Constraint.PRISMATIC);
+    Constraint.call(this,bodyA,bodyB,Constraint.PRISMATIC,options);
 
     // Get anchors
     var localAnchorA = vec2.fromValues(0,0),

@@ -19,18 +19,17 @@
         var world = new p2.World({
             doProfiling : true,
             gravity : [0,-15],
+            islandSplit : true
         });
 
         var N = 10,                         // Number of circles in each rope
             M = 10,                         // Number of ropes
-            r = 0.1,                        // Circle radius
-            subsolver = new p2.GSSolver();  // Solver to use in each subsystem
+            r = 0.1;                        // Circle radius
 
-        world.solver = new p2.IslandSolver(subsolver);
-        subsolver.stiffness = 1e7;
-        subsolver.relaxation = 3;
-        subsolver.tolerance = 0.1;
-        subsolver.iterations = N;
+        world.solver.stiffness = 1e7;
+        world.solver.relaxation = 3;
+        world.solver.tolerance = 0.1;
+        world.solver.iterations = N;
 
         // Create circle ropes
         for(var j=0; j<M; j++){
