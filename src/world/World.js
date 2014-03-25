@@ -1056,6 +1056,20 @@ function extend(a,b){
         a[key] = b[key];
 }
 
+function contactMaterialToJSON(cm){
+    return {
+        id : cm.id,
+        materialA :             cm.materialA.id,
+        materialB :             cm.materialB.id,
+        friction :              cm.friction,
+        restitution :           cm.restitution,
+        stiffness :             cm.stiffness,
+        relaxation :            cm.relaxation,
+        frictionStiffness :     cm.frictionStiffness,
+        frictionRelaxation :    cm.frictionRelaxation,
+    };
+}
+
 /**
  * Convert the world to a JSON-serializable Object.
  *
@@ -1067,21 +1081,24 @@ World.prototype.toJSON = function(){
     var world = this;
 
     var json = {
-        p2 :                    pkg.version,
-        bodies :                [],
-        springs :               [],
-        solver :                {},
-        gravity :               v2a(world.gravity),
-        broadphase :            {},
-        distanceConstraints :   [],
-        revoluteConstraints :   [],
-        prismaticConstraints :  [],
-        lockConstraints :       [],
-        gearConstraints :       [],
-        contactMaterials :      [],
-        materials :             [],
+        p2 :                        pkg.version,
+        bodies :                    [],
+        springs :                   [],
+        solver :                    {},
+        gravity :                   v2a(world.gravity),
+        broadphase :                {},
+        distanceConstraints :       [],
+        revoluteConstraints :       [],
+        prismaticConstraints :      [],
+        lockConstraints :           [],
+        gearConstraints :           [],
+        contactMaterials :          [],
+        materials :                 [],
+        defaultContactMaterial :    contactMaterialToJSON(world.defaultContactMaterial),
+        islandSplit :               world.islandSplit,
+        enableIslandSleeping :      world.enableIslandSleeping,
+        enableBodySleeping :        world.enableBodySleeping,
     };
-
 
     // Solver
     var js = json.solver,
@@ -1125,6 +1142,7 @@ World.prototype.toJSON = function(){
         var jc = {
             bodyA : world.bodies.indexOf(c.bodyA),
             bodyB : world.bodies.indexOf(c.bodyB),
+            collideConnected : c.collideConnected
         };
 
         switch(c.type){
@@ -1255,8 +1273,9 @@ World.prototype.toJSON = function(){
 
             case Shape.CONVEX:
                 var verts = [];
-                for(var k=0; k<s.vertices.length; k++)
+                for(var k=0; k<s.vertices.length; k++){
                     verts.push(v2a(s.vertices[k]));
+                }
                 extend(jsonShape,{ vertices : verts });
                 jsonBody.convexShapes.push(jsonShape);
                 break;
@@ -1278,17 +1297,7 @@ World.prototype.toJSON = function(){
     // Serialize contactmaterials
     for(var i=0; i<world.contactMaterials.length; i++){
         var cm = world.contactMaterials[i];
-        json.contactMaterials.push({
-            id : cm.id,
-            materialA :             cm.materialA.id, // Note: Reference by id!
-            materialB :             cm.materialB.id,
-            friction :              cm.friction,
-            restitution :           cm.restitution,
-            stiffness :             cm.stiffness,
-            relaxation :            cm.relaxation,
-            frictionStiffness :     cm.frictionStiffness,
-            frictionRelaxation :    cm.frictionRelaxation,
-        });
+        json.contactMaterials.push(contactMaterialToJSON(cm));
     }
 
     // Serialize materials
@@ -1328,6 +1337,10 @@ World.prototype.fromJSON = function(json){
     // Set gravity
     vec2.copy(w.gravity, json.gravity);
 
+    w.islandSplit =           json.islandSplit;
+    w.enableIslandSleeping =  json.enableIslandSleeping;
+    w.enableBodySleeping =    json.enableBodySleeping;
+
     // Set solver
     switch(json.solver.type){
     case "GSSolver":
@@ -1365,6 +1378,9 @@ World.prototype.fromJSON = function(json){
         id2material[jm.id+""] = m;
         m.id = jm.id;
     }
+
+    // Load default material
+    w.defaultMaterial.id = json.defaultContactMaterial.materialA;
 
     // Load bodies
     for(var i=0; i!==json.bodies.length; i++){
@@ -1490,23 +1506,37 @@ World.prototype.fromJSON = function(json){
         w.addContactMaterial(cm);
     }
 
+    // Load default contact material
+    var jm = json.defaultContactMaterial,
+        matA = w.defaultMaterial,
+        matB = w.defaultMaterial;
+    var cm = new ContactMaterial(matA, matB, {
+        friction :              jm.friction,
+        restitution :           jm.restitution,
+        stiffness :             jm.stiffness,
+        relaxation :            jm.relaxation,
+        frictionStiffness :     jm.frictionStiffness,
+        frictionRelaxation :    jm.frictionRelaxation,
+    });
+    cm.id = jm.id;
+    w.defaultContactMaterial = cm;
+
     // DistanceConstraint
     for(var i=0; i<json.distanceConstraints.length; i++){
         var c = json.distanceConstraints[i];
-        w.addConstraint(new DistanceConstraint( bodies[c.bodyA],
-                                                bodies[c.bodyB],
-                                                c.distance,
-                                                c.maxForce));
+        w.addConstraint(new DistanceConstraint( bodies[c.bodyA], bodies[c.bodyB], c.distance, {
+            maxForce:c.maxForce,
+            collideConnected:c.collideConnected
+        }));
     }
 
     // RevoluteConstraint
     for(var i=0; i<json.revoluteConstraints.length; i++){
         var c = json.revoluteConstraints[i];
-        var revolute = new RevoluteConstraint(  bodies[c.bodyA],
-                                                c.pivotA,
-                                                bodies[c.bodyB],
-                                                c.pivotB,
-                                                c.maxForce);
+        var revolute = new RevoluteConstraint(bodies[c.bodyA], c.pivotA, bodies[c.bodyB], c.pivotB, {
+            maxForce: c.maxForce,
+            collideConnected: c.collideConnected
+        });
         if(c.motorEnabled){
             revolute.enableMotor();
         }
@@ -1526,6 +1556,7 @@ World.prototype.fromJSON = function(json){
                 localAxisA : c.localAxisA,
                 localAnchorA : c.localAnchorA,
                 localAnchorB : c.localAnchorB,
+                collideConnected: c.collideConnected
             });
         p.motorSpeed = c.motorSpeed;
         w.addConstraint(p);
@@ -1538,6 +1569,7 @@ World.prototype.fromJSON = function(json){
             maxForce :     c.maxForce,
             localOffsetB : c.localOffsetB,
             localAngleB :  c.localAngleB,
+            collideConnected: c.collideConnected
         }));
     }
 
@@ -1548,6 +1580,7 @@ World.prototype.fromJSON = function(json){
             maxForce :      c.maxForce,
             angle :         c.angle,
             ratio :         c.ratio,
+            collideConnected: c.collideConnected
         }));
     }
 
@@ -1562,6 +1595,7 @@ World.prototype.fromJSON = function(json){
 World.prototype.clear = function(){
 
     this.time = 0;
+    this.fixedStepTime = 0;
 
     // Remove all solver equations
     if(this.solver && this.solver.equations.length){
@@ -1591,6 +1625,8 @@ World.prototype.clear = function(){
     for(var i=cms.length-1; i>=0; i--){
         this.removeContactMaterial(cms[i]);
     }
+
+    World.apply(this);
 };
 
 /**

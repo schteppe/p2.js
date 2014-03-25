@@ -12,14 +12,7 @@ module.exports = function(grunt) {
                 options : {
                     standalone : "p2"
                 }
-            },
-            extras : {
-                src : ["src/p2.extras.js"],
-                dest : 'build/p2.extras.js',
-                options : {
-                    standalone : "p2extras"
-                }
-            },
+            }
         },
 
         uglify : {

@@ -123,7 +123,8 @@ function Demo(world){
                     break;
                 case "R": // restart
                     that.removeAllVisuals();
-                    that.world.fromJSON(that.initialState);
+                    var result = that.world.fromJSON(that.initialState);
+                    if(!result) console.warn("Not everything could be loaded from JSON!");
                     /*var result = that.serializer.deserialize(that.initialState,that.world,p2);
                     if(!result)
                         console.error(that.serializer.error,that.serializer.validateResult);*/
