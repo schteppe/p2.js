@@ -18,8 +18,6 @@ module.exports = {
     GridBroadphase :                require('./collision/GridBroadphase'),
     GSSolver :                      require('./solver/GSSolver'),
     Heightfield :                   require('./shapes/Heightfield'),
-    Island :                        require('./solver/IslandSolver'),
-    IslandSolver :                  require('./solver/IslandSolver'),
     Line :                          require('./shapes/Line'),
     LockConstraint :                require('./constraints/LockConstraint'),
     Material :                      require('./material/Material'),

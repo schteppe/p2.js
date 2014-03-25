@@ -114,6 +114,10 @@ The most recent commits are currently pushed to the ```master``` branch. Thanks 
 ### Change log
 
 ##### Current dev version
+* Removed ```IslandSolver``` in favor of the new property ```World.islandSplit```.
+* Changed constructors of the ```Constraints``` so they all take an ```options``` object as last parameter.
+* Added property ```.collideConnected``` to ```Constraint```.
+* Added property ```.islandSplit``` to ```World```.
 * Added methods ```.disableBodyCollision``` and ```.enableBodyCollision``` to ```World```.
 * Added properties ```.useWorldGravityForFrictionApproximation``` and ```.frictionGravity``` to ```World```.
 * Added ```Heightfield``` class.
