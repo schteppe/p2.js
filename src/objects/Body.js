@@ -12,7 +12,7 @@ module.exports = Body;
  *
  * @class Body
  * @constructor
- * @extends {EventEmitter}
+ * @extends EventEmitter
  * @param {Object}              [options]
  * @param {Number}              [options.mass=0]    A number >= 0. If zero, the .motionState will be set to Body.STATIC.
  * @param {Array}               [options.position]

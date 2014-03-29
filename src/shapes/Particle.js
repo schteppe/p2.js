@@ -7,7 +7,7 @@ module.exports = Particle;
  * Particle shape class.
  * @class Particle
  * @constructor
- * @extends {Shape}
+ * @extends Shape
  */
 function Particle(){
     Shape.call(this,Shape.PARTICLE);

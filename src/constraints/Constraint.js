@@ -19,6 +19,7 @@ function Constraint(bodyA, bodyB, type, options){
 
     /**
      * Equations to be solved in this constraint
+     *
      * @property equations
      * @type {Array}
      */

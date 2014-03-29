@@ -11,7 +11,7 @@ module.exports = PrismaticConstraint;
  *
  * @class PrismaticConstraint
  * @constructor
- * @extends {Constraint}
+ * @extends Constraint
  * @author schteppe
  * @param {Body}    bodyA
  * @param {Body}    bodyB

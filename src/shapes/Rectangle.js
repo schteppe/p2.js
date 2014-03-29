@@ -10,7 +10,7 @@ module.exports = Rectangle;
  * @constructor
  * @param {Number} w Width
  * @param {Number} h Height
- * @extends {Convex}
+ * @extends Convex
  */
 function Rectangle(w,h){
     var verts = [   vec2.fromValues(-w/2, -h/2),

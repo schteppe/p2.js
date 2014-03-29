@@ -13,7 +13,7 @@ module.exports = FrictionEquation;
  * @param {Body} bi
  * @param {Body} bj
  * @param {Number} slipForce
- * @extends {Equation}
+ * @extends Equation
  */
 function FrictionEquation(bi,bj,slipForce){
     Equation.call(this,bi,bj,-slipForce,slipForce);

@@ -14,7 +14,7 @@ module.exports = DistanceConstraint;
  * @param {Body} bodyB
  * @param {number} dist The distance to keep between the bodies.
  * @param {number} maxForce
- * @extends {Constraint}
+ * @extends Constraint
  */
 function DistanceConstraint(bodyA,bodyB,distance,options){
     options = options || {};

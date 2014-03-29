@@ -23,7 +23,7 @@ var worldPivotA = vec2.create(),
  * @param {Float32Array}    pivotB See pivotA.
  * @param {Object}          [options]
  * @param {Number}          [options.maxForce] The maximum force that should be applied to constrain the bodies.
- * @extends {Constraint}
+ * @extends Constraint
  * @todo Ability to specify world points
  */
 function RevoluteConstraint(bodyA, pivotA, bodyB, pivotB, options){

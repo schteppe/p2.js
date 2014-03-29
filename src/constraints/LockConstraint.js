@@ -16,7 +16,7 @@ module.exports = LockConstraint;
  * @param {Array}  [options.localOffsetB] The offset of bodyB in bodyA's frame.
  * @param {number} [options.localAngleB]  The angle of bodyB in bodyA's frame.
  * @param {number} [options.maxForce]
- * @extends {Constraint}
+ * @extends Constraint
  */
 function LockConstraint(bodyA, bodyB, options){
     options = options || {};

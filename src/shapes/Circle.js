@@ -6,7 +6,7 @@ module.exports = Circle;
 /**
  * Circle shape class.
  * @class Circle
- * @extends {Shape}
+ * @extends Shape
  * @constructor
  * @param {number} [radius=1] The radius of this circle
  */

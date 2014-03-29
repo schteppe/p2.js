@@ -7,7 +7,7 @@ module.exports = Solver;
  * Base class for constraint solvers.
  * @class Solver
  * @constructor
- * @extends {EventEmitter}
+ * @extends EventEmitter
  */
 function Solver(options,type){
     options = options || {};

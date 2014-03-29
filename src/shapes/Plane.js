@@ -7,7 +7,7 @@ module.exports = Plane;
 /**
  * Plane shape class. The plane is facing in the Y direction.
  * @class Plane
- * @extends {Shape}
+ * @extends Shape
  * @constructor
  */
 function Plane(){

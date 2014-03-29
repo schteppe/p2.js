@@ -54,7 +54,7 @@ if(!performance.now){
  * @param {Broadphase}      options.broadphase      Defaults to NaiveBroadphase
  * @param {Boolean}         options.islandSplit
  * @param {Boolean}         options.doProfiling
- * @extends {EventEmitter}
+ * @extends EventEmitter
  */
 function World(options){
     EventEmitter.apply(this);

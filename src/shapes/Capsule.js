@@ -7,7 +7,7 @@ module.exports = Capsule;
  * Capsule shape class.
  * @class Capsule
  * @constructor
- * @extends {Shape}
+ * @extends Shape
  * @param {Number} length The distance between the end points
  * @param {Number} radius Radius of the capsule
  */

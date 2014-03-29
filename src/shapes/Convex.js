@@ -9,7 +9,7 @@ module.exports = Convex;
  * Convex shape class.
  * @class Convex
  * @constructor
- * @extends {Shape}
+ * @extends Shape
  * @param {Array} vertices An array of Float32Array vertices that span this shape. Vertices are given in counter-clockwise (CCW) direction.
  */
 function Convex(vertices){

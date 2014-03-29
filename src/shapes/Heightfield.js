@@ -6,7 +6,7 @@ module.exports = Heightfield;
 /**
  * Heightfield shape class. Height data is given as an array. These data points are spread out evenly with a distance "elementWidth".
  * @class Heightfield
- * @extends {Shape}
+ * @extends Shape
  * @constructor
  */
 function Heightfield(data,maxValue,elementWidth){
