@@ -94,8 +94,31 @@ function LockConstraint(bodyA, bodyB, options){
     this.localAngleB =  localAngleB;
 
     this.equations.push(x, y, rot);
+    this.setMaxForce(maxForce);
 }
 LockConstraint.prototype = new Constraint();
+
+/**
+ * Set the maximum force to be applied.
+ * @method setMaxForce
+ * @param {Number} force
+ */
+LockConstraint.prototype.setMaxForce = function(force){
+    var eqs = this.equations;
+    for(var i=0; i<this.equations.length; i++){
+        eqs[i].maxForce =  force;
+        eqs[i].minForce = -force;
+    }
+};
+
+/**
+ * Get the max force.
+ * @method getMaxForce
+ * @return {Number}
+ */
+LockConstraint.prototype.getMaxForce = function(){
+    return this.equations[0].maxForce;
+};
 
 var l = vec2.create();
 var r = vec2.create();

@@ -1199,7 +1199,7 @@ World.prototype.toJSON = function(){
             extend(jc,{
                 localOffsetB :  v2a(c.localOffsetB),
                 localAngleB :   c.localAngleB,
-                maxForce :      c.maxForce,
+                maxForce :      c.getMaxForce(),
             });
             json.lockConstraints.push(jc);
             break;
