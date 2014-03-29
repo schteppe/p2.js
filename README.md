@@ -114,6 +114,7 @@ The most recent commits are currently pushed to the ```master``` branch. Thanks 
 ### Change log
 
 ##### Current dev version
+* Changed property names ```.bi```, ```.bj```, ```.ni```, ```.ri```, ```.rj``` to ```.bodyA```, ```.bodyB```, ```.normalA```, ```.contactPointA```, ```.contactPointB``` in ```Equation```, ```ContactEquation``` and ```FrictionEquation``` classes.
 * Removed ```IslandSolver``` in favor of the new property ```World.islandSplit```.
 * Changed constructors of the ```Constraints``` so they all take an ```options``` object as last parameter.
 * Added property ```.collideConnected``` to ```Constraint```.
