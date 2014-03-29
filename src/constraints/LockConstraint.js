@@ -55,23 +55,24 @@ function LockConstraint(bodyA, bodyB, options){
         rot =   new Equation(bodyA,bodyB,-maxForce,maxForce);
 
     var l = vec2.create(),
-        g = vec2.create();
+        g = vec2.create(),
+        that = this;
     x.computeGq = function(){
-        vec2.rotate(l,localOffsetB,bodyA.angle);
-        vec2.sub(g,bodyB.position,bodyA.position);
-        vec2.sub(g,g,l);
+        vec2.rotate(l, that.localOffsetB, bodyA.angle);
+        vec2.sub(g, bodyB.position, bodyA.position);
+        vec2.sub(g, g, l);
         return g[0];
-    }
+    };
     y.computeGq = function(){
-        vec2.rotate(l,localOffsetB,bodyA.angle);
-        vec2.sub(g,bodyB.position,bodyA.position);
-        vec2.sub(g,g,l);
+        vec2.rotate(l, that.localOffsetB, bodyA.angle);
+        vec2.sub(g, bodyB.position, bodyA.position);
+        vec2.sub(g, g, l);
         return g[1];
     };
     var r = vec2.create(),
         t = vec2.create();
     rot.computeGq = function(){
-        vec2.rotate(r,localOffsetB,bodyB.angle - localAngleB);
+        vec2.rotate(r, that.localOffsetB, bodyB.angle - that.localAngleB);
         vec2.scale(r,r,-1);
         vec2.sub(g,bodyA.position,bodyB.position);
         vec2.add(g,g,r);
@@ -80,11 +81,19 @@ function LockConstraint(bodyA, bodyB, options){
         return vec2.dot(g,t);
     };
 
+    /**
+     * The offset of bodyB in bodyA's frame.
+     * @property {Array} localOffsetB
+     */
     this.localOffsetB = localOffsetB;
-    this.localAngleB =  localAngleB;
-    this.maxForce = maxForce;
 
-    var eqs = this.equations = [ x, y, rot ];
+    /**
+     * The offset angle of bodyB in bodyA's frame.
+     * @property {Number} localAngleB
+     */
+    this.localAngleB =  localAngleB;
+
+    this.equations.push(x, y, rot);
 }
 LockConstraint.prototype = new Constraint();
 

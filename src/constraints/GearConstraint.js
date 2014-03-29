@@ -65,3 +65,12 @@ GearConstraint.prototype.update = function(){
 GearConstraint.prototype.setMaxTorque = function(torque){
     this.equations[0].setMaxTorque(torque);
 };
+
+/**
+ * Get the max torque for the constraint.
+ * @method getMaxTorque
+ * @return {Number}
+ */
+GearConstraint.prototype.getMaxTorque = function(torque){
+    return this.equations[0].maxForce;
+};
