@@ -508,10 +508,10 @@ PixiDemo.prototype.render = function(){
         g.lineStyle(this.lineWidth,0x000000,1);
         for(var i=0; i!==this.world.narrowphase.contactEquations.length; i++){
             var eq = this.world.narrowphase.contactEquations[i],
-                bi = eq.bi,
-                bj = eq.bj,
-                ri = eq.ri,
-                rj = eq.rj,
+                bi = eq.bodyA,
+                bj = eq.bodyB,
+                ri = eq.contactPointA,
+                rj = eq.contactPointB,
                 xi = (     bi.position[0] * ppu ),
                 yi = ( h - bi.position[1] * ppu ),
                 xj = (     bj.position[0] * ppu ),
@@ -527,7 +527,7 @@ PixiDemo.prototype.render = function(){
     }
 
     this.renderer.render(this.container);
-}
+};
 
 //http://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
 function componentToHex(c) {

@@ -187,9 +187,9 @@
         var result = false;
         for(var i=0; i<world.narrowphase.contactEquations.length; i++){
           var c = world.narrowphase.contactEquations[i];
-          if(c.bi === characterBody || c.bj === characterBody){
-            var d = p2.vec2.dot(c.ni,yAxis); // Normal dot Y-axis
-            if(c.bi === characterBody) d *= -1;
+          if(c.bodyA === characterBody || c.bodyB === characterBody){
+            var d = p2.vec2.dot(c.normalA, yAxis); // Normal dot Y-axis
+            if(c.bodyA === characterBody) d *= -1;
             if(d > 0.5) result = true;
           }
         }

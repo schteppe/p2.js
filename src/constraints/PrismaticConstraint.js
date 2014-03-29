@@ -15,12 +15,12 @@ module.exports = PrismaticConstraint;
  * @author schteppe
  * @param {Body}    bodyA
  * @param {Body}    bodyB
- * @param {Object}  options
- * @param {Number}  options.maxForce                Max force to be applied by the constraint
- * @param {Array}   options.localAnchorA            Body A's anchor point, defined in its own local frame.
- * @param {Array}   options.localAnchorB            Body B's anchor point, defined in its own local frame.
- * @param {Array}   options.localAxisA              An axis, defined in body A frame, that body B's anchor point may slide along.
- * @param {Boolean} options.disableRotationalLock   If set to true, bodyB will be free to rotate around its anchor point.
+ * @param {Object}  [options]
+ * @param {Number}  [options.maxForce]                Max force to be applied by the constraint
+ * @param {Array}   [options.localAnchorA]            Body A's anchor point, defined in its own local frame.
+ * @param {Array}   [options.localAnchorB]            Body B's anchor point, defined in its own local frame.
+ * @param {Array}   [options.localAxisA]              An axis, defined in body A frame, that body B's anchor point may slide along.
+ * @param {Boolean} [options.disableRotationalLock]   If set to true, bodyB will be free to rotate around its anchor point.
  */
 function PrismaticConstraint(bodyA, bodyB, options){
     options = options || {};
@@ -180,8 +180,8 @@ function PrismaticConstraint(bodyA, bodyB, options){
     motorEquation.computeGq = function(){ return 0; };
     motorEquation.computeGW = function(){
         var G = this.G,
-            bi = this.bi,
-            bj = this.bj,
+            bi = this.bodyA,
+            bj = this.bodyB,
             vi = bi.velocity,
             vj = bj.velocity,
             wi = bi.angularVelocity,
@@ -243,7 +243,7 @@ PrismaticConstraint.prototype.update = function(){
         Limits strategy:
         Add contact equation, with normal along the constraint axis.
         min/maxForce is set so the constraint is repulsive in the correct direction.
-        Some offset is added to either equation.ri or .rj to get the correct upper/lower limit.
+        Some offset is added to either equation.contactPointA or .contactPointB to get the correct upper/lower limit.
 
                  ^
                  |
@@ -262,11 +262,11 @@ PrismaticConstraint.prototype.update = function(){
 
     if(this.upperLimitEnabled && relPosition > upperLimit){
         // Update contact constraint normal, etc
-        vec2.scale(upperLimitEquation.ni, worldAxisA, -1);
-        vec2.sub(upperLimitEquation.ri, worldAnchorA, bodyA.position);
-        vec2.sub(upperLimitEquation.rj, worldAnchorB, bodyB.position);
+        vec2.scale(upperLimitEquation.normalA, worldAxisA, -1);
+        vec2.sub(upperLimitEquation.contactPointA, worldAnchorA, bodyA.position);
+        vec2.sub(upperLimitEquation.contactPointB, worldAnchorB, bodyB.position);
         vec2.scale(tmp,worldAxisA,upperLimit);
-        vec2.add(upperLimitEquation.ri,upperLimitEquation.ri,tmp);
+        vec2.add(upperLimitEquation.contactPointA,upperLimitEquation.contactPointA,tmp);
         if(eqs.indexOf(upperLimitEquation)==-1)
             eqs.push(upperLimitEquation);
     } else {
@@ -276,11 +276,11 @@ PrismaticConstraint.prototype.update = function(){
 
     if(this.lowerLimitEnabled && relPosition < lowerLimit){
         // Update contact constraint normal, etc
-        vec2.scale(lowerLimitEquation.ni, worldAxisA, 1);
-        vec2.sub(lowerLimitEquation.ri, worldAnchorA, bodyA.position);
-        vec2.sub(lowerLimitEquation.rj, worldAnchorB, bodyB.position);
+        vec2.scale(lowerLimitEquation.normalA, worldAxisA, 1);
+        vec2.sub(lowerLimitEquation.contactPointA, worldAnchorA, bodyA.position);
+        vec2.sub(lowerLimitEquation.contactPointB, worldAnchorB, bodyB.position);
         vec2.scale(tmp,worldAxisA,lowerLimit);
-        vec2.sub(lowerLimitEquation.rj,lowerLimitEquation.rj,tmp);
+        vec2.sub(lowerLimitEquation.contactPointB,lowerLimitEquation.contactPointB,tmp);
         if(eqs.indexOf(lowerLimitEquation)==-1)
             eqs.push(lowerLimitEquation);
     } else {

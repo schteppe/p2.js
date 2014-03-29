@@ -17,12 +17,12 @@ var worldPivotA = vec2.create(),
  * @class RevoluteConstraint
  * @constructor
  * @author schteppe
- * @param {Body}            bodyA
- * @param {Float32Array}    pivotA The point relative to the center of mass of bodyA which bodyA is constrained to.
- * @param {Body}            bodyB Body that will be constrained in a similar way to the same point as bodyA. We will therefore get sort of a link between bodyA and bodyB. If not specified, bodyA will be constrained to a static point.
- * @param {Float32Array}    pivotB See pivotA.
- * @param {Object}          [options]
- * @param {Number}          [options.maxForce] The maximum force that should be applied to constrain the bodies.
+ * @param {Body}    bodyA
+ * @param {Array}   pivotA              The point relative to the center of mass of bodyA which bodyA is constrained to.
+ * @param {Body}    bodyB               Body that will be constrained in a similar way to the same point as bodyA. We will therefore get sort of a link between bodyA and bodyB. If not specified, bodyA will be constrained to a static point.
+ * @param {Array}   pivotB              See pivotA.
+ * @param {Object}  [options]
+ * @param {Number}  [options.maxForce]  The maximum force that should be applied to constrain the bodies.
  * @extends Constraint
  * @todo Ability to specify world points
  */
@@ -68,6 +68,12 @@ function RevoluteConstraint(bodyA, pivotA, bodyB, pivotB, options){
     y.maxForce = x.maxForce =  maxForce;
 
     this.motorEquation = new RotationalVelocityEquation(bodyA,bodyB);
+
+    /**
+     * Indicates whether the motor is enabled.
+     * @property {Boolean} motorEnabled
+     * @readOnly
+     */
     this.motorEnabled = false;
 
     /**

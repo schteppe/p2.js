@@ -165,8 +165,8 @@ Narrowphase.prototype.reset = function(world){
     clearObject(this.collidingBodiesLastStep);
     for(var i=0; i!==this.contactEquations.length; i++){
         var eq = this.contactEquations[i],
-            id1 = eq.bi.id,
-            id2 = eq.bj.id;
+            id1 = eq.bodyA.id,
+            id2 = eq.bodyB.id;
         if(id1 > id2){
             var tmp = id1;
             id1 = id2;
@@ -201,8 +201,8 @@ Narrowphase.prototype.reset = function(world){
  */
 Narrowphase.prototype.createContactEquation = function(bodyA,bodyB,shapeA,shapeB){
     var c = this.reusableContactEquations.length ? this.reusableContactEquations.pop() : new ContactEquation(bodyA,bodyB);
-    c.bi = bodyA;
-    c.bj = bodyB;
+    c.bodyA = bodyA;
+    c.bodyB = bodyB;
     c.shapeA = shapeA;
     c.shapeB = shapeB;
     c.restitution = this.restitution;
@@ -228,8 +228,8 @@ Narrowphase.prototype.createContactEquation = function(bodyA,bodyB,shapeA,shapeB
  */
 Narrowphase.prototype.createFrictionEquation = function(bodyA,bodyB,shapeA,shapeB){
     var c = this.reusableFrictionEquations.length ? this.reusableFrictionEquations.pop() : new FrictionEquation(bodyA,bodyB);
-    c.bi = bodyA;
-    c.bj = bodyB;
+    c.bodyA = bodyA;
+    c.bodyB = bodyB;
     c.shapeA = shapeA;
     c.shapeB = shapeB;
     c.setSlipForce(this.slipForce);
@@ -248,13 +248,13 @@ Narrowphase.prototype.createFrictionEquation = function(bodyA,bodyB,shapeA,shape
  * @return {FrictionEquation}
  */
 Narrowphase.prototype.createFrictionFromContact = function(c){
-    var eq = this.createFrictionEquation(c.bi,c.bj,c.shapeA,c.shapeB);
-    vec2.copy(eq.ri, c.ri);
-    vec2.copy(eq.rj, c.rj);
-    vec2.rotate(eq.t, c.ni, -Math.PI / 2);
+    var eq = this.createFrictionEquation(c.bodyA, c.bodyB, c.shapeA, c.shapeB);
+    vec2.copy(eq.contactPointA, c.contactPointA);
+    vec2.copy(eq.contactPointB, c.contactPointB);
+    vec2.rotate(eq.t, c.normalA, -Math.PI / 2);
     eq.contactEquation = c;
     return eq;
-}
+};
 
 /**
  * Convex/line narrowphase
@@ -529,20 +529,20 @@ Narrowphase.prototype.planeLine = function(planeBody, planeShape, planeOffset, p
             var c = this.createContactEquation(planeBody,lineBody,planeShape,lineShape);
             numContacts++;
 
-            vec2.copy(c.ni, worldNormal);
-            vec2.normalize(c.ni,c.ni);
+            vec2.copy(c.normalA, worldNormal);
+            vec2.normalize(c.normalA,c.normalA);
 
             // distance vector along plane normal
             vec2.scale(dist, worldNormal, d);
 
             // Vector from plane center to contact
-            sub(c.ri, v, dist);
-            sub(c.ri, c.ri, planeBody.position);
+            sub(c.contactPointA, v, dist);
+            sub(c.contactPointA, c.contactPointA, planeBody.position);
 
             // From line center to contact
-            sub(c.rj, v,    lineOffset);
-            add(c.rj, c.rj, lineOffset);
-            sub(c.rj, c.rj, lineBody.position);
+            sub(c.contactPointB, v,    lineOffset);
+            add(c.contactPointB, c.contactPointB, lineOffset);
+            sub(c.contactPointB, c.contactPointB, lineBody.position);
 
             this.contactEquations.push(c);
 
@@ -658,16 +658,16 @@ Narrowphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj, justTest, 
 
             var c = this.createContactEquation(circleBody,lineBody,si,sj);
 
-            vec2.scale(c.ni, orthoDist, -1);
-            vec2.normalize(c.ni, c.ni);
+            vec2.scale(c.normalA, orthoDist, -1);
+            vec2.normalize(c.normalA, c.normalA);
 
-            vec2.scale( c.ri, c.ni,  circleRadius);
-            add(c.ri, c.ri, circleOffset);
-            sub(c.ri, c.ri, circleBody.position);
+            vec2.scale( c.contactPointA, c.normalA,  circleRadius);
+            add(c.contactPointA, c.contactPointA, circleOffset);
+            sub(c.contactPointA, c.contactPointA, circleBody.position);
 
-            sub(c.rj, projectedPoint, lineOffset);
-            add(c.rj, c.rj, lineOffset);
-            sub(c.rj, c.rj, lineBody.position);
+            sub(c.contactPointB, projectedPoint, lineOffset);
+            add(c.contactPointB, c.contactPointB, lineOffset);
+            sub(c.contactPointB, c.contactPointB, lineBody.position);
 
             this.contactEquations.push(c);
 
@@ -695,19 +695,19 @@ Narrowphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj, justTest, 
 
             var c = this.createContactEquation(circleBody,lineBody,si,sj);
 
-            vec2.copy(c.ni, dist);
-            vec2.normalize(c.ni,c.ni);
+            vec2.copy(c.normalA, dist);
+            vec2.normalize(c.normalA,c.normalA);
 
             // Vector from circle to contact point is the normal times the circle radius
-            vec2.scale(c.ri, c.ni, circleRadius);
-            add(c.ri, c.ri, circleOffset);
-            sub(c.ri, c.ri, circleBody.position);
+            vec2.scale(c.contactPointA, c.normalA, circleRadius);
+            add(c.contactPointA, c.contactPointA, circleOffset);
+            sub(c.contactPointA, c.contactPointA, circleBody.position);
 
-            sub(c.rj, v, lineOffset);
-            vec2.scale(lineEndToLineRadius, c.ni, -lineRadius);
-            add(c.rj, c.rj, lineEndToLineRadius);
-            add(c.rj, c.rj, lineOffset);
-            sub(c.rj, c.rj, lineBody.position);
+            sub(c.contactPointB, v, lineOffset);
+            vec2.scale(lineEndToLineRadius, c.normalA, -lineRadius);
+            add(c.contactPointB, c.contactPointB, lineEndToLineRadius);
+            add(c.contactPointB, c.contactPointB, lineOffset);
+            sub(c.contactPointB, c.contactPointB, lineBody.position);
 
             this.contactEquations.push(c);
 
@@ -872,16 +872,16 @@ Narrowphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
             return true;
 
         var c = this.createContactEquation(circleBody,convexBody,si,sj);
-        vec2.sub(c.ni, minCandidate, circleOffset)
-        vec2.normalize(c.ni, c.ni);
+        vec2.sub(c.normalA, minCandidate, circleOffset)
+        vec2.normalize(c.normalA, c.normalA);
 
-        vec2.scale(c.ri,  c.ni, circleRadius);
-        add(c.ri, c.ri, circleOffset);
-        sub(c.ri, c.ri, circleBody.position);
+        vec2.scale(c.contactPointA,  c.normalA, circleRadius);
+        add(c.contactPointA, c.contactPointA, circleOffset);
+        sub(c.contactPointA, c.contactPointA, circleBody.position);
 
-        sub(c.rj, closestEdgeProjectedPoint, convexOffset);
-        add(c.rj, c.rj, convexOffset);
-        sub(c.rj, c.rj, convexBody.position);
+        sub(c.contactPointB, closestEdgeProjectedPoint, convexOffset);
+        add(c.contactPointB, c.contactPointB, convexOffset);
+        sub(c.contactPointB, c.contactPointB, convexBody.position);
 
         this.contactEquations.push(c);
 
@@ -895,16 +895,16 @@ Narrowphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
     if(closestEdge != -1){
         var c = this.createContactEquation(circleBody,convexBody);
 
-        vec2.scale(c.ni, closestEdgeOrthoDist, -1);
-        vec2.normalize(c.ni, c.ni);
+        vec2.scale(c.normalA, closestEdgeOrthoDist, -1);
+        vec2.normalize(c.normalA, c.normalA);
 
-        vec2.scale(c.ri,  c.ni, circleRadius);
-        add(c.ri, c.ri, circleOffset);
-        sub(c.ri, c.ri, circleBody.position);
+        vec2.scale(c.contactPointA,  c.normalA, circleRadius);
+        add(c.contactPointA, c.contactPointA, circleOffset);
+        sub(c.contactPointA, c.contactPointA, circleBody.position);
 
-        sub(c.rj, closestEdgeProjectedPoint, convexOffset);
-        add(c.rj, c.rj, convexOffset);
-        sub(c.rj, c.rj, convexBody.position);
+        sub(c.contactPointB, closestEdgeProjectedPoint, convexOffset);
+        add(c.contactPointB, c.contactPointB, convexOffset);
+        sub(c.contactPointB, c.contactPointB, convexBody.position);
 
         this.contactEquations.push(c);
 
@@ -929,17 +929,17 @@ Narrowphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
 
                 var c = this.createContactEquation(circleBody,convexBody,si,sj);
 
-                vec2.copy(c.ni, dist);
-                vec2.normalize(c.ni,c.ni);
+                vec2.copy(c.normalA, dist);
+                vec2.normalize(c.normalA,c.normalA);
 
                 // Vector from circle to contact point is the normal times the circle radius
-                vec2.scale(c.ri, c.ni, circleRadius);
-                add(c.ri, c.ri, circleOffset);
-                sub(c.ri, c.ri, circleBody.position);
+                vec2.scale(c.contactPointA, c.normalA, circleRadius);
+                add(c.contactPointA, c.contactPointA, circleOffset);
+                sub(c.contactPointA, c.contactPointA, circleBody.position);
 
-                sub(c.rj, worldVertex, convexOffset);
-                add(c.rj, c.rj, convexOffset);
-                sub(c.rj, c.rj, convexBody.position);
+                sub(c.contactPointB, worldVertex, convexOffset);
+                add(c.contactPointB, c.contactPointB, convexOffset);
+                sub(c.contactPointB, c.contactPointB, convexBody.position);
 
                 this.contactEquations.push(c);
 
@@ -1117,18 +1117,18 @@ Narrowphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, just
     if(found){
         var c = this.createContactEquation(particleBody,convexBody,si,sj);
 
-        vec2.scale(c.ni, minEdgeNormal, -1);
-        vec2.normalize(c.ni, c.ni);
+        vec2.scale(c.normalA, minEdgeNormal, -1);
+        vec2.normalize(c.normalA, c.normalA);
 
         // Particle has no extent to the contact point
-        vec2.set(c.ri,  0, 0);
-        add(c.ri, c.ri, particleOffset);
-        sub(c.ri, c.ri, particleBody.position);
+        vec2.set(c.contactPointA,  0, 0);
+        add(c.contactPointA, c.contactPointA, particleOffset);
+        sub(c.contactPointA, c.contactPointA, particleBody.position);
 
         // From convex center to point
-        sub(c.rj, closestEdgeProjectedPoint, convexOffset);
-        add(c.rj, c.rj, convexOffset);
-        sub(c.rj, c.rj, convexBody.position);
+        sub(c.contactPointB, closestEdgeProjectedPoint, convexOffset);
+        add(c.contactPointB, c.contactPointB, convexOffset);
+        sub(c.contactPointB, c.contactPointB, convexBody.position);
 
         this.contactEquations.push(c);
 
@@ -1174,17 +1174,17 @@ Narrowphase.prototype.circleCircle = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
     if(justTest) return true;
 
     var c = this.createContactEquation(bodyA,bodyB,si,sj);
-    sub(c.ni, offsetB, offsetA);
-    vec2.normalize(c.ni,c.ni);
+    sub(c.normalA, offsetB, offsetA);
+    vec2.normalize(c.normalA,c.normalA);
 
-    vec2.scale( c.ri, c.ni,  radiusA);
-    vec2.scale( c.rj, c.ni, -radiusB);
+    vec2.scale( c.contactPointA, c.normalA,  radiusA);
+    vec2.scale( c.contactPointB, c.normalA, -radiusB);
 
-    add(c.ri, c.ri, offsetA);
-    sub(c.ri, c.ri, bodyA.position);
+    add(c.contactPointA, c.contactPointA, offsetA);
+    sub(c.contactPointA, c.contactPointA, bodyA.position);
 
-    add(c.rj, c.rj, offsetB);
-    sub(c.rj, c.rj, bodyB.position);
+    add(c.contactPointB, c.contactPointB, offsetB);
+    sub(c.contactPointB, c.contactPointB, bodyB.position);
 
     this.contactEquations.push(c);
 
@@ -1243,18 +1243,18 @@ Narrowphase.prototype.planeConvex = function( bi,si,xi,ai, bj,sj,xj,aj, justTest
 
             sub(dist, worldVertex, planeOffset);
 
-            vec2.copy(c.ni, worldNormal);
+            vec2.copy(c.normalA, worldNormal);
 
-            var d = dot(dist, c.ni);
-            vec2.scale(dist, c.ni, d);
+            var d = dot(dist, c.normalA);
+            vec2.scale(dist, c.normalA, d);
 
             // rj is from convex center to contact
-            sub(c.rj, worldVertex, convexBody.position);
+            sub(c.contactPointB, worldVertex, convexBody.position);
 
 
             // ri is from plane center to contact
-            sub( c.ri, worldVertex, dist);
-            sub( c.ri, c.ri, planeBody.position);
+            sub( c.contactPointA, worldVertex, dist);
+            sub( c.contactPointA, c.contactPointA, planeBody.position);
 
             this.contactEquations.push(c);
 
@@ -1318,16 +1318,16 @@ Narrowphase.prototype.particlePlane = function( bi,si,xi,ai, bj,sj,xj,aj, justTe
 
     var c = this.createContactEquation(planeBody,particleBody,sj,si);
 
-    vec2.copy(c.ni, worldNormal);
-    vec2.scale( dist, c.ni, d );
+    vec2.copy(c.normalA, worldNormal);
+    vec2.scale( dist, c.normalA, d );
     // dist is now the distance vector in the normal direction
 
     // ri is the particle position projected down onto the plane, from the plane center
-    sub( c.ri, particleOffset, dist);
-    sub( c.ri, c.ri, planeBody.position);
+    sub( c.contactPointA, particleOffset, dist);
+    sub( c.contactPointA, c.contactPointA, planeBody.position);
 
     // rj is from the body center to the particle center
-    sub( c.rj, particleOffset, particleBody.position );
+    sub( c.contactPointB, particleOffset, particleBody.position );
 
     this.contactEquations.push(c);
 
@@ -1364,16 +1364,16 @@ Narrowphase.prototype.circleParticle = function(   bi,si,xi,ai, bj,sj,xj,aj, jus
     if(justTest) return true;
 
     var c = this.createContactEquation(circleBody,particleBody,si,sj);
-    vec2.copy(c.ni, dist);
-    vec2.normalize(c.ni,c.ni);
+    vec2.copy(c.normalA, dist);
+    vec2.normalize(c.normalA,c.normalA);
 
     // Vector from circle to contact point is the normal times the circle radius
-    vec2.scale(c.ri, c.ni, circleShape.radius);
-    add(c.ri, c.ri, circleOffset);
-    sub(c.ri, c.ri, circleBody.position);
+    vec2.scale(c.contactPointA, c.normalA, circleShape.radius);
+    add(c.contactPointA, c.contactPointA, circleOffset);
+    sub(c.contactPointA, c.contactPointA, circleBody.position);
 
     // Vector from particle center to contact point is zero
-    sub(c.rj, particleOffset, particleBody.position);
+    sub(c.contactPointB, particleOffset, particleBody.position);
 
     this.contactEquations.push(c);
 
@@ -1470,18 +1470,18 @@ Narrowphase.prototype.circlePlane = function(   bi,si,xi,ai, bj,sj,xj,aj, justTe
     var contact = this.createContactEquation(planeBody,circleBody,sj,si);
 
     // ni is the plane world normal
-    vec2.copy(contact.ni, worldNormal);
+    vec2.copy(contact.normalA, worldNormal);
 
     // rj is the vector from circle center to the contact point
-    vec2.scale(contact.rj, contact.ni, -circleShape.radius);
-    add(contact.rj, contact.rj, circleOffset);
-    sub(contact.rj, contact.rj, circleBody.position);
+    vec2.scale(contact.contactPointB, contact.normalA, -circleShape.radius);
+    add(contact.contactPointB, contact.contactPointB, circleOffset);
+    sub(contact.contactPointB, contact.contactPointB, circleBody.position);
 
     // ri is the distance from plane center to contact.
-    vec2.scale(temp, contact.ni, d);
-    sub(contact.ri, planeToCircle, temp ); // Subtract normal distance vector from the distance vector
-    add(contact.ri, contact.ri, planeOffset);
-    sub(contact.ri, contact.ri, planeBody.position);
+    vec2.scale(temp, contact.normalA, d);
+    sub(contact.contactPointA, planeToCircle, temp ); // Subtract normal distance vector from the distance vector
+    add(contact.contactPointA, contact.contactPointA, planeOffset);
+    sub(contact.contactPointA, contact.contactPointA, planeBody.position);
 
     this.contactEquations.push(contact);
 
@@ -1616,21 +1616,21 @@ Narrowphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
 
                 sub(worldEdge, worldPoint1, worldPoint0);
 
-                vec2.rotate(c.ni, worldEdge, -Math.PI/2); // Normal points out of convex A
-                vec2.normalize(c.ni,c.ni);
+                vec2.rotate(c.normalA, worldEdge, -Math.PI/2); // Normal points out of convex A
+                vec2.normalize(c.normalA,c.normalA);
 
                 sub(dist, worldPoint, worldPoint0); // From edge point to the penetrating point
-                var d = dot(c.ni,dist);             // Penetration
-                vec2.scale(penetrationVec, c.ni, d);     // Vector penetration
+                var d = dot(c.normalA,dist);             // Penetration
+                vec2.scale(penetrationVec, c.normalA, d);     // Vector penetration
 
-                sub(c.ri, worldPoint, offsetA);
-                sub(c.ri, c.ri, penetrationVec);
-                add(c.ri, c.ri, offsetA);
-                sub(c.ri, c.ri, bodyA.position);
+                sub(c.contactPointA, worldPoint, offsetA);
+                sub(c.contactPointA, c.contactPointA, penetrationVec);
+                add(c.contactPointA, c.contactPointA, offsetA);
+                sub(c.contactPointA, c.contactPointA, bodyA.position);
 
-                sub(c.rj, worldPoint, offsetB);
-                add(c.rj, c.rj, offsetB);
-                sub(c.rj, c.rj, bodyB.position);
+                sub(c.contactPointB, worldPoint, offsetB);
+                add(c.contactPointB, c.contactPointB, offsetB);
+                sub(c.contactPointB, c.contactPointB, bodyB.position);
 
                 this.contactEquations.push(c);
 
@@ -1926,16 +1926,16 @@ Narrowphase.prototype.circleHeightfield = function( circleBody,circleShape,circl
         var c = this.createContactEquation(hfBody,circleBody,hfShape,circleShape);
 
         // Normal is out of the heightfield
-        vec2.copy(c.ni, minCandidateNormal);
+        vec2.copy(c.normalA, minCandidateNormal);
 
         // Vector from circle to heightfield
-        vec2.scale(c.rj,  c.ni, -radius);
-        add(c.rj, c.rj, circlePos);
-        sub(c.rj, c.rj, circleBody.position);
+        vec2.scale(c.contactPointB,  c.normalA, -radius);
+        add(c.contactPointB, c.contactPointB, circlePos);
+        sub(c.contactPointB, c.contactPointB, circleBody.position);
 
-        vec2.copy(c.ri, minCandidate);
-        //vec2.sub(c.ri, c.ri, hfPos);
-        vec2.sub(c.ri, c.ri, hfBody.position);
+        vec2.copy(c.contactPointA, minCandidate);
+        //vec2.sub(c.contactPointA, c.contactPointA, hfPos);
+        vec2.sub(c.contactPointA, c.contactPointA, hfBody.position);
 
         this.contactEquations.push(c);
 
@@ -1963,16 +1963,16 @@ Narrowphase.prototype.circleHeightfield = function( circleBody,circleShape,circl
                 var c = this.createContactEquation(hfBody,circleBody,hfShape,circleShape);
 
                 // Construct normal - out of heightfield
-                vec2.copy(c.ni, dist);
-                vec2.normalize(c.ni,c.ni);
+                vec2.copy(c.normalA, dist);
+                vec2.normalize(c.normalA,c.normalA);
 
-                vec2.scale(c.rj, c.ni, -radius);
-                add(c.rj, c.rj, circlePos);
-                sub(c.rj, c.rj, circleBody.position);
+                vec2.scale(c.contactPointB, c.normalA, -radius);
+                add(c.contactPointB, c.contactPointB, circlePos);
+                sub(c.contactPointB, c.contactPointB, circleBody.position);
 
-                sub(c.ri, v0, hfPos);
-                add(c.ri, c.ri, hfPos);
-                sub(c.ri, c.ri, hfBody.position);
+                sub(c.contactPointA, v0, hfPos);
+                add(c.contactPointA, c.contactPointA, hfPos);
+                sub(c.contactPointA, c.contactPointA, hfBody.position);
 
                 this.contactEquations.push(c);
 

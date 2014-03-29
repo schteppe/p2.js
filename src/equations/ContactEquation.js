@@ -10,45 +10,46 @@ module.exports = ContactEquation;
  * @class ContactEquation
  * @constructor
  * @extends Equation
- * @param {Body} bi
- * @param {Body} bj
+ * @param {Body} bodyA
+ * @param {Body} bodyB
  */
-function ContactEquation(bi,bj){
-    Equation.call(this,bi,bj,0,Number.MAX_VALUE);
+function ContactEquation(bodyA, bodyB){
+    Equation.call(this, bodyA, bodyB, 0, Number.MAX_VALUE);
 
     /**
      * Vector from body i center of mass to the contact point.
-     * @property ri
+     * @property contactPointA
      * @type {Array}
      */
-    this.ri = vec2.create();
+    this.contactPointA = vec2.create();
     this.penetrationVec = vec2.create();
 
     /**
-     * Vector from body j center of mass to the contact point.
-     * @property rj
+     * World-oriented vector from body A center of mass to the contact point.
+     * @property contactPointB
      * @type {Array}
      */
-    this.rj = vec2.create();
+    this.contactPointB = vec2.create();
 
     /**
      * The normal vector, pointing out of body i
-     * @property ni
+     * @property normalA
      * @type {Array}
      */
-    this.ni = vec2.create();
+    this.normalA = vec2.create();
 
     /**
-     * The restitution to use. 0=no bounciness, 1=max bounciness.
+     * The restitution to use (0=no bounciness, 1=max bounciness).
      * @property restitution
      * @type {Number}
      */
     this.restitution = 0;
 
     /**
-     * Set to true if this is the first impact between the bodies (not persistant contact).
+     * This property is set to true if this is the first impact between the bodies (not persistant contact).
      * @property firstImpact
      * @type {Boolean}
+     * @readOnly
      */
     this.firstImpact = false;
 
@@ -65,19 +66,19 @@ function ContactEquation(bi,bj){
      * @type {Shape}
      */
     this.shapeB = null;
-};
+}
 ContactEquation.prototype = new Equation();
 ContactEquation.prototype.constructor = ContactEquation;
 ContactEquation.prototype.computeB = function(a,b,h){
-    var bi = this.bi,
-        bj = this.bj,
-        ri = this.ri,
-        rj = this.rj,
+    var bi = this.bodyA,
+        bj = this.bodyB,
+        ri = this.contactPointA,
+        rj = this.contactPointB,
         xi = bi.position,
         xj = bj.position;
 
     var penetrationVec = this.penetrationVec,
-        n = this.ni,
+        n = this.normalA,
         G = this.G;
 
     // Caluclate cross products

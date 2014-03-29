@@ -8,22 +8,22 @@ var vec2 = require('../math/vec2'),
  * Base class for constraint equations.
  * @class Equation
  * @constructor
- * @param {Body} bi First body participating in the equation
- * @param {Body} bj Second body participating in the equation
+ * @param {Body} bodyA First body participating in the equation
+ * @param {Body} bodyB Second body participating in the equation
  * @param {number} minForce Minimum force to apply. Default: -Number.MAX_VALUE
  * @param {number} maxForce Maximum force to apply. Default: Number.MAX_VALUE
  */
-function Equation(bi,bj,minForce,maxForce){
+function Equation(bodyA, bodyB, minForce, maxForce){
 
     /**
-     * Minimum force to apply when solving
+     * Minimum force to apply when solving.
      * @property minForce
      * @type {Number}
      */
     this.minForce = typeof(minForce)==="undefined" ? -Number.MAX_VALUE : minForce;
 
     /**
-     * Max force to apply when solving
+     * Max force to apply when solving.
      * @property maxForce
      * @type {Number}
      */
@@ -31,17 +31,17 @@ function Equation(bi,bj,minForce,maxForce){
 
     /**
      * First body participating in the constraint
-     * @property bi
+     * @property bodyA
      * @type {Body}
      */
-    this.bi = bi;
+    this.bodyA = bodyA;
 
     /**
      * Second body participating in the constraint
-     * @property bj
+     * @property bodyB
      * @type {Body}
      */
-    this.bj = bj;
+    this.bodyB = bodyB;
 
     /**
      * The stiffness of this equation. Typically chosen to a large number (~1e7), but can be chosen somewhat freely to get a stable simulation.
@@ -148,8 +148,8 @@ var qi = vec2.create(),
     qj = vec2.create();
 Equation.prototype.computeGq = function(){
     var G = this.G,
-        bi = this.bi,
-        bj = this.bj,
+        bi = this.bodyA,
+        bj = this.bodyB,
         xi = bi.position,
         xj = bj.position,
         ai = bi.angle,
@@ -191,8 +191,8 @@ Equation.prototype.transformedGmult = function(G,vi,wi,vj,wj){
  */
 Equation.prototype.computeGW = function(){
     var G = this.G,
-        bi = this.bi,
-        bj = this.bj,
+        bi = this.bodyA,
+        bj = this.bodyB,
         vi = bi.velocity,
         vj = bj.velocity,
         wi = bi.angularVelocity,
@@ -207,8 +207,8 @@ Equation.prototype.computeGW = function(){
  */
 Equation.prototype.computeGWlambda = function(){
     var G = this.G,
-        bi = this.bi,
-        bj = this.bj,
+        bi = this.bodyA,
+        bj = this.bodyB,
         vi = bi.vlambda,
         vj = bj.vlambda,
         wi = bi.wlambda,
@@ -224,8 +224,8 @@ Equation.prototype.computeGWlambda = function(){
 var iMfi = vec2.create(),
     iMfj = vec2.create();
 Equation.prototype.computeGiMf = function(){
-    var bi = this.bi,
-        bj = this.bj,
+    var bi = this.bodyA,
+        bj = this.bodyB,
         fi = bi.force,
         ti = bi.angularForce,
         fj = bj.force,
@@ -248,8 +248,8 @@ Equation.prototype.computeGiMf = function(){
  * @return {Number}
  */
 Equation.prototype.computeGiMGt = function(){
-    var bi = this.bi,
-        bj = this.bj,
+    var bi = this.bodyA,
+        bj = this.bodyB,
         invMassi = bi.invMass,
         invMassj = bj.invMass,
         invIi = bi.invInertia,
@@ -279,8 +279,8 @@ var tmpMat1 = mat2.create(),
  * @param {Number} deltalambda
  */
 Equation.prototype.addToWlambda = function(deltalambda){
-    var bi = this.bi,
-        bj = this.bj,
+    var bi = this.bodyA,
+        bj = this.bodyB,
         temp = addToWlambda_temp,
         imMat1 = tmpMat1,
         imMat2 = tmpMat2,

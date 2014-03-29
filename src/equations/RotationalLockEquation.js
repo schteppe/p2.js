@@ -9,14 +9,14 @@ module.exports = RotationalLockEquation;
  * @class RotationalLockEquation
  * @constructor
  * @extends Equation
- * @param {Body} bi
- * @param {Body} bj
- * @param {Object} options
- * @param {Number} options.angle Angle to add to the local vector in body i.
+ * @param {Body} bodyA
+ * @param {Body} bodyB
+ * @param {Object} [options]
+ * @param {Number} [options.angle] Angle to add to the local vector in body i.
  */
-function RotationalLockEquation(bi,bj,options){
+function RotationalLockEquation(bodyA, bodyB, options){
     options = options || {};
-    Equation.call(this,bi,bj,-Number.MAX_VALUE,Number.MAX_VALUE);
+    Equation.call(this, bodyA, bodyB, -Number.MAX_VALUE, Number.MAX_VALUE);
     this.angle = options.angle || 0;
 
     var G = this.G;
@@ -31,7 +31,7 @@ var worldVectorA = vec2.create(),
     xAxis = vec2.fromValues(1,0),
     yAxis = vec2.fromValues(0,1);
 RotationalLockEquation.prototype.computeGq = function(){
-    vec2.rotate(worldVectorA,xAxis,this.bi.angle+this.angle);
-    vec2.rotate(worldVectorB,yAxis,this.bj.angle);
+    vec2.rotate(worldVectorA,xAxis,this.bodyA.angle+this.angle);
+    vec2.rotate(worldVectorB,yAxis,this.bodyB.angle);
     return vec2.dot(worldVectorA,worldVectorB);
 };

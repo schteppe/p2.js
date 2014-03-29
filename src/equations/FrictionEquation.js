@@ -10,32 +10,32 @@ module.exports = FrictionEquation;
  *
  * @class FrictionEquation
  * @constructor
- * @param {Body} bi
- * @param {Body} bj
+ * @param {Body} bodyA
+ * @param {Body} bodyB
  * @param {Number} slipForce
  * @extends Equation
  */
-function FrictionEquation(bi,bj,slipForce){
-    Equation.call(this,bi,bj,-slipForce,slipForce);
+function FrictionEquation(bodyA, bodyB, slipForce){
+    Equation.call(this, bodyA, bodyB, -slipForce, slipForce);
 
     /**
-     * Relative vector from center of body i to the contact point, in world coords.
-     * @property ri
-     * @type {Float32Array}
+     * Relative vector from center of body A to the contact point, world oriented.
+     * @property contactPointA
+     * @type {Array}
      */
-    this.ri = vec2.create();
+    this.contactPointA = vec2.create();
 
     /**
-     * Relative vector from center of body j to the contact point, in world coords.
-     * @property rj
-     * @type {Float32Array}
+     * Relative vector from center of body B to the contact point, world oriented.
+     * @property contactPointB
+     * @type {Array}
      */
-    this.rj = vec2.create();
+    this.contactPointB = vec2.create();
 
     /**
-     * Tangent vector that the friction force will act along, in world coords.
+     * Tangent vector that the friction force will act along. World oriented.
      * @property t
-     * @type {Float32Array}
+     * @type {Array}
      */
     this.t = vec2.create();
 
@@ -93,10 +93,10 @@ FrictionEquation.prototype.getSlipForce = function(){
 };
 
 FrictionEquation.prototype.computeB = function(a,b,h){
-    var bi = this.bi,
-        bj = this.bj,
-        ri = this.ri,
-        rj = this.rj,
+    var bi = this.bodyA,
+        bj = this.bodyB,
+        ri = this.contactPointA,
+        rj = this.contactPointB,
         t = this.t,
         G = this.G;
 

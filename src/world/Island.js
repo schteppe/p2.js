@@ -45,13 +45,13 @@ Island.prototype.getBodies = function(result){
     bodyIds.length = 0;
     for(var i=0; i!==eqs.length; i++){
         var eq = eqs[i];
-        if(bodyIds.indexOf(eq.bi.id)===-1){
-            bodies.push(eq.bi);
-            bodyIds.push(eq.bi.id);
+        if(bodyIds.indexOf(eq.bodyA.id)===-1){
+            bodies.push(eq.bodyA);
+            bodyIds.push(eq.bodyA.id);
         }
-        if(bodyIds.indexOf(eq.bj.id)===-1){
-            bodies.push(eq.bj);
-            bodyIds.push(eq.bj.id);
+        if(bodyIds.indexOf(eq.bodyB.id)===-1){
+            bodies.push(eq.bodyB);
+            bodyIds.push(eq.bodyB.id);
         }
     }
     return bodies;

@@ -150,8 +150,8 @@ IslandManager.prototype.split = function(world){
     // Add connectivity data. Each equation connects 2 bodies.
     for(var k=0; k!==equations.length; k++){
         var eq=equations[k],
-            i=bodies.indexOf(eq.bi),
-            j=bodies.indexOf(eq.bj),
+            i=bodies.indexOf(eq.bodyA),
+            j=bodies.indexOf(eq.bodyB),
             ni=nodes[i],
             nj=nodes[j];
         ni.neighbors.push(nj);

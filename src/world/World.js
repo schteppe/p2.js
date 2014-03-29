@@ -760,8 +760,8 @@ World.prototype.internalStep = function(dt){
         for(var i=0; i!==np.contactEquations.length; i++){
             var eq = np.contactEquations[i];
             if(eq.firstImpact){
-                ev.bodyA = eq.bi;
-                ev.bodyB = eq.bj;
+                ev.bodyA = eq.bodyA;
+                ev.bodyB = eq.bodyB;
                 ev.shapeA = eq.shapeA;
                 ev.shapeB = eq.shapeB;
                 ev.contactEquation = eq;

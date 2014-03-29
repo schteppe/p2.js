@@ -9,14 +9,14 @@ module.exports = RotationalVelocityEquation;
  * @class RotationalVelocityEquation
  * @constructor
  * @extends Equation
- * @param {Body} bi
- * @param {Body} bj
+ * @param {Body} bodyA
+ * @param {Body} bodyB
  */
-function RotationalVelocityEquation(bi,bj){
-    Equation.call(this,bi,bj,-Number.MAX_VALUE,Number.MAX_VALUE);
+function RotationalVelocityEquation(bodyA, bodyB){
+    Equation.call(this, bodyA, bodyB, -Number.MAX_VALUE, Number.MAX_VALUE);
     this.relativeVelocity = 1;
     this.ratio = 1;
-};
+}
 RotationalVelocityEquation.prototype = new Equation();
 RotationalVelocityEquation.prototype.constructor = RotationalVelocityEquation;
 RotationalVelocityEquation.prototype.computeB = function(a,b,h){

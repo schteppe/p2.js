@@ -34,7 +34,7 @@ AngleLockEquation.prototype = new Equation();
 AngleLockEquation.prototype.constructor = AngleLockEquation;
 
 AngleLockEquation.prototype.computeGq = function(){
-    return this.ratio*this.bi.angle - this.bj.angle + this.angle;
+    return this.ratio * this.bodyA.angle - this.bodyB.angle + this.angle;
 };
 
 /**
