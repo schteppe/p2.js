@@ -48,3 +48,13 @@ AngleLockEquation.prototype.setRatio = function(ratio){
     G[5] = -1;
     this.ratio = ratio;
 };
+
+/**
+ * Set the max force for the equation.
+ * @method setMaxTorque
+ * @param {Number} torque
+ */
+AngleLockEquation.prototype.setMaxTorque = function(torque){
+    this.maxForce =  torque;
+    this.minForce = -torque;
+};

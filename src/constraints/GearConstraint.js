@@ -12,8 +12,11 @@ module.exports = GearConstraint;
  * @author schteppe
  * @param {Body}            bodyA
  * @param {Body}            bodyB
- * @param {Number}          maxForce The maximum force that should be applied to constrain the bodies.
- * @extends {Constraint}
+ * @param {Object}          [options]
+ * @param {Number}          [options.angle] Relative angle between the bodies.
+ * @param {Number}          [options.ratio] Gear ratio.
+ * @param {Number}          [options.maxTorque] Maximum torque to apply.
+ * @extends Constraint
  * @todo Ability to specify world points
  */
 function GearConstraint(bodyA, bodyB, options){
@@ -21,8 +24,7 @@ function GearConstraint(bodyA, bodyB, options){
 
     Constraint.call(this, bodyA, bodyB, Constraint.GEAR, options);
 
-    // Equations to be fed to the solver
-    var eqs = this.equations = [
+    this.equations = [
         new AngleLockEquation(bodyA,bodyB,options),
     ];
 
@@ -39,6 +41,11 @@ function GearConstraint(bodyA, bodyB, options){
      * @type {Number}
      */
     this.ratio = typeof(options.ratio) === "number" ? options.ratio : 1;
+
+    // Set max torque
+    if(typeof(options.maxTorque) === "number"){
+        this.setMaxTorque(options.maxTorque);
+    }
 }
 GearConstraint.prototype = new Constraint();
 
@@ -48,4 +55,13 @@ GearConstraint.prototype.update = function(){
         eq.setRatio(this.ratio);
     }
     eq.angle = this.angle;
+};
+
+/**
+ * Set the max torque for the constraint.
+ * @method setMaxTorque
+ * @param {Number} torque
+ */
+GearConstraint.prototype.setMaxTorque = function(torque){
+    this.equations[0].setMaxTorque(torque);
 };
