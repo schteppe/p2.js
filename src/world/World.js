@@ -886,11 +886,13 @@ World.prototype.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,cm,glen){
         numContacts = 0;
     if (resolver) {
         var sensor = si.sensor || sj.sensor;
+        var numFrictionBefore = np.frictionEquations.length;
         if (si.type < sj.type) {
             numContacts = resolver.call(np, bi,si,xiw,aiw, bj,sj,xjw,ajw, sensor);
         } else {
             numContacts = resolver.call(np, bj,sj,xjw,ajw, bi,si,xiw,aiw, sensor);
         }
+        var numFrictionEquations = np.frictionEquations.length - numFrictionBefore;
 
         if(numContacts){
             var key = si.id < sj.id ? si.id+" "+ sj.id : sj.id+" "+ si.id;
@@ -910,7 +912,6 @@ World.prototype.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,cm,glen){
                         e.contactEquations.push(np.contactEquations[i]);
                     }
                 }
-
                 this.emit(e);
             }
 
@@ -930,6 +931,15 @@ World.prototype.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,cm,glen){
                 current.keys.push(key+"_bodyA");
                 current[key+"_bodyB"] = bj;
                 current.keys.push(key+"_bodyB");
+            }
+
+
+            // divide the max friction force by the number of contacts
+            if(typeof(numContacts)==="number" && numFrictionEquations > 1){ // Why divide by 1?
+                for(var i=np.frictionEquations.length-numFrictionEquations; i<np.frictionEquations.length; i++){
+                    var f = np.frictionEquations[i];
+                    f.setSlipForce(f.getSlipForce() / numFrictionEquations);
+                }
             }
         }
     }

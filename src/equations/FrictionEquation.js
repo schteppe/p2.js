@@ -84,6 +84,14 @@ FrictionEquation.prototype.setSlipForce = function(slipForce){
     this.minForce = -slipForce;
 };
 
+/**
+ * Get the max force for the constraint.
+ * @method getSlipForce
+ */
+FrictionEquation.prototype.getSlipForce = function(){
+    return this.maxForce;
+};
+
 FrictionEquation.prototype.computeB = function(a,b,h){
     var bi = this.bi,
         bj = this.bj,
