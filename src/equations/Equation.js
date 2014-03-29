@@ -10,8 +10,8 @@ var vec2 = require('../math/vec2'),
  * @constructor
  * @param {Body} bi First body participating in the equation
  * @param {Body} bj Second body participating in the equation
- * @param {number} minForce Minimum force to apply. Default: -1e6
- * @param {number} maxForce Maximum force to apply. Default: 1e6
+ * @param {number} minForce Minimum force to apply. Default: -Number.MAX_VALUE
+ * @param {number} maxForce Maximum force to apply. Default: Number.MAX_VALUE
  */
 function Equation(bi,bj,minForce,maxForce){
 
@@ -20,14 +20,14 @@ function Equation(bi,bj,minForce,maxForce){
      * @property minForce
      * @type {Number}
      */
-    this.minForce = typeof(minForce)=="undefined" ? -1e6 : minForce;
+    this.minForce = typeof(minForce)==="undefined" ? -Number.MAX_VALUE : minForce;
 
     /**
      * Max force to apply when solving
      * @property maxForce
      * @type {Number}
      */
-    this.maxForce = typeof(maxForce)=="undefined" ? 1e6 : maxForce;
+    this.maxForce = typeof(maxForce)==="undefined" ? Number.MAX_VALUE : maxForce;
 
     /**
      * First body participating in the constraint
@@ -63,7 +63,9 @@ function Equation(bi,bj,minForce,maxForce){
      * @type {Array}
      */
     this.G = new Utils.ARRAY_TYPE(6);
-    for(var i=0; i<6; i++) this.G[i]=0;
+    for(var i=0; i<6; i++){
+        this.G[i]=0;
+    }
 
     // Constraint frames for body i and j
     /*
@@ -98,7 +100,7 @@ function Equation(bi,bj,minForce,maxForce){
      * @property {Boolean} enabled
      */
     this.enabled = true;
-};
+}
 Equation.prototype.constructor = Equation;
 
 /**

@@ -933,7 +933,6 @@ World.prototype.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,cm,glen){
                 current.keys.push(key+"_bodyB");
             }
 
-
             // divide the max friction force by the number of contacts
             if(typeof(numContacts)==="number" && numFrictionEquations > 1){ // Why divide by 1?
                 for(var i=np.frictionEquations.length-numFrictionEquations; i<np.frictionEquations.length; i++){
