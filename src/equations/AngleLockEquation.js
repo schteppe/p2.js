@@ -9,19 +9,27 @@ module.exports = AngleLockEquation;
  * @class AngleLockEquation
  * @constructor
  * @extends Equation
- * @param {Body} bi
- * @param {Body} bj
+ * @param {Body} bodyA
+ * @param {Body} bodyB
  * @param {Object} options
  * @param {Number} options.angle Angle to add to the local vector in body i.
  * @param {Number} options.ratio Gear ratio
  */
-function AngleLockEquation(bi,bj,options){
+function AngleLockEquation(bodyA, bodyB, options){
     options = options || {};
-    Equation.call(this,bi,bj,-Number.MAX_VALUE,Number.MAX_VALUE);
+    Equation.call(this,bodyA,bodyB,-Number.MAX_VALUE,Number.MAX_VALUE);
     this.angle = options.angle || 0;
-    this.ratio = typeof(options.ratio)=="number" ? options.ratio : 1;
+
+    /**
+     * The gear ratio.
+     * @property {Number} ratio
+     * @private
+     * @see setRatio
+     */
+    this.ratio = typeof(options.ratio)==="number" ? options.ratio : 1;
+
     this.setRatio(this.ratio);
-};
+}
 AngleLockEquation.prototype = new Equation();
 AngleLockEquation.prototype.constructor = AngleLockEquation;
 
@@ -29,6 +37,11 @@ AngleLockEquation.prototype.computeGq = function(){
     return this.ratio*this.bi.angle - this.bj.angle + this.angle;
 };
 
+/**
+ * Set the gear ratio for this equation
+ * @method setRatio
+ * @param {Number} ratio
+ */
 AngleLockEquation.prototype.setRatio = function(ratio){
     var G = this.G;
     G[2] =  ratio;

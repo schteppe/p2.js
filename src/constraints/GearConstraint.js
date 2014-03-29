@@ -31,20 +31,21 @@ function GearConstraint(bodyA, bodyB, options){
      * @property angle
      * @type {Number}
      */
-    this.angle = typeof(options.angle) == "number" ? options.angle : 0;
+    this.angle = typeof(options.angle) === "number" ? options.angle : 0;
 
     /**
-     * The gear ratio
+     * The gear ratio.
      * @property ratio
      * @type {Number}
      */
-    this.ratio = typeof(options.ratio) == "number" ? options.ratio : 1;
+    this.ratio = typeof(options.ratio) === "number" ? options.ratio : 1;
 }
 GearConstraint.prototype = new Constraint();
 
 GearConstraint.prototype.update = function(){
     var eq = this.equations[0];
-    if(eq.ratio != this.ratio)
+    if(eq.ratio !== this.ratio){
         eq.setRatio(this.ratio);
+    }
     eq.angle = this.angle;
 };
