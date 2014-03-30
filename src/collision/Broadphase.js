@@ -44,7 +44,7 @@ Broadphase.AABB = 1;
 /**
  * Bounding circle type.
  * @static
- * @property {Number} AABB
+ * @property {Number} BOUNDING_CIRCLE
  */
 Broadphase.BOUNDING_CIRCLE = 2;
 
@@ -94,6 +94,29 @@ Broadphase.aabbCheck = function(bodyA, bodyB){
     if(bodyA.aabbNeedsUpdate) bodyA.updateAABB();
     if(bodyB.aabbNeedsUpdate) bodyB.updateAABB();
     return bodyA.aabb.overlaps(bodyB.aabb);
+};
+
+/**
+ * Check whether the bounding radius of two bodies overlap.
+ * @method  boundingRadiusCheck
+ * @param  {Body} bodyA
+ * @param  {Body} bodyB
+ * @return {Boolean}
+ */
+Broadphase.prototype.boundingVolumeCheck = function(bodyA, bodyB){
+    var result;
+
+    switch(this.boundingVolumeType){
+    case Broadphase.BOUNDING_CIRCLE:
+        result =  Broadphase.boundingRadiusCheck(bodyA,bodyB);
+        break;
+    case Broadphase.AABB:
+        result = Broadphase.aabbCheck(bodyA,bodyB);
+        break;
+    default:
+        throw new Error('Bounding volume type not recognized: '+this.boundingVolumeType);
+    }
+    return result;
 };
 
 /**

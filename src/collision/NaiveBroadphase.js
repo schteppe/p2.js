@@ -27,8 +27,7 @@ NaiveBroadphase.prototype = new Broadphase();
  */
 NaiveBroadphase.prototype.getCollisionPairs = function(world){
     var bodies = world.bodies,
-        result = this.result,
-        check = this.boundingVolumeType===Broadphase.AABB ? Broadphase.aabbCheck : Broadphase.boundingRadiusCheck;
+        result = this.result;
 
     result.length = 0;
 
@@ -38,7 +37,7 @@ NaiveBroadphase.prototype.getCollisionPairs = function(world){
         for(var j=0; j<i; j++){
             var bj = bodies[j];
 
-            if(Broadphase.canCollide(bi,bj) && check(bi,bj)){
+            if(Broadphase.canCollide(bi,bj) && this.boundingVolumeCheck(bi,bj)){
                 result.push(bi,bj);
             }
         }

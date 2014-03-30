@@ -133,13 +133,12 @@ SAPBroadphase.prototype.getCollisionPairs = function(world){
     var bodiesX = this.axisListX,
         bodiesY = this.axisListY,
         result = this.result,
-        axisIndex = this.axisIndex,
-        i,j;
+        axisIndex = this.axisIndex;
 
     result.length = 0;
 
     // Update all AABBs if needed
-    for(i=0; i!==bodiesX.length; i++){
+    for(var i=0; i!==bodiesX.length; i++){
         var b = bodiesX[i];
         if(b.aabbNeedsUpdate) b.updateAABB();
     }
@@ -149,10 +148,10 @@ SAPBroadphase.prototype.getCollisionPairs = function(world){
     SAPBroadphase.sortAxisListY(bodiesY);
 
     // Look through the X list
-    for(i=0, N=bodiesX.length; i!==N; i++){
+    for(var i=0, N=bodiesX.length; i!==N; i++){
         var bi = bodiesX[i];
 
-        for(j=i+1; j<N; j++){
+        for(var j=i+1; j<N; j++){
             var bj = bodiesX[j];
 
             // Bounds overlap?
@@ -169,27 +168,29 @@ SAPBroadphase.prototype.getCollisionPairs = function(world){
     }
 
     // Look through the Y list
-    for(i=0, N=bodiesY.length; i!==N; i++){
+    for(var i=0, N=bodiesY.length; i!==N; i++){
         var bi = bodiesY[i];
 
-        for(j=i+1; j<N; j++){
+        for(var j=i+1; j<N; j++){
             var bj = bodiesY[j];
 
-            if(!SAPBroadphase.checkBounds(bi,bj,1))
+            if(!SAPBroadphase.checkBounds(bi,bj,1)){
                 break;
+            }
 
             // If in preliminary list, add to final result
             if(Broadphase.canCollide(bi,bj)){
                 var key = bi.id < bj.id ? bi.id+' '+bj.id : bj.id+' '+bi.id;
-                if(preliminaryList[key] && Broadphase.boundingRadiusCheck(bi,bj))
+                if(preliminaryList[key] && this.boundingVolumeCheck(bi,bj)){
                     result.push(bi,bj);
+                }
             }
         }
     }
 
     // Empty prel list
     var keys = preliminaryList.keys;
-    for(i=0, N=keys.length; i!==N; i++){
+    for(var i=0, N=keys.length; i!==N; i++){
         delete preliminaryList[keys[i]];
     }
     keys.length = 0;
