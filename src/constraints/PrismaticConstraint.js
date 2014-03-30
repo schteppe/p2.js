@@ -82,7 +82,7 @@ function PrismaticConstraint(bodyA, bodyB, options){
         // g = ( xj + rj - xi - ri ) * t
         return vec2.dot(gg,t);
     };
-    trans.update = function(){
+    trans.updateJacobian = function(){
         var G = this.G,
             xi = bodyA.position,
             xj = bodyB.position;
@@ -99,7 +99,7 @@ function PrismaticConstraint(bodyA, bodyB, options){
         G[3] = t[0];
         G[4] = t[1];
         G[5] = vec2.crossLength(rj,t);
-    }
+    };
     this.equations.push(trans);
 
     // Rotational part
@@ -216,7 +216,7 @@ PrismaticConstraint.prototype.update = function(){
         localAnchorA = this.localAnchorA,
         localAnchorB = this.localAnchorB;
 
-    trans.update();
+    trans.updateJacobian();
 
     // Transform local things to world
     vec2.rotate(worldAxisA,      localAxisA,      bodyA.angle);

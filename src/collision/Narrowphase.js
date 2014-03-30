@@ -209,6 +209,7 @@ Narrowphase.prototype.createContactEquation = function(bodyA,bodyB,shapeA,shapeB
     c.firstImpact = !this.collidedLastStep(bodyA,bodyB);
     c.stiffness = this.stiffness;
     c.relaxation = this.relaxation;
+    c.needsUpdate = true;
     c.enabled = true;
 
     // Wake up bodies when they get new contact
@@ -239,6 +240,7 @@ Narrowphase.prototype.createFrictionEquation = function(bodyA,bodyB,shapeA,shape
     c.frictionCoefficient = this.frictionCoefficient;
     c.relativeVelocity = this.surfaceVelocity;
     c.enabled = true;
+    c.needsUpdate = true;
     c.frictionStiffness = this.frictionStiffness;
     c.frictionRelaxation = this.frictionRelaxation;
     return c;

@@ -12,11 +12,8 @@ module.exports = GSSolver;
  * @constructor
  * @extends Solver
  * @param {Object} [options]
- * @param {Number} options.iterations
- * @param {Number} options.timeStep
- * @param {Number} options.stiffness
- * @param {Number} options.relaxation
- * @param {Number} options.tolerance
+ * @param {Number} [options.iterations=10]
+ * @param {Number} [options.tolerance]
  */
 function GSSolver(options){
     Solver.call(this,options,Solver.GS);
@@ -43,27 +40,6 @@ function GSSolver(options){
     this.invCs =  new Utils.ARRAY_TYPE(this.arrayStep);
 
     /**
-     * Whether to use .stiffness and .relaxation parameters from the Solver instead of each Equation individually.
-     * @type {Boolean}
-     * @property useGlobalEquationParameters
-     */
-    this.useGlobalEquationParameters = true;
-
-    /**
-     * Global equation stiffness. Larger number gives harder contacts, etc, but may also be more expensive to compute, or it will make your simulation explode.
-     * @property stiffness
-     * @type {Number}
-     */
-    this.stiffness = 1e6;
-
-    /**
-     * Global equation relaxation. This is the number of timesteps required for a constraint to be resolved. Larger number will give softer contacts. Set to around 3 or 4 for good enough results.
-     * @property relaxation
-     * @type {Number}
-     */
-    this.relaxation = 4;
-
-    /**
      * Set to true to set all right hand side terms to zero when solving. Can be handy for a few applications.
      * @property useZeroRHS
      * @type {Boolean}
@@ -78,7 +54,7 @@ function GSSolver(options){
      * @type {Number}
      */
     this.skipFrictionIterations = 0;
-};
+}
 GSSolver.prototype = new Solver();
 
 function setArrayZero(array){
@@ -105,12 +81,6 @@ GSSolver.prototype.solve = function(h,world){
         Neq = equations.length,
         bodies = world.bodies,
         Nbodies = world.bodies.length,
-        d = this.relaxation,
-        k = this.stiffness,
-        eps = 4.0 / (h * h * k * (1 + 4 * d)),
-        a = 4.0 / (h * (1 + 4 * d)),
-        b = (4.0 * d) / (1 + 4 * d),
-        useGlobalParams = this.useGlobalEquationParameters,
         add = vec2.add,
         set = vec2.set,
         useZeroRHS = this.useZeroRHS,
@@ -126,17 +96,15 @@ GSSolver.prototype.solve = function(h,world){
     var invCs = this.invCs,
         Bs = this.Bs,
         lambda = this.lambda;
-    if(!useGlobalParams){
-        for(var i=0, c; c = equations[i]; i++){
-            c.updateSpookParams(h);
-            Bs[i] =     c.computeB(c.a,c.b,h);
-            invCs[i] =  c.computeInvC(c.eps);
+
+    for(var i=0; i!==equations.length; i++){
+        var c = equations[i];
+        if(c.timeStep !== h || c.needsUpdate){
+            c.timeStep = h;
+            c.update();
         }
-    } else {
-        for(var i=0, c; c = equations[i]; i++){
-            Bs[i] =     c.computeB(a,b,h);
-            invCs[i] =  c.computeInvC(eps);
-        }
+        Bs[i] =     c.computeB(c.a,c.b,h);
+        invCs[i] =  c.computeInvC(c.epsilon);
     }
 
     var q, B, c, deltalambdaTot,i,j;
@@ -157,12 +125,11 @@ GSSolver.prototype.solve = function(h,world){
             for(j=0; j!==Neq; j++){
                 c = equations[j];
 
-                if(c instanceof FrictionEquation && iter < skipFrictionIter)
+                if(c instanceof FrictionEquation && iter < skipFrictionIter){
                     continue;
+                }
 
-                var _eps = useGlobalParams ? eps : c.eps;
-
-                var deltalambda = GSSolver.iterateEquation(j,c,_eps,Bs,invCs,lambda,useZeroRHS,h,iter,skipFrictionIter,this.useNormalForceForFriction);
+                var deltalambda = GSSolver.iterateEquation(j,c,c.epsilon,Bs,invCs,lambda,useZeroRHS,h,iter,skipFrictionIter,this.useNormalForceForFriction);
                 deltalambdaTot += Math.abs(deltalambda);
             }
 
@@ -184,7 +151,7 @@ GSSolver.iterateEquation = function(j,eq,eps,Bs,invCs,lambda,useZeroRHS,dt,iter,
         lambdaj = lambda[j],
         GWlambda = eq.computeGWlambda();
 
-    if(useNormal && eq instanceof FrictionEquation && iter == skipFrictionIter){
+    if(useNormal && eq instanceof FrictionEquation && iter === skipFrictionIter){
         // Rescale the max friction force according to the normal force
         eq.maxForce =  eq.contactEquation.multiplier * eq.frictionCoefficient * dt;
         eq.minForce = -eq.contactEquation.multiplier * eq.frictionCoefficient * dt;

@@ -78,9 +78,14 @@ function Equation(bodyA, bodyB, minForce, maxForce){
 
     this.a = 0;
     this.b = 0;
-    this.eps = 0;
-    this.h = 0;
-    this.updateSpookParams(1/60);
+    this.epsilon = 0;
+    this.timeStep = 1/60;
+
+    /**
+     * Indicates if stiffness or relaxation was changed.
+     * @property {Boolean} needsUpdate
+     */
+    this.needsUpdate = true;
 
     /**
      * The resulting constraint multiplier from the last solve. This is mostly equivalent to the force produced by the constraint.
@@ -104,18 +109,19 @@ function Equation(bodyA, bodyB, minForce, maxForce){
 Equation.prototype.constructor = Equation;
 
 /**
- * Update SPOOK parameters .a, .b and .eps according to the given time step. See equations 9, 10 and 11 in the <a href="http://www8.cs.umu.se/kurser/5DV058/VT09/lectures/spooknotes.pdf">SPOOK notes</a>.
- * @method updateSpookParams
- * @param  {number} timeStep
+ * Compute SPOOK parameters .a, .b and .epsilon according to the current parameters. See equations 9, 10 and 11 in the <a href="http://www8.cs.umu.se/kurser/5DV058/VT09/lectures/spooknotes.pdf">SPOOK notes</a>.
+ * @method update
  */
-Equation.prototype.updateSpookParams = function(timeStep){
+Equation.prototype.update = function(){
     var k = this.stiffness,
         d = this.relaxation,
-        h = timeStep;
+        h = this.timeStep;
+
     this.a = 4.0 / (h * (1 + 4 * d));
     this.b = (4.0 * d) / (1 + 4 * d);
-    this.eps = 4.0 / (h * h * k * (1 + 4 * d));
-    this.h = timeStep;
+    this.epsilon = 4.0 / (h * h * k * (1 + 4 * d));
+
+    this.needsUpdate = false;
 };
 
 function Gmult(G,vi,wi,vj,wj){
