@@ -9,8 +9,10 @@ module.exports = function(grunt) {
             core : {
                 src : ["src/p2.js"],
                 dest : 'build/p2.js',
-                options : {
-                    standalone : "p2"
+                options:{
+                    bundleOptions : {
+                        standalone : "p2"
+                    }
                 }
             }
         },
