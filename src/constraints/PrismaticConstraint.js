@@ -21,6 +21,8 @@ module.exports = PrismaticConstraint;
  * @param {Array}   [options.localAnchorB]            Body B's anchor point, defined in its own local frame.
  * @param {Array}   [options.localAxisA]              An axis, defined in body A frame, that body B's anchor point may slide along.
  * @param {Boolean} [options.disableRotationalLock]   If set to true, bodyB will be free to rotate around its anchor point.
+ * @param {Number}  [options.upperLimit]
+ * @param {Number}  [options.lowerLimit]
  */
 function PrismaticConstraint(bodyA, bodyB, options){
     options = options || {};
@@ -122,28 +124,28 @@ function PrismaticConstraint(bodyA, bodyB, options){
      * @property lowerLimitEnabled
      * @type {Boolean}
      */
-    this.lowerLimitEnabled = false;
+    this.lowerLimitEnabled = typeof(options.lowerLimit)!=="undefined" ? true : false;
 
     /**
      * Set to true to enable upper limit.
      * @property upperLimitEnabled
      * @type {Boolean}
      */
-    this.upperLimitEnabled = false;
+    this.upperLimitEnabled = typeof(options.upperLimit)!=="undefined" ? true : false;
 
     /**
      * Lower constraint limit. The constraint position is forced to be larger than this value.
      * @property lowerLimit
      * @type {Number}
      */
-    this.lowerLimit = 0;
+    this.lowerLimit = typeof(options.lowerLimit)!=="undefined" ? options.lowerLimit : 0;
 
     /**
      * Upper constraint limit. The constraint position is forced to be smaller than this value.
      * @property upperLimit
      * @type {Number}
      */
-    this.upperLimit = 1;
+    this.upperLimit = typeof(options.upperLimit)!=="undefined" ? options.upperLimit : 1;
 
     // Equations used for limits
     this.upperLimitEquation = new ContactEquation(bodyA,bodyB);

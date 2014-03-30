@@ -35,16 +35,13 @@
 
         // Create PrismaticConstraint
         var c = new p2.PrismaticConstraint(bodyA, bodyB, {
-            localAnchorA : [ 1, 0],
-            localAnchorB : [-1, 0],
-            localAxisA :   [ 0, 1],
+            localAnchorA :  [ 1, 0],
+            localAnchorB :  [-1, 0],
+            localAxisA :    [ 0, 1],
+            upperLimit :    0.5,
+            lowerLimit :    -0.5,
         });
         world.addConstraint(c);
-
-        c.upperLimitEnabled = true;
-        c.upperLimit = 0.5;
-        c.lowerLimitEnabled = true;
-        c.lowerLimit = -0.5;
 
         // Create ground
         var planeShape = new p2.Plane();
