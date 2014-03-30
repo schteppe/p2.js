@@ -48,14 +48,14 @@ function Equation(bodyA, bodyB, minForce, maxForce){
      * @property stiffness
      * @type {Number}
      */
-    this.stiffness = 1e6;
+    this.stiffness = Equation.DEFAULT_STIFFNESS;
 
     /**
      * The number of time steps needed to stabilize the constraint equation. Typically between 3 and 5 time steps.
      * @property relaxation
      * @type {Number}
      */
-    this.relaxation = 4;
+    this.relaxation = Equation.DEFAULT_RELAXATION;
 
     /**
      * The Jacobian entry of this equation. 6 numbers, 3 per body (x,y,angle).
@@ -107,6 +107,22 @@ function Equation(bodyA, bodyB, minForce, maxForce){
     this.enabled = true;
 }
 Equation.prototype.constructor = Equation;
+
+/**
+ * The default stiffness when creating a new Equation.
+ * @static
+ * @property {Number} DEFAULT_STIFFNESS
+ * @default 1e6
+ */
+Equation.DEFAULT_STIFFNESS = 1e6;
+
+/**
+ * The default relaxation when creating a new Equation.
+ * @static
+ * @property {Number} DEFAULT_RELAXATION
+ * @default 4
+ */
+Equation.DEFAULT_RELAXATION = 4;
 
 /**
  * Compute SPOOK parameters .a, .b and .epsilon according to the current parameters. See equations 9, 10 and 11 in the <a href="http://www8.cs.umu.se/kurser/5DV058/VT09/lectures/spooknotes.pdf">SPOOK notes</a>.
