@@ -114,6 +114,10 @@ The most recent commits are currently pushed to the ```master``` branch. Thanks 
 ### Change log
 
 ##### Current dev version
+* Added methods ```.setStiffness``` and ```.setRelaxation``` methods to ```Constraint```.
+* Removed properties ```.stiffness```, ```.relaxation``` and ```.useGlobalEquationParameters``` from ```GSSolver```.
+* Added methods ```.setGlobalStiffness```, ```.setGlobalRelaxation```, ```.setGlobalEquationParameters``` to ```World```.
+* Renamed property ```.eps``` to ```.epsilon``` for ```Equation```.
 * Removed property ```.useBoundingBoxes``` from ```NaiveBroadphase``` in favor of the new property ```.boundingVolumeType``` in ```Broadphase```.
 * Added methods ```.getMaxForce``` and ```.setMaxForce``` to ```LockConstraint```.
 * Changed property names ```.bi```, ```.bj```, ```.ni```, ```.ri```, ```.rj``` to ```.bodyA```, ```.bodyB```, ```.normalA```, ```.contactPointA```, ```.contactPointB``` in ```Equation```, ```ContactEquation``` and ```FrictionEquation``` classes.
@@ -149,7 +153,7 @@ The most recent commits are currently pushed to the ```master``` branch. Thanks 
 * Added properties ```.allowSleep```, ```.sleepState```, ```.sleepSpeedLimit```, ```.sleepTimeLimit```, ```.lastTimeSleepy``` as well as methods ```.sleep```, ```.wakeUp()``` and ```.sleepTick``` to ```Body```.
 * Added enums ```Body.AWAKE```, ```Body.SLEEPY```, ```Body.SLEEPING```.
 * Added property ```.enableBodySleeping``` to ```World```.
-* Added option ```.disableRotationalLock``` to ```PrismaticConstraint``` constructor.
+* Added options ```.disableRotationalLock```, ```.lowerLimit```, ```.upperLimit``` to ```PrismaticConstraint``` constructor.
 * Added methods ```.enableMotor```, ```.disableMotor``` to ```.PrismaticConstraint``` as well as properties ```.motorEnabled```, ```.motorSpeed```, ```.motorEquation```.
 
 ##### 0.4.0
