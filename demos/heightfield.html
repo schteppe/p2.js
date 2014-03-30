@@ -27,7 +27,7 @@
             var shape = new p2.Circle(r);
             var p = new p2.Body({
                 mass: 1,
-                position: [Math.random()+(i-N/2)*r*2,Math.random()],
+                position: [Math.random()+(i-N/2)*r*2, 2],
             });
             p.addShape(shape);
             world.addBody(p);
