@@ -1232,7 +1232,6 @@ World.prototype.toJSON = function(){
                 angularVelocity : b.angularVelocity,
                 force : v2a(b.force),
                 motionState : b.motionState,
-                concavePath : b.concavePath,
                 fixedRotation : b.fixedRotation,
                 circleShapes :    [],
                 planeShapes :     [],
@@ -1242,6 +1241,10 @@ World.prototype.toJSON = function(){
                 convexShapes :    [],
                 capsuleShapes :   [],
             };
+
+        if(b.concavePath){
+            jsonBody.concavePath = b.concavePath;
+        }
 
         for(var j=0; j<ss.length; j++){
             var s = ss[j],
@@ -1459,8 +1462,9 @@ World.prototype.fromJSON = function(json){
             body.addShape(shape, shapeJSON.offset, shapeJSON.angle);
         }
 
-        if(jb.concavePath)
+        if(jb.concavePath){
             b.concavePath = jb.concavePath;
+        }
 
         w.addBody(b);
     }

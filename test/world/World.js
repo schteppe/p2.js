@@ -3,6 +3,14 @@ var World = require(__dirname + '/../../src/world/World')
 ,   Circle = require(__dirname + '/../../src/shapes/Circle')
 ,   Convex = require(__dirname + '/../../src/shapes/Convex')
 ,   pkg = require(__dirname + '/../../package.json')
+,   schema = require("./schema").schema
+,   sample = require("./schema").sample
+,   ZSchema = require("z-schema")
+
+var validator = new ZSchema({
+    sync: true,
+    strict: true
+});
 
 exports.construct = function(test){
     // STUB
@@ -56,195 +64,14 @@ exports.disableBodyCollision = function(test){
     test.done();
 };
 
-var sample = {
-    p2: pkg.version,
-    gravity: [0,-10],
-    solver: {
-        type: "GSSolver",
-        iterations: 10,
-        stiffness : 1e7,
-        relaxation: 3,
-    },
-    broadphase: {
-        type:"SAPBroadphase",
-    },
-    bodies: [{
-        id :       1,
-        mass :     1,
-        angle :    0,
-        position : [0,0],
-        velocity : [0,0],
-        angularVelocity : 0,
-        force : [0,0],
-        motionState : 1,
-        fixedRotation : false,
-        concavePath : null,
-        capsuleShapes : [{
-            length : 1,
-            radius : 2,
-            offset : [0,0],
-            angle : 0,
-            collisionGroup:1,
-            collisionMask : 1,
-            material : 1,
-        }],
-        circleShapes : [{
-            radius : 2,
-            offset : [0,0],
-            angle : 0,
-            collisionGroup:1,
-            collisionMask : 1,
-            material : 1,
-        }],
-        convexShapes : [{
-            vertices : [[0,1],[0,0],[1,0]],
-            offset : [0,0],
-            angle : 0,
-            collisionGroup:1,
-            collisionMask : 1,
-            material : 1,
-        }],
-        lineShapes : [{
-            length : 1,
-            offset : [0,0],
-            angle : 0,
-            collisionGroup:1,
-            collisionMask : 1,
-            material : 1,
-        }],
-        particleShapes : [{
-            offset : [0,0],
-            angle : 0,
-            collisionGroup:1,
-            collisionMask : 1,
-            material : 1,
-        }],
-        planeShapes : [{
-            offset : [0,0],
-            angle : 0,
-            collisionGroup:1,
-            collisionMask : 1,
-            material : 1,
-        }],
-        rectangleShapes :   [{
-            width:1,
-            height:1,
-            offset : [0,0],
-            angle : 0,
-            collisionGroup:1,
-            collisionMask : 1,
-            material : 1,
-        }],
-    },{
-        id :       2,
-        mass :     1,
-        angle :    0,
-        position : [0,0],
-        velocity : [0,0],
-        angularVelocity : 0,
-        force : [0,0],
-        motionState : 1,
-        fixedRotation : false,
-        concavePath : [[0,0],[1,0],[1,1]],
-        capsuleShapes :     [],
-        circleShapes :      [],
-        convexShapes :      [],
-        lineShapes :        [],
-        particleShapes :    [],
-        planeShapes :       [],
-        rectangleShapes :   [],
-    }],
-    springs: [{
-        bodyA :         0,
-        bodyB :         1,
-        stiffness :     100,
-        damping :       1,
-        restLength :    1,
-        localAnchorA :  [1,2],
-        localAnchorB :  [-1,-2],
-    }],
-    distanceConstraints :   [{
-        bodyA:      0,
-        bodyB:      1,
-        distance:   1,
-        maxForce:   1e6,
-        collideConnected : true,
-    }],
-    revoluteConstraints :   [{
-        bodyA:              0,
-        bodyB:              1,
-        pivotA:             [0,0],
-        pivotB:             [0,0],
-        maxForce:           1e6,
-        motorEnabled :      true,
-        motorSpeed:         1,
-        lowerLimit:         0,
-        lowerLimitEnabled:  false,
-        upperLimit:         1,
-        upperLimitEnabled:  false,
-        collideConnected : true,
-    }],
-    prismaticConstraints :  [{
-        bodyA:      0,
-        bodyB:      1,
-        localAnchorA: [0,0],
-        localAnchorB: [0,0],
-        localAxisA: [0,0],
-        maxForce:   1e6,
-        motorEnabled:false,
-        motorSpeed:1,
-        lowerLimit:         0,
-        lowerLimitEnabled:  false,
-        upperLimit:         1,
-        upperLimitEnabled:  false,
-        collideConnected : true,
-    }],
-    lockConstraints : [{
-        bodyA:          0,
-        bodyB:          1,
-        localOffsetB:   [0,0],
-        localAngleB:    0,
-        maxForce:       1e6,
-        collideConnected : true,
-    }],
-    gearConstraints : [{
-        bodyA:          0,
-        bodyB:          1,
-        angle:          0,
-        ratio:          0,
-        maxForce:       1e6,
-        collideConnected : true,
-    }],
-    contactMaterials : [{
-        id:1,
-        materialA:1,
-        materialB:2,
-        stiffness:1e6,
-        relaxation:3,
-        frictionStiffness:1e6,
-        frictionRelaxation:3,
-        friction:0.3,
-        restitution:0.3,
-    }],
-    materials : [{
-        id:1,
-    },{
-        id:2,
-    }],
-    defaultContactMaterial : {
-        id:2,
-        materialA:1,
-        materialB:1,
-        stiffness:1e6,
-        relaxation:3,
-        frictionStiffness:1e6,
-        frictionRelaxation:3,
-        friction:0.3,
-        restitution:0.3,
-    }
-};
-
 exports.fromJSON = function(test){
+    var valid = validator.validate(sample, schema);
+    if (!valid) {
+        console.log(JSON.stringify(validator.getLastError().errors,2,2));
+    }
+    test.ok(valid, 'Sample JSON invalid!');
+
+    // Try a JSON1 -> World -> JSON2 roundtrip and see if JSON1 == JSON2
     var world = new World();
     world.fromJSON(sample);
     var json = world.toJSON();
@@ -323,6 +150,12 @@ exports.step = function(test){
 exports.toJSON = function(test){
     var world = new World();
     var json = world.toJSON();
+    var valid = validator.validate(json, schema);
+    if (!valid) {
+        console.log(JSON.stringify(validator.getLastError().errors,2,2));
+    }
+    test.ok(valid, 'Sample JSON invalid!');
+
     test.done();
 };
 
