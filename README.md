@@ -114,6 +114,7 @@ The most recent commits are currently pushed to the ```master``` branch. Thanks 
 ### Change log
 
 ##### Current dev version
+* Removed property ```.useBoundingBoxes``` from ```NaiveBroadphase``` in favor of the new property ```.boundingVolumeType``` in ```Broadphase```.
 * Added methods ```.getMaxForce``` and ```.setMaxForce``` to ```LockConstraint```.
 * Changed property names ```.bi```, ```.bj```, ```.ni```, ```.ri```, ```.rj``` to ```.bodyA```, ```.bodyB```, ```.normalA```, ```.contactPointA```, ```.contactPointB``` in ```Equation```, ```ContactEquation``` and ```FrictionEquation``` classes.
 * Removed ```IslandSolver``` in favor of the new property ```World.islandSplit```.
