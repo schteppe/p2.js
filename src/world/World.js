@@ -1706,7 +1706,7 @@ World.prototype.hitTest = function(worldPoint,bodies,precision){
 
 /**
  * Sets the Equation parameters for all constraints and contact materials.
- * @method setEquationParameters
+ * @method setGlobalEquationParameters
  * @param {object} [parameters]
  * @param {Number} [parameters.relaxation]
  * @param {Number} [parameters.stiffness]
@@ -1754,12 +1754,22 @@ World.prototype.setGlobalEquationParameters = function(parameters){
     }
 };
 
+/**
+ * Set the stiffness for all equations and contact materials.
+ * @method setGlobalStiffness
+ * @param {Number} stiffness
+ */
 World.prototype.setGlobalStiffness = function(stiffness){
     this.setGlobalEquationParameters({
         stiffness: stiffness
     });
 };
 
+/**
+ * Set the relaxation for all equations and contact materials.
+ * @method setGlobalRelaxation
+ * @param {Number} relaxation
+ */
 World.prototype.setGlobalRelaxation = function(relaxation){
     this.setGlobalEquationParameters({
         relaxation: relaxation
