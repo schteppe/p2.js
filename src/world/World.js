@@ -1208,7 +1208,7 @@ World.prototype.toJSON = function(){
             extend(jc,{
                 angle :     c.angle,
                 ratio :     c.ratio,
-                maxForce :  c.maxForce || 1e6,
+                maxForce :  c.maxForce || 1e6, // correct?
             });
             json.gearConstraints.push(jc);
             break;

@@ -50,5 +50,5 @@ Heightfield.prototype.computeAABB = function(out, position, angle){
     out.upperBound[0] = this.elementWidth * this.data.length + position[0];
     out.upperBound[1] = this.maxValue + position[1];
     out.lowerBound[0] = position[0];
-    out.lowerBound[1] = position[1];
+    out.lowerBound[1] = -Number.MAX_VALUE; // Infinity
 };

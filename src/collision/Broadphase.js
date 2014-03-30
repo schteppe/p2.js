@@ -23,9 +23,30 @@ function Broadphase(type){
      * The world to search for collision pairs in. To change it, use .setWorld()
      * @property world
      * @type {World}
+     * @readOnly
      */
     this.world = null;
-};
+
+    /**
+     * The bounding volume type to use in the broadphase algorithms.
+     * @property {Number} boundingVolumeType
+     */
+    this.boundingVolumeType = Broadphase.AABB;
+}
+
+/**
+ * Axis aligned bounding box type.
+ * @static
+ * @property {Number} AABB
+ */
+Broadphase.AABB = 1;
+
+/**
+ * Bounding circle type.
+ * @static
+ * @property {Number} AABB
+ */
+Broadphase.BOUNDING_CIRCLE = 2;
 
 /**
  * Set the world that we are searching for collision pairs in

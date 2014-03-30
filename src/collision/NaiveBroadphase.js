@@ -1,9 +1,9 @@
-var Circle = require('../shapes/Circle')
-,   Plane = require('../shapes/Plane')
-,   Shape = require('../shapes/Shape')
-,   Particle = require('../shapes/Particle')
-,   Broadphase = require('../collision/Broadphase')
-,   vec2 = require('../math/vec2')
+var Circle = require('../shapes/Circle'),
+    Plane = require('../shapes/Plane'),
+    Shape = require('../shapes/Shape'),
+    Particle = require('../shapes/Particle'),
+    Broadphase = require('../collision/Broadphase'),
+    vec2 = require('../math/vec2');
 
 module.exports = NaiveBroadphase;
 
@@ -15,15 +15,8 @@ module.exports = NaiveBroadphase;
  * @extends Broadphase
  */
 function NaiveBroadphase(){
-    Broadphase.call(this,Broadphase.NAIVE);
-
-    /**
-     * Set to true to use bounding box checks instead of bounding radius.
-     * @property useBoundingBoxes
-     * @type {Boolean}
-     */
-    this.useBoundingBoxes = false;
-};
+    Broadphase.call(this, Broadphase.NAIVE);
+}
 NaiveBroadphase.prototype = new Broadphase();
 
 /**
@@ -35,19 +28,19 @@ NaiveBroadphase.prototype = new Broadphase();
 NaiveBroadphase.prototype.getCollisionPairs = function(world){
     var bodies = world.bodies,
         result = this.result,
-        i, j, bi, bj,
-        check = this.useBoundingBoxes ? Broadphase.aabbCheck : Broadphase.boundingRadiusCheck;
+        check = this.boundingVolumeType===Broadphase.AABB ? Broadphase.aabbCheck : Broadphase.boundingRadiusCheck;
 
     result.length = 0;
 
-    for(i=0, Ncolliding=bodies.length; i!==Ncolliding; i++){
-        bi = bodies[i];
+    for(var i=0, Ncolliding=bodies.length; i!==Ncolliding; i++){
+        var bi = bodies[i];
 
-        for(j=0; j<i; j++){
-            bj = bodies[j];
+        for(var j=0; j<i; j++){
+            var bj = bodies[j];
 
-            if(Broadphase.canCollide(bi,bj) && check(bi,bj))
+            if(Broadphase.canCollide(bi,bj) && check(bi,bj)){
                 result.push(bi,bj);
+            }
         }
     }
 
