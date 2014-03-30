@@ -47,6 +47,7 @@ function Constraint(bodyA, bodyB, type, options){
      */
     this.collideConnected = typeof(options.collideConnected)!=="undefined" ? options.collideConnected : true;
 
+    // Wake up bodies when connected
     if(bodyA) bodyA.wakeUp();
     if(bodyB) bodyB.wakeUp();
 };
@@ -64,3 +65,31 @@ Constraint.GEAR = 2;
 Constraint.LOCK = 3;
 Constraint.PRISMATIC = 4;
 Constraint.REVOLUTE = 5;
+
+/**
+ * Set stiffness for this constraint.
+ * @method setStiffness
+ * @param {Number} stiffness
+ */
+Constraint.prototype.setStiffness = function(stiffness){
+    var eqs = this.equations;
+    for(var i=0; i !== eqs.length; i++){
+        var eq = eqs[i];
+        eq.stiffness = stiffness;
+        eq.needsUpdate = true;
+    }
+};
+
+/**
+ * Set relaxation for this constraint.
+ * @method setRelaxation
+ * @param {Number} relaxation
+ */
+Constraint.prototype.setRelaxation = function(relaxation){
+    var eqs = this.equations;
+    for(var i=0; i !== eqs.length; i++){
+        var eq = eqs[i];
+        eq.relaxation = relaxation;
+        eq.needsUpdate = true;
+    }
+};
