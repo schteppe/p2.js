@@ -211,10 +211,13 @@ Narrowphase.prototype.createContactEquation = function(bodyA,bodyB,shapeA,shapeB
     c.relaxation = this.relaxation;
     c.enabled = true;
 
-    if(bodyA.allowSleep && (bodyA.motionState == Body.DYNAMIC) && !(bodyB.motionState == Body.STATIC || bodyB.sleepState === Body.SLEEPY))
+    // Wake up bodies when they get new contact
+    if(bodyA.allowSleep && (bodyA.motionState === Body.DYNAMIC) && !(bodyB.motionState === Body.STATIC || bodyB.sleepState === Body.SLEEPY)){
         bodyA.wakeUp();
-    if(bodyB.allowSleep && (bodyB.motionState == Body.DYNAMIC) && !(bodyA.motionState == Body.STATIC || bodyA.sleepState === Body.SLEEPY))
+    }
+    if(bodyB.allowSleep && (bodyB.motionState === Body.DYNAMIC) && !(bodyA.motionState === Body.STATIC || bodyA.sleepState === Body.SLEEPY)){
         bodyB.wakeUp();
+    }
 
     return c;
 };
