@@ -13,8 +13,8 @@ module.exports = LockConstraint;
  * @param {Body} bodyA
  * @param {Body} bodyB
  * @param {Object} [options]
- * @param {Array}  [options.localOffsetB] The offset of bodyB in bodyA's frame.
- * @param {number} [options.localAngleB]  The angle of bodyB in bodyA's frame.
+ * @param {Array}  [options.localOffsetB] The offset of bodyB in bodyA's frame. Default is the zero vector.
+ * @param {number} [options.localAngleB=0]  The angle of bodyB in bodyA's frame.
  * @param {number} [options.maxForce]
  * @extends Constraint
  */
@@ -22,7 +22,7 @@ function LockConstraint(bodyA, bodyB, options){
     options = options || {};
 
     Constraint.call(this,bodyA,bodyB,Constraint.LOCK,options);
-    var maxForce = ( typeof(options.maxForce)=="undefined" ? Number.MAX_VALUE : options.maxForce );
+    var maxForce = ( typeof(options.maxForce)==="undefined" ? Number.MAX_VALUE : options.maxForce );
     var localOffsetB = options.localOffsetB || vec2.fromValues(0,0);
     localOffsetB = vec2.fromValues(localOffsetB[0],localOffsetB[1]);
 

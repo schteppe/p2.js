@@ -30,11 +30,16 @@ function RevoluteConstraint(bodyA, pivotA, bodyB, pivotB, options){
     options = options || {};
     Constraint.call(this,bodyA,bodyB,Constraint.REVOLUTE,options);
 
-    maxForce = options.maxForce;
+    var maxForce = this.maxForce = typeof(options.maxForce) !== "undefined" ? options.maxForce : Number.MAX_VALUE;
 
-    maxForce = this.maxForce = typeof(maxForce)!="undefined" ? maxForce : Number.MAX_VALUE;
-
+    /**
+     * @property {Array} pivotA
+     */
     this.pivotA = pivotA;
+
+    /**
+     * @property {Array} pivotB
+     */
     this.pivotB = pivotB;
 
     // Equations to be fed to the solver
@@ -43,12 +48,13 @@ function RevoluteConstraint(bodyA, pivotA, bodyB, pivotB, options){
         new Equation(bodyA,bodyB,-maxForce,maxForce),
     ];
 
-    var x =  eqs[0];
+    var x = eqs[0];
     var y = eqs[1];
+    var that = this;
 
     x.computeGq = function(){
-        vec2.rotate(worldPivotA, pivotA, bodyA.angle);
-        vec2.rotate(worldPivotB, pivotB, bodyB.angle);
+        vec2.rotate(worldPivotA, that.pivotA, bodyA.angle);
+        vec2.rotate(worldPivotB, that.pivotB, bodyB.angle);
         vec2.add(g, bodyB.position, worldPivotB);
         vec2.sub(g, g, bodyA.position);
         vec2.sub(g, g, worldPivotA);
@@ -56,8 +62,8 @@ function RevoluteConstraint(bodyA, pivotA, bodyB, pivotB, options){
     };
 
     y.computeGq = function(){
-        vec2.rotate(worldPivotA, pivotA, bodyA.angle);
-        vec2.rotate(worldPivotB, pivotB, bodyB.angle);
+        vec2.rotate(worldPivotA, that.pivotA, bodyA.angle);
+        vec2.rotate(worldPivotB, that.pivotB, bodyB.angle);
         vec2.add(g, bodyB.position, worldPivotB);
         vec2.sub(g, g, bodyA.position);
         vec2.sub(g, g, worldPivotA);
@@ -70,16 +76,17 @@ function RevoluteConstraint(bodyA, pivotA, bodyB, pivotB, options){
     this.motorEquation = new RotationalVelocityEquation(bodyA,bodyB);
 
     /**
-     * Indicates whether the motor is enabled.
+     * Indicates whether the motor is enabled. Use .enableMotor() to enable the constraint motor.
      * @property {Boolean} motorEnabled
      * @readOnly
      */
     this.motorEnabled = false;
 
     /**
-     * The constraint position
+     * The constraint position.
      * @property angle
      * @type {Number}
+     * @readOnly
      */
     this.angle = 0;
 
@@ -234,7 +241,9 @@ RevoluteConstraint.prototype.motorIsEnabled = function(){
  * @param  {Number} speed
  */
 RevoluteConstraint.prototype.setMotorSpeed = function(speed){
-    if(!this.motorEnabled) return;
+    if(!this.motorEnabled){
+        return;
+    }
     var i = this.equations.indexOf(this.motorEquation);
     this.equations[i].relativeVelocity = speed;
 };

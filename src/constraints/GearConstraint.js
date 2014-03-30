@@ -13,8 +13,8 @@ module.exports = GearConstraint;
  * @param {Body}            bodyA
  * @param {Body}            bodyB
  * @param {Object}          [options]
- * @param {Number}          [options.angle] Relative angle between the bodies.
- * @param {Number}          [options.ratio] Gear ratio.
+ * @param {Number}          [options.angle=0] Relative angle between the bodies.
+ * @param {Number}          [options.ratio=1] Gear ratio.
  * @param {Number}          [options.maxTorque] Maximum torque to apply.
  * @extends Constraint
  * @todo Ability to specify world points
