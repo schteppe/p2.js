@@ -6,8 +6,6 @@ var sample = {
     solver: {
         type: "GSSolver",
         iterations: 10,
-        stiffness : 1e7,
-        relaxation: 3,
     },
     broadphase: {
         type:"SAPBroadphase",
@@ -445,14 +443,6 @@ solver_v1 = {
         iterations:  {
 		    type:"integer",
 		    minimum:1,
-		},
-        stiffness:{
-		    type:"number",
-		    minimum:0,
-		},
-        relaxation : {
-		    type:"number",
-		    minimum:0,
 		},
     },
     additionalProperties:false

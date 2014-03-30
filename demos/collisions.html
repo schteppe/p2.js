@@ -25,13 +25,12 @@
             broadphase : new p2.SAPBroadphase(),
         });
 
-        // Testing...
         world.islandSplit = true;
         world.enableIslandSleeping = true;
 
         world.solver.iterations = 20;
-        world.solver.stiffness = 1e4;
-        world.solver.relaxation = 4;
+
+        world.setGlobalStiffness(1e4);
 
         var verts = [];
         for(var i=0, N=5; i<N; i++){

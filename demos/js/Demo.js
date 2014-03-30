@@ -40,6 +40,8 @@ function Demo(world){
     this.springs=[];
     this.paused = false;
     this.timeStep = 1/60;
+    this.relaxation = 4;
+    this.stiffness = 1e6;
 
     this.mouseConstraint = null;
     this.nullBody = new p2.Body();
@@ -511,17 +513,17 @@ Demo.prototype.createMenu = function(){
 
                     "<div class='input-prepend input-block-level'>",
                       "<span class='add-on'>Iterations</span>",
-                      "<input id='menu-solver-iterations' type='number' min='1' value='10'>",
+                      "<input id='menu-solver-iterations' type='number' min='1' value='"+this.world.solver.iterations+"'>",
                     "</div>",
 
                     "<div class='input-prepend input-block-level'>",
                       "<span class='add-on'>Relaxation</span>",
-                      "<input id='menu-solver-relaxation' type='number' step='any' min='0' value='4'>",
+                      "<input id='menu-solver-relaxation' type='number' step='any' min='0' value='"+this.relaxation+"'>",
                     "</div>",
 
                     "<div class='input-prepend input-block-level'>",
                       "<span class='add-on'>Stiffness</span>",
-                      "<input id='menu-solver-stiffness' type='number' step='any' min='0' value='"+this.world.solver.stiffness+"'>",
+                      "<input id='menu-solver-stiffness' type='number' step='any' min='0' value='"+this.stiffness+"'>",
                     "</div>",
 
                 "</fieldset>",
@@ -595,19 +597,19 @@ Demo.prototype.createMenu = function(){
 
     $("#menu-solver-iterations").change(function(e){
         var solver = that.world.solver;
-        if("subsolver" in solver)
-            solver = solver.subsolver;
         solver.iterations = parseInt($(this).val());
     }).tooltip({
         title : '# timesteps needed for stabilization'
     });
     $("#menu-solver-relaxation").change(function(e){
-        that.world.solver.relaxation = parseFloat($(this).val());
+        that.relaxation = parseFloat($(this).val());
+        that.setEquationParameters();
     }).tooltip({
         title : '# timesteps needed for stabilization'
     });
     $("#menu-solver-stiffness").change(function(e){
-        that.world.solver.stiffness = parseFloat($(this).val());
+        that.stiffness = parseFloat($(this).val());
+        that.setEquationParameters();
     }).tooltip({
         title : "Constraint stiffness",
     });
@@ -634,6 +636,13 @@ Demo.zoomInEvent = {
 };
 Demo.zoomOutEvent = {
     type:"zoomout"
+};
+
+Demo.prototype.setEquationParameters = function(){
+    this.world.setGlobalEquationParameters({
+        stiffness: this.stiffness,
+        relaxation: this.relaxation
+    });
 };
 
 Demo.prototype.updateTools = function(){

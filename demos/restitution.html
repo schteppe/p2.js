@@ -21,10 +21,6 @@
             gravity : [0,-10],
         });
 
-        // Turn off global equation parameters for stiffness and restitution.
-        // This enables our contact material stiffness/restituion settings.
-        world.solver.useGlobalEquationParameters = false;
-
         var circleShape = new p2.Circle(0.5);
         var ballBody1 = new p2.Body({
             position: [-2,1],

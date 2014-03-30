@@ -20,7 +20,7 @@
             gravity : [0,-10],
             broadphase : new p2.SAPBroadphase(),
         });
-        world.solver.stiffness = 1e4;
+        world.setGlobalStiffness(1e4);
 
         // Create ground
         var planeShape = new p2.Plane();

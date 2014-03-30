@@ -37,9 +37,8 @@
         // Init world
         world = new p2.World();
 
-        world.defaultFriction = 0.5;
-        world.solver.stiffness = 1e5;
-        world.solver.relaxation = 3;
+        world.defaultContactMaterial.friction = 0.5;
+        world.setGlobalStiffness(1e5);
 
         // Init materials
         var groundMaterial = new p2.Material(),
