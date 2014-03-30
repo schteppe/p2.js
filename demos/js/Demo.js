@@ -40,8 +40,8 @@ function Demo(world){
     this.springs=[];
     this.paused = false;
     this.timeStep = 1/60;
-    this.relaxation = 4;
-    this.stiffness = 1e6;
+    this.relaxation = p2.Equation.DEFAULT_RELAXATION;
+    this.stiffness = p2.Equation.DEFAULT_STIFFNESS;
 
     this.mouseConstraint = null;
     this.nullBody = new p2.Body();
