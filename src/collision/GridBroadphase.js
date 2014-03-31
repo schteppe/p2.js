@@ -3,7 +3,7 @@ var Circle = require('../shapes/Circle')
 ,   Particle = require('../shapes/Particle')
 ,   Broadphase = require('../collision/Broadphase')
 ,   vec2 = require('../math/vec2')
-,   _ = require('underscore')
+,   Utils = require('../utils/Utils')
 
 module.exports = GridBroadphase;
 
@@ -25,7 +25,7 @@ function GridBroadphase(options){
     options = options || {};
     Broadphase.apply(this);
 
-    _.defaults(options,{
+    Utils.extend(options,{
         xmin:   -100,
         xmax:   100,
         ymin:   -100,

@@ -16,7 +16,7 @@ function Utils(){};
  */
 Utils.appendArray = function(a,b){
     if (b.length < 150000) {
-        a.push.apply(a, b)
+        a.push.apply(a, b);
     } else {
         for (var i = 0, len = b.length; i !== len; ++i) {
             a.push(b[i]);
@@ -34,8 +34,9 @@ Utils.appendArray = function(a,b){
  */
 Utils.splice = function(array,index,howmany){
     howmany = howmany || 1;
-    for (var i=index, len=array.length-howmany; i < len; i++)
+    for (var i=index, len=array.length-howmany; i < len; i++){
         array[i] = array[i + howmany];
+    }
     array.length = len;
 };
 
@@ -46,3 +47,16 @@ Utils.splice = function(array,index,howmany){
  * @property ARRAY_TYPE
  */
 Utils.ARRAY_TYPE = Float32Array || Array;
+
+/**
+ * Extend an object with the properties of another
+ * @static
+ * @method extend
+ * @param  {object} a
+ * @param  {object} b
+ */
+Utils.extend = function(a,b){
+    for(var key in b){
+        a[key] = b[key];
+    }
+};
