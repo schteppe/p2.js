@@ -12,12 +12,13 @@ module.exports = GridBroadphase;
  * @class GridBroadphase
  * @constructor
  * @extends Broadphase
- * @param {number} xmin Lower x bound of the grid
- * @param {number} xmax Upper x bound
- * @param {number} ymin Lower y bound
- * @param {number} ymax Upper y bound
- * @param {number} nx Number of bins along x axis
- * @param {number} ny Number of bins along y axis
+ * @param {object} [options]
+ * @param {number} [options.xmin]   Lower x bound of the grid
+ * @param {number} [options.xmax]   Upper x bound
+ * @param {number} [options.ymin]   Lower y bound
+ * @param {number} [options.ymax]   Upper y bound
+ * @param {number} [options.nx]     Number of bins along x axis
+ * @param {number} [options.ny]     Number of bins along y axis
  * @todo Should have an option for dynamic scene size
  */
 function GridBroadphase(options){
