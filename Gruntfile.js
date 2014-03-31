@@ -26,10 +26,19 @@ module.exports = function(grunt) {
 
         nodeunit: {
             all: ['test/**/*.js'],
+        },
+
+        jshint: {
+            all: ['src/**/*.js'],
+            options:{
+                jshintrc: '.jshintrc',
+                force: true // Do not fail the task
+            }
         }
     });
 
     grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-browserify');
     grunt.loadNpmTasks('grunt-contrib-nodeunit');
     grunt.registerTask('default', ['browserify','webworkerify','uglify','addLicense']);
