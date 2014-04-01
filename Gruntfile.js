@@ -41,7 +41,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-browserify');
     grunt.loadNpmTasks('grunt-contrib-nodeunit');
-    grunt.registerTask('default', ['browserify','webworkerify','uglify','addLicense']);
+    grunt.registerTask('default', ['grabVec2','browserify','webworkerify','uglify','addLicense']);
     grunt.registerTask('test', ['nodeunit']);
 
     grunt.registerTask('webworkerify','Fixes the browserify bundle so it works in Web Workers',function(){
@@ -57,5 +57,11 @@ module.exports = function(grunt) {
 
         fs.writeFileSync("build/p2.js",text+"\n"+dev);
         fs.writeFileSync("build/p2.min.js",text+"\n"+min);
+    });
+
+    grunt.registerTask('grabVec2','Grabs the vec2 class from the gl-matrix library.',function(){
+        var common = fs.readFileSync("node_modules/gl-matrix/src/gl-matrix/common.js").toString();
+        var vec2 = fs.readFileSync("node_modules/gl-matrix/src/gl-matrix/vec2.js").toString();
+        fs.writeFileSync("build/vec2.js",common+'\n'+vec2);
     });
 };
