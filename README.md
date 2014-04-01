@@ -114,6 +114,10 @@ The most recent commits are currently pushed to the ```master``` branch. Thanks 
 ### Change log
 
 ##### Current dev version
+* Upgraded to gl-matrix 2.1.0.
+* Removed ```QuadTree```.
+* Removed ```mat2```.
+* Added ```Utils.extend```.
 * Added methods ```.setStiffness``` and ```.setRelaxation``` methods to ```Constraint```.
 * Removed properties ```.stiffness```, ```.relaxation``` and ```.useGlobalEquationParameters``` from ```GSSolver```.
 * Added methods ```.setGlobalStiffness```, ```.setGlobalRelaxation```, ```.setGlobalEquationParameters``` to ```World```.
