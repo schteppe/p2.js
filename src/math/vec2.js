@@ -6,29 +6,7 @@
 // Only import vec2 from gl-matrix and skip the rest
 var vec2 = require('../../node_modules/gl-matrix/src/gl-matrix/vec2').vec2;
 
-// Now add some extensions
-
-/**
- * Get the vector x component
- * @method getX
- * @static
- * @param  {Float32Array} a
- * @return {Number}
- */
-vec2.getX = function(a){
-    return a[0];
-};
-
-/**
- * Get the vector y component
- * @method getY
- * @static
- * @param  {Float32Array} a
- * @return {Number}
- */
-vec2.getY = function(a){
-    return a[1];
-};
+// Extensions
 
 /**
  * Make a cross product and only return the z component
@@ -89,12 +67,28 @@ vec2.rotate = function(out,a,angle){
     out[1] = s*x +c*y;
 };
 
+/**
+ * Transform a point position to local frame.
+ * @method toLocalFrame
+ * @param  {Array} out
+ * @param  {Array} worldPoint
+ * @param  {Array} framePosition
+ * @param  {Number} frameAngle
+ */
 vec2.toLocalFrame = function(out, worldPoint, framePosition, frameAngle){
     vec2.copy(out, worldPoint);
     vec2.sub(out, out, framePosition);
     vec2.rotate(out, out, -frameAngle);
 };
 
+/**
+ * Transform a point position to global frame.
+ * @method toGlobalFrame
+ * @param  {Array} out
+ * @param  {Array} localPoint
+ * @param  {Array} framePosition
+ * @param  {Number} frameAngle
+ */
 vec2.toGlobalFrame = function(out, localPoint, framePosition, frameAngle){
     vec2.copy(out, localPoint);
     vec2.rotate(out, out, frameAngle);
