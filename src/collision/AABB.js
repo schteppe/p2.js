@@ -1,5 +1,5 @@
 var vec2 = require('../math/vec2')
-,   Utils = require('../utils/Utils')
+,   Utils = require('../utils/Utils');
 
 module.exports = AABB;
 
@@ -7,9 +7,9 @@ module.exports = AABB;
  * Axis aligned bounding box class.
  * @class AABB
  * @constructor
- * @param {Object} options
- * @param {Array} upperBound
- * @param {Array} lowerBound
+ * @param {Object}  [options]
+ * @param {Array}   [options.upperBound]
+ * @param {Array}   [options.lowerBound]
  */
 function AABB(options){
 
@@ -19,7 +19,9 @@ function AABB(options){
      * @type {Array}
      */
     this.lowerBound = vec2.create();
-    if(options && options.lowerBound) vec2.copy(this.lowerBound, options.lowerBound);
+    if(options && options.lowerBound){
+        vec2.copy(this.lowerBound, options.lowerBound);
+    }
 
     /**
      * The upper bound of the bounding box.
@@ -27,7 +29,9 @@ function AABB(options){
      * @type {Array}
      */
     this.upperBound = vec2.create();
-    if(options && options.upperBound) vec2.copy(this.upperBound, options.upperBound);
+    if(options && options.upperBound){
+        vec2.copy(this.upperBound, options.upperBound);
+    }
 }
 
 var tmp = vec2.create();
@@ -45,7 +49,7 @@ AABB.prototype.setFromPoints = function(points,position,angle){
     for(var i=0; i<points.length; i++){
         var p = points[i];
 
-        if(typeof(angle) =="number"){
+        if(typeof(angle) === "number"){
             vec2.rotate(tmp,p,angle);
             p = tmp;
         }
@@ -86,12 +90,14 @@ AABB.prototype.extend = function(aabb){
     // Loop over x and y
     for(var i=0; i<2; i++){
         // Extend lower bound
-        if(aabb.lowerBound[i] < this.lowerBound[i])
+        if(aabb.lowerBound[i] < this.lowerBound[i]){
             this.lowerBound[i] = aabb.lowerBound[i];
+        }
 
         // Upper
-        if(aabb.upperBound[i] > this.upperBound[i])
+        if(aabb.upperBound[i] > this.upperBound[i]){
             this.upperBound[i] = aabb.upperBound[i];
+        }
     }
 };
 

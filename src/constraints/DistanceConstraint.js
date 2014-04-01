@@ -12,8 +12,9 @@ module.exports = DistanceConstraint;
  * @author schteppe
  * @param {Body} bodyA
  * @param {Body} bodyB
- * @param {number} dist The distance to keep between the bodies.
- * @param {number} maxForce
+ * @param {number} distance The distance to keep between the bodies.
+ * @param {object} [options]
+ * @param {object} [options.maxForce=Number.MAX_VALUE] Maximum force to apply.
  * @extends Constraint
  */
 function DistanceConstraint(bodyA,bodyB,distance,options){
@@ -29,10 +30,11 @@ function DistanceConstraint(bodyA,bodyB,distance,options){
     this.distance = distance;
 
     var maxForce;
-    if(typeof(options.maxForce)==="undefined" )
+    if(typeof(options.maxForce)==="undefined" ){
         maxForce = Number.MAX_VALUE;
-    else
+    } else {
         maxForce = options.maxForce;
+    }
 
     var normal = new Equation(bodyA,bodyB,-maxForce,maxForce); // Just in the normal direction
     this.equations = [ normal ];

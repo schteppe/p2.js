@@ -1,5 +1,5 @@
 var Shape = require('./Shape')
-,   vec2 = require('../math/vec2')
+,   vec2 = require('../math/vec2');
 
 module.exports = Capsule;
 
@@ -8,8 +8,8 @@ module.exports = Capsule;
  * @class Capsule
  * @constructor
  * @extends Shape
- * @param {Number} length The distance between the end points
- * @param {Number} radius Radius of the capsule
+ * @param {Number} [length] The distance between the end points
+ * @param {Number} [radius] Radius of the capsule
  */
 function Capsule(length,radius){
 
@@ -26,7 +26,7 @@ function Capsule(length,radius){
     this.radius = radius || 1;
 
     Shape.call(this,Shape.CAPSULE);
-};
+}
 Capsule.prototype = new Shape();
 
 /**

@@ -11,9 +11,9 @@ module.exports = AngleLockEquation;
  * @extends Equation
  * @param {Body} bodyA
  * @param {Body} bodyB
- * @param {Object} options
- * @param {Number} options.angle Angle to add to the local vector in body i.
- * @param {Number} options.ratio Gear ratio
+ * @param {Object} [options]
+ * @param {Number} [options.angle] Angle to add to the local vector in body A.
+ * @param {Number} [options.ratio] Gear ratio
  */
 function AngleLockEquation(bodyA, bodyB, options){
     options = options || {};

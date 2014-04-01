@@ -9,13 +9,13 @@ module.exports = ContactMaterial;
  * @param {Material} materialA
  * @param {Material} materialB
  * @param {Object}   [options]
- * @param {Number}   options.friction           Friction coefficient.
- * @param {Number}   options.restitution        Restitution coefficient aka "bounciness".
- * @param {Number}   options.stiffness          ContactEquation stiffness.
- * @param {Number}   options.relaxation         ContactEquation relaxation.
- * @param {Number}   options.frictionStiffness  FrictionEquation stiffness.
- * @param {Number}   options.frictionRelaxation FrictionEquation relaxation.
- * @param {Number}   options.surfaceVelocity    Surface velocity.
+ * @param {Number}   [options.friction=0.3]       Friction coefficient.
+ * @param {Number}   [options.restitution=0]      Restitution coefficient aka "bounciness".
+ * @param {Number}   [options.stiffness]          ContactEquation stiffness.
+ * @param {Number}   [options.relaxation]         ContactEquation relaxation.
+ * @param {Number}   [options.frictionStiffness]  FrictionEquation stiffness.
+ * @param {Number}   [options.frictionRelaxation] FrictionEquation relaxation.
+ * @param {Number}   [options.surfaceVelocity=0]  Surface velocity.
  * @author schteppe
  */
 function ContactMaterial(materialA, materialB, options){
@@ -59,6 +59,8 @@ function ContactMaterial(materialA, materialB, options){
      */
     this.restitution =  typeof(options.restitution) !== "undefined" ?   Number(options.restitution) : 0.0;
 
+    // Todo: use Equation defaults below?
+
     /**
      * Stiffness of the resulting ContactEquation that this ContactMaterial generate
      * @property stiffness
@@ -91,7 +93,7 @@ function ContactMaterial(materialA, materialB, options){
      * Will add surface velocity to this material. If bodyA rests on top if bodyB, and the surface velocity is positive, bodyA will slide to the right.
      * @property {Number} surfaceVelocity
      */
-    this.surfaceVelocity = typeof(options.surfaceVelocity)    !== "undefined" ?   Number(options.surfaceVelocity)    : 0
-};
+    this.surfaceVelocity = typeof(options.surfaceVelocity)    !== "undefined" ?   Number(options.surfaceVelocity)    : 0;
+}
 
 ContactMaterial.idCounter = 0;

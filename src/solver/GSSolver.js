@@ -13,7 +13,7 @@ module.exports = GSSolver;
  * @extends Solver
  * @param {Object} [options]
  * @param {Number} [options.iterations=10]
- * @param {Number} [options.tolerance]
+ * @param {Number} [options.tolerance=0]
  */
 function GSSolver(options){
     Solver.call(this,options,Solver.GS);
@@ -27,13 +27,12 @@ function GSSolver(options){
     this.iterations = options.iterations || 10;
 
     /**
-     * The error tolerance. If the total error is below this limit, the solver will stop. Set to zero for as good solution as possible.
+     * The error tolerance. If the total error is below this limit, the solver will stop. Set to zero for as good solution as possible, but to something larger than zero to make computations faster.
      * @property tolerance
      * @type {Number}
      */
     this.tolerance = options.tolerance || 0;
 
-    this.debug = options.debug || false;
     this.arrayStep = 30;
     this.lambda = new Utils.ARRAY_TYPE(this.arrayStep);
     this.Bs =     new Utils.ARRAY_TYPE(this.arrayStep);

@@ -76,7 +76,6 @@ FrictionEquation.prototype.constructor = FrictionEquation;
  * larger than this value.
  * @method setSlipForce
  * @param  {Number} slipForce
- * @deprecated Use .frictionCoefficient instead
  */
 FrictionEquation.prototype.setSlipForce = function(slipForce){
     this.maxForce = slipForce;
@@ -86,6 +85,7 @@ FrictionEquation.prototype.setSlipForce = function(slipForce){
 /**
  * Get the max force for the constraint.
  * @method getSlipForce
+ * @return {Number}
  */
 FrictionEquation.prototype.getSlipForce = function(){
     return this.maxForce;

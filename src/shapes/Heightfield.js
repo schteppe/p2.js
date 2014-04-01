@@ -1,5 +1,5 @@
 var Shape = require('./Shape')
-,    vec2 = require('../math/vec2')
+,    vec2 = require('../math/vec2');
 
 module.exports = Heightfield;
 
@@ -8,13 +8,34 @@ module.exports = Heightfield;
  * @class Heightfield
  * @extends Shape
  * @constructor
+ * @param {Array} data
+ * @param {Number} maxValue
+ * @param {Number} elementWidth
+ * @todo Should take maxValue as an option and also be able to compute it itself if not given.
+ * @todo Should be possible to use along all axes, not just y
  */
 function Heightfield(data,maxValue,elementWidth){
+
+    /**
+     * An array of numbers, or height values, that are spread out along the x axis.
+     * @property {array} data
+     */
     this.data = data;
+
+    /**
+     * Max value of the data
+     * @property {number} maxValue
+     */
     this.maxValue = maxValue;
+
+    /**
+     * The width of each element
+     * @property {number} elementWidth
+     */
     this.elementWidth = elementWidth;
+
     Shape.call(this,Shape.HEIGHTFIELD);
-};
+}
 Heightfield.prototype = new Shape();
 
 /**
