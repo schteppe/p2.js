@@ -1,7 +1,6 @@
-var mat2 = require('../math/mat2')
-,   vec2 = require('../math/vec2')
+var vec2 = require('../math/vec2')
 ,   Equation = require('./Equation')
-,   Utils = require('../utils/Utils')
+,   Utils = require('../utils/Utils');
 
 module.exports = FrictionEquation;
 
@@ -68,7 +67,7 @@ function FrictionEquation(bodyA, bodyB, slipForce){
      * @type {Number}
      */
     this.frictionCoefficient = 0.3;
-};
+}
 FrictionEquation.prototype = new Equation();
 FrictionEquation.prototype.constructor = FrictionEquation;
 
