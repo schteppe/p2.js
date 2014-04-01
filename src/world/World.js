@@ -905,13 +905,15 @@ World.prototype.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,cm,glen){
                 e.bodyA = bi;
                 e.bodyB = bj;
 
+                // Reset contact equations
+                e.contactEquations.length = 0;
+                
                 if(typeof(numContacts)==="number"){
-                    // Add contacts to the event object
-                    e.contactEquations.length = 0;
                     for(var i=np.contactEquations.length-numContacts; i<np.contactEquations.length; i++){
                         e.contactEquations.push(np.contactEquations[i]);
                     }
                 }
+
                 this.emit(e);
             }
 
