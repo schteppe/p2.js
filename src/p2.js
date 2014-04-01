@@ -35,7 +35,6 @@ module.exports = {
     Spring :                        require('./objects/Spring'),
     Utils :                         require('./utils/Utils'),
     World :                         require('./world/World'),
-    QuadTree :                      require('./collision/QuadTree').QuadTree,
     vec2 :                          require('./math/vec2'),
     version :                       require('../package.json').version,
 };
