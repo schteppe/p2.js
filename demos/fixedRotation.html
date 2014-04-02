@@ -21,6 +21,8 @@
             gravity : [0,-10],
         });
 
+        world.solver.tolerance = 0.01;
+
         var bodyA = new p2.Body({
             mass: 1,
             position: [-1,0],

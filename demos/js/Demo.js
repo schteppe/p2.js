@@ -42,7 +42,6 @@ function Demo(world){
     this.timeStep = 1/60;
     this.relaxation = p2.Equation.DEFAULT_RELAXATION;
     this.stiffness = p2.Equation.DEFAULT_STIFFNESS;
-    this.tolerance = 0;
 
     this.mouseConstraint = null;
     this.nullBody = new p2.Body();
@@ -529,7 +528,7 @@ Demo.prototype.createMenu = function(){
 
                     "<div class='input-prepend input-block-level'>",
                       "<span class='add-on'>Tolerance</span>",
-                      "<input id='menu-solver-tolerance' type='number' step='any' min='0' value='"+this.tolerance+"'>",
+                      "<input id='menu-solver-tolerance' type='number' step='any' min='0' value='"+this.world.solver.tolerance+"'>",
                     "</div>",
 
                 "</fieldset>",
@@ -620,9 +619,9 @@ Demo.prototype.createMenu = function(){
         title : "Constraint stiffness",
     });
     $("#menu-solver-tolerance").change(function(e){
-        that.tolerance = parseFloat($(this).val());
-        if(that.tolerance >= 0){
-            that.world.solver.tolerance = that.tolerance;
+        var tolerance = parseFloat($(this).val());
+        if(tolerance >= 0){
+            that.world.solver.tolerance = tolerance;
         }
     }).tooltip({
         title : "Solver tolerance",

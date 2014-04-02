@@ -22,6 +22,9 @@
         });
         world.setGlobalStiffness(1e4);
 
+        world.solver.iterations = 20;
+        world.solver.tolerance = 0.01;
+
         // Create ground
         var planeShape = new p2.Plane();
         var plane = new p2.Body({ position: [0,-2]});

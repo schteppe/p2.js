@@ -20,6 +20,7 @@
             gravity : [0,0],
         });
         world.solver.iterations = 30;
+        world.solver.tolerance = 0.01;
 
         // Create static dummy body that we can constrain other bodies to
         var dummyBody = new p2.Body({

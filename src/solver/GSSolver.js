@@ -27,7 +27,7 @@ function GSSolver(options){
     this.iterations = options.iterations || 10;
 
     /**
-     * The error tolerance. If the total error is below this limit, the solver will stop. Set to zero for as good solution as possible, but to something larger than zero to make computations faster.
+     * The error tolerance, per constraint. If the total error is below this limit, the solver will stop iterating. Set to zero for as good solution as possible, but to something larger than zero to make computations faster.
      * @property tolerance
      * @type {Number}
      */
@@ -81,9 +81,9 @@ GSSolver.prototype.solve = function(h,world){
     var iter = 0,
         maxIter = this.iterations,
         skipFrictionIter = this.skipFrictionIterations,
-        tolSquared = this.tolerance*this.tolerance,
         equations = this.equations,
         Neq = equations.length,
+        tolSquared = Math.pow(this.tolerance*Neq, 2),
         bodies = world.bodies,
         Nbodies = world.bodies.length,
         add = vec2.add,

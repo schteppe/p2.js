@@ -25,6 +25,7 @@
             gravity : [0,-10],
         });
         world.solver.iterations = 100;
+        world.solver.tolerance = 0.001;
 
         var circleShape = new p2.Circle(0.5);
         circleShape.collisionGroup = CIRCLE;

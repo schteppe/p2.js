@@ -27,7 +27,11 @@
 
         // Set solver iterations: this controls contact quality.
         // Large value = better contacts, but requires more computations.
-        world.solver.iterations = 5;
+        world.solver.iterations = 10;
+
+        // Solver tolerance: if the solver error is smaller than this value, it will stop solving.
+        // Set to zero to make sure that you get as good solutions as possible.
+        world.solver.tolerance = 0.01;
 
         // Create ground shape (plane)
         var planeShape = new p2.Plane();

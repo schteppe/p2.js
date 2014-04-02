@@ -29,6 +29,7 @@
         });
         world.setGlobalStiffness(1e5);
         world.solver.iterations = 20;
+        world.solver.tolerance = 0.02;
 
         // Create circle bodies
         var shape = new p2.Circle(r);

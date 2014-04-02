@@ -29,6 +29,7 @@
         world.enableIslandSleeping = true;
 
         world.solver.iterations = 20;
+        world.solver.tolerance = 0.001;
 
         world.setGlobalStiffness(1e4);
 
@@ -64,7 +65,6 @@
                 bodyB.addShape(shapeB);
                 world.addBody(bodyB);
                 bodyB.position[1] = dropHeight;
-                bodyB.angle = 0;
             }
             opts.position[0] += dist;
             numAdded++;
