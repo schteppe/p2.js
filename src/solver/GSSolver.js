@@ -1,7 +1,7 @@
 var vec2 = require('../math/vec2')
 ,   Solver = require('./Solver')
 ,   Utils = require('../utils/Utils')
-,   FrictionEquation = require('../equations/FrictionEquation')
+,   FrictionEquation = require('../equations/FrictionEquation');
 
 module.exports = GSSolver;
 
@@ -53,6 +53,12 @@ function GSSolver(options){
      * @type {Number}
      */
     this.skipFrictionIterations = 0;
+
+    /**
+     * The number of iterations that were made during the last solve. If .tolerance is zero, this value will always be equal to .iterations, but if .tolerance is larger than zero, and the solver can quit early, then this number will be somewhere between 1 and .iterations.
+     * @property {Number} usedIterations
+     */
+    this.usedIterations = 0;
 }
 GSSolver.prototype = new Solver();
 
@@ -84,6 +90,8 @@ GSSolver.prototype.solve = function(h,world){
         set = vec2.set,
         useZeroRHS = this.useZeroRHS,
         lambda = this.lambda;
+
+    this.usedIterations = 0;
 
     // Things that does not change during iteration can be computed once
     if(lambda.length < Neq){
@@ -132,8 +140,12 @@ GSSolver.prototype.solve = function(h,world){
                 deltalambdaTot += Math.abs(deltalambda);
             }
 
+            this.usedIterations++;
+
             // If the total error is small enough - stop iterate
-            if(deltalambdaTot*deltalambdaTot <= tolSquared) break;
+            if(deltalambdaTot*deltalambdaTot <= tolSquared){
+                break;
+            }
         }
 
         // Add result to velocity
@@ -159,7 +171,9 @@ GSSolver.iterateEquation = function(j,eq,eps,Bs,invCs,lambda,useZeroRHS,dt,iter,
     var maxForce = eq.maxForce,
         minForce = eq.minForce;
 
-    if(useZeroRHS) B = 0;
+    if(useZeroRHS){
+        B = 0;
+    }
 
     var deltalambda = invC * ( B - GWlambda - eps * lambdaj );
 

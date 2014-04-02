@@ -57,6 +57,11 @@ Island.prototype.getBodies = function(result){
     return bodies;
 };
 
+/**
+ * Check if the entire island wants to sleep.
+ * @method wantsToSleep
+ * @return {Boolean}
+ */
 Island.prototype.wantsToSleep = function(){
     for(var i=0; i<this.bodies.length; i++){
         var b = this.bodies[i];
@@ -67,6 +72,10 @@ Island.prototype.wantsToSleep = function(){
     return true;
 };
 
+/**
+ * Make all bodies in the island sleep.
+ * @method sleep
+ */
 Island.prototype.sleep = function(){
     for(var i=0; i<this.bodies.length; i++){
         var b = this.bodies[i];
