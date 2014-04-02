@@ -31,7 +31,7 @@ function GSSolver(options){
      * @property tolerance
      * @type {Number}
      */
-    this.tolerance = options.tolerance || 0;
+    this.tolerance = options.tolerance || 1e-10;
 
     this.arrayStep = 30;
     this.lambda = new Utils.ARRAY_TYPE(this.arrayStep);
