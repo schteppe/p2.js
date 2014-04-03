@@ -190,7 +190,7 @@ Demo.prototype.run = function(){
             var now = Date.now() / 1000,
                 timeSinceLastCall = now-lastCallTime;
             lastCallTime = now;
-            demo.world.step(1/60,timeSinceLastCall,demo.maxSubSteps);
+            demo.world.step(demo.timeStep,timeSinceLastCall,demo.maxSubSteps);
         }
         demo.render();
         requestAnimationFrame(update);

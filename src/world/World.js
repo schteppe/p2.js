@@ -454,7 +454,8 @@ var step_r = vec2.create(),
     step_mg = vec2.create(),
     xiw = vec2.fromValues(0,0),
     xjw = vec2.fromValues(0,0),
-    zero = vec2.fromValues(0,0);
+    zero = vec2.fromValues(0,0),
+    interpvelo = vec2.fromValues(0,0);
 
 /**
  * Step the physics world forward in time.
@@ -470,6 +471,8 @@ var step_r = vec2.create(),
  *     // fixed timestepping without interpolation
  *     var world = new World();
  *     world.step(0.01);
+ *
+ * @see http://bulletphysics.org/mediawiki-1.5.8/index.php/Stepping_The_World
  */
 World.prototype.step = function(dt,timeSinceLastCalled,maxSubSteps){
     maxSubSteps = maxSubSteps || 10;
@@ -484,31 +487,33 @@ World.prototype.step = function(dt,timeSinceLastCalled,maxSubSteps){
 
     } else {
 
+        // Compute the number of fixed steps we should have taken since the last step
         var internalSteps = Math.floor( (this.time+timeSinceLastCalled) / dt) - Math.floor(this.time / dt);
         internalSteps = Math.min(internalSteps,maxSubSteps);
 
+        // Do some fixed steps to catch up
         for(var i=0; i<internalSteps; i++){
             this.internalStep(dt);
-            /*
-            for(var j=0; j!==this.bodies.length; j++){
-                // Store state for interpolation
-                // Todo
-                var b = this.bodies[j];
-            }
-            */
         }
 
-        // Increment time
+        // Increment internal clock
         this.time += timeSinceLastCalled;
-        this.fixedStepTime += internalSteps * dt;
 
-        // Compute the interpolation data
-        var h = this.time - this.fixedStepTime - dt;
+        // Compute "Left over" time step
+        var h = this.time % dt;
+
+        // @todo: same for angle & angularVelocity
         for(var j=0; j!==this.bodies.length; j++){
-            // Store interpolated state
             var b = this.bodies[j];
-            b.interpolatedPosition[0] = b.position[0] + b.velocity[0]*h;
-            b.interpolatedPosition[1] = b.position[1] + b.velocity[1]*h;
+            if(b.motionState !== Body.STATIC){
+                // Interpolate
+                vec2.sub(interpvelo, b.position, b.previousPosition);
+                vec2.scale(interpvelo, interpvelo, h/dt);
+                vec2.add(b.interpolatedPosition, b.position, interpvelo);
+            } else {
+                // For static bodies, just copy
+                vec2.copy(b.interpolatedPosition, b.position);
+            }
         }
     }
 };
@@ -820,6 +825,9 @@ World.integrateBody = function(body,dt){
         pos = body.position,
         velo = body.velocity;
 
+    // Save old position
+    vec2.copy(body.previousPosition, body.position);
+
     // Angular step
     if(!body.fixedRotation){
         body.angularVelocity += body.angularForce * body.invInertia * dt;
@@ -907,7 +915,7 @@ World.prototype.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,cm,glen){
 
                 // Reset contact equations
                 e.contactEquations.length = 0;
-                
+
                 if(typeof(numContacts)==="number"){
                     for(var i=np.contactEquations.length-numContacts; i<np.contactEquations.length; i++){
                         e.contactEquations.push(np.contactEquations[i]);

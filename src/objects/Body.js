@@ -117,6 +117,13 @@ function Body(options){
     this.interpolatedPosition = vec2.fromValues(0,0);
 
     /**
+     * The previous position of the body.
+     * @property previousPosition
+     * @type {Array}
+     */
+    this.previousPosition = vec2.fromValues(0,0);
+
+    /**
      * The velocity of the body
      * @property velocity
      * @type {Array}
