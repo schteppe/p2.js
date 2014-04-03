@@ -431,12 +431,13 @@ PixiDemo.updateSpriteTransform = function(sprite,body,ppu,h){
     if(false){
         sprite.position.x =     body.position[0] * ppu;
         sprite.position.y = h - body.position[1] * ppu;
+        sprite.rotation = -body.angle;
     } else {
         // Use interpolated position
         sprite.position.x =     body.interpolatedPosition[0] * ppu;
         sprite.position.y = h - body.interpolatedPosition[1] * ppu;
+        sprite.rotation = -body.interpolatedAngle;
     }
-    sprite.rotation = -body.angle;
 };
 
 var X = p2.vec2.fromValues(1,0),

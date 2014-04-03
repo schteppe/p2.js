@@ -510,9 +510,12 @@ World.prototype.step = function(dt,timeSinceLastCalled,maxSubSteps){
                 vec2.sub(interpvelo, b.position, b.previousPosition);
                 vec2.scale(interpvelo, interpvelo, h/dt);
                 vec2.add(b.interpolatedPosition, b.position, interpvelo);
+
+                b.interpolatedAngle = b.angle + (b.angle - b.previousAngle) * h/dt;
             } else {
-                // For static bodies, just copy
+                // For static bodies, just copy. Who else will do it?
                 vec2.copy(b.interpolatedPosition, b.position);
+                b.interpolatedAngle = b.angle;
             }
         }
     }
@@ -827,6 +830,7 @@ World.integrateBody = function(body,dt){
 
     // Save old position
     vec2.copy(body.previousPosition, body.position);
+    body.previousAngle = body.angle;
 
     // Angular step
     if(!body.fixedRotation){

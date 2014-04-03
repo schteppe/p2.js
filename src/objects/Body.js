@@ -107,7 +107,9 @@ function Body(options){
      * @type {Array}
      */
     this.position = vec2.fromValues(0,0);
-    if(options.position) vec2.copy(this.position, options.position);
+    if(options.position){
+        vec2.copy(this.position, options.position);
+    }
 
     /**
      * The interpolated position of the body.
@@ -117,11 +119,25 @@ function Body(options){
     this.interpolatedPosition = vec2.fromValues(0,0);
 
     /**
+     * The interpolated angle of the body.
+     * @property interpolatedAngle
+     * @type {Number}
+     */
+    this.interpolatedAngle = 0;
+
+    /**
      * The previous position of the body.
      * @property previousPosition
      * @type {Array}
      */
     this.previousPosition = vec2.fromValues(0,0);
+
+    /**
+     * The previous angle of the body.
+     * @property previousAngle
+     * @type {Number}
+     */
+    this.previousAngle = 0;
 
     /**
      * The velocity of the body
