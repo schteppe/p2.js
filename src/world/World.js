@@ -111,16 +111,22 @@ function World(options){
     this.gravity = options.gravity || vec2.fromValues(0, -9.78);
 
     /**
-     * Set to true if you want .frictionGravity to be automatically set to the length of .gravity.
-     * @property {Boolean} useWorldGravityForFrictionApproximation
-     */
-    this.useWorldGravityForFrictionApproximation = true;
-
-    /**
      * Gravity to use when approximating the friction max force (mu*mass*gravity).
      * @property {Number} frictionGravity
      */
-    this.frictionGravity = vec2.length(this.gravity);
+    this.frictionGravity = vec2.length(this.gravity) || 10;
+
+    /**
+     * Set to true if you want .frictionGravity to be automatically set to the length of .gravity.
+     * @property {Boolean} useWorldGravityAsFrictionGravity
+     */
+    this.useWorldGravityAsFrictionGravity = true;
+
+    /**
+     * If the length of .gravity is zero, and .useWorldGravityAsFrictionGravity=true, then switch to using .frictionGravity for friction instead. This fallback is useful for gravityless games.
+     * @type {Boolean}
+     */
+    this.useFrictionGravityOnZeroGravity = true;
 
     /**
      * Whether to do timing measurements during the step() or not.
@@ -502,7 +508,6 @@ World.prototype.step = function(dt,timeSinceLastCalled,maxSubSteps){
         // Compute "Left over" time step
         var h = this.time % dt;
 
-        // @todo: same for angle & angularVelocity
         for(var j=0; j!==this.bodies.length; j++){
             var b = this.bodies[j];
             if(b.motionState !== Body.STATIC){
@@ -556,9 +561,15 @@ World.prototype.internalStep = function(dt){
         t0 = performance.now();
     }
 
-    // Update friction gravity
-    if(this.useWorldGravityForFrictionApproximation){
-        this.frictionGravity = vec2.length(this.gravity);
+    // Update approximate friction gravity.
+    if(this.useWorldGravityAsFrictionGravity){
+        var gravityLen = vec2.length(this.gravity);
+        if(gravityLen === 0 && this.useFrictionGravityOnZeroGravity){
+            // Leave friction gravity as it is.
+        } else {
+            // Nonzero gravity. Use it.
+            this.frictionGravity = gravityLen;
+        }
     }
 
     // Add gravity to bodies
