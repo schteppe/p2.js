@@ -91,8 +91,12 @@ Broadphase.boundingRadiusCheck = function(bodyA, bodyB){
  * @return {Boolean}
  */
 Broadphase.aabbCheck = function(bodyA, bodyB){
-    if(bodyA.aabbNeedsUpdate) bodyA.updateAABB();
-    if(bodyB.aabbNeedsUpdate) bodyB.updateAABB();
+    if(bodyA.aabbNeedsUpdate){
+        bodyA.updateAABB();
+    }
+    if(bodyB.aabbNeedsUpdate){
+        bodyB.updateAABB();
+    }
     return bodyA.aabb.overlaps(bodyB.aabb);
 };
 
@@ -129,25 +133,29 @@ Broadphase.prototype.boundingVolumeCheck = function(bodyA, bodyB){
 Broadphase.canCollide = function(bodyA, bodyB){
 
     // Cannot collide static bodies
-    if(bodyA.motionState == Body.STATIC && bodyB.motionState == Body.STATIC)
+    if(bodyA.motionState === Body.STATIC && bodyB.motionState === Body.STATIC){
         return false;
+    }
 
     // Cannot collide static vs kinematic bodies
-    if( (bodyA.motionState == Body.KINEMATIC && bodyB.motionState == Body.STATIC) ||
-        (bodyA.motionState == Body.STATIC    && bodyB.motionState == Body.KINEMATIC))
+    if( (bodyA.motionState === Body.KINEMATIC && bodyB.motionState === Body.STATIC) ||
+        (bodyA.motionState === Body.STATIC    && bodyB.motionState === Body.KINEMATIC)){
         return false;
+    }
 
     // Cannot collide kinematic vs kinematic
-    if(bodyA.motionState == Body.KINEMATIC && bodyB.motionState == Body.KINEMATIC)
+    if(bodyA.motionState === Body.KINEMATIC && bodyB.motionState === Body.KINEMATIC){
         return false;
+    }
 
     // Cannot collide both sleeping bodies
-    if(bodyA.sleepState == Body.SLEEPING && bodyB.sleepState == Body.SLEEPING)
+    if(bodyA.sleepState === Body.SLEEPING && bodyB.sleepState === Body.SLEEPING){
         return false;
+    }
 
     // Cannot collide if one is static and the other is sleeping
-    if( (bodyA.sleepState == Body.SLEEPING && bodyB.motionState == Body.STATIC) ||
-        (bodyB.sleepState == Body.SLEEPING && bodyA.motionState == Body.STATIC)){
+    if( (bodyA.sleepState === Body.SLEEPING && bodyB.motionState === Body.STATIC) ||
+        (bodyB.sleepState === Body.SLEEPING && bodyA.motionState === Body.STATIC)){
         return false;
     }
 
