@@ -25,6 +25,7 @@
         var world = new p2.World({
             doProfiling:true,
             gravity : [0,-5],
+            broadphase : new p2.SAPBroadphase(),
         });
 
         // Set stiffness of all contacts and constraints

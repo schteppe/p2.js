@@ -15,28 +15,38 @@
 <body>
     <script>
 
+        // Create the physics world
         var world = new p2.World({
             doProfiling:true,
             gravity : [0,-10],
             broadphase : new p2.SAPBroadphase(),
         });
+
+        // Set stiffness of contact & constraints
         world.setGlobalStiffness(1e4);
 
         world.solver.iterations = 20;
         world.solver.tolerance = 0.01;
         world.enableBodySleeping = true;
+        world.islandSplit = true;
 
-        // Enable dynamic friction!
+        // Enable dynamic friction. A bit more expensive than without, but gives more accurate friction
         world.solver.frictionIterations = 10;
 
         // Create ground
         var planeShape = new p2.Plane();
-        var plane = new p2.Body({ position: [0,-2]});
+        var plane = new p2.Body({
+            mass: 0, // static
+            position: [0,-2]
+        });
         plane.addShape(planeShape);
         world.addBody(plane);
 
-        // Create concave body
-        var concaveBody = new p2.Body({ mass : 1, position:[0,2] });
+        // Create a concave body
+        var concaveBody = new p2.Body({
+            mass : 1,
+            position:[0,2]
+        });
 
         // Give a concave path to the body.
         // Body.prototype.fromPolygon will automatically add shapes at
@@ -48,11 +58,16 @@
                     [0.5, 0.5]];
         concaveBody.fromPolygon(path);
 
+        // Add the body to the world
         world.addBody(concaveBody);
 
+        // Create demo application
         var demo = new PixiDemo(world);
+
+        // Enable shape drawing
         demo.setState(Demo.DRAWPOLYGON);
 
+        // Automatically set the density of bodies that the user draws on the screen
         world.on("addBody",function(evt){
             evt.body.setDensity(1);
         });
