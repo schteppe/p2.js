@@ -26,6 +26,9 @@
         world.solver.tolerance = 0.01;
         world.enableBodySleeping = true;
 
+        // Enable dynamic friction!
+        world.solver.frictionIterations = 10;
+
         // Create ground
         var planeShape = new p2.Plane();
         var plane = new p2.Body({ position: [0,-2]});
