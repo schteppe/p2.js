@@ -220,5 +220,5 @@ SAPBroadphase.checkBounds = function(bi,bj,axisIndex){
 
     return boundB1 < boundA2;
     */
-    return bj.aabb.lowerBound[axisIndex] < bi.aabb.upperBound[axisIndex];
+    return bj.aabb.lowerBound[axisIndex] <= bi.aabb.upperBound[axisIndex];
 };
