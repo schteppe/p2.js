@@ -1,4 +1,5 @@
 var Material = require('./Material');
+var Equation = require('../equations/Equation');
 
 module.exports = ContactMaterial;
 
@@ -66,28 +67,28 @@ function ContactMaterial(materialA, materialB, options){
      * @property stiffness
      * @type {Number}
      */
-    this.stiffness =            typeof(options.stiffness)           !== "undefined" ?   Number(options.stiffness)   : 1e7;
+    this.stiffness =            typeof(options.stiffness)           !== "undefined" ?   Number(options.stiffness)   : Equation.DEFAULT_STIFFNESS;
 
     /**
      * Relaxation of the resulting ContactEquation that this ContactMaterial generate
      * @property relaxation
      * @type {Number}
      */
-    this.relaxation =           typeof(options.relaxation)          !== "undefined" ?   Number(options.relaxation)  : 3;
+    this.relaxation =           typeof(options.relaxation)          !== "undefined" ?   Number(options.relaxation)  : Equation.DEFAULT_RELAXATION;
 
     /**
      * Stiffness of the resulting FrictionEquation that this ContactMaterial generate
      * @property frictionStiffness
      * @type {Number}
      */
-    this.frictionStiffness =    typeof(options.frictionStiffness)   !== "undefined" ?   Number(options.frictionStiffness)   : 1e7;
+    this.frictionStiffness =    typeof(options.frictionStiffness)   !== "undefined" ?   Number(options.frictionStiffness)   : Equation.DEFAULT_STIFFNESS;
 
     /**
      * Relaxation of the resulting FrictionEquation that this ContactMaterial generate
      * @property frictionRelaxation
      * @type {Number}
      */
-    this.frictionRelaxation =   typeof(options.frictionRelaxation)  !== "undefined" ?   Number(options.frictionRelaxation)  : 3;
+    this.frictionRelaxation =   typeof(options.frictionRelaxation)  !== "undefined" ?   Number(options.frictionRelaxation)  : Equation.DEFAULT_RELAXATION;
 
     /**
      * Will add surface velocity to this material. If bodyA rests on top if bodyB, and the surface velocity is positive, bodyA will slide to the right.

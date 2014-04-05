@@ -212,14 +212,6 @@ Narrowphase.prototype.createContactEquation = function(bodyA,bodyB,shapeA,shapeB
     c.needsUpdate = true;
     c.enabled = true;
 
-    // Wake up bodies when they get new contact
-    if(bodyA.allowSleep && (bodyA.motionState === Body.DYNAMIC) && !(bodyB.motionState === Body.STATIC || bodyB.sleepState === Body.SLEEPY)){
-        bodyA.wakeUp();
-    }
-    if(bodyB.allowSleep && (bodyB.motionState === Body.DYNAMIC) && !(bodyA.motionState === Body.STATIC || bodyA.sleepState === Body.SLEEPY)){
-        bodyB.wakeUp();
-    }
-
     return c;
 };
 
@@ -1237,9 +1229,11 @@ Narrowphase.prototype.planeConvex = function( bi,si,xi,ai, bj,sj,xj,aj, justTest
 
         sub(dist, worldVertex, planeOffset);
 
-        if(dot(dist,worldNormal) < 0){
+        if(dot(dist,worldNormal) <= Narrowphase.convexPrecision){
 
-            if(justTest) return true;
+            if(justTest){
+                return true;
+            }
 
             // Found vertex
             numReported++;
@@ -1262,15 +1256,9 @@ Narrowphase.prototype.planeConvex = function( bi,si,xi,ai, bj,sj,xj,aj, justTest
             sub( c.contactPointA, c.contactPointA, planeBody.position);
 
             this.contactEquations.push(c);
-
-            // TODO: if we have 2 contacts, we do only need 1 friction equation
-
             if(this.enableFriction){
                 this.frictionEquations.push(this.createFrictionFromContact(c));
             }
-
-            if(numReported >= 2)
-                break;
         }
     }
 
@@ -1467,9 +1455,13 @@ Narrowphase.prototype.circlePlane = function(   bi,si,xi,ai, bj,sj,xj,aj, justTe
     // Normal direction distance
     var d = dot(worldNormal, planeToCircle);
 
-    if(d > circleShape.radius) return 0; // No overlap. Abort.
+    if(d > circleShape.radius){
+        return 0; // No overlap. Abort.
+    }
 
-    if(justTest) return true;
+    if(justTest){
+        return true;
+    }
 
     // Create contact
     var contact = this.createContactEquation(planeBody,circleBody,sj,si);
@@ -1497,7 +1489,7 @@ Narrowphase.prototype.circlePlane = function(   bi,si,xi,ai, bj,sj,xj,aj, justTe
     return 1;
 };
 
-Narrowphase.convexPrecision = 1e-10;
+Narrowphase.convexPrecision = 1e-7;
 
 /**
  * Convex/convex Narrowphase.See <a href="http://www.altdevblogaday.com/2011/05/13/contact-generation-between-3d-convex-meshes/">this article</a> for more info.
@@ -1528,7 +1520,9 @@ Narrowphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
         precision = precision || Narrowphase.convexPrecision;
 
     var found = Narrowphase.findSeparatingAxis(si,xi,ai,sj,xj,aj,sepAxis);
-    if(!found) return 0;
+    if(!found){
+        return 0;
+    }
 
     // Make sure the separating axis is directed from shape i to shape j
     sub(dist,xj,xi);
@@ -1540,7 +1534,9 @@ Narrowphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
     var closestEdge1 = Narrowphase.getClosestEdge(si,ai,sepAxis,true), // Flipped axis
         closestEdge2 = Narrowphase.getClosestEdge(sj,aj,sepAxis);
 
-    if(closestEdge1==-1 || closestEdge2==-1) return 0;
+    if(closestEdge1 === -1 || closestEdge2 === -1){
+        return 0;
+    }
 
     // Loop over the shapes
     for(var k=0; k<2; k++){
@@ -1552,7 +1548,7 @@ Narrowphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
             angleA = ai, angleB = aj,
             bodyA = bi, bodyB = bj;
 
-        if(k==0){
+        if(k === 0){
             // Swap!
             var tmp;
             tmp = closestEdgeA; closestEdgeA = closestEdgeB;    closestEdgeB = tmp;
@@ -1598,9 +1594,11 @@ Narrowphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
                 }
             }
 
-            if(insideNumEdges == 3){
+            if(insideNumEdges >= 3){
 
-                if(justTest) return true;
+                if(justTest){
+                    return true;
+                }
 
                 // worldPoint was on the "inside" side of each of the 3 checked edges.
                 // Project it to the center edge and use the projection direction as normal
@@ -1759,7 +1757,7 @@ Narrowphase.findSeparatingAxis = function(c1,offset1,angle1,c2,offset2,angle2,se
 
             // Get separating distance
             var dist = b[0] - a[1];
-            overlap = dist < 0;
+            overlap = (dist <= Narrowphase.convexPrecision);
 
             if(maxDist===null || dist > maxDist){
                 vec2.copy(sepAxis, normal);

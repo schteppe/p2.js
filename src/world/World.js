@@ -918,6 +918,15 @@ World.prototype.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,cm,glen){
         var numFrictionEquations = np.frictionEquations.length - numFrictionBefore;
 
         if(numContacts){
+
+            // Wake up bodies
+            if(bi.allowSleep && (bi.motionState === Body.DYNAMIC) && !(bj.motionState === Body.STATIC || bj.sleepState === Body.SLEEPY)){
+                bi.wakeUp();
+            }
+            if(bj.allowSleep && (bj.motionState === Body.DYNAMIC) && !(bi.motionState === Body.STATIC || bi.sleepState === Body.SLEEPY)){
+                bj.wakeUp();
+            }
+
             var key = si.id < sj.id ? si.id+" "+ sj.id : sj.id+" "+ si.id;
             if(!this.overlappingShapesLastState[key]){
 
