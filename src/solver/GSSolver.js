@@ -45,14 +45,13 @@ function GSSolver(options){
      */
     this.useZeroRHS = false;
 
-    this.useNormalForceForFriction = false;
-
     /**
-     * Number of friction iterations to skip. If .skipFrictionIterations=2, then no FrictionEquations will be iterated until the third iteration.
-     * @property skipFrictionIterations
+     * Number of solver iterations that are done to approximate normal forces. When these iterations are done, friction force will be computed from the contact normal forces. These friction forces will override any other friction forces set from the World for example.
+     * The solver will use less iterations if the solution is below the .tolerance.
+     * @property frictionIterations
      * @type {Number}
      */
-    this.skipFrictionIterations = 0;
+    this.frictionIterations = 0;
 
     /**
      * The number of iterations that were made during the last solve. If .tolerance is zero, this value will always be equal to .iterations, but if .tolerance is larger than zero, and the solver can quit early, then this number will be somewhere between 1 and .iterations.
@@ -74,13 +73,13 @@ function setArrayZero(array){
  * @param  {Number}  h       Time step
  * @param  {World}   world    World to solve
  */
-GSSolver.prototype.solve = function(h,world){
+GSSolver.prototype.solve = function(h, world){
 
     this.sortEquations();
 
     var iter = 0,
         maxIter = this.iterations,
-        skipFrictionIter = this.skipFrictionIterations,
+        maxFrictionIter = this.frictionIterations,
         equations = this.equations,
         Neq = equations.length,
         tolSquared = Math.pow(this.tolerance*Neq, 2),
@@ -123,7 +122,44 @@ GSSolver.prototype.solve = function(h,world){
             bodies[i].resetConstraintVelocity();
         }
 
-        // Iterate over equations
+        if(maxFrictionIter){
+            // Iterate over contact equations to get normal forces
+            for(iter=0; iter!==maxFrictionIter; iter++){
+
+                // Accumulate the total error for each iteration.
+                deltalambdaTot = 0.0;
+
+                for(j=0; j!==Neq; j++){
+                    c = equations[j];
+
+                    if(c instanceof FrictionEquation){
+                        //continue;
+                    }
+
+                    var deltalambda = GSSolver.iterateEquation(j,c,c.epsilon,Bs,invCs,lambda,useZeroRHS,h,iter);
+                    deltalambdaTot += Math.abs(deltalambda);
+                }
+
+                this.usedIterations++;
+
+                // If the total error is small enough - stop iterate
+                if(deltalambdaTot*deltalambdaTot <= tolSquared){
+                    break;
+                }
+            }
+
+            // Set computed friction force
+            for(j=0; j!==Neq; j++){
+                var eq = equations[j];
+                if(eq instanceof FrictionEquation){
+                    var f = eq.contactEquation.multiplier * eq.frictionCoefficient;
+                    eq.maxForce =  f;
+                    eq.minForce = -f;
+                }
+            }
+        }
+
+        // Iterate over all equations
         for(iter=0; iter!==maxIter; iter++){
 
             // Accumulate the total error for each iteration.
@@ -132,11 +168,7 @@ GSSolver.prototype.solve = function(h,world){
             for(j=0; j!==Neq; j++){
                 c = equations[j];
 
-                if(c instanceof FrictionEquation && iter < skipFrictionIter){
-                    continue;
-                }
-
-                var deltalambda = GSSolver.iterateEquation(j,c,c.epsilon,Bs,invCs,lambda,useZeroRHS,h,iter,skipFrictionIter,this.useNormalForceForFriction);
+                var deltalambda = GSSolver.iterateEquation(j,c,c.epsilon,Bs,invCs,lambda,useZeroRHS,h,iter);
                 deltalambdaTot += Math.abs(deltalambda);
             }
 
@@ -155,18 +187,12 @@ GSSolver.prototype.solve = function(h,world){
     }
 };
 
-GSSolver.iterateEquation = function(j,eq,eps,Bs,invCs,lambda,useZeroRHS,dt,iter,skipFrictionIter,useNormal){
+GSSolver.iterateEquation = function(j,eq,eps,Bs,invCs,lambda,useZeroRHS,dt,iter){
     // Compute iteration
     var B = Bs[j],
         invC = invCs[j],
         lambdaj = lambda[j],
         GWlambda = eq.computeGWlambda();
-
-    if(useNormal && eq instanceof FrictionEquation && iter === skipFrictionIter){
-        // Rescale the max friction force according to the normal force
-        eq.maxForce =  eq.contactEquation.multiplier * eq.frictionCoefficient * dt;
-        eq.minForce = -eq.contactEquation.multiplier * eq.frictionCoefficient * dt;
-    }
 
     var maxForce = eq.maxForce,
         minForce = eq.minForce;
