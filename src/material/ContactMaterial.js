@@ -60,8 +60,6 @@ function ContactMaterial(materialA, materialB, options){
      */
     this.restitution =  typeof(options.restitution) !== "undefined" ?   Number(options.restitution) : 0.0;
 
-    // Todo: use Equation defaults below?
-
     /**
      * Stiffness of the resulting ContactEquation that this ContactMaterial generate
      * @property stiffness
