@@ -15,9 +15,11 @@
 <body>
     <script>
 
+        // Create a world with island splitting enabled.
+        // The island splitting will cut the scene into independent islands and treat them as separate simulations. This can improve performance.
         var world = new p2.World({
             doProfiling : true,
-            gravity : [0,-15],
+            gravity : [0,-10],
             islandSplit : true
         });
 
@@ -41,9 +43,10 @@
                 });
                 p.addShape(shape);
                 if(lastBody){
+                    // Connect the current body to the previous one
                     var dist = Math.abs(p.position[1]-lastBody.position[1]);
-                    var c = new p2.DistanceConstraint(p,lastBody, dist);
-                    world.addConstraint(c);
+                    var constraint = new p2.DistanceConstraint(p,lastBody, dist);
+                    world.addConstraint(constraint);
                 } else {
                     p.velocity[0] = 1*i;
                 }
@@ -52,6 +55,13 @@
             }
             lastBody = null;
         }
+
+        // Print the number of independent islands to console repeatedly.
+        // This will output 10 if the ropes don't touch.
+        setInterval(function(){
+            var numIslands = world.islandManager.islands.length;
+            console.log("Number of islands:",numIslands);
+        },1000);
 
         var demo = new PixiDemo(world);
 

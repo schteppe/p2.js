@@ -14,12 +14,7 @@
 </head>
 <body>
     <script>
-
-        var BOX =       Math.pow(2,1),
-            PLANE =     Math.pow(2,2),
-            CIRCLE =    Math.pow(2,3),
-            OTHER =     Math.pow(2,4);
-
+        // Create physics world
         var world = new p2.World({
             doProfiling:true,
             gravity : [0,-10],
@@ -27,9 +22,8 @@
         world.solver.iterations = 100;
         world.solver.tolerance = 0.001;
 
+        // Create two circles
         var circleShape = new p2.Circle(0.5);
-        circleShape.collisionGroup = CIRCLE;
-        circleShape.collisionMask = BOX | PLANE | OTHER;
         var bodyA = new p2.Body({
             mass: 1,
             position: [-1, 1],
@@ -43,30 +37,40 @@
         bodyB.addShape(circleShape);
         world.addBody(bodyB);
 
-        var c = new p2.LockConstraint(bodyA,bodyB,{ localOffsetB:[2,0], localAngleB:Math.PI / 4 });
-        world.addConstraint(c);
+        // Create constraint.
+        // This will lock bodyB to bodyA
+        var constraint = new p2.LockConstraint(bodyA, bodyB, {
+            localOffsetB : [2,0],       // Position of bodyB, in bodyA's local coordinate system
+            localAngleB : Math.PI / 4   // and rotation
+        });
+        world.addConstraint(constraint);
 
-        // Create a beam
+        // Create a beam made of locked rectangles
         var boxShape = new p2.Rectangle(0.5,0.5);
-        boxShape.collisionGroup = BOX;
-        boxShape.collisionMask = CIRCLE | PLANE | OTHER;
         var r = 1,
             lastBody,
             N = 10;
         for(var i=0; i<N; i++){
-            var b = new p2.Body({ mass:1, position:[i*boxShape.width*r - N*boxShape.width*r/2,3] });
-            b.addShape(boxShape);
-            world.addBody(b);
+            var body = new p2.Body({
+                mass:1,
+                position:[i*boxShape.width*r - N*boxShape.width*r/2,3]
+            });
+            body.addShape(boxShape);
+            world.addBody(body);
             if(lastBody){
-                world.addConstraint(new p2.LockConstraint(lastBody,b,{ localOffsetB:[boxShape.width*r,0],localAngleB:0}));
+                // Connect current body to the last one
+                var constraint = new p2.LockConstraint(lastBody, body, {
+                    localOffsetB : [boxShape.width*r,0],
+                    localAngleB : 0,
+                    collideConnected : false
+                });
+                world.addConstraint(constraint);
             }
-            lastBody = b;
+            lastBody = body;
         }
 
         // Create ground
         var planeShape = new p2.Plane();
-        planeShape.collisionGroup = PLANE;
-        planeShape.collisionMask = BOX | CIRCLE | OTHER;
         var plane = new p2.Body({
             position : [0,-1],
         });
@@ -74,9 +78,6 @@
         world.addBody(plane);
 
         var demo = new PixiDemo(world);
-
-        demo.newShapeCollisionGroup = OTHER;
-        demo.newShapeCollisionMask =  BOX|CIRCLE|OTHER|PLANE;
 
     </script>
 </body>
