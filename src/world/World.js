@@ -510,7 +510,7 @@ World.prototype.step = function(dt,timeSinceLastCalled,maxSubSteps){
 
         for(var j=0; j!==this.bodies.length; j++){
             var b = this.bodies[j];
-            if(b.motionState !== Body.STATIC){
+            if(b.motionState !== Body.STATIC && b.sleepState !== Body.SLEEPING){
                 // Interpolate
                 vec2.sub(interpvelo, b.position, b.previousPosition);
                 vec2.scale(interpvelo, interpvelo, h/dt);
@@ -792,13 +792,13 @@ World.prototype.internalStep = function(dt){
     // Sleeping update
     if(this.enableBodySleeping){
         for(i=0; i!==Nbodies; i++){
-            bodies[i].sleepTick(this.time);
+            bodies[i].sleepTick(this.time, false, dt);
         }
     } else if(this.enableIslandSleeping && this.islandSplit){
 
         // Tell all bodies to sleep tick but dont sleep yet
         for(i=0; i!==Nbodies; i++){
-            bodies[i].sleepTick(this.time, true);
+            bodies[i].sleepTick(this.time, true, dt);
         }
 
         // Sleep islands
@@ -832,6 +832,7 @@ var ib_velodt = vec2.create();
  * @method integrateBody
  * @param  {Body} body
  * @param  {Number} dt
+ * @todo Move to Body.prototype?
  */
 World.integrateBody = function(body,dt){
     var minv = body.invMass,
@@ -920,10 +921,36 @@ World.prototype.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,cm,glen){
         if(numContacts){
 
             // Wake up bodies
-            if(bi.allowSleep && (bi.motionState === Body.DYNAMIC) && !(bj.motionState === Body.STATIC || bj.sleepState === Body.SLEEPY)){
+            var wakeUpA = false;
+            var wakeUpB = false;
+
+            var speedSquaredA = vec2.squaredLength(bi.velocity) + Math.pow(bi.angularVelocity,2);
+            var speedLimitSquaredA = Math.pow(bi.sleepSpeedLimit,2);
+            var speedSquaredB = vec2.squaredLength(bj.velocity) + Math.pow(bj.angularVelocity,2);
+            var speedLimitSquaredB = Math.pow(bj.sleepSpeedLimit,2);
+
+            if( bi.allowSleep &&
+                bi.motionState === Body.DYNAMIC &&
+                bi.sleepState  === Body.SLEEPING &&
+                bj.sleepState  === Body.AWAKE &&
+                bj.motionState !== Body.STATIC &&
+                speedSquaredB >= speedLimitSquaredB*2
+            ){
+                wakeUpA = true;
+            }
+            if( bj.allowSleep &&
+                bj.motionState === Body.DYNAMIC &&
+                bj.sleepState  === Body.SLEEPING &&
+                bi.sleepState  === Body.AWAKE &&
+                bi.motionState !== Body.STATIC &&
+                speedSquaredA >= speedLimitSquaredA*2
+            ){
+                wakeUpB = true;
+            }
+            if(wakeUpA){
                 bi.wakeUp();
             }
-            if(bj.allowSleep && (bj.motionState === Body.DYNAMIC) && !(bi.motionState === Body.STATIC || bi.sleepState === Body.SLEEPY)){
+            if(wakeUpB){
                 bj.wakeUp();
             }
 

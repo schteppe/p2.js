@@ -316,9 +316,9 @@ function Body(options){
      * If the speed (the norm of the velocity) is smaller than this value, the body is considered sleepy.
      * @property sleepSpeedLimit
      * @type {Number}
-     * @default 0.1
+     * @default 0.2
      */
-    this.sleepSpeedLimit = 0.1;
+    this.sleepSpeedLimit = 0.2;
 
     /**
      * If the body has been sleepy for this sleepTimeLimit seconds, it is considered sleeping.
@@ -762,6 +762,7 @@ Body.prototype.applyDamping = function(dt){
 Body.prototype.wakeUp = function(){
     var s = this.sleepState;
     this.sleepState = Body.AWAKE;
+    this.idleTime = 0;
     if(s !== Body.AWAKE){
         this.emit(Body.wakeUpEvent);
     }
@@ -773,16 +774,22 @@ Body.prototype.wakeUp = function(){
  */
 Body.prototype.sleep = function(){
     this.sleepState = Body.SLEEPING;
+    this.angularVelocity = 0;
+    this.angularForce = 0;
+    vec2.set(this.velocity,0,0);
+    vec2.set(this.force,0,0);
     this.emit(Body.sleepEvent);
 };
+
+//var velo2 = vec2.create();
 
 /**
  * @method sleepTick
  * @param float time The world time in seconds
  * @brief Called every timestep to update internal sleep timer and change sleep state if needed.
  */
-Body.prototype.sleepTick = function(time, dontSleep){
-    if(!this.allowSleep){
+Body.prototype.sleepTick = function(time, dontSleep, dt){
+    if(!this.allowSleep || this.motionState === Body.SLEEPING){
         return;
     }
 
@@ -791,11 +798,29 @@ Body.prototype.sleepTick = function(time, dontSleep){
     var sleepState = this.sleepState,
         speedSquared = vec2.squaredLength(this.velocity) + Math.pow(this.angularVelocity,2),
         speedLimitSquared = Math.pow(this.sleepSpeedLimit,2);
+
+    // Add to idle time
+    if(speedSquared >= speedLimitSquared){
+        this.idleTime = 0;
+        this.sleepState = Body.AWAKE;
+    } else {
+        this.idleTime += dt;
+        this.sleepState = Body.SLEEPY;
+    }
+    if(this.idleTime > this.sleepTimeLimit){
+        if(!dontSleep){
+            this.sleep();
+        } else {
+            this.wantsToSleep = true;
+        }
+    }
+
+    /*
     if(sleepState===Body.AWAKE && speedSquared < speedLimitSquared){
         this.sleepState = Body.SLEEPY; // Sleepy
         this.timeLastSleepy = time;
         this.emit(Body.sleepyEvent);
-    } else if(sleepState===Body.SLEEPY && speedSquared > speedLimitSquared){
+    } else if(sleepState===Body.SLEEPY && speedSquared >= speedLimitSquared){
         this.wakeUp(); // Wake up
     } else if(sleepState===Body.SLEEPY && (time - this.timeLastSleepy ) > this.sleepTimeLimit){
         this.wantsToSleep = true;
@@ -803,6 +828,17 @@ Body.prototype.sleepTick = function(time, dontSleep){
             this.sleep();
         }
     }
+    */
+};
+
+Body.prototype.getVelocityFromPosition = function(store, timeStep){
+    store = store || vec2.create();
+    vec2.sub(store, this.position, this.previousPosition);
+    vec2.scale(store, store, 1/timeStep);
+    return store;
+};
+Body.prototype.getAngularVelocityFromPosition = function(timeStep){
+    return (this.angle - this.previousAngle) / timeStep;
 };
 
 /**

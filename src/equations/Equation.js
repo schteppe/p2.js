@@ -1,7 +1,8 @@
 module.exports = Equation;
 
 var vec2 = require('../math/vec2'),
-    Utils = require('../utils/Utils');
+    Utils = require('../utils/Utils'),
+    Body = require('../objects/Body');
 
 /**
  * Base class for constraint equations.
@@ -251,10 +252,10 @@ Equation.prototype.computeGiMf = function(){
         ti = bi.angularForce,
         fj = bj.force,
         tj = bj.angularForce,
-        invMassi = bi.invMass,
-        invMassj = bj.invMass,
-        invIi = bi.invInertia,
-        invIj = bj.invInertia,
+        invMassi = getBodyInvMass(bi),
+        invMassj = getBodyInvMass(bj),
+        invIi = getBodyInvInertia(bi),
+        invIj = getBodyInvInertia(bj),
         G = this.G;
 
     vec2.scale(iMfi, fi,invMassi);
@@ -262,6 +263,21 @@ Equation.prototype.computeGiMf = function(){
 
     return this.transformedGmult(G,iMfi,ti*invIi,iMfj,tj*invIj);
 };
+
+function getBodyInvMass(body){
+    if(body.sleepState === Body.SLEEPING){
+        return 0;
+    } else {
+        return body.invMass;
+    }
+}
+function getBodyInvInertia(body){
+    if(body.sleepState === Body.SLEEPING){
+        return 0;
+    } else {
+        return body.invInertia;
+    }
+}
 
 /**
  * Computes G*inv(M)*G'
@@ -271,10 +287,10 @@ Equation.prototype.computeGiMf = function(){
 Equation.prototype.computeGiMGt = function(){
     var bi = this.bodyA,
         bj = this.bodyB,
-        invMassi = bi.invMass,
-        invMassj = bj.invMass,
-        invIi = bi.invInertia,
-        invIj = bj.invInertia,
+        invMassi = getBodyInvMass(bi),
+        invMassj = getBodyInvMass(bj),
+        invIi = getBodyInvInertia(bi),
+        invIj = getBodyInvInertia(bj),
         G = this.G;
 
     return  G[0] * G[0] * invMassi +
@@ -305,6 +321,10 @@ Equation.prototype.addToWlambda = function(deltalambda){
         Gj = addToWlambda_Gj,
         ri = addToWlambda_ri,
         rj = addToWlambda_rj,
+        invMassi = getBodyInvMass(bi),
+        invMassj = getBodyInvMass(bj),
+        invIi = getBodyInvInertia(bi),
+        invIj = getBodyInvInertia(bj),
         Mdiag = addToWlambda_Mdiag,
         G = this.G;
 
@@ -313,22 +333,20 @@ Equation.prototype.addToWlambda = function(deltalambda){
     Gj[0] = G[3];
     Gj[1] = G[4];
 
-
     // Add to linear velocity
     // v_lambda += inv(M) * delta_lamba * G
-    vec2.scale(temp,Gi,bi.invMass*deltalambda);
+    vec2.scale(temp, Gi, invMassi*deltalambda);
     vec2.add( bi.vlambda, bi.vlambda, temp);
     // This impulse is in the offset frame
     // Also add contribution to angular
     //bi.wlambda -= vec2.crossLength(temp,ri);
+    bi.wlambda += invIi * G[2] * deltalambda;
 
-    vec2.scale(temp,Gj,bj.invMass*deltalambda);
+
+    vec2.scale(temp, Gj, invMassj*deltalambda);
     vec2.add( bj.vlambda, bj.vlambda, temp);
     //bj.wlambda -= vec2.crossLength(temp,rj);
-
-    // Add to angular velocity
-    bi.wlambda += bi.invInertia * G[2] * deltalambda;
-    bj.wlambda += bj.invInertia * G[5] * deltalambda;
+    bj.wlambda += invIj * G[5] * deltalambda;
 };
 
 /**
