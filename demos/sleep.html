@@ -20,19 +20,19 @@
             gravity : [0,-10],
         });
 
-        var circleBody = new p2.Body({
-            mass: 1,
-            position: [0,0],
-        });
-        circleBody.addShape(new p2.Circle(0.5));
-        world.addBody(circleBody);
-
-        var circleBody2 = new p2.Body({
-            mass: 1,
-            position: [0,2],
-        });
-        circleBody2.addShape(new p2.Circle(0.5));
-        world.addBody(circleBody2);
+        var radius = 0.15;
+        for(var i=0; i<20; i++){
+            var circleBody = new p2.Body({
+                mass: 1,
+                position: [0,i*2*radius],
+            });
+            circleBody.allowSleep = true;
+            circleBody.sleepSpeedLimit = 1; // Body will feel sleepy if speed<1 (speed is the norm of velocity)
+            circleBody.sleepTimeLimit =  1; // Body falls asleep after 1s of sleepiness
+            circleBody.addShape(new p2.Circle(radius));
+            circleBody.damping = 0.2;
+            world.addBody(circleBody);
+        }
 
         // Create ground
         var planeShape = new p2.Plane();
@@ -44,20 +44,6 @@
 
         // Allow sleeping
         world.enableBodySleeping = true;
-        circleBody.allowSleep = true;
-        circleBody2.allowSleep = true;
-
-        // Sleep parameters
-        circleBody.sleepSpeedLimit = 0.1; // Body will feel sleepy if speed<1 (speed is the norm of velocity)
-        circleBody.sleepTimeLimit =    1; // Body falls asleep after 1s of sleepiness
-
-        circleBody.on("sleepy",function(event){
-          console.log("The circle is feeling sleepy...");
-        });
-
-        circleBody.on("sleep",function(event){
-          console.log("The circle fell asleep!");
-        });
 
         var demo = new PixiDemo(world);
 

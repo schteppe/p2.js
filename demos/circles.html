@@ -24,17 +24,17 @@
 
         var world = new p2.World({
             doProfiling:true,
-            gravity : [0,-10],
-            broadphase : new p2.SAPBroadphase(),
+            gravity : [0,-5],
         });
-        world.setGlobalStiffness(1e5);
+        world.setGlobalStiffness(Number.MAX_VALUE);
         world.solver.iterations = 20;
-        world.solver.tolerance = 0.02;
+        //world.solver.tolerance = 0.02;
+        world.enableBodySleeping = true;
 
         // Create circle bodies
         var shape = new p2.Circle(r);
         for(var i=0; i<N; i++){
-            for(var j=0; j<M; j++){
+            for(var j=M-1; j>=0; j--){
                 var x = (i-N/2)*r*d+(disturb ? Math.random()*r : 0);
                 var y = (j-M/2)*r*d;
                 var p = new p2.Body({
@@ -42,6 +42,9 @@
                     position: [x, y],
                 });
                 p.addShape(shape);
+                p.allowSleep = true;
+                p.sleepSpeedLimit = 1; // Body will feel sleepy if speed<1 (speed is the norm of velocity)
+                p.sleepTimeLimit = 1; // Body falls asleep after 1s of sleepiness
                 world.addBody(p);
             }
         }
