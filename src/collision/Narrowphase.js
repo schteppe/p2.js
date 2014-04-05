@@ -233,8 +233,8 @@ Narrowphase.prototype.createFrictionEquation = function(bodyA,bodyB,shapeA,shape
     c.relativeVelocity = this.surfaceVelocity;
     c.enabled = true;
     c.needsUpdate = true;
-    c.frictionStiffness = this.frictionStiffness;
-    c.frictionRelaxation = this.frictionRelaxation;
+    c.stiffness = this.frictionStiffness;
+    c.relaxation = this.frictionRelaxation;
     return c;
 };
 
@@ -1165,10 +1165,13 @@ Narrowphase.prototype.circleCircle = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
 
     sub(dist,xi,xj);
     var r = radiusA + radiusB;
-    if(vec2.squaredLength(dist) > r*r)
+    if(vec2.squaredLength(dist) > r*r){
         return 0;
+    }
 
-    if(justTest) return true;
+    if(justTest){
+        return true;
+    }
 
     var c = this.createContactEquation(bodyA,bodyB,si,sj);
     sub(c.normalA, offsetB, offsetA);
