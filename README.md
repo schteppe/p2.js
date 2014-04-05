@@ -114,7 +114,12 @@ The most recent commits are currently pushed to the ```master``` branch. Thanks 
 ### Change log
 
 ##### Current dev version
-* Upgraded to gl-matrix 2.1.0.
+* Added property ```.enableIslandSleeping``` to ```World```.
+* Added property ```.useFrictionGravityOnZeroGravity``` to ```World```.
+* Renamed ```.useWorldGravityForFrictionApproximation``` in ```World``` to ```.useWorldGravityAsFrictionGravity``` to keep things more uniform.
+* Sleep improvements.
+* Added property ```.frictionIterations``` to ```GSSolver```, and removed ```.skipFrictionIterations```.
+* Upgraded to gl-matrix ```2.1.0```.
 * Removed ```QuadTree```.
 * Removed ```mat2```.
 * Added ```Utils.extend```.
@@ -132,7 +137,7 @@ The most recent commits are currently pushed to the ```master``` branch. Thanks 
 * Added methods ```.disableBodyCollision``` and ```.enableBodyCollision``` to ```World```.
 * Added properties ```.useWorldGravityForFrictionApproximation``` and ```.frictionGravity``` to ```World```.
 * Added ```Heightfield``` class.
-* Removed properties ```.defaultFriction``` and ```.defaultRestitution``` from ```World```.
+* Removed properties ```.defaultFriction``` and ```.defaultRestitution``` from ```World```, in favor of ```.defaultContactMaterial```.
 * Added property ```.enabled``` to ```Equation```.
 * Added property ```.surfaceVelocity``` to ```ContactMaterial```.
 * Added property ```.sensor``` to ```Shape```.
@@ -141,7 +146,6 @@ The most recent commits are currently pushed to the ```master``` branch. Thanks 
 * Renamed class ```SAP1DBroadphase``` to ```SAPBroadphase```.
 * Added property ```.interpolatedPosition``` to ``Body```.
 * Added method ```.internalStep``` to ```World```.
-* Added property ```.defaultRestitution``` to ```World```.
 * Added property ```.applyGravity``` to ```World```.
 * Renamed method ```.computeC``` to ```.computeInvC``` in ```Equation```, and made it compute the inverse.
 * Added static method ```Utils.splice```.
@@ -154,11 +158,11 @@ The most recent commits are currently pushed to the ```master``` branch. Thanks 
 * Added method ```.computeAABB``` to ```Shape```.
 * Added static method ```Broadphase.canCollide```.
 * ```Body``` now inherits from ```EventEmitter```, and dispatches events ```'sleep'```,```'sleepy'``` and ```'wakeup'```.
-* Added properties ```.allowSleep```, ```.sleepState```, ```.sleepSpeedLimit```, ```.sleepTimeLimit```, ```.lastTimeSleepy``` as well as methods ```.sleep```, ```.wakeUp()``` and ```.sleepTick``` to ```Body```.
+* Added properties ```.allowSleep```, ```.sleepState```, ```.sleepSpeedLimit```, ```.sleepTimeLimit```, ```.lastTimeSleepy``` as well as methods ```.sleep```, ```.wakeUp``` and ```.sleepTick``` to ```Body```.
 * Added enums ```Body.AWAKE```, ```Body.SLEEPY```, ```Body.SLEEPING```.
 * Added property ```.enableBodySleeping``` to ```World```.
 * Added options ```.disableRotationalLock```, ```.lowerLimit```, ```.upperLimit``` to ```PrismaticConstraint``` constructor.
-* Added methods ```.enableMotor```, ```.disableMotor``` to ```.PrismaticConstraint``` as well as properties ```.motorEnabled```, ```.motorSpeed```, ```.motorEquation```.
+* Added methods ```.enableMotor```, ```.disableMotor``` to ```PrismaticConstraint``` as well as properties ```.motorEnabled```, ```.motorSpeed```, ```.motorEquation```.
 
 ##### 0.4.0
 * Added properties ```.damping``` and ```.angularDamping``` to ```Body```.
