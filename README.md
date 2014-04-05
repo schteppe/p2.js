@@ -113,7 +113,7 @@ The most recent commits are currently pushed to the ```master``` branch. Thanks 
 
 ### Change log
 
-##### Current dev version
+##### 0.5.0
 * Added property ```.enableIslandSleeping``` to ```World```.
 * Added property ```.useFrictionGravityOnZeroGravity``` to ```World```.
 * Renamed ```.useWorldGravityForFrictionApproximation``` in ```World``` to ```.useWorldGravityAsFrictionGravity``` to keep things more uniform.
