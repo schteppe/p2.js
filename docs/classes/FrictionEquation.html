@@ -41,6 +41,10 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/AABB.html">AABB</a></li>
+            
+                <li><a href="../classes/AngleLockEquation.html">AngleLockEquation</a></li>
+            
                 <li><a href="../classes/Body.html">Body</a></li>
             
                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
@@ -65,19 +69,23 @@
             
                 <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
             
+                <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
+            
                 <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
             
+                <li><a href="../classes/Heightfield.html">Heightfield</a></li>
+            
                 <li><a href="../classes/Island.html">Island</a></li>
             
-                <li><a href="../classes/IslandSolver.html">IslandSolver</a></li>
+                <li><a href="../classes/IslandManager.html">IslandManager</a></li>
+            
+                <li><a href="../classes/IslandNode.html">IslandNode</a></li>
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
-            
-                <li><a href="../classes/mat2.html">mat2</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
@@ -91,8 +99,6 @@
             
                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
             
-                <li><a href="../classes/QuadTree.html">QuadTree</a></li>
-            
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
@@ -101,7 +107,7 @@
             
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
-                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
+                <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -166,7 +172,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_constraints_FrictionEquation.js.html#l8"><code>src&#x2F;constraints&#x2F;FrictionEquation.js:8</code></a>
+            Defined in: <a href="../files/src_equations_FrictionEquation.js.html#l7"><code>src&#x2F;equations&#x2F;FrictionEquation.js:7</code></a>
         </div>
     
 
@@ -194,13 +200,13 @@
             
                 <li class="arg">
                     
-                        <code>bi</code>
+                        <code>bodyA</code>
                     
                 </li>
             
                 <li class="arg">
                     
-                        <code>bj</code>
+                        <code>bodyB</code>
                     
                 </li>
             
@@ -239,7 +245,7 @@
             
         
         
-        <a href="../files/src_constraints_FrictionEquation.js.html#l8"><code>src&#x2F;constraints&#x2F;FrictionEquation.js:8</code></a>
+        <a href="../files/src_equations_FrictionEquation.js.html#l7"><code>src&#x2F;equations&#x2F;FrictionEquation.js:7</code></a>
         
         </p>
 
@@ -261,7 +267,7 @@
             
                 <li class="param">
                     
-                        <code class="param-name">bi</code>
+                        <code class="param-name">bodyA</code>
                         <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
                     
 
@@ -276,7 +282,7 @@
             
                 <li class="param">
                     
-                        <code class="param-name">bj</code>
+                        <code class="param-name">bodyB</code>
                         <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
                     
 
@@ -340,12 +346,80 @@
 
                     <ul class="index-list methods extends">
                         
-                            <li class="index-item method deprecated">
+                            <li class="index-item method inherited">
+                                <a href="#method_addToWlambda">addToWlambda</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_computeB">computeB</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_computeGiMf">computeGiMf</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_computeGiMGt">computeGiMGt</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_computeGq">computeGq</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_computeGW">computeGW</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_computeGWlambda">computeGWlambda</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_computeInvC">computeInvC</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_getSlipForce">getSlipForce</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
                                 <a href="#method_setSlipForce">setSlipForce</a>
 
                                 
                                 
-                                    <span class="flag deprecated">deprecated</span>
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_update">update</a>
+
+                                
                                 
                             </li>
                         
@@ -359,8 +433,43 @@
 
                     <ul class="index-list properties extends">
                         
+                            <li class="index-item property inherited">
+                                <a href="#property_bodyA">bodyA</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_bodyB">bodyB</a>
+
+                                
+                                
+                            </li>
+                        
                             <li class="index-item property">
                                 <a href="#property_contactEquation">contactEquation</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_contactPointA">contactPointA</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_contactPointB">contactPointB</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_enabled">enabled</a>
 
                                 
                                 
@@ -373,15 +482,50 @@
                                 
                             </li>
                         
-                            <li class="index-item property">
-                                <a href="#property_ri">ri</a>
+                            <li class="index-item property inherited">
+                                <a href="#property_G">G</a>
 
                                 
                                 
                             </li>
                         
-                            <li class="index-item property">
-                                <a href="#property_rj">rj</a>
+                            <li class="index-item property inherited">
+                                <a href="#property_maxForce">maxForce</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_minForce">minForce</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_multiplier">multiplier</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_needsUpdate">needsUpdate</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_relativeVelocity">relativeVelocity</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_relaxation">relaxation</a>
 
                                 
                                 
@@ -396,6 +540,13 @@
                         
                             <li class="index-item property">
                                 <a href="#property_shapeB">shapeB</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_stiffness">stiffness</a>
 
                                 
                                 
@@ -422,8 +573,8 @@
                 <h2 class="off-left">Methods</h2>
 
                 
-                    <div id="method_setSlipForce" class="method item deprecated">
-    <h3 class="name"><code>setSlipForce</code></h3>
+                    <div id="method_addToWlambda" class="method item inherited">
+    <h3 class="name"><code>addToWlambda</code></h3>
 
     
         <div class="args">
@@ -431,7 +582,7 @@
             
                 <li class="arg">
                     
-                        <code>slipForce</code>
+                        <code>deltalambda</code>
                     
                 </li>
             
@@ -442,7 +593,593 @@
     
 
     
-        <span class="flag deprecated" title="Use .frictionCoefficient instead">deprecated</span>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Equation.html#method_addToWlambda">Equation</a>:
+            
+        
+        
+        <a href="../files/src_equations_Equation.js.html#l311"><code>src&#x2F;equations&#x2F;Equation.js:311</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Add constraint velocity to the bodies.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">deltalambda</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_computeB" class="method item inherited">
+    <h3 class="name"><code>computeB</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Number</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Equation.html#method_computeB">Equation</a>:
+            
+        
+        
+        <a href="../files/src_equations_Equation.js.html#l152"><code>src&#x2F;equations&#x2F;Equation.js:152</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Computes the RHS of the SPOOK equation</p>
+
+    </div>
+
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Number</span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_computeGiMf" class="method item inherited">
+    <h3 class="name"><code>computeGiMf</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Number</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Equation.html#method_computeGiMf">Equation</a>:
+            
+        
+        
+        <a href="../files/src_equations_Equation.js.html#l241"><code>src&#x2F;equations&#x2F;Equation.js:241</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Computes G<em>inv(M)</em>f, where M is the mass matrix with diagonal blocks for each body, and f are the forces on the bodies.</p>
+
+    </div>
+
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Number</span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_computeGiMGt" class="method item inherited">
+    <h3 class="name"><code>computeGiMGt</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Number</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Equation.html#method_computeGiMGt">Equation</a>:
+            
+        
+        
+        <a href="../files/src_equations_Equation.js.html#l282"><code>src&#x2F;equations&#x2F;Equation.js:282</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Computes G<em>inv(M)</em>G&#39;</p>
+
+    </div>
+
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Number</span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_computeGq" class="method item inherited">
+    <h3 class="name"><code>computeGq</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Number</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Equation.html#method_computeGq">Equation</a>:
+            
+        
+        
+        <a href="../files/src_equations_Equation.js.html#l164"><code>src&#x2F;equations&#x2F;Equation.js:164</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Computes G*q, where q are the generalized body coordinates</p>
+
+    </div>
+
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Number</span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_computeGW" class="method item inherited">
+    <h3 class="name"><code>computeGW</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Number</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Equation.html#method_computeGW">Equation</a>:
+            
+        
+        
+        <a href="../files/src_equations_Equation.js.html#l209"><code>src&#x2F;equations&#x2F;Equation.js:209</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Computes G*W, where W are the body velocities</p>
+
+    </div>
+
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Number</span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_computeGWlambda" class="method item inherited">
+    <h3 class="name"><code>computeGWlambda</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Number</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Equation.html#method_computeGWlambda">Equation</a>:
+            
+        
+        
+        <a href="../files/src_equations_Equation.js.html#l225"><code>src&#x2F;equations&#x2F;Equation.js:225</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Computes G*Wlambda, where W are the body velocities</p>
+
+    </div>
+
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Number</span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_computeInvC" class="method item inherited">
+    <h3 class="name"><code>computeInvC</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>eps</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Number</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Equation.html#method_computeInvC">Equation</a>:
+            
+        
+        
+        <a href="../files/src_equations_Equation.js.html#l352"><code>src&#x2F;equations&#x2F;Equation.js:352</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Compute the denominator part of the SPOOK equation: C = G<em>inv(M)</em>G&#39; + eps</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">eps</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Number</span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_getSlipForce" class="method item">
+    <h3 class="name"><code>getSlipForce</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Number</span>
+        </span>
+    
+
     
 
     
@@ -466,13 +1203,88 @@
             
         
         
-        <a href="../files/src_constraints_FrictionEquation.js.html#l73"><code>src&#x2F;constraints&#x2F;FrictionEquation.js:73</code></a>
+        <a href="../files/src_equations_FrictionEquation.js.html#l85"><code>src&#x2F;equations&#x2F;FrictionEquation.js:85</code></a>
         
         </p>
 
 
         
-            <p>Deprecated: Use .frictionCoefficient instead</p>
+
+        
+    </div>
+
+    <div class="description">
+        <p>Get the max force for the constraint.</p>
+
+    </div>
+
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Number</span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_setSlipForce" class="method item">
+    <h3 class="name"><code>setSlipForce</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>slipForce</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_equations_FrictionEquation.js.html#l74"><code>src&#x2F;equations&#x2F;FrictionEquation.js:74</code></a>
+        
+        </p>
+
+
         
 
         
@@ -515,12 +1327,148 @@ larger than this value.</p>
 </div>
 
                 
+                    <div id="method_update" class="method item inherited">
+    <h3 class="name"><code>update</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Equation.html#method_update">Equation</a>:
+            
+        
+        
+        <a href="../files/src_equations_Equation.js.html#l127"><code>src&#x2F;equations&#x2F;Equation.js:127</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Compute SPOOK parameters .a, .b and .epsilon according to the current parameters. See equations 9, 10 and 11 in the <a href="http://www8.cs.umu.se/kurser/5DV058/VT09/lectures/spooknotes.pdf">SPOOK notes</a>.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
             </div>
         
 
         
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
+
+                
+                    <div id="property_bodyA" class="property item inherited">
+    <h3 class="name"><code>bodyA</code></h3>
+    <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Equation.html#property_bodyA">Equation</a>:
+            
+        
+        
+        <a href="../files/src_equations_Equation.js.html#l32"><code>src&#x2F;equations&#x2F;Equation.js:32</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>First body participating in the constraint</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_bodyB" class="property item inherited">
+    <h3 class="name"><code>bodyB</code></h3>
+    <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Equation.html#property_bodyB">Equation</a>:
+            
+        
+        
+        <a href="../files/src_equations_Equation.js.html#l39"><code>src&#x2F;equations&#x2F;Equation.js:39</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Second body participating in the constraint</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
 
                 
                     <div id="property_contactEquation" class="property item">
@@ -546,7 +1494,7 @@ larger than this value.</p>
             
         
         
-        <a href="../files/src_constraints_FrictionEquation.js.html#l42"><code>src&#x2F;constraints&#x2F;FrictionEquation.js:42</code></a>
+        <a href="../files/src_equations_FrictionEquation.js.html#l41"><code>src&#x2F;equations&#x2F;FrictionEquation.js:41</code></a>
         
         </p>
 
@@ -557,6 +1505,138 @@ larger than this value.</p>
 
     <div class="description">
         <p>A ContactEquation connected to this friction. The contact equation can be used to rescale the max force for the friction.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_contactPointA" class="property item">
+    <h3 class="name"><code>contactPointA</code></h3>
+    <span class="type">Array</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_equations_FrictionEquation.js.html#l20"><code>src&#x2F;equations&#x2F;FrictionEquation.js:20</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Relative vector from center of body A to the contact point, world oriented.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_contactPointB" class="property item">
+    <h3 class="name"><code>contactPointB</code></h3>
+    <span class="type">Array</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_equations_FrictionEquation.js.html#l27"><code>src&#x2F;equations&#x2F;FrictionEquation.js:27</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Relative vector from center of body B to the contact point, world oriented.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_enabled" class="property item inherited">
+    <h3 class="name"><code>enabled</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Equation.html#property_enabled">Equation</a>:
+            
+        
+        
+        <a href="../files/src_equations_Equation.js.html#l103"><code>src&#x2F;equations&#x2F;Equation.js:103</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Whether this equation is enabled or not. If true, it will be added to the solver.</p>
 
     </div>
 
@@ -591,7 +1671,7 @@ larger than this value.</p>
             
         
         
-        <a href="../files/src_constraints_FrictionEquation.js.html#l63"><code>src&#x2F;constraints&#x2F;FrictionEquation.js:63</code></a>
+        <a href="../files/src_equations_FrictionEquation.js.html#l64"><code>src&#x2F;equations&#x2F;FrictionEquation.js:64</code></a>
         
         </p>
 
@@ -613,9 +1693,9 @@ larger than this value.</p>
 </div>
 
                 
-                    <div id="property_ri" class="property item">
-    <h3 class="name"><code>ri</code></h3>
-    <span class="type">Float32Array</span>
+                    <div id="property_G" class="property item inherited">
+    <h3 class="name"><code>G</code></h3>
+    <span class="type">Array</span>
 
     
 
@@ -628,15 +1708,12 @@ larger than this value.</p>
     <div class="meta">
         
             
-                
-                <p>
-                
-                Defined in
-                
+                <p>Inherited from
+                <a href="../classes/Equation.html#property_G">Equation</a>:
             
         
         
-        <a href="../files/src_constraints_FrictionEquation.js.html#l21"><code>src&#x2F;constraints&#x2F;FrictionEquation.js:21</code></a>
+        <a href="../files/src_equations_Equation.js.html#l60"><code>src&#x2F;equations&#x2F;Equation.js:60</code></a>
         
         </p>
 
@@ -646,7 +1723,7 @@ larger than this value.</p>
     </div>
 
     <div class="description">
-        <p>Relative vector from center of body i to the contact point, in world coords.</p>
+        <p>The Jacobian entry of this equation. 6 numbers, 3 per body (x,y,angle).</p>
 
     </div>
 
@@ -658,9 +1735,9 @@ larger than this value.</p>
 </div>
 
                 
-                    <div id="property_rj" class="property item">
-    <h3 class="name"><code>rj</code></h3>
-    <span class="type">Float32Array</span>
+                    <div id="property_maxForce" class="property item inherited">
+    <h3 class="name"><code>maxForce</code></h3>
+    <span class="type">Number</span>
 
     
 
@@ -673,15 +1750,12 @@ larger than this value.</p>
     <div class="meta">
         
             
-                
-                <p>
-                
-                Defined in
-                
+                <p>Inherited from
+                <a href="../classes/Equation.html#property_maxForce">Equation</a>:
             
         
         
-        <a href="../files/src_constraints_FrictionEquation.js.html#l28"><code>src&#x2F;constraints&#x2F;FrictionEquation.js:28</code></a>
+        <a href="../files/src_equations_Equation.js.html#l25"><code>src&#x2F;equations&#x2F;Equation.js:25</code></a>
         
         </p>
 
@@ -691,7 +1765,217 @@ larger than this value.</p>
     </div>
 
     <div class="description">
-        <p>Relative vector from center of body j to the contact point, in world coords.</p>
+        <p>Max force to apply when solving.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_minForce" class="property item inherited">
+    <h3 class="name"><code>minForce</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Equation.html#property_minForce">Equation</a>:
+            
+        
+        
+        <a href="../files/src_equations_Equation.js.html#l18"><code>src&#x2F;equations&#x2F;Equation.js:18</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Minimum force to apply when solving.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_multiplier" class="property item inherited">
+    <h3 class="name"><code>multiplier</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Equation.html#property_multiplier">Equation</a>:
+            
+        
+        
+        <a href="../files/src_equations_Equation.js.html#l90"><code>src&#x2F;equations&#x2F;Equation.js:90</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The resulting constraint multiplier from the last solve. This is mostly equivalent to the force produced by the constraint.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_needsUpdate" class="property item inherited">
+    <h3 class="name"><code>needsUpdate</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Equation.html#property_needsUpdate">Equation</a>:
+            
+        
+        
+        <a href="../files/src_equations_Equation.js.html#l84"><code>src&#x2F;equations&#x2F;Equation.js:84</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Indicates if stiffness or relaxation was changed.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_relativeVelocity" class="property item inherited">
+    <h3 class="name"><code>relativeVelocity</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Equation.html#property_relativeVelocity">Equation</a>:
+            
+        
+        
+        <a href="../files/src_equations_Equation.js.html#l97"><code>src&#x2F;equations&#x2F;Equation.js:97</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Relative velocity.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_relaxation" class="property item inherited">
+    <h3 class="name"><code>relaxation</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Equation.html#property_relaxation">Equation</a>:
+            
+        
+        
+        <a href="../files/src_equations_Equation.js.html#l53"><code>src&#x2F;equations&#x2F;Equation.js:53</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The number of time steps needed to stabilize the constraint equation. Typically between 3 and 5 time steps.</p>
 
     </div>
 
@@ -726,7 +2010,7 @@ larger than this value.</p>
             
         
         
-        <a href="../files/src_constraints_FrictionEquation.js.html#l49"><code>src&#x2F;constraints&#x2F;FrictionEquation.js:49</code></a>
+        <a href="../files/src_equations_FrictionEquation.js.html#l48"><code>src&#x2F;equations&#x2F;FrictionEquation.js:48</code></a>
         
         </p>
 
@@ -771,7 +2055,7 @@ larger than this value.</p>
             
         
         
-        <a href="../files/src_constraints_FrictionEquation.js.html#l56"><code>src&#x2F;constraints&#x2F;FrictionEquation.js:56</code></a>
+        <a href="../files/src_equations_FrictionEquation.js.html#l56"><code>src&#x2F;equations&#x2F;FrictionEquation.js:56</code></a>
         
         </p>
 
@@ -793,9 +2077,51 @@ larger than this value.</p>
 </div>
 
                 
+                    <div id="property_stiffness" class="property item inherited">
+    <h3 class="name"><code>stiffness</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Equation.html#property_stiffness">Equation</a>:
+            
+        
+        
+        <a href="../files/src_equations_Equation.js.html#l46"><code>src&#x2F;equations&#x2F;Equation.js:46</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The stiffness of this equation. Typically chosen to a large number (~1e7), but can be chosen somewhat freely to get a stable simulation.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
                     <div id="property_t" class="property item">
     <h3 class="name"><code>t</code></h3>
-    <span class="type">Float32Array</span>
+    <span class="type">Array</span>
 
     
 
@@ -816,7 +2142,7 @@ larger than this value.</p>
             
         
         
-        <a href="../files/src_constraints_FrictionEquation.js.html#l35"><code>src&#x2F;constraints&#x2F;FrictionEquation.js:35</code></a>
+        <a href="../files/src_equations_FrictionEquation.js.html#l34"><code>src&#x2F;equations&#x2F;FrictionEquation.js:34</code></a>
         
         </p>
 
@@ -826,7 +2152,7 @@ larger than this value.</p>
     </div>
 
     <div class="description">
-        <p>Tangent vector that the friction force will act along, in world coords.</p>
+        <p>Tangent vector that the friction force will act along. World oriented.</p>
 
     </div>
 

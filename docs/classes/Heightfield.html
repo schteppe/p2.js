@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Capsule - p2.js</title>
+    <title>Heightfield - p2.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -160,7 +160,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>Capsule Class</h1>
+                        <h1>Heightfield Class</h1>
 <div class="box meta">
     
 
@@ -172,7 +172,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_shapes_Capsule.js.html#l6"><code>src&#x2F;shapes&#x2F;Capsule.js:6</code></a>
+            Defined in: <a href="../files/src_shapes_Heightfield.js.html#l6"><code>src&#x2F;shapes&#x2F;Heightfield.js:6</code></a>
         </div>
     
 
@@ -184,15 +184,15 @@
 
 
 <div class="box intro">
-    <p>Capsule shape class.</p>
+    <p>Heightfield shape class. Height data is given as an array. These data points are spread out evenly with a distance &quot;elementWidth&quot;.</p>
 
 </div>
 
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_Capsule" class="method item">
-    <h3 class="name"><code>Capsule</code></h3>
+        <div id="method_Heightfield" class="method item">
+    <h3 class="name"><code>Heightfield</code></h3>
 
     
         <div class="args">
@@ -200,13 +200,19 @@
             
                 <li class="arg">
                     
-                        <code class="optional">[length]</code>
+                        <code>data</code>
                     
                 </li>
             
                 <li class="arg">
                     
-                        <code class="optional">[radius]</code>
+                        <code>maxValue</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>elementWidth</code>
                     
                 </li>
             
@@ -239,7 +245,7 @@
             
         
         
-        <a href="../files/src_shapes_Capsule.js.html#l6"><code>src&#x2F;shapes&#x2F;Capsule.js:6</code></a>
+        <a href="../files/src_shapes_Heightfield.js.html#l6"><code>src&#x2F;shapes&#x2F;Heightfield.js:6</code></a>
         
         </p>
 
@@ -261,16 +267,14 @@
             
                 <li class="param">
                     
-                        <code class="param-name optional">[length]</code>
-                        <span class="type">Number</span>
-                        <span class="flag optional" title="This parameter is optional.">optional</span>
+                        <code class="param-name">data</code>
+                        <span class="type">Array</span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>The distance between the end points</p>
-
+                         
                     </div>
 
                     
@@ -278,16 +282,29 @@
             
                 <li class="param">
                     
-                        <code class="param-name optional">[radius]</code>
+                        <code class="param-name">maxValue</code>
                         <span class="type">Number</span>
-                        <span class="flag optional" title="This parameter is optional.">optional</span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>Radius of the capsule</p>
+                         
+                    </div>
 
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">elementWidth</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
                     </div>
 
                     
@@ -338,13 +355,6 @@
                         
                             <li class="index-item method inherited">
                                 <a href="#method_computeMomentOfInertia">computeMomentOfInertia</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method">
-                                <a href="#method_conputeMomentOfInertia">conputeMomentOfInertia</a>
 
                                 
                                 
@@ -402,15 +412,22 @@
                                 
                             </li>
                         
-                            <li class="index-item property inherited">
-                                <a href="#property_id">id</a>
+                            <li class="index-item property">
+                                <a href="#property_data">data</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item property">
-                                <a href="#property_length">length</a>
+                                <a href="#property_elementWidth">elementWidth</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_id">id</a>
 
                                 
                                 
@@ -424,7 +441,7 @@
                             </li>
                         
                             <li class="index-item property">
-                                <a href="#property_radius">radius</a>
+                                <a href="#property_maxValue">maxValue</a>
 
                                 
                                 
@@ -512,7 +529,7 @@
             
         
         
-        <a href="../files/src_shapes_Capsule.js.html#l63"><code>src&#x2F;shapes&#x2F;Capsule.js:63</code></a>
+        <a href="../files/src_shapes_Heightfield.js.html#l63"><code>src&#x2F;shapes&#x2F;Heightfield.js:63</code></a>
         
         </p>
 
@@ -588,7 +605,7 @@
 </div>
 
                 
-                    <div id="method_computeMomentOfInertia" class="method item inherited">
+                    <div id="method_computeMomentOfInertia" class="method item">
     <h3 class="name"><code>computeMomentOfInertia</code></h3>
 
     
@@ -625,13 +642,16 @@
 
     <div class="meta">
         
+            <p>Inherited from
+            <a href="../classes/Shape.html#method_computeMomentOfInertia">
+                Shape
+            </a>
             
-                <p>Inherited from
-                <a href="../classes/Shape.html#method_computeMomentOfInertia">Shape</a>:
+            but overwritten in
             
         
         
-        <a href="../files/src_shapes_Shape.js.html#l153"><code>src&#x2F;shapes&#x2F;Shape.js:153</code></a>
+        <a href="../files/src_shapes_Heightfield.js.html#l41"><code>src&#x2F;shapes&#x2F;Heightfield.js:41</code></a>
         
         </p>
 
@@ -642,8 +662,7 @@
     </div>
 
     <div class="description">
-        <p>Should return the moment of inertia around the Z axis of the body given the total mass. See <a href="http://en.wikipedia.org/wiki/List_of_moments_of_inertia">Wikipedia&#39;s list of moments of inertia</a>.</p>
-
+        
     </div>
 
     
@@ -680,8 +699,6 @@
                     
                         <span class="type">Number</span>:
                     
-                    <p>If the inertia is infinity or if the object simply isn&#39;t possible to rotate, return 0.</p>
-
                 
             </div>
         </div>
@@ -691,21 +708,63 @@
 </div>
 
                 
-                    <div id="method_conputeMomentOfInertia" class="method item">
-    <h3 class="name"><code>conputeMomentOfInertia</code></h3>
+                    <div id="method_updateArea" class="method item inherited">
+    <h3 class="name"><code>updateArea</code></h3>
 
     
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
             
-                <li class="arg">
-                    
-                        <code>mass</code>
-                    
-                </li>
+                <p>Inherited from
+                <a href="../classes/Shape.html#method_updateArea">Shape</a>:
             
-            </ul><span class="paren">)</span>
-        </div>
+        
+        
+        <a href="../files/src_shapes_Shape.js.html#l172"><code>src&#x2F;shapes&#x2F;Shape.js:172</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Update the .area property of the shape.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_updateBoundingRadius" class="method item inherited">
+    <h3 class="name"><code>updateBoundingRadius</code></h3>
+
+    
+        <span class="paren">()</span>
     
 
     
@@ -729,15 +788,12 @@
     <div class="meta">
         
             
-                
-                <p>
-                
-                Defined in
-                
+                <p>Inherited from
+                <a href="../classes/Shape.html#method_updateBoundingRadius">Shape</a>:
             
         
         
-        <a href="../files/src_shapes_Capsule.js.html#l32"><code>src&#x2F;shapes&#x2F;Capsule.js:32</code></a>
+        <a href="../files/src_shapes_Shape.js.html#l163"><code>src&#x2F;shapes&#x2F;Shape.js:163</code></a>
         
         </p>
 
@@ -748,33 +804,10 @@
     </div>
 
     <div class="description">
-        <p>Compute the mass moment of inertia of the Capsule.</p>
+        <p>Returns the bounding circle radius of this shape.</p>
 
     </div>
 
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">mass</code>
-                        <span class="type">Number</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
     
 
     
@@ -789,114 +822,6 @@
                 
             </div>
         </div>
-    
-
-    
-</div>
-
-                
-                    <div id="method_updateArea" class="method item">
-    <h3 class="name"><code>updateArea</code></h3>
-
-    
-        <span class="paren">()</span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            <p>Inherited from
-            <a href="../classes/Shape.html#method_updateArea">
-                Shape
-            </a>
-            
-            but overwritten in
-            
-        
-        
-        <a href="../files/src_shapes_Capsule.js.html#l54"><code>src&#x2F;shapes&#x2F;Capsule.js:54</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_updateBoundingRadius" class="method item">
-    <h3 class="name"><code>updateBoundingRadius</code></h3>
-
-    
-        <span class="paren">()</span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            <p>Inherited from
-            <a href="../classes/Shape.html#method_updateBoundingRadius">
-                Shape
-            </a>
-            
-            but overwritten in
-            
-        
-        
-        <a href="../files/src_shapes_Capsule.js.html#l47"><code>src&#x2F;shapes&#x2F;Capsule.js:47</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        
-    </div>
-
-    
-
     
 
     
@@ -1108,6 +1033,96 @@ if(shapeA.collisionGroup &amp; shapeB.collisionMask)!=0 &amp;&amp; (shapeB.colli
 </div>
 
                 
+                    <div id="property_data" class="property item">
+    <h3 class="name"><code>data</code></h3>
+    <span class="type">Array</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_shapes_Heightfield.js.html#l19"><code>src&#x2F;shapes&#x2F;Heightfield.js:19</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>An array of numbers, or height values, that are spread out along the x axis.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_elementWidth" class="property item">
+    <h3 class="name"><code>elementWidth</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_shapes_Heightfield.js.html#l31"><code>src&#x2F;shapes&#x2F;Heightfield.js:31</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The width of each element</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
                     <div id="property_id" class="property item inherited">
     <h3 class="name"><code>id</code></h3>
     <span class="type">Number</span>
@@ -1139,51 +1154,6 @@ if(shapeA.collisionGroup &amp; shapeB.collisionMask)!=0 &amp;&amp; (shapeB.colli
 
     <div class="description">
         <p>Shape object identifier.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_length" class="property item">
-    <h3 class="name"><code>length</code></h3>
-    <span class="type">Number</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_shapes_Capsule.js.html#l16"><code>src&#x2F;shapes&#x2F;Capsule.js:16</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>The distance between the end points.</p>
 
     </div>
 
@@ -1237,8 +1207,8 @@ if(shapeA.collisionGroup &amp; shapeB.collisionMask)!=0 &amp;&amp; (shapeB.colli
 </div>
 
                 
-                    <div id="property_radius" class="property item">
-    <h3 class="name"><code>radius</code></h3>
+                    <div id="property_maxValue" class="property item">
+    <h3 class="name"><code>maxValue</code></h3>
     <span class="type">Number</span>
 
     
@@ -1260,7 +1230,7 @@ if(shapeA.collisionGroup &amp; shapeB.collisionMask)!=0 &amp;&amp; (shapeB.colli
             
         
         
-        <a href="../files/src_shapes_Capsule.js.html#l22"><code>src&#x2F;shapes&#x2F;Capsule.js:22</code></a>
+        <a href="../files/src_shapes_Heightfield.js.html#l25"><code>src&#x2F;shapes&#x2F;Heightfield.js:25</code></a>
         
         </p>
 
@@ -1270,7 +1240,7 @@ if(shapeA.collisionGroup &amp; shapeB.collisionMask)!=0 &amp;&amp; (shapeB.colli
     </div>
 
     <div class="description">
-        <p>The radius of the capsule.</p>
+        <p>Max value of the data</p>
 
     </div>
 

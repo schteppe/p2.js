@@ -41,6 +41,10 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/AABB.html">AABB</a></li>
+            
+                <li><a href="../classes/AngleLockEquation.html">AngleLockEquation</a></li>
+            
                 <li><a href="../classes/Body.html">Body</a></li>
             
                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
@@ -65,19 +69,23 @@
             
                 <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
             
+                <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
+            
                 <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
             
+                <li><a href="../classes/Heightfield.html">Heightfield</a></li>
+            
                 <li><a href="../classes/Island.html">Island</a></li>
             
-                <li><a href="../classes/IslandSolver.html">IslandSolver</a></li>
+                <li><a href="../classes/IslandManager.html">IslandManager</a></li>
+            
+                <li><a href="../classes/IslandNode.html">IslandNode</a></li>
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
-            
-                <li><a href="../classes/mat2.html">mat2</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
@@ -91,8 +99,6 @@
             
                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
             
-                <li><a href="../classes/QuadTree.html">QuadTree</a></li>
-            
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
@@ -101,7 +107,7 @@
             
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
-                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
+                <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -164,9 +170,32 @@ module.exports = Shape;
  * Base class for shapes.
  * @class Shape
  * @constructor
+ * @param {Number} type
  */
 function Shape(type){
+
+    /**
+     * The type of the shape. One of:
+     *
+     * * {{#crossLink &quot;Shape/CIRCLE:property&quot;}}Shape.CIRCLE{{/crossLink}}
+     * * {{#crossLink &quot;Shape/PARTICLE:property&quot;}}Shape.PARTICLE{{/crossLink}}
+     * * {{#crossLink &quot;Shape/PLANE:property&quot;}}Shape.PLANE{{/crossLink}}
+     * * {{#crossLink &quot;Shape/CONVEX:property&quot;}}Shape.CONVEX{{/crossLink}}
+     * * {{#crossLink &quot;Shape/LINE:property&quot;}}Shape.LINE{{/crossLink}}
+     * * {{#crossLink &quot;Shape/RECTANGLE:property&quot;}}Shape.RECTANGLE{{/crossLink}}
+     * * {{#crossLink &quot;Shape/CAPSULE:property&quot;}}Shape.CAPSULE{{/crossLink}}
+     * * {{#crossLink &quot;Shape/HEIGHTFIELD:property&quot;}}Shape.HEIGHTFIELD{{/crossLink}}
+     *
+     * @property {number} type
+     */
     this.type = type;
+
+    /**
+     * Shape object identifier.
+     * @type {Number}
+     * @property id
+     */
+    this.id = Shape.idCounter++;
 
     /**
      * Bounding circle radius of this shape
@@ -228,16 +257,64 @@ function Shape(type){
      */
     this.area = 0;
 
+    /**
+     * Set to true if you want this shape to be a sensor. A sensor does not generate contacts, but it still reports contact events. This is good if you want to know if a shape is overlapping another shape, without them generating contacts.
+     * @property {Boolean} sensor
+     */
+    this.sensor = false;
+
     this.updateArea();
 };
 
+Shape.idCounter = 0;
+
+/**
+ * @static
+ * @property {Number} CIRCLE
+ */
 Shape.CIRCLE =      1;
+
+/**
+ * @static
+ * @property {Number} PARTICLE
+ */
 Shape.PARTICLE =    2;
+
+/**
+ * @static
+ * @property {Number} PLANE
+ */
 Shape.PLANE =       4;
+
+/**
+ * @static
+ * @property {Number} CONVEX
+ */
 Shape.CONVEX =      8;
+
+/**
+ * @static
+ * @property {Number} LINE
+ */
 Shape.LINE =        16;
+
+/**
+ * @static
+ * @property {Number} RECTANGLE
+ */
 Shape.RECTANGLE =   32;
+
+/**
+ * @static
+ * @property {Number} CAPSULE
+ */
 Shape.CAPSULE =     64;
+
+/**
+ * @static
+ * @property {Number} HEIGHTFIELD
+ */
+Shape.HEIGHTFIELD = 128;
 
 /**
  * Should return the moment of inertia around the Z axis of the body given the total mass. See &lt;a href=&quot;http://en.wikipedia.org/wiki/List_of_moments_of_inertia&quot;&gt;Wikipedia&#x27;s list of moments of inertia&lt;/a&gt;.
@@ -264,6 +341,17 @@ Shape.prototype.updateBoundingRadius = function(){
  */
 Shape.prototype.updateArea = function(){
     // To be implemented in all subclasses
+};
+
+/**
+ * Compute the world axis-aligned bounding box (AABB) of this shape.
+ * @method computeAABB
+ * @param  {AABB}   out      The resulting AABB.
+ * @param  {Array}  position
+ * @param  {Number} angle
+ */
+Shape.prototype.computeAABB = function(out, position, angle){
+    // To be implemented in each subclass
 };
 
     </pre>

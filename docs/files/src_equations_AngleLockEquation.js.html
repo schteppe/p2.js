@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/objects/Spring.js - p2.js</title>
+    <title>src/equations/AngleLockEquation.js - p2.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -160,190 +160,69 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: src/objects/Spring.js</h1>
+                        <h1 class="file-heading">File: src/equations/AngleLockEquation.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
-var vec2 = require(&#x27;../math/vec2&#x27;);
+var Equation = require(&quot;./Equation&quot;),
+    vec2 = require(&#x27;../math/vec2&#x27;);
 
-module.exports = Spring;
+module.exports = AngleLockEquation;
 
 /**
- * A spring, connecting two bodies. The Spring explicitly adds force and angularForce to the bodies and does therefore not put load on the solver.
+ * Locks the relative angle between two bodies. The constraint tries to keep the dot product between two vectors, local in each body, to zero. The local angle in body i is a parameter.
  *
- * @class Spring
+ * @class AngleLockEquation
  * @constructor
+ * @extends Equation
  * @param {Body} bodyA
  * @param {Body} bodyB
  * @param {Object} [options]
- * @param {number} [options.restLength=1]   A number &gt; 0. Default: 1
- * @param {number} [options.stiffness=100]  Spring constant (see Hookes Law). A number &gt;= 0.
- * @param {number} [options.damping=1]      A number &gt;= 0. Default: 1
- * @param {Array}  [options.worldAnchorA]   Where to hook the spring to body A, in world coordinates. Overrides the option &quot;localAnchorA&quot; if given.
- * @param {Array}  [options.worldAnchorB]
- * @param {Array}  [options.localAnchorA]   Where to hook the spring to body A, in local body coordinates. Defaults to the body center.
- * @param {Array}  [options.localAnchorB]
+ * @param {Number} [options.angle] Angle to add to the local vector in body A.
+ * @param {Number} [options.ratio] Gear ratio
  */
-function Spring(bodyA,bodyB,options){
+function AngleLockEquation(bodyA, bodyB, options){
     options = options || {};
+    Equation.call(this,bodyA,bodyB,-Number.MAX_VALUE,Number.MAX_VALUE);
+    this.angle = options.angle || 0;
 
     /**
-     * Rest length of the spring.
-     * @property restLength
-     * @type {number}
+     * The gear ratio.
+     * @property {Number} ratio
+     * @private
+     * @see setRatio
      */
-    this.restLength = typeof(options.restLength)==&quot;number&quot; ? options.restLength : 1;
+    this.ratio = typeof(options.ratio)===&quot;number&quot; ? options.ratio : 1;
 
-    /**
-     * Stiffness of the spring.
-     * @property stiffness
-     * @type {number}
-     */
-    this.stiffness = options.stiffness || 100;
+    this.setRatio(this.ratio);
+}
+AngleLockEquation.prototype = new Equation();
+AngleLockEquation.prototype.constructor = AngleLockEquation;
 
-    /**
-     * Damping of the spring.
-     * @property damping
-     * @type {number}
-     */
-    this.damping = options.damping || 1;
-
-    /**
-     * First connected body.
-     * @property bodyA
-     * @type {Body}
-     */
-    this.bodyA = bodyA;
-
-    /**
-     * Second connected body.
-     * @property bodyB
-     * @type {Body}
-     */
-    this.bodyB = bodyB;
-
-    /**
-     * Anchor for bodyA in local bodyA coordinates.
-     * @property localAnchorA
-     * @type {Array}
-     */
-    this.localAnchorA = vec2.fromValues(0,0);
-
-    /**
-     * Anchor for bodyB in local bodyB coordinates.
-     * @property localAnchorB
-     * @type {Array}
-     */
-    this.localAnchorB = vec2.fromValues(0,0);
-
-    if(options.localAnchorA) vec2.copy(this.localAnchorA, options.localAnchorA);
-    if(options.localAnchorB) vec2.copy(this.localAnchorB, options.localAnchorB);
-    if(options.worldAnchorA) this.setWorldAnchorA(options.worldAnchorA);
-    if(options.worldAnchorB) this.setWorldAnchorB(options.worldAnchorB);
+AngleLockEquation.prototype.computeGq = function(){
+    return this.ratio * this.bodyA.angle - this.bodyB.angle + this.angle;
 };
 
 /**
- * Set the anchor point on body A, using world coordinates.
- * @method setWorldAnchorA
- * @param {Array} worldAnchorA
+ * Set the gear ratio for this equation
+ * @method setRatio
+ * @param {Number} ratio
  */
-Spring.prototype.setWorldAnchorA = function(worldAnchorA){
-    this.bodyA.toLocalFrame(this.localAnchorA, worldAnchorA);
+AngleLockEquation.prototype.setRatio = function(ratio){
+    var G = this.G;
+    G[2] =  ratio;
+    G[5] = -1;
+    this.ratio = ratio;
 };
 
 /**
- * Set the anchor point on body B, using world coordinates.
- * @method setWorldAnchorB
- * @param {Array} worldAnchorB
+ * Set the max force for the equation.
+ * @method setMaxTorque
+ * @param {Number} torque
  */
-Spring.prototype.setWorldAnchorB = function(worldAnchorB){
-    this.bodyB.toLocalFrame(this.localAnchorB, worldAnchorB);
-};
-
-/**
- * Get the anchor point on body A, in world coordinates.
- * @method getWorldAnchorA
- * @param {Array} result The vector to store the result in.
- */
-Spring.prototype.getWorldAnchorA = function(result){
-    this.bodyA.toWorldFrame(result, this.localAnchorA);
-};
-
-/**
- * Get the anchor point on body B, in world coordinates.
- * @method getWorldAnchorB
- * @param {Array} result The vector to store the result in.
- */
-Spring.prototype.getWorldAnchorB = function(result){
-    this.bodyB.toWorldFrame(result, this.localAnchorB);
-};
-
-var applyForce_r =              vec2.create(),
-    applyForce_r_unit =         vec2.create(),
-    applyForce_u =              vec2.create(),
-    applyForce_f =              vec2.create(),
-    applyForce_worldAnchorA =   vec2.create(),
-    applyForce_worldAnchorB =   vec2.create(),
-    applyForce_ri =             vec2.create(),
-    applyForce_rj =             vec2.create(),
-    applyForce_tmp =            vec2.create();
-
-/**
- * Apply the spring force to the connected bodies.
- * @method applyForce
- */
-Spring.prototype.applyForce = function(){
-    var k = this.stiffness,
-        d = this.damping,
-        l = this.restLength,
-        bodyA = this.bodyA,
-        bodyB = this.bodyB,
-        r = applyForce_r,
-        r_unit = applyForce_r_unit,
-        u = applyForce_u,
-        f = applyForce_f,
-        tmp = applyForce_tmp;
-
-    var worldAnchorA = applyForce_worldAnchorA,
-        worldAnchorB = applyForce_worldAnchorB,
-        ri = applyForce_ri,
-        rj = applyForce_rj;
-
-    // Get world anchors
-    this.getWorldAnchorA(worldAnchorA);
-    this.getWorldAnchorB(worldAnchorB);
-
-    // Get offset points
-    vec2.sub(ri, worldAnchorA, bodyA.position);
-    vec2.sub(rj, worldAnchorB, bodyB.position);
-
-    // Compute distance vector between world anchor points
-    vec2.sub(r, worldAnchorB, worldAnchorA);
-    var rlen = vec2.len(r);
-    vec2.normalize(r_unit,r);
-
-    //console.log(rlen)
-    //console.log(&quot;A&quot;,vec2.str(worldAnchorA),&quot;B&quot;,vec2.str(worldAnchorB))
-
-    // Compute relative velocity of the anchor points, u
-    vec2.sub(u, bodyB.velocity, bodyA.velocity);
-    vec2.crossZV(tmp, bodyB.angularVelocity, rj);
-    vec2.add(u, u, tmp);
-    vec2.crossZV(tmp, bodyA.angularVelocity, ri);
-    vec2.sub(u, u, tmp);
-
-    // F = - k * ( x - L ) - D * ( u )
-    vec2.scale(f, r_unit, -k*(rlen-l) - d*vec2.dot(u,r_unit));
-
-    // Add forces to bodies
-    vec2.sub( bodyA.force, bodyA.force, f);
-    vec2.add( bodyB.force, bodyB.force, f);
-
-    // Angular force
-    var ri_x_f = vec2.crossLength(ri, f);
-    var rj_x_f = vec2.crossLength(rj, f);
-    bodyA.angularForce -= ri_x_f;
-    bodyB.angularForce += rj_x_f;
+AngleLockEquation.prototype.setMaxTorque = function(torque){
+    this.maxForce =  torque;
+    this.minForce = -torque;
 };
 
     </pre>

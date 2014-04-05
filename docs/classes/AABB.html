@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>QuadTree - p2.js</title>
+    <title>AABB - p2.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -41,6 +41,10 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/AABB.html">AABB</a></li>
+            
+                <li><a href="../classes/AngleLockEquation.html">AngleLockEquation</a></li>
+            
                 <li><a href="../classes/Body.html">Body</a></li>
             
                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
@@ -65,19 +69,23 @@
             
                 <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
             
+                <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
+            
                 <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
             
+                <li><a href="../classes/Heightfield.html">Heightfield</a></li>
+            
                 <li><a href="../classes/Island.html">Island</a></li>
             
-                <li><a href="../classes/IslandSolver.html">IslandSolver</a></li>
+                <li><a href="../classes/IslandManager.html">IslandManager</a></li>
+            
+                <li><a href="../classes/IslandNode.html">IslandNode</a></li>
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
-            
-                <li><a href="../classes/mat2.html">mat2</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
@@ -91,8 +99,6 @@
             
                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
             
-                <li><a href="../classes/QuadTree.html">QuadTree</a></li>
-            
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
@@ -101,7 +107,7 @@
             
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
-                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
+                <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -154,7 +160,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>QuadTree Class</h1>
+                        <h1>AABB Class</h1>
 <div class="box meta">
     
 
@@ -162,7 +168,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_collision_QuadTree.js.html#l10"><code>src&#x2F;collision&#x2F;QuadTree.js:10</code></a>
+            Defined in: <a href="../files/src_collision_AABB.js.html#l6"><code>src&#x2F;collision&#x2F;AABB.js:6</code></a>
         </div>
     
 
@@ -174,15 +180,15 @@
 
 
 <div class="box intro">
-    <p>QuadTree data structure. See <a href="https://github.com/mikechambers/ExamplesByMesh/tree/master/JavaScript/QuadTree">https://github.com/mikechambers/ExamplesByMesh/tree/master/JavaScript/QuadTree</a></p>
+    <p>Axis aligned bounding box class.</p>
 
 </div>
 
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_QuadTree" class="method item">
-    <h3 class="name"><code>QuadTree</code></h3>
+        <div id="method_AABB" class="method item">
+    <h3 class="name"><code>AABB</code></h3>
 
     
         <div class="args">
@@ -190,25 +196,7 @@
             
                 <li class="arg">
                     
-                        <code>An</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>pointQuad</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>maxDepth</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>maxChildren</code>
+                        <code class="optional">[options]</code>
                     
                 </li>
             
@@ -241,7 +229,7 @@
             
         
         
-        <a href="../files/src_collision_QuadTree.js.html#l10"><code>src&#x2F;collision&#x2F;QuadTree.js:10</code></a>
+        <a href="../files/src_collision_AABB.js.html#l6"><code>src&#x2F;collision&#x2F;AABB.js:6</code></a>
         
         </p>
 
@@ -263,67 +251,49 @@
             
                 <li class="param">
                     
-                        <code class="param-name">An</code>
+                        <code class="param-name optional">[options]</code>
                         <span class="type">Object</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>object representing the bounds of the top level of the QuadTree. The object
-should contain the following properties : x, y, width, height</p>
-
+                         
                     </div>
 
                     
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">pointQuad</code>
-                        <span class="type">Boolean</span>
-                    
+                        <ul class="params-list">
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[upperBound]</code>
+                                    <span class="type">Array</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
 
-                    
+                                <div class="param-description">
+                                    
+                                </div>
 
-                    <div class="param-description">
-                        <p>Whether the QuadTree will contain points (true), or items with bounds
-(width / height)(false). Default value is false.</p>
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[lowerBound]</code>
+                                    <span class="type">Array</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
 
-                    </div>
+                                <div class="param-description">
+                                    
+                                </div>
 
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">maxDepth</code>
-                        <span class="type">Number</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>The maximum number of levels that the quadtree will create. Default is 4.</p>
-
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">maxChildren</code>
-                        <span class="type">Number</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>The maximum number of children that a node can contain before it is split into sub-nodes.</p>
-
-                    </div>
-
+                                
+                            </li>
+                            
+                        </ul>
                     
                 </li>
             
@@ -364,21 +334,28 @@ should contain the following properties : x, y, width, height</p>
                     <ul class="index-list methods">
                         
                             <li class="index-item method">
-                                <a href="#method_clear">clear</a>
+                                <a href="#method_copy">copy</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item method">
-                                <a href="#method_insert">insert</a>
+                                <a href="#method_extend">extend</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item method">
-                                <a href="#method_retrieve">retrieve</a>
+                                <a href="#method_overlaps">overlaps</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_setFromPoints">setFromPoints</a>
 
                                 
                                 
@@ -395,7 +372,14 @@ should contain the following properties : x, y, width, height</p>
                     <ul class="index-list properties">
                         
                             <li class="index-item property">
-                                <a href="#property_root">root</a>
+                                <a href="#property_lowerBound">lowerBound</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_upperBound">upperBound</a>
 
                                 
                                 
@@ -415,63 +399,8 @@ should contain the following properties : x, y, width, height</p>
                 <h2 class="off-left">Methods</h2>
 
                 
-                    <div id="method_clear" class="method item">
-    <h3 class="name"><code>clear</code></h3>
-
-    
-        <span class="paren">()</span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_collision_QuadTree.js.html#l54"><code>src&#x2F;collision&#x2F;QuadTree.js:54</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Clears all nodes and children from the QuadTree</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_insert" class="method item">
-    <h3 class="name"><code>insert</code></h3>
+                    <div id="method_copy" class="method item">
+    <h3 class="name"><code>copy</code></h3>
 
     
         <div class="args">
@@ -479,7 +408,7 @@ should contain the following properties : x, y, width, height</p>
             
                 <li class="arg">
                     
-                        <code>item</code>
+                        <code>aabb</code>
                     
                 </li>
             
@@ -512,7 +441,7 @@ should contain the following properties : x, y, width, height</p>
             
         
         
-        <a href="../files/src_collision_QuadTree.js.html#l37"><code>src&#x2F;collision&#x2F;QuadTree.js:37</code></a>
+        <a href="../files/src_collision_AABB.js.html#l74"><code>src&#x2F;collision&#x2F;AABB.js:74</code></a>
         
         </p>
 
@@ -523,7 +452,7 @@ should contain the following properties : x, y, width, height</p>
     </div>
 
     <div class="description">
-        <p>Inserts an item into the QuadTree.</p>
+        <p>Copy bounds from an AABB to this AABB</p>
 
     </div>
 
@@ -535,16 +464,14 @@ should contain the following properties : x, y, width, height</p>
             
                 <li class="param">
                     
-                        <code class="param-name">item</code>
-                        <span class="type">Object | Array</span>
+                        <code class="param-name">aabb</code>
+                        <span class="type"><a href="../classes/AABB.html" class="crosslink">AABB</a></span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>The item or Array of items to be inserted into the QuadTree. The item should expose x, y
-properties that represents its position in 2D space.</p>
-
+                         
                     </div>
 
                     
@@ -560,8 +487,8 @@ properties that represents its position in 2D space.</p>
 </div>
 
                 
-                    <div id="method_retrieve" class="method item">
-    <h3 class="name"><code>retrieve</code></h3>
+                    <div id="method_extend" class="method item">
+    <h3 class="name"><code>extend</code></h3>
 
     
         <div class="args">
@@ -569,7 +496,7 @@ properties that represents its position in 2D space.</p>
             
                 <li class="arg">
                     
-                        <code>item</code>
+                        <code>aabb</code>
                     
                 </li>
             
@@ -602,7 +529,7 @@ properties that represents its position in 2D space.</p>
             
         
         
-        <a href="../files/src_collision_QuadTree.js.html#l62"><code>src&#x2F;collision&#x2F;QuadTree.js:62</code></a>
+        <a href="../files/src_collision_AABB.js.html#l84"><code>src&#x2F;collision&#x2F;AABB.js:84</code></a>
         
         </p>
 
@@ -613,8 +540,7 @@ properties that represents its position in 2D space.</p>
     </div>
 
     <div class="description">
-        <p>Retrieves all items / points in the same node as the specified item / point. If the specified item
-overlaps the bounds of a node, then all children in both nodes will be returned.</p>
+        <p>Extend this AABB so that it covers the given AABB too.</p>
 
     </div>
 
@@ -626,15 +552,206 @@ overlaps the bounds of a node, then all children in both nodes will be returned.
             
                 <li class="param">
                     
-                        <code class="param-name">item</code>
-                        <span class="type">Object</span>
+                        <code class="param-name">aabb</code>
+                        <span class="type"><a href="../classes/AABB.html" class="crosslink">AABB</a></span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>An object representing a 2D coordinate point (with x, y properties), or a shape
-with dimensions (x, y, width, height) properties.</p>
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_overlaps" class="method item">
+    <h3 class="name"><code>overlaps</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>aabb</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Boolean</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_collision_AABB.js.html#l104"><code>src&#x2F;collision&#x2F;AABB.js:104</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Returns true if the given AABB overlaps this AABB.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">aabb</code>
+                        <span class="type"><a href="../classes/AABB.html" class="crosslink">AABB</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Boolean</span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_setFromPoints" class="method item">
+    <h3 class="name"><code>setFromPoints</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>points</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_collision_AABB.js.html#l39"><code>src&#x2F;collision&#x2F;AABB.js:39</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Set the AABB bounds from a set of points.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">points</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>An array of vec2&#39;s.</p>
 
                     </div>
 
@@ -659,9 +776,9 @@ with dimensions (x, y, width, height) properties.</p>
                 <h2 class="off-left">Properties</h2>
 
                 
-                    <div id="property_root" class="property item">
-    <h3 class="name"><code>root</code></h3>
-    <span class="type">Node</span>
+                    <div id="property_lowerBound" class="property item">
+    <h3 class="name"><code>lowerBound</code></h3>
+    <span class="type">Array</span>
 
     
 
@@ -682,7 +799,7 @@ with dimensions (x, y, width, height) properties.</p>
             
         
         
-        <a href="../files/src_collision_QuadTree.js.html#l29"><code>src&#x2F;collision&#x2F;QuadTree.js:29</code></a>
+        <a href="../files/src_collision_AABB.js.html#l16"><code>src&#x2F;collision&#x2F;AABB.js:16</code></a>
         
         </p>
 
@@ -692,7 +809,52 @@ with dimensions (x, y, width, height) properties.</p>
     </div>
 
     <div class="description">
-        <p>The root node of the QuadTree which covers the entire area being segmented.</p>
+        <p>The lower bound of the bounding box.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_upperBound" class="property item">
+    <h3 class="name"><code>upperBound</code></h3>
+    <span class="type">Array</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_collision_AABB.js.html#l26"><code>src&#x2F;collision&#x2F;AABB.js:26</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The upper bound of the bounding box.</p>
 
     </div>
 

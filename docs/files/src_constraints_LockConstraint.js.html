@@ -41,6 +41,10 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/AABB.html">AABB</a></li>
+            
+                <li><a href="../classes/AngleLockEquation.html">AngleLockEquation</a></li>
+            
                 <li><a href="../classes/Body.html">Body</a></li>
             
                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
@@ -65,19 +69,23 @@
             
                 <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
             
+                <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
+            
                 <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
             
+                <li><a href="../classes/Heightfield.html">Heightfield</a></li>
+            
                 <li><a href="../classes/Island.html">Island</a></li>
             
-                <li><a href="../classes/IslandSolver.html">IslandSolver</a></li>
+                <li><a href="../classes/IslandManager.html">IslandManager</a></li>
+            
+                <li><a href="../classes/IslandNode.html">IslandNode</a></li>
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
-            
-                <li><a href="../classes/mat2.html">mat2</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
@@ -91,8 +99,6 @@
             
                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
             
-                <li><a href="../classes/QuadTree.html">QuadTree</a></li>
-            
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
@@ -101,7 +107,7 @@
             
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
-                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
+                <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -160,7 +166,7 @@
     <pre class="code prettyprint linenums">
 var Constraint = require(&#x27;./Constraint&#x27;)
 ,   vec2 = require(&#x27;../math/vec2&#x27;)
-,   Equation = require(&#x27;./Equation&#x27;)
+,   Equation = require(&#x27;../equations/Equation&#x27;)
 
 module.exports = LockConstraint;
 
@@ -173,14 +179,16 @@ module.exports = LockConstraint;
  * @param {Body} bodyA
  * @param {Body} bodyB
  * @param {Object} [options]
- * @param {Array}  [options.localOffsetB] The offset of bodyB in bodyA&#x27;s frame.
- * @param {number} [options.localAngleB]  The angle of bodyB in bodyA&#x27;s frame.
+ * @param {Array}  [options.localOffsetB] The offset of bodyB in bodyA&#x27;s frame. Default is the zero vector.
+ * @param {number} [options.localAngleB=0]  The angle of bodyB in bodyA&#x27;s frame.
  * @param {number} [options.maxForce]
- * @extends {Constraint}
+ * @extends Constraint
  */
-function LockConstraint(bodyA,bodyB,options){
-    Constraint.call(this,bodyA,bodyB);
-    var maxForce = ( typeof(options.maxForce)==&quot;undefined&quot; ? Number.MAX_VALUE : options.maxForce );
+function LockConstraint(bodyA, bodyB, options){
+    options = options || {};
+
+    Constraint.call(this,bodyA,bodyB,Constraint.LOCK,options);
+    var maxForce = ( typeof(options.maxForce)===&quot;undefined&quot; ? Number.MAX_VALUE : options.maxForce );
     var localOffsetB = options.localOffsetB || vec2.fromValues(0,0);
     localOffsetB = vec2.fromValues(localOffsetB[0],localOffsetB[1]);
 
@@ -213,23 +221,24 @@ function LockConstraint(bodyA,bodyB,options){
         rot =   new Equation(bodyA,bodyB,-maxForce,maxForce);
 
     var l = vec2.create(),
-        g = vec2.create();
+        g = vec2.create(),
+        that = this;
     x.computeGq = function(){
-        vec2.rotate(l,localOffsetB,bodyA.angle);
-        vec2.sub(g,bodyB.position,bodyA.position);
-        vec2.sub(g,g,l);
+        vec2.rotate(l, that.localOffsetB, bodyA.angle);
+        vec2.sub(g, bodyB.position, bodyA.position);
+        vec2.sub(g, g, l);
         return g[0];
-    }
+    };
     y.computeGq = function(){
-        vec2.rotate(l,localOffsetB,bodyA.angle);
-        vec2.sub(g,bodyB.position,bodyA.position);
-        vec2.sub(g,g,l);
+        vec2.rotate(l, that.localOffsetB, bodyA.angle);
+        vec2.sub(g, bodyB.position, bodyA.position);
+        vec2.sub(g, g, l);
         return g[1];
     };
     var r = vec2.create(),
         t = vec2.create();
     rot.computeGq = function(){
-        vec2.rotate(r,localOffsetB,bodyB.angle - localAngleB);
+        vec2.rotate(r, that.localOffsetB, bodyB.angle - that.localAngleB);
         vec2.scale(r,r,-1);
         vec2.sub(g,bodyA.position,bodyB.position);
         vec2.add(g,g,r);
@@ -238,13 +247,44 @@ function LockConstraint(bodyA,bodyB,options){
         return vec2.dot(g,t);
     };
 
+    /**
+     * The offset of bodyB in bodyA&#x27;s frame.
+     * @property {Array} localOffsetB
+     */
     this.localOffsetB = localOffsetB;
-    this.localAngleB =  localAngleB;
-    this.maxForce = maxForce;
 
-    var eqs = this.equations = [ x, y, rot ];
+    /**
+     * The offset angle of bodyB in bodyA&#x27;s frame.
+     * @property {Number} localAngleB
+     */
+    this.localAngleB =  localAngleB;
+
+    this.equations.push(x, y, rot);
+    this.setMaxForce(maxForce);
 }
 LockConstraint.prototype = new Constraint();
+
+/**
+ * Set the maximum force to be applied.
+ * @method setMaxForce
+ * @param {Number} force
+ */
+LockConstraint.prototype.setMaxForce = function(force){
+    var eqs = this.equations;
+    for(var i=0; i&lt;this.equations.length; i++){
+        eqs[i].maxForce =  force;
+        eqs[i].minForce = -force;
+    }
+};
+
+/**
+ * Get the max force.
+ * @method getMaxForce
+ * @return {Number}
+ */
+LockConstraint.prototype.getMaxForce = function(){
+    return this.equations[0].maxForce;
+};
 
 var l = vec2.create();
 var r = vec2.create();

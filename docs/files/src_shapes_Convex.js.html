@@ -41,6 +41,10 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/AABB.html">AABB</a></li>
+            
+                <li><a href="../classes/AngleLockEquation.html">AngleLockEquation</a></li>
+            
                 <li><a href="../classes/Body.html">Body</a></li>
             
                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
@@ -65,19 +69,23 @@
             
                 <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
             
+                <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
+            
                 <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
             
+                <li><a href="../classes/Heightfield.html">Heightfield</a></li>
+            
                 <li><a href="../classes/Island.html">Island</a></li>
             
-                <li><a href="../classes/IslandSolver.html">IslandSolver</a></li>
+                <li><a href="../classes/IslandManager.html">IslandManager</a></li>
+            
+                <li><a href="../classes/IslandNode.html">IslandNode</a></li>
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
-            
-                <li><a href="../classes/mat2.html">mat2</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
@@ -91,8 +99,6 @@
             
                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
             
-                <li><a href="../classes/QuadTree.html">QuadTree</a></li>
-            
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
@@ -101,7 +107,7 @@
             
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
-                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
+                <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -169,7 +175,7 @@ module.exports = Convex;
  * Convex shape class.
  * @class Convex
  * @constructor
- * @extends {Shape}
+ * @extends Shape
  * @param {Array} vertices An array of Float32Array vertices that span this shape. Vertices are given in counter-clockwise (CCW) direction.
  */
 function Convex(vertices){
@@ -179,13 +185,13 @@ function Convex(vertices){
      * @property vertices
      * @type {Array}
      */
-    this.vertices = vertices || [];
+    this.vertices = [];
 
     // Copy the verts
-    for(var i=0; i&lt;this.vertices.length; i++){
-        var v = vec2.fromValues();
-        vec2.copy(v,this.vertices[i]);
-        this.vertices[i] = v;
+    for(var i=0; i&lt;vertices.length; i++){
+        var v = vec2.create();
+        vec2.copy(v,vertices[i]);
+        this.vertices.push(v);
     }
 
     /**
@@ -213,9 +219,14 @@ function Convex(vertices){
      * @type {Number}
      */
     this.boundingRadius = 0;
-    this.updateBoundingRadius();
+
 
     Shape.call(this,Shape.CONVEX);
+
+    this.updateBoundingRadius();
+    this.updateArea();
+    if(this.area &lt; 0)
+        throw new Error(&quot;Convex vertices must be given in conter-clockwise winding.&quot;);
 };
 Convex.prototype = new Shape();
 
@@ -289,7 +300,7 @@ Convex.prototype.updateCenterOfMass = function(){
 
         // Get mass for the triangle (density=1 in this case)
         // http://math.stackexchange.com/questions/80198/area-of-triangle-via-vectors
-        var m = decomp.Point.area(a,b,c)
+        var m = Convex.triangleArea(a,b,c)
         totalArea += m;
 
         // Add to center of mass
@@ -302,76 +313,24 @@ Convex.prototype.updateCenterOfMass = function(){
 
 /**
  * Compute the mass moment of inertia of the Convex.
- * @method conputeMomentOfInertia
+ * @method computeMomentOfInertia
  * @param  {Number} mass
  * @return {Number}
- * @todo  should use .triangles
+ * @see http://www.gamedev.net/topic/342822-moment-of-inertia-of-a-polygon-2d/
  */
 Convex.prototype.computeMomentOfInertia = function(mass){
-
-    // In short: Triangulate the Convex, compute centroid and inertia of
-    // each sub-triangle. Add up to total using parallel axis theorem.
-
-    var I = 0;
-
-    // Rewrite on polyk notation, array of numbers
-    var polykVerts = [];
-    for(var i=0; i&lt;this.vertices.length; i++){
-        var v = this.vertices[i];
-        polykVerts.push(v[0],v[1]);
+    var denom = 0.0,
+        numer = 0.0,
+        N = this.vertices.length;
+    for(var j = N-1, i = 0; i &lt; N; j = i, i ++){
+        var p0 = this.vertices[j];
+        var p1 = this.vertices[i];
+        var a = Math.abs(vec2.crossLength(p0,p1));
+        var b = vec2.dot(p1,p1) + vec2.dot(p1,p0) + vec2.dot(p0,p0);
+        denom += a * b;
+        numer += a;
     }
-
-    // Triangulate
-    var triangles = polyk.Triangulate(polykVerts);
-
-    // Get total convex area and density
-    var area = polyk.GetArea(polykVerts);
-    this.updateArea();
-    var density = mass / this.area;
-
-    // Temp vectors
-    var a = vec2.create(),
-        b = vec2.create(),
-        c = vec2.create(),
-        centroid = vec2.create(),
-        n = vec2.create(),
-        ac = vec2.create(),
-        ca = vec2.create(),
-        cb = vec2.create(),
-        centroid_times_mass = vec2.create();
-
-    // Loop over all triangles, add their inertia contributions to I
-    for(var i=0; i&lt;triangles.length; i+=3){
-        var id1 = triangles[i],
-            id2 = triangles[i+1],
-            id3 = triangles[i+2];
-
-        // a,b,c are triangle corners
-        vec2.set(a, polykVerts[2*id1], polykVerts[2*id1+1]);
-        vec2.set(b, polykVerts[2*id2], polykVerts[2*id2+1]);
-        vec2.set(c, polykVerts[2*id3], polykVerts[2*id3+1]);
-
-        vec2.centroid(centroid, a, b, c);
-
-        vec2.sub(ca, c, a);
-        vec2.sub(cb, c, b);
-
-        var area_triangle = decomp.Point.area(a,b,c)
-        var base = vec2.length(ca);
-        var height = 2*area_triangle / base; // a=b*h/2 =&gt; h=2*a/b
-
-        // Get mass for the triangle
-        var m = area_triangle * density;
-
-        // Get inertia for this triangle: http://answers.yahoo.com/question/index?qid=20080721030038AA3oE1m
-        var I_triangle = m*(base * (Math.pow(height,3))) / 36;
-
-        // Add to total inertia using parallel axis theorem
-        var r2 = vec2.squaredLength(centroid);
-        I += I_triangle + m*r2;
-    }
-
-    return I;
+    return (mass / 6.0) * (denom / numer);
 };
 
 /**
@@ -391,6 +350,19 @@ Convex.prototype.updateBoundingRadius = function(){
 };
 
 /**
+ * Get the area of the triangle spanned by the three points a, b, c. The area is positive if the points are given in counter-clockwise order, otherwise negative.
+ * @static
+ * @method triangleArea
+ * @param {Array} a
+ * @param {Array} b
+ * @param {Array} c
+ * @return {Number}
+ */
+Convex.triangleArea = function(a,b,c){
+    return (((b[0] - a[0])*(c[1] - a[1]))-((c[0] - a[0])*(b[1] - a[1]))) * 0.5;
+}
+
+/**
  * Update the .area
  * @method updateArea
  */
@@ -407,12 +379,20 @@ Convex.prototype.updateArea = function(){
             c = verts[t[2]];
 
         // Get mass for the triangle (density=1 in this case)
-        // http://math.stackexchange.com/questions/80198/area-of-triangle-via-vectors
-        var m = decomp.Point.area(a,b,c)
+        var m = Convex.triangleArea(a,b,c);
         this.area += m;
     }
 };
 
+/**
+ * @method computeAABB
+ * @param  {AABB}   out
+ * @param  {Array}  position
+ * @param  {Number} angle
+ */
+Convex.prototype.computeAABB = function(out, position, angle){
+   out.setFromPoints(this.vertices,position,angle);
+};
 
     </pre>
 </div>

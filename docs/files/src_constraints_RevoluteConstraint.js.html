@@ -41,6 +41,10 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/AABB.html">AABB</a></li>
+            
+                <li><a href="../classes/AngleLockEquation.html">AngleLockEquation</a></li>
+            
                 <li><a href="../classes/Body.html">Body</a></li>
             
                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
@@ -65,19 +69,23 @@
             
                 <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
             
+                <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
+            
                 <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
             
+                <li><a href="../classes/Heightfield.html">Heightfield</a></li>
+            
                 <li><a href="../classes/Island.html">Island</a></li>
             
-                <li><a href="../classes/IslandSolver.html">IslandSolver</a></li>
+                <li><a href="../classes/IslandManager.html">IslandManager</a></li>
+            
+                <li><a href="../classes/IslandNode.html">IslandNode</a></li>
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
-            
-                <li><a href="../classes/mat2.html">mat2</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
@@ -91,8 +99,6 @@
             
                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
             
-                <li><a href="../classes/QuadTree.html">QuadTree</a></li>
-            
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
@@ -101,7 +107,7 @@
             
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
-                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
+                <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -159,9 +165,9 @@
 <div class="file">
     <pre class="code prettyprint linenums">
 var Constraint = require(&#x27;./Constraint&#x27;)
-,   Equation = require(&#x27;./Equation&#x27;)
-,   RotationalVelocityEquation = require(&#x27;./RotationalVelocityEquation&#x27;)
-,   RotationalLockEquation = require(&#x27;./RotationalLockEquation&#x27;)
+,   Equation = require(&#x27;../equations/Equation&#x27;)
+,   RotationalVelocityEquation = require(&#x27;../equations/RotationalVelocityEquation&#x27;)
+,   RotationalLockEquation = require(&#x27;../equations/RotationalLockEquation&#x27;)
 ,   vec2 = require(&#x27;../math/vec2&#x27;)
 
 module.exports = RevoluteConstraint;
@@ -177,20 +183,29 @@ var worldPivotA = vec2.create(),
  * @class RevoluteConstraint
  * @constructor
  * @author schteppe
- * @param {Body}            bodyA
- * @param {Float32Array}    pivotA The point relative to the center of mass of bodyA which bodyA is constrained to.
- * @param {Body}            bodyB Body that will be constrained in a similar way to the same point as bodyA. We will therefore get sort of a link between bodyA and bodyB. If not specified, bodyA will be constrained to a static point.
- * @param {Float32Array}    pivotB See pivotA.
- * @param {Number}          maxForce The maximum force that should be applied to constrain the bodies.
- * @extends {Constraint}
+ * @param {Body}    bodyA
+ * @param {Array}   pivotA              The point relative to the center of mass of bodyA which bodyA is constrained to.
+ * @param {Body}    bodyB               Body that will be constrained in a similar way to the same point as bodyA. We will therefore get sort of a link between bodyA and bodyB. If not specified, bodyA will be constrained to a static point.
+ * @param {Array}   pivotB              See pivotA.
+ * @param {Object}  [options]
+ * @param {Number}  [options.maxForce]  The maximum force that should be applied to constrain the bodies.
+ * @extends Constraint
  * @todo Ability to specify world points
  */
-function RevoluteConstraint(bodyA, pivotA, bodyB, pivotB, maxForce){
-    Constraint.call(this,bodyA,bodyB);
+function RevoluteConstraint(bodyA, pivotA, bodyB, pivotB, options){
+    options = options || {};
+    Constraint.call(this,bodyA,bodyB,Constraint.REVOLUTE,options);
 
-    maxForce = typeof(maxForce)!=&quot;undefined&quot; ? maxForce : Number.MAX_VALUE;
+    var maxForce = this.maxForce = typeof(options.maxForce) !== &quot;undefined&quot; ? options.maxForce : Number.MAX_VALUE;
 
+    /**
+     * @property {Array} pivotA
+     */
     this.pivotA = pivotA;
+
+    /**
+     * @property {Array} pivotB
+     */
     this.pivotB = pivotB;
 
     // Equations to be fed to the solver
@@ -199,12 +214,13 @@ function RevoluteConstraint(bodyA, pivotA, bodyB, pivotB, maxForce){
         new Equation(bodyA,bodyB,-maxForce,maxForce),
     ];
 
-    var x =  eqs[0];
+    var x = eqs[0];
     var y = eqs[1];
+    var that = this;
 
     x.computeGq = function(){
-        vec2.rotate(worldPivotA, pivotA, bodyA.angle);
-        vec2.rotate(worldPivotB, pivotB, bodyB.angle);
+        vec2.rotate(worldPivotA, that.pivotA, bodyA.angle);
+        vec2.rotate(worldPivotB, that.pivotB, bodyB.angle);
         vec2.add(g, bodyB.position, worldPivotB);
         vec2.sub(g, g, bodyA.position);
         vec2.sub(g, g, worldPivotA);
@@ -212,8 +228,8 @@ function RevoluteConstraint(bodyA, pivotA, bodyB, pivotB, maxForce){
     };
 
     y.computeGq = function(){
-        vec2.rotate(worldPivotA, pivotA, bodyA.angle);
-        vec2.rotate(worldPivotB, pivotB, bodyB.angle);
+        vec2.rotate(worldPivotA, that.pivotA, bodyA.angle);
+        vec2.rotate(worldPivotB, that.pivotB, bodyB.angle);
         vec2.add(g, bodyB.position, worldPivotB);
         vec2.sub(g, g, bodyA.position);
         vec2.sub(g, g, worldPivotA);
@@ -224,13 +240,50 @@ function RevoluteConstraint(bodyA, pivotA, bodyB, pivotB, maxForce){
     y.maxForce = x.maxForce =  maxForce;
 
     this.motorEquation = new RotationalVelocityEquation(bodyA,bodyB);
+
+    /**
+     * Indicates whether the motor is enabled. Use .enableMotor() to enable the constraint motor.
+     * @property {Boolean} motorEnabled
+     * @readOnly
+     */
     this.motorEnabled = false;
 
-    // Angle limits
+    /**
+     * The constraint position.
+     * @property angle
+     * @type {Number}
+     * @readOnly
+     */
+    this.angle = 0;
+
+    /**
+     * Set to true to enable lower limit
+     * @property lowerLimitEnabled
+     * @type {Boolean}
+     */
     this.lowerLimitEnabled = false;
+
+    /**
+     * Set to true to enable upper limit
+     * @property upperLimitEnabled
+     * @type {Boolean}
+     */
     this.upperLimitEnabled = false;
+
+    /**
+     * The lower limit on the constraint angle.
+     * @property lowerLimit
+     * @type {Boolean}
+     */
     this.lowerLimit = 0;
+
+    /**
+     * The upper limit on the constraint angle.
+     * @property upperLimit
+     * @type {Boolean}
+     */
     this.upperLimit = 0;
+
     this.upperLimitEquation = new RotationalLockEquation(bodyA,bodyB);
     this.lowerLimitEquation = new RotationalLockEquation(bodyA,bodyB);
     this.upperLimitEquation.minForce = 0;
@@ -301,6 +354,8 @@ RevoluteConstraint.prototype.update = function(){
     vec2.rotate(worldPivotA, pivotA, bodyA.angle);
     vec2.rotate(worldPivotB, pivotB, bodyB.angle);
 
+    // todo: these are a bit sparse. We could save some computations on making custom eq.computeGW functions, etc
+
     x.G[0] = -1;
     x.G[1] =  0;
     x.G[2] = -vec2.crossLength(worldPivotA,xAxis);
@@ -352,7 +407,9 @@ RevoluteConstraint.prototype.motorIsEnabled = function(){
  * @param  {Number} speed
  */
 RevoluteConstraint.prototype.setMotorSpeed = function(speed){
-    if(!this.motorEnabled) return;
+    if(!this.motorEnabled){
+        return;
+    }
     var i = this.equations.indexOf(this.motorEquation);
     this.equations[i].relativeVelocity = speed;
 };

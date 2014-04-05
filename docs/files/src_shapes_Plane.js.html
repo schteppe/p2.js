@@ -41,6 +41,10 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/AABB.html">AABB</a></li>
+            
+                <li><a href="../classes/AngleLockEquation.html">AngleLockEquation</a></li>
+            
                 <li><a href="../classes/Body.html">Body</a></li>
             
                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
@@ -65,19 +69,23 @@
             
                 <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
             
+                <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
+            
                 <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
             
+                <li><a href="../classes/Heightfield.html">Heightfield</a></li>
+            
                 <li><a href="../classes/Island.html">Island</a></li>
             
-                <li><a href="../classes/IslandSolver.html">IslandSolver</a></li>
+                <li><a href="../classes/IslandManager.html">IslandManager</a></li>
+            
+                <li><a href="../classes/IslandNode.html">IslandNode</a></li>
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
-            
-                <li><a href="../classes/mat2.html">mat2</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
@@ -91,8 +99,6 @@
             
                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
             
-                <li><a href="../classes/QuadTree.html">QuadTree</a></li>
-            
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
@@ -101,7 +107,7 @@
             
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
-                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
+                <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -158,14 +164,16 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
-var Shape = require(&#x27;./Shape&#x27;);
+var Shape =  require(&#x27;./Shape&#x27;)
+,    vec2 =  require(&#x27;../math/vec2&#x27;)
+,    Utils = require(&#x27;../utils/Utils&#x27;)
 
 module.exports = Plane;
 
 /**
  * Plane shape class. The plane is facing in the Y direction.
  * @class Plane
- * @extends {Shape}
+ * @extends Shape
  * @constructor
  */
 function Plane(){
@@ -187,6 +195,48 @@ Plane.prototype.computeMomentOfInertia = function(mass){
  */
 Plane.prototype.updateBoundingRadius = function(){
     this.boundingRadius = Number.MAX_VALUE;
+};
+
+/**
+ * @method computeAABB
+ * @param  {AABB}   out
+ * @param  {Array}  position
+ * @param  {Number} angle
+ */
+Plane.prototype.computeAABB = function(out, position, angle){
+    var a = 0,
+        set = vec2.set;
+    if(typeof(angle) == &quot;number&quot;)
+        a = angle % (2*Math.PI);
+
+    if(a == 0){
+        // y goes from -inf to 0
+        set(out.lowerBound, -Number.MAX_VALUE, -Number.MAX_VALUE);
+        set(out.upperBound,  Number.MAX_VALUE,  0);
+    } else if(a == Math.PI / 2){
+        // x goes from 0 to inf
+        set(out.lowerBound,                 0, -Number.MAX_VALUE);
+        set(out.upperBound,  Number.MAX_VALUE,  Number.MAX_VALUE);
+    } else if(a == Math.PI){
+        // y goes from 0 to inf
+        set(out.lowerBound, -Number.MAX_VALUE, 0);
+        set(out.upperBound,  Number.MAX_VALUE, Number.MAX_VALUE);
+    } else if(a == 3*Math.PI/2){
+        // x goes from -inf to 0
+        set(out.lowerBound, -Number.MAX_VALUE, -Number.MAX_VALUE);
+        set(out.upperBound,                 0,  Number.MAX_VALUE);
+    } else {
+        // Set max bounds
+        set(out.lowerBound, -Number.MAX_VALUE, -Number.MAX_VALUE);
+        set(out.upperBound,  Number.MAX_VALUE,  Number.MAX_VALUE);
+    }
+
+    vec2.add(out.lowerBound, out.lowerBound, position);
+    vec2.add(out.upperBound, out.upperBound, position);
+};
+
+Plane.prototype.updateArea = function(){
+    this.area = Number.MAX_VALUE;
 };
 
 

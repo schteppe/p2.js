@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>GSSolver - p2.js</title>
+    <title>IslandManager - p2.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -160,7 +160,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>GSSolver Class</h1>
+                        <h1>IslandManager Class</h1>
 <div class="box meta">
     
 
@@ -172,7 +172,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_solver_GSSolver.js.html#l8"><code>src&#x2F;solver&#x2F;GSSolver.js:8</code></a>
+            Defined in: <a href="../files/src_world_IslandManager.js.html#l8"><code>src&#x2F;world&#x2F;IslandManager.js:8</code></a>
         </div>
     
 
@@ -184,15 +184,15 @@
 
 
 <div class="box intro">
-    <p>Iterative Gauss-Seidel constraint equation solver.</p>
+    <p>Splits the system of bodies and equations into independent islands</p>
 
 </div>
 
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_GSSolver" class="method item">
-    <h3 class="name"><code>GSSolver</code></h3>
+        <div id="method_IslandManager" class="method item">
+    <h3 class="name"><code>IslandManager</code></h3>
 
     
         <div class="args">
@@ -233,7 +233,7 @@
             
         
         
-        <a href="../files/src_solver_GSSolver.js.html#l8"><code>src&#x2F;solver&#x2F;GSSolver.js:8</code></a>
+        <a href="../files/src_world_IslandManager.js.html#l8"><code>src&#x2F;world&#x2F;IslandManager.js:8</code></a>
         
         </p>
 
@@ -266,38 +266,6 @@
                          
                     </div>
 
-                    
-                        <ul class="params-list">
-                            
-                            <li class="param">
-                                
-                                    <code class="param-name optional">[iterations=10]</code>
-                                    <span class="type">Number</span>
-                                    <span class="flag optional" title="This parameter is optional.">optional</span>
-                                
-
-                                <div class="param-description">
-                                    
-                                </div>
-
-                                
-                            </li>
-                            
-                            <li class="param">
-                                
-                                    <code class="param-name optional">[tolerance=0]</code>
-                                    <span class="type">Number</span>
-                                    <span class="flag optional" title="This parameter is optional.">optional</span>
-                                
-
-                                <div class="param-description">
-                                    
-                                </div>
-
-                                
-                            </li>
-                            
-                        </ul>
                     
                 </li>
             
@@ -351,9 +319,25 @@
                                 
                             </li>
                         
+                            <li class="index-item method">
+                                <a href="#method_bfs">bfs</a>
+
+                                
+                                
+                            </li>
+                        
                             <li class="index-item method inherited">
                                 <a href="#method_emit">emit</a>
 
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_getUnvisitedNode">getUnvisitedNode</a>
+
+                                
+                                    <span class="flag static">static</span>
                                 
                                 
                             </li>
@@ -414,6 +398,20 @@
                                 
                             </li>
                         
+                            <li class="index-item method">
+                                <a href="#method_split">split</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_visit">visit</a>
+
+                                
+                                
+                            </li>
+                        
                     </ul>
                 </div>
             
@@ -439,35 +437,21 @@
                             </li>
                         
                             <li class="index-item property">
-                                <a href="#property_frictionIterations">frictionIterations</a>
+                                <a href="#property_islands">islands</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item property">
-                                <a href="#property_iterations">iterations</a>
+                                <a href="#property_nodes">nodes</a>
 
                                 
                                 
                             </li>
                         
-                            <li class="index-item property">
-                                <a href="#property_tolerance">tolerance</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_usedIterations">usedIterations</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_useZeroRHS">useZeroRHS</a>
+                            <li class="index-item property private">
+                                <a href="#property_queue">queue</a>
 
                                 
                                 
@@ -657,6 +641,139 @@
 </div>
 
                 
+                    <div id="method_bfs" class="method item">
+    <h3 class="name"><code>bfs</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>root</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>bds</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>eqs</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_IslandManager.js.html#l84"><code>src&#x2F;world&#x2F;IslandManager.js:84</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Runs the search algorithm, starting at a root node. The resulting bodies and equations will be stored in the provided arrays.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">root</code>
+                        <span class="type"><a href="../classes/IslandNode.html" class="crosslink">IslandNode</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The node to start from</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">bds</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>An array to append resulting Bodies to.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">eqs</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>An array to append resulting Equations to.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
                     <div id="method_emit" class="method item inherited">
     <h3 class="name"><code>emit</code></h3>
 
@@ -767,6 +884,114 @@
                         <span class="type"><a href="../classes/EventEmitter.html" class="crosslink">EventEmitter</a></span>:
                     
                     <p>The self object, for chainability.</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_getUnvisitedNode" class="method item">
+    <h3 class="name"><code>getUnvisitedNode</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>nodes</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/IslandNode.html" class="crosslink">IslandNode</a> | Boolean</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_IslandManager.js.html#l48"><code>src&#x2F;world&#x2F;IslandManager.js:48</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Get an unvisited node from a list of nodes.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">nodes</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/IslandNode.html" class="crosslink">IslandNode</a> | Boolean</span>:
+                    
+                    <p>The node if found, else false.</p>
 
                 
             </div>
@@ -1284,7 +1509,7 @@
 </div>
 
                 
-                    <div id="method_solve" class="method item">
+                    <div id="method_solve" class="method item inherited">
     <h3 class="name"><code>solve</code></h3>
 
     
@@ -1293,7 +1518,7 @@
             
                 <li class="arg">
                     
-                        <code>h</code>
+                        <code>dt</code>
                     
                 </li>
             
@@ -1323,16 +1548,13 @@
 
     <div class="meta">
         
-            <p>Inherited from
-            <a href="../classes/Solver.html#method_solve">
-                Solver
-            </a>
             
-            but overwritten in
+                <p>Inherited from
+                <a href="../classes/Solver.html#method_solve">Solver</a>:
             
         
         
-        <a href="../files/src_solver_GSSolver.js.html#l70"><code>src&#x2F;solver&#x2F;GSSolver.js:70</code></a>
+        <a href="../files/src_solver_Solver.js.html#l36"><code>src&#x2F;solver&#x2F;Solver.js:36</code></a>
         
         </p>
 
@@ -1343,7 +1565,7 @@
     </div>
 
     <div class="description">
-        <p>Solve the system of equations</p>
+        <p>Method to be implemented in each subclass</p>
 
     </div>
 
@@ -1355,15 +1577,14 @@
             
                 <li class="param">
                     
-                        <code class="param-name">h</code>
+                        <code class="param-name">dt</code>
                         <span class="type">Number</span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>Time step</p>
-
+                         
                     </div>
 
                     
@@ -1378,8 +1599,7 @@
                     
 
                     <div class="param-description">
-                        <p>World to solve</p>
-
+                         
                     </div>
 
                     
@@ -1553,6 +1773,242 @@
 </div>
 
                 
+                    <div id="method_split" class="method item">
+    <h3 class="name"><code>split</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>world</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Array</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_IslandManager.js.html#l122"><code>src&#x2F;world&#x2F;IslandManager.js:122</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Split the world into independent islands. The result is stored in .islands.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">world</code>
+                        <span class="type"><a href="../classes/World.html" class="crosslink">World</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Array</span>:
+                    
+                    <p>The generated islands</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_visit" class="method item">
+    <h3 class="name"><code>visit</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>node</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>bds</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>eqs</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_IslandManager.js.html#l66"><code>src&#x2F;world&#x2F;IslandManager.js:66</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Visit a node.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">node</code>
+                        <span class="type"><a href="../classes/IslandNode.html" class="crosslink">IslandNode</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">bds</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">eqs</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
             </div>
         
 
@@ -1561,7 +2017,7 @@
                 <h2 class="off-left">Properties</h2>
 
                 
-                    <div id="property_equations" class="property item inherited">
+                    <div id="property_equations" class="property item">
     <h3 class="name"><code>equations</code></h3>
     <span class="type">Array</span>
 
@@ -1575,13 +2031,16 @@
 
     <div class="meta">
         
+            <p>Inherited from
+            <a href="../classes/Solver.html#property_equations">
+                Solver
+            </a>
             
-                <p>Inherited from
-                <a href="../classes/Solver.html#property_equations">Solver</a>:
+            but overwritten in
             
         
         
-        <a href="../files/src_solver_Solver.js.html#l19"><code>src&#x2F;solver&#x2F;Solver.js:19</code></a>
+        <a href="../files/src_world_IslandManager.js.html#l22"><code>src&#x2F;world&#x2F;IslandManager.js:22</code></a>
         
         </p>
 
@@ -1591,7 +2050,7 @@
     </div>
 
     <div class="description">
-        <p>Current equations in the solver.</p>
+        <p>The equations to split. Manually fill this array before running .split().</p>
 
     </div>
 
@@ -1645,9 +2104,9 @@
 </div>
 
                 
-                    <div id="property_frictionIterations" class="property item">
-    <h3 class="name"><code>frictionIterations</code></h3>
-    <span class="type">Number</span>
+                    <div id="property_islands" class="property item">
+    <h3 class="name"><code>islands</code></h3>
+    <span class="type">Array</span>
 
     
 
@@ -1668,7 +2127,7 @@
             
         
         
-        <a href="../files/src_solver_GSSolver.js.html#l48"><code>src&#x2F;solver&#x2F;GSSolver.js:48</code></a>
+        <a href="../files/src_world_IslandManager.js.html#l28"><code>src&#x2F;world&#x2F;IslandManager.js:28</code></a>
         
         </p>
 
@@ -1678,8 +2137,7 @@
     </div>
 
     <div class="description">
-        <p>Number of solver iterations that are done to approximate normal forces. When these iterations are done, friction force will be computed from the contact normal forces. These friction forces will override any other friction forces set from the World for example.
-The solver will use less iterations if the solution is below the .tolerance.</p>
+        <p>The resulting <a href="../classes/Island.html" class="crosslink">Island</a>s.</p>
 
     </div>
 
@@ -1691,9 +2149,9 @@ The solver will use less iterations if the solution is below the .tolerance.</p>
 </div>
 
                 
-                    <div id="property_iterations" class="property item">
-    <h3 class="name"><code>iterations</code></h3>
-    <span class="type">Number</span>
+                    <div id="property_nodes" class="property item">
+    <h3 class="name"><code>nodes</code></h3>
+    <span class="type">Array</span>
 
     
 
@@ -1714,7 +2172,7 @@ The solver will use less iterations if the solution is below the .tolerance.</p>
             
         
         
-        <a href="../files/src_solver_GSSolver.js.html#l22"><code>src&#x2F;solver&#x2F;GSSolver.js:22</code></a>
+        <a href="../files/src_world_IslandManager.js.html#l34"><code>src&#x2F;world&#x2F;IslandManager.js:34</code></a>
         
         </p>
 
@@ -1724,7 +2182,7 @@ The solver will use less iterations if the solution is below the .tolerance.</p>
     </div>
 
     <div class="description">
-        <p>The number of iterations to do when solving. More gives better results, but is more expensive.</p>
+        <p>The resulting graph nodes.</p>
 
     </div>
 
@@ -1736,57 +2194,14 @@ The solver will use less iterations if the solution is below the .tolerance.</p>
 </div>
 
                 
-                    <div id="property_tolerance" class="property item">
-    <h3 class="name"><code>tolerance</code></h3>
-    <span class="type">Number</span>
+                    <div id="property_queue" class="property item private">
+    <h3 class="name"><code>queue</code></h3>
+    <span class="type">Array</span>
 
     
 
     
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_solver_GSSolver.js.html#l29"><code>src&#x2F;solver&#x2F;GSSolver.js:29</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>The error tolerance, per constraint. If the total error is below this limit, the solver will stop iterating. Set to zero for as good solution as possible, but to something larger than zero to make computations faster.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_usedIterations" class="property item">
-    <h3 class="name"><code>usedIterations</code></h3>
-    <span class="type">Number</span>
-
-    
-
+        <span class="flag private">private</span>
     
 
     
@@ -1804,7 +2219,7 @@ The solver will use less iterations if the solution is below the .tolerance.</p>
             
         
         
-        <a href="../files/src_solver_GSSolver.js.html#l56"><code>src&#x2F;solver&#x2F;GSSolver.js:56</code></a>
+        <a href="../files/src_world_IslandManager.js.html#l40"><code>src&#x2F;world&#x2F;IslandManager.js:40</code></a>
         
         </p>
 
@@ -1814,52 +2229,7 @@ The solver will use less iterations if the solution is below the .tolerance.</p>
     </div>
 
     <div class="description">
-        <p>The number of iterations that were made during the last solve. If .tolerance is zero, this value will always be equal to .iterations, but if .tolerance is larger than zero, and the solver can quit early, then this number will be somewhere between 1 and .iterations.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_useZeroRHS" class="property item">
-    <h3 class="name"><code>useZeroRHS</code></h3>
-    <span class="type">Boolean</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_solver_GSSolver.js.html#l41"><code>src&#x2F;solver&#x2F;GSSolver.js:41</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Set to true to set all right hand side terms to zero when solving. Can be handy for a few applications.</p>
+        <p>The node queue, used when traversing the graph of nodes.</p>
 
     </div>
 

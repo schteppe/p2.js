@@ -41,6 +41,10 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/AABB.html">AABB</a></li>
+            
+                <li><a href="../classes/AngleLockEquation.html">AngleLockEquation</a></li>
+            
                 <li><a href="../classes/Body.html">Body</a></li>
             
                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
@@ -65,19 +69,23 @@
             
                 <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
             
+                <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
+            
                 <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
             
+                <li><a href="../classes/Heightfield.html">Heightfield</a></li>
+            
                 <li><a href="../classes/Island.html">Island</a></li>
             
-                <li><a href="../classes/IslandSolver.html">IslandSolver</a></li>
+                <li><a href="../classes/IslandManager.html">IslandManager</a></li>
+            
+                <li><a href="../classes/IslandNode.html">IslandNode</a></li>
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
-            
-                <li><a href="../classes/mat2.html">mat2</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
@@ -91,8 +99,6 @@
             
                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
             
-                <li><a href="../classes/QuadTree.html">QuadTree</a></li>
-            
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
@@ -101,7 +107,7 @@
             
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
-                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
+                <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -161,7 +167,7 @@
 var vec2 = require(&#x27;../math/vec2&#x27;)
 ,   Solver = require(&#x27;./Solver&#x27;)
 ,   Utils = require(&#x27;../utils/Utils&#x27;)
-,   FrictionEquation = require(&#x27;../constraints/FrictionEquation&#x27;)
+,   FrictionEquation = require(&#x27;../equations/FrictionEquation&#x27;);
 
 module.exports = GSSolver;
 
@@ -172,14 +178,11 @@ module.exports = GSSolver;
  * @constructor
  * @extends Solver
  * @param {Object} [options]
- * @param {Number} options.iterations
- * @param {Number} options.timeStep
- * @param {Number} options.stiffness
- * @param {Number} options.relaxation
- * @param {Number} options.tolerance
+ * @param {Number} [options.iterations=10]
+ * @param {Number} [options.tolerance=0]
  */
 function GSSolver(options){
-    Solver.call(this,options);
+    Solver.call(this,options,Solver.GS);
     options = options || {};
 
     /**
@@ -190,38 +193,16 @@ function GSSolver(options){
     this.iterations = options.iterations || 10;
 
     /**
-     * The error tolerance. If the total error is below this limit, the solver will stop. Set to zero for as good solution as possible.
+     * The error tolerance, per constraint. If the total error is below this limit, the solver will stop iterating. Set to zero for as good solution as possible, but to something larger than zero to make computations faster.
      * @property tolerance
      * @type {Number}
      */
-    this.tolerance = options.tolerance || 0;
+    this.tolerance = options.tolerance || 1e-10;
 
-    this.debug = options.debug || false;
     this.arrayStep = 30;
     this.lambda = new Utils.ARRAY_TYPE(this.arrayStep);
     this.Bs =     new Utils.ARRAY_TYPE(this.arrayStep);
     this.invCs =  new Utils.ARRAY_TYPE(this.arrayStep);
-
-    /**
-     * Whether to use .stiffness and .relaxation parameters from the Solver instead of each Equation individually.
-     * @type {Boolean}
-     * @property useGlobalEquationParameters
-     */
-    this.useGlobalEquationParameters = true;
-
-    /**
-     * Global equation stiffness. Larger number gives harder contacts, etc, but may also be more expensive to compute, or it will make your simulation explode.
-     * @property stiffness
-     * @type {Number}
-     */
-    this.stiffness = 1e6;
-
-    /**
-     * Global equation relaxation. This is the number of timesteps required for a constraint to be resolved. Larger number will give softer contacts. Set to around 3 or 4 for good enough results.
-     * @property relaxation
-     * @type {Number}
-     */
-    this.relaxation = 4;
 
     /**
      * Set to true to set all right hand side terms to zero when solving. Can be handy for a few applications.
@@ -231,80 +212,120 @@ function GSSolver(options){
     this.useZeroRHS = false;
 
     /**
-     * Number of friction iterations to skip. If .skipFrictionIterations=2, then no FrictionEquations will be iterated until the third iteration.
-     * @property skipFrictionIterations
+     * Number of solver iterations that are done to approximate normal forces. When these iterations are done, friction force will be computed from the contact normal forces. These friction forces will override any other friction forces set from the World for example.
+     * The solver will use less iterations if the solution is below the .tolerance.
+     * @property frictionIterations
      * @type {Number}
      */
-    this.skipFrictionIterations = 2;
-};
+    this.frictionIterations = 0;
+
+    /**
+     * The number of iterations that were made during the last solve. If .tolerance is zero, this value will always be equal to .iterations, but if .tolerance is larger than zero, and the solver can quit early, then this number will be somewhere between 1 and .iterations.
+     * @property {Number} usedIterations
+     */
+    this.usedIterations = 0;
+}
 GSSolver.prototype = new Solver();
+
+function setArrayZero(array){
+    for(var i=0; i!==array.length; i++){
+        array[i] = 0.0;
+    }
+}
 
 /**
  * Solve the system of equations
  * @method solve
- * @param  {Number}  dt       Time step
+ * @param  {Number}  h       Time step
  * @param  {World}   world    World to solve
  */
-GSSolver.prototype.solve = function(dt,world){
+GSSolver.prototype.solve = function(h, world){
 
     this.sortEquations();
 
     var iter = 0,
         maxIter = this.iterations,
-        skipFrictionIter = this.skipFrictionIterations,
-        tolSquared = this.tolerance*this.tolerance,
+        maxFrictionIter = this.frictionIterations,
         equations = this.equations,
         Neq = equations.length,
+        tolSquared = Math.pow(this.tolerance*Neq, 2),
         bodies = world.bodies,
         Nbodies = world.bodies.length,
-        h = dt,
-        d = this.relaxation,
-        k = this.stiffness,
-        eps = 4.0 / (h * h * k * (1 + 4 * d)),
-        a = 4.0 / (h * (1 + 4 * d)),
-        b = (4.0 * d) / (1 + 4 * d),
-        useGlobalParams = this.useGlobalEquationParameters,
         add = vec2.add,
         set = vec2.set,
-        useZeroRHS = this.useZeroRHS;
+        useZeroRHS = this.useZeroRHS,
+        lambda = this.lambda;
+
+    this.usedIterations = 0;
 
     // Things that does not change during iteration can be computed once
-    if(this.lambda.length &lt; Neq){
-        this.lambda = new Utils.ARRAY_TYPE(Neq + this.arrayStep);
-        this.Bs =     new Utils.ARRAY_TYPE(Neq + this.arrayStep);
-        this.invCs =  new Utils.ARRAY_TYPE(Neq + this.arrayStep);
+    if(lambda.length &lt; Neq){
+        lambda = this.lambda =  new Utils.ARRAY_TYPE(Neq + this.arrayStep);
+        this.Bs =               new Utils.ARRAY_TYPE(Neq + this.arrayStep);
+        this.invCs =            new Utils.ARRAY_TYPE(Neq + this.arrayStep);
     }
+    setArrayZero(lambda);
     var invCs = this.invCs,
         Bs = this.Bs,
         lambda = this.lambda;
-    for(var i=0; i!==Neq; i++){
-        var c = equations[i];
-        lambda[i] = 0.0;
 
-        var _a = a,
-            _b = b,
-            _eps = eps;
-        if(!useGlobalParams){
-            if(h !== c.h) c.updateSpookParams(h);
-            _a = c.a;
-            _b = c.b;
-            _eps = c.eps;
+    for(var i=0; i!==equations.length; i++){
+        var c = equations[i];
+        if(c.timeStep !== h || c.needsUpdate){
+            c.timeStep = h;
+            c.update();
         }
-        Bs[i] = c.computeB(_a,_b,h);
-        invCs[i] = 1.0 / c.computeC(_eps);
+        Bs[i] =     c.computeB(c.a,c.b,h);
+        invCs[i] =  c.computeInvC(c.epsilon);
     }
 
-    var q, B, c, invC, deltalambda, deltalambdaTot, GWlambda, lambdaj;
+    var q, B, c, deltalambdaTot,i,j;
 
     if(Neq !== 0){
-        var i,j, minForce, maxForce, lambdaj_plus_deltalambda;
 
         // Reset vlambda
         for(i=0; i!==Nbodies; i++){
             bodies[i].resetConstraintVelocity();
         }
 
-        // Iterate over equations
+        if(maxFrictionIter){
+            // Iterate over contact equations to get normal forces
+            for(iter=0; iter!==maxFrictionIter; iter++){
+
+                // Accumulate the total error for each iteration.
+                deltalambdaTot = 0.0;
+
+                for(j=0; j!==Neq; j++){
+                    c = equations[j];
+
+                    if(c instanceof FrictionEquation){
+                        //continue;
+                    }
+
+                    var deltalambda = GSSolver.iterateEquation(j,c,c.epsilon,Bs,invCs,lambda,useZeroRHS,h,iter);
+                    deltalambdaTot += Math.abs(deltalambda);
+                }
+
+                this.usedIterations++;
+
+                // If the total error is small enough - stop iterate
+                if(deltalambdaTot*deltalambdaTot &lt;= tolSquared){
+                    break;
+                }
+            }
+
+            // Set computed friction force
+            for(j=0; j!==Neq; j++){
+                var eq = equations[j];
+                if(eq instanceof FrictionEquation){
+                    var f = eq.contactEquation.multiplier * eq.frictionCoefficient;
+                    eq.maxForce =  f;
+                    eq.minForce = -f;
+                }
+            }
+        }
+
+        // Iterate over all equations
         for(iter=0; iter!==maxIter; iter++){
 
             // Accumulate the total error for each iteration.
@@ -313,17 +334,16 @@ GSSolver.prototype.solve = function(dt,world){
             for(j=0; j!==Neq; j++){
                 c = equations[j];
 
-                if(c instanceof FrictionEquation &amp;&amp; iter &lt; skipFrictionIter)
-                    continue;
-
-                var _eps = useGlobalParams ? eps : c.eps;
-
-                var deltalambda = GSSolver.iterateEquation(j,c,_eps,Bs,invCs,lambda,useZeroRHS,dt);
-                if(tolSquared !== 0) deltalambdaTot += Math.abs(deltalambda);
+                var deltalambda = GSSolver.iterateEquation(j,c,c.epsilon,Bs,invCs,lambda,useZeroRHS,h,iter);
+                deltalambdaTot += Math.abs(deltalambda);
             }
 
+            this.usedIterations++;
+
             // If the total error is small enough - stop iterate
-            if(tolSquared !== 0 &amp;&amp; deltalambdaTot*deltalambdaTot &lt;= tolSquared) break;
+            if(deltalambdaTot*deltalambdaTot &lt;= tolSquared){
+                break;
+            }
         }
 
         // Add result to velocity
@@ -331,35 +351,30 @@ GSSolver.prototype.solve = function(dt,world){
             bodies[i].addConstraintVelocity();
         }
     }
-    errorTot = deltalambdaTot;
 };
 
-GSSolver.iterateEquation = function(j,eq,eps,Bs,invCs,lambda,useZeroRHS,dt){
+GSSolver.iterateEquation = function(j,eq,eps,Bs,invCs,lambda,useZeroRHS,dt,iter){
     // Compute iteration
     var B = Bs[j],
         invC = invCs[j],
         lambdaj = lambda[j],
-        GWlambda = eq.computeGWlambda(eps);
-
-    if(eq instanceof FrictionEquation){
-        // Rescale the max friction force according to the normal force
-        eq.maxForce =  eq.contactEquation.multiplier * eq.frictionCoefficient * dt;
-        eq.minForce = -eq.contactEquation.multiplier * eq.frictionCoefficient * dt;
-    }
+        GWlambda = eq.computeGWlambda();
 
     var maxForce = eq.maxForce,
         minForce = eq.minForce;
 
-    if(useZeroRHS) B = 0;
+    if(useZeroRHS){
+        B = 0;
+    }
 
     var deltalambda = invC * ( B - GWlambda - eps * lambdaj );
 
     // Clamp if we are not within the min/max interval
     var lambdaj_plus_deltalambda = lambdaj + deltalambda;
-    if(lambdaj_plus_deltalambda &lt; minForce){
-        deltalambda = minForce - lambdaj;
-    } else if(lambdaj_plus_deltalambda &gt; maxForce){
-        deltalambda = maxForce - lambdaj;
+    if(lambdaj_plus_deltalambda &lt; minForce*dt){
+        deltalambda = minForce*dt - lambdaj;
+    } else if(lambdaj_plus_deltalambda &gt; maxForce*dt){
+        deltalambda = maxForce*dt - lambdaj;
     }
     lambda[j] += deltalambda;
     eq.multiplier = lambda[j] / dt;

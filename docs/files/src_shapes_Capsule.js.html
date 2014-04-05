@@ -41,6 +41,10 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/AABB.html">AABB</a></li>
+            
+                <li><a href="../classes/AngleLockEquation.html">AngleLockEquation</a></li>
+            
                 <li><a href="../classes/Body.html">Body</a></li>
             
                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
@@ -65,19 +69,23 @@
             
                 <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
             
+                <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
+            
                 <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
             
+                <li><a href="../classes/Heightfield.html">Heightfield</a></li>
+            
                 <li><a href="../classes/Island.html">Island</a></li>
             
-                <li><a href="../classes/IslandSolver.html">IslandSolver</a></li>
+                <li><a href="../classes/IslandManager.html">IslandManager</a></li>
+            
+                <li><a href="../classes/IslandNode.html">IslandNode</a></li>
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
-            
-                <li><a href="../classes/mat2.html">mat2</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
@@ -91,8 +99,6 @@
             
                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
             
-                <li><a href="../classes/QuadTree.html">QuadTree</a></li>
-            
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
@@ -101,7 +107,7 @@
             
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
-                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
+                <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -159,7 +165,7 @@
 <div class="file">
     <pre class="code prettyprint linenums">
 var Shape = require(&#x27;./Shape&#x27;)
-,   vec2 = require(&#x27;../math/vec2&#x27;)
+,   vec2 = require(&#x27;../math/vec2&#x27;);
 
 module.exports = Capsule;
 
@@ -167,16 +173,26 @@ module.exports = Capsule;
  * Capsule shape class.
  * @class Capsule
  * @constructor
- * @extends {Shape}
- * @param {Number} length The distance between the end points
- * @param {Number} radius Radius of the capsule
+ * @extends Shape
+ * @param {Number} [length] The distance between the end points
+ * @param {Number} [radius] Radius of the capsule
  */
 function Capsule(length,radius){
+
+    /**
+     * The distance between the end points.
+     * @property {Number} length
+     */
     this.length = length || 1;
+
+    /**
+     * The radius of the capsule.
+     * @property {Number} radius
+     */
     this.radius = radius || 1;
 
     Shape.call(this,Shape.CAPSULE);
-};
+}
 Capsule.prototype = new Shape();
 
 /**
@@ -194,8 +210,44 @@ Capsule.prototype.computeMomentOfInertia = function(mass){
     return mass * (h*h + w*w) / 12;
 };
 
+/**
+ * @method updateBoundingRadius
+ */
 Capsule.prototype.updateBoundingRadius = function(){
     this.boundingRadius = this.radius + this.length/2;
+};
+
+/**
+ * @method updateArea
+ */
+Capsule.prototype.updateArea = function(){
+    this.area = Math.PI * this.radius * this.radius + this.radius * 2 * this.length;
+};
+
+var r = vec2.create();
+
+/**
+ * @method computeAABB
+ * @param  {AABB}   out      The resulting AABB.
+ * @param  {Array}  position
+ * @param  {Number} angle
+ */
+Capsule.prototype.computeAABB = function(out, position, angle){
+    var radius = this.radius;
+
+    // Compute center position of one of the the circles, world oriented, but with local offset
+    vec2.set(r,this.length,0);
+    vec2.rotate(r,r,angle);
+
+    // Get bounds
+    vec2.set(out.upperBound,  Math.max(r[0]+radius, -r[0]+radius),
+                              Math.max(r[1]+radius, -r[1]+radius));
+    vec2.set(out.lowerBound,  Math.min(r[0]-radius, -r[0]-radius),
+                              Math.min(r[1]-radius, -r[1]-radius));
+
+    // Add offset
+    vec2.add(out.lowerBound, out.lowerBound, position);
+    vec2.add(out.upperBound, out.upperBound, position);
 };
 
     </pre>

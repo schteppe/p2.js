@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/solver/IslandSolver.js - p2.js</title>
+    <title>src/shapes/Heightfield.js - p2.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -41,6 +41,10 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/AABB.html">AABB</a></li>
+            
+                <li><a href="../classes/AngleLockEquation.html">AngleLockEquation</a></li>
+            
                 <li><a href="../classes/Body.html">Body</a></li>
             
                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
@@ -65,19 +69,23 @@
             
                 <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
             
+                <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
+            
                 <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
             
+                <li><a href="../classes/Heightfield.html">Heightfield</a></li>
+            
                 <li><a href="../classes/Island.html">Island</a></li>
             
-                <li><a href="../classes/IslandSolver.html">IslandSolver</a></li>
+                <li><a href="../classes/IslandManager.html">IslandManager</a></li>
+            
+                <li><a href="../classes/IslandNode.html">IslandNode</a></li>
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
-            
-                <li><a href="../classes/mat2.html">mat2</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
@@ -91,8 +99,6 @@
             
                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
             
-                <li><a href="../classes/QuadTree.html">QuadTree</a></li>
-            
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
@@ -101,7 +107,7 @@
             
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
-                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
+                <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -154,183 +160,84 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: src/solver/IslandSolver.js</h1>
+                        <h1 class="file-heading">File: src/shapes/Heightfield.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
-var Solver = require(&#x27;./Solver&#x27;)
-,   vec2 = require(&#x27;../math/vec2&#x27;)
-,   Island = require(&#x27;../solver/Island&#x27;)
-,   Body = require(&#x27;../objects/Body&#x27;)
-,   STATIC = Body.STATIC
+var Shape = require(&#x27;./Shape&#x27;)
+,    vec2 = require(&#x27;../math/vec2&#x27;);
 
-module.exports = IslandSolver;
+module.exports = Heightfield;
 
 /**
- * Splits the system of bodies and equations into independent islands
- *
- * @class IslandSolver
+ * Heightfield shape class. Height data is given as an array. These data points are spread out evenly with a distance &quot;elementWidth&quot;.
+ * @class Heightfield
+ * @extends Shape
  * @constructor
- * @param {Solver} subsolver
- * @param {Object} options
- * @extends Solver
+ * @param {Array} data
+ * @param {Number} maxValue
+ * @param {Number} elementWidth
+ * @todo Should take maxValue as an option and also be able to compute it itself if not given.
+ * @todo Should be possible to use along all axes, not just y
  */
-function IslandSolver(subsolver,options){
-    Solver.call(this,options);
-    var that = this;
+function Heightfield(data,maxValue,elementWidth){
 
     /**
-     * The solver used in the workers.
-     * @property subsolver
-     * @type {Solver}
+     * An array of numbers, or height values, that are spread out along the x axis.
+     * @property {array} data
      */
-    this.subsolver = subsolver;
+    this.data = data;
 
     /**
-     * Number of islands. Read only.
-     * @property numIslands
-     * @type {number}
+     * Max value of the data
+     * @property {number} maxValue
      */
-    this.numIslands = 0;
-
-    // Pooling of node objects saves some GC load
-    this._nodePool = [];
+    this.maxValue = maxValue;
 
     /**
-     * Fires before an island is solved.
-     * @event beforeSolveIsland
-     * @param {Island} island
+     * The width of each element
+     * @property {number} elementWidth
      */
-    this.beforeSolveIslandEvent = {
-        type : &quot;beforeSolveIsland&quot;,
-        island : null,
-    };
-};
-IslandSolver.prototype = new Solver();
+    this.elementWidth = elementWidth;
 
-function getUnvisitedNode(nodes){
-    var Nnodes = nodes.length;
-    for(var i=0; i!==Nnodes; i++){
-        var node = nodes[i];
-        if(!node.visited &amp;&amp; !(node.body.motionState &amp; STATIC)){ // correct?
-            return node;
-        }
-    }
-    return false;
+    Shape.call(this,Shape.HEIGHTFIELD);
 }
-
-function bfs(root,visitFunc){
-    var queue = [];
-    queue.push(root);
-    root.visited = true;
-    visitFunc(root);
-    while(queue.length) {
-        var node = queue.pop();
-        // Loop over unvisited child nodes
-        var child;
-        while((child = getUnvisitedNode(node.children))) {
-            child.visited = true;
-            visitFunc(child);
-            queue.push(child);
-        }
-    }
-}
+Heightfield.prototype = new Shape();
 
 /**
- * Solves the full system.
- * @method solve
- * @param  {Number} dt
- * @param  {World} world
+ * @method computeMomentOfInertia
+ * @param  {Number} mass
+ * @return {Number}
  */
-IslandSolver.prototype.solve = function(dt,world){
-    var nodes = [],
-        bodies=world.bodies,
-        equations=this.equations,
-        Neq=equations.length,
-        Nbodies=bodies.length,
-        subsolver=this.subsolver,
-        workers = this._workers,
-        workerData = this._workerData,
-        workerIslandGroups = this._workerIslandGroups;
+Heightfield.prototype.computeMomentOfInertia = function(mass){
+    return Number.MAX_VALUE;
+};
 
-    // Create needed nodes, reuse if possible
-    for(var i=0; i!==Nbodies; i++){
-        if(this._nodePool.length)
-            nodes.push( this._nodePool.pop() );
-        else {
-            nodes.push({
-                body:bodies[i],
-                children:[],
-                eqs:[],
-                visited:false
-            });
-        }
+Heightfield.prototype.updateBoundingRadius = function(){
+    this.boundingRadius = Number.MAX_VALUE;
+};
+
+Heightfield.prototype.updateArea = function(){
+    var data = this.data,
+        area = 0;
+    for(var i=0; i&lt;data.length-1; i++){
+        area += (data[i]+data[i+1]) / 2 * this.elementWidth;
     }
+    this.area = area;
+};
 
-    // Reset node values
-    for(var i=0; i!==Nbodies; i++){
-        var node = nodes[i];
-        node.body = bodies[i];
-        node.children.length = 0;
-        node.eqs.length = 0;
-        node.visited = false;
-    }
-
-    // Add connectivity data. Each equation connects 2 bodies.
-    for(var k=0; k!==Neq; k++){
-        var eq=equations[k],
-            i=bodies.indexOf(eq.bi),
-            j=bodies.indexOf(eq.bj),
-            ni=nodes[i],
-            nj=nodes[j];
-        ni.children.push(nj);
-        ni.eqs.push(eq);
-        nj.children.push(ni);
-        nj.eqs.push(eq);
-    }
-
-    // The BFS search algorithm needs a traversal function. What we do is gather all bodies and equations connected.
-    var child, n=0, eqs=[], bds=[];
-    function visitFunc(node){
-        bds.push(node.body);
-        var Neqs = node.eqs.length;
-        for(var i=0; i!==Neqs; i++){
-            var eq = node.eqs[i];
-            if(eqs.indexOf(eq) === -1){
-                eqs.push(eq);
-            }
-        }
-    }
-
-    // Get islands
-    var islands = [];
-    while((child = getUnvisitedNode(nodes))){
-        var island = new Island(); // @todo Should be reused from somewhere
-        eqs.length = 0;
-        bds.length = 0;
-        bfs(child,visitFunc); // run search algo to gather an island of bodies
-
-        // Add equations to island
-        var Neqs = eqs.length;
-        for(var i=0; i!==Neqs; i++){
-            var eq = eqs[i];
-            island.equations.push(eq);
-        }
-
-        n++;
-        islands.push(island);
-    }
-
-    this.numIslands = n;
-
-    // Solve islands
-    var e = this.beforeSolveIslandEvent;
-    for(var i=0; i&lt;islands.length; i++){
-        var island = islands[i];
-        e.island = island;
-        this.emit(e);
-        island.solve(dt,this.subsolver);
-    }
+/**
+ * @method computeAABB
+ * @param  {AABB}   out      The resulting AABB.
+ * @param  {Array}  position
+ * @param  {Number} angle
+ */
+Heightfield.prototype.computeAABB = function(out, position, angle){
+    // Use the max data rectangle
+    out.upperBound[0] = this.elementWidth * this.data.length + position[0];
+    out.upperBound[1] = this.maxValue + position[1];
+    out.lowerBound[0] = position[0];
+    out.lowerBound[1] = -Number.MAX_VALUE; // Infinity
 };
 
     </pre>

@@ -41,6 +41,10 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/AABB.html">AABB</a></li>
+            
+                <li><a href="../classes/AngleLockEquation.html">AngleLockEquation</a></li>
+            
                 <li><a href="../classes/Body.html">Body</a></li>
             
                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
@@ -65,19 +69,23 @@
             
                 <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
             
+                <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
+            
                 <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
             
+                <li><a href="../classes/Heightfield.html">Heightfield</a></li>
+            
                 <li><a href="../classes/Island.html">Island</a></li>
             
-                <li><a href="../classes/IslandSolver.html">IslandSolver</a></li>
+                <li><a href="../classes/IslandManager.html">IslandManager</a></li>
+            
+                <li><a href="../classes/IslandNode.html">IslandNode</a></li>
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
-            
-                <li><a href="../classes/mat2.html">mat2</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
@@ -91,8 +99,6 @@
             
                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
             
-                <li><a href="../classes/QuadTree.html">QuadTree</a></li>
-            
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
@@ -101,7 +107,7 @@
             
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
-                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
+                <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -158,6 +164,10 @@
 <div class="box meta">
     
 
+    
+        <div class="extends">
+            Extends <a href="../classes/EventEmitter.html" class="crosslink">EventEmitter</a>
+        </div>
     
 
     
@@ -278,7 +288,7 @@ shapes that are used for collisions.</p>
                             <li class="param">
                                 
                                     <code class="param-name optional">[position]</code>
-                                    <span class="type">Float32Array | Array</span>
+                                    <span class="type">Array</span>
                                     <span class="flag optional" title="This parameter is optional.">optional</span>
                                 
 
@@ -292,7 +302,7 @@ shapes that are used for collisions.</p>
                             <li class="param">
                                 
                                     <code class="param-name optional">[velocity]</code>
-                                    <span class="type">Float32Array | Array</span>
+                                    <span class="type">Array</span>
                                     <span class="flag optional" title="This parameter is optional.">optional</span>
                                 
 
@@ -334,7 +344,7 @@ shapes that are used for collisions.</p>
                             <li class="param">
                                 
                                     <code class="param-name optional">[force]</code>
-                                    <span class="type">Float32Array | Array</span>
+                                    <span class="type">Array</span>
                                     <span class="flag optional" title="This parameter is optional.">optional</span>
                                 
 
@@ -348,6 +358,20 @@ shapes that are used for collisions.</p>
                             <li class="param">
                                 
                                     <code class="param-name optional">[angularForce=0]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[fixedRotation=false]</code>
                                     <span class="type">Number</span>
                                     <span class="flag optional" title="This parameter is optional.">optional</span>
                                 
@@ -387,6 +411,8 @@ shapes that are used for collisions.</p>
         
         
         
+            <li class="api-class-tab events"><a href="#events">Events</a></li>
+        
     </ul>
 
     <div>
@@ -397,7 +423,7 @@ shapes that are used for collisions.</p>
                 <div class="index-section methods">
                     <h3>Methods</h3>
 
-                    <ul class="index-list methods">
+                    <ul class="index-list methods extends">
                         
                             <li class="index-item method">
                                 <a href="#method_addShape">addShape</a>
@@ -427,8 +453,43 @@ shapes that are used for collisions.</p>
                                 
                             </li>
                         
+                            <li class="index-item method inherited">
+                                <a href="#method_emit">emit</a>
+
+                                
+                                
+                            </li>
+                        
                             <li class="index-item method">
                                 <a href="#method_fromPolygon">fromPolygon</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_getArea">getArea</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_has">has</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_off">off</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_on">on</a>
 
                                 
                                 
@@ -442,7 +503,28 @@ shapes that are used for collisions.</p>
                             </li>
                         
                             <li class="index-item method">
+                                <a href="#method_setDensity">setDensity</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
                                 <a href="#method_setZeroForce">setZeroForce</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_sleep">sleep</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_sleepTick">sleepTick</a>
 
                                 
                                 
@@ -463,6 +545,13 @@ shapes that are used for collisions.</p>
                             </li>
                         
                             <li class="index-item method">
+                                <a href="#method_updateAABB">updateAABB</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
                                 <a href="#method_updateBoundingRadius">updateBoundingRadius</a>
 
                                 
@@ -476,6 +565,13 @@ shapes that are used for collisions.</p>
                                 
                             </li>
                         
+                            <li class="index-item method">
+                                <a href="#method_wakeUp">wakeUp</a>
+
+                                
+                                
+                            </li>
+                        
                     </ul>
                 </div>
             
@@ -484,7 +580,28 @@ shapes that are used for collisions.</p>
                 <div class="index-section properties">
                     <h3>Properties</h3>
 
-                    <ul class="index-list properties">
+                    <ul class="index-list properties extends">
+                        
+                            <li class="index-item property">
+                                <a href="#property_aabb">aabb</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_aabbNeedsUpdate">aabbNeedsUpdate</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_allowSleep">allowSleep</a>
+
+                                
+                                
+                            </li>
                         
                             <li class="index-item property">
                                 <a href="#property_angle">angle</a>
@@ -515,6 +632,15 @@ shapes that are used for collisions.</p>
                             </li>
                         
                             <li class="index-item property">
+                                <a href="#property_AWAKE">AWAKE</a>
+
+                                
+                                    <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
                                 <a href="#property_boundingRadius">boundingRadius</a>
 
                                 
@@ -538,7 +664,21 @@ shapes that are used for collisions.</p>
                             </li>
                         
                             <li class="index-item property">
+                                <a href="#property_fixedRotation">fixedRotation</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
                                 <a href="#property_force">force</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_gravityScale">gravityScale</a>
 
                                 
                                 
@@ -553,6 +693,20 @@ shapes that are used for collisions.</p>
                         
                             <li class="index-item property">
                                 <a href="#property_inertia">inertia</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_interpolatedAngle">interpolatedAngle</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_interpolatedPosition">interpolatedPosition</a>
 
                                 
                                 
@@ -603,6 +757,20 @@ shapes that are used for collisions.</p>
                             </li>
                         
                             <li class="index-item property">
+                                <a href="#property_previousAngle">previousAngle</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_previousPosition">previousPosition</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
                                 <a href="#property_shapeAngles">shapeAngles</a>
 
                                 
@@ -624,10 +792,56 @@ shapes that are used for collisions.</p>
                             </li>
                         
                             <li class="index-item property">
+                                <a href="#property_SLEEPING">SLEEPING</a>
+
+                                
+                                    <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_sleepSpeedLimit">sleepSpeedLimit</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_sleepState">sleepState</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_sleepTimeLimit">sleepTimeLimit</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_SLEEPY">SLEEPY</a>
+
+                                
+                                    <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
                                 <a href="#property_STATIC">STATIC</a>
 
                                 
                                     <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property private">
+                                <a href="#property_timeLastSleepy">timeLastSleepy</a>
+
                                 
                                 
                             </li>
@@ -653,12 +867,48 @@ shapes that are used for collisions.</p>
                                 
                             </li>
                         
+                            <li class="index-item property">
+                                <a href="#property_world">world</a>
+
+                                
+                                
+                            </li>
+                        
                     </ul>
                 </div>
             
 
             
 
+            
+                <div class="index-section events">
+                    <h3>Events</h3>
+
+                    <ul class="index-list events extends">
+                        
+                            <li class="index-item event">
+                                <a href="#event_sleep">sleep</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item event">
+                                <a href="#event_sleepy">sleepy</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item event">
+                                <a href="#event_wakeup">wakeup</a>
+
+                                
+                                
+                            </li>
+                        
+                    </ul>
+                </div>
             
         </div>
 
@@ -721,7 +971,7 @@ shapes that are used for collisions.</p>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l222"><code>src&#x2F;objects&#x2F;Body.js:222</code></a>
+        <a href="../files/src_objects_Body.js.html#l437"><code>src&#x2F;objects&#x2F;Body.js:437</code></a>
         
         </p>
 
@@ -762,7 +1012,7 @@ Will automatically update the mass properties and bounding radius.</p>
                 <li class="param">
                     
                         <code class="param-name optional">[offset]</code>
-                        <span class="type">Float32Array | Array</span>
+                        <span class="type">Array</span>
                         <span class="flag optional" title="This parameter is optional.">optional</span>
                     
 
@@ -854,7 +1104,7 @@ body.addShape(shape,[0,1],Math.PI/2);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l430"><code>src&#x2F;objects&#x2F;Body.js:430</code></a>
+        <a href="../files/src_objects_Body.js.html#l666"><code>src&#x2F;objects&#x2F;Body.js:666</code></a>
         
         </p>
 
@@ -919,7 +1169,7 @@ body.addShape(shape,[0,1],Math.PI/2);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l501"><code>src&#x2F;objects&#x2F;Body.js:501</code></a>
+        <a href="../files/src_objects_Body.js.html#l735"><code>src&#x2F;objects&#x2F;Body.js:735</code></a>
         
         </p>
 
@@ -1014,7 +1264,7 @@ body.addShape(shape,[0,1],Math.PI/2);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l312"><code>src&#x2F;objects&#x2F;Body.js:312</code></a>
+        <a href="../files/src_objects_Body.js.html#l546"><code>src&#x2F;objects&#x2F;Body.js:546</code></a>
         
         </p>
 
@@ -1038,7 +1288,7 @@ body.addShape(shape,[0,1],Math.PI/2);</code></pre>
                 <li class="param">
                     
                         <code class="param-name">force</code>
-                        <span class="type">Float32Array</span>
+                        <span class="type">Array</span>
                     
 
                     
@@ -1054,7 +1304,7 @@ body.addShape(shape,[0,1],Math.PI/2);</code></pre>
                 <li class="param">
                     
                         <code class="param-name">worldPoint</code>
-                        <span class="type">Float32Array</span>
+                        <span class="type">Array</span>
                     
 
                     
@@ -1071,6 +1321,126 @@ body.addShape(shape,[0,1],Math.PI/2);</code></pre>
         </div>
     
 
+    
+
+    
+</div>
+
+                
+                    <div id="method_emit" class="method item inherited">
+    <h3 class="name"><code>emit</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>event</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/EventEmitter.html" class="crosslink">EventEmitter</a></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/EventEmitter.html#method_emit">EventEmitter</a>:
+            
+        
+        
+        <a href="../files/src_events_EventEmitter.js.html#l66"><code>src&#x2F;events&#x2F;EventEmitter.js:66</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Emit an event.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">event</code>
+                        <span class="type">Object</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        
+                    </div>
+
+                    
+                        <ul class="params-list">
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name">type</code>
+                                    <span class="type">String</span>
+                                
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                                
+                            </li>
+                            
+                        </ul>
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/EventEmitter.html" class="crosslink">EventEmitter</a></span>:
+                    
+                    <p>The self object, for chainability.</p>
+
+                
+            </div>
+        </div>
     
 
     
@@ -1129,7 +1499,7 @@ body.addShape(shape,[0,1],Math.PI/2);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l353"><code>src&#x2F;objects&#x2F;Body.js:353</code></a>
+        <a href="../files/src_objects_Body.js.html#l587"><code>src&#x2F;objects&#x2F;Body.js:587</code></a>
         
         </p>
 
@@ -1255,6 +1625,447 @@ body.addShape(shape,[0,1],Math.PI/2);</code></pre>
 </div>
 
                 
+                    <div id="method_getArea" class="method item">
+    <h3 class="name"><code>getArea</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Number</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Body.js.html#l367"><code>src&#x2F;objects&#x2F;Body.js:367</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Get the total area of all shapes in the body</p>
+
+    </div>
+
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Number</span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_has" class="method item inherited">
+    <h3 class="name"><code>has</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>type</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>listener</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Boolean</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/EventEmitter.html#method_has">EventEmitter</a>:
+            
+        
+        
+        <a href="../files/src_events_EventEmitter.js.html#l33"><code>src&#x2F;events&#x2F;EventEmitter.js:33</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Check if an event listener is added</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">type</code>
+                        <span class="type">String</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">listener</code>
+                        <span class="type">Function</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Boolean</span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_off" class="method item inherited">
+    <h3 class="name"><code>off</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>type</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>listener</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/EventEmitter.html" class="crosslink">EventEmitter</a></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/EventEmitter.html#method_off">EventEmitter</a>:
+            
+        
+        
+        <a href="../files/src_events_EventEmitter.js.html#l49"><code>src&#x2F;events&#x2F;EventEmitter.js:49</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Remove an event listener</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">type</code>
+                        <span class="type">String</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">listener</code>
+                        <span class="type">Function</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/EventEmitter.html" class="crosslink">EventEmitter</a></span>:
+                    
+                    <p>The self object, for chainability.</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_on" class="method item inherited">
+    <h3 class="name"><code>on</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>type</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>listener</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/EventEmitter.html" class="crosslink">EventEmitter</a></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/EventEmitter.html#method_on">EventEmitter</a>:
+            
+        
+        
+        <a href="../files/src_events_EventEmitter.js.html#l13"><code>src&#x2F;events&#x2F;EventEmitter.js:13</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Add an event listener</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">type</code>
+                        <span class="type">String</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">listener</code>
+                        <span class="type">Function</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/EventEmitter.html" class="crosslink">EventEmitter</a></span>:
+                    
+                    <p>The self object, for chainability.</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
                     <div id="method_removeShape" class="method item">
     <h3 class="name"><code>removeShape</code></h3>
 
@@ -1301,7 +2112,7 @@ body.addShape(shape,[0,1],Math.PI/2);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l262"><code>src&#x2F;objects&#x2F;Body.js:262</code></a>
+        <a href="../files/src_objects_Body.js.html#l479"><code>src&#x2F;objects&#x2F;Body.js:479</code></a>
         
         </p>
 
@@ -1361,6 +2172,61 @@ body.addShape(shape,[0,1],Math.PI/2);</code></pre>
 </div>
 
                 
+                    <div id="method_setDensity" class="method item">
+    <h3 class="name"><code>setDensity</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Body.js.html#l357"><code>src&#x2F;objects&#x2F;Body.js:357</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Set the total density of the body</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
                     <div id="method_setZeroForce" class="method item">
     <h3 class="name"><code>setZeroForce</code></h3>
 
@@ -1393,7 +2259,7 @@ body.addShape(shape,[0,1],Math.PI/2);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l478"><code>src&#x2F;objects&#x2F;Body.js:478</code></a>
+        <a href="../files/src_objects_Body.js.html#l712"><code>src&#x2F;objects&#x2F;Body.js:712</code></a>
         
         </p>
 
@@ -1408,6 +2274,149 @@ body.addShape(shape,[0,1],Math.PI/2);</code></pre>
 
     </div>
 
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_sleep" class="method item">
+    <h3 class="name"><code>sleep</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Body.js.html#l770"><code>src&#x2F;objects&#x2F;Body.js:770</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Force body sleep</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_sleepTick" class="method item">
+    <h3 class="name"><code>sleepTick</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>float</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Body.js.html#l785"><code>src&#x2F;objects&#x2F;Body.js:785</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">float</code>
+                        <span class="type">Object</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>time The world time in seconds</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
     
 
     
@@ -1464,7 +2473,7 @@ body.addShape(shape,[0,1],Math.PI/2);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l333"><code>src&#x2F;objects&#x2F;Body.js:333</code></a>
+        <a href="../files/src_objects_Body.js.html#l567"><code>src&#x2F;objects&#x2F;Body.js:567</code></a>
         
         </p>
 
@@ -1488,7 +2497,7 @@ body.addShape(shape,[0,1],Math.PI/2);</code></pre>
                 <li class="param">
                     
                         <code class="param-name">out</code>
-                        <span class="type">Float32Array | Array</span>
+                        <span class="type">Array</span>
                     
 
                     
@@ -1504,7 +2513,7 @@ body.addShape(shape,[0,1],Math.PI/2);</code></pre>
                 <li class="param">
                     
                         <code class="param-name">worldPoint</code>
-                        <span class="type">Float32Array | Array</span>
+                        <span class="type">Array</span>
                     
 
                     
@@ -1575,7 +2584,7 @@ body.addShape(shape,[0,1],Math.PI/2);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l343"><code>src&#x2F;objects&#x2F;Body.js:343</code></a>
+        <a href="../files/src_objects_Body.js.html#l577"><code>src&#x2F;objects&#x2F;Body.js:577</code></a>
         
         </p>
 
@@ -1638,6 +2647,61 @@ body.addShape(shape,[0,1],Math.PI/2);</code></pre>
 </div>
 
                 
+                    <div id="method_updateAABB" class="method item">
+    <h3 class="name"><code>updateAABB</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Body.js.html#l383"><code>src&#x2F;objects&#x2F;Body.js:383</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Updates the AABB of the Body</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
                     <div id="method_updateBoundingRadius" class="method item">
     <h3 class="name"><code>updateBoundingRadius</code></h3>
 
@@ -1670,7 +2734,7 @@ body.addShape(shape,[0,1],Math.PI/2);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l200"><code>src&#x2F;objects&#x2F;Body.js:200</code></a>
+        <a href="../files/src_objects_Body.js.html#l414"><code>src&#x2F;objects&#x2F;Body.js:414</code></a>
         
         </p>
 
@@ -1726,7 +2790,7 @@ are changed.</p>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l280"><code>src&#x2F;objects&#x2F;Body.js:280</code></a>
+        <a href="../files/src_objects_Body.js.html#l499"><code>src&#x2F;objects&#x2F;Body.js:499</code></a>
         
         </p>
 
@@ -1760,12 +2824,217 @@ body.updateMassProperties();</code></pre>
 </div>
 
                 
+                    <div id="method_wakeUp" class="method item">
+    <h3 class="name"><code>wakeUp</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Body.js.html#l756"><code>src&#x2F;objects&#x2F;Body.js:756</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Wake the body up. Normally you should not need this, as the body is automatically awoken at events such as collisions.
+Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="crosslink">Body.AWAKE</a> and emits the wakeUp event if the body wasn&#39;t awake before.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
             </div>
         
 
         
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
+
+                
+                    <div id="property_aabb" class="property item">
+    <h3 class="name"><code>aabb</code></h3>
+    <span class="type"><a href="../classes/AABB.html" class="crosslink">AABB</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Body.js.html#l273"><code>src&#x2F;objects&#x2F;Body.js:273</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Bounding box of this body.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_aabbNeedsUpdate" class="property item">
+    <h3 class="name"><code>aabbNeedsUpdate</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Body.js.html#l280"><code>src&#x2F;objects&#x2F;Body.js:280</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Indicates if the AABB needs update. Update it with <a href="../classes/Body.html#method_updateAABB" class="crosslink">.updateAABB()</a>.</p>
+
+    </div>
+
+    
+
+    
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre class="code prettyprint"><code>// Force update the AABB
+body.aabbNeedsUpdate = true;
+body.updateAABB();
+console.log(body.aabbNeedsUpdate); // false</code></pre>
+
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="property_allowSleep" class="property item">
+    <h3 class="name"><code>allowSleep</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Body.js.html#l294"><code>src&#x2F;objects&#x2F;Body.js:294</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>If true, the body will automatically fall to sleep. Note that you need to enable sleeping in the <a href="../classes/World.html" class="crosslink">World</a> before anything will happen.</p>
+
+    </div>
+
+    
+        <p><strong>Default:</strong> true</p>
+    
+
+    
+
+    
+</div>
 
                 
                     <div id="property_angle" class="property item">
@@ -1791,7 +3060,7 @@ body.updateMassProperties();</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l120"><code>src&#x2F;objects&#x2F;Body.js:120</code></a>
+        <a href="../files/src_objects_Body.js.html#l166"><code>src&#x2F;objects&#x2F;Body.js:166</code></a>
         
         </p>
 
@@ -1801,12 +3070,29 @@ body.updateMassProperties();</code></pre>
     </div>
 
     <div class="description">
-        <p>The angle of the body</p>
+        <p>The angle of the body, in radians.</p>
 
     </div>
 
     
 
+    
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre class="code prettyprint"><code>// The angle property is not normalized to the interval 0 to 2*pi, it can be any value.
+// If you need a value between 0 and 2*pi, use the following function to normalize it.
+function normalizeAngle(angle){
+    angle = angle % (2*Math.PI);
+    if(angle &lt; 0){
+        angle += (2*Math.PI);
+    }
+    return angle;
+}</code></pre>
+
+            </div>
+        </div>
     
 
     
@@ -1836,7 +3122,7 @@ body.updateMassProperties();</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l156"><code>src&#x2F;objects&#x2F;Body.js:156</code></a>
+        <a href="../files/src_objects_Body.js.html#l227"><code>src&#x2F;objects&#x2F;Body.js:227</code></a>
         
         </p>
 
@@ -1846,10 +3132,12 @@ body.updateMassProperties();</code></pre>
     </div>
 
     <div class="description">
-        <p>The angular force acting on the body</p>
+        <p>The angular force acting on the body. Should be a value between 0 and 1.</p>
 
     </div>
 
+    
+        <p><strong>Default:</strong> 0.1</p>
     
 
     
@@ -1881,7 +3169,7 @@ body.updateMassProperties();</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l142"><code>src&#x2F;objects&#x2F;Body.js:142</code></a>
+        <a href="../files/src_objects_Body.js.html#l212"><code>src&#x2F;objects&#x2F;Body.js:212</code></a>
         
         </p>
 
@@ -1891,7 +3179,7 @@ body.updateMassProperties();</code></pre>
     </div>
 
     <div class="description">
-        <p>The angular force acting on the body</p>
+        <p>The angular force acting on the body. See <a href="../classes/Body.html#property_force" class="crosslink">force</a>.</p>
 
     </div>
 
@@ -1926,7 +3214,7 @@ body.updateMassProperties();</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l127"><code>src&#x2F;objects&#x2F;Body.js:127</code></a>
+        <a href="../files/src_objects_Body.js.html#l183"><code>src&#x2F;objects&#x2F;Body.js:183</code></a>
         
         </p>
 
@@ -1936,8 +3224,54 @@ body.updateMassProperties();</code></pre>
     </div>
 
     <div class="description">
-        <p>The angular velocity of the body</p>
+        <p>The angular velocity of the body, in radians per second.</p>
 
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_AWAKE" class="property item">
+    <h3 class="name"><code>AWAKE</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Body.js.html#l888"><code>src&#x2F;objects&#x2F;Body.js:888</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
     </div>
 
     
@@ -1971,7 +3305,7 @@ body.updateMassProperties();</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l188"><code>src&#x2F;objects&#x2F;Body.js:188</code></a>
+        <a href="../files/src_objects_Body.js.html#l266"><code>src&#x2F;objects&#x2F;Body.js:266</code></a>
         
         </p>
 
@@ -1981,7 +3315,7 @@ body.updateMassProperties();</code></pre>
     </div>
 
     <div class="description">
-        <p>Bounding circle radius</p>
+        <p>Bounding circle radius.</p>
 
     </div>
 
@@ -2016,7 +3350,7 @@ body.updateMassProperties();</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l149"><code>src&#x2F;objects&#x2F;Body.js:149</code></a>
+        <a href="../files/src_objects_Body.js.html#l219"><code>src&#x2F;objects&#x2F;Body.js:219</code></a>
         
         </p>
 
@@ -2026,10 +3360,12 @@ body.updateMassProperties();</code></pre>
     </div>
 
     <div class="description">
-        <p>The linear damping acting on the body in the velocity direction</p>
+        <p>The linear damping acting on the body in the velocity direction. Should be a value between 0 and 1.</p>
 
     </div>
 
+    
+        <p><strong>Default:</strong> 0.1</p>
     
 
     
@@ -2063,7 +3399,7 @@ body.updateMassProperties();</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l518"><code>src&#x2F;objects&#x2F;Body.js:518</code></a>
+        <a href="../files/src_objects_Body.js.html#l864"><code>src&#x2F;objects&#x2F;Body.js:864</code></a>
         
         </p>
 
@@ -2085,9 +3421,9 @@ body.updateMassProperties();</code></pre>
 </div>
 
                 
-                    <div id="property_force" class="property item">
-    <h3 class="name"><code>force</code></h3>
-    <span class="type">Float32Array</span>
+                    <div id="property_fixedRotation" class="property item">
+    <h3 class="name"><code>fixedRotation</code></h3>
+    <span class="type">Boolean</span>
 
     
 
@@ -2108,7 +3444,7 @@ body.updateMassProperties();</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l134"><code>src&#x2F;objects&#x2F;Body.js:134</code></a>
+        <a href="../files/src_objects_Body.js.html#l97"><code>src&#x2F;objects&#x2F;Body.js:97</code></a>
         
         </p>
 
@@ -2118,10 +3454,120 @@ body.updateMassProperties();</code></pre>
     </div>
 
     <div class="description">
-        <p>The force acting on the body</p>
+        <p>Set to true if you want to fix the rotation of the body.</p>
 
     </div>
 
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_force" class="property item">
+    <h3 class="name"><code>force</code></h3>
+    <span class="type">Array</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Body.js.html#l190"><code>src&#x2F;objects&#x2F;Body.js:190</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The force acting on the body. Since the body force (and <a href="../classes/Body.html#property_angularForce" class="crosslink">angularForce</a>) will be zeroed after each step, so you need to set the force before each step.</p>
+
+    </div>
+
+    
+
+    
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre class="code prettyprint"><code>// This produces a forcefield of 1 Newton in the positive x direction.
+for(var i=0; i&lt;numSteps; i++){
+    body.force[0] = 1;
+    world.step(1/60);
+}</code></pre>
+<pre class="code prettyprint"><code>// This will apply a rotational force on the body
+for(var i=0; i&lt;numSteps; i++){
+    body.angularForce = -3;
+    world.step(1/60);
+}</code></pre>
+
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="property_gravityScale" class="property item">
+    <h3 class="name"><code>gravityScale</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Body.js.html#l331"><code>src&#x2F;objects&#x2F;Body.js:331</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Gravity scaling factor. If you want the body to ignore gravity, set this to zero. If you want to reverse gravity, set it to -1.</p>
+
+    </div>
+
+    
+        <p><strong>Default:</strong> 1</p>
     
 
     
@@ -2153,7 +3599,7 @@ body.updateMassProperties();</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l29"><code>src&#x2F;objects&#x2F;Body.js:29</code></a>
+        <a href="../files/src_objects_Body.js.html#l31"><code>src&#x2F;objects&#x2F;Body.js:31</code></a>
         
         </p>
 
@@ -2198,7 +3644,7 @@ body.updateMassProperties();</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l74"><code>src&#x2F;objects&#x2F;Body.js:74</code></a>
+        <a href="../files/src_objects_Body.js.html#l83"><code>src&#x2F;objects&#x2F;Body.js:83</code></a>
         
         </p>
 
@@ -2209,6 +3655,96 @@ body.updateMassProperties();</code></pre>
 
     <div class="description">
         <p>The inertia of the body around the Z axis.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_interpolatedAngle" class="property item">
+    <h3 class="name"><code>interpolatedAngle</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Body.js.html#l121"><code>src&#x2F;objects&#x2F;Body.js:121</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The interpolated angle of the body.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_interpolatedPosition" class="property item">
+    <h3 class="name"><code>interpolatedPosition</code></h3>
+    <span class="type">Array</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Body.js.html#l114"><code>src&#x2F;objects&#x2F;Body.js:114</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The interpolated position of the body.</p>
 
     </div>
 
@@ -2243,7 +3779,7 @@ body.updateMassProperties();</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l81"><code>src&#x2F;objects&#x2F;Body.js:81</code></a>
+        <a href="../files/src_objects_Body.js.html#l90"><code>src&#x2F;objects&#x2F;Body.js:90</code></a>
         
         </p>
 
@@ -2288,7 +3824,7 @@ body.updateMassProperties();</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l67"><code>src&#x2F;objects&#x2F;Body.js:67</code></a>
+        <a href="../files/src_objects_Body.js.html#l76"><code>src&#x2F;objects&#x2F;Body.js:76</code></a>
         
         </p>
 
@@ -2335,7 +3871,7 @@ body.updateMassProperties();</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l534"><code>src&#x2F;objects&#x2F;Body.js:534</code></a>
+        <a href="../files/src_objects_Body.js.html#l880"><code>src&#x2F;objects&#x2F;Body.js:880</code></a>
         
         </p>
 
@@ -2380,7 +3916,7 @@ body.updateMassProperties();</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l60"><code>src&#x2F;objects&#x2F;Body.js:60</code></a>
+        <a href="../files/src_objects_Body.js.html#l69"><code>src&#x2F;objects&#x2F;Body.js:69</code></a>
         
         </p>
 
@@ -2425,7 +3961,7 @@ body.updateMassProperties();</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l163"><code>src&#x2F;objects&#x2F;Body.js:163</code></a>
+        <a href="../files/src_objects_Body.js.html#l235"><code>src&#x2F;objects&#x2F;Body.js:235</code></a>
         
         </p>
 
@@ -2435,9 +3971,12 @@ body.updateMassProperties();</code></pre>
     </div>
 
     <div class="description">
-        <p>The type of motion this body has. Should be one of: Body.STATIC (the body
-does not move), Body.DYNAMIC (body can move and respond to collisions)
-and Body.KINEMATIC (only moves according to its .velocity).</p>
+        <p>The type of motion this body has. Should be one of: <a href="../classes/Body.html#property_STATIC" class="crosslink">Body.STATIC</a>, <a href="../classes/Body.html#property_DYNAMIC" class="crosslink">Body.DYNAMIC</a> and <a href="../classes/Body.html#property_KINEMATIC" class="crosslink">Body.KINEMATIC</a>.</p>
+<ul>
+<li>Static bodies do not move, and they do not respond to forces or collision.</li>
+<li>Dynamic bodies body can move and respond to collisions and forces.</li>
+<li>Kinematic bodies only moves according to its .velocity, and does not respond to collisions or force.</li>
+</ul>
 
     </div>
 
@@ -2449,11 +3988,15 @@ and Body.KINEMATIC (only moves according to its .velocity).</p>
 
             <div class="example-content">
                 <pre class="code prettyprint"><code>// This body will move and interact with other bodies
-var dynamicBody = new Body();
-dynamicBody.motionState = Body.DYNAMIC;</code></pre>
+var dynamicBody = new Body({
+    mass : 1  // If mass is nonzero, the body becomes dynamic automatically
+});
+dynamicBody.motionState == Body.DYNAMIC // true</code></pre>
 <pre class="code prettyprint"><code>// This body will not move at all
-var staticBody = new Body();
-staticBody.motionState = Body.STATIC;</code></pre>
+var staticBody = new Body({
+    mass : 0 // Will make the body static
+});
+staticBody.motionState == Body.STATIC // true</code></pre>
 <pre class="code prettyprint"><code>// This body will only move if you change its velocity
 var kinematicBody = new Body();
 kinematicBody.motionState = Body.KINEMATIC;</code></pre>
@@ -2468,7 +4011,7 @@ kinematicBody.motionState = Body.KINEMATIC;</code></pre>
                 
                     <div id="property_position" class="property item">
     <h3 class="name"><code>position</code></h3>
-    <span class="type">Float32Array</span>
+    <span class="type">Array</span>
 
     
 
@@ -2489,7 +4032,7 @@ kinematicBody.motionState = Body.KINEMATIC;</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l90"><code>src&#x2F;objects&#x2F;Body.js:90</code></a>
+        <a href="../files/src_objects_Body.js.html#l104"><code>src&#x2F;objects&#x2F;Body.js:104</code></a>
         
         </p>
 
@@ -2500,6 +4043,96 @@ kinematicBody.motionState = Body.KINEMATIC;</code></pre>
 
     <div class="description">
         <p>The position of the body</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_previousAngle" class="property item">
+    <h3 class="name"><code>previousAngle</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Body.js.html#l135"><code>src&#x2F;objects&#x2F;Body.js:135</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The previous angle of the body.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_previousPosition" class="property item">
+    <h3 class="name"><code>previousPosition</code></h3>
+    <span class="type">Array</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Body.js.html#l128"><code>src&#x2F;objects&#x2F;Body.js:128</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The previous position of the body.</p>
 
     </div>
 
@@ -2534,7 +4167,7 @@ kinematicBody.motionState = Body.KINEMATIC;</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l53"><code>src&#x2F;objects&#x2F;Body.js:53</code></a>
+        <a href="../files/src_objects_Body.js.html#l62"><code>src&#x2F;objects&#x2F;Body.js:62</code></a>
         
         </p>
 
@@ -2579,7 +4212,7 @@ kinematicBody.motionState = Body.KINEMATIC;</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l45"><code>src&#x2F;objects&#x2F;Body.js:45</code></a>
+        <a href="../files/src_objects_Body.js.html#l54"><code>src&#x2F;objects&#x2F;Body.js:54</code></a>
         
         </p>
 
@@ -2590,7 +4223,7 @@ kinematicBody.motionState = Body.KINEMATIC;</code></pre>
 
     <div class="description">
         <p>The local shape offsets, relative to the body center of mass. This is an
-array of Float32Array.</p>
+array of Array.</p>
 
     </div>
 
@@ -2625,7 +4258,7 @@ array of Float32Array.</p>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l36"><code>src&#x2F;objects&#x2F;Body.js:36</code></a>
+        <a href="../files/src_objects_Body.js.html#l45"><code>src&#x2F;objects&#x2F;Body.js:45</code></a>
         
         </p>
 
@@ -2638,6 +4271,240 @@ array of Float32Array.</p>
         <p>The shapes of the body. The local transform of the shape in .shapes[i] is
 defined by .shapeOffsets[i] and .shapeAngles[i].</p>
 
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_SLEEPING" class="property item">
+    <h3 class="name"><code>SLEEPING</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Body.js.html#l902"><code>src&#x2F;objects&#x2F;Body.js:902</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_sleepSpeedLimit" class="property item">
+    <h3 class="name"><code>sleepSpeedLimit</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Body.js.html#l315"><code>src&#x2F;objects&#x2F;Body.js:315</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>If the speed (the norm of the velocity) is smaller than this value, the body is considered sleepy.</p>
+
+    </div>
+
+    
+        <p><strong>Default:</strong> 0.2</p>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_sleepState" class="property item">
+    <h3 class="name"><code>sleepState</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Body.js.html#l304"><code>src&#x2F;objects&#x2F;Body.js:304</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>One of <a href="../classes/Body.html#property_AWAKE" class="crosslink">Body.AWAKE</a>, <a href="../classes/Body.html#property_SLEEPY" class="crosslink">Body.SLEEPY</a> and <a href="../classes/Body.html#property_SLEEPING" class="crosslink">Body.SLEEPING</a>.</p>
+<p>The body is initially Body.AWAKE. If its velocity norm is below .sleepSpeedLimit, the sleepState will become Body.SLEEPY. If the body continues to be Body.SLEEPY for .sleepTimeLimit seconds, it will fall asleep (Body.SLEEPY).</p>
+
+    </div>
+
+    
+        <p><strong>Default:</strong> Body.AWAKE</p>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_sleepTimeLimit" class="property item">
+    <h3 class="name"><code>sleepTimeLimit</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Body.js.html#l323"><code>src&#x2F;objects&#x2F;Body.js:323</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>If the body has been sleepy for this sleepTimeLimit seconds, it is considered sleeping.</p>
+
+    </div>
+
+    
+        <p><strong>Default:</strong> 1</p>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_SLEEPY" class="property item">
+    <h3 class="name"><code>SLEEPY</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Body.js.html#l895"><code>src&#x2F;objects&#x2F;Body.js:895</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
     </div>
 
     
@@ -2673,7 +4540,7 @@ defined by .shapeOffsets[i] and .shapeAngles[i].</p>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l526"><code>src&#x2F;objects&#x2F;Body.js:526</code></a>
+        <a href="../files/src_objects_Body.js.html#l872"><code>src&#x2F;objects&#x2F;Body.js:872</code></a>
         
         </p>
 
@@ -2695,9 +4562,56 @@ defined by .shapeOffsets[i] and .shapeAngles[i].</p>
 </div>
 
                 
+                    <div id="property_timeLastSleepy" class="property item private">
+    <h3 class="name"><code>timeLastSleepy</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Body.js.html#l338"><code>src&#x2F;objects&#x2F;Body.js:338</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The last time when the body went to SLEEPY state.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
                     <div id="property_velocity" class="property item">
     <h3 class="name"><code>velocity</code></h3>
-    <span class="type">Float32Array</span>
+    <span class="type">Array</span>
 
     
 
@@ -2718,7 +4632,7 @@ defined by .shapeOffsets[i] and .shapeAngles[i].</p>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l98"><code>src&#x2F;objects&#x2F;Body.js:98</code></a>
+        <a href="../files/src_objects_Body.js.html#l142"><code>src&#x2F;objects&#x2F;Body.js:142</code></a>
         
         </p>
 
@@ -2742,7 +4656,7 @@ defined by .shapeOffsets[i] and .shapeAngles[i].</p>
                 
                     <div id="property_vlambda" class="property item">
     <h3 class="name"><code>vlambda</code></h3>
-    <span class="type">Float32Array</span>
+    <span class="type">Array</span>
 
     
 
@@ -2763,7 +4677,7 @@ defined by .shapeOffsets[i] and .shapeAngles[i].</p>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l106"><code>src&#x2F;objects&#x2F;Body.js:106</code></a>
+        <a href="../files/src_objects_Body.js.html#l152"><code>src&#x2F;objects&#x2F;Body.js:152</code></a>
         
         </p>
 
@@ -2787,7 +4701,7 @@ defined by .shapeOffsets[i] and .shapeAngles[i].</p>
                 
                     <div id="property_wlambda" class="property item">
     <h3 class="name"><code>wlambda</code></h3>
-    <span class="type">Float32Array</span>
+    <span class="type">Array</span>
 
     
 
@@ -2808,7 +4722,7 @@ defined by .shapeOffsets[i] and .shapeAngles[i].</p>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l113"><code>src&#x2F;objects&#x2F;Body.js:113</code></a>
+        <a href="../files/src_objects_Body.js.html#l159"><code>src&#x2F;objects&#x2F;Body.js:159</code></a>
         
         </p>
 
@@ -2830,11 +4744,191 @@ defined by .shapeOffsets[i] and .shapeAngles[i].</p>
 </div>
 
                 
+                    <div id="property_world" class="property item">
+    <h3 class="name"><code>world</code></h3>
+    <span class="type"><a href="../classes/World.html" class="crosslink">World</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Body.js.html#l38"><code>src&#x2F;objects&#x2F;Body.js:38</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The world that this body is added to. This property is set to NULL if the body is not added to any world.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
             </div>
         
 
         
 
+        
+            <div id="events" class="api-class-tabpanel">
+                <h2 class="off-left">Events</h2>
+
+                
+                    <div id="event_sleep" class="events item">
+    <h3 class="name"><code>sleep</code></h3>
+    <span class="type"></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Body.js.html#l850"><code>src&#x2F;objects&#x2F;Body.js:850</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+
+
+    
+</div>
+
+                
+                    <div id="event_sleepy" class="events item">
+    <h3 class="name"><code>sleepy</code></h3>
+    <span class="type"></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Body.js.html#l843"><code>src&#x2F;objects&#x2F;Body.js:843</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+
+
+    
+</div>
+
+                
+                    <div id="event_wakeup" class="events item">
+    <h3 class="name"><code>wakeup</code></h3>
+    <span class="type"></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Body.js.html#l857"><code>src&#x2F;objects&#x2F;Body.js:857</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+
+
+    
+</div>
+
+                
+            </div>
         
     </div>
 </div>

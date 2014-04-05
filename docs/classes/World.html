@@ -41,6 +41,10 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/AABB.html">AABB</a></li>
+            
+                <li><a href="../classes/AngleLockEquation.html">AngleLockEquation</a></li>
+            
                 <li><a href="../classes/Body.html">Body</a></li>
             
                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
@@ -65,19 +69,23 @@
             
                 <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
             
+                <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
+            
                 <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
             
+                <li><a href="../classes/Heightfield.html">Heightfield</a></li>
+            
                 <li><a href="../classes/Island.html">Island</a></li>
             
-                <li><a href="../classes/IslandSolver.html">IslandSolver</a></li>
+                <li><a href="../classes/IslandManager.html">IslandManager</a></li>
+            
+                <li><a href="../classes/IslandNode.html">IslandNode</a></li>
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
-            
-                <li><a href="../classes/mat2.html">mat2</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
@@ -91,8 +99,6 @@
             
                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
             
-                <li><a href="../classes/QuadTree.html">QuadTree</a></li>
-            
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
@@ -101,7 +107,7 @@
             
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
-                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
+                <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -166,7 +172,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_world_World.js.html#l38"><code>src&#x2F;world&#x2F;World.js:38</code></a>
+            Defined in: <a href="../files/src_world_World.js.html#l46"><code>src&#x2F;world&#x2F;World.js:46</code></a>
         </div>
     
 
@@ -227,7 +233,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l38"><code>src&#x2F;world&#x2F;World.js:38</code></a>
+        <a href="../files/src_world_World.js.html#l46"><code>src&#x2F;world&#x2F;World.js:46</code></a>
         
         </p>
 
@@ -280,7 +286,7 @@
                             <li class="param">
                                 
                                     <code class="param-name">gravity</code>
-                                    <span class="type">Float32Array</span>
+                                    <span class="type">Array</span>
                                 
 
                                 <div class="param-description">
@@ -300,6 +306,32 @@
                                 <div class="param-description">
                                     <p>Defaults to NaiveBroadphase</p>
 
+                                </div>
+
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name">islandSplit</code>
+                                    <span class="type">Boolean</span>
+                                
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name">doProfiling</code>
+                                    <span class="type">Boolean</span>
+                                
+
+                                <div class="param-description">
+                                    
                                 </div>
 
                                 
@@ -390,6 +422,27 @@
                             </li>
                         
                             <li class="index-item method">
+                                <a href="#method_disableCollision">disableCollision</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_emit">emit</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_enableCollision">enableCollision</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
                                 <a href="#method_fromJSON">fromJSON</a>
 
                                 
@@ -410,6 +463,13 @@
                                 
                             </li>
                         
+                            <li class="index-item method inherited">
+                                <a href="#method_has">has</a>
+
+                                
+                                
+                            </li>
+                        
                             <li class="index-item method">
                                 <a href="#method_hitTest">hitTest</a>
 
@@ -422,6 +482,27 @@
 
                                 
                                     <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method private">
+                                <a href="#method_internalStep">internalStep</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_off">off</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_on">on</a>
+
                                 
                                 
                             </li>
@@ -458,7 +539,26 @@
                                 <a href="#method_runNarrowphase">runNarrowphase</a>
 
                                 
-                                    <span class="flag static">static</span>
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_setGlobalEquationParameters">setGlobalEquationParameters</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_setGlobalRelaxation">setGlobalRelaxation</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_setGlobalStiffness">setGlobalStiffness</a>
+
                                 
                                 
                             </li>
@@ -470,17 +570,12 @@
                                 
                             </li>
                         
-                            <li class="index-item method">
+                            <li class="index-item method deprecated">
                                 <a href="#method_toJSON">toJSON</a>
 
                                 
                                 
-                            </li>
-                        
-                            <li class="index-item method">
-                                <a href="#method_upgradeJSON">upgradeJSON</a>
-
-                                
+                                    <span class="flag deprecated">deprecated</span>
                                 
                             </li>
                         
@@ -495,7 +590,21 @@
                     <ul class="index-list properties extends">
                         
                             <li class="index-item property">
+                                <a href="#property_allowSleep">allowSleep</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
                                 <a href="#property_applyDamping">applyDamping</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_applyGravity">applyGravity</a>
 
                                 
                                 
@@ -510,6 +619,13 @@
                         
                             <li class="index-item property">
                                 <a href="#property_bodies">bodies</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property private">
+                                <a href="#property_bodiesToBeRemoved">bodiesToBeRemoved</a>
 
                                 
                                 
@@ -537,7 +653,21 @@
                             </li>
                         
                             <li class="index-item property">
-                                <a href="#property_defaultFriction">defaultFriction</a>
+                                <a href="#property_defaultContactMaterial">defaultContactMaterial</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_defaultMaterial">defaultMaterial</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property private">
+                                <a href="#property_disabledBodyCollisionPairs">disabledBodyCollisionPairs</a>
 
                                 
                                 
@@ -551,14 +681,42 @@
                             </li>
                         
                             <li class="index-item property">
-                                <a href="#property_"></a>
+                                <a href="#property_emitImpactEvent">emitImpactEvent</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item property">
-                                <a href="#property_emitImpactEvent">emitImpactEvent</a>
+                                <a href="#property_enableIslandSleeping">enableIslandSleeping</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_frictionGravity">frictionGravity</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_gravity">gravity</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_islandManager">islandManager</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_islandSplit">islandSplit</a>
 
                                 
                                 
@@ -607,7 +765,28 @@
                             </li>
                         
                             <li class="index-item property">
+                                <a href="#property_stepping">stepping</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
                                 <a href="#property_time">time</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_useFrictionGravityOnZeroGravity">useFrictionGravityOnZeroGravity</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_useWorldGravityAsFrictionGravity">useWorldGravityAsFrictionGravity</a>
 
                                 
                                 
@@ -640,6 +819,20 @@
                             </li>
                         
                             <li class="index-item event">
+                                <a href="#event_beginContact">beginContact</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item event">
+                                <a href="#event_endContact">endContact</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item event">
                                 <a href="#event_impact">impact</a>
 
                                 
@@ -647,7 +840,21 @@
                             </li>
                         
                             <li class="index-item event">
+                                <a href="#event_postBroadphase">postBroadphase</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item event">
                                 <a href="#event_postStep">postStep</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item event">
+                                <a href="#event_preSolve">preSolve</a>
 
                                 
                                 
@@ -712,7 +919,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l568"><code>src&#x2F;world&#x2F;World.js:568</code></a>
+        <a href="../files/src_world_World.js.html#l1034"><code>src&#x2F;world&#x2F;World.js:1034</code></a>
         
         </p>
 
@@ -811,7 +1018,7 @@ world.addBody(body);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l236"><code>src&#x2F;world&#x2F;World.js:236</code></a>
+        <a href="../files/src_world_World.js.html#l389"><code>src&#x2F;world&#x2F;World.js:389</code></a>
         
         </p>
 
@@ -899,7 +1106,7 @@ world.addBody(body);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l246"><code>src&#x2F;world&#x2F;World.js:246</code></a>
+        <a href="../files/src_world_World.js.html#l399"><code>src&#x2F;world&#x2F;World.js:399</code></a>
         
         </p>
 
@@ -987,7 +1194,7 @@ world.addBody(body);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l544"><code>src&#x2F;world&#x2F;World.js:544</code></a>
+        <a href="../files/src_world_World.js.html#l1009"><code>src&#x2F;world&#x2F;World.js:1009</code></a>
         
         </p>
 
@@ -1065,7 +1272,7 @@ world.addBody(body);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l970"><code>src&#x2F;world&#x2F;World.js:970</code></a>
+        <a href="../files/src_world_World.js.html#l1660"><code>src&#x2F;world&#x2F;World.js:1660</code></a>
         
         </p>
 
@@ -1124,7 +1331,7 @@ world.addBody(body);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l1008"><code>src&#x2F;world&#x2F;World.js:1008</code></a>
+        <a href="../files/src_world_World.js.html#l1702"><code>src&#x2F;world&#x2F;World.js:1702</code></a>
         
         </p>
 
@@ -1153,6 +1360,344 @@ world.addBody(body);</code></pre>
                 
             </div>
         </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_disableCollision" class="method item">
+    <h3 class="name"><code>disableCollision</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>bodyA</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>bodyB</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_World.js.html#l1092"><code>src&#x2F;world&#x2F;World.js:1092</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Disable collision between two bodies</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">bodyA</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">bodyB</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_emit" class="method item inherited">
+    <h3 class="name"><code>emit</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>event</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/EventEmitter.html" class="crosslink">EventEmitter</a></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/EventEmitter.html#method_emit">EventEmitter</a>:
+            
+        
+        
+        <a href="../files/src_events_EventEmitter.js.html#l66"><code>src&#x2F;events&#x2F;EventEmitter.js:66</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Emit an event.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">event</code>
+                        <span class="type">Object</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        
+                    </div>
+
+                    
+                        <ul class="params-list">
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name">type</code>
+                                    <span class="type">String</span>
+                                
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                                
+                            </li>
+                            
+                        </ul>
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/EventEmitter.html" class="crosslink">EventEmitter</a></span>:
+                    
+                    <p>The self object, for chainability.</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_enableCollision" class="method item">
+    <h3 class="name"><code>enableCollision</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>bodyA</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>bodyB</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_World.js.html#l1102"><code>src&#x2F;world&#x2F;World.js:1102</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Enable collisions between the given two bodies</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">bodyA</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">bodyB</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
     
 
     
@@ -1205,7 +1750,7 @@ world.addBody(body);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l829"><code>src&#x2F;world&#x2F;World.js:829</code></a>
+        <a href="../files/src_world_World.js.html#l1392"><code>src&#x2F;world&#x2F;World.js:1392</code></a>
         
         </p>
 
@@ -1301,7 +1846,7 @@ world.addBody(body);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l602"><code>src&#x2F;world&#x2F;World.js:602</code></a>
+        <a href="../files/src_world_World.js.html#l1076"><code>src&#x2F;world&#x2F;World.js:1076</code></a>
         
         </p>
 
@@ -1390,7 +1935,7 @@ world.addBody(body);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l267"><code>src&#x2F;world&#x2F;World.js:267</code></a>
+        <a href="../files/src_world_World.js.html#l421"><code>src&#x2F;world&#x2F;World.js:421</code></a>
         
         </p>
 
@@ -1465,6 +2010,128 @@ world.addBody(body);</code></pre>
 </div>
 
                 
+                    <div id="method_has" class="method item inherited">
+    <h3 class="name"><code>has</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>type</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>listener</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Boolean</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/EventEmitter.html#method_has">EventEmitter</a>:
+            
+        
+        
+        <a href="../files/src_events_EventEmitter.js.html#l33"><code>src&#x2F;events&#x2F;EventEmitter.js:33</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Check if an event listener is added</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">type</code>
+                        <span class="type">String</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">listener</code>
+                        <span class="type">Function</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Boolean</span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
                     <div id="method_hitTest" class="method item">
     <h3 class="name"><code>hitTest</code></h3>
 
@@ -1523,7 +2190,7 @@ world.addBody(body);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l1023"><code>src&#x2F;world&#x2F;World.js:1023</code></a>
+        <a href="../files/src_world_World.js.html#l1717"><code>src&#x2F;world&#x2F;World.js:1717</code></a>
         
         </p>
 
@@ -1666,7 +2333,7 @@ world.addBody(body);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l468"><code>src&#x2F;world&#x2F;World.js:468</code></a>
+        <a href="../files/src_world_World.js.html#l829"><code>src&#x2F;world&#x2F;World.js:829</code></a>
         
         </p>
 
@@ -1727,6 +2394,344 @@ world.addBody(body);</code></pre>
 </div>
 
                 
+                    <div id="method_internalStep" class="method item private">
+    <h3 class="name"><code>internalStep</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>dt</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_World.js.html#l529"><code>src&#x2F;world&#x2F;World.js:529</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Make a fixed step.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">dt</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_off" class="method item inherited">
+    <h3 class="name"><code>off</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>type</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>listener</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/EventEmitter.html" class="crosslink">EventEmitter</a></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/EventEmitter.html#method_off">EventEmitter</a>:
+            
+        
+        
+        <a href="../files/src_events_EventEmitter.js.html#l49"><code>src&#x2F;events&#x2F;EventEmitter.js:49</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Remove an event listener</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">type</code>
+                        <span class="type">String</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">listener</code>
+                        <span class="type">Function</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/EventEmitter.html" class="crosslink">EventEmitter</a></span>:
+                    
+                    <p>The self object, for chainability.</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_on" class="method item inherited">
+    <h3 class="name"><code>on</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>type</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>listener</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/EventEmitter.html" class="crosslink">EventEmitter</a></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/EventEmitter.html#method_on">EventEmitter</a>:
+            
+        
+        
+        <a href="../files/src_events_EventEmitter.js.html#l13"><code>src&#x2F;events&#x2F;EventEmitter.js:13</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Add an event listener</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">type</code>
+                        <span class="type">String</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">listener</code>
+                        <span class="type">Function</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/EventEmitter.html" class="crosslink">EventEmitter</a></span>:
+                    
+                    <p>The self object, for chainability.</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
                     <div id="method_removeBody" class="method item">
     <h3 class="name"><code>removeBody</code></h3>
 
@@ -1769,7 +2774,7 @@ world.addBody(body);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l586"><code>src&#x2F;world&#x2F;World.js:586</code></a>
+        <a href="../files/src_world_World.js.html#l1055"><code>src&#x2F;world&#x2F;World.js:1055</code></a>
         
         </p>
 
@@ -1780,7 +2785,7 @@ world.addBody(body);</code></pre>
     </div>
 
     <div class="description">
-        <p>Remove a body from the simulation</p>
+        <p>Remove a body from the simulation. If this method is called during step(), the body removal is scheduled to after the step.</p>
 
     </div>
 
@@ -1857,7 +2862,7 @@ world.addBody(body);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l286"><code>src&#x2F;world&#x2F;World.js:286</code></a>
+        <a href="../files/src_world_World.js.html#l441"><code>src&#x2F;world&#x2F;World.js:441</code></a>
         
         </p>
 
@@ -1945,7 +2950,7 @@ world.addBody(body);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l255"><code>src&#x2F;world&#x2F;World.js:255</code></a>
+        <a href="../files/src_world_World.js.html#l408"><code>src&#x2F;world&#x2F;World.js:408</code></a>
         
         </p>
 
@@ -2033,7 +3038,7 @@ world.addBody(body);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l556"><code>src&#x2F;world&#x2F;World.js:556</code></a>
+        <a href="../files/src_world_World.js.html#l1021"><code>src&#x2F;world&#x2F;World.js:1021</code></a>
         
         </p>
 
@@ -2146,12 +3151,6 @@ world.addBody(body);</code></pre>
                     
                 </li>
             
-                <li class="arg">
-                    
-                        <code>glen</code>
-                    
-                </li>
-            
             </ul><span class="paren">)</span>
         </div>
     
@@ -2164,8 +3163,6 @@ world.addBody(body);</code></pre>
 
     
 
-    
-        <span class="flag static">static</span>
     
 
     
@@ -2183,7 +3180,7 @@ world.addBody(body);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l492"><code>src&#x2F;world&#x2F;World.js:492</code></a>
+        <a href="../files/src_world_World.js.html#l862"><code>src&#x2F;world&#x2F;World.js:862</code></a>
         
         </p>
 
@@ -2354,9 +3351,291 @@ world.addBody(body);</code></pre>
                     
                 </li>
             
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_setGlobalEquationParameters" class="method item">
+    <h3 class="name"><code>setGlobalEquationParameters</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code class="optional">[parameters]</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_World.js.html#l1768"><code>src&#x2F;world&#x2F;World.js:1768</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Sets the Equation parameters for all constraints and contact materials.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
                 <li class="param">
                     
-                        <code class="param-name">glen</code>
+                        <code class="param-name optional">[parameters]</code>
+                        <span class="type">Object</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                        <ul class="params-list">
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[relaxation]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[stiffness]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                                
+                            </li>
+                            
+                        </ul>
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_setGlobalRelaxation" class="method item">
+    <h3 class="name"><code>setGlobalRelaxation</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>relaxation</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_World.js.html#l1829"><code>src&#x2F;world&#x2F;World.js:1829</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Set the relaxation for all equations and contact materials.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">relaxation</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_setGlobalStiffness" class="method item">
+    <h3 class="name"><code>setGlobalStiffness</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>stiffness</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_World.js.html#l1818"><code>src&#x2F;world&#x2F;World.js:1818</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Set the stiffness for all equations and contact materials.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">stiffness</code>
                         <span class="type">Number</span>
                     
 
@@ -2392,6 +3671,18 @@ world.addBody(body);</code></pre>
                     
                 </li>
             
+                <li class="arg">
+                    
+                        <code class="optional">[timeSinceLastCalled=0]</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code class="optional">[maxSubSteps=10]</code>
+                    
+                </li>
+            
             </ul><span class="paren">)</span>
         </div>
     
@@ -2421,7 +3712,7 @@ world.addBody(body);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l310"><code>src&#x2F;world&#x2F;World.js:310</code></a>
+        <a href="../files/src_world_World.js.html#l466"><code>src&#x2F;world&#x2F;World.js:466</code></a>
         
         </p>
 
@@ -2433,6 +3724,7 @@ world.addBody(body);</code></pre>
 
     <div class="description">
         <p>Step the physics world forward in time.</p>
+<p>There are two modes. The simple mode is fixed timestepping without interpolation. In this case you only use the first argument. The second case uses interpolation. In that you also provide the time since the function was last used, as well as the maximum fixed timesteps to take.</p>
 
     </div>
 
@@ -2451,7 +3743,41 @@ world.addBody(body);</code></pre>
                     
 
                     <div class="param-description">
-                        <p>The time step size to use.</p>
+                        <p>The fixed time step size to use.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name optional">[timeSinceLastCalled=0]</code>
+                        <span class="type">Number</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The time elapsed since the function was last called.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name optional">[maxSubSteps=10]</code>
+                        <span class="type">Number</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>Maximum number of fixed steps to take per function call.</p>
 
                     </div>
 
@@ -2469,7 +3795,8 @@ world.addBody(body);</code></pre>
             <h4>Example:</h4>
 
             <div class="example-content">
-                <pre class="code prettyprint"><code>var world = new World();
+                <pre class="code prettyprint"><code>// fixed timestepping without interpolation
+var world = new World();
 world.step(0.01);</code></pre>
 
             </div>
@@ -2478,7 +3805,7 @@ world.step(0.01);</code></pre>
 </div>
 
                 
-                    <div id="method_toJSON" class="method item">
+                    <div id="method_toJSON" class="method item deprecated">
     <h3 class="name"><code>toJSON</code></h3>
 
     
@@ -2491,6 +3818,8 @@ world.step(0.01);</code></pre>
         </span>
     
 
+    
+        <span class="flag deprecated" title="Should use Serializer instead.">deprecated</span>
     
 
     
@@ -2514,11 +3843,13 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l617"><code>src&#x2F;world&#x2F;World.js:617</code></a>
+        <a href="../files/src_world_World.js.html#l1143"><code>src&#x2F;world&#x2F;World.js:1143</code></a>
         
         </p>
 
 
+        
+            <p>Deprecated: Should use Serializer instead.</p>
         
 
         
@@ -2549,32 +3880,17 @@ world.step(0.01);</code></pre>
 </div>
 
                 
-                    <div id="method_upgradeJSON" class="method item">
-    <h3 class="name"><code>upgradeJSON</code></h3>
+            </div>
+        
 
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>json</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
+        
+            <div id="properties" class="api-class-tabpanel">
+                <h2 class="off-left">Properties</h2>
 
-    
-        <span class="returns-inline">
-            <span class="type">Object | Boolean</span>
-        </span>
-    
-
-    
-
-    
+                
+                    <div id="property_allowSleep" class="property item">
+    <h3 class="name"><code>allowSleep</code></h3>
+    <span class="type">Boolean</span>
 
     
 
@@ -2595,10 +3911,9 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l778"><code>src&#x2F;world&#x2F;World.js:778</code></a>
+        <a href="../files/src_world_World.js.html#l322"><code>src&#x2F;world&#x2F;World.js:322</code></a>
         
         </p>
-
 
         
 
@@ -2606,61 +3921,16 @@ world.step(0.01);</code></pre>
     </div>
 
     <div class="description">
-        <p>Upgrades a JSON object to current version</p>
+        <p>Enable / disable automatic body sleeping. Sleeping can improve performance. You might need to <a href="../classes/Body.html#method_wakeUp" class="crosslink">wake up</a> the bodies if they fall asleep when they shouldn&#39;t. If you want to enable sleeping in the world, but want to disable it for a particular body, see <a href="../classes/Body.html#property_allowSleep" class="crosslink">Body.allowSleep</a>.</p>
 
     </div>
 
     
-        <div class="params">
-            <h4>Parameters:</h4>
 
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">json</code>
-                        <span class="type">Object</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                
-                    
-                        <span class="type">Object | Boolean</span>:
-                    
-                    <p>New json object, or false on failure.</p>
-
-                
-            </div>
-        </div>
     
 
     
 </div>
-
-                
-            </div>
-        
-
-        
-            <div id="properties" class="api-class-tabpanel">
-                <h2 class="off-left">Properties</h2>
 
                 
                     <div id="property_applyDamping" class="property item">
@@ -2686,7 +3956,7 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l147"><code>src&#x2F;world&#x2F;World.js:147</code></a>
+        <a href="../files/src_world_World.js.html#l190"><code>src&#x2F;world&#x2F;World.js:190</code></a>
         
         </p>
 
@@ -2697,6 +3967,51 @@ world.step(0.01);</code></pre>
 
     <div class="description">
         <p>Enable to automatically apply body damping each step.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_applyGravity" class="property item">
+    <h3 class="name"><code>applyGravity</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_World.js.html#l197"><code>src&#x2F;world&#x2F;World.js:197</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Enable to automatically apply gravity each step.</p>
 
     </div>
 
@@ -2731,7 +4046,7 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l140"><code>src&#x2F;world&#x2F;World.js:140</code></a>
+        <a href="../files/src_world_World.js.html#l183"><code>src&#x2F;world&#x2F;World.js:183</code></a>
         
         </p>
 
@@ -2776,7 +4091,7 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l62"><code>src&#x2F;world&#x2F;World.js:62</code></a>
+        <a href="../files/src_world_World.js.html#l72"><code>src&#x2F;world&#x2F;World.js:72</code></a>
         
         </p>
 
@@ -2786,7 +4101,54 @@ world.step(0.01);</code></pre>
     </div>
 
     <div class="description">
-        <p>All bodies in the world.</p>
+        <p>All bodies in the world. To add a body to the world, use <a href="../classes/World.html#method_addBody" class="crosslink">addBody</a>.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_bodiesToBeRemoved" class="property item private">
+    <h3 class="name"><code>bodiesToBeRemoved</code></h3>
+    <span class="type">Array</span>
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_World.js.html#l231"><code>src&#x2F;world&#x2F;World.js:231</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Bodies that are scheduled to be removed at the end of the step.</p>
 
     </div>
 
@@ -2821,7 +4183,7 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l110"><code>src&#x2F;world&#x2F;World.js:110</code></a>
+        <a href="../files/src_world_World.js.html#l147"><code>src&#x2F;world&#x2F;World.js:147</code></a>
         
         </p>
 
@@ -2866,7 +4228,7 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l118"><code>src&#x2F;world&#x2F;World.js:118</code></a>
+        <a href="../files/src_world_World.js.html#l156"><code>src&#x2F;world&#x2F;World.js:156</code></a>
         
         </p>
 
@@ -2911,7 +4273,7 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l161"><code>src&#x2F;world&#x2F;World.js:161</code></a>
+        <a href="../files/src_world_World.js.html#l211"><code>src&#x2F;world&#x2F;World.js:211</code></a>
         
         </p>
 
@@ -2933,9 +4295,9 @@ world.step(0.01);</code></pre>
 </div>
 
                 
-                    <div id="property_defaultFriction" class="property item">
-    <h3 class="name"><code>defaultFriction</code></h3>
-    <span class="type">Number</span>
+                    <div id="property_defaultContactMaterial" class="property item">
+    <h3 class="name"><code>defaultContactMaterial</code></h3>
+    <span class="type"><a href="../classes/ContactMaterial.html" class="crosslink">ContactMaterial</a></span>
 
     
 
@@ -2956,7 +4318,7 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l126"><code>src&#x2F;world&#x2F;World.js:126</code></a>
+        <a href="../files/src_world_World.js.html#l170"><code>src&#x2F;world&#x2F;World.js:170</code></a>
         
         </p>
 
@@ -2966,7 +4328,99 @@ world.step(0.01);</code></pre>
     </div>
 
     <div class="description">
-        <p>Friction between colliding bodies. This value is used if no matching ContactMaterial is found for the body pair.</p>
+        <p>The default contact material to use, if no contact material was set for the colliding materials.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_defaultMaterial" class="property item">
+    <h3 class="name"><code>defaultMaterial</code></h3>
+    <span class="type"><a href="../classes/Material.html" class="crosslink">Material</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_World.js.html#l164"><code>src&#x2F;world&#x2F;World.js:164</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Dummy default material in the world, used in .defaultContactMaterial</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_disabledBodyCollisionPairs" class="property item private">
+    <h3 class="name"><code>disabledBodyCollisionPairs</code></h3>
+    <span class="type">Array</span>
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_World.js.html#l78"><code>src&#x2F;world&#x2F;World.js:78</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Disabled body collision pairs. See {{#crossLink "World/disableBodyCollision:method"}}.</p>
 
     </div>
 
@@ -3001,7 +4455,7 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l94"><code>src&#x2F;world&#x2F;World.js:94</code></a>
+        <a href="../files/src_world_World.js.html#l131"><code>src&#x2F;world&#x2F;World.js:131</code></a>
         
         </p>
 
@@ -3012,51 +4466,6 @@ world.step(0.01);</code></pre>
 
     <div class="description">
         <p>Whether to do timing measurements during the step() or not.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_" class="property item">
-    <h3 class="name"><code></code></h3>
-    <span class="type">Float32Array</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_world_World.js.html#l86"><code>src&#x2F;world&#x2F;World.js:86</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Gravity in the world. This is applied on all bodies in the beginning of each step().</p>
 
     </div>
 
@@ -3091,7 +4500,7 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l175"><code>src&#x2F;world&#x2F;World.js:175</code></a>
+        <a href="../files/src_world_World.js.html#l246"><code>src&#x2F;world&#x2F;World.js:246</code></a>
         
         </p>
 
@@ -3102,6 +4511,231 @@ world.step(0.01);</code></pre>
 
     <div class="description">
         <p>Set to true if you want to the world to emit the &quot;impact&quot; event. Turning this off could improve performance.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_enableIslandSleeping" class="property item">
+    <h3 class="name"><code>enableIslandSleeping</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_World.js.html#l329"><code>src&#x2F;world&#x2F;World.js:329</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Enable or disable island sleeping. Note that you must enable <a href="../classes/World.html#property_islandSplit" class="crosslink">.islandSplit</a> for this to work.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_frictionGravity" class="property item">
+    <h3 class="name"><code>frictionGravity</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_World.js.html#l113"><code>src&#x2F;world&#x2F;World.js:113</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Gravity to use when approximating the friction max force (mu<em>mass</em>gravity).</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_gravity" class="property item">
+    <h3 class="name"><code>gravity</code></h3>
+    <span class="type">Array</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_World.js.html#l105"><code>src&#x2F;world&#x2F;World.js:105</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Gravity in the world. This is applied on all bodies in the beginning of each step().</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_islandManager" class="property item">
+    <h3 class="name"><code>islandManager</code></h3>
+    <span class="type"><a href="../classes/IslandManager.html" class="crosslink">IslandManager</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_World.js.html#l99"><code>src&#x2F;world&#x2F;World.js:99</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The island manager of this world.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_islandSplit" class="property item">
+    <h3 class="name"><code>islandSplit</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_World.js.html#l240"><code>src&#x2F;world&#x2F;World.js:240</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Whether to enable island splitting. Island splitting can be an advantage for many things, including solver performance. See <a href="../classes/IslandManager.html" class="crosslink">IslandManager</a>.</p>
 
     </div>
 
@@ -3136,7 +4770,7 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l102"><code>src&#x2F;world&#x2F;World.js:102</code></a>
+        <a href="../files/src_world_World.js.html#l139"><code>src&#x2F;world&#x2F;World.js:139</code></a>
         
         </p>
 
@@ -3181,7 +4815,7 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l133"><code>src&#x2F;world&#x2F;World.js:133</code></a>
+        <a href="../files/src_world_World.js.html#l176"><code>src&#x2F;world&#x2F;World.js:176</code></a>
         
         </p>
 
@@ -3226,7 +4860,7 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l78"><code>src&#x2F;world&#x2F;World.js:78</code></a>
+        <a href="../files/src_world_World.js.html#l91"><code>src&#x2F;world&#x2F;World.js:91</code></a>
         
         </p>
 
@@ -3271,7 +4905,7 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l154"><code>src&#x2F;world&#x2F;World.js:154</code></a>
+        <a href="../files/src_world_World.js.html#l204"><code>src&#x2F;world&#x2F;World.js:204</code></a>
         
         </p>
 
@@ -3316,7 +4950,7 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l70"><code>src&#x2F;world&#x2F;World.js:70</code></a>
+        <a href="../files/src_world_World.js.html#l85"><code>src&#x2F;world&#x2F;World.js:85</code></a>
         
         </p>
 
@@ -3326,7 +4960,7 @@ world.step(0.01);</code></pre>
     </div>
 
     <div class="description">
-        <p>The solver used to satisfy constraints and contacts.</p>
+        <p>The solver used to satisfy constraints and contacts. Default is <a href="../classes/GSSolver.html" class="crosslink">GSSolver</a>.</p>
 
     </div>
 
@@ -3361,7 +4995,7 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l54"><code>src&#x2F;world&#x2F;World.js:54</code></a>
+        <a href="../files/src_world_World.js.html#l64"><code>src&#x2F;world&#x2F;World.js:64</code></a>
         
         </p>
 
@@ -3371,7 +5005,52 @@ world.step(0.01);</code></pre>
     </div>
 
     <div class="description">
-        <p>All springs in the world.</p>
+        <p>All springs in the world. To add a spring to the world, use <a href="../classes/World.html#method_addSpring" class="crosslink">addSpring</a>.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_stepping" class="property item">
+    <h3 class="name"><code>stepping</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_World.js.html#l225"><code>src&#x2F;world&#x2F;World.js:225</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Is true during the step().</p>
 
     </div>
 
@@ -3406,7 +5085,7 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l168"><code>src&#x2F;world&#x2F;World.js:168</code></a>
+        <a href="../files/src_world_World.js.html#l218"><code>src&#x2F;world&#x2F;World.js:218</code></a>
         
         </p>
 
@@ -3417,6 +5096,96 @@ world.step(0.01);</code></pre>
 
     <div class="description">
         <p>World time.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_useFrictionGravityOnZeroGravity" class="property item">
+    <h3 class="name"><code>useFrictionGravityOnZeroGravity</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_World.js.html#l125"><code>src&#x2F;world&#x2F;World.js:125</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>If the length of .gravity is zero, and .useWorldGravityAsFrictionGravity=true, then switch to using .frictionGravity for friction instead. This fallback is useful for gravityless games.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_useWorldGravityAsFrictionGravity" class="property item">
+    <h3 class="name"><code>useWorldGravityAsFrictionGravity</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_World.js.html#l119"><code>src&#x2F;world&#x2F;World.js:119</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Set to true if you want .frictionGravity to be automatically set to the length of .gravity.</p>
 
     </div>
 
@@ -3461,7 +5230,7 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l194"><code>src&#x2F;world&#x2F;World.js:194</code></a>
+        <a href="../files/src_world_World.js.html#l265"><code>src&#x2F;world&#x2F;World.js:265</code></a>
         
         </p>
 
@@ -3471,7 +5240,8 @@ world.step(0.01);</code></pre>
     </div>
 
     <div class="description">
-        
+        <p>Fired when a body is added to the world.</p>
+
     </div>
 
     
@@ -3527,7 +5297,7 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l212"><code>src&#x2F;world&#x2F;World.js:212</code></a>
+        <a href="../files/src_world_World.js.html#l285"><code>src&#x2F;world&#x2F;World.js:285</code></a>
         
         </p>
 
@@ -3571,6 +5341,260 @@ world.step(0.01);</code></pre>
 </div>
 
                 
+                    <div id="event_beginContact" class="events item">
+    <h3 class="name"><code>beginContact</code></h3>
+    <span class="type"></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_World.js.html#l335"><code>src&#x2F;world&#x2F;World.js:335</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Fired when two shapes starts start to overlap. Fired in the narrowphase, during step.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Event Payload:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">shapeA</code>
+                        <span class="type"><a href="../classes/Shape.html" class="crosslink">Shape</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">shapeB</code>
+                        <span class="type"><a href="../classes/Shape.html" class="crosslink">Shape</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">bodyA</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">bodyB</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">contactEquations</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+
+    
+</div>
+
+                
+                    <div id="event_endContact" class="events item">
+    <h3 class="name"><code>endContact</code></h3>
+    <span class="type"></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_World.js.html#l353"><code>src&#x2F;world&#x2F;World.js:353</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Fired when two shapes stop overlapping, after the narrowphase (during step).</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Event Payload:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">shapeA</code>
+                        <span class="type"><a href="../classes/Shape.html" class="crosslink">Shape</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">shapeB</code>
+                        <span class="type"><a href="../classes/Shape.html" class="crosslink">Shape</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">bodyA</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">bodyB</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">contactEquations</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+
+    
+</div>
+
+                
                     <div id="event_impact" class="events item">
     <h3 class="name"><code>impact</code></h3>
     <span class="type"></span>
@@ -3594,7 +5618,7 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l222"><code>src&#x2F;world&#x2F;World.js:222</code></a>
+        <a href="../files/src_world_World.js.html#l295"><code>src&#x2F;world&#x2F;World.js:295</code></a>
         
         </p>
 
@@ -3653,6 +5677,76 @@ world.step(0.01);</code></pre>
 </div>
 
                 
+                    <div id="event_postBroadphase" class="events item">
+    <h3 class="name"><code>postBroadphase</code></h3>
+    <span class="type"></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_World.js.html#l310"><code>src&#x2F;world&#x2F;World.js:310</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Fired after the Broadphase has collected collision pairs in the world.
+Inside the event handler, you can modify the pairs array as you like, to
+prevent collisions between objects that you don&#39;t want.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Event Payload:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">pairs</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>An array of collision pairs. If this array is [body1,body2,body3,body4], then the body pairs 1,2 and 3,4 would advance to narrowphase.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+
+    
+</div>
+
+                
                     <div id="event_postStep" class="events item">
     <h3 class="name"><code>postStep</code></h3>
     <span class="type"></span>
@@ -3676,7 +5770,7 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l186"><code>src&#x2F;world&#x2F;World.js:186</code></a>
+        <a href="../files/src_world_World.js.html#l257"><code>src&#x2F;world&#x2F;World.js:257</code></a>
         
         </p>
 
@@ -3690,6 +5784,90 @@ world.step(0.01);</code></pre>
 
     </div>
 
+    
+
+
+    
+</div>
+
+                
+                    <div id="event_preSolve" class="events item">
+    <h3 class="name"><code>preSolve</code></h3>
+    <span class="type"></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_World.js.html#l370"><code>src&#x2F;world&#x2F;World.js:370</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Fired just before equations are added to the solver to be solved. Can be used to control what equations goes into the solver.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Event Payload:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">contactEquations</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>An array of contacts to be solved.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">frictionEquations</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>An array of friction equations to be solved.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
     
 
 
@@ -3720,7 +5898,7 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l203"><code>src&#x2F;world&#x2F;World.js:203</code></a>
+        <a href="../files/src_world_World.js.html#l275"><code>src&#x2F;world&#x2F;World.js:275</code></a>
         
         </p>
 
@@ -3730,7 +5908,8 @@ world.step(0.01);</code></pre>
     </div>
 
     <div class="description">
-        
+        <p>Fired when a body is removed from the world.</p>
+
     </div>
 
     

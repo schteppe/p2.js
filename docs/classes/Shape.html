@@ -41,6 +41,10 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/AABB.html">AABB</a></li>
+            
+                <li><a href="../classes/AngleLockEquation.html">AngleLockEquation</a></li>
+            
                 <li><a href="../classes/Body.html">Body</a></li>
             
                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
@@ -65,19 +69,23 @@
             
                 <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
             
+                <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
+            
                 <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
             
+                <li><a href="../classes/Heightfield.html">Heightfield</a></li>
+            
                 <li><a href="../classes/Island.html">Island</a></li>
             
-                <li><a href="../classes/IslandSolver.html">IslandSolver</a></li>
+                <li><a href="../classes/IslandManager.html">IslandManager</a></li>
+            
+                <li><a href="../classes/IslandNode.html">IslandNode</a></li>
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
-            
-                <li><a href="../classes/mat2.html">mat2</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
@@ -91,8 +99,6 @@
             
                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
             
-                <li><a href="../classes/QuadTree.html">QuadTree</a></li>
-            
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
@@ -101,7 +107,7 @@
             
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
-                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
+                <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -185,7 +191,17 @@
     <h3 class="name"><code>Shape</code></h3>
 
     
-        <span class="paren">()</span>
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>type</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
     
 
     
@@ -228,6 +244,29 @@
     </div>
 
     
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">type</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
 
     
 
@@ -260,6 +299,13 @@
                     <h3>Methods</h3>
 
                     <ul class="index-list methods">
+                        
+                            <li class="index-item method">
+                                <a href="#method_computeAABB">computeAABB</a>
+
+                                
+                                
+                            </li>
                         
                             <li class="index-item method">
                                 <a href="#method_computeMomentOfInertia">computeMomentOfInertia</a>
@@ -307,6 +353,24 @@
                             </li>
                         
                             <li class="index-item property">
+                                <a href="#property_CAPSULE">CAPSULE</a>
+
+                                
+                                    <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_CIRCLE">CIRCLE</a>
+
+                                
+                                    <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
                                 <a href="#property_collisionGroup">collisionGroup</a>
 
                                 
@@ -321,7 +385,82 @@
                             </li>
                         
                             <li class="index-item property">
+                                <a href="#property_CONVEX">CONVEX</a>
+
+                                
+                                    <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_HEIGHTFIELD">HEIGHTFIELD</a>
+
+                                
+                                    <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_id">id</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_LINE">LINE</a>
+
+                                
+                                    <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
                                 <a href="#property_material">material</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_PARTICLE">PARTICLE</a>
+
+                                
+                                    <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_PLANE">PLANE</a>
+
+                                
+                                    <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_RECTANGLE">RECTANGLE</a>
+
+                                
+                                    <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_sensor">sensor</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_type">type</a>
 
                                 
                                 
@@ -339,6 +478,137 @@
         
             <div id="methods" class="api-class-tabpanel">
                 <h2 class="off-left">Methods</h2>
+
+                
+                    <div id="method_computeAABB" class="method item">
+    <h3 class="name"><code>computeAABB</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>out</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>position</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>angle</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_shapes_Shape.js.html#l180"><code>src&#x2F;shapes&#x2F;Shape.js:180</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Compute the world axis-aligned bounding box (AABB) of this shape.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">out</code>
+                        <span class="type"><a href="../classes/AABB.html" class="crosslink">AABB</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The resulting AABB.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">position</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">angle</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
 
                 
                     <div id="method_computeMomentOfInertia" class="method item">
@@ -387,7 +657,7 @@
             
         
         
-        <a href="../files/src_shapes_Shape.js.html#l82"><code>src&#x2F;shapes&#x2F;Shape.js:82</code></a>
+        <a href="../files/src_shapes_Shape.js.html#l153"><code>src&#x2F;shapes&#x2F;Shape.js:153</code></a>
         
         </p>
 
@@ -479,7 +749,7 @@
             
         
         
-        <a href="../files/src_shapes_Shape.js.html#l101"><code>src&#x2F;shapes&#x2F;Shape.js:101</code></a>
+        <a href="../files/src_shapes_Shape.js.html#l172"><code>src&#x2F;shapes&#x2F;Shape.js:172</code></a>
         
         </p>
 
@@ -538,7 +808,7 @@
             
         
         
-        <a href="../files/src_shapes_Shape.js.html#l92"><code>src&#x2F;shapes&#x2F;Shape.js:92</code></a>
+        <a href="../files/src_shapes_Shape.js.html#l163"><code>src&#x2F;shapes&#x2F;Shape.js:163</code></a>
         
         </p>
 
@@ -604,7 +874,7 @@
             
         
         
-        <a href="../files/src_shapes_Shape.js.html#l64"><code>src&#x2F;shapes&#x2F;Shape.js:64</code></a>
+        <a href="../files/src_shapes_Shape.js.html#l87"><code>src&#x2F;shapes&#x2F;Shape.js:87</code></a>
         
         </p>
 
@@ -649,7 +919,7 @@
             
         
         
-        <a href="../files/src_shapes_Shape.js.html#l11"><code>src&#x2F;shapes&#x2F;Shape.js:11</code></a>
+        <a href="../files/src_shapes_Shape.js.html#l34"><code>src&#x2F;shapes&#x2F;Shape.js:34</code></a>
         
         </p>
 
@@ -661,6 +931,98 @@
     <div class="description">
         <p>Bounding circle radius of this shape</p>
 
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_CAPSULE" class="property item">
+    <h3 class="name"><code>CAPSULE</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_shapes_Shape.js.html#l141"><code>src&#x2F;shapes&#x2F;Shape.js:141</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_CIRCLE" class="property item">
+    <h3 class="name"><code>CIRCLE</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_shapes_Shape.js.html#l105"><code>src&#x2F;shapes&#x2F;Shape.js:105</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
     </div>
 
     
@@ -694,7 +1056,7 @@
             
         
         
-        <a href="../files/src_shapes_Shape.js.html#l18"><code>src&#x2F;shapes&#x2F;Shape.js:18</code></a>
+        <a href="../files/src_shapes_Shape.js.html#l41"><code>src&#x2F;shapes&#x2F;Shape.js:41</code></a>
         
         </p>
 
@@ -768,7 +1130,7 @@ if(shapeA.collisionGroup &amp; shapeB.collisionMask)!=0 &amp;&amp; (shapeB.colli
             
         
         
-        <a href="../files/src_shapes_Shape.js.html#l49"><code>src&#x2F;shapes&#x2F;Shape.js:49</code></a>
+        <a href="../files/src_shapes_Shape.js.html#l72"><code>src&#x2F;shapes&#x2F;Shape.js:72</code></a>
         
         </p>
 
@@ -780,6 +1142,189 @@ if(shapeA.collisionGroup &amp; shapeB.collisionMask)!=0 &amp;&amp; (shapeB.colli
     <div class="description">
         <p>Collision mask of this shape. See .collisionGroup.</p>
 
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_CONVEX" class="property item">
+    <h3 class="name"><code>CONVEX</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_shapes_Shape.js.html#l123"><code>src&#x2F;shapes&#x2F;Shape.js:123</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_HEIGHTFIELD" class="property item">
+    <h3 class="name"><code>HEIGHTFIELD</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_shapes_Shape.js.html#l147"><code>src&#x2F;shapes&#x2F;Shape.js:147</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_id" class="property item">
+    <h3 class="name"><code>id</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_shapes_Shape.js.html#l27"><code>src&#x2F;shapes&#x2F;Shape.js:27</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Shape object identifier.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_LINE" class="property item">
+    <h3 class="name"><code>LINE</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_shapes_Shape.js.html#l129"><code>src&#x2F;shapes&#x2F;Shape.js:129</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
     </div>
 
     
@@ -813,7 +1358,7 @@ if(shapeA.collisionGroup &amp; shapeB.collisionMask)!=0 &amp;&amp; (shapeB.colli
             
         
         
-        <a href="../files/src_shapes_Shape.js.html#l57"><code>src&#x2F;shapes&#x2F;Shape.js:57</code></a>
+        <a href="../files/src_shapes_Shape.js.html#l80"><code>src&#x2F;shapes&#x2F;Shape.js:80</code></a>
         
         </p>
 
@@ -824,6 +1369,244 @@ if(shapeA.collisionGroup &amp; shapeB.collisionMask)!=0 &amp;&amp; (shapeB.colli
 
     <div class="description">
         <p>Material to use in collisions for this Shape. If this is set to null, the world will use default material properties instead.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_PARTICLE" class="property item">
+    <h3 class="name"><code>PARTICLE</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_shapes_Shape.js.html#l111"><code>src&#x2F;shapes&#x2F;Shape.js:111</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_PLANE" class="property item">
+    <h3 class="name"><code>PLANE</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_shapes_Shape.js.html#l117"><code>src&#x2F;shapes&#x2F;Shape.js:117</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_RECTANGLE" class="property item">
+    <h3 class="name"><code>RECTANGLE</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_shapes_Shape.js.html#l135"><code>src&#x2F;shapes&#x2F;Shape.js:135</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_sensor" class="property item">
+    <h3 class="name"><code>sensor</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_shapes_Shape.js.html#l94"><code>src&#x2F;shapes&#x2F;Shape.js:94</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Set to true if you want this shape to be a sensor. A sensor does not generate contacts, but it still reports contact events. This is good if you want to know if a shape is overlapping another shape, without them generating contacts.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_type" class="property item">
+    <h3 class="name"><code>type</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_shapes_Shape.js.html#l11"><code>src&#x2F;shapes&#x2F;Shape.js:11</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The type of the shape. One of:</p>
+<ul>
+<li><a href="../classes/Shape.html#property_CIRCLE" class="crosslink">Shape.CIRCLE</a></li>
+<li><a href="../classes/Shape.html#property_PARTICLE" class="crosslink">Shape.PARTICLE</a></li>
+<li><a href="../classes/Shape.html#property_PLANE" class="crosslink">Shape.PLANE</a></li>
+<li><a href="../classes/Shape.html#property_CONVEX" class="crosslink">Shape.CONVEX</a></li>
+<li><a href="../classes/Shape.html#property_LINE" class="crosslink">Shape.LINE</a></li>
+<li><a href="../classes/Shape.html#property_RECTANGLE" class="crosslink">Shape.RECTANGLE</a></li>
+<li><a href="../classes/Shape.html#property_CAPSULE" class="crosslink">Shape.CAPSULE</a></li>
+<li><a href="../classes/Shape.html#property_HEIGHTFIELD" class="crosslink">Shape.HEIGHTFIELD</a></li>
+</ul>
 
     </div>
 

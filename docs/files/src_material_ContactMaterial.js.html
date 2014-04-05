@@ -41,6 +41,10 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/AABB.html">AABB</a></li>
+            
+                <li><a href="../classes/AngleLockEquation.html">AngleLockEquation</a></li>
+            
                 <li><a href="../classes/Body.html">Body</a></li>
             
                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
@@ -65,19 +69,23 @@
             
                 <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
             
+                <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
+            
                 <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
             
+                <li><a href="../classes/Heightfield.html">Heightfield</a></li>
+            
                 <li><a href="../classes/Island.html">Island</a></li>
             
-                <li><a href="../classes/IslandSolver.html">IslandSolver</a></li>
+                <li><a href="../classes/IslandManager.html">IslandManager</a></li>
+            
+                <li><a href="../classes/IslandNode.html">IslandNode</a></li>
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
-            
-                <li><a href="../classes/mat2.html">mat2</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
@@ -91,8 +99,6 @@
             
                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
             
-                <li><a href="../classes/QuadTree.html">QuadTree</a></li>
-            
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
@@ -101,7 +107,7 @@
             
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
-                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
+                <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -158,30 +164,39 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
+var Material = require(&#x27;./Material&#x27;);
+var Equation = require(&#x27;../equations/Equation&#x27;);
+
 module.exports = ContactMaterial;
 
-var idCounter = 0;
-
 /**
- * Defines a physics material.
+ * Defines what happens when two materials meet, such as what friction coefficient to use. You can also set other things such as restitution, surface velocity and constraint parameters.
  * @class ContactMaterial
  * @constructor
  * @param {Material} materialA
  * @param {Material} materialB
  * @param {Object}   [options]
- * @param {Number}   options.friction
- * @param {Number}   options.restitution
+ * @param {Number}   [options.friction=0.3]       Friction coefficient.
+ * @param {Number}   [options.restitution=0]      Restitution coefficient aka &quot;bounciness&quot;.
+ * @param {Number}   [options.stiffness]          ContactEquation stiffness.
+ * @param {Number}   [options.relaxation]         ContactEquation relaxation.
+ * @param {Number}   [options.frictionStiffness]  FrictionEquation stiffness.
+ * @param {Number}   [options.frictionRelaxation] FrictionEquation relaxation.
+ * @param {Number}   [options.surfaceVelocity=0]  Surface velocity.
  * @author schteppe
  */
 function ContactMaterial(materialA, materialB, options){
     options = options || {};
+
+    if(!(materialA instanceof Material) || !(materialB instanceof Material))
+        throw new Error(&quot;First two arguments must be Material instances.&quot;);
 
     /**
      * The contact material identifier
      * @property id
      * @type {Number}
      */
-    this.id = idCounter++;
+    this.id = ContactMaterial.idCounter++;
 
     /**
      * First material participating in the contact material
@@ -216,29 +231,37 @@ function ContactMaterial(materialA, materialB, options){
      * @property stiffness
      * @type {Number}
      */
-    this.stiffness =            typeof(options.stiffness)           !== &quot;undefined&quot; ?   Number(options.stiffness)   : 1e7;
+    this.stiffness =            typeof(options.stiffness)           !== &quot;undefined&quot; ?   Number(options.stiffness)   : Equation.DEFAULT_STIFFNESS;
 
     /**
      * Relaxation of the resulting ContactEquation that this ContactMaterial generate
      * @property relaxation
      * @type {Number}
      */
-    this.relaxation =           typeof(options.relaxation)          !== &quot;undefined&quot; ?   Number(options.relaxation)  : 3;
+    this.relaxation =           typeof(options.relaxation)          !== &quot;undefined&quot; ?   Number(options.relaxation)  : Equation.DEFAULT_RELAXATION;
 
     /**
      * Stiffness of the resulting FrictionEquation that this ContactMaterial generate
      * @property frictionStiffness
      * @type {Number}
      */
-    this.frictionStiffness =    typeof(options.frictionStiffness)   !== &quot;undefined&quot; ?   Number(options.frictionStiffness)   : 1e7;
+    this.frictionStiffness =    typeof(options.frictionStiffness)   !== &quot;undefined&quot; ?   Number(options.frictionStiffness)   : Equation.DEFAULT_STIFFNESS;
 
     /**
      * Relaxation of the resulting FrictionEquation that this ContactMaterial generate
      * @property frictionRelaxation
      * @type {Number}
      */
-    this.frictionRelaxation =   typeof(options.frictionRelaxation)  !== &quot;undefined&quot; ?   Number(options.frictionRelaxation)  : 3;
-};
+    this.frictionRelaxation =   typeof(options.frictionRelaxation)  !== &quot;undefined&quot; ?   Number(options.frictionRelaxation)  : Equation.DEFAULT_RELAXATION;
+
+    /**
+     * Will add surface velocity to this material. If bodyA rests on top if bodyB, and the surface velocity is positive, bodyA will slide to the right.
+     * @property {Number} surfaceVelocity
+     */
+    this.surfaceVelocity = typeof(options.surfaceVelocity)    !== &quot;undefined&quot; ?   Number(options.surfaceVelocity)    : 0;
+}
+
+ContactMaterial.idCounter = 0;
 
     </pre>
 </div>

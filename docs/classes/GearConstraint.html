@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>IslandSolver - p2.js</title>
+    <title>GearConstraint - p2.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -41,6 +41,10 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/AABB.html">AABB</a></li>
+            
+                <li><a href="../classes/AngleLockEquation.html">AngleLockEquation</a></li>
+            
                 <li><a href="../classes/Body.html">Body</a></li>
             
                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
@@ -65,19 +69,23 @@
             
                 <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
             
+                <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
+            
                 <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
             
+                <li><a href="../classes/Heightfield.html">Heightfield</a></li>
+            
                 <li><a href="../classes/Island.html">Island</a></li>
             
-                <li><a href="../classes/IslandSolver.html">IslandSolver</a></li>
+                <li><a href="../classes/IslandManager.html">IslandManager</a></li>
+            
+                <li><a href="../classes/IslandNode.html">IslandNode</a></li>
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
-            
-                <li><a href="../classes/mat2.html">mat2</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
@@ -91,8 +99,6 @@
             
                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
             
-                <li><a href="../classes/QuadTree.html">QuadTree</a></li>
-            
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
@@ -101,7 +107,7 @@
             
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
-                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
+                <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -154,19 +160,19 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>IslandSolver Class</h1>
+                        <h1>GearConstraint Class</h1>
 <div class="box meta">
     
 
     
         <div class="extends">
-            Extends <a href="../classes/Solver.html" class="crosslink">Solver</a>
+            Extends <a href="../classes/Constraint.html" class="crosslink">Constraint</a>
         </div>
     
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_solver_IslandSolver.js.html#l9"><code>src&#x2F;solver&#x2F;IslandSolver.js:9</code></a>
+            Defined in: <a href="../files/src_constraints_GearConstraint.js.html#l8"><code>src&#x2F;constraints&#x2F;GearConstraint.js:8</code></a>
         </div>
     
 
@@ -178,15 +184,15 @@
 
 
 <div class="box intro">
-    <p>Splits the system of bodies and equations into independent islands</p>
+    <p>Connects two bodies at given offset points, letting them rotate relative to each other around this point.</p>
 
 </div>
 
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_IslandSolver" class="method item">
-    <h3 class="name"><code>IslandSolver</code></h3>
+        <div id="method_GearConstraint" class="method item">
+    <h3 class="name"><code>GearConstraint</code></h3>
 
     
         <div class="args">
@@ -194,13 +200,19 @@
             
                 <li class="arg">
                     
-                        <code>subsolver</code>
+                        <code>bodyA</code>
                     
                 </li>
             
                 <li class="arg">
                     
-                        <code>options</code>
+                        <code>bodyB</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code class="optional">[options]</code>
                     
                 </li>
             
@@ -233,7 +245,7 @@
             
         
         
-        <a href="../files/src_solver_IslandSolver.js.html#l9"><code>src&#x2F;solver&#x2F;IslandSolver.js:9</code></a>
+        <a href="../files/src_constraints_GearConstraint.js.html#l8"><code>src&#x2F;constraints&#x2F;GearConstraint.js:8</code></a>
         
         </p>
 
@@ -255,8 +267,8 @@
             
                 <li class="param">
                     
-                        <code class="param-name">subsolver</code>
-                        <span class="type"><a href="../classes/Solver.html" class="crosslink">Solver</a></span>
+                        <code class="param-name">bodyA</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
                     
 
                     
@@ -270,8 +282,8 @@
             
                 <li class="param">
                     
-                        <code class="param-name">options</code>
-                        <span class="type">Object</span>
+                        <code class="param-name">bodyB</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
                     
 
                     
@@ -280,6 +292,71 @@
                          
                     </div>
 
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name optional">[options]</code>
+                        <span class="type">Object</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                        <ul class="params-list">
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[angle=0]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
+
+                                <div class="param-description">
+                                    <p>Relative angle between the bodies.</p>
+
+                                </div>
+
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[ratio=1]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
+
+                                <div class="param-description">
+                                    <p>Gear ratio.</p>
+
+                                </div>
+
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[maxTorque]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
+
+                                <div class="param-description">
+                                    <p>Maximum torque to apply.</p>
+
+                                </div>
+
+                                
+                            </li>
+                            
+                        </ul>
                     
                 </li>
             
@@ -307,8 +384,6 @@
         
         
         
-            <li class="api-class-tab events"><a href="#events">Events</a></li>
-        
     </ul>
 
     <div>
@@ -321,43 +396,36 @@
 
                     <ul class="index-list methods extends">
                         
-                            <li class="index-item method inherited">
-                                <a href="#method_addEquation">addEquation</a>
+                            <li class="index-item method">
+                                <a href="#method_getMaxTorque">getMaxTorque</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_setMaxTorque">setMaxTorque</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item method inherited">
-                                <a href="#method_addEquations">addEquations</a>
+                                <a href="#method_setRelaxation">setRelaxation</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item method inherited">
-                                <a href="#method_removeAllEquations">removeAllEquations</a>
+                                <a href="#method_setStiffness">setStiffness</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item method inherited">
-                                <a href="#method_removeEquation">removeEquation</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method inherited">
-                                <a href="#method_solve">solve</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method inherited">
-                                <a href="#method_sortEquations">sortEquations</a>
+                                <a href="#method_update">update</a>
 
                                 
                                 
@@ -373,6 +441,34 @@
 
                     <ul class="index-list properties extends">
                         
+                            <li class="index-item property">
+                                <a href="#property_angle">angle</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_bodyA">bodyA</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_bodyB">bodyB</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_collideConnected">collideConnected</a>
+
+                                
+                                
+                            </li>
+                        
                             <li class="index-item property inherited">
                                 <a href="#property_equations">equations</a>
 
@@ -380,22 +476,8 @@
                                 
                             </li>
                         
-                            <li class="index-item property inherited">
-                                <a href="#property_equationSortFunction">equationSortFunction</a>
-
-                                
-                                
-                            </li>
-                        
                             <li class="index-item property">
-                                <a href="#property_numIslands">numIslands</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_subsolver">subsolver</a>
+                                <a href="#property_ratio">ratio</a>
 
                                 
                                 
@@ -407,21 +489,6 @@
 
             
 
-            
-                <div class="index-section events">
-                    <h3>Events</h3>
-
-                    <ul class="index-list events extends">
-                        
-                            <li class="index-item event">
-                                <a href="#event_beforeSolveIsland">beforeSolveIsland</a>
-
-                                
-                                
-                            </li>
-                        
-                    </ul>
-                </div>
             
         </div>
 
@@ -430,184 +497,18 @@
                 <h2 class="off-left">Methods</h2>
 
                 
-                    <div id="method_addEquation" class="method item inherited">
-    <h3 class="name"><code>addEquation</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>eq</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/Solver.html#method_addEquation">Solver</a>:
-            
-        
-        
-        <a href="../files/src_solver_Solver.js.html#l53"><code>src&#x2F;solver&#x2F;Solver.js:53</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Add an equation to be solved.</p>
-
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">eq</code>
-                        <span class="type"><a href="../classes/Equation.html" class="crosslink">Equation</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_addEquations" class="method item inherited">
-    <h3 class="name"><code>addEquations</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>eqs</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/Solver.html#method_addEquations">Solver</a>:
-            
-        
-        
-        <a href="../files/src_solver_Solver.js.html#l63"><code>src&#x2F;solver&#x2F;Solver.js:63</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Add equations. Same as .addEquation, but this time the argument is an array of Equations</p>
-
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">eqs</code>
-                        <span class="type">Array</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_removeAllEquations" class="method item inherited">
-    <h3 class="name"><code>removeAllEquations</code></h3>
+                    <div id="method_getMaxTorque" class="method item">
+    <h3 class="name"><code>getMaxTorque</code></h3>
 
     
         <span class="paren">()</span>
     
 
     
+        <span class="returns-inline">
+            <span class="type">Number</span>
+        </span>
+    
 
     
 
@@ -624,12 +525,15 @@
     <div class="meta">
         
             
-                <p>Inherited from
-                <a href="../classes/Solver.html#method_removeAllEquations">Solver</a>:
+                
+                <p>
+                
+                Defined in
+                
             
         
         
-        <a href="../files/src_solver_Solver.js.html#l85"><code>src&#x2F;solver&#x2F;Solver.js:85</code></a>
+        <a href="../files/src_constraints_GearConstraint.js.html#l69"><code>src&#x2F;constraints&#x2F;GearConstraint.js:69</code></a>
         
         </p>
 
@@ -640,20 +544,32 @@
     </div>
 
     <div class="description">
-        <p>Remove all currently added equations.</p>
+        <p>Get the max torque for the constraint.</p>
 
     </div>
 
     
 
     
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Number</span>:
+                    
+                
+            </div>
+        </div>
+    
 
     
 </div>
 
                 
-                    <div id="method_removeEquation" class="method item inherited">
-    <h3 class="name"><code>removeEquation</code></h3>
+                    <div id="method_setMaxTorque" class="method item">
+    <h3 class="name"><code>setMaxTorque</code></h3>
 
     
         <div class="args">
@@ -661,7 +577,7 @@
             
                 <li class="arg">
                     
-                        <code>eq</code>
+                        <code>torque</code>
                     
                 </li>
             
@@ -686,106 +602,15 @@
     <div class="meta">
         
             
-                <p>Inherited from
-                <a href="../classes/Solver.html#method_removeEquation">Solver</a>:
-            
-        
-        
-        <a href="../files/src_solver_Solver.js.html#l73"><code>src&#x2F;solver&#x2F;Solver.js:73</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Remove an equation.</p>
-
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">eq</code>
-                        <span class="type"><a href="../classes/Equation.html" class="crosslink">Equation</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
-</div>
-
                 
-                    <div id="method_solve" class="method item">
-    <h3 class="name"><code>solve</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>dt</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>world</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            <p>Inherited from
-            <a href="../classes/Solver.html#method_solve">
-                Solver
-            </a>
-            
-            but overwritten in
+                <p>
+                
+                Defined in
+                
             
         
         
-        <a href="../files/src_solver_IslandSolver.js.html#l79"><code>src&#x2F;solver&#x2F;IslandSolver.js:79</code></a>
+        <a href="../files/src_constraints_GearConstraint.js.html#l60"><code>src&#x2F;constraints&#x2F;GearConstraint.js:60</code></a>
         
         </p>
 
@@ -796,7 +621,7 @@
     </div>
 
     <div class="description">
-        <p>Solves the full system.</p>
+        <p>Set the max torque for the constraint.</p>
 
     </div>
 
@@ -808,7 +633,7 @@
             
                 <li class="param">
                     
-                        <code class="param-name">dt</code>
+                        <code class="param-name">torque</code>
                         <span class="type">Number</span>
                     
 
@@ -821,10 +646,80 @@
                     
                 </li>
             
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_setRelaxation" class="method item inherited">
+    <h3 class="name"><code>setRelaxation</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>relaxation</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Constraint.html#method_setRelaxation">Constraint</a>:
+            
+        
+        
+        <a href="../files/src_constraints_Constraint.js.html#l83"><code>src&#x2F;constraints&#x2F;Constraint.js:83</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Set relaxation for this constraint.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
                 <li class="param">
                     
-                        <code class="param-name">world</code>
-                        <span class="type"><a href="../classes/World.html" class="crosslink">World</a></span>
+                        <code class="param-name">relaxation</code>
+                        <span class="type">Number</span>
                     
 
                     
@@ -846,8 +741,93 @@
 </div>
 
                 
-                    <div id="method_sortEquations" class="method item inherited">
-    <h3 class="name"><code>sortEquations</code></h3>
+                    <div id="method_setStiffness" class="method item inherited">
+    <h3 class="name"><code>setStiffness</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>stiffness</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Constraint.html#method_setStiffness">Constraint</a>:
+            
+        
+        
+        <a href="../files/src_constraints_Constraint.js.html#l69"><code>src&#x2F;constraints&#x2F;Constraint.js:69</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Set stiffness for this constraint.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">stiffness</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_update" class="method item inherited">
+    <h3 class="name"><code>update</code></h3>
 
     
         <span class="paren">()</span>
@@ -871,11 +851,11 @@
         
             
                 <p>Inherited from
-                <a href="../classes/Solver.html#method_sortEquations">Solver</a>:
+                <a href="../classes/Constraint.html#method_update">Constraint</a>:
             
         
         
-        <a href="../files/src_solver_Solver.js.html#l44"><code>src&#x2F;solver&#x2F;Solver.js:44</code></a>
+        <a href="../files/src_constraints_Constraint.js.html#l55"><code>src&#x2F;constraints&#x2F;Constraint.js:55</code></a>
         
         </p>
 
@@ -886,7 +866,7 @@
     </div>
 
     <div class="description">
-        <p>Sort all equations using the .equationSortFunction. Should be called by subclasses before solving.</p>
+        <p>Updates the internal constraint parameters before solve.</p>
 
     </div>
 
@@ -906,92 +886,8 @@
                 <h2 class="off-left">Properties</h2>
 
                 
-                    <div id="property_equations" class="property item inherited">
-    <h3 class="name"><code>equations</code></h3>
-    <span class="type">Array</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/Solver.html#property_equations">Solver</a>:
-            
-        
-        
-        <a href="../files/src_solver_Solver.js.html#l17"><code>src&#x2F;solver&#x2F;Solver.js:17</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Current equations in the solver.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_equationSortFunction" class="property item inherited">
-    <h3 class="name"><code>equationSortFunction</code></h3>
-    <span class="type">Function | Boolean</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/Solver.html#property_equationSortFunction">Solver</a>:
-            
-        
-        
-        <a href="../files/src_solver_Solver.js.html#l25"><code>src&#x2F;solver&#x2F;Solver.js:25</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Function that is used to sort all equations before each solve.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_numIslands" class="property item">
-    <h3 class="name"><code>numIslands</code></h3>
+                    <div id="property_angle" class="property item">
+    <h3 class="name"><code>angle</code></h3>
     <span class="type">Number</span>
 
     
@@ -1013,7 +909,7 @@
             
         
         
-        <a href="../files/src_solver_IslandSolver.js.html#l29"><code>src&#x2F;solver&#x2F;IslandSolver.js:29</code></a>
+        <a href="../files/src_constraints_GearConstraint.js.html#l31"><code>src&#x2F;constraints&#x2F;GearConstraint.js:31</code></a>
         
         </p>
 
@@ -1023,7 +919,7 @@
     </div>
 
     <div class="description">
-        <p>Number of islands. Read only.</p>
+        <p>The relative angle</p>
 
     </div>
 
@@ -1035,9 +931,179 @@
 </div>
 
                 
-                    <div id="property_subsolver" class="property item">
-    <h3 class="name"><code>subsolver</code></h3>
-    <span class="type"><a href="../classes/Solver.html" class="crosslink">Solver</a></span>
+                    <div id="property_bodyA" class="property item inherited">
+    <h3 class="name"><code>bodyA</code></h3>
+    <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Constraint.html#property_bodyA">Constraint</a>:
+            
+        
+        
+        <a href="../files/src_constraints_Constraint.js.html#l28"><code>src&#x2F;constraints&#x2F;Constraint.js:28</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>First body participating in the constraint.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_bodyB" class="property item inherited">
+    <h3 class="name"><code>bodyB</code></h3>
+    <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Constraint.html#property_bodyB">Constraint</a>:
+            
+        
+        
+        <a href="../files/src_constraints_Constraint.js.html#l35"><code>src&#x2F;constraints&#x2F;Constraint.js:35</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Second body participating in the constraint.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_collideConnected" class="property item inherited">
+    <h3 class="name"><code>collideConnected</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Constraint.html#property_collideConnected">Constraint</a>:
+            
+        
+        
+        <a href="../files/src_constraints_Constraint.js.html#l42"><code>src&#x2F;constraints&#x2F;Constraint.js:42</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Set to true if you want the connected bodies to collide.</p>
+
+    </div>
+
+    
+        <p><strong>Default:</strong> true</p>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_equations" class="property item inherited">
+    <h3 class="name"><code>equations</code></h3>
+    <span class="type">Array</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Constraint.html#property_equations">Constraint</a>:
+            
+        
+        
+        <a href="../files/src_constraints_Constraint.js.html#l20"><code>src&#x2F;constraints&#x2F;Constraint.js:20</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Equations to be solved in this constraint</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_ratio" class="property item">
+    <h3 class="name"><code>ratio</code></h3>
+    <span class="type">Number</span>
 
     
 
@@ -1058,7 +1124,7 @@
             
         
         
-        <a href="../files/src_solver_IslandSolver.js.html#l22"><code>src&#x2F;solver&#x2F;IslandSolver.js:22</code></a>
+        <a href="../files/src_constraints_GearConstraint.js.html#l38"><code>src&#x2F;constraints&#x2F;GearConstraint.js:38</code></a>
         
         </p>
 
@@ -1068,7 +1134,7 @@
     </div>
 
     <div class="description">
-        <p>The solver used in the workers.</p>
+        <p>The gear ratio.</p>
 
     </div>
 
@@ -1085,79 +1151,6 @@
 
         
 
-        
-            <div id="events" class="api-class-tabpanel">
-                <h2 class="off-left">Events</h2>
-
-                
-                    <div id="event_beforeSolveIsland" class="events item">
-    <h3 class="name"><code>beforeSolveIsland</code></h3>
-    <span class="type"></span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_solver_IslandSolver.js.html#l39"><code>src&#x2F;solver&#x2F;IslandSolver.js:39</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Fires before an island is solved.</p>
-
-    </div>
-
-    
-        <div class="params">
-            <h4>Event Payload:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">island</code>
-                        <span class="type"><a href="../classes/Island.html" class="crosslink">Island</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-
-    
-</div>
-
-                
-            </div>
         
     </div>
 </div>

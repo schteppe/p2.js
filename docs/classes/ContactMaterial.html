@@ -41,6 +41,10 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/AABB.html">AABB</a></li>
+            
+                <li><a href="../classes/AngleLockEquation.html">AngleLockEquation</a></li>
+            
                 <li><a href="../classes/Body.html">Body</a></li>
             
                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
@@ -65,19 +69,23 @@
             
                 <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
             
+                <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
+            
                 <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
             
+                <li><a href="../classes/Heightfield.html">Heightfield</a></li>
+            
                 <li><a href="../classes/Island.html">Island</a></li>
             
-                <li><a href="../classes/IslandSolver.html">IslandSolver</a></li>
+                <li><a href="../classes/IslandManager.html">IslandManager</a></li>
+            
+                <li><a href="../classes/IslandNode.html">IslandNode</a></li>
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
-            
-                <li><a href="../classes/mat2.html">mat2</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
@@ -91,8 +99,6 @@
             
                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
             
-                <li><a href="../classes/QuadTree.html">QuadTree</a></li>
-            
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
@@ -101,7 +107,7 @@
             
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
-                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
+                <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -162,7 +168,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_material_ContactMaterial.js.html#l5"><code>src&#x2F;material&#x2F;ContactMaterial.js:5</code></a>
+            Defined in: <a href="../files/src_material_ContactMaterial.js.html#l6"><code>src&#x2F;material&#x2F;ContactMaterial.js:6</code></a>
         </div>
     
 
@@ -174,7 +180,7 @@
 
 
 <div class="box intro">
-    <p>Defines a physics material.</p>
+    <p>Defines what happens when two materials meet, such as what friction coefficient to use. You can also set other things such as restitution, surface velocity and constraint parameters.</p>
 
 </div>
 
@@ -235,7 +241,7 @@
             
         
         
-        <a href="../files/src_material_ContactMaterial.js.html#l5"><code>src&#x2F;material&#x2F;ContactMaterial.js:5</code></a>
+        <a href="../files/src_material_ContactMaterial.js.html#l6"><code>src&#x2F;material&#x2F;ContactMaterial.js:6</code></a>
         
         </p>
 
@@ -303,12 +309,14 @@
                             
                             <li class="param">
                                 
-                                    <code class="param-name">friction</code>
+                                    <code class="param-name optional">[friction=0.3]</code>
                                     <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
                                 
 
                                 <div class="param-description">
-                                    
+                                    <p>Friction coefficient.</p>
+
                                 </div>
 
                                 
@@ -316,12 +324,89 @@
                             
                             <li class="param">
                                 
-                                    <code class="param-name">restitution</code>
+                                    <code class="param-name optional">[restitution=0]</code>
                                     <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
                                 
 
                                 <div class="param-description">
-                                    
+                                    <p>Restitution coefficient aka &quot;bounciness&quot;.</p>
+
+                                </div>
+
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[stiffness]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
+
+                                <div class="param-description">
+                                    <p>ContactEquation stiffness.</p>
+
+                                </div>
+
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[relaxation]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
+
+                                <div class="param-description">
+                                    <p>ContactEquation relaxation.</p>
+
+                                </div>
+
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[frictionStiffness]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
+
+                                <div class="param-description">
+                                    <p>FrictionEquation stiffness.</p>
+
+                                </div>
+
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[frictionRelaxation]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
+
+                                <div class="param-description">
+                                    <p>FrictionEquation relaxation.</p>
+
+                                </div>
+
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[surfaceVelocity=0]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
+
+                                <div class="param-description">
+                                    <p>Surface velocity.</p>
+
                                 </div>
 
                                 
@@ -430,6 +515,13 @@
                                 
                             </li>
                         
+                            <li class="index-item property">
+                                <a href="#property_surfaceVelocity">surfaceVelocity</a>
+
+                                
+                                
+                            </li>
+                        
                     </ul>
                 </div>
             
@@ -469,7 +561,7 @@
             
         
         
-        <a href="../files/src_material_ContactMaterial.js.html#l40"><code>src&#x2F;material&#x2F;ContactMaterial.js:40</code></a>
+        <a href="../files/src_material_ContactMaterial.js.html#l49"><code>src&#x2F;material&#x2F;ContactMaterial.js:49</code></a>
         
         </p>
 
@@ -514,7 +606,7 @@
             
         
         
-        <a href="../files/src_material_ContactMaterial.js.html#l75"><code>src&#x2F;material&#x2F;ContactMaterial.js:75</code></a>
+        <a href="../files/src_material_ContactMaterial.js.html#l84"><code>src&#x2F;material&#x2F;ContactMaterial.js:84</code></a>
         
         </p>
 
@@ -559,7 +651,7 @@
             
         
         
-        <a href="../files/src_material_ContactMaterial.js.html#l68"><code>src&#x2F;material&#x2F;ContactMaterial.js:68</code></a>
+        <a href="../files/src_material_ContactMaterial.js.html#l77"><code>src&#x2F;material&#x2F;ContactMaterial.js:77</code></a>
         
         </p>
 
@@ -604,7 +696,7 @@
             
         
         
-        <a href="../files/src_material_ContactMaterial.js.html#l19"><code>src&#x2F;material&#x2F;ContactMaterial.js:19</code></a>
+        <a href="../files/src_material_ContactMaterial.js.html#l28"><code>src&#x2F;material&#x2F;ContactMaterial.js:28</code></a>
         
         </p>
 
@@ -649,7 +741,7 @@
             
         
         
-        <a href="../files/src_material_ContactMaterial.js.html#l26"><code>src&#x2F;material&#x2F;ContactMaterial.js:26</code></a>
+        <a href="../files/src_material_ContactMaterial.js.html#l35"><code>src&#x2F;material&#x2F;ContactMaterial.js:35</code></a>
         
         </p>
 
@@ -694,7 +786,7 @@
             
         
         
-        <a href="../files/src_material_ContactMaterial.js.html#l33"><code>src&#x2F;material&#x2F;ContactMaterial.js:33</code></a>
+        <a href="../files/src_material_ContactMaterial.js.html#l42"><code>src&#x2F;material&#x2F;ContactMaterial.js:42</code></a>
         
         </p>
 
@@ -739,7 +831,7 @@
             
         
         
-        <a href="../files/src_material_ContactMaterial.js.html#l61"><code>src&#x2F;material&#x2F;ContactMaterial.js:61</code></a>
+        <a href="../files/src_material_ContactMaterial.js.html#l70"><code>src&#x2F;material&#x2F;ContactMaterial.js:70</code></a>
         
         </p>
 
@@ -784,7 +876,7 @@
             
         
         
-        <a href="../files/src_material_ContactMaterial.js.html#l47"><code>src&#x2F;material&#x2F;ContactMaterial.js:47</code></a>
+        <a href="../files/src_material_ContactMaterial.js.html#l56"><code>src&#x2F;material&#x2F;ContactMaterial.js:56</code></a>
         
         </p>
 
@@ -829,7 +921,7 @@
             
         
         
-        <a href="../files/src_material_ContactMaterial.js.html#l54"><code>src&#x2F;material&#x2F;ContactMaterial.js:54</code></a>
+        <a href="../files/src_material_ContactMaterial.js.html#l63"><code>src&#x2F;material&#x2F;ContactMaterial.js:63</code></a>
         
         </p>
 
@@ -840,6 +932,51 @@
 
     <div class="description">
         <p>Stiffness of the resulting ContactEquation that this ContactMaterial generate</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_surfaceVelocity" class="property item">
+    <h3 class="name"><code>surfaceVelocity</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_material_ContactMaterial.js.html#l91"><code>src&#x2F;material&#x2F;ContactMaterial.js:91</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Will add surface velocity to this material. If bodyA rests on top if bodyB, and the surface velocity is positive, bodyA will slide to the right.</p>
 
     </div>
 

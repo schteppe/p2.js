@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>mat2 - p2.js</title>
+    <title>src/collision/AABB.js - p2.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -41,6 +41,10 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/AABB.html">AABB</a></li>
+            
+                <li><a href="../classes/AngleLockEquation.html">AngleLockEquation</a></li>
+            
                 <li><a href="../classes/Body.html">Body</a></li>
             
                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
@@ -65,19 +69,23 @@
             
                 <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
             
+                <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
+            
                 <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
             
+                <li><a href="../classes/Heightfield.html">Heightfield</a></li>
+            
                 <li><a href="../classes/Island.html">Island</a></li>
             
-                <li><a href="../classes/IslandSolver.html">IslandSolver</a></li>
+                <li><a href="../classes/IslandManager.html">IslandManager</a></li>
+            
+                <li><a href="../classes/IslandNode.html">IslandNode</a></li>
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
-            
-                <li><a href="../classes/mat2.html">mat2</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
@@ -91,8 +99,6 @@
             
                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
             
-                <li><a href="../classes/QuadTree.html">QuadTree</a></li>
-            
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
@@ -101,7 +107,7 @@
             
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
-                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
+                <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -154,63 +160,135 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>mat2 Class</h1>
-<div class="box meta">
-    
+                        <h1 class="file-heading">File: src/collision/AABB.js</h1>
 
-    
+<div class="file">
+    <pre class="code prettyprint linenums">
+var vec2 = require(&#x27;../math/vec2&#x27;)
+,   Utils = require(&#x27;../utils/Utils&#x27;);
 
-    
-        <div class="foundat">
-            Defined in: <a href="../files/src_math_mat2.js.html#l1"><code>src&#x2F;math&#x2F;mat2.js:1</code></a>
-        </div>
-    
+module.exports = AABB;
 
-    
+/**
+ * Axis aligned bounding box class.
+ * @class AABB
+ * @constructor
+ * @param {Object}  [options]
+ * @param {Array}   [options.upperBound]
+ * @param {Array}   [options.lowerBound]
+ */
+function AABB(options){
 
-    
-</div>
+    /**
+     * The lower bound of the bounding box.
+     * @property lowerBound
+     * @type {Array}
+     */
+    this.lowerBound = vec2.create();
+    if(options &amp;&amp; options.lowerBound){
+        vec2.copy(this.lowerBound, options.lowerBound);
+    }
 
+    /**
+     * The upper bound of the bounding box.
+     * @property upperBound
+     * @type {Array}
+     */
+    this.upperBound = vec2.create();
+    if(options &amp;&amp; options.upperBound){
+        vec2.copy(this.upperBound, options.upperBound);
+    }
+}
 
+var tmp = vec2.create();
 
-<div class="box intro">
-    <p>The mat2 object from glMatrix, extended with the functions documented here. See <a href="http://glmatrix.net">http://glmatrix.net</a> for full doc.</p>
+/**
+ * Set the AABB bounds from a set of points.
+ * @method setFromPoints
+ * @param {Array} points An array of vec2&#x27;s.
+ */
+AABB.prototype.setFromPoints = function(points,position,angle){
+    var l = this.lowerBound,
+        u = this.upperBound;
+    vec2.set(l,  Number.MAX_VALUE,  Number.MAX_VALUE);
+    vec2.set(u, -Number.MAX_VALUE, -Number.MAX_VALUE);
+    for(var i=0; i&lt;points.length; i++){
+        var p = points[i];
 
-</div>
+        if(typeof(angle) === &quot;number&quot;){
+            vec2.rotate(tmp,p,angle);
+            p = tmp;
+        }
 
+        for(var j=0; j&lt;2; j++){
+            if(p[j] &gt; u[j]){
+                u[j] = p[j];
+            }
+            if(p[j] &lt; l[j]){
+                l[j] = p[j];
+            }
+        }
+    }
 
+    // Add offset
+    if(position){
+        vec2.add(this.lowerBound, this.lowerBound, position);
+        vec2.add(this.upperBound, this.upperBound, position);
+    }
+};
 
-<div id="classdocs" class="tabview">
-    <ul class="api-class-tabs">
-        <li class="api-class-tab index"><a href="#index">Index</a></li>
+/**
+ * Copy bounds from an AABB to this AABB
+ * @method copy
+ * @param  {AABB} aabb
+ */
+AABB.prototype.copy = function(aabb){
+    vec2.copy(this.lowerBound, aabb.lowerBound);
+    vec2.copy(this.upperBound, aabb.upperBound);
+};
 
-        
-        
-        
-        
-    </ul>
+/**
+ * Extend this AABB so that it covers the given AABB too.
+ * @method extend
+ * @param  {AABB} aabb
+ */
+AABB.prototype.extend = function(aabb){
+    // Loop over x and y
+    for(var i=0; i&lt;2; i++){
+        // Extend lower bound
+        if(aabb.lowerBound[i] &lt; this.lowerBound[i]){
+            this.lowerBound[i] = aabb.lowerBound[i];
+        }
 
-    <div>
-        <div id="index" class="api-class-tabpanel index">
-            <h2 class="off-left">Item Index</h2>
+        // Upper
+        if(aabb.upperBound[i] &gt; this.upperBound[i]){
+            this.upperBound[i] = aabb.upperBound[i];
+        }
+    }
+};
 
-            
+/**
+ * Returns true if the given AABB overlaps this AABB.
+ * @method overlaps
+ * @param  {AABB} aabb
+ * @return {Boolean}
+ */
+AABB.prototype.overlaps = function(aabb){
+    var l1 = this.lowerBound,
+        u1 = this.upperBound,
+        l2 = aabb.lowerBound,
+        u2 = aabb.upperBound;
 
-            
+    //      l2        u2
+    //      |---------|
+    // |--------|
+    // l1       u1
 
-            
+    return ((l2[0] &lt;= u1[0] &amp;&amp; u1[0] &lt;= u2[0]) || (l1[0] &lt;= u2[0] &amp;&amp; u2[0] &lt;= u1[0])) &amp;&amp;
+           ((l2[1] &lt;= u1[1] &amp;&amp; u1[1] &lt;= u2[1]) || (l1[1] &lt;= u2[1] &amp;&amp; u2[1] &lt;= u1[1]));
+};
 
-            
-        </div>
-
-        
-
-        
-
-        
-
-        
-    </div>
+    </pre>
 </div>
 
                     </div>

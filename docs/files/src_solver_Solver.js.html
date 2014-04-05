@@ -41,6 +41,10 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/AABB.html">AABB</a></li>
+            
+                <li><a href="../classes/AngleLockEquation.html">AngleLockEquation</a></li>
+            
                 <li><a href="../classes/Body.html">Body</a></li>
             
                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
@@ -65,19 +69,23 @@
             
                 <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
             
+                <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
+            
                 <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
             
+                <li><a href="../classes/Heightfield.html">Heightfield</a></li>
+            
                 <li><a href="../classes/Island.html">Island</a></li>
             
-                <li><a href="../classes/IslandSolver.html">IslandSolver</a></li>
+                <li><a href="../classes/IslandManager.html">IslandManager</a></li>
+            
+                <li><a href="../classes/IslandNode.html">IslandNode</a></li>
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
-            
-                <li><a href="../classes/mat2.html">mat2</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
@@ -91,8 +99,6 @@
             
                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
             
-                <li><a href="../classes/QuadTree.html">QuadTree</a></li>
-            
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
@@ -101,7 +107,7 @@
             
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
-                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
+                <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -167,12 +173,14 @@ module.exports = Solver;
  * Base class for constraint solvers.
  * @class Solver
  * @constructor
- * @extends {EventEmitter}
+ * @extends EventEmitter
  */
-function Solver(options){
+function Solver(options,type){
     options = options || {};
 
     EventEmitter.call(this);
+
+    this.type = type;
 
     /**
      * Current equations in the solver.
@@ -188,7 +196,7 @@ function Solver(options){
      * @type {function|boolean}
      */
     this.equationSortFunction = options.equationSortFunction || false;
-};
+}
 Solver.prototype = new EventEmitter();
 
 /**
@@ -201,13 +209,39 @@ Solver.prototype.solve = function(dt,world){
     throw new Error(&quot;Solver.solve should be implemented by subclasses!&quot;);
 };
 
+var mockWorld = {bodies:[]};
+
+/**
+ * Solves all constraints in an island.
+ * @method solveIsland
+ * @param  {Number} dt
+ * @param  {Island} island
+ */
+Solver.prototype.solveIsland = function(dt,island){
+
+    this.removeAllEquations();
+
+    if(island.equations.length){
+        // Add equations to solver
+        this.addEquations(island.equations);
+        mockWorld.bodies.length = 0;
+        island.getBodies(mockWorld.bodies);
+
+        // Solve
+        if(mockWorld.bodies.length){
+            this.solve(dt,mockWorld);
+        }
+    }
+};
+
 /**
  * Sort all equations using the .equationSortFunction. Should be called by subclasses before solving.
  * @method sortEquations
  */
 Solver.prototype.sortEquations = function(){
-    if(this.equationSortFunction)
+    if(this.equationSortFunction){
         this.equations.sort(this.equationSortFunction);
+    }
 };
 
 /**
@@ -217,7 +251,9 @@ Solver.prototype.sortEquations = function(){
  * @param {Equation} eq
  */
 Solver.prototype.addEquation = function(eq){
-    this.equations.push(eq);
+    if(eq.enabled){
+        this.equations.push(eq);
+    }
 };
 
 /**
@@ -227,7 +263,13 @@ Solver.prototype.addEquation = function(eq){
  * @param {Array} eqs
  */
 Solver.prototype.addEquations = function(eqs){
-    Utils.appendArray(this.equations,eqs);
+    //Utils.appendArray(this.equations,eqs);
+    for(var i=0, N=eqs.length; i!==N; i++){
+        var eq = eqs[i];
+        if(eq.enabled){
+            this.equations.push(eq);
+        }
+    }
 };
 
 /**
@@ -238,8 +280,9 @@ Solver.prototype.addEquations = function(eqs){
  */
 Solver.prototype.removeEquation = function(eq){
     var i = this.equations.indexOf(eq);
-    if(i!=-1)
+    if(i !== -1){
         this.equations.splice(i,1);
+    }
 };
 
 /**
@@ -251,6 +294,8 @@ Solver.prototype.removeAllEquations = function(){
     this.equations.length=0;
 };
 
+Solver.GS = 1;
+Solver.ISLAND = 2;
 
     </pre>
 </div>

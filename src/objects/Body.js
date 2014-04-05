@@ -757,7 +757,6 @@ Body.prototype.applyDamping = function(dt){
  * Wake the body up. Normally you should not need this, as the body is automatically awoken at events such as collisions.
  * Sets the sleepState to {{#crossLink "Body/AWAKE:property"}}Body.AWAKE{{/crossLink}} and emits the wakeUp event if the body wasn't awake before.
  * @method wakeUp
- * @fires wakeup
  */
 Body.prototype.wakeUp = function(){
     var s = this.sleepState;
@@ -769,8 +768,8 @@ Body.prototype.wakeUp = function(){
 };
 
 /**
+ * Force body sleep
  * @method sleep
- * @brief Force body sleep
  */
 Body.prototype.sleep = function(){
     this.sleepState = Body.SLEEPING;

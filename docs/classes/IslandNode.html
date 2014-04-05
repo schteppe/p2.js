@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Constraint - p2.js</title>
+    <title>IslandNode - p2.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -160,7 +160,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>Constraint Class</h1>
+                        <h1>IslandNode Class</h1>
 <div class="box meta">
     
 
@@ -168,7 +168,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_constraints_Constraint.js.html#l3"><code>src&#x2F;constraints&#x2F;Constraint.js:3</code></a>
+            Defined in: <a href="../files/src_world_IslandNode.js.html#l3"><code>src&#x2F;world&#x2F;IslandNode.js:3</code></a>
         </div>
     
 
@@ -180,15 +180,15 @@
 
 
 <div class="box intro">
-    <p>Base constraint class.</p>
+    <p>Holds a body and keeps track of some additional properties needed for graph traversal.</p>
 
 </div>
 
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_Constraint" class="method item">
-    <h3 class="name"><code>Constraint</code></h3>
+        <div id="method_IslandNode" class="method item">
+    <h3 class="name"><code>IslandNode</code></h3>
 
     
         <div class="args">
@@ -196,25 +196,7 @@
             
                 <li class="arg">
                     
-                        <code>bodyA</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>bodyB</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>type</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code class="optional">[options]</code>
+                        <code>body</code>
                     
                 </li>
             
@@ -247,7 +229,7 @@
             
         
         
-        <a href="../files/src_constraints_Constraint.js.html#l3"><code>src&#x2F;constraints&#x2F;Constraint.js:3</code></a>
+        <a href="../files/src_world_IslandNode.js.html#l3"><code>src&#x2F;world&#x2F;IslandNode.js:3</code></a>
         
         </p>
 
@@ -269,7 +251,7 @@
             
                 <li class="param">
                     
-                        <code class="param-name">bodyA</code>
+                        <code class="param-name">body</code>
                         <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
                     
 
@@ -279,70 +261,6 @@
                          
                     </div>
 
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">bodyB</code>
-                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">type</code>
-                        <span class="type">Number</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name optional">[options]</code>
-                        <span class="type">Object</span>
-                        <span class="flag optional" title="This parameter is optional.">optional</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                        <ul class="params-list">
-                            
-                            <li class="param">
-                                
-                                    <code class="param-name optional">[collideConnected=true]</code>
-                                    <span class="type">Object</span>
-                                    <span class="flag optional" title="This parameter is optional.">optional</span>
-                                
-
-                                <div class="param-description">
-                                    
-                                </div>
-
-                                
-                            </li>
-                            
-                        </ul>
                     
                 </li>
             
@@ -383,21 +301,7 @@
                     <ul class="index-list methods">
                         
                             <li class="index-item method">
-                                <a href="#method_setRelaxation">setRelaxation</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method">
-                                <a href="#method_setStiffness">setStiffness</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method">
-                                <a href="#method_update">update</a>
+                                <a href="#method_reset">reset</a>
 
                                 
                                 
@@ -414,21 +318,7 @@
                     <ul class="index-list properties">
                         
                             <li class="index-item property">
-                                <a href="#property_bodyA">bodyA</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_bodyB">bodyB</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_collideConnected">collideConnected</a>
+                                <a href="#property_"></a>
 
                                 
                                 
@@ -436,6 +326,20 @@
                         
                             <li class="index-item property">
                                 <a href="#property_equations">equations</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_neighbors">neighbors</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_visited">visited</a>
 
                                 
                                 
@@ -455,184 +359,8 @@
                 <h2 class="off-left">Methods</h2>
 
                 
-                    <div id="method_setRelaxation" class="method item">
-    <h3 class="name"><code>setRelaxation</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>relaxation</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_constraints_Constraint.js.html#l83"><code>src&#x2F;constraints&#x2F;Constraint.js:83</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Set relaxation for this constraint.</p>
-
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">relaxation</code>
-                        <span class="type">Number</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_setStiffness" class="method item">
-    <h3 class="name"><code>setStiffness</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>stiffness</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_constraints_Constraint.js.html#l69"><code>src&#x2F;constraints&#x2F;Constraint.js:69</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Set stiffness for this constraint.</p>
-
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">stiffness</code>
-                        <span class="type">Number</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_update" class="method item">
-    <h3 class="name"><code>update</code></h3>
+                    <div id="method_reset" class="method item">
+    <h3 class="name"><code>reset</code></h3>
 
     
         <span class="paren">()</span>
@@ -663,7 +391,7 @@
             
         
         
-        <a href="../files/src_constraints_Constraint.js.html#l55"><code>src&#x2F;constraints&#x2F;Constraint.js:55</code></a>
+        <a href="../files/src_world_IslandNode.js.html#l37"><code>src&#x2F;world&#x2F;IslandNode.js:37</code></a>
         
         </p>
 
@@ -674,7 +402,7 @@
     </div>
 
     <div class="description">
-        <p>Updates the internal constraint parameters before solve.</p>
+        <p>Clean this node from bodies and equations.</p>
 
     </div>
 
@@ -694,8 +422,8 @@
                 <h2 class="off-left">Properties</h2>
 
                 
-                    <div id="property_bodyA" class="property item">
-    <h3 class="name"><code>bodyA</code></h3>
+                    <div id="property_" class="property item">
+    <h3 class="name"><code></code></h3>
     <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
 
     
@@ -717,7 +445,7 @@
             
         
         
-        <a href="../files/src_constraints_Constraint.js.html#l28"><code>src&#x2F;constraints&#x2F;Constraint.js:28</code></a>
+        <a href="../files/src_world_IslandNode.js.html#l11"><code>src&#x2F;world&#x2F;IslandNode.js:11</code></a>
         
         </p>
 
@@ -727,102 +455,10 @@
     </div>
 
     <div class="description">
-        <p>First body participating in the constraint.</p>
+        <p>The body that is contained in this node.</p>
 
     </div>
 
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_bodyB" class="property item">
-    <h3 class="name"><code>bodyB</code></h3>
-    <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_constraints_Constraint.js.html#l35"><code>src&#x2F;constraints&#x2F;Constraint.js:35</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Second body participating in the constraint.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_collideConnected" class="property item">
-    <h3 class="name"><code>collideConnected</code></h3>
-    <span class="type">Boolean</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_constraints_Constraint.js.html#l42"><code>src&#x2F;constraints&#x2F;Constraint.js:42</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Set to true if you want the connected bodies to collide.</p>
-
-    </div>
-
-    
-        <p><strong>Default:</strong> true</p>
     
 
     
@@ -854,7 +490,7 @@
             
         
         
-        <a href="../files/src_constraints_Constraint.js.html#l20"><code>src&#x2F;constraints&#x2F;Constraint.js:20</code></a>
+        <a href="../files/src_world_IslandNode.js.html#l23"><code>src&#x2F;world&#x2F;IslandNode.js:23</code></a>
         
         </p>
 
@@ -864,7 +500,97 @@
     </div>
 
     <div class="description">
-        <p>Equations to be solved in this constraint</p>
+        <p>Equations connected to this node.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_neighbors" class="property item">
+    <h3 class="name"><code>neighbors</code></h3>
+    <span class="type">Array</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_IslandNode.js.html#l17"><code>src&#x2F;world&#x2F;IslandNode.js:17</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Neighboring IslandNodes</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_visited" class="property item">
+    <h3 class="name"><code>visited</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_IslandNode.js.html#l29"><code>src&#x2F;world&#x2F;IslandNode.js:29</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>If this node was visiting during the graph traversal.</p>
 
     </div>
 

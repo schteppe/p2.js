@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/constraints/ContactEquation.js - p2.js</title>
+    <title>src/equations/ContactEquation.js - p2.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -41,6 +41,10 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/AABB.html">AABB</a></li>
+            
+                <li><a href="../classes/AngleLockEquation.html">AngleLockEquation</a></li>
+            
                 <li><a href="../classes/Body.html">Body</a></li>
             
                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
@@ -65,19 +69,23 @@
             
                 <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
             
+                <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
+            
                 <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
             
+                <li><a href="../classes/Heightfield.html">Heightfield</a></li>
+            
                 <li><a href="../classes/Island.html">Island</a></li>
             
-                <li><a href="../classes/IslandSolver.html">IslandSolver</a></li>
+                <li><a href="../classes/IslandManager.html">IslandManager</a></li>
+            
+                <li><a href="../classes/IslandNode.html">IslandNode</a></li>
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
-            
-                <li><a href="../classes/mat2.html">mat2</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
@@ -91,8 +99,6 @@
             
                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
             
-                <li><a href="../classes/QuadTree.html">QuadTree</a></li>
-            
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
@@ -101,7 +107,7 @@
             
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
-                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
+                <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -154,13 +160,12 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: src/constraints/ContactEquation.js</h1>
+                        <h1 class="file-heading">File: src/equations/ContactEquation.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
 var Equation = require(&quot;./Equation&quot;),
-    vec2 = require(&#x27;../math/vec2&#x27;),
-    mat2 = require(&#x27;../math/mat2&#x27;);
+    vec2 = require(&#x27;../math/vec2&#x27;);
 
 module.exports = ContactEquation;
 
@@ -170,45 +175,46 @@ module.exports = ContactEquation;
  * @class ContactEquation
  * @constructor
  * @extends Equation
- * @param {Body} bi
- * @param {Body} bj
+ * @param {Body} bodyA
+ * @param {Body} bodyB
  */
-function ContactEquation(bi,bj){
-    Equation.call(this,bi,bj,0,Number.MAX_VALUE);
+function ContactEquation(bodyA, bodyB){
+    Equation.call(this, bodyA, bodyB, 0, Number.MAX_VALUE);
 
     /**
      * Vector from body i center of mass to the contact point.
-     * @property ri
+     * @property contactPointA
      * @type {Array}
      */
-    this.ri = vec2.create();
+    this.contactPointA = vec2.create();
     this.penetrationVec = vec2.create();
 
     /**
-     * Vector from body j center of mass to the contact point.
-     * @property rj
+     * World-oriented vector from body A center of mass to the contact point.
+     * @property contactPointB
      * @type {Array}
      */
-    this.rj = vec2.create();
+    this.contactPointB = vec2.create();
 
     /**
      * The normal vector, pointing out of body i
-     * @property ni
+     * @property normalA
      * @type {Array}
      */
-    this.ni = vec2.create();
+    this.normalA = vec2.create();
 
     /**
-     * The restitution to use. 0=no bounciness, 1=max bounciness.
+     * The restitution to use (0=no bounciness, 1=max bounciness).
      * @property restitution
      * @type {Number}
      */
     this.restitution = 0;
 
     /**
-     * Set to true if this is the first impact between the bodies (not persistant contact).
+     * This property is set to true if this is the first impact between the bodies (not persistant contact).
      * @property firstImpact
      * @type {Boolean}
+     * @readOnly
      */
     this.firstImpact = false;
 
@@ -225,19 +231,19 @@ function ContactEquation(bi,bj){
      * @type {Shape}
      */
     this.shapeB = null;
-};
+}
 ContactEquation.prototype = new Equation();
 ContactEquation.prototype.constructor = ContactEquation;
 ContactEquation.prototype.computeB = function(a,b,h){
-    var bi = this.bi,
-        bj = this.bj,
-        ri = this.ri,
-        rj = this.rj,
+    var bi = this.bodyA,
+        bj = this.bodyB,
+        ri = this.contactPointA,
+        rj = this.contactPointB,
         xi = bi.position,
         xj = bj.position;
 
     var penetrationVec = this.penetrationVec,
-        n = this.ni,
+        n = this.normalA,
         G = this.G;
 
     // Caluclate cross products
@@ -263,8 +269,8 @@ ContactEquation.prototype.computeB = function(a,b,h){
         Gq = 0;
         GW = (1/b)*(1+this.restitution) * this.computeGW();
     } else {
-        GW = this.computeGW();
         Gq = vec2.dot(n,penetrationVec);
+        GW = this.computeGW();
     }
 
     var GiMf = this.computeGiMf();

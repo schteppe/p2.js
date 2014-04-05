@@ -41,6 +41,10 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/AABB.html">AABB</a></li>
+            
+                <li><a href="../classes/AngleLockEquation.html">AngleLockEquation</a></li>
+            
                 <li><a href="../classes/Body.html">Body</a></li>
             
                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
@@ -65,19 +69,23 @@
             
                 <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
             
+                <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
+            
                 <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
             
+                <li><a href="../classes/Heightfield.html">Heightfield</a></li>
+            
                 <li><a href="../classes/Island.html">Island</a></li>
             
-                <li><a href="../classes/IslandSolver.html">IslandSolver</a></li>
+                <li><a href="../classes/IslandManager.html">IslandManager</a></li>
+            
+                <li><a href="../classes/IslandNode.html">IslandNode</a></li>
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
-            
-                <li><a href="../classes/mat2.html">mat2</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
@@ -91,8 +99,6 @@
             
                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
             
-                <li><a href="../classes/QuadTree.html">QuadTree</a></li>
-            
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
@@ -101,7 +107,7 @@
             
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
-                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
+                <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -163,10 +169,12 @@ var vec2 = require(&#x27;../math/vec2&#x27;)
 ,   add = vec2.add
 ,   dot = vec2.dot
 ,   Utils = require(&#x27;../utils/Utils&#x27;)
-,   ContactEquation = require(&#x27;../constraints/ContactEquation&#x27;)
-,   FrictionEquation = require(&#x27;../constraints/FrictionEquation&#x27;)
+,   ContactEquation = require(&#x27;../equations/ContactEquation&#x27;)
+,   FrictionEquation = require(&#x27;../equations/FrictionEquation&#x27;)
 ,   Circle = require(&#x27;../shapes/Circle&#x27;)
 ,   Shape = require(&#x27;../shapes/Shape&#x27;)
+,   Body = require(&#x27;../objects/Body&#x27;)
+,   Rectangle = require(&#x27;../shapes/Rectangle&#x27;)
 
 module.exports = Narrowphase;
 
@@ -191,6 +199,7 @@ var tmp1 = vec2.fromValues(0,0)
 ,   tmp16 = vec2.fromValues(0,0)
 ,   tmp17 = vec2.fromValues(0,0)
 ,   tmp18 = vec2.fromValues(0,0)
+,   tmpArray = []
 
 /**
  * Narrowphase. Creates contacts and friction given shapes and transforms.
@@ -232,6 +241,12 @@ function Narrowphase(){
      */
     this.frictionCoefficient = 0.3;
 
+    /**
+     * Will be the .relativeVelocity in each produced FrictionEquation.
+     * @property {Number} surfaceVelocity
+     */
+    this.surfaceVelocity = 0;
+
     this.reuseObjects = true;
     this.reusableContactEquations = [];
     this.reusableFrictionEquations = [];
@@ -243,8 +258,35 @@ function Narrowphase(){
      */
     this.restitution = 0;
 
+    /**
+     * The stiffness value to use in the next contact equations.
+     * @property {Number} stiffness
+     */
+    this.stiffness = 1e7;
+
+    /**
+     * The stiffness value to use in the next contact equations.
+     * @property {Number} stiffness
+     */
+    this.relaxation = 3;
+
+    /**
+     * The stiffness value to use in the next friction equations.
+     * @property frictionStiffness
+     * @type {Number}
+     */
+    this.frictionStiffness = 1e7;
+
+    /**
+     * The relaxation value to use in the next friction equations.
+     * @property frictionRelaxation
+     * @type {Number}
+     */
+    this.frictionRelaxation = 3;
+
+
     // Keep track of the colliding bodies last step
-    this.collidingBodiesLastStep = {};
+    this.collidingBodiesLastStep = { keys:[] };
 };
 
 /**
@@ -265,25 +307,42 @@ Narrowphase.prototype.collidedLastStep = function(bi,bj){
     return !!this.collidingBodiesLastStep[id1 + &quot; &quot; + id2];
 };
 
-/**
- * Throws away the old equatons and gets ready to create new
- * @method reset
- */
-Narrowphase.prototype.reset = function(){
-
-    // Save the colliding bodies data
+// &quot;for in&quot; loops aren&#x27;t optimised in chrome... is there a better way to handle last-step collision memory?
+// Maybe do this: http://jsperf.com/reflection-vs-array-of-keys
+function clearObject(obj){
+    for(var i = 0, l = obj.keys.length; i &lt; l; i++) {
+        delete obj[obj.keys[i]];
+    }
+    obj.keys.length = 0;
+    /*
     for(var key in this.collidingBodiesLastStep)
         delete this.collidingBodiesLastStep[key];
+    */
+}
+
+/**
+ * Throws away the old equations and gets ready to create new
+ * @method reset
+ * @param {World} world
+ */
+Narrowphase.prototype.reset = function(world){
+
+    // Save the colliding bodies data
+    clearObject(this.collidingBodiesLastStep);
     for(var i=0; i!==this.contactEquations.length; i++){
         var eq = this.contactEquations[i],
-            id1 = eq.bi.id,
-            id2 = eq.bj.id;
+            id1 = eq.bodyA.id,
+            id2 = eq.bodyB.id;
         if(id1 &gt; id2){
             var tmp = id1;
             id1 = id2;
             id2 = tmp;
         }
-        this.collidingBodiesLastStep[id1 + &quot; &quot; + id2] = true;
+        var key = id1 + &quot; &quot; + id2;
+        if(!this.collidingBodiesLastStep[key]){
+            this.collidingBodiesLastStep[key] = true;
+            this.collidingBodiesLastStep.keys.push(key);
+        }
     }
 
     if(this.reuseObjects){
@@ -308,12 +367,17 @@ Narrowphase.prototype.reset = function(){
  */
 Narrowphase.prototype.createContactEquation = function(bodyA,bodyB,shapeA,shapeB){
     var c = this.reusableContactEquations.length ? this.reusableContactEquations.pop() : new ContactEquation(bodyA,bodyB);
-    c.bi = bodyA;
-    c.bj = bodyB;
+    c.bodyA = bodyA;
+    c.bodyB = bodyB;
     c.shapeA = shapeA;
     c.shapeB = shapeB;
     c.restitution = this.restitution;
     c.firstImpact = !this.collidedLastStep(bodyA,bodyB);
+    c.stiffness = this.stiffness;
+    c.relaxation = this.relaxation;
+    c.needsUpdate = true;
+    c.enabled = true;
+
     return c;
 };
 
@@ -326,12 +390,17 @@ Narrowphase.prototype.createContactEquation = function(bodyA,bodyB,shapeA,shapeB
  */
 Narrowphase.prototype.createFrictionEquation = function(bodyA,bodyB,shapeA,shapeB){
     var c = this.reusableFrictionEquations.length ? this.reusableFrictionEquations.pop() : new FrictionEquation(bodyA,bodyB);
-    c.bi = bodyA;
-    c.bj = bodyB;
+    c.bodyA = bodyA;
+    c.bodyB = bodyB;
     c.shapeA = shapeA;
     c.shapeB = shapeB;
     c.setSlipForce(this.slipForce);
     c.frictionCoefficient = this.frictionCoefficient;
+    c.relativeVelocity = this.surfaceVelocity;
+    c.enabled = true;
+    c.needsUpdate = true;
+    c.stiffness = this.frictionStiffness;
+    c.relaxation = this.frictionRelaxation;
     return c;
 };
 
@@ -342,37 +411,234 @@ Narrowphase.prototype.createFrictionEquation = function(bodyA,bodyB,shapeA,shape
  * @return {FrictionEquation}
  */
 Narrowphase.prototype.createFrictionFromContact = function(c){
-    var eq = this.createFrictionEquation(c.bi,c.bj);
-    vec2.copy(eq.ri, c.ri);
-    vec2.copy(eq.rj, c.rj);
-    vec2.rotate(eq.t, c.ni, -Math.PI / 2);
+    var eq = this.createFrictionEquation(c.bodyA, c.bodyB, c.shapeA, c.shapeB);
+    vec2.copy(eq.contactPointA, c.contactPointA);
+    vec2.copy(eq.contactPointB, c.contactPointB);
+    vec2.rotate(eq.t, c.normalA, -Math.PI / 2);
     eq.contactEquation = c;
     return eq;
+};
+
+/**
+ * Convex/line narrowphase
+ * @method convexLine
+ * @param  {Body}       bi
+ * @param  {Convex}     si
+ * @param  {Array}      xi
+ * @param  {Number}     ai
+ * @param  {Body}       bj
+ * @param  {Line}       sj
+ * @param  {Array}      xj
+ * @param  {Number}     aj
+ * @todo Implement me!
+ */
+Narrowphase.prototype[Shape.LINE | Shape.CONVEX] =
+Narrowphase.prototype.convexLine = function(bi,si,xi,ai, bj,sj,xj,aj, justTest){
+    // TODO
+    if(justTest)
+        return false;
+    else
+        return 0;
+};
+
+/**
+ * Line/rectangle narrowphase
+ * @method lineRectangle
+ * @param  {Body}       bi
+ * @param  {Line}       si
+ * @param  {Array}      xi
+ * @param  {Number}     ai
+ * @param  {Body}       bj
+ * @param  {Rectangle}  sj
+ * @param  {Array}      xj
+ * @param  {Number}     aj
+ * @todo Implement me!
+ */
+Narrowphase.prototype[Shape.LINE | Shape.RECTANGLE] =
+Narrowphase.prototype.lineRectangle = function(bi,si,xi,ai, bj,sj,xj,aj, justTest){
+    // TODO
+    if(justTest)
+        return false;
+    else
+        return 0;
+};
+
+function setConvexToCapsuleShapeMiddle(convexShape, capsuleShape){
+    vec2.set(convexShape.vertices[0], -capsuleShape.length * 0.5, -capsuleShape.radius);
+    vec2.set(convexShape.vertices[1],  capsuleShape.length * 0.5, -capsuleShape.radius);
+    vec2.set(convexShape.vertices[2],  capsuleShape.length * 0.5,  capsuleShape.radius);
+    vec2.set(convexShape.vertices[3], -capsuleShape.length * 0.5,  capsuleShape.radius);
 }
+
+var convexCapsule_tempRect = new Rectangle(1,1),
+    convexCapsule_tempVec = vec2.create();
+
+/**
+ * Convex/capsule narrowphase
+ * @method convexCapsule
+ * @param  {Body}       bi
+ * @param  {Convex}     si
+ * @param  {Array}      xi
+ * @param  {Number}     ai
+ * @param  {Body}       bj
+ * @param  {Capsule}    sj
+ * @param  {Array}      xj
+ * @param  {Number}     aj
+ * @todo Implement me!
+ */
+Narrowphase.prototype[Shape.CAPSULE | Shape.CONVEX] =
+Narrowphase.prototype[Shape.CAPSULE | Shape.RECTANGLE] =
+Narrowphase.prototype.convexCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTest){
+
+    // Check the circles
+    // Add offsets!
+    var circlePos = convexCapsule_tempVec;
+    vec2.set(circlePos, sj.length/2,0);
+    vec2.rotate(circlePos,circlePos,aj);
+    vec2.add(circlePos,circlePos,xj);
+    var result1 = this.circleConvex(bj,sj,circlePos,aj, bi,si,xi,ai, justTest, sj.radius);
+
+    vec2.set(circlePos,-sj.length/2, 0);
+    vec2.rotate(circlePos,circlePos,aj);
+    vec2.add(circlePos,circlePos,xj);
+    var result2 = this.circleConvex(bj,sj,circlePos,aj, bi,si,xi,ai, justTest, sj.radius);
+
+    if(justTest &amp;&amp; (result1 || result2))
+        return true;
+
+    // Check center rect
+    var r = convexCapsule_tempRect;
+    setConvexToCapsuleShapeMiddle(r,sj);
+    var result = this.convexConvex(bi,si,xi,ai, bj,r,xj,aj, justTest);
+
+    return result + result1 + result2;
+};
+
+/**
+ * Capsule/line narrowphase
+ * @method lineCapsule
+ * @param  {Body}       bi
+ * @param  {Line}       si
+ * @param  {Array}      xi
+ * @param  {Number}     ai
+ * @param  {Body}       bj
+ * @param  {Capsule}    sj
+ * @param  {Array}      xj
+ * @param  {Number}     aj
+ * @todo Implement me!
+ */
+Narrowphase.prototype[Shape.CAPSULE | Shape.LINE] =
+Narrowphase.prototype.lineCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTest){
+    // TODO
+    if(justTest)
+        return false;
+    else
+        return 0;
+};
+
+var capsuleCapsule_tempVec1 = vec2.create();
+var capsuleCapsule_tempVec2 = vec2.create();
+var capsuleCapsule_tempRect1 = new Rectangle(1,1);
+
+/**
+ * Capsule/capsule narrowphase
+ * @method capsuleCapsule
+ * @param  {Body}       bi
+ * @param  {Capsule}    si
+ * @param  {Array}      xi
+ * @param  {Number}     ai
+ * @param  {Body}       bj
+ * @param  {Capsule}    sj
+ * @param  {Array}      xj
+ * @param  {Number}     aj
+ * @todo Implement me!
+ */
+Narrowphase.prototype[Shape.CAPSULE | Shape.CAPSULE] =
+Narrowphase.prototype.capsuleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTest){
+
+    // Check the circles
+    // Add offsets!
+    var circlePosi = capsuleCapsule_tempVec1,
+        circlePosj = capsuleCapsule_tempVec2;
+
+    var numContacts = 0;
+
+    // Need 4 circle checks, between all
+    for(var i=0; i&lt;2; i++){
+
+        vec2.set(circlePosi,(i==0?-1:1)*si.length/2,0);
+        vec2.rotate(circlePosi,circlePosi,ai);
+        vec2.add(circlePosi,circlePosi,xi);
+
+        for(var j=0; j&lt;2; j++){
+
+            vec2.set(circlePosj,(j==0?-1:1)*sj.length/2, 0);
+            vec2.rotate(circlePosj,circlePosj,aj);
+            vec2.add(circlePosj,circlePosj,xj);
+
+            var result = this.circleCircle(bi,si,circlePosi,ai, bj,sj,circlePosj,aj, justTest, si.radius, sj.radius);
+
+            if(justTest &amp;&amp; result)
+                return true;
+
+            numContacts += result;
+        }
+    }
+
+    // Check circles against the center rectangles
+    var rect = capsuleCapsule_tempRect1;
+    setConvexToCapsuleShapeMiddle(rect,si);
+    var result1 = this.convexCapsule(bi,rect,xi,ai, bj,sj,xj,aj, justTest);
+
+    if(justTest &amp;&amp; result1) return true;
+    numContacts += result1;
+
+    setConvexToCapsuleShapeMiddle(rect,sj);
+    var result2 = this.convexCapsule(bj,rect,xj,aj, bi,si,xi,ai, justTest);
+
+    if(justTest &amp;&amp; result2) return true;
+    numContacts += result2;
+
+    return numContacts;
+};
+
+/**
+ * Line/line narrowphase
+ * @method lineLine
+ * @param  {Body}       bi
+ * @param  {Line}       si
+ * @param  {Array}      xi
+ * @param  {Number}     ai
+ * @param  {Body}       bj
+ * @param  {Line}       sj
+ * @param  {Array}      xj
+ * @param  {Number}     aj
+ * @todo Implement me!
+ */
+Narrowphase.prototype[Shape.LINE | Shape.LINE] =
+Narrowphase.prototype.lineLine = function(bi,si,xi,ai, bj,sj,xj,aj, justTest){
+    // TODO
+    if(justTest)
+        return false;
+    else
+        return 0;
+};
 
 /**
  * Plane/line Narrowphase
  * @method planeLine
- * @param  {Body} bi
- * @param  {Plane} si
- * @param  {Array} xi
- * @param  {Number} ai
- * @param  {Body} bj
- * @param  {Line} sj
- * @param  {Array} xj
- * @param  {Number} aj
+ * @param  {Body}   planeBody
+ * @param  {Plane}  planeShape
+ * @param  {Array}  planeOffset
+ * @param  {Number} planeAngle
+ * @param  {Body}   lineBody
+ * @param  {Line}   lineShape
+ * @param  {Array}  lineOffset
+ * @param  {Number} lineAngle
  */
 Narrowphase.prototype[Shape.PLANE | Shape.LINE] =
-Narrowphase.prototype.planeLine = function(bi,si,xi,ai, bj,sj,xj,aj){
-    var lineShape = sj,
-        lineAngle = aj,
-        lineBody = bj,
-        lineOffset = xj,
-        planeOffset = xi,
-        planeAngle = ai,
-        planeBody = bi,
-        planeShape = si;
-
+Narrowphase.prototype.planeLine = function(planeBody, planeShape, planeOffset, planeAngle,
+                                           lineBody,  lineShape,  lineOffset,  lineAngle, justTest){
     var worldVertex0 = tmp1,
         worldVertex1 = tmp2,
         worldVertex01 = tmp3,
@@ -381,7 +647,9 @@ Narrowphase.prototype.planeLine = function(bi,si,xi,ai, bj,sj,xj,aj){
         worldEdgeUnit = tmp6,
         dist = tmp7,
         worldNormal = tmp8,
-        worldTangent = tmp9;
+        worldTangent = tmp9,
+        verts = tmpArray
+        numContacts = 0;
 
     // Get start and end points
     vec2.set(worldVertex0, -lineShape.length/2, 0);
@@ -407,7 +675,8 @@ Narrowphase.prototype.planeLine = function(bi,si,xi,ai, bj,sj,xj,aj){
     vec2.rotate(worldNormal, yAxis, planeAngle);
 
     // Check line ends
-    var verts = [worldVertex0, worldVertex1];
+    verts[0] = worldVertex0;
+    verts[1] = worldVertex1;
     for(var i=0; i&lt;verts.length; i++){
         var v = verts[i];
 
@@ -417,22 +686,26 @@ Narrowphase.prototype.planeLine = function(bi,si,xi,ai, bj,sj,xj,aj){
 
         if(d &lt; 0){
 
-            var c = this.createContactEquation(planeBody,lineBody,si,sj);
+            if(justTest)
+                return true;
 
-            vec2.copy(c.ni, worldNormal);
-            vec2.normalize(c.ni,c.ni);
+            var c = this.createContactEquation(planeBody,lineBody,planeShape,lineShape);
+            numContacts++;
+
+            vec2.copy(c.normalA, worldNormal);
+            vec2.normalize(c.normalA,c.normalA);
 
             // distance vector along plane normal
             vec2.scale(dist, worldNormal, d);
 
             // Vector from plane center to contact
-            sub(c.ri, v, dist);
-            sub(c.ri, c.ri, planeBody.position);
+            sub(c.contactPointA, v, dist);
+            sub(c.contactPointA, c.contactPointA, planeBody.position);
 
             // From line center to contact
-            sub(c.rj, v,    lineOffset);
-            add(c.rj, c.rj, lineOffset);
-            sub(c.rj, c.rj, lineBody.position);
+            sub(c.contactPointB, v,    lineOffset);
+            add(c.contactPointB, c.contactPointB, lineOffset);
+            sub(c.contactPointB, c.contactPointB, lineBody.position);
 
             this.contactEquations.push(c);
 
@@ -442,6 +715,8 @@ Narrowphase.prototype.planeLine = function(bi,si,xi,ai, bj,sj,xj,aj){
             }
         }
     }
+
+    return numContacts;
 };
 
 Narrowphase.prototype[Shape.PARTICLE | Shape.CAPSULE] =
@@ -490,7 +765,9 @@ Narrowphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj, justTest, 
         worldVertex11 = tmp11,
         dist = tmp12,
         lineToCircle = tmp13,
-        lineEndToLineRadius = tmp14;
+        lineEndToLineRadius = tmp14,
+
+        verts = tmpArray;
 
     // Get start and end points
     vec2.set(worldVertex0, -lineShape.length/2, 0);
@@ -544,16 +821,16 @@ Narrowphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj, justTest, 
 
             var c = this.createContactEquation(circleBody,lineBody,si,sj);
 
-            vec2.scale(c.ni, orthoDist, -1);
-            vec2.normalize(c.ni, c.ni);
+            vec2.scale(c.normalA, orthoDist, -1);
+            vec2.normalize(c.normalA, c.normalA);
 
-            vec2.scale( c.ri, c.ni,  circleRadius);
-            add(c.ri, c.ri, circleOffset);
-            sub(c.ri, c.ri, circleBody.position);
+            vec2.scale( c.contactPointA, c.normalA,  circleRadius);
+            add(c.contactPointA, c.contactPointA, circleOffset);
+            sub(c.contactPointA, c.contactPointA, circleBody.position);
 
-            sub(c.rj, projectedPoint, lineOffset);
-            add(c.rj, c.rj, lineOffset);
-            sub(c.rj, c.rj, lineBody.position);
+            sub(c.contactPointB, projectedPoint, lineOffset);
+            add(c.contactPointB, c.contactPointB, lineOffset);
+            sub(c.contactPointB, c.contactPointB, lineBody.position);
 
             this.contactEquations.push(c);
 
@@ -561,12 +838,14 @@ Narrowphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj, justTest, 
                 this.frictionEquations.push(this.createFrictionFromContact(c));
             }
 
-            return true;
+            return 1;
         }
     }
 
     // Add corner
-    var verts = [worldVertex0, worldVertex1];
+    // @todo reuse array object
+    verts[0] = worldVertex0;
+    verts[1] = worldVertex1;
 
     for(var i=0; i&lt;verts.length; i++){
         var v = verts[i];
@@ -579,19 +858,19 @@ Narrowphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj, justTest, 
 
             var c = this.createContactEquation(circleBody,lineBody,si,sj);
 
-            vec2.copy(c.ni, dist);
-            vec2.normalize(c.ni,c.ni);
+            vec2.copy(c.normalA, dist);
+            vec2.normalize(c.normalA,c.normalA);
 
             // Vector from circle to contact point is the normal times the circle radius
-            vec2.scale(c.ri, c.ni, circleRadius);
-            add(c.ri, c.ri, circleOffset);
-            sub(c.ri, c.ri, circleBody.position);
+            vec2.scale(c.contactPointA, c.normalA, circleRadius);
+            add(c.contactPointA, c.contactPointA, circleOffset);
+            sub(c.contactPointA, c.contactPointA, circleBody.position);
 
-            sub(c.rj, v, lineOffset);
-            vec2.scale(lineEndToLineRadius, c.ni, -lineRadius);
-            add(c.rj, c.rj, lineEndToLineRadius);
-            add(c.rj, c.rj, lineOffset);
-            sub(c.rj, c.rj, lineBody.position);
+            sub(c.contactPointB, v, lineOffset);
+            vec2.scale(lineEndToLineRadius, c.normalA, -lineRadius);
+            add(c.contactPointB, c.contactPointB, lineEndToLineRadius);
+            add(c.contactPointB, c.contactPointB, lineOffset);
+            sub(c.contactPointB, c.contactPointB, lineBody.position);
 
             this.contactEquations.push(c);
 
@@ -599,11 +878,11 @@ Narrowphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj, justTest, 
                 this.frictionEquations.push(this.createFrictionFromContact(c));
             }
 
-            return true;
+            return 1;
         }
     }
 
-    return false;
+    return 0;
 };
 
 /**
@@ -636,6 +915,7 @@ Narrowphase.prototype.circleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTes
  * @param  {Number} aj
  */
 Narrowphase.prototype[Shape.CIRCLE | Shape.CONVEX] =
+Narrowphase.prototype[Shape.CIRCLE | Shape.RECTANGLE] =
 Narrowphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTest, circleRadius){
     var convexShape = sj,
         convexAngle = aj,
@@ -680,8 +960,8 @@ Narrowphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
     verts = convexShape.vertices;
 
     // Check all edges first
-    for(var i=0; i!==verts.length; i++){
-        var v0 = verts[i],
+    for(var i=0; i!==verts.length+1; i++){
+        var v0 = verts[i%verts.length],
             v1 = verts[(i+1)%verts.length];
 
         vec2.rotate(worldVertex0, v0, convexAngle);
@@ -750,40 +1030,44 @@ Narrowphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
     }
 
     if(found){
+
+        if(justTest)
+            return true;
+
         var c = this.createContactEquation(circleBody,convexBody,si,sj);
-        vec2.sub(c.ni, minCandidate, circleOffset)
-        vec2.normalize(c.ni, c.ni);
+        vec2.sub(c.normalA, minCandidate, circleOffset)
+        vec2.normalize(c.normalA, c.normalA);
 
-        vec2.scale(c.ri,  c.ni, circleRadius);
-        add(c.ri, c.ri, circleOffset);
-        sub(c.ri, c.ri, circleBody.position);
+        vec2.scale(c.contactPointA,  c.normalA, circleRadius);
+        add(c.contactPointA, c.contactPointA, circleOffset);
+        sub(c.contactPointA, c.contactPointA, circleBody.position);
 
-        sub(c.rj, closestEdgeProjectedPoint, convexOffset);
-        add(c.rj, c.rj, convexOffset);
-        sub(c.rj, c.rj, convexBody.position);
+        sub(c.contactPointB, closestEdgeProjectedPoint, convexOffset);
+        add(c.contactPointB, c.contactPointB, convexOffset);
+        sub(c.contactPointB, c.contactPointB, convexBody.position);
 
         this.contactEquations.push(c);
 
         if(this.enableFriction)
             this.frictionEquations.push( this.createFrictionFromContact(c) );
 
-        return true;
+        return 1;
     }
 
     /*
     if(closestEdge != -1){
         var c = this.createContactEquation(circleBody,convexBody);
 
-        vec2.scale(c.ni, closestEdgeOrthoDist, -1);
-        vec2.normalize(c.ni, c.ni);
+        vec2.scale(c.normalA, closestEdgeOrthoDist, -1);
+        vec2.normalize(c.normalA, c.normalA);
 
-        vec2.scale(c.ri,  c.ni, circleRadius);
-        add(c.ri, c.ri, circleOffset);
-        sub(c.ri, c.ri, circleBody.position);
+        vec2.scale(c.contactPointA,  c.normalA, circleRadius);
+        add(c.contactPointA, c.contactPointA, circleOffset);
+        sub(c.contactPointA, c.contactPointA, circleBody.position);
 
-        sub(c.rj, closestEdgeProjectedPoint, convexOffset);
-        add(c.rj, c.rj, convexOffset);
-        sub(c.rj, c.rj, convexBody.position);
+        sub(c.contactPointB, closestEdgeProjectedPoint, convexOffset);
+        add(c.contactPointB, c.contactPointB, convexOffset);
+        sub(c.contactPointB, c.contactPointB, convexBody.position);
 
         this.contactEquations.push(c);
 
@@ -808,17 +1092,17 @@ Narrowphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
 
                 var c = this.createContactEquation(circleBody,convexBody,si,sj);
 
-                vec2.copy(c.ni, dist);
-                vec2.normalize(c.ni,c.ni);
+                vec2.copy(c.normalA, dist);
+                vec2.normalize(c.normalA,c.normalA);
 
                 // Vector from circle to contact point is the normal times the circle radius
-                vec2.scale(c.ri, c.ni, circleRadius);
-                add(c.ri, c.ri, circleOffset);
-                sub(c.ri, c.ri, circleBody.position);
+                vec2.scale(c.contactPointA, c.normalA, circleRadius);
+                add(c.contactPointA, c.contactPointA, circleOffset);
+                sub(c.contactPointA, c.contactPointA, circleBody.position);
 
-                sub(c.rj, worldVertex, convexOffset);
-                add(c.rj, c.rj, convexOffset);
-                sub(c.rj, c.rj, convexBody.position);
+                sub(c.contactPointB, worldVertex, convexOffset);
+                add(c.contactPointB, c.contactPointB, convexOffset);
+                sub(c.contactPointB, c.contactPointB, convexBody.position);
 
                 this.contactEquations.push(c);
 
@@ -826,12 +1110,12 @@ Narrowphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
                     this.frictionEquations.push(this.createFrictionFromContact(c));
                 }
 
-                return true;
+                return 1;
             }
         }
     }
 
-    return false;
+    return 0;
 };
 
 // Check if a point is in a polygon
@@ -887,6 +1171,7 @@ function pointInConvex(worldPoint,convexShape,convexOffset,convexAngle){
  * @todo use pointInConvex and code more similar to circleConvex
  */
 Narrowphase.prototype[Shape.PARTICLE | Shape.CONVEX] =
+Narrowphase.prototype[Shape.PARTICLE | Shape.RECTANGLE] =
 Narrowphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTest ){
     var convexShape = sj,
         convexAngle = aj,
@@ -923,7 +1208,9 @@ Narrowphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, just
 
     // Check if the particle is in the polygon at all
     if(!pointInConvex(particleOffset,convexShape,convexOffset,convexAngle))
-        return false;
+        return 0;
+
+    if(justTest) return true;
 
     // Check edges first
     var lastCross = null;
@@ -993,29 +1280,29 @@ Narrowphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, just
     if(found){
         var c = this.createContactEquation(particleBody,convexBody,si,sj);
 
-        vec2.scale(c.ni, minEdgeNormal, -1);
-        vec2.normalize(c.ni, c.ni);
+        vec2.scale(c.normalA, minEdgeNormal, -1);
+        vec2.normalize(c.normalA, c.normalA);
 
         // Particle has no extent to the contact point
-        vec2.set(c.ri,  0, 0);
-        add(c.ri, c.ri, particleOffset);
-        sub(c.ri, c.ri, particleBody.position);
+        vec2.set(c.contactPointA,  0, 0);
+        add(c.contactPointA, c.contactPointA, particleOffset);
+        sub(c.contactPointA, c.contactPointA, particleBody.position);
 
         // From convex center to point
-        sub(c.rj, closestEdgeProjectedPoint, convexOffset);
-        add(c.rj, c.rj, convexOffset);
-        sub(c.rj, c.rj, convexBody.position);
+        sub(c.contactPointB, closestEdgeProjectedPoint, convexOffset);
+        add(c.contactPointB, c.contactPointB, convexOffset);
+        sub(c.contactPointB, c.contactPointB, convexBody.position);
 
         this.contactEquations.push(c);
 
         if(this.enableFriction)
             this.frictionEquations.push( this.createFrictionFromContact(c) );
 
-        return true;
+        return 1;
     }
 
 
-    return false;
+    return 0;
 };
 
 /**
@@ -1031,42 +1318,46 @@ Narrowphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, just
  * @param  {Number} aj
  */
 Narrowphase.prototype[Shape.CIRCLE] =
-Narrowphase.prototype.circleCircle = function(  bi,si,xi,ai, bj,sj,xj,aj, justTest){
+Narrowphase.prototype.circleCircle = function(  bi,si,xi,ai, bj,sj,xj,aj, justTest, radiusA, radiusB){
     var bodyA = bi,
         shapeA = si,
         offsetA = xi,
         bodyB = bj,
         shapeB = sj,
         offsetB = xj,
-        dist = tmp1;
+        dist = tmp1,
+        radiusA = radiusA || shapeA.radius,
+        radiusB = radiusB || shapeB.radius;
 
     sub(dist,xi,xj);
-    var r = si.radius + sj.radius;
+    var r = radiusA + radiusB;
     if(vec2.squaredLength(dist) &gt; r*r){
-        return false;
+        return 0;
     }
 
-    if(justTest) return true;
+    if(justTest){
+        return true;
+    }
 
     var c = this.createContactEquation(bodyA,bodyB,si,sj);
-    sub(c.ni, offsetB, offsetA);
-    vec2.normalize(c.ni,c.ni);
+    sub(c.normalA, offsetB, offsetA);
+    vec2.normalize(c.normalA,c.normalA);
 
-    vec2.scale( c.ri, c.ni,  shapeA.radius);
-    vec2.scale( c.rj, c.ni, -shapeB.radius);
+    vec2.scale( c.contactPointA, c.normalA,  radiusA);
+    vec2.scale( c.contactPointB, c.normalA, -radiusB);
 
-    add(c.ri, c.ri, offsetA);
-    sub(c.ri, c.ri, bodyA.position);
+    add(c.contactPointA, c.contactPointA, offsetA);
+    sub(c.contactPointA, c.contactPointA, bodyA.position);
 
-    add(c.rj, c.rj, offsetB);
-    sub(c.rj, c.rj, bodyB.position);
+    add(c.contactPointB, c.contactPointB, offsetB);
+    sub(c.contactPointB, c.contactPointB, bodyB.position);
 
     this.contactEquations.push(c);
 
     if(this.enableFriction){
         this.frictionEquations.push(this.createFrictionFromContact(c));
     }
-    return true;
+    return 1;
 };
 
 /**
@@ -1082,7 +1373,8 @@ Narrowphase.prototype.circleCircle = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
  * @param  {Number} aj
  */
 Narrowphase.prototype[Shape.PLANE | Shape.CONVEX] =
-Narrowphase.prototype.planeConvex = function( bi,si,xi,ai, bj,sj,xj,aj ){
+Narrowphase.prototype[Shape.PLANE | Shape.RECTANGLE] =
+Narrowphase.prototype.planeConvex = function( bi,si,xi,ai, bj,sj,xj,aj, justTest ){
     var convexBody = bj,
         convexOffset = xj,
         convexShape = sj,
@@ -1106,7 +1398,11 @@ Narrowphase.prototype.planeConvex = function( bi,si,xi,ai, bj,sj,xj,aj ){
 
         sub(dist, worldVertex, planeOffset);
 
-        if(dot(dist,worldNormal) &lt; 0){
+        if(dot(dist,worldNormal) &lt;= Narrowphase.convexPrecision){
+
+            if(justTest){
+                return true;
+            }
 
             // Found vertex
             numReported++;
@@ -1115,41 +1411,36 @@ Narrowphase.prototype.planeConvex = function( bi,si,xi,ai, bj,sj,xj,aj ){
 
             sub(dist, worldVertex, planeOffset);
 
-            vec2.copy(c.ni, worldNormal);
+            vec2.copy(c.normalA, worldNormal);
 
-            var d = dot(dist, c.ni);
-            vec2.scale(dist, c.ni, d);
+            var d = dot(dist, c.normalA);
+            vec2.scale(dist, c.normalA, d);
 
             // rj is from convex center to contact
-            sub(c.rj, worldVertex, convexBody.position);
+            sub(c.contactPointB, worldVertex, convexBody.position);
 
 
             // ri is from plane center to contact
-            sub( c.ri, worldVertex, dist);
-            sub( c.ri, c.ri, planeBody.position);
+            sub( c.contactPointA, worldVertex, dist);
+            sub( c.contactPointA, c.contactPointA, planeBody.position);
 
             this.contactEquations.push(c);
-
-            // TODO: if we have 2 contacts, we do only need 1 friction equation
-
             if(this.enableFriction){
                 this.frictionEquations.push(this.createFrictionFromContact(c));
             }
-
-            if(numReported &gt;= 2)
-                break;
         }
     }
-    return numReported &gt; 0;
+
+    return numReported;
 };
 
 /**
  * @method convexPlane
  * @deprecated Use .planeConvex() instead!
  */
-Narrowphase.prototype.convexPlane = function( bi,si,xi,ai, bj,sj,xj,aj ){
+Narrowphase.prototype.convexPlane = function( bi,si,xi,ai, bj,sj,xj,aj, justTest ){
     console.warn(&quot;Narrowphase.prototype.convexPlane is deprecated. Use planeConvex instead!&quot;);
-    return this.planeConvex( bj,sj,xj,aj, bi,si,xi,ai );
+    return this.planeConvex( bj,sj,xj,aj, bi,si,xi,ai, justTest );
 }
 
 /**
@@ -1184,28 +1475,28 @@ Narrowphase.prototype.particlePlane = function( bi,si,xi,ai, bj,sj,xj,aj, justTe
 
     var d = dot(dist, worldNormal);
 
-    if(d &gt; 0) return false;
+    if(d &gt; 0) return 0;
     if(justTest) return true;
 
     var c = this.createContactEquation(planeBody,particleBody,sj,si);
 
-    vec2.copy(c.ni, worldNormal);
-    vec2.scale( dist, c.ni, d );
+    vec2.copy(c.normalA, worldNormal);
+    vec2.scale( dist, c.normalA, d );
     // dist is now the distance vector in the normal direction
 
     // ri is the particle position projected down onto the plane, from the plane center
-    sub( c.ri, particleOffset, dist);
-    sub( c.ri, c.ri, planeBody.position);
+    sub( c.contactPointA, particleOffset, dist);
+    sub( c.contactPointA, c.contactPointA, planeBody.position);
 
     // rj is from the body center to the particle center
-    sub( c.rj, particleOffset, particleBody.position );
+    sub( c.contactPointB, particleOffset, particleBody.position );
 
     this.contactEquations.push(c);
 
     if(this.enableFriction){
         this.frictionEquations.push(this.createFrictionFromContact(c));
     }
-    return true;
+    return 1;
 };
 
 /**
@@ -1231,20 +1522,20 @@ Narrowphase.prototype.circleParticle = function(   bi,si,xi,ai, bj,sj,xj,aj, jus
         dist = tmp1;
 
     sub(dist, particleOffset, circleOffset);
-    if(vec2.squaredLength(dist) &gt; circleShape.radius*circleShape.radius) return false;
+    if(vec2.squaredLength(dist) &gt; circleShape.radius*circleShape.radius) return 0;
     if(justTest) return true;
 
     var c = this.createContactEquation(circleBody,particleBody,si,sj);
-    vec2.copy(c.ni, dist);
-    vec2.normalize(c.ni,c.ni);
+    vec2.copy(c.normalA, dist);
+    vec2.normalize(c.normalA,c.normalA);
 
     // Vector from circle to contact point is the normal times the circle radius
-    vec2.scale(c.ri, c.ni, circleShape.radius);
-    add(c.ri, c.ri, circleOffset);
-    sub(c.ri, c.ri, circleBody.position);
+    vec2.scale(c.contactPointA, c.normalA, circleShape.radius);
+    add(c.contactPointA, c.contactPointA, circleOffset);
+    sub(c.contactPointA, c.contactPointA, circleBody.position);
 
     // Vector from particle center to contact point is zero
-    sub(c.rj, particleOffset, particleBody.position);
+    sub(c.contactPointB, particleOffset, particleBody.position);
 
     this.contactEquations.push(c);
 
@@ -1252,7 +1543,7 @@ Narrowphase.prototype.circleParticle = function(   bi,si,xi,ai, bj,sj,xj,aj, jus
         this.frictionEquations.push(this.createFrictionFromContact(c));
     }
 
-    return true;
+    return 1;
 };
 
 var capsulePlane_tmpCircle = new Circle(1),
@@ -1261,7 +1552,7 @@ var capsulePlane_tmpCircle = new Circle(1),
     capsulePlane_tmp3 = vec2.create();
 
 Narrowphase.prototype[Shape.PLANE | Shape.CAPSULE] =
-Narrowphase.prototype.planeCapsule = function( bi,si,xi,ai, bj,sj,xj,aj ){
+Narrowphase.prototype.planeCapsule = function( bi,si,xi,ai, bj,sj,xj,aj, justTest ){
     var end1 = capsulePlane_tmp1,
         end2 = capsulePlane_tmp2,
         circle = capsulePlane_tmpCircle,
@@ -1279,17 +1570,22 @@ Narrowphase.prototype.planeCapsule = function( bi,si,xi,ai, bj,sj,xj,aj ){
     circle.radius = sj.radius;
 
     // Do Narrowphase as two circles
-    this.circlePlane(bj,circle,end1,0, bi,si,xi,ai);
-    this.circlePlane(bj,circle,end2,0, bi,si,xi,ai);
+    var numContacts1 = this.circlePlane(bj,circle,end1,0, bi,si,xi,ai, justTest),
+        numContacts2 = this.circlePlane(bj,circle,end2,0, bi,si,xi,ai, justTest);
+
+    if(justTest)
+        return numContacts1 || numContacts2;
+    else
+        return numContacts1 + numContacts2;
 };
 
 /**
  * @method capsulePlane
  * @deprecated Use .planeCapsule() instead!
  */
-Narrowphase.prototype.capsulePlane = function( bi,si,xi,ai, bj,sj,xj,aj ){
+Narrowphase.prototype.capsulePlane = function( bi,si,xi,ai, bj,sj,xj,aj, justTest ){
     console.warn(&quot;Narrowphase.prototype.capsulePlane() is deprecated. Use .planeCapsule() instead!&quot;);
-    return this.planeCapsule( bj,sj,xj,aj, bi,si,xi,ai );
+    return this.planeCapsule( bj,sj,xj,aj, bi,si,xi,ai, justTest );
 }
 
 /**
@@ -1304,7 +1600,7 @@ Narrowphase.prototype.capsulePlane = function( bi,si,xi,ai, bj,sj,xj,aj ){
  * @param  {Number}  aj     Extra angle to apply to the plane
  */
 Narrowphase.prototype[Shape.CIRCLE | Shape.PLANE] =
-Narrowphase.prototype.circlePlane = function(   bi,si,xi,ai, bj,sj,xj,aj ){
+Narrowphase.prototype.circlePlane = function(   bi,si,xi,ai, bj,sj,xj,aj, justTest ){
     var circleBody = bi,
         circleShape = si,
         circleOffset = xi, // Offset from body center, rotated!
@@ -1328,24 +1624,30 @@ Narrowphase.prototype.circlePlane = function(   bi,si,xi,ai, bj,sj,xj,aj ){
     // Normal direction distance
     var d = dot(worldNormal, planeToCircle);
 
-    if(d &gt; circleShape.radius) return false; // No overlap. Abort.
+    if(d &gt; circleShape.radius){
+        return 0; // No overlap. Abort.
+    }
+
+    if(justTest){
+        return true;
+    }
 
     // Create contact
     var contact = this.createContactEquation(planeBody,circleBody,sj,si);
 
     // ni is the plane world normal
-    vec2.copy(contact.ni, worldNormal);
+    vec2.copy(contact.normalA, worldNormal);
 
     // rj is the vector from circle center to the contact point
-    vec2.scale(contact.rj, contact.ni, -circleShape.radius);
-    add(contact.rj, contact.rj, circleOffset);
-    sub(contact.rj, contact.rj, circleBody.position);
+    vec2.scale(contact.contactPointB, contact.normalA, -circleShape.radius);
+    add(contact.contactPointB, contact.contactPointB, circleOffset);
+    sub(contact.contactPointB, contact.contactPointB, circleBody.position);
 
     // ri is the distance from plane center to contact.
-    vec2.scale(temp, contact.ni, d);
-    sub(contact.ri, planeToCircle, temp ); // Subtract normal distance vector from the distance vector
-    add(contact.ri, contact.ri, planeOffset);
-    sub(contact.ri, contact.ri, planeBody.position);
+    vec2.scale(temp, contact.normalA, d);
+    sub(contact.contactPointA, planeToCircle, temp ); // Subtract normal distance vector from the distance vector
+    add(contact.contactPointA, contact.contactPointA, planeOffset);
+    sub(contact.contactPointA, contact.contactPointA, planeBody.position);
 
     this.contactEquations.push(contact);
 
@@ -1353,9 +1655,10 @@ Narrowphase.prototype.circlePlane = function(   bi,si,xi,ai, bj,sj,xj,aj ){
         this.frictionEquations.push( this.createFrictionFromContact(contact) );
     }
 
-    return true;
+    return 1;
 };
 
+Narrowphase.convexPrecision = 1e-7;
 
 /**
  * Convex/convex Narrowphase.See &lt;a href=&quot;http://www.altdevblogaday.com/2011/05/13/contact-generation-between-3d-convex-meshes/&quot;&gt;this article&lt;/a&gt; for more info.
@@ -1370,7 +1673,9 @@ Narrowphase.prototype.circlePlane = function(   bi,si,xi,ai, bj,sj,xj,aj ){
  * @param  {Number} aj
  */
 Narrowphase.prototype[Shape.CONVEX] =
-Narrowphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj ){
+Narrowphase.prototype[Shape.CONVEX | Shape.RECTANGLE] =
+Narrowphase.prototype[Shape.RECTANGLE] =
+Narrowphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTest, precision ){
     var sepAxis = tmp1,
         worldPoint = tmp2,
         worldPoint0 = tmp3,
@@ -1379,10 +1684,14 @@ Narrowphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj ){
         projected = tmp6,
         penetrationVec = tmp7,
         dist = tmp8,
-        worldNormal = tmp9;
+        worldNormal = tmp9,
+        numContacts = 0,
+        precision = precision || Narrowphase.convexPrecision;
 
     var found = Narrowphase.findSeparatingAxis(si,xi,ai,sj,xj,aj,sepAxis);
-    if(!found) return false;
+    if(!found){
+        return 0;
+    }
 
     // Make sure the separating axis is directed from shape i to shape j
     sub(dist,xj,xi);
@@ -1394,7 +1703,9 @@ Narrowphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj ){
     var closestEdge1 = Narrowphase.getClosestEdge(si,ai,sepAxis,true), // Flipped axis
         closestEdge2 = Narrowphase.getClosestEdge(sj,aj,sepAxis);
 
-    if(closestEdge1==-1 || closestEdge2==-1) return false;
+    if(closestEdge1 === -1 || closestEdge2 === -1){
+        return 0;
+    }
 
     // Loop over the shapes
     for(var k=0; k&lt;2; k++){
@@ -1406,7 +1717,7 @@ Narrowphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj ){
             angleA = ai, angleB = aj,
             bodyA = bi, bodyB = bj;
 
-        if(k==0){
+        if(k === 0){
             // Swap!
             var tmp;
             tmp = closestEdgeA; closestEdgeA = closestEdgeB;    closestEdgeB = tmp;
@@ -1447,18 +1758,23 @@ Narrowphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj ){
 
                 var d = dot(worldNormal,dist);
 
-                if(d &lt; 0){
+                if(d &lt;= precision){
                     insideNumEdges++;
                 }
             }
 
-            if(insideNumEdges == 3){
+            if(insideNumEdges &gt;= 3){
+
+                if(justTest){
+                    return true;
+                }
 
                 // worldPoint was on the &quot;inside&quot; side of each of the 3 checked edges.
                 // Project it to the center edge and use the projection direction as normal
 
                 // Create contact
-                var c = this.createContactEquation(bodyA,bodyB,si,sj);
+                var c = this.createContactEquation(bodyA,bodyB,shapeA,shapeB);
+                numContacts++;
 
                 // Get center edge from body A
                 var v0 = shapeA.vertices[(closestEdgeA)   % shapeA.vertices.length],
@@ -1472,22 +1788,21 @@ Narrowphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj ){
 
                 sub(worldEdge, worldPoint1, worldPoint0);
 
-                vec2.rotate(c.ni, worldEdge, -Math.PI/2); // Normal points out of convex A
-                vec2.normalize(c.ni,c.ni);
+                vec2.rotate(c.normalA, worldEdge, -Math.PI/2); // Normal points out of convex A
+                vec2.normalize(c.normalA,c.normalA);
 
                 sub(dist, worldPoint, worldPoint0); // From edge point to the penetrating point
-                var d = dot(c.ni,dist);             // Penetration
-                vec2.scale(penetrationVec, c.ni, d);     // Vector penetration
+                var d = dot(c.normalA,dist);             // Penetration
+                vec2.scale(penetrationVec, c.normalA, d);     // Vector penetration
 
+                sub(c.contactPointA, worldPoint, offsetA);
+                sub(c.contactPointA, c.contactPointA, penetrationVec);
+                add(c.contactPointA, c.contactPointA, offsetA);
+                sub(c.contactPointA, c.contactPointA, bodyA.position);
 
-                sub(c.ri, worldPoint, offsetA);
-                sub(c.ri, c.ri, penetrationVec);
-                add(c.ri, c.ri, offsetA);
-                sub(c.ri, c.ri, bodyA.position);
-
-                sub(c.rj, worldPoint, offsetB);
-                add(c.rj, c.rj, offsetB);
-                sub(c.rj, c.rj, bodyB.position);
+                sub(c.contactPointB, worldPoint, offsetB);
+                add(c.contactPointB, c.contactPointB, offsetB);
+                sub(c.contactPointB, c.contactPointB, bodyB.position);
 
                 this.contactEquations.push(c);
 
@@ -1497,6 +1812,8 @@ Narrowphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj ){
             }
         }
     }
+
+    return numContacts;
 };
 
 // .projectConvex is called by other functions, need local tmp vectors
@@ -1609,7 +1926,7 @@ Narrowphase.findSeparatingAxis = function(c1,offset1,angle1,c2,offset2,angle2,se
 
             // Get separating distance
             var dist = b[0] - a[1];
-            overlap = dist &lt; 0;
+            overlap = (dist &lt;= Narrowphase.convexPrecision);
 
             if(maxDist===null || dist &gt; maxDist){
                 vec2.copy(sepAxis, normal);
@@ -1669,6 +1986,180 @@ Narrowphase.getClosestEdge = function(c,angle,axis,flip){
     return closestEdge;
 };
 
+var circleHeightfield_candidate = vec2.create(),
+    circleHeightfield_dist = vec2.create(),
+    circleHeightfield_v0 = vec2.create(),
+    circleHeightfield_v1 = vec2.create(),
+    circleHeightfield_minCandidate = vec2.create(),
+    circleHeightfield_worldNormal = vec2.create(),
+    circleHeightfield_minCandidateNormal = vec2.create();
+
+/**
+ * @method circleHeightfield
+ * @param  {Body}           bi
+ * @param  {Circle}         si
+ * @param  {Array}          xi
+ * @param  {Body}           bj
+ * @param  {Heightfield}    sj
+ * @param  {Array}          xj
+ * @param  {Number}         aj
+ */
+Narrowphase.prototype[Shape.CIRCLE | Shape.HEIGHTFIELD] =
+Narrowphase.prototype.circleHeightfield = function( circleBody,circleShape,circlePos,circleAngle,
+                                                    hfBody,hfShape,hfPos,hfAngle, justTest, radius ){
+    var data = hfShape.data,
+        radius = radius || circleShape.radius,
+        w = hfShape.elementWidth,
+        dist = circleHeightfield_dist,
+        candidate = circleHeightfield_candidate,
+        minCandidate = circleHeightfield_minCandidate,
+        minCandidateNormal = circleHeightfield_minCandidateNormal,
+        worldNormal = circleHeightfield_worldNormal,
+        v0 = circleHeightfield_v0,
+        v1 = circleHeightfield_v1;
+
+    // Get the index of the points to test against
+    var idxA = Math.floor( (circlePos[0] - radius - hfPos[0]) / w ),
+        idxB = Math.ceil(  (circlePos[0] + radius - hfPos[0]) / w );
+
+    /*if(idxB &lt; 0 || idxA &gt;= data.length)
+        return justTest ? false : 0;*/
+
+    if(idxA &lt; 0) idxA = 0;
+    if(idxB &gt;= data.length) idxB = data.length-1;
+
+    // Get max and min
+    var max = data[idxA],
+        min = data[idxB];
+    for(var i=idxA; i&lt;idxB; i++){
+        if(data[i] &lt; min) min = data[i];
+        if(data[i] &gt; max) max = data[i];
+    }
+
+    if(circlePos[1]-radius &gt; max)
+        return justTest ? false : 0;
+
+    if(circlePos[1]+radius &lt; min){
+        // Below the minimum point... We can just guess.
+        // TODO
+    }
+
+    // 1. Check so center of circle is not inside the field. If it is, this wont work...
+    // 2. For each edge
+    // 2. 1. Get point on circle that is closest to the edge (scale normal with -radius)
+    // 2. 2. Check if point is inside.
+
+    var found = false,
+        minDist = false;
+
+    // Check all edges first
+    for(var i=idxA; i&lt;idxB; i++){
+
+        // Get points
+        vec2.set(v0,     i*w, data[i]  );
+        vec2.set(v1, (i+1)*w, data[i+1]);
+        vec2.add(v0,v0,hfPos);
+        vec2.add(v1,v1,hfPos);
+
+        // Get normal
+        vec2.sub(worldNormal, v1, v0);
+        vec2.rotate(worldNormal, worldNormal, Math.PI/2);
+        vec2.normalize(worldNormal,worldNormal);
+
+        // Get point on circle, closest to the edge
+        vec2.scale(candidate,worldNormal,-radius);
+        vec2.add(candidate,candidate,circlePos);
+
+        // Distance from v0 to the candidate point
+        vec2.sub(dist,candidate,v0);
+
+        // Check if it is in the element &quot;stick&quot;
+        var d = vec2.dot(dist,worldNormal);
+        if(candidate[0] &gt;= v0[0] &amp;&amp; candidate[0] &lt; v1[0] &amp;&amp; d &lt;= 0){
+
+            if(minDist === false || Math.abs(d) &lt; minDist){
+
+                // Store the candidate point, projected to the edge
+                vec2.scale(dist,worldNormal,-d);
+                vec2.add(minCandidate,candidate,dist);
+                vec2.copy(minCandidateNormal,worldNormal);
+
+                found = true;
+                minDist = Math.abs(d);
+
+                if(justTest)
+                    return true;
+            }
+        }
+    }
+
+    if(found){
+
+        var c = this.createContactEquation(hfBody,circleBody,hfShape,circleShape);
+
+        // Normal is out of the heightfield
+        vec2.copy(c.normalA, minCandidateNormal);
+
+        // Vector from circle to heightfield
+        vec2.scale(c.contactPointB,  c.normalA, -radius);
+        add(c.contactPointB, c.contactPointB, circlePos);
+        sub(c.contactPointB, c.contactPointB, circleBody.position);
+
+        vec2.copy(c.contactPointA, minCandidate);
+        //vec2.sub(c.contactPointA, c.contactPointA, hfPos);
+        vec2.sub(c.contactPointA, c.contactPointA, hfBody.position);
+
+        this.contactEquations.push(c);
+
+        if(this.enableFriction)
+            this.frictionEquations.push( this.createFrictionFromContact(c) );
+
+        return 1;
+    }
+
+
+    // Check all vertices
+    if(radius &gt; 0){
+        for(var i=idxA; i&lt;=idxB; i++){
+
+            // Get point
+            vec2.set(v0, i*w, data[i]);
+            vec2.add(v0,v0,hfPos);
+
+            vec2.sub(dist, circlePos, v0);
+
+            if(vec2.squaredLength(dist) &lt; radius*radius){
+
+                if(justTest) return true;
+
+                var c = this.createContactEquation(hfBody,circleBody,hfShape,circleShape);
+
+                // Construct normal - out of heightfield
+                vec2.copy(c.normalA, dist);
+                vec2.normalize(c.normalA,c.normalA);
+
+                vec2.scale(c.contactPointB, c.normalA, -radius);
+                add(c.contactPointB, c.contactPointB, circlePos);
+                sub(c.contactPointB, c.contactPointB, circleBody.position);
+
+                sub(c.contactPointA, v0, hfPos);
+                add(c.contactPointA, c.contactPointA, hfPos);
+                sub(c.contactPointA, c.contactPointA, hfBody.position);
+
+                this.contactEquations.push(c);
+
+                if(this.enableFriction){
+                    this.frictionEquations.push(this.createFrictionFromContact(c));
+                }
+
+                return 1;
+            }
+        }
+    }
+
+    return 0;
+
+};
 
     </pre>
 </div>

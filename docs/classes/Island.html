@@ -41,6 +41,10 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/AABB.html">AABB</a></li>
+            
+                <li><a href="../classes/AngleLockEquation.html">AngleLockEquation</a></li>
+            
                 <li><a href="../classes/Body.html">Body</a></li>
             
                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
@@ -65,19 +69,23 @@
             
                 <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
             
+                <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
+            
                 <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
             
+                <li><a href="../classes/Heightfield.html">Heightfield</a></li>
+            
                 <li><a href="../classes/Island.html">Island</a></li>
             
-                <li><a href="../classes/IslandSolver.html">IslandSolver</a></li>
+                <li><a href="../classes/IslandManager.html">IslandManager</a></li>
+            
+                <li><a href="../classes/IslandNode.html">IslandNode</a></li>
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
-            
-                <li><a href="../classes/mat2.html">mat2</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
@@ -91,8 +99,6 @@
             
                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
             
-                <li><a href="../classes/QuadTree.html">QuadTree</a></li>
-            
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
@@ -101,7 +107,7 @@
             
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
-                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
+                <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -162,7 +168,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_solver_Island.js.html#l3"><code>src&#x2F;solver&#x2F;Island.js:3</code></a>
+            Defined in: <a href="../files/src_world_Island.js.html#l5"><code>src&#x2F;world&#x2F;Island.js:5</code></a>
         </div>
     
 
@@ -213,7 +219,7 @@
             
         
         
-        <a href="../files/src_solver_Island.js.html#l3"><code>src&#x2F;solver&#x2F;Island.js:3</code></a>
+        <a href="../files/src_world_Island.js.html#l5"><code>src&#x2F;world&#x2F;Island.js:5</code></a>
         
         </p>
 
@@ -276,7 +282,14 @@
                             </li>
                         
                             <li class="index-item method">
-                                <a href="#method_solve">solve</a>
+                                <a href="#method_sleep">sleep</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_wantsToSleep">wantsToSleep</a>
 
                                 
                                 
@@ -356,7 +369,7 @@
             
         
         
-        <a href="../files/src_solver_Island.js.html#l34"><code>src&#x2F;solver&#x2F;Island.js:34</code></a>
+        <a href="../files/src_world_Island.js.html#l37"><code>src&#x2F;world&#x2F;Island.js:37</code></a>
         
         </p>
 
@@ -425,7 +438,7 @@
             
         
         
-        <a href="../files/src_solver_Island.js.html#l25"><code>src&#x2F;solver&#x2F;Island.js:25</code></a>
+        <a href="../files/src_world_Island.js.html#l27"><code>src&#x2F;world&#x2F;Island.js:27</code></a>
         
         </p>
 
@@ -448,27 +461,11 @@
 </div>
 
                 
-                    <div id="method_solve" class="method item">
-    <h3 class="name"><code>solve</code></h3>
+                    <div id="method_sleep" class="method item">
+    <h3 class="name"><code>sleep</code></h3>
 
     
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>dt</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>solver</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
+        <span class="paren">()</span>
     
 
     
@@ -496,7 +493,7 @@
             
         
         
-        <a href="../files/src_solver_Island.js.html#l57"><code>src&#x2F;solver&#x2F;Island.js:57</code></a>
+        <a href="../files/src_world_Island.js.html#l75"><code>src&#x2F;world&#x2F;Island.js:75</code></a>
         
         </p>
 
@@ -507,50 +504,83 @@
     </div>
 
     <div class="description">
-        <p>Solves all constraints in the group of islands.</p>
+        <p>Make all bodies in the island sleep.</p>
 
     </div>
 
     
-        <div class="params">
-            <h4>Parameters:</h4>
 
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">dt</code>
-                        <span class="type">Number</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">solver</code>
-                        <span class="type"><a href="../classes/Solver.html" class="crosslink">Solver</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
     
 
+    
+</div>
+
+                
+                    <div id="method_wantsToSleep" class="method item">
+    <h3 class="name"><code>wantsToSleep</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Boolean</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_Island.js.html#l60"><code>src&#x2F;world&#x2F;Island.js:60</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Check if the entire island wants to sleep.</p>
+
+    </div>
+
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Boolean</span>:
+                    
+                
+            </div>
+        </div>
     
 
     
@@ -588,7 +618,7 @@
             
         
         
-        <a href="../files/src_solver_Island.js.html#l17"><code>src&#x2F;solver&#x2F;Island.js:17</code></a>
+        <a href="../files/src_world_Island.js.html#l19"><code>src&#x2F;world&#x2F;Island.js:19</code></a>
         
         </p>
 
@@ -633,7 +663,7 @@
             
         
         
-        <a href="../files/src_solver_Island.js.html#l10"><code>src&#x2F;solver&#x2F;Island.js:10</code></a>
+        <a href="../files/src_world_Island.js.html#l12"><code>src&#x2F;world&#x2F;Island.js:12</code></a>
         
         </p>
 

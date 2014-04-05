@@ -41,6 +41,10 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/AABB.html">AABB</a></li>
+            
+                <li><a href="../classes/AngleLockEquation.html">AngleLockEquation</a></li>
+            
                 <li><a href="../classes/Body.html">Body</a></li>
             
                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
@@ -65,19 +69,23 @@
             
                 <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
             
+                <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
+            
                 <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
             
+                <li><a href="../classes/Heightfield.html">Heightfield</a></li>
+            
                 <li><a href="../classes/Island.html">Island</a></li>
             
-                <li><a href="../classes/IslandSolver.html">IslandSolver</a></li>
+                <li><a href="../classes/IslandManager.html">IslandManager</a></li>
+            
+                <li><a href="../classes/IslandNode.html">IslandNode</a></li>
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
-            
-                <li><a href="../classes/mat2.html">mat2</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
@@ -91,8 +99,6 @@
             
                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
             
-                <li><a href="../classes/QuadTree.html">QuadTree</a></li>
-            
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
@@ -101,7 +107,7 @@
             
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
-                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
+                <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -174,7 +180,7 @@
 
 
 <div class="box intro">
-    <p>A spring, connecting two bodies.</p>
+    <p>A spring, connecting two bodies. The Spring explicitly adds force and angularForce to the bodies and does therefore not put load on the solver.</p>
 
 </div>
 
@@ -303,8 +309,9 @@
                             
                             <li class="param">
                                 
-                                    <code class="param-name">restLength</code>
+                                    <code class="param-name optional">[restLength=1]</code>
                                     <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
                                 
 
                                 <div class="param-description">
@@ -317,12 +324,13 @@
                             
                             <li class="param">
                                 
-                                    <code class="param-name">stiffness</code>
+                                    <code class="param-name optional">[stiffness=100]</code>
                                     <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
                                 
 
                                 <div class="param-description">
-                                    <p>A number &gt;= 0. Default: 100</p>
+                                    <p>Spring constant (see Hookes Law). A number &gt;= 0.</p>
 
                                 </div>
 
@@ -331,8 +339,9 @@
                             
                             <li class="param">
                                 
-                                    <code class="param-name">damping</code>
+                                    <code class="param-name optional">[damping=1]</code>
                                     <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
                                 
 
                                 <div class="param-description">
@@ -345,12 +354,13 @@
                             
                             <li class="param">
                                 
-                                    <code class="param-name">worldAnchorA</code>
+                                    <code class="param-name optional">[worldAnchorA]</code>
                                     <span class="type">Array</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
                                 
 
                                 <div class="param-description">
-                                    <p>Where to hook the spring to body A, in world coordinates.</p>
+                                    <p>Where to hook the spring to body A, in world coordinates. Overrides the option &quot;localAnchorA&quot; if given.</p>
 
                                 </div>
 
@@ -359,8 +369,9 @@
                             
                             <li class="param">
                                 
-                                    <code class="param-name">worldAnchorB</code>
+                                    <code class="param-name optional">[worldAnchorB]</code>
                                     <span class="type">Array</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
                                 
 
                                 <div class="param-description">
@@ -372,12 +383,13 @@
                             
                             <li class="param">
                                 
-                                    <code class="param-name">localAnchorA</code>
+                                    <code class="param-name optional">[localAnchorA]</code>
                                     <span class="type">Array</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
                                 
 
                                 <div class="param-description">
-                                    <p>Where to hook the spring to body A, in local body coordinates.</p>
+                                    <p>Where to hook the spring to body A, in local body coordinates. Defaults to the body center.</p>
 
                                 </div>
 
@@ -386,8 +398,9 @@
                             
                             <li class="param">
                                 
-                                    <code class="param-name">localAnchorB</code>
+                                    <code class="param-name optional">[localAnchorB]</code>
                                     <span class="type">Array</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
                                 
 
                                 <div class="param-description">

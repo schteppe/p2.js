@@ -41,6 +41,10 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/AABB.html">AABB</a></li>
+            
+                <li><a href="../classes/AngleLockEquation.html">AngleLockEquation</a></li>
+            
                 <li><a href="../classes/Body.html">Body</a></li>
             
                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
@@ -65,19 +69,23 @@
             
                 <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
             
+                <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
+            
                 <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
             
+                <li><a href="../classes/Heightfield.html">Heightfield</a></li>
+            
                 <li><a href="../classes/Island.html">Island</a></li>
             
-                <li><a href="../classes/IslandSolver.html">IslandSolver</a></li>
+                <li><a href="../classes/IslandManager.html">IslandManager</a></li>
+            
+                <li><a href="../classes/IslandNode.html">IslandNode</a></li>
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
-            
-                <li><a href="../classes/mat2.html">mat2</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
@@ -91,8 +99,6 @@
             
                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
             
-                <li><a href="../classes/QuadTree.html">QuadTree</a></li>
-            
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
@@ -101,7 +107,7 @@
             
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
-                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
+                <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -162,7 +168,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_collision_Narrowphase.js.html#l35"><code>src&#x2F;collision&#x2F;Narrowphase.js:35</code></a>
+            Defined in: <a href="../files/src_collision_Narrowphase.js.html#l38"><code>src&#x2F;collision&#x2F;Narrowphase.js:38</code></a>
         </div>
     
 
@@ -213,7 +219,7 @@
             
         
         
-        <a href="../files/src_collision_Narrowphase.js.html#l35"><code>src&#x2F;collision&#x2F;Narrowphase.js:35</code></a>
+        <a href="../files/src_collision_Narrowphase.js.html#l38"><code>src&#x2F;collision&#x2F;Narrowphase.js:38</code></a>
         
         </p>
 
@@ -261,6 +267,13 @@
 
                     <ul class="index-list methods">
                         
+                            <li class="index-item method">
+                                <a href="#method_capsuleCapsule">capsuleCapsule</a>
+
+                                
+                                
+                            </li>
+                        
                             <li class="index-item method deprecated">
                                 <a href="#method_capsulePlane">capsulePlane</a>
 
@@ -286,6 +299,13 @@
                         
                             <li class="index-item method">
                                 <a href="#method_circleConvex">circleConvex</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_circleHeightfield">circleHeightfield</a>
 
                                 
                                 
@@ -320,7 +340,21 @@
                             </li>
                         
                             <li class="index-item method">
+                                <a href="#method_convexCapsule">convexCapsule</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
                                 <a href="#method_convexConvex">convexConvex</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_convexLine">convexLine</a>
 
                                 
                                 
@@ -370,6 +404,27 @@
 
                                 
                                     <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_lineCapsule">lineCapsule</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_lineLine">lineLine</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_lineRectangle">lineRectangle</a>
+
                                 
                                 
                             </li>
@@ -457,6 +512,20 @@
                             </li>
                         
                             <li class="index-item property">
+                                <a href="#property_frictionRelaxation">frictionRelaxation</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_frictionStiffness">frictionStiffness</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
                                 <a href="#property_restitution">restitution</a>
 
                                 
@@ -465,6 +534,27 @@
                         
                             <li class="index-item property">
                                 <a href="#property_slipForce">slipForce</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_stiffness">stiffness</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_stiffness">stiffness</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_surfaceVelocity">surfaceVelocity</a>
 
                                 
                                 
@@ -482,6 +572,241 @@
         
             <div id="methods" class="api-class-tabpanel">
                 <h2 class="off-left">Methods</h2>
+
+                
+                    <div id="method_capsuleCapsule" class="method item">
+    <h3 class="name"><code>capsuleCapsule</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>bi</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>si</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>xi</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>ai</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>bj</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>sj</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>xj</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>aj</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_collision_Narrowphase.js.html#l377"><code>src&#x2F;collision&#x2F;Narrowphase.js:377</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Capsule/capsule narrowphase</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">bi</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">si</code>
+                        <span class="type"><a href="../classes/Capsule.html" class="crosslink">Capsule</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">xi</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">ai</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">bj</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">sj</code>
+                        <span class="type"><a href="../classes/Capsule.html" class="crosslink">Capsule</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">xj</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">aj</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
 
                 
                     <div id="method_capsulePlane" class="method item deprecated">
@@ -518,7 +843,7 @@
             
         
         
-        <a href="../files/src_collision_Narrowphase.js.html#l1126"><code>src&#x2F;collision&#x2F;Narrowphase.js:1126</code></a>
+        <a href="../files/src_collision_Narrowphase.js.html#l1416"><code>src&#x2F;collision&#x2F;Narrowphase.js:1416</code></a>
         
         </p>
 
@@ -626,7 +951,7 @@
             
         
         
-        <a href="../files/src_collision_Narrowphase.js.html#l449"><code>src&#x2F;collision&#x2F;Narrowphase.js:449</code></a>
+        <a href="../files/src_collision_Narrowphase.js.html#l722"><code>src&#x2F;collision&#x2F;Narrowphase.js:722</code></a>
         
         </p>
 
@@ -861,7 +1186,7 @@
             
         
         
-        <a href="../files/src_collision_Narrowphase.js.html#l861"><code>src&#x2F;collision&#x2F;Narrowphase.js:861</code></a>
+        <a href="../files/src_collision_Narrowphase.js.html#l1142"><code>src&#x2F;collision&#x2F;Narrowphase.js:1142</code></a>
         
         </p>
 
@@ -1096,7 +1421,7 @@
             
         
         
-        <a href="../files/src_collision_Narrowphase.js.html#l466"><code>src&#x2F;collision&#x2F;Narrowphase.js:466</code></a>
+        <a href="../files/src_collision_Narrowphase.js.html#l739"><code>src&#x2F;collision&#x2F;Narrowphase.js:739</code></a>
         
         </p>
 
@@ -1196,6 +1521,219 @@
                     
                         <code class="param-name">sj</code>
                         <span class="type"><a href="../classes/Convex.html" class="crosslink">Convex</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">xj</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">aj</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_circleHeightfield" class="method item">
+    <h3 class="name"><code>circleHeightfield</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>bi</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>si</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>xi</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>bj</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>sj</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>xj</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>aj</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_collision_Narrowphase.js.html#l1831"><code>src&#x2F;collision&#x2F;Narrowphase.js:1831</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">bi</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">si</code>
+                        <span class="type"><a href="../classes/Circle.html" class="crosslink">Circle</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">xi</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">bj</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">sj</code>
+                        <span class="type"><a href="../classes/Heightfield.html" class="crosslink">Heightfield</a></span>
                     
 
                     
@@ -1349,7 +1887,7 @@
             
         
         
-        <a href="../files/src_collision_Narrowphase.js.html#l292"><code>src&#x2F;collision&#x2F;Narrowphase.js:292</code></a>
+        <a href="../files/src_collision_Narrowphase.js.html#l561"><code>src&#x2F;collision&#x2F;Narrowphase.js:561</code></a>
         
         </p>
 
@@ -1632,7 +2170,7 @@
             
         
         
-        <a href="../files/src_collision_Narrowphase.js.html#l1051"><code>src&#x2F;collision&#x2F;Narrowphase.js:1051</code></a>
+        <a href="../files/src_collision_Narrowphase.js.html#l1336"><code>src&#x2F;collision&#x2F;Narrowphase.js:1336</code></a>
         
         </p>
 
@@ -1861,7 +2399,7 @@
             
         
         
-        <a href="../files/src_collision_Narrowphase.js.html#l1135"><code>src&#x2F;collision&#x2F;Narrowphase.js:1135</code></a>
+        <a href="../files/src_collision_Narrowphase.js.html#l1425"><code>src&#x2F;collision&#x2F;Narrowphase.js:1425</code></a>
         
         </p>
 
@@ -2056,7 +2594,7 @@
             
         
         
-        <a href="../files/src_collision_Narrowphase.js.html#l90"><code>src&#x2F;collision&#x2F;Narrowphase.js:90</code></a>
+        <a href="../files/src_collision_Narrowphase.js.html#l126"><code>src&#x2F;collision&#x2F;Narrowphase.js:126</code></a>
         
         </p>
 
@@ -2123,6 +2661,241 @@
                 
             </div>
         </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_convexCapsule" class="method item">
+    <h3 class="name"><code>convexCapsule</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>bi</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>si</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>xi</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>ai</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>bj</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>sj</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>xj</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>aj</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_collision_Narrowphase.js.html#l310"><code>src&#x2F;collision&#x2F;Narrowphase.js:310</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Convex/capsule narrowphase</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">bi</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">si</code>
+                        <span class="type"><a href="../classes/Convex.html" class="crosslink">Convex</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">xi</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">ai</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">bj</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">sj</code>
+                        <span class="type"><a href="../classes/Capsule.html" class="crosslink">Capsule</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">xj</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">aj</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
     
 
     
@@ -2213,7 +2986,7 @@
             
         
         
-        <a href="../files/src_collision_Narrowphase.js.html#l1200"><code>src&#x2F;collision&#x2F;Narrowphase.js:1200</code></a>
+        <a href="../files/src_collision_Narrowphase.js.html#l1497"><code>src&#x2F;collision&#x2F;Narrowphase.js:1497</code></a>
         
         </p>
 
@@ -2364,6 +3137,241 @@
 </div>
 
                 
+                    <div id="method_convexLine" class="method item">
+    <h3 class="name"><code>convexLine</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>bi</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>si</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>xi</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>ai</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>bj</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>sj</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>xj</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>aj</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_collision_Narrowphase.js.html#l256"><code>src&#x2F;collision&#x2F;Narrowphase.js:256</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Convex/line narrowphase</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">bi</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">si</code>
+                        <span class="type"><a href="../classes/Convex.html" class="crosslink">Convex</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">xi</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">ai</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">bj</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">sj</code>
+                        <span class="type"><a href="../classes/Line.html" class="crosslink">Line</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">xj</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">aj</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
                     <div id="method_convexPlane" class="method item deprecated">
     <h3 class="name"><code>convexPlane</code></h3>
 
@@ -2398,7 +3406,7 @@
             
         
         
-        <a href="../files/src_collision_Narrowphase.js.html#l986"><code>src&#x2F;collision&#x2F;Narrowphase.js:986</code></a>
+        <a href="../files/src_collision_Narrowphase.js.html#l1271"><code>src&#x2F;collision&#x2F;Narrowphase.js:1271</code></a>
         
         </p>
 
@@ -2474,7 +3482,7 @@
             
         
         
-        <a href="../files/src_collision_Narrowphase.js.html#l142"><code>src&#x2F;collision&#x2F;Narrowphase.js:142</code></a>
+        <a href="../files/src_collision_Narrowphase.js.html#l195"><code>src&#x2F;collision&#x2F;Narrowphase.js:195</code></a>
         
         </p>
 
@@ -2599,7 +3607,7 @@
             
         
         
-        <a href="../files/src_collision_Narrowphase.js.html#l160"><code>src&#x2F;collision&#x2F;Narrowphase.js:160</code></a>
+        <a href="../files/src_collision_Narrowphase.js.html#l218"><code>src&#x2F;collision&#x2F;Narrowphase.js:218</code></a>
         
         </p>
 
@@ -2718,7 +3726,7 @@
             
         
         
-        <a href="../files/src_collision_Narrowphase.js.html#l178"><code>src&#x2F;collision&#x2F;Narrowphase.js:178</code></a>
+        <a href="../files/src_collision_Narrowphase.js.html#l241"><code>src&#x2F;collision&#x2F;Narrowphase.js:241</code></a>
         
         </p>
 
@@ -2860,7 +3868,7 @@
             
         
         
-        <a href="../files/src_collision_Narrowphase.js.html#l1393"><code>src&#x2F;collision&#x2F;Narrowphase.js:1393</code></a>
+        <a href="../files/src_collision_Narrowphase.js.html#l1704"><code>src&#x2F;collision&#x2F;Narrowphase.js:1704</code></a>
         
         </p>
 
@@ -3077,7 +4085,7 @@
             
         
         
-        <a href="../files/src_collision_Narrowphase.js.html#l1470"><code>src&#x2F;collision&#x2F;Narrowphase.js:1470</code></a>
+        <a href="../files/src_collision_Narrowphase.js.html#l1781"><code>src&#x2F;collision&#x2F;Narrowphase.js:1781</code></a>
         
         </p>
 
@@ -3182,6 +4190,711 @@
 </div>
 
                 
+                    <div id="method_lineCapsule" class="method item">
+    <h3 class="name"><code>lineCapsule</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>bi</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>si</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>xi</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>ai</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>bj</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>sj</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>xj</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>aj</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_collision_Narrowphase.js.html#l351"><code>src&#x2F;collision&#x2F;Narrowphase.js:351</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Capsule/line narrowphase</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">bi</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">si</code>
+                        <span class="type"><a href="../classes/Line.html" class="crosslink">Line</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">xi</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">ai</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">bj</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">sj</code>
+                        <span class="type"><a href="../classes/Capsule.html" class="crosslink">Capsule</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">xj</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">aj</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_lineLine" class="method item">
+    <h3 class="name"><code>lineLine</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>bi</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>si</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>xi</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>ai</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>bj</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>sj</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>xj</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>aj</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_collision_Narrowphase.js.html#l439"><code>src&#x2F;collision&#x2F;Narrowphase.js:439</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Line/line narrowphase</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">bi</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">si</code>
+                        <span class="type"><a href="../classes/Line.html" class="crosslink">Line</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">xi</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">ai</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">bj</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">sj</code>
+                        <span class="type"><a href="../classes/Line.html" class="crosslink">Line</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">xj</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">aj</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_lineRectangle" class="method item">
+    <h3 class="name"><code>lineRectangle</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>bi</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>si</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>xi</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>ai</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>bj</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>sj</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>xj</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>aj</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_collision_Narrowphase.js.html#l278"><code>src&#x2F;collision&#x2F;Narrowphase.js:278</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Line/rectangle narrowphase</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">bi</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">si</code>
+                        <span class="type"><a href="../classes/Line.html" class="crosslink">Line</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">xi</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">ai</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">bj</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">sj</code>
+                        <span class="type"><a href="../classes/Rectangle.html" class="crosslink">Rectangle</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">xj</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">aj</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
                     <div id="method_particleConvex" class="method item">
     <h3 class="name"><code>particleConvex</code></h3>
 
@@ -3266,7 +4979,7 @@
             
         
         
-        <a href="../files/src_collision_Narrowphase.js.html#l716"><code>src&#x2F;collision&#x2F;Narrowphase.js:716</code></a>
+        <a href="../files/src_collision_Narrowphase.js.html#l994"><code>src&#x2F;collision&#x2F;Narrowphase.js:994</code></a>
         
         </p>
 
@@ -3501,7 +5214,7 @@
             
         
         
-        <a href="../files/src_collision_Narrowphase.js.html#l995"><code>src&#x2F;collision&#x2F;Narrowphase.js:995</code></a>
+        <a href="../files/src_collision_Narrowphase.js.html#l1280"><code>src&#x2F;collision&#x2F;Narrowphase.js:1280</code></a>
         
         </p>
 
@@ -3744,7 +5457,7 @@
             
         
         
-        <a href="../files/src_collision_Narrowphase.js.html#l912"><code>src&#x2F;collision&#x2F;Narrowphase.js:912</code></a>
+        <a href="../files/src_collision_Narrowphase.js.html#l1197"><code>src&#x2F;collision&#x2F;Narrowphase.js:1197</code></a>
         
         </p>
 
@@ -3904,49 +5617,49 @@
             
                 <li class="arg">
                     
-                        <code>bi</code>
+                        <code>planeBody</code>
                     
                 </li>
             
                 <li class="arg">
                     
-                        <code>si</code>
+                        <code>planeShape</code>
                     
                 </li>
             
                 <li class="arg">
                     
-                        <code>xi</code>
+                        <code>planeOffset</code>
                     
                 </li>
             
                 <li class="arg">
                     
-                        <code>ai</code>
+                        <code>planeAngle</code>
                     
                 </li>
             
                 <li class="arg">
                     
-                        <code>bj</code>
+                        <code>lineBody</code>
                     
                 </li>
             
                 <li class="arg">
                     
-                        <code>sj</code>
+                        <code>lineShape</code>
                     
                 </li>
             
                 <li class="arg">
                     
-                        <code>xj</code>
+                        <code>lineOffset</code>
                     
                 </li>
             
                 <li class="arg">
                     
-                        <code>aj</code>
+                        <code>lineAngle</code>
                     
                 </li>
             
@@ -3979,7 +5692,7 @@
             
         
         
-        <a href="../files/src_collision_Narrowphase.js.html#l193"><code>src&#x2F;collision&#x2F;Narrowphase.js:193</code></a>
+        <a href="../files/src_collision_Narrowphase.js.html#l461"><code>src&#x2F;collision&#x2F;Narrowphase.js:461</code></a>
         
         </p>
 
@@ -4002,7 +5715,7 @@
             
                 <li class="param">
                     
-                        <code class="param-name">bi</code>
+                        <code class="param-name">planeBody</code>
                         <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
                     
 
@@ -4017,7 +5730,7 @@
             
                 <li class="param">
                     
-                        <code class="param-name">si</code>
+                        <code class="param-name">planeShape</code>
                         <span class="type"><a href="../classes/Plane.html" class="crosslink">Plane</a></span>
                     
 
@@ -4032,7 +5745,7 @@
             
                 <li class="param">
                     
-                        <code class="param-name">xi</code>
+                        <code class="param-name">planeOffset</code>
                         <span class="type">Array</span>
                     
 
@@ -4047,7 +5760,7 @@
             
                 <li class="param">
                     
-                        <code class="param-name">ai</code>
+                        <code class="param-name">planeAngle</code>
                         <span class="type">Number</span>
                     
 
@@ -4062,7 +5775,7 @@
             
                 <li class="param">
                     
-                        <code class="param-name">bj</code>
+                        <code class="param-name">lineBody</code>
                         <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
                     
 
@@ -4077,7 +5790,7 @@
             
                 <li class="param">
                     
-                        <code class="param-name">sj</code>
+                        <code class="param-name">lineShape</code>
                         <span class="type"><a href="../classes/Line.html" class="crosslink">Line</a></span>
                     
 
@@ -4092,7 +5805,7 @@
             
                 <li class="param">
                     
-                        <code class="param-name">xj</code>
+                        <code class="param-name">lineOffset</code>
                         <span class="type">Array</span>
                     
 
@@ -4107,7 +5820,7 @@
             
                 <li class="param">
                     
-                        <code class="param-name">aj</code>
+                        <code class="param-name">lineAngle</code>
                         <span class="type">Number</span>
                     
 
@@ -4198,7 +5911,7 @@
             
         
         
-        <a href="../files/src_collision_Narrowphase.js.html#l1345"><code>src&#x2F;collision&#x2F;Narrowphase.js:1345</code></a>
+        <a href="../files/src_collision_Narrowphase.js.html#l1656"><code>src&#x2F;collision&#x2F;Narrowphase.js:1656</code></a>
         
         </p>
 
@@ -4308,7 +6021,17 @@
     <h3 class="name"><code>reset</code></h3>
 
     
-        <span class="paren">()</span>
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>world</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
     
 
     
@@ -4336,7 +6059,7 @@
             
         
         
-        <a href="../files/src_collision_Narrowphase.js.html#l108"><code>src&#x2F;collision&#x2F;Narrowphase.js:108</code></a>
+        <a href="../files/src_collision_Narrowphase.js.html#l157"><code>src&#x2F;collision&#x2F;Narrowphase.js:157</code></a>
         
         </p>
 
@@ -4347,10 +6070,33 @@
     </div>
 
     <div class="description">
-        <p>Throws away the old equatons and gets ready to create new</p>
+        <p>Throws away the old equations and gets ready to create new</p>
 
     </div>
 
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">world</code>
+                        <span class="type"><a href="../classes/World.html" class="crosslink">World</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
     
 
     
@@ -4390,7 +6136,7 @@
             
         
         
-        <a href="../files/src_collision_Narrowphase.js.html#l42"><code>src&#x2F;collision&#x2F;Narrowphase.js:42</code></a>
+        <a href="../files/src_collision_Narrowphase.js.html#l45"><code>src&#x2F;collision&#x2F;Narrowphase.js:45</code></a>
         
         </p>
 
@@ -4434,7 +6180,7 @@
             
         
         
-        <a href="../files/src_collision_Narrowphase.js.html#l54"><code>src&#x2F;collision&#x2F;Narrowphase.js:54</code></a>
+        <a href="../files/src_collision_Narrowphase.js.html#l57"><code>src&#x2F;collision&#x2F;Narrowphase.js:57</code></a>
         
         </p>
 
@@ -4479,7 +6225,7 @@
             
         
         
-        <a href="../files/src_collision_Narrowphase.js.html#l68"><code>src&#x2F;collision&#x2F;Narrowphase.js:68</code></a>
+        <a href="../files/src_collision_Narrowphase.js.html#l71"><code>src&#x2F;collision&#x2F;Narrowphase.js:71</code></a>
         
         </p>
 
@@ -4524,7 +6270,7 @@
             
         
         
-        <a href="../files/src_collision_Narrowphase.js.html#l48"><code>src&#x2F;collision&#x2F;Narrowphase.js:48</code></a>
+        <a href="../files/src_collision_Narrowphase.js.html#l51"><code>src&#x2F;collision&#x2F;Narrowphase.js:51</code></a>
         
         </p>
 
@@ -4535,6 +6281,96 @@
 
     <div class="description">
         
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_frictionRelaxation" class="property item">
+    <h3 class="name"><code>frictionRelaxation</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_collision_Narrowphase.js.html#l114"><code>src&#x2F;collision&#x2F;Narrowphase.js:114</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The relaxation value to use in the next friction equations.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_frictionStiffness" class="property item">
+    <h3 class="name"><code>frictionStiffness</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_collision_Narrowphase.js.html#l107"><code>src&#x2F;collision&#x2F;Narrowphase.js:107</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The stiffness value to use in the next friction equations.</p>
+
     </div>
 
     
@@ -4568,7 +6404,7 @@
             
         
         
-        <a href="../files/src_collision_Narrowphase.js.html#l79"><code>src&#x2F;collision&#x2F;Narrowphase.js:79</code></a>
+        <a href="../files/src_collision_Narrowphase.js.html#l88"><code>src&#x2F;collision&#x2F;Narrowphase.js:88</code></a>
         
         </p>
 
@@ -4613,7 +6449,7 @@
             
         
         
-        <a href="../files/src_collision_Narrowphase.js.html#l61"><code>src&#x2F;collision&#x2F;Narrowphase.js:61</code></a>
+        <a href="../files/src_collision_Narrowphase.js.html#l64"><code>src&#x2F;collision&#x2F;Narrowphase.js:64</code></a>
         
         </p>
 
@@ -4624,6 +6460,141 @@
 
     <div class="description">
         <p>The friction slip force to use when creating friction equations.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_stiffness" class="property item">
+    <h3 class="name"><code>stiffness</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_collision_Narrowphase.js.html#l95"><code>src&#x2F;collision&#x2F;Narrowphase.js:95</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The stiffness value to use in the next contact equations.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_stiffness" class="property item">
+    <h3 class="name"><code>stiffness</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_collision_Narrowphase.js.html#l101"><code>src&#x2F;collision&#x2F;Narrowphase.js:101</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The stiffness value to use in the next contact equations.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_surfaceVelocity" class="property item">
+    <h3 class="name"><code>surfaceVelocity</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_collision_Narrowphase.js.html#l78"><code>src&#x2F;collision&#x2F;Narrowphase.js:78</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Will be the .relativeVelocity in each produced FrictionEquation.</p>
 
     </div>
 

@@ -41,6 +41,10 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/AABB.html">AABB</a></li>
+            
+                <li><a href="../classes/AngleLockEquation.html">AngleLockEquation</a></li>
+            
                 <li><a href="../classes/Body.html">Body</a></li>
             
                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
@@ -65,19 +69,23 @@
             
                 <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
             
+                <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
+            
                 <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
             
+                <li><a href="../classes/Heightfield.html">Heightfield</a></li>
+            
                 <li><a href="../classes/Island.html">Island</a></li>
             
-                <li><a href="../classes/IslandSolver.html">IslandSolver</a></li>
+                <li><a href="../classes/IslandManager.html">IslandManager</a></li>
+            
+                <li><a href="../classes/IslandNode.html">IslandNode</a></li>
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
-            
-                <li><a href="../classes/mat2.html">mat2</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
@@ -91,8 +99,6 @@
             
                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
             
-                <li><a href="../classes/QuadTree.html">QuadTree</a></li>
-            
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
@@ -101,7 +107,7 @@
             
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
-                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
+                <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -159,10 +165,10 @@
 <div class="file">
     <pre class="code prettyprint linenums">
 var Constraint = require(&#x27;./Constraint&#x27;)
-,   ContactEquation = require(&#x27;./ContactEquation&#x27;)
-,   Equation = require(&#x27;./Equation&#x27;)
+,   ContactEquation = require(&#x27;../equations/ContactEquation&#x27;)
+,   Equation = require(&#x27;../equations/Equation&#x27;)
 ,   vec2 = require(&#x27;../math/vec2&#x27;)
-,   RotationalLockEquation = require(&#x27;./RotationalLockEquation&#x27;)
+,   RotationalLockEquation = require(&#x27;../equations/RotationalLockEquation&#x27;)
 
 module.exports = PrismaticConstraint;
 
@@ -171,19 +177,22 @@ module.exports = PrismaticConstraint;
  *
  * @class PrismaticConstraint
  * @constructor
- * @extends {Constraint}
+ * @extends Constraint
  * @author schteppe
  * @param {Body}    bodyA
  * @param {Body}    bodyB
- * @param {Object}  options
- * @param {Number}  options.maxForce        Max force to be applied by the constraint
- * @param {Array}   options.localAnchorA    Body A&#x27;s anchor point, defined in its own local frame.
- * @param {Array}   options.localAnchorB    Body B&#x27;s anchor point, defined in its own local frame.
- * @param {Array}   options.localAxisA      An axis, defined in body A frame, that body B&#x27;s anchor point may slide along.
+ * @param {Object}  [options]
+ * @param {Number}  [options.maxForce]                Max force to be applied by the constraint
+ * @param {Array}   [options.localAnchorA]            Body A&#x27;s anchor point, defined in its own local frame.
+ * @param {Array}   [options.localAnchorB]            Body B&#x27;s anchor point, defined in its own local frame.
+ * @param {Array}   [options.localAxisA]              An axis, defined in body A frame, that body B&#x27;s anchor point may slide along.
+ * @param {Boolean} [options.disableRotationalLock]   If set to true, bodyB will be free to rotate around its anchor point.
+ * @param {Number}  [options.upperLimit]
+ * @param {Number}  [options.lowerLimit]
  */
-function PrismaticConstraint(bodyA,bodyB,options){
+function PrismaticConstraint(bodyA, bodyB, options){
     options = options || {};
-    Constraint.call(this,bodyA,bodyB);
+    Constraint.call(this,bodyA,bodyB,Constraint.PRISMATIC,options);
 
     // Get anchors
     var localAnchorA = vec2.fromValues(0,0),
@@ -229,7 +238,7 @@ function PrismaticConstraint(bodyA,bodyB,options){
 
      */
 
-    var maxForce = this.maxForce = typeof(options.maxForce)===&quot;undefined&quot; ? options.maxForce : Number.MAX_VALUE;
+    var maxForce = this.maxForce = typeof(options.maxForce)!=&quot;undefined&quot; ? options.maxForce : Number.MAX_VALUE;
 
     // Translational part
     var trans = new Equation(bodyA,bodyB,-maxForce,maxForce);
@@ -241,7 +250,7 @@ function PrismaticConstraint(bodyA,bodyB,options){
         // g = ( xj + rj - xi - ri ) * t
         return vec2.dot(gg,t);
     };
-    trans.update = function(){
+    trans.updateJacobian = function(){
         var G = this.G,
             xi = bodyA.position,
             xj = bodyB.position;
@@ -258,13 +267,105 @@ function PrismaticConstraint(bodyA,bodyB,options){
         G[3] = t[0];
         G[4] = t[1];
         G[5] = vec2.crossLength(rj,t);
-    }
-    var rot = new RotationalLockEquation(bodyA,bodyB,-maxForce,maxForce);
+    };
+    this.equations.push(trans);
 
-    this.equations.push(trans,rot);
+    // Rotational part
+    if(!options.disableRotationalLock){
+        var rot = new RotationalLockEquation(bodyA,bodyB,-maxForce,maxForce);
+        this.equations.push(rot);
+    }
+
+    /**
+     * The position of anchor A relative to anchor B, along the constraint axis.
+     * @property position
+     * @type {Number}
+     */
+    this.position = 0;
+
+    this.velocity = 0;
+
+    /**
+     * Set to true to enable lower limit.
+     * @property lowerLimitEnabled
+     * @type {Boolean}
+     */
+    this.lowerLimitEnabled = typeof(options.lowerLimit)!==&quot;undefined&quot; ? true : false;
+
+    /**
+     * Set to true to enable upper limit.
+     * @property upperLimitEnabled
+     * @type {Boolean}
+     */
+    this.upperLimitEnabled = typeof(options.upperLimit)!==&quot;undefined&quot; ? true : false;
+
+    /**
+     * Lower constraint limit. The constraint position is forced to be larger than this value.
+     * @property lowerLimit
+     * @type {Number}
+     */
+    this.lowerLimit = typeof(options.lowerLimit)!==&quot;undefined&quot; ? options.lowerLimit : 0;
+
+    /**
+     * Upper constraint limit. The constraint position is forced to be smaller than this value.
+     * @property upperLimit
+     * @type {Number}
+     */
+    this.upperLimit = typeof(options.upperLimit)!==&quot;undefined&quot; ? options.upperLimit : 1;
+
+    // Equations used for limits
+    this.upperLimitEquation = new ContactEquation(bodyA,bodyB);
+    this.lowerLimitEquation = new ContactEquation(bodyA,bodyB);
+
+    // Set max/min forces
+    this.upperLimitEquation.minForce = this.lowerLimitEquation.minForce = 0;
+    this.upperLimitEquation.maxForce = this.lowerLimitEquation.maxForce = maxForce;
+
+    /**
+     * Equation used for the motor.
+     * @property motorEquation
+     * @type {Equation}
+     */
+    this.motorEquation = new Equation(bodyA,bodyB);
+
+    /**
+     * The current motor state. Enable or disable the motor using .enableMotor
+     * @property motorEnabled
+     * @type {Boolean}
+     */
+    this.motorEnabled = false;
+
+    /**
+     * Set the target speed for the motor.
+     * @property motorSpeed
+     * @type {Number}
+     */
+    this.motorSpeed = 0;
+
+    var that = this;
+    var motorEquation = this.motorEquation;
+    var old = motorEquation.computeGW;
+    motorEquation.computeGq = function(){ return 0; };
+    motorEquation.computeGW = function(){
+        var G = this.G,
+            bi = this.bodyA,
+            bj = this.bodyB,
+            vi = bi.velocity,
+            vj = bj.velocity,
+            wi = bi.angularVelocity,
+            wj = bj.angularVelocity;
+        return this.transformedGmult(G,vi,wi,vj,wj) + that.motorSpeed;
+    };
 }
 
 PrismaticConstraint.prototype = new Constraint();
+
+var worldAxisA = vec2.create(),
+    worldAnchorA = vec2.create(),
+    worldAnchorB = vec2.create(),
+    orientedAnchorA = vec2.create(),
+    orientedAnchorB = vec2.create(),
+    tmp = vec2.create();
 
 /**
  * Update the constraint equations. Should be done if any of the bodies changed position, before solving.
@@ -272,8 +373,109 @@ PrismaticConstraint.prototype = new Constraint();
  */
 PrismaticConstraint.prototype.update = function(){
     var eqs = this.equations,
-        trans = eqs[0];
-    trans.update();
+        trans = eqs[0],
+        upperLimit = this.upperLimit,
+        lowerLimit = this.lowerLimit,
+        upperLimitEquation = this.upperLimitEquation,
+        lowerLimitEquation = this.lowerLimitEquation,
+        bodyA = this.bodyA,
+        bodyB = this.bodyB,
+        localAxisA = this.localAxisA,
+        localAnchorA = this.localAnchorA,
+        localAnchorB = this.localAnchorB;
+
+    trans.updateJacobian();
+
+    // Transform local things to world
+    vec2.rotate(worldAxisA,      localAxisA,      bodyA.angle);
+    vec2.rotate(orientedAnchorA, localAnchorA,    bodyA.angle);
+    vec2.add(worldAnchorA,       orientedAnchorA, bodyA.position);
+    vec2.rotate(orientedAnchorB, localAnchorB,    bodyB.angle);
+    vec2.add(worldAnchorB,       orientedAnchorB, bodyB.position);
+
+    var relPosition = this.position = vec2.dot(worldAnchorB,worldAxisA) - vec2.dot(worldAnchorA,worldAxisA);
+
+    // Motor
+    if(this.motorEnabled){
+        // G = [ a     a x ri   -a   -a x rj ]
+        var G = this.motorEquation.G;
+        G[0] = worldAxisA[0];
+        G[1] = worldAxisA[1];
+        G[2] = vec2.crossLength(worldAxisA,orientedAnchorB);
+        G[3] = -worldAxisA[0];
+        G[4] = -worldAxisA[1];
+        G[5] = -vec2.crossLength(worldAxisA,orientedAnchorA);
+    }
+
+    /*
+        Limits strategy:
+        Add contact equation, with normal along the constraint axis.
+        min/maxForce is set so the constraint is repulsive in the correct direction.
+        Some offset is added to either equation.contactPointA or .contactPointB to get the correct upper/lower limit.
+
+                 ^
+                 |
+      upperLimit x
+                 |    ------
+         anchorB x&lt;---|  B |
+                 |    |    |
+        ------   |    ------
+        |    |   |
+        |  A |--&gt;x anchorA
+        ------   |
+                 x lowerLimit
+                 |
+                axis
+     */
+
+    if(this.upperLimitEnabled &amp;&amp; relPosition &gt; upperLimit){
+        // Update contact constraint normal, etc
+        vec2.scale(upperLimitEquation.normalA, worldAxisA, -1);
+        vec2.sub(upperLimitEquation.contactPointA, worldAnchorA, bodyA.position);
+        vec2.sub(upperLimitEquation.contactPointB, worldAnchorB, bodyB.position);
+        vec2.scale(tmp,worldAxisA,upperLimit);
+        vec2.add(upperLimitEquation.contactPointA,upperLimitEquation.contactPointA,tmp);
+        if(eqs.indexOf(upperLimitEquation)==-1)
+            eqs.push(upperLimitEquation);
+    } else {
+        var idx = eqs.indexOf(upperLimitEquation);
+        if(idx != -1) eqs.splice(idx,1);
+    }
+
+    if(this.lowerLimitEnabled &amp;&amp; relPosition &lt; lowerLimit){
+        // Update contact constraint normal, etc
+        vec2.scale(lowerLimitEquation.normalA, worldAxisA, 1);
+        vec2.sub(lowerLimitEquation.contactPointA, worldAnchorA, bodyA.position);
+        vec2.sub(lowerLimitEquation.contactPointB, worldAnchorB, bodyB.position);
+        vec2.scale(tmp,worldAxisA,lowerLimit);
+        vec2.sub(lowerLimitEquation.contactPointB,lowerLimitEquation.contactPointB,tmp);
+        if(eqs.indexOf(lowerLimitEquation)==-1)
+            eqs.push(lowerLimitEquation);
+    } else {
+        var idx = eqs.indexOf(lowerLimitEquation);
+        if(idx != -1) eqs.splice(idx,1);
+    }
+};
+
+/**
+ * Enable the motor
+ * @method enableMotor
+ */
+PrismaticConstraint.prototype.enableMotor = function(){
+    if(this.motorEnabled) return;
+    this.equations.push(this.motorEquation);
+    this.motorEnabled = true;
+};
+
+/**
+ * Disable the rotational motor
+ * @method disableMotor
+ */
+PrismaticConstraint.prototype.disableMotor = function(){
+    if(!this.motorEnabled) return;
+    var i = this.equations.indexOf(this.motorEquation);
+    this.equations.splice(i,1);
+    this.motorEnabled = false;
 };
 
     </pre>

@@ -41,6 +41,10 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/AABB.html">AABB</a></li>
+            
+                <li><a href="../classes/AngleLockEquation.html">AngleLockEquation</a></li>
+            
                 <li><a href="../classes/Body.html">Body</a></li>
             
                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
@@ -65,19 +69,23 @@
             
                 <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
             
+                <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
+            
                 <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
             
+                <li><a href="../classes/Heightfield.html">Heightfield</a></li>
+            
                 <li><a href="../classes/Island.html">Island</a></li>
             
-                <li><a href="../classes/IslandSolver.html">IslandSolver</a></li>
+                <li><a href="../classes/IslandManager.html">IslandManager</a></li>
+            
+                <li><a href="../classes/IslandNode.html">IslandNode</a></li>
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
-            
-                <li><a href="../classes/mat2.html">mat2</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
@@ -91,8 +99,6 @@
             
                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
             
-                <li><a href="../classes/QuadTree.html">QuadTree</a></li>
-            
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
@@ -101,7 +107,7 @@
             
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
-                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
+                <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -166,7 +172,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_constraints_ContactEquation.js.html#l7"><code>src&#x2F;constraints&#x2F;ContactEquation.js:7</code></a>
+            Defined in: <a href="../files/src_equations_ContactEquation.js.html#l6"><code>src&#x2F;equations&#x2F;ContactEquation.js:6</code></a>
         </div>
     
 
@@ -194,13 +200,13 @@
             
                 <li class="arg">
                     
-                        <code>bi</code>
+                        <code>bodyA</code>
                     
                 </li>
             
                 <li class="arg">
                     
-                        <code>bj</code>
+                        <code>bodyB</code>
                     
                 </li>
             
@@ -233,7 +239,7 @@
             
         
         
-        <a href="../files/src_constraints_ContactEquation.js.html#l7"><code>src&#x2F;constraints&#x2F;ContactEquation.js:7</code></a>
+        <a href="../files/src_equations_ContactEquation.js.html#l6"><code>src&#x2F;equations&#x2F;ContactEquation.js:6</code></a>
         
         </p>
 
@@ -255,7 +261,7 @@
             
                 <li class="param">
                     
-                        <code class="param-name">bi</code>
+                        <code class="param-name">bodyA</code>
                         <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
                     
 
@@ -270,7 +276,7 @@
             
                 <li class="param">
                     
-                        <code class="param-name">bj</code>
+                        <code class="param-name">bodyB</code>
                         <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
                     
 
@@ -334,13 +340,6 @@
                             </li>
                         
                             <li class="index-item method inherited">
-                                <a href="#method_computeC">computeC</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method inherited">
                                 <a href="#method_computeGiMf">computeGiMf</a>
 
                                 
@@ -376,7 +375,14 @@
                             </li>
                         
                             <li class="index-item method inherited">
-                                <a href="#method_updateSpookParams">updateSpookParams</a>
+                                <a href="#method_computeInvC">computeInvC</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_update">update</a>
 
                                 
                                 
@@ -393,14 +399,35 @@
                     <ul class="index-list properties extends">
                         
                             <li class="index-item property inherited">
-                                <a href="#property_bi">bi</a>
+                                <a href="#property_bodyA">bodyA</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item property inherited">
-                                <a href="#property_bj">bj</a>
+                                <a href="#property_bodyB">bodyB</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_contactPointA">contactPointA</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_contactPointB">contactPointB</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_enabled">enabled</a>
 
                                 
                                 
@@ -441,8 +468,22 @@
                                 
                             </li>
                         
+                            <li class="index-item property inherited">
+                                <a href="#property_needsUpdate">needsUpdate</a>
+
+                                
+                                
+                            </li>
+                        
                             <li class="index-item property">
-                                <a href="#property_ni">ni</a>
+                                <a href="#property_normalA">normalA</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_relativeVelocity">relativeVelocity</a>
 
                                 
                                 
@@ -457,20 +498,6 @@
                         
                             <li class="index-item property">
                                 <a href="#property_restitution">restitution</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_ri">ri</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_rj">rj</a>
 
                                 
                                 
@@ -550,7 +577,7 @@
             
         
         
-        <a href="../files/src_constraints_Equation.js.html#l260"><code>src&#x2F;constraints&#x2F;Equation.js:260</code></a>
+        <a href="../files/src_equations_Equation.js.html#l311"><code>src&#x2F;equations&#x2F;Equation.js:311</code></a>
         
         </p>
 
@@ -580,7 +607,7 @@
                     
 
                     <div class="param-description">
-                         
+                        
                     </div>
 
                     
@@ -629,7 +656,7 @@
             
         
         
-        <a href="../files/src_constraints_Equation.js.html#l115"><code>src&#x2F;constraints&#x2F;Equation.js:115</code></a>
+        <a href="../files/src_equations_Equation.js.html#l152"><code>src&#x2F;equations&#x2F;Equation.js:152</code></a>
         
         </p>
 
@@ -644,107 +671,6 @@
 
     </div>
 
-    
-
-    
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                
-                    
-                        <span class="type">Number</span>:
-                    
-                
-            </div>
-        </div>
-    
-
-    
-</div>
-
-                
-                    <div id="method_computeC" class="method item inherited">
-    <h3 class="name"><code>computeC</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>eps</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-        <span class="returns-inline">
-            <span class="type">Number</span>
-        </span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/Equation.html#method_computeC">Equation</a>:
-            
-        
-        
-        <a href="../files/src_constraints_Equation.js.html#l308"><code>src&#x2F;constraints&#x2F;Equation.js:308</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Compute the denominator part of the SPOOK equation: C = G<em>inv(M)</em>G&#39; + eps</p>
-
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">eps</code>
-                        <span class="type">Number</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
     
 
     
@@ -798,7 +724,7 @@
             
         
         
-        <a href="../files/src_constraints_Equation.js.html#l204"><code>src&#x2F;constraints&#x2F;Equation.js:204</code></a>
+        <a href="../files/src_equations_Equation.js.html#l241"><code>src&#x2F;equations&#x2F;Equation.js:241</code></a>
         
         </p>
 
@@ -866,7 +792,7 @@
             
         
         
-        <a href="../files/src_constraints_Equation.js.html#l230"><code>src&#x2F;constraints&#x2F;Equation.js:230</code></a>
+        <a href="../files/src_equations_Equation.js.html#l282"><code>src&#x2F;equations&#x2F;Equation.js:282</code></a>
         
         </p>
 
@@ -934,7 +860,7 @@
             
         
         
-        <a href="../files/src_constraints_Equation.js.html#l127"><code>src&#x2F;constraints&#x2F;Equation.js:127</code></a>
+        <a href="../files/src_equations_Equation.js.html#l164"><code>src&#x2F;equations&#x2F;Equation.js:164</code></a>
         
         </p>
 
@@ -1002,7 +928,7 @@
             
         
         
-        <a href="../files/src_constraints_Equation.js.html#l172"><code>src&#x2F;constraints&#x2F;Equation.js:172</code></a>
+        <a href="../files/src_equations_Equation.js.html#l209"><code>src&#x2F;equations&#x2F;Equation.js:209</code></a>
         
         </p>
 
@@ -1070,7 +996,7 @@
             
         
         
-        <a href="../files/src_constraints_Equation.js.html#l188"><code>src&#x2F;constraints&#x2F;Equation.js:188</code></a>
+        <a href="../files/src_equations_Equation.js.html#l225"><code>src&#x2F;equations&#x2F;Equation.js:225</code></a>
         
         </p>
 
@@ -1105,8 +1031,8 @@
 </div>
 
                 
-                    <div id="method_updateSpookParams" class="method item inherited">
-    <h3 class="name"><code>updateSpookParams</code></h3>
+                    <div id="method_computeInvC" class="method item inherited">
+    <h3 class="name"><code>computeInvC</code></h3>
 
     
         <div class="args">
@@ -1114,12 +1040,103 @@
             
                 <li class="arg">
                     
-                        <code>timeStep</code>
+                        <code>eps</code>
                     
                 </li>
             
             </ul><span class="paren">)</span>
         </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Number</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Equation.html#method_computeInvC">Equation</a>:
+            
+        
+        
+        <a href="../files/src_equations_Equation.js.html#l352"><code>src&#x2F;equations&#x2F;Equation.js:352</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Compute the denominator part of the SPOOK equation: C = G<em>inv(M)</em>G&#39; + eps</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">eps</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Number</span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_update" class="method item inherited">
+    <h3 class="name"><code>update</code></h3>
+
+    
+        <span class="paren">()</span>
     
 
     
@@ -1140,11 +1157,11 @@
         
             
                 <p>Inherited from
-                <a href="../classes/Equation.html#method_updateSpookParams">Equation</a>:
+                <a href="../classes/Equation.html#method_update">Equation</a>:
             
         
         
-        <a href="../files/src_constraints_Equation.js.html#l91"><code>src&#x2F;constraints&#x2F;Equation.js:91</code></a>
+        <a href="../files/src_equations_Equation.js.html#l127"><code>src&#x2F;equations&#x2F;Equation.js:127</code></a>
         
         </p>
 
@@ -1155,33 +1172,10 @@
     </div>
 
     <div class="description">
-        <p>Update SPOOK parameters .a, .b and .eps according to the given time step. See equations 9, 10 and 11 in the <a href="http://www8.cs.umu.se/kurser/5DV058/VT09/lectures/spooknotes.pdf">SPOOK notes</a>.</p>
+        <p>Compute SPOOK parameters .a, .b and .epsilon according to the current parameters. See equations 9, 10 and 11 in the <a href="http://www8.cs.umu.se/kurser/5DV058/VT09/lectures/spooknotes.pdf">SPOOK notes</a>.</p>
 
     </div>
 
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">timeStep</code>
-                        <span class="type">Number</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
     
 
     
@@ -1198,8 +1192,8 @@
                 <h2 class="off-left">Properties</h2>
 
                 
-                    <div id="property_bi" class="property item inherited">
-    <h3 class="name"><code>bi</code></h3>
+                    <div id="property_bodyA" class="property item inherited">
+    <h3 class="name"><code>bodyA</code></h3>
     <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
 
     
@@ -1214,11 +1208,11 @@
         
             
                 <p>Inherited from
-                <a href="../classes/Equation.html#property_bi">Equation</a>:
+                <a href="../classes/Equation.html#property_bodyA">Equation</a>:
             
         
         
-        <a href="../files/src_constraints_Equation.js.html#l32"><code>src&#x2F;constraints&#x2F;Equation.js:32</code></a>
+        <a href="../files/src_equations_Equation.js.html#l32"><code>src&#x2F;equations&#x2F;Equation.js:32</code></a>
         
         </p>
 
@@ -1240,8 +1234,8 @@
 </div>
 
                 
-                    <div id="property_bj" class="property item inherited">
-    <h3 class="name"><code>bj</code></h3>
+                    <div id="property_bodyB" class="property item inherited">
+    <h3 class="name"><code>bodyB</code></h3>
     <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
 
     
@@ -1256,11 +1250,11 @@
         
             
                 <p>Inherited from
-                <a href="../classes/Equation.html#property_bj">Equation</a>:
+                <a href="../classes/Equation.html#property_bodyB">Equation</a>:
             
         
         
-        <a href="../files/src_constraints_Equation.js.html#l39"><code>src&#x2F;constraints&#x2F;Equation.js:39</code></a>
+        <a href="../files/src_equations_Equation.js.html#l39"><code>src&#x2F;equations&#x2F;Equation.js:39</code></a>
         
         </p>
 
@@ -1271,6 +1265,138 @@
 
     <div class="description">
         <p>Second body participating in the constraint</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_contactPointA" class="property item">
+    <h3 class="name"><code>contactPointA</code></h3>
+    <span class="type">Array</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_equations_ContactEquation.js.html#l18"><code>src&#x2F;equations&#x2F;ContactEquation.js:18</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Vector from body i center of mass to the contact point.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_contactPointB" class="property item">
+    <h3 class="name"><code>contactPointB</code></h3>
+    <span class="type">Array</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_equations_ContactEquation.js.html#l26"><code>src&#x2F;equations&#x2F;ContactEquation.js:26</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>World-oriented vector from body A center of mass to the contact point.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_enabled" class="property item inherited">
+    <h3 class="name"><code>enabled</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Equation.html#property_enabled">Equation</a>:
+            
+        
+        
+        <a href="../files/src_equations_Equation.js.html#l103"><code>src&#x2F;equations&#x2F;Equation.js:103</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Whether this equation is enabled or not. If true, it will be added to the solver.</p>
 
     </div>
 
@@ -1305,7 +1431,7 @@
             
         
         
-        <a href="../files/src_constraints_ContactEquation.js.html#l48"><code>src&#x2F;constraints&#x2F;ContactEquation.js:48</code></a>
+        <a href="../files/src_equations_ContactEquation.js.html#l47"><code>src&#x2F;equations&#x2F;ContactEquation.js:47</code></a>
         
         </p>
 
@@ -1315,7 +1441,7 @@
     </div>
 
     <div class="description">
-        <p>Set to true if this is the first impact between the bodies (not persistant contact).</p>
+        <p>This property is set to true if this is the first impact between the bodies (not persistant contact).</p>
 
     </div>
 
@@ -1347,7 +1473,7 @@
             
         
         
-        <a href="../files/src_constraints_Equation.js.html#l60"><code>src&#x2F;constraints&#x2F;Equation.js:60</code></a>
+        <a href="../files/src_equations_Equation.js.html#l60"><code>src&#x2F;equations&#x2F;Equation.js:60</code></a>
         
         </p>
 
@@ -1389,7 +1515,7 @@
             
         
         
-        <a href="../files/src_constraints_Equation.js.html#l25"><code>src&#x2F;constraints&#x2F;Equation.js:25</code></a>
+        <a href="../files/src_equations_Equation.js.html#l25"><code>src&#x2F;equations&#x2F;Equation.js:25</code></a>
         
         </p>
 
@@ -1399,7 +1525,7 @@
     </div>
 
     <div class="description">
-        <p>Max force to apply when solving</p>
+        <p>Max force to apply when solving.</p>
 
     </div>
 
@@ -1431,7 +1557,7 @@
             
         
         
-        <a href="../files/src_constraints_Equation.js.html#l18"><code>src&#x2F;constraints&#x2F;Equation.js:18</code></a>
+        <a href="../files/src_equations_Equation.js.html#l18"><code>src&#x2F;equations&#x2F;Equation.js:18</code></a>
         
         </p>
 
@@ -1441,7 +1567,7 @@
     </div>
 
     <div class="description">
-        <p>Minimum force to apply when solving</p>
+        <p>Minimum force to apply when solving.</p>
 
     </div>
 
@@ -1473,7 +1599,7 @@
             
         
         
-        <a href="../files/src_constraints_Equation.js.html#l82"><code>src&#x2F;constraints&#x2F;Equation.js:82</code></a>
+        <a href="../files/src_equations_Equation.js.html#l90"><code>src&#x2F;equations&#x2F;Equation.js:90</code></a>
         
         </p>
 
@@ -1495,8 +1621,50 @@
 </div>
 
                 
-                    <div id="property_ni" class="property item">
-    <h3 class="name"><code>ni</code></h3>
+                    <div id="property_needsUpdate" class="property item inherited">
+    <h3 class="name"><code>needsUpdate</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Equation.html#property_needsUpdate">Equation</a>:
+            
+        
+        
+        <a href="../files/src_equations_Equation.js.html#l84"><code>src&#x2F;equations&#x2F;Equation.js:84</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Indicates if stiffness or relaxation was changed.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_normalA" class="property item">
+    <h3 class="name"><code>normalA</code></h3>
     <span class="type">Array</span>
 
     
@@ -1518,7 +1686,7 @@
             
         
         
-        <a href="../files/src_constraints_ContactEquation.js.html#l34"><code>src&#x2F;constraints&#x2F;ContactEquation.js:34</code></a>
+        <a href="../files/src_equations_ContactEquation.js.html#l33"><code>src&#x2F;equations&#x2F;ContactEquation.js:33</code></a>
         
         </p>
 
@@ -1529,6 +1697,48 @@
 
     <div class="description">
         <p>The normal vector, pointing out of body i</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_relativeVelocity" class="property item inherited">
+    <h3 class="name"><code>relativeVelocity</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Equation.html#property_relativeVelocity">Equation</a>:
+            
+        
+        
+        <a href="../files/src_equations_Equation.js.html#l97"><code>src&#x2F;equations&#x2F;Equation.js:97</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Relative velocity.</p>
 
     </div>
 
@@ -1560,7 +1770,7 @@
             
         
         
-        <a href="../files/src_constraints_Equation.js.html#l53"><code>src&#x2F;constraints&#x2F;Equation.js:53</code></a>
+        <a href="../files/src_equations_Equation.js.html#l53"><code>src&#x2F;equations&#x2F;Equation.js:53</code></a>
         
         </p>
 
@@ -1605,7 +1815,7 @@
             
         
         
-        <a href="../files/src_constraints_ContactEquation.js.html#l41"><code>src&#x2F;constraints&#x2F;ContactEquation.js:41</code></a>
+        <a href="../files/src_equations_ContactEquation.js.html#l40"><code>src&#x2F;equations&#x2F;ContactEquation.js:40</code></a>
         
         </p>
 
@@ -1615,97 +1825,7 @@
     </div>
 
     <div class="description">
-        <p>The restitution to use. 0=no bounciness, 1=max bounciness.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_ri" class="property item">
-    <h3 class="name"><code>ri</code></h3>
-    <span class="type">Array</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_constraints_ContactEquation.js.html#l19"><code>src&#x2F;constraints&#x2F;ContactEquation.js:19</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Vector from body i center of mass to the contact point.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_rj" class="property item">
-    <h3 class="name"><code>rj</code></h3>
-    <span class="type">Array</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_constraints_ContactEquation.js.html#l27"><code>src&#x2F;constraints&#x2F;ContactEquation.js:27</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Vector from body j center of mass to the contact point.</p>
+        <p>The restitution to use (0=no bounciness, 1=max bounciness).</p>
 
     </div>
 
@@ -1740,7 +1860,7 @@
             
         
         
-        <a href="../files/src_constraints_ContactEquation.js.html#l55"><code>src&#x2F;constraints&#x2F;ContactEquation.js:55</code></a>
+        <a href="../files/src_equations_ContactEquation.js.html#l55"><code>src&#x2F;equations&#x2F;ContactEquation.js:55</code></a>
         
         </p>
 
@@ -1785,7 +1905,7 @@
             
         
         
-        <a href="../files/src_constraints_ContactEquation.js.html#l62"><code>src&#x2F;constraints&#x2F;ContactEquation.js:62</code></a>
+        <a href="../files/src_equations_ContactEquation.js.html#l62"><code>src&#x2F;equations&#x2F;ContactEquation.js:62</code></a>
         
         </p>
 
@@ -1827,7 +1947,7 @@
             
         
         
-        <a href="../files/src_constraints_Equation.js.html#l46"><code>src&#x2F;constraints&#x2F;Equation.js:46</code></a>
+        <a href="../files/src_equations_Equation.js.html#l46"><code>src&#x2F;equations&#x2F;Equation.js:46</code></a>
         
         </p>
 

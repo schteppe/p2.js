@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/math/mat2.js - p2.js</title>
+    <title>src/equations/FrictionEquation.js - p2.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -41,6 +41,10 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/AABB.html">AABB</a></li>
+            
+                <li><a href="../classes/AngleLockEquation.html">AngleLockEquation</a></li>
+            
                 <li><a href="../classes/Body.html">Body</a></li>
             
                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
@@ -65,19 +69,23 @@
             
                 <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
             
+                <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
+            
                 <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
             
+                <li><a href="../classes/Heightfield.html">Heightfield</a></li>
+            
                 <li><a href="../classes/Island.html">Island</a></li>
             
-                <li><a href="../classes/IslandSolver.html">IslandSolver</a></li>
+                <li><a href="../classes/IslandManager.html">IslandManager</a></li>
+            
+                <li><a href="../classes/IslandNode.html">IslandNode</a></li>
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
-            
-                <li><a href="../classes/mat2.html">mat2</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
@@ -91,8 +99,6 @@
             
                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
             
-                <li><a href="../classes/QuadTree.html">QuadTree</a></li>
-            
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
@@ -101,7 +107,7 @@
             
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
-                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
+                <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -154,20 +160,127 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: src/math/mat2.js</h1>
+                        <h1 class="file-heading">File: src/equations/FrictionEquation.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
+var vec2 = require(&#x27;../math/vec2&#x27;)
+,   Equation = require(&#x27;./Equation&#x27;)
+,   Utils = require(&#x27;../utils/Utils&#x27;);
+
+module.exports = FrictionEquation;
+
 /**
- * The mat2 object from glMatrix, extended with the functions documented here. See http://glmatrix.net for full doc.
- * @class mat2
+ * Constrains the slipping in a contact along a tangent
+ *
+ * @class FrictionEquation
+ * @constructor
+ * @param {Body} bodyA
+ * @param {Body} bodyB
+ * @param {Number} slipForce
+ * @extends Equation
  */
+function FrictionEquation(bodyA, bodyB, slipForce){
+    Equation.call(this, bodyA, bodyB, -slipForce, slipForce);
 
-// Only import mat2 from gl-matrix and skip the rest
-var mat2 = require(&#x27;../../node_modules/gl-matrix/src/gl-matrix/mat2&#x27;).mat2;
+    /**
+     * Relative vector from center of body A to the contact point, world oriented.
+     * @property contactPointA
+     * @type {Array}
+     */
+    this.contactPointA = vec2.create();
 
-// Export everything
-module.exports = mat2;
+    /**
+     * Relative vector from center of body B to the contact point, world oriented.
+     * @property contactPointB
+     * @type {Array}
+     */
+    this.contactPointB = vec2.create();
+
+    /**
+     * Tangent vector that the friction force will act along. World oriented.
+     * @property t
+     * @type {Array}
+     */
+    this.t = vec2.create();
+
+    /**
+     * A ContactEquation connected to this friction. The contact equation can be used to rescale the max force for the friction.
+     * @property contactEquation
+     * @type {ContactEquation}
+     */
+    this.contactEquation = null;
+
+    /**
+     * The shape in body i that triggered this friction.
+     * @property shapeA
+     * @type {Shape}
+     * @todo Needed? The shape can be looked up via contactEquation.shapeA...
+     */
+    this.shapeA = null;
+
+    /**
+     * The shape in body j that triggered this friction.
+     * @property shapeB
+     * @type {Shape}
+     * @todo Needed? The shape can be looked up via contactEquation.shapeB...
+     */
+    this.shapeB = null;
+
+    /**
+     * The friction coefficient to use.
+     * @property frictionCoefficient
+     * @type {Number}
+     */
+    this.frictionCoefficient = 0.3;
+}
+FrictionEquation.prototype = new Equation();
+FrictionEquation.prototype.constructor = FrictionEquation;
+
+/**
+ * Set the slipping condition for the constraint. The friction force cannot be
+ * larger than this value.
+ * @method setSlipForce
+ * @param  {Number} slipForce
+ */
+FrictionEquation.prototype.setSlipForce = function(slipForce){
+    this.maxForce = slipForce;
+    this.minForce = -slipForce;
+};
+
+/**
+ * Get the max force for the constraint.
+ * @method getSlipForce
+ * @return {Number}
+ */
+FrictionEquation.prototype.getSlipForce = function(){
+    return this.maxForce;
+};
+
+FrictionEquation.prototype.computeB = function(a,b,h){
+    var bi = this.bodyA,
+        bj = this.bodyB,
+        ri = this.contactPointA,
+        rj = this.contactPointB,
+        t = this.t,
+        G = this.G;
+
+    // G = [-t -rixt t rjxt]
+    // And remember, this is a pure velocity constraint, g is always zero!
+    G[0] = -t[0];
+    G[1] = -t[1];
+    G[2] = -vec2.crossLength(ri,t);
+    G[3] = t[0];
+    G[4] = t[1];
+    G[5] = vec2.crossLength(rj,t);
+
+    var GW = this.computeGW(),
+        GiMf = this.computeGiMf();
+
+    var B = /* - g * a  */ - GW * b - h*GiMf;
+
+    return B;
+};
 
     </pre>
 </div>

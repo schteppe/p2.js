@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/constraints/Equation.js - p2.js</title>
+    <title>src/equations/Equation.js - p2.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -41,6 +41,10 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/AABB.html">AABB</a></li>
+            
+                <li><a href="../classes/AngleLockEquation.html">AngleLockEquation</a></li>
+            
                 <li><a href="../classes/Body.html">Body</a></li>
             
                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
@@ -65,19 +69,23 @@
             
                 <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
             
+                <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
+            
                 <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
             
+                <li><a href="../classes/Heightfield.html">Heightfield</a></li>
+            
                 <li><a href="../classes/Island.html">Island</a></li>
             
-                <li><a href="../classes/IslandSolver.html">IslandSolver</a></li>
+                <li><a href="../classes/IslandManager.html">IslandManager</a></li>
+            
+                <li><a href="../classes/IslandNode.html">IslandNode</a></li>
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
-            
-                <li><a href="../classes/mat2.html">mat2</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
@@ -91,8 +99,6 @@
             
                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
             
-                <li><a href="../classes/QuadTree.html">QuadTree</a></li>
-            
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
@@ -101,7 +107,7 @@
             
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
-                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
+                <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -154,68 +160,68 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: src/constraints/Equation.js</h1>
+                        <h1 class="file-heading">File: src/equations/Equation.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
 module.exports = Equation;
 
 var vec2 = require(&#x27;../math/vec2&#x27;),
-    mat2 = require(&#x27;../math/mat2&#x27;),
-    Utils = require(&#x27;../utils/Utils&#x27;);
+    Utils = require(&#x27;../utils/Utils&#x27;),
+    Body = require(&#x27;../objects/Body&#x27;);
 
 /**
  * Base class for constraint equations.
  * @class Equation
  * @constructor
- * @param {Body} bi First body participating in the equation
- * @param {Body} bj Second body participating in the equation
- * @param {number} minForce Minimum force to apply. Default: -1e6
- * @param {number} maxForce Maximum force to apply. Default: 1e6
+ * @param {Body} bodyA First body participating in the equation
+ * @param {Body} bodyB Second body participating in the equation
+ * @param {number} minForce Minimum force to apply. Default: -Number.MAX_VALUE
+ * @param {number} maxForce Maximum force to apply. Default: Number.MAX_VALUE
  */
-function Equation(bi,bj,minForce,maxForce){
+function Equation(bodyA, bodyB, minForce, maxForce){
 
     /**
-     * Minimum force to apply when solving
+     * Minimum force to apply when solving.
      * @property minForce
      * @type {Number}
      */
-    this.minForce = typeof(minForce)==&quot;undefined&quot; ? -1e6 : minForce;
+    this.minForce = typeof(minForce)===&quot;undefined&quot; ? -Number.MAX_VALUE : minForce;
 
     /**
-     * Max force to apply when solving
+     * Max force to apply when solving.
      * @property maxForce
      * @type {Number}
      */
-    this.maxForce = typeof(maxForce)==&quot;undefined&quot; ? 1e6 : maxForce;
+    this.maxForce = typeof(maxForce)===&quot;undefined&quot; ? Number.MAX_VALUE : maxForce;
 
     /**
      * First body participating in the constraint
-     * @property bi
+     * @property bodyA
      * @type {Body}
      */
-    this.bi = bi;
+    this.bodyA = bodyA;
 
     /**
      * Second body participating in the constraint
-     * @property bj
+     * @property bodyB
      * @type {Body}
      */
-    this.bj = bj;
+    this.bodyB = bodyB;
 
     /**
      * The stiffness of this equation. Typically chosen to a large number (~1e7), but can be chosen somewhat freely to get a stable simulation.
      * @property stiffness
      * @type {Number}
      */
-    this.stiffness = 1e6;
+    this.stiffness = Equation.DEFAULT_STIFFNESS;
 
     /**
      * The number of time steps needed to stabilize the constraint equation. Typically between 3 and 5 time steps.
      * @property relaxation
      * @type {Number}
      */
-    this.relaxation = 4;
+    this.relaxation = Equation.DEFAULT_RELAXATION;
 
     /**
      * The Jacobian entry of this equation. 6 numbers, 3 per body (x,y,angle).
@@ -223,6 +229,9 @@ function Equation(bi,bj,minForce,maxForce){
      * @type {Array}
      */
     this.G = new Utils.ARRAY_TYPE(6);
+    for(var i=0; i&lt;6; i++){
+        this.G[i]=0;
+    }
 
     // Constraint frames for body i and j
     /*
@@ -235,9 +244,14 @@ function Equation(bi,bj,minForce,maxForce){
 
     this.a = 0;
     this.b = 0;
-    this.eps = 0;
-    this.h = 0;
-    this.updateSpookParams(1/60);
+    this.epsilon = 0;
+    this.timeStep = 1/60;
+
+    /**
+     * Indicates if stiffness or relaxation was changed.
+     * @property {Boolean} needsUpdate
+     */
+    this.needsUpdate = true;
 
     /**
      * The resulting constraint multiplier from the last solve. This is mostly equivalent to the force produced by the constraint.
@@ -245,22 +259,51 @@ function Equation(bi,bj,minForce,maxForce){
      * @type {Number}
      */
     this.multiplier = 0;
-};
+
+    /**
+     * Relative velocity.
+     * @property {Number} relativeVelocity
+     */
+    this.relativeVelocity = 0;
+
+    /**
+     * Whether this equation is enabled or not. If true, it will be added to the solver.
+     * @property {Boolean} enabled
+     */
+    this.enabled = true;
+}
 Equation.prototype.constructor = Equation;
 
 /**
- * Update SPOOK parameters .a, .b and .eps according to the given time step. See equations 9, 10 and 11 in the &lt;a href=&quot;http://www8.cs.umu.se/kurser/5DV058/VT09/lectures/spooknotes.pdf&quot;&gt;SPOOK notes&lt;/a&gt;.
- * @method updateSpookParams
- * @param  {number} timeStep
+ * The default stiffness when creating a new Equation.
+ * @static
+ * @property {Number} DEFAULT_STIFFNESS
+ * @default 1e6
  */
-Equation.prototype.updateSpookParams = function(timeStep){
+Equation.DEFAULT_STIFFNESS = 1e6;
+
+/**
+ * The default relaxation when creating a new Equation.
+ * @static
+ * @property {Number} DEFAULT_RELAXATION
+ * @default 4
+ */
+Equation.DEFAULT_RELAXATION = 4;
+
+/**
+ * Compute SPOOK parameters .a, .b and .epsilon according to the current parameters. See equations 9, 10 and 11 in the &lt;a href=&quot;http://www8.cs.umu.se/kurser/5DV058/VT09/lectures/spooknotes.pdf&quot;&gt;SPOOK notes&lt;/a&gt;.
+ * @method update
+ */
+Equation.prototype.update = function(){
     var k = this.stiffness,
         d = this.relaxation,
-        h = timeStep;
+        h = this.timeStep;
+
     this.a = 4.0 / (h * (1 + 4 * d));
     this.b = (4.0 * d) / (1 + 4 * d);
-    this.eps = 4.0 / (h * h * k * (1 + 4 * d));
-    this.h = timeStep;
+    this.epsilon = 4.0 / (h * h * k * (1 + 4 * d));
+
+    this.needsUpdate = false;
 };
 
 function Gmult(G,vi,wi,vj,wj){
@@ -293,8 +336,8 @@ var qi = vec2.create(),
     qj = vec2.create();
 Equation.prototype.computeGq = function(){
     var G = this.G,
-        bi = this.bi,
-        bj = this.bj,
+        bi = this.bodyA,
+        bj = this.bodyB,
         xi = bi.position,
         xj = bj.position,
         ai = bi.angle,
@@ -336,13 +379,13 @@ Equation.prototype.transformedGmult = function(G,vi,wi,vj,wj){
  */
 Equation.prototype.computeGW = function(){
     var G = this.G,
-        bi = this.bi,
-        bj = this.bj,
+        bi = this.bodyA,
+        bj = this.bodyB,
         vi = bi.velocity,
         vj = bj.velocity,
         wi = bi.angularVelocity,
         wj = bj.angularVelocity;
-    return this.transformedGmult(G,vi,wi,vj,wj);
+    return this.transformedGmult(G,vi,wi,vj,wj) + this.relativeVelocity;
 };
 
 /**
@@ -352,13 +395,13 @@ Equation.prototype.computeGW = function(){
  */
 Equation.prototype.computeGWlambda = function(){
     var G = this.G,
-        bi = this.bi,
-        bj = this.bj,
+        bi = this.bodyA,
+        bj = this.bodyB,
         vi = bi.vlambda,
         vj = bj.vlambda,
         wi = bi.wlambda,
         wj = bj.wlambda;
-    return this.transformedGmult(G,vi,wi,vj,wj);
+    return Gmult(G,vi,wi,vj,wj);
 };
 
 /**
@@ -369,16 +412,16 @@ Equation.prototype.computeGWlambda = function(){
 var iMfi = vec2.create(),
     iMfj = vec2.create();
 Equation.prototype.computeGiMf = function(){
-    var bi = this.bi,
-        bj = this.bj,
+    var bi = this.bodyA,
+        bj = this.bodyB,
         fi = bi.force,
         ti = bi.angularForce,
         fj = bj.force,
         tj = bj.angularForce,
-        invMassi = bi.invMass,
-        invMassj = bj.invMass,
-        invIi = bi.invInertia,
-        invIj = bj.invInertia,
+        invMassi = getBodyInvMass(bi),
+        invMassj = getBodyInvMass(bj),
+        invIi = getBodyInvInertia(bi),
+        invIj = getBodyInvInertia(bj),
         G = this.G;
 
     vec2.scale(iMfi, fi,invMassi);
@@ -387,18 +430,33 @@ Equation.prototype.computeGiMf = function(){
     return this.transformedGmult(G,iMfi,ti*invIi,iMfj,tj*invIj);
 };
 
+function getBodyInvMass(body){
+    if(body.sleepState === Body.SLEEPING){
+        return 0;
+    } else {
+        return body.invMass;
+    }
+}
+function getBodyInvInertia(body){
+    if(body.sleepState === Body.SLEEPING){
+        return 0;
+    } else {
+        return body.invInertia;
+    }
+}
+
 /**
  * Computes G*inv(M)*G&#x27;
  * @method computeGiMGt
  * @return {Number}
  */
 Equation.prototype.computeGiMGt = function(){
-    var bi = this.bi,
-        bj = this.bj,
-        invMassi = bi.invMass,
-        invMassj = bj.invMass,
-        invIi = bi.invInertia,
-        invIj = bj.invInertia,
+    var bi = this.bodyA,
+        bj = this.bodyB,
+        invMassi = getBodyInvMass(bi),
+        invMassj = getBodyInvMass(bj),
+        invIi = getBodyInvInertia(bi),
+        invIj = getBodyInvInertia(bj),
         G = this.G;
 
     return  G[0] * G[0] * invMassi +
@@ -413,9 +471,8 @@ var addToWlambda_temp = vec2.create(),
     addToWlambda_Gi = vec2.create(),
     addToWlambda_Gj = vec2.create(),
     addToWlambda_ri = vec2.create(),
-    addToWlambda_rj = vec2.create();
-var tmpMat1 = mat2.create(),
-    tmpMat2 = mat2.create();
+    addToWlambda_rj = vec2.create(),
+    addToWlambda_Mdiag = vec2.create();
 
 /**
  * Add constraint velocity to the bodies.
@@ -423,15 +480,18 @@ var tmpMat1 = mat2.create(),
  * @param {Number} deltalambda
  */
 Equation.prototype.addToWlambda = function(deltalambda){
-    var bi = this.bi,
-        bj = this.bj,
+    var bi = this.bodyA,
+        bj = this.bodyB,
         temp = addToWlambda_temp,
-        imMat1 = tmpMat1,
-        imMat2 = tmpMat2,
         Gi = addToWlambda_Gi,
         Gj = addToWlambda_Gj,
         ri = addToWlambda_ri,
         rj = addToWlambda_rj,
+        invMassi = getBodyInvMass(bi),
+        invMassj = getBodyInvMass(bj),
+        invIi = getBodyInvInertia(bi),
+        invIj = getBodyInvInertia(bj),
+        Mdiag = addToWlambda_Mdiag,
         G = this.G;
 
     Gi[0] = G[0];
@@ -439,40 +499,30 @@ Equation.prototype.addToWlambda = function(deltalambda){
     Gj[0] = G[3];
     Gj[1] = G[4];
 
-    mat2.identity(imMat1);
-    mat2.identity(imMat2);
-    imMat1[0] = imMat1[3] = bi.invMass;
-    imMat2[0] = imMat2[3] = bj.invMass;
-
-    /*
-    vec2.rotate(ri,this.xi,bi.angle);
-    vec2.rotate(rj,this.xj,bj.angle);
-    */
-
     // Add to linear velocity
-    vec2.scale(temp,vec2.transformMat2(temp,Gi,imMat1),deltalambda);
+    // v_lambda += inv(M) * delta_lamba * G
+    vec2.scale(temp, Gi, invMassi*deltalambda);
     vec2.add( bi.vlambda, bi.vlambda, temp);
     // This impulse is in the offset frame
     // Also add contribution to angular
     //bi.wlambda -= vec2.crossLength(temp,ri);
+    bi.wlambda += invIi * G[2] * deltalambda;
 
-    vec2.scale(temp,vec2.transformMat2(temp,Gj,imMat2),deltalambda);
+
+    vec2.scale(temp, Gj, invMassj*deltalambda);
     vec2.add( bj.vlambda, bj.vlambda, temp);
     //bj.wlambda -= vec2.crossLength(temp,rj);
-
-    // Add to angular velocity
-    bi.wlambda += bi.invInertia * G[2] * deltalambda;
-    bj.wlambda += bj.invInertia * G[5] * deltalambda;
+    bj.wlambda += invIj * G[5] * deltalambda;
 };
 
 /**
  * Compute the denominator part of the SPOOK equation: C = G*inv(M)*G&#x27; + eps
- * @method computeC
+ * @method computeInvC
  * @param  {Number} eps
  * @return {Number}
  */
-Equation.prototype.computeC = function(eps){
-    return this.computeGiMGt() + eps;
+Equation.prototype.computeInvC = function(eps){
+    return 1.0 / (this.computeGiMGt() + eps);
 };
 
     </pre>
