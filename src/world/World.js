@@ -124,7 +124,7 @@ function World(options){
 
     /**
      * If the length of .gravity is zero, and .useWorldGravityAsFrictionGravity=true, then switch to using .frictionGravity for friction instead. This fallback is useful for gravityless games.
-     * @type {Boolean}
+     * @property {Boolean} useFrictionGravityOnZeroGravity
      */
     this.useFrictionGravityOnZeroGravity = true;
 
