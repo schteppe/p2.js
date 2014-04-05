@@ -28,7 +28,6 @@ p2.js
 * [Tearable constraints](http://schteppe.github.io/p2.js/demos/tearable.html)
 * [Surface velocity](http://schteppe.github.io/p2.js/demos/surfaceVelocity.html)
 * [Suspension](http://schteppe.github.io/p2.js/demos/suspension.html)
-* [Tearable constraints](http://schteppe.github.io/p2.js/demos/tearable.html)
 
 ### Examples
 Examples showing how to use p2.js with your favorite renderer.
