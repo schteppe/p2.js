@@ -36,6 +36,7 @@ function Demo(world){
 
     this.maxSubSteps = 3;
 
+    // Bodies to draw
     this.bodies=[];
     this.springs=[];
     this.paused = false;

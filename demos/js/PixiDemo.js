@@ -70,7 +70,10 @@ function PixiDemo(world,options){
         var h = that.renderer.height;
         that.drawCircle(g,center[0]*ppu,h-ppu*center[1],0,ppu*R,false,that.lineWidth);
     });
-};
+
+    // If constraints should be drawn
+    this.drawConstraints = false;
+}
 PixiDemo.prototype = Object.create(Demo.prototype);
 
 PixiDemo.prototype.stagePositionToPhysics = function(out,stagePosition){
@@ -417,11 +420,12 @@ PixiDemo.prototype.drawPath = function(g,path,color,fillColor,lineWidth,isSleepi
             lasty = y;
         }
     }
-    if(typeof(fillColor)=="number")
+    if(typeof(fillColor)==="number"){
         g.endFill();
+    }
 
     // Close the path
-    if(path.length>2 && typeof(fillColor)=="number"){
+    if(path.length>2 && typeof(fillColor)==="number"){
         g.moveTo(path[path.length-1][0],path[path.length-1][1]);
         g.lineTo(path[0][0],path[0][1]);
     }
@@ -539,7 +543,7 @@ PixiDemo.prototype.render = function(){
 //http://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
 function componentToHex(c) {
     var hex = c.toString(16);
-    return hex.length == 1 ? "0" + hex : hex;
+    return hex.length === 1 ? "0" + hex : hex;
 }
 function rgbToHex(r, g, b) {
     return componentToHex(r) + componentToHex(g) + componentToHex(b);
@@ -556,7 +560,6 @@ function randomPastelHex(){
     green = Math.floor((green + 3*mix[1]) / 4);
     blue =  Math.floor((blue +  3*mix[2]) / 4);
 
-    return rgbToHex(red,green,blue);
     return rgbToHex(red,green,blue);
 }
 
@@ -643,56 +646,6 @@ PixiDemo.prototype.addRenderable = function(obj){
     if(obj instanceof p2.Body && obj.shapes.length){
 
         this.drawRenderable(obj, sprite, color, lineColor);
-        /*
-        if(obj.concavePath && !this.debugPolygons){
-            var path = [];
-            for(var j=0; j!==obj.concavePath.length; j++){
-                var v = obj.concavePath[j];
-                path.push([v[0]*ppu, -v[1]*ppu]);
-            }
-            PixiDemo.drawPath(sprite, path, lineColor, color, lw);
-        } else {
-            for(var i=0; i<obj.shapes.length; i++){
-                var child = obj.shapes[i],
-                    offset = obj.shapeOffsets[i],
-                    angle = obj.shapeAngles[i];
-                offset = offset || zero;
-                angle = angle || 0;
-
-                if(child instanceof p2.Circle){
-                    this.drawCircle(sprite,offset[0]*ppu,-offset[1]*ppu,angle,child.radius*ppu,color,lw);
-
-                } else if(child instanceof p2.Particle){
-                    this.drawCircle(sprite,offset[0]*ppu,-offset[1]*ppu,angle,2*lw,lineColor,0);
-
-                } else if(child instanceof p2.Plane){
-                    // TODO use shape angle
-                    PixiDemo.drawPlane(sprite, -10*ppu, 10*ppu, color, lineColor, lw, lw*10, lw*10, ppu*100);
-
-                } else if(child instanceof p2.Line){
-                    PixiDemo.drawLine(sprite, child.length*ppu, lineColor, lw);
-
-                } else if(child instanceof p2.Rectangle){
-                    this.drawRectangle(sprite, offset[0]*ppu, -offset[1]*ppu, angle, child.width*ppu, child.height*ppu, lineColor, color, lw);
-
-                } else if(child instanceof p2.Capsule){
-                    PixiDemo.drawCapsule(sprite, offset[0]*ppu, -offset[1]*ppu, angle, child.length*ppu, child.radius*ppu, lineColor, color,lw);
-
-                } else if(child instanceof p2.Convex){
-                    // Scale verts
-                    var verts = [],
-                        vrot = p2.vec2.create();
-                    for(var j=0; j!==child.vertices.length; j++){
-                        var v = child.vertices[j];
-                        p2.vec2.rotate(vrot, v, angle);
-                        verts.push([(vrot[0]+offset[0])*ppu, -(vrot[1]+offset[1])*ppu]);
-                    }
-
-                    this.drawConvex(sprite, verts, child.triangles, lineColor, color, lw, this.debugPolygons,[offset[0]*ppu,-offset[1]*ppu]);
-                }
-            }
-        }
-        */
         this.sprites.push(sprite);
         this.stage.addChild(sprite);
 
@@ -711,13 +664,13 @@ PixiDemo.prototype.addRenderable = function(obj){
 PixiDemo.prototype.removeRenderable = function(obj){
     if(obj instanceof p2.Body){
         var i = this.bodies.indexOf(obj);
-        if(i!=-1){
+        if(i!==-1){
             this.stage.removeChild(this.sprites[i]);
             this.sprites.splice(i,1);
         }
     } else if(obj instanceof p2.Spring){
         var i = this.springs.indexOf(obj);
-        if(i!=-1){
+        if(i!==-1){
             this.stage.removeChild(this.springSprites[i]);
             this.springSprites.splice(i,1);
         }
