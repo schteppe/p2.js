@@ -668,6 +668,15 @@ World.prototype.internalStep = function(dt){
         }
     }
 
+    // Wake up bodies
+    for(var i=0; i!==Nbodies; i++){
+        var body = bodies[i];
+        if(body._wakeUpAfterNarrowphase){
+            body.wakeUp();
+            body._wakeUpAfterNarrowphase = false;
+        }
+    }
+
     // Emit shape end overlap events
     var last = this.overlappingShapesLastState;
     for(var i=0; i!==last.keys.length; i++){
@@ -923,40 +932,30 @@ World.prototype.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,cm,glen){
 
         if(numContacts){
 
-            // TODO: should wake up bodies *after* the narrowphase.
-
-            // Wake up bodies
-            var wakeUpA = false;
-            var wakeUpB = false;
-
-            var speedSquaredA = vec2.squaredLength(bi.velocity) + Math.pow(bi.angularVelocity,2);
-            var speedLimitSquaredA = Math.pow(bi.sleepSpeedLimit,2);
-            var speedSquaredB = vec2.squaredLength(bj.velocity) + Math.pow(bj.angularVelocity,2);
-            var speedLimitSquaredB = Math.pow(bj.sleepSpeedLimit,2);
-
             if( bi.allowSleep &&
                 bi.motionState === Body.DYNAMIC &&
                 bi.sleepState  === Body.SLEEPING &&
                 bj.sleepState  === Body.AWAKE &&
-                bj.motionState !== Body.STATIC &&
-                speedSquaredB >= speedLimitSquaredB*2
+                bj.motionState !== Body.STATIC
             ){
-                wakeUpA = true;
+                var speedSquaredB = vec2.squaredLength(bj.velocity) + Math.pow(bj.angularVelocity,2);
+                var speedLimitSquaredB = Math.pow(bj.sleepSpeedLimit,2);
+                if(speedSquaredB >= speedLimitSquaredB*2){
+                    bi._wakeUpAfterNarrowphase = true;
+                }
             }
+
             if( bj.allowSleep &&
                 bj.motionState === Body.DYNAMIC &&
                 bj.sleepState  === Body.SLEEPING &&
                 bi.sleepState  === Body.AWAKE &&
-                bi.motionState !== Body.STATIC &&
-                speedSquaredA >= speedLimitSquaredA*2
+                bi.motionState !== Body.STATIC
             ){
-                wakeUpB = true;
-            }
-            if(wakeUpA){
-                bi.wakeUp();
-            }
-            if(wakeUpB){
-                bj.wakeUp();
+                var speedSquaredA = vec2.squaredLength(bi.velocity) + Math.pow(bi.angularVelocity,2);
+                var speedLimitSquaredA = Math.pow(bi.sleepSpeedLimit,2);
+                if(speedSquaredA >= speedLimitSquaredA*2){
+                    bj._wakeUpAfterNarrowphase = true;
+                }
             }
 
             var key = si.id < sj.id ? si.id+" "+ sj.id : sj.id+" "+ si.id;

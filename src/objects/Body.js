@@ -348,6 +348,8 @@ function Body(options){
     this.lastAngularDampingScale = 1;
     this.lastDampingTimeStep = -1;
 
+    this._wakeUpAfterNarrowphase = false;
+
     this.updateMassProperties();
 }
 Body.prototype = new EventEmitter();
