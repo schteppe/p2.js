@@ -11,7 +11,7 @@ module.exports = Capsule;
  * @param {Number} [length] The distance between the end points
  * @param {Number} [radius] Radius of the capsule
  */
-function Capsule(length,radius){
+function Capsule(length, radius){
 
     /**
      * The distance between the end points.

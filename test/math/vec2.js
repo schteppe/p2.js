@@ -1,10 +1,5 @@
 var vec2 = require(__dirname + '/../../src/math/vec2');
 
-exports.construct = function(test){
-    // STUB
-    test.done();
-};
-
 exports.centroid = function(test){
     var a=[0,0],
         b=[1,0],

@@ -1,6 +1,6 @@
 var vec2 = require('../math/vec2')
 ,   Shape = require('./Shape')
-,   Convex = require('./Convex')
+,   Convex = require('./Convex');
 
 module.exports = Rectangle;
 
@@ -8,34 +8,37 @@ module.exports = Rectangle;
  * Rectangle shape class.
  * @class Rectangle
  * @constructor
- * @param {Number} w Width
- * @param {Number} h Height
+ * @param {Number} width Width
+ * @param {Number} height Height
  * @extends Convex
  */
-function Rectangle(w,h){
-    var verts = [   vec2.fromValues(-w/2, -h/2),
-                    vec2.fromValues( w/2, -h/2),
-                    vec2.fromValues( w/2,  h/2),
-                    vec2.fromValues(-w/2,  h/2)];
+function Rectangle(width, height){
+    width = width || 1;
+    height = height || 1;
+
+    var verts = [   vec2.fromValues(-width/2, -height/2),
+                    vec2.fromValues( width/2, -height/2),
+                    vec2.fromValues( width/2,  height/2),
+                    vec2.fromValues(-width/2,  height/2)];
 
     /**
      * Total width of the rectangle
      * @property width
      * @type {Number}
      */
-    this.width = w;
+    this.width = width;
 
     /**
      * Total height of the rectangle
      * @property height
      * @type {Number}
      */
-    this.height = h;
+    this.height = height;
 
     Convex.call(this,verts);
 
     this.type = Shape.RECTANGLE;
-};
+}
 Rectangle.prototype = new Convex([]);
 
 /**

@@ -1,7 +1,7 @@
 var EventEmitter = require(__dirname + '/../../src/events/EventEmitter');
 
 exports.construct = function(test){
-    // STUB
+    var emitter = new EventEmitter();
     test.done();
 };
 

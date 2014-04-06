@@ -1,7 +1,7 @@
 var Solver = require(__dirname + '/../../src/solver/Solver');
 
 exports.construct = function(test){
-    // STUB
+    var solver = new Solver();
     test.done();
 };
 

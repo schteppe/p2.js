@@ -5,7 +5,7 @@ var World = require(__dirname + '/../../src/world/World')
 ,   pkg = require(__dirname + '/../../package.json')
 ,   schema = require("./schema").schema
 ,   sample = require("./schema").sample
-,   ZSchema = require("z-schema")
+,   ZSchema = require("z-schema");
 
 var validator = new ZSchema({
     sync: true,
@@ -13,7 +13,14 @@ var validator = new ZSchema({
 });
 
 exports.construct = function(test){
-    // STUB
+    var world = new World();
+
+    var options = {
+        gravity: [123,456]
+    };
+    world = new World(options);
+    test.equal(world.gravity[0], options.gravity[0]);
+    test.equal(world.gravity[1], options.gravity[1]);
     test.done();
 };
 
@@ -71,7 +78,7 @@ exports.fromJSON = function(test){
     }
     test.ok(valid, 'Sample JSON invalid!');
 
-    // Try a JSON1 -> World -> JSON2 roundtrip and see if JSON1 == JSON2
+    // Try a JSON1 -> World -> JSON2 roundtrip and see if JSON1 === JSON2
     var world = new World();
     world.fromJSON(sample);
     var json = world.toJSON();
@@ -178,17 +185,17 @@ exports.events = {
         var beginContactHits = 0,
             endContactHits = 0;
         world.on("beginContact",function(evt){
-            test.ok( evt.shapeA.id == shapeA.id || evt.shapeA.id == shapeB.id );
-            test.ok( evt.shapeB.id == shapeA.id || evt.shapeB.id == shapeB.id );
-            test.ok( evt.bodyA.id == bodyA.id || evt.bodyA.id == bodyB.id );
-            test.ok( evt.bodyB.id == bodyA.id || evt.bodyB.id == bodyB.id );
+            test.ok( evt.shapeA.id === shapeA.id || evt.shapeA.id === shapeB.id );
+            test.ok( evt.shapeB.id === shapeA.id || evt.shapeB.id === shapeB.id );
+            test.ok( evt.bodyA.id === bodyA.id || evt.bodyA.id === bodyB.id );
+            test.ok( evt.bodyB.id === bodyA.id || evt.bodyB.id === bodyB.id );
             beginContactHits++;
         });
         world.on("endContact",function(evt){
-            test.ok( evt.shapeA.id == shapeA.id || evt.shapeA.id == shapeB.id );
-            test.ok( evt.shapeB.id == shapeA.id || evt.shapeB.id == shapeB.id );
-            test.ok( evt.bodyA.id == bodyA.id || evt.bodyA.id == bodyB.id );
-            test.ok( evt.bodyB.id == bodyA.id || evt.bodyB.id == bodyB.id );
+            test.ok( evt.shapeA.id === shapeA.id || evt.shapeA.id === shapeB.id );
+            test.ok( evt.shapeB.id === shapeA.id || evt.shapeB.id === shapeB.id );
+            test.ok( evt.bodyA.id === bodyA.id || evt.bodyA.id === bodyB.id );
+            test.ok( evt.bodyB.id === bodyA.id || evt.bodyB.id === bodyB.id );
             endContactHits++;
         });
         world.step(1/60);

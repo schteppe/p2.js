@@ -22,7 +22,7 @@ function RotationalLockEquation(bodyA, bodyB, options){
     var G = this.G;
     G[2] =  1;
     G[5] = -1;
-};
+}
 RotationalLockEquation.prototype = new Equation();
 RotationalLockEquation.prototype.constructor = RotationalLockEquation;
 

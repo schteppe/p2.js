@@ -1,7 +1,7 @@
 var Particle = require(__dirname + '/../../src/shapes/Particle');
 
 exports.construct = function(test){
-    // STUB
+    var particle = new Particle();
     test.done();
 };
 

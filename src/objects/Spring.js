@@ -1,4 +1,5 @@
 var vec2 = require('../math/vec2');
+var Utils = require('../utils/Utils');
 
 module.exports = Spring;
 
@@ -13,34 +14,40 @@ module.exports = Spring;
  * @param {number} [options.restLength=1]   A number > 0. Default: 1
  * @param {number} [options.stiffness=100]  Spring constant (see Hookes Law). A number >= 0.
  * @param {number} [options.damping=1]      A number >= 0. Default: 1
- * @param {Array}  [options.worldAnchorA]   Where to hook the spring to body A, in world coordinates. Overrides the option "localAnchorA" if given.
- * @param {Array}  [options.worldAnchorB]
  * @param {Array}  [options.localAnchorA]   Where to hook the spring to body A, in local body coordinates. Defaults to the body center.
  * @param {Array}  [options.localAnchorB]
+ * @param {Array}  [options.worldAnchorA]   Where to hook the spring to body A, in world coordinates. Overrides the option "localAnchorA" if given.
+ * @param {Array}  [options.worldAnchorB]
  */
 function Spring(bodyA,bodyB,options){
-    options = options || {};
+    options = Utils.defaults(options,{
+        restLength: 1,
+        stiffness: 100,
+        damping: 1,
+        localAnchorA: [0,0],
+        localAnchorB: [0,0],
+    });
 
     /**
      * Rest length of the spring.
      * @property restLength
      * @type {number}
      */
-    this.restLength = typeof(options.restLength)=="number" ? options.restLength : 1;
+    this.restLength = options.restLength;
 
     /**
      * Stiffness of the spring.
      * @property stiffness
      * @type {number}
      */
-    this.stiffness = options.stiffness || 100;
+    this.stiffness = options.stiffness;
 
     /**
      * Damping of the spring.
      * @property damping
      * @type {number}
      */
-    this.damping = options.damping || 1;
+    this.damping = options.damping;
 
     /**
      * First connected body.
@@ -61,20 +68,24 @@ function Spring(bodyA,bodyB,options){
      * @property localAnchorA
      * @type {Array}
      */
-    this.localAnchorA = vec2.fromValues(0,0);
+    this.localAnchorA = vec2.create();
+    vec2.copy(this.localAnchorA, options.localAnchorA);
 
     /**
      * Anchor for bodyB in local bodyB coordinates.
      * @property localAnchorB
      * @type {Array}
      */
-    this.localAnchorB = vec2.fromValues(0,0);
+    this.localAnchorB = vec2.create();
+    vec2.copy(this.localAnchorB, options.localAnchorB);
 
-    if(options.localAnchorA) vec2.copy(this.localAnchorA, options.localAnchorA);
-    if(options.localAnchorB) vec2.copy(this.localAnchorB, options.localAnchorB);
-    if(options.worldAnchorA) this.setWorldAnchorA(options.worldAnchorA);
-    if(options.worldAnchorB) this.setWorldAnchorB(options.worldAnchorB);
-};
+    if(options.worldAnchorA){
+        this.setWorldAnchorA(options.worldAnchorA);
+    }
+    if(options.worldAnchorB){
+        this.setWorldAnchorB(options.worldAnchorB);
+    }
+}
 
 /**
  * Set the anchor point on body A, using world coordinates.

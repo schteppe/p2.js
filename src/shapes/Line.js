@@ -17,10 +17,10 @@ function Line(length){
      * @property length
      * @type {Number}
      */
-    this.length = length;
+    this.length = length || 1;
 
     Shape.call(this,Shape.LINE);
-};
+}
 Line.prototype = new Shape();
 Line.prototype.computeMomentOfInertia = function(mass){
     return mass * Math.pow(this.length,2) / 12;

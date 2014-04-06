@@ -1,7 +1,10 @@
 var Rectangle = require(__dirname + '/../../src/shapes/Rectangle');
 
 exports.construct = function(test){
-    // STUB
+    var rect = new Rectangle();
+    test.equal(rect.width,1);
+    test.equal(rect.height,1);
+    var rect = new Rectangle(2,3);
     test.done();
 };
 

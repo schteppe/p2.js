@@ -1,7 +1,8 @@
 var Circle = require(__dirname + '/../../src/shapes/Circle');
 
 exports.construct = function(test){
-    // STUB
+    var circle = new Circle(2);
+    test.equal(circle.radius, 2);
     test.done();
 };
 

@@ -1,7 +1,7 @@
 var Plane = require(__dirname + '/../../src/shapes/Plane');
 
 exports.construct = function(test){
-    // STUB
+    var plane = new Plane();
     test.done();
 };
 

@@ -49,11 +49,11 @@ if(!performance.now){
  * @class World
  * @constructor
  * @param {Object}          [options]
- * @param {Solver}          options.solver          Defaults to GSSolver.
- * @param {Array}           options.gravity         Defaults to [0,-9.78]
- * @param {Broadphase}      options.broadphase      Defaults to NaiveBroadphase
- * @param {Boolean}         options.islandSplit
- * @param {Boolean}         options.doProfiling
+ * @param {Solver}          [options.solver]            Defaults to GSSolver.
+ * @param {Array}           [options.gravity]           Defaults to [0,-9.78]
+ * @param {Broadphase}      [options.broadphase]        Defaults to NaiveBroadphase
+ * @param {Boolean}         [options.islandSplit=false]
+ * @param {Boolean}         [options.doProfiling=false]
  * @extends EventEmitter
  */
 function World(options){
@@ -108,7 +108,10 @@ function World(options){
      * @property gravity
      * @type {Array}
      */
-    this.gravity = options.gravity || vec2.fromValues(0, -9.78);
+    this.gravity = vec2.fromValues(0, -9.78);
+    if(options.gravity){
+        vec2.copy(this.gravity, options.gravity);
+    }
 
     /**
      * Gravity to use when approximating the friction max force (mu*mass*gravity).
@@ -919,6 +922,8 @@ World.prototype.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,cm,glen){
         var numFrictionEquations = np.frictionEquations.length - numFrictionBefore;
 
         if(numContacts){
+
+            // TODO: should wake up bodies *after* the narrowphase.
 
             // Wake up bodies
             var wakeUpA = false;

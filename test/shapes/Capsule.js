@@ -1,7 +1,9 @@
 var Capsule = require(__dirname + '/../../src/shapes/Capsule');
 
 exports.construct = function(test){
-    // STUB
+    var capsule = new Capsule(2,3);
+    test.equal(capsule.length, 2);
+    test.equal(capsule.radius, 3);
     test.done();
 };
 

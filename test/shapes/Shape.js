@@ -3,9 +3,10 @@ var AABB = require(__dirname + '/../../src/collision/AABB')
 ,   Circle = require(__dirname + '/../../src/shapes/Circle')
 ,   Rectangle = require(__dirname + '/../../src/shapes/Rectangle')
 ,   Plane = require(__dirname + '/../../src/shapes/Plane')
+,   Shape = require(__dirname + '/../../src/shapes/Shape');
 
 exports.construct = function(test){
-    // STUB
+    var shape = new Shape();
     test.done();
 };
 
