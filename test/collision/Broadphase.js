@@ -1,7 +1,8 @@
 var Broadphase = require(__dirname + '/../../src/collision/Broadphase');
 
 exports.construct = function(test){
-    // STUB
+    var b = new Broadphase(Broadphase.NAIVE);
+    test.equal(b.type, Broadphase.NAIVE);
     test.done();
 };
 

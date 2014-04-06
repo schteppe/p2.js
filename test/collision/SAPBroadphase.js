@@ -1,7 +1,7 @@
 var SAPBroadphase = require(__dirname + '/../../src/collision/SAPBroadphase');
 
 exports.construct = function(test){
-    // STUB
+    var broadphase = new SAPBroadphase();
     test.done();
 };
 

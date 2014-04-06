@@ -22,10 +22,9 @@ module.exports = GridBroadphase;
  * @todo Should have an option for dynamic scene size
  */
 function GridBroadphase(options){
-    options = options || {};
     Broadphase.apply(this);
 
-    Utils.extend(options,{
+    options = Utils.defaults(options,{
         xmin:   -100,
         xmax:   100,
         ymin:   -100,

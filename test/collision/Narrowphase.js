@@ -24,7 +24,7 @@ exports.setUp = function(callback){
 };
 
 exports.construct = function(test){
-    // STUB
+    var narrowphase = new Narrowphase();
     test.done();
 };
 

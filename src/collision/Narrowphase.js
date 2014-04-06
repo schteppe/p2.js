@@ -8,7 +8,7 @@ var vec2 = require('../math/vec2')
 ,   Circle = require('../shapes/Circle')
 ,   Shape = require('../shapes/Shape')
 ,   Body = require('../objects/Body')
-,   Rectangle = require('../shapes/Rectangle')
+,   Rectangle = require('../shapes/Rectangle');
 
 module.exports = Narrowphase;
 
@@ -33,7 +33,7 @@ var tmp1 = vec2.fromValues(0,0)
 ,   tmp16 = vec2.fromValues(0,0)
 ,   tmp17 = vec2.fromValues(0,0)
 ,   tmp18 = vec2.fromValues(0,0)
-,   tmpArray = []
+,   tmpArray = [];
 
 /**
  * Narrowphase. Creates contacts and friction given shapes and transforms.
@@ -121,7 +121,7 @@ function Narrowphase(){
 
     // Keep track of the colliding bodies last step
     this.collidingBodiesLastStep = { keys:[] };
-};
+}
 
 /**
  * Check if the bodies were in contact since the last reset().

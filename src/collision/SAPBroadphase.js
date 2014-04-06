@@ -1,10 +1,5 @@
-var Circle = require('../shapes/Circle')
-,   Plane = require('../shapes/Plane')
-,   Shape = require('../shapes/Shape')
-,   Particle = require('../shapes/Particle')
-,   Utils = require('../utils/Utils')
-,   Broadphase = require('../collision/Broadphase')
-,   vec2 = require('../math/vec2')
+var Utils = require('../utils/Utils')
+,   Broadphase = require('../collision/Broadphase');
 
 module.exports = SAPBroadphase;
 
@@ -50,13 +45,17 @@ function SAPBroadphase(){
     this._removeBodyHandler = function(e){
         // Remove from X list
         var idx = axisListX.indexOf(e.body);
-        if(idx !== -1) axisListX.splice(idx,1);
+        if(idx !== -1){
+            axisListX.splice(idx,1);
+        }
 
         // Remove from Y list
         idx = axisListY.indexOf(e.body);
-        if(idx !== -1) axisListY.splice(idx,1);
-    }
-};
+        if(idx !== -1){
+            axisListY.splice(idx,1);
+        }
+    };
+}
 SAPBroadphase.prototype = new Broadphase();
 
 /**
