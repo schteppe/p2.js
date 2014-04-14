@@ -70,9 +70,6 @@ function PixiDemo(world,options){
         var h = that.renderer.height;
         that.drawCircle(g,center[0]*ppu,h-ppu*center[1],0,ppu*R,false,that.lineWidth);
     });
-
-    // If constraints should be drawn
-    this.drawConstraints = false;
 }
 PixiDemo.prototype = Object.create(Demo.prototype);
 

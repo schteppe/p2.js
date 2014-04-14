@@ -74,6 +74,9 @@ function Demo(world){
     // If contacts should be drawn
     this.drawContacts = false;
 
+    // If constraints should be drawn
+    this.drawConstraints = false;
+
     this.stats_sum = 0;
     this.stats_N = 100;
     this.stats_Nsummed = 0;
@@ -132,8 +135,9 @@ function Demo(world){
                     if(!result)
                         console.error(that.serializer.error,that.serializer.validateResult);*/
                     break;
-                case "C": // toggle draw contacts
+                case "C": // toggle draw contacts & constraints
                     that.drawContacts = !that.drawContacts;
+                    that.drawConstraints = !that.drawConstraints;
                     break;
                 case "D": // toggle draw polygon mode
                     that.setState(s == Demo.DRAWPOLYGON ? Demo.DEFAULT : s = Demo.DRAWPOLYGON);
