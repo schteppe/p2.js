@@ -205,6 +205,12 @@ PixiDemo.prototype.init = function(){
     });
 };
 
+PixiDemo.prototype.centerCamera = function(x, y){
+    var ppu = this.pixelsPerLengthUnit;
+    this.stage.position.x = this.renderer.width/2 - ppu*x;
+    this.stage.position.y = -this.renderer.height/2 + ppu*y;
+};
+
 /**
  * Draw a circle onto a graphics object
  * @method drawCircle
@@ -429,15 +435,14 @@ PixiDemo.prototype.drawPath = function(g,path,color,fillColor,lineWidth,isSleepi
 };
 
 PixiDemo.updateSpriteTransform = function(sprite,body,ppu,h){
-    if(false){
-        sprite.position.x =     body.position[0] * ppu;
-        sprite.position.y = h - body.position[1] * ppu;
-        sprite.rotation = -body.angle;
-    } else {
-        // Use interpolated position
+    if(this.useInterpolatedPositions){
         sprite.position.x =     body.interpolatedPosition[0] * ppu;
         sprite.position.y = h - body.interpolatedPosition[1] * ppu;
         sprite.rotation = -body.interpolatedAngle;
+    } else {
+        sprite.position.x =     body.position[0] * ppu;
+        sprite.position.y = h - body.position[1] * ppu;
+        sprite.rotation = -body.angle;
     }
 };
 
@@ -474,8 +479,14 @@ PixiDemo.prototype.render = function(){
             sprite = springSprites[i],
             bA = s.bodyA,
             bB = s.bodyB;
-        s.getWorldAnchorA(worldAnchorA);
-        s.getWorldAnchorB(worldAnchorB);
+
+        if(this.useInterpolatedPositions){
+            p2.vec2.toGlobalFrame(worldAnchorA, s.localAnchorA, bA.interpolatedPosition, bA.interpolatedAngle);
+            p2.vec2.toGlobalFrame(worldAnchorB, s.localAnchorB, bB.interpolatedPosition, bB.interpolatedAngle);
+        } else {
+            s.getWorldAnchorA(worldAnchorA);
+            s.getWorldAnchorB(worldAnchorB);
+        }
 
         sprite.scale.y = 1;
         if(worldAnchorA[1] < worldAnchorB[1]){
@@ -617,8 +628,17 @@ PixiDemo.prototype.drawRenderable = function(obj, graphics, color, lineColor){
                         p2.vec2.rotate(vrot, v, angle);
                         verts.push([(vrot[0]+offset[0])*ppu, -(vrot[1]+offset[1])*ppu]);
                     }
-
                     this.drawConvex(graphics, verts, child.triangles, lineColor, color, lw, this.debugPolygons,[offset[0]*ppu,-offset[1]*ppu], isSleeping);
+
+                } else if(child instanceof p2.Heightfield){
+                    var path = [[0,100*ppu]];
+                    for(var j=0; j!==child.data.length; j++){
+                        var v = child.data[j];
+                        path.push([j*child.elementWidth*ppu, -v*ppu]);
+                    }
+                    path.push([child.data.length*child.elementWidth*ppu,100*ppu]);
+                    this.drawPath(graphics, path, lineColor, color, lw, isSleeping);
+
                 }
             }
         }

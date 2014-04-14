@@ -48,6 +48,8 @@ function Demo(world){
     this.nullBody = new p2.Body();
     this.pickPrecision = 5;
 
+    this.useInterpolatedPositions = false;
+
     this.drawPoints = [];
     this.drawPointsChangeEvent = { type : "drawPointsChange" };
     this.drawCircleCenter = p2.vec2.create();
