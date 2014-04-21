@@ -385,7 +385,6 @@ function World(options){
     // For keeping track of overlapping shapes
     this.overlappingShapesLastState = { keys:[] };
     this.overlappingShapesCurrentState = { keys:[] };
-    this.overlappingShapeLookup = { keys:[] };
 }
 World.prototype = new Object(EventEmitter.prototype);
 
