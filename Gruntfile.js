@@ -34,6 +34,24 @@ module.exports = function(grunt) {
                 jshintrc: '.jshintrc',
                 force: true // Do not fail the task
             }
+        },
+
+        watch: {
+            options: {
+                nospawn: false
+            },
+            source: {
+                files: 'src/**/*',
+                tasks: [
+                    'default'
+                ]
+            },
+            test: {
+                files: 'test/**/*',
+                tasks: [
+                    'test'
+                ]
+            },
         }
     });
 
@@ -41,6 +59,8 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-browserify');
     grunt.loadNpmTasks('grunt-contrib-nodeunit');
+    grunt.loadNpmTasks('grunt-contrib-watch');
+
     grunt.registerTask('default', ['grabVec2','browserify','webworkerify','uglify','addLicense']);
     grunt.registerTask('test', ['nodeunit']);
 
