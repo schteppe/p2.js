@@ -93,6 +93,10 @@ OverlapKeeper.prototype.getDiff = function(dictA, dictB, result){
     return result;
 };
 
+OverlapKeeper.prototype.isNewOverlap = function(shapeA, shapeB){
+    return !!!this.overlappingLastState.get(shapeA.id, shapeB.id);
+};
+
 OverlapKeeper.prototype.getNewBodyOverlaps = function(result){
     this.tmpArray1.length = 0;
     var overlaps = this.getNewOverlaps(this.tmpArray1);
