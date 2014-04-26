@@ -47,7 +47,7 @@ module.exports = function(grunt) {
                 ]
             },
             test: {
-                files: 'test/**/*',
+                files: ['src/**/*', 'test/**/*'],
                 tasks: [
                     'test'
                 ]
