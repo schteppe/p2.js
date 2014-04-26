@@ -198,11 +198,18 @@ exports.events = {
             test.ok( evt.bodyB.id === bodyA.id || evt.bodyB.id === bodyB.id );
             endContactHits++;
         });
+
         world.step(1/60);
+        test.equal(beginContactHits, 1);
+        test.equal(endContactHits, 0);
+
+        world.step(1/60);
+        test.equal(beginContactHits, 1);
+        test.equal(endContactHits, 0);
+
         bodyA.position[0] = 10;
         world.step(1/60);
-
-        test.equal(beginContactHits,1);
+        test.equal(beginContactHits, 1);
         test.equal(endContactHits,1);
 
         test.done();

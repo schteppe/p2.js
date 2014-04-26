@@ -66,6 +66,25 @@ exports.getNewOverlaps = function(test){
     test.done();
 };
 
+exports.isNewOverlap = function(test){
+    var bodyA = new Body();
+    var bodyB = new Body();
+    var shapeA = new Circle(1);
+    var shapeB = new Circle(1);
+    var keeper = new OverlapKeeper();
+    keeper.setOverlapping(bodyA, shapeA, bodyB, shapeB);
+
+    var result = keeper.isNewOverlap(shapeA, shapeB);
+    test.equal(result, true);
+
+    keeper.tick();
+
+    var result = keeper.isNewOverlap(shapeA, shapeB);
+    test.equal(result, false);
+
+    test.done();
+};
+
 exports.getNewBodyOverlaps = function(test){
     var bodyA = new Body();
     var bodyB = new Body();
