@@ -144,14 +144,11 @@ Narrowphase.prototype.collidedLastStep = function(bi,bj){
 // "for in" loops aren't optimised in chrome... is there a better way to handle last-step collision memory?
 // Maybe do this: http://jsperf.com/reflection-vs-array-of-keys
 function clearObject(obj){
-    for(var i = 0, l = obj.keys.length; i < l; i++) {
-        delete obj[obj.keys[i]];
+    var l = obj.keys.length;
+    while(l--){
+        delete obj[obj.keys[l]];
     }
     obj.keys.length = 0;
-    /*
-    for(var key in this.collidingBodiesLastStep)
-        delete this.collidingBodiesLastStep[key];
-    */
 }
 
 /**
