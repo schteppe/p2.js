@@ -8,6 +8,7 @@ var vec2 = require('../math/vec2')
 ,   ContactEquation = require('../equations/ContactEquation')
 ,   FrictionEquation = require('../equations/FrictionEquation')
 ,   Circle = require('../shapes/Circle')
+,   Convex = require('../shapes/Convex')
 ,   Shape = require('../shapes/Shape')
 ,   Body = require('../objects/Body')
 ,   Rectangle = require('../shapes/Rectangle');
@@ -1971,4 +1972,79 @@ Narrowphase.prototype.circleHeightfield = function( circleBody,circleShape,circl
 
     return 0;
 
+};
+
+var convexHeightfield_v0 = vec2.create(),
+    convexHeightfield_v1 = vec2.create(),
+    convexHeightfield_tilePos = vec2.create(),
+    convexHeightfield_tempConvexShape = new Convex([vec2.create(),vec2.create(),vec2.create(),vec2.create()]);
+/**
+ * @method circleHeightfield
+ * @param  {Body}           bi
+ * @param  {Circle}         si
+ * @param  {Array}          xi
+ * @param  {Body}           bj
+ * @param  {Heightfield}    sj
+ * @param  {Array}          xj
+ * @param  {Number}         aj
+ */
+Narrowphase.prototype[Shape.RECTANGLE | Shape.HEIGHTFIELD] =
+Narrowphase.prototype[Shape.CONVEX | Shape.HEIGHTFIELD] =
+Narrowphase.prototype.convexHeightfield = function( convexBody,convexShape,convexPos,convexAngle,
+                                                    hfBody,hfShape,hfPos,hfAngle, justTest ){
+    var data = hfShape.data,
+        w = hfShape.elementWidth,
+        v0 = convexHeightfield_v0,
+        v1 = convexHeightfield_v1,
+        tilePos = convexHeightfield_tilePos,
+        tileConvex = convexHeightfield_tempConvexShape;
+
+    // Get the index of the points to test against
+    var idxA = Math.floor( (convexBody.aabb.lowerBound[0] - hfPos[0]) / w ),
+        idxB = Math.ceil(  (convexBody.aabb.upperBound[0] - hfPos[0]) / w );
+
+    if(idxA < 0) idxA = 0;
+    if(idxB >= data.length) idxB = data.length-1;
+
+    // Get max and min
+    var max = data[idxA],
+        min = data[idxB];
+    for(var i=idxA; i<idxB; i++){
+        if(data[i] < min) min = data[i];
+        if(data[i] > max) max = data[i];
+    }
+
+    if(convexBody.aabb.lowerBound[1] > max){
+        return justTest ? false : 0;
+    }
+
+    var found = false;
+    var numContacts = 0;
+
+    // Loop over all edges
+    for(var i=idxA; i<idxB; i++){
+
+        // Get points
+        vec2.set(v0,     i*w, data[i]  );
+        vec2.set(v1, (i+1)*w, data[i+1]);
+        vec2.add(v0,v0,hfPos);
+        vec2.add(v1,v1,hfPos);
+
+        // Construct a convex
+        var tileHeight = 100; // todo
+        vec2.set(tilePos, (v1[0] + v0[0])*0.5, (v1[1] + v0[1] - tileHeight)*0.5);
+
+        vec2.sub(tileConvex.vertices[0], v1, tilePos);
+        vec2.sub(tileConvex.vertices[1], v0, tilePos);
+        vec2.copy(tileConvex.vertices[2], tileConvex.vertices[1]);
+        vec2.copy(tileConvex.vertices[3], tileConvex.vertices[0]);
+        tileConvex.vertices[2][1] -= tileHeight;
+        tileConvex.vertices[3][1] -= tileHeight;
+
+        // Do convex collision
+        numContacts += this.convexConvex(   convexBody, convexShape, convexPos, convexAngle,
+                                            hfBody, tileConvex, tilePos, 0, justTest);
+    }
+
+    return numContacts;
 };
