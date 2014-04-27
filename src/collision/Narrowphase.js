@@ -619,7 +619,7 @@ Narrowphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj, justTest, 
     vec2.normalize(worldEdgeUnit, worldEdge);
 
     // Get tangent to the edge.
-    vec2.rotate(worldTangent, worldEdgeUnit, -Math.PI/2);
+    vec2.rotate90cw(worldTangent, worldEdgeUnit);
 
     // Check distance from the plane spanned by the edge vs the circle
     sub(dist, circleOffset, worldVertex0);
