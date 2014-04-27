@@ -148,6 +148,8 @@ GSSolver.prototype.solve = function(h, world){
                 }
             }
 
+            GSSolver.updateMultipliers(equations, lambda, 1/h);
+
             // Set computed friction force
             for(j=0; j!==Neq; j++){
                 var eq = equations[j];
@@ -185,12 +187,16 @@ GSSolver.prototype.solve = function(h, world){
             bodies[i].addConstraintVelocity();
         }
 
-        // Set the .multiplier property of each equation
-        var l = Neq;
-        var invDt = 1/h;
-        while(l--){
-            equations[l].multiplier = lambda[l] * invDt;
-        }
+        GSSolver.updateMultipliers(equations, lambda, 1/h);
+    }
+};
+
+// Sets the .multiplier property of each equation
+GSSolver.updateMultipliers = function(equations, lambda, invDt){
+    // Set the .multiplier property of each equation
+    var l = equations.length;
+    while(l--){
+        equations[l].multiplier = lambda[l] * invDt;
     }
 };
 
