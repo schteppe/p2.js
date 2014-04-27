@@ -26,6 +26,7 @@ var  GSSolver = require('../solver/GSSolver')
 ,    SAPBroadphase = require('../collision/SAPBroadphase')
 ,    Narrowphase = require('../collision/Narrowphase')
 ,    Utils = require('../utils/Utils')
+,    OverlapKeeper = require('../utils/OverlapKeeper')
 ,    IslandManager = require('./IslandManager')
 
 module.exports = World;
@@ -385,6 +386,8 @@ function World(options){
     // For keeping track of overlapping shapes
     this.overlappingShapesLastState = { keys:[] };
     this.overlappingShapesCurrentState = { keys:[] };
+
+    this.overlapKeeper = new OverlapKeeper();
 }
 World.prototype = new Object(EventEmitter.prototype);
 
@@ -528,6 +531,8 @@ World.prototype.step = function(dt,timeSinceLastCalled,maxSubSteps){
         }
     }
 };
+
+var endOverlaps = [];
 
 /**
  * Make a fixed step.
@@ -677,47 +682,21 @@ World.prototype.internalStep = function(dt){
         }
     }
 
-    // Emit shape end overlap events
-    // TODO: check if there's any listener before doing this
-    var last = this.overlappingShapesLastState;
-    for(var i=0; i!==last.keys.length; i++){
-        var key = last.keys[i];
-
-        if(last[key]!==true){
-            continue;
-        }
-
-        if(!this.overlappingShapesCurrentState[key]){
-            // Not overlapping in current state, but in last state. Emit event!
-            var e = this.endContactEvent;
-
-            // Add shapes to the event object
-            e.shapeA = last[key+"_shapeA"];
-            e.shapeB = last[key+"_shapeB"];
-            e.bodyA = last[key+"_bodyA"];
-            e.bodyB = last[key+"_bodyB"];
+    // Emit end overlap events
+    if(this.has('endContact')){
+        this.overlapKeeper.getEndOverlaps(endOverlaps);
+        var e = this.endContactEvent;
+        var l = endOverlaps.length;
+        while(l--){
+            var data = endOverlaps[l];
+            e.shapeA = data.shapeA;
+            e.shapeB = data.shapeB;
+            e.bodyA = data.bodyA;
+            e.bodyB = data.bodyA;
             this.emit(e);
         }
     }
-
-    // Clear last object
-    for(var i=0; i!==last.keys.length; i++){
-        delete last[last.keys[i]];
-    }
-    last.keys.length = 0;
-
-    // Transfer from new object to old
-    var current = this.overlappingShapesCurrentState;
-    for(var i=0; i!==current.keys.length; i++){
-        last[current.keys[i]] = current[current.keys[i]];
-        last.keys.push(current.keys[i]);
-    }
-
-    // Clear current object
-    for(var i=0; i!==current.keys.length; i++){
-        delete current[current.keys[i]];
-    }
-    current.keys.length = 0;
+    this.overlapKeeper.tick();
 
     var preSolveEvent = this.preSolveEvent;
     preSolveEvent.contactEquations = np.contactEquations;
@@ -787,7 +766,7 @@ World.prototype.internalStep = function(dt){
     }
 
     // Emit impact event
-    if(this.emitImpactEvent){
+    if(this.emitImpactEvent && this.has('impact')){
         var ev = this.impactEvent;
         for(var i=0; i!==np.contactEquations.length; i++){
             var eq = np.contactEquations[i];
@@ -959,8 +938,8 @@ World.prototype.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,cm,glen){
                 }
             }
 
-            var key = si.id < sj.id ? si.id+" "+ sj.id : sj.id+" "+ si.id;
-            if(!this.overlappingShapesLastState[key]){
+            this.overlapKeeper.setOverlapping(bi, si, bj, sj);
+            if(this.has('beginContact') && this.overlapKeeper.isNewOverlap(si, sj)){
 
                 // Report new shape overlap
                 var e = this.beginContactEvent;
@@ -979,24 +958,6 @@ World.prototype.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,cm,glen){
                 }
 
                 this.emit(e);
-            }
-
-            // Store current contact state
-            var current = this.overlappingShapesCurrentState;
-            if(!current[key]){
-
-                current[key] = true;
-                current.keys.push(key);
-
-                // Also store shape & body data
-                current[key+"_shapeA"] = si;
-                current.keys.push(key+"_shapeA");
-                current[key+"_shapeB"] = sj;
-                current.keys.push(key+"_shapeB");
-                current[key+"_bodyA"] = bi;
-                current.keys.push(key+"_bodyA");
-                current[key+"_bodyB"] = bj;
-                current.keys.push(key+"_bodyB");
             }
 
             // divide the max friction force by the number of contacts
