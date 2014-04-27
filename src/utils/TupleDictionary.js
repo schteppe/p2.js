@@ -62,7 +62,8 @@ TupleDictionary.prototype.getByKey = function(key) {
 TupleDictionary.prototype.get = function(i, j) {
     i = i|0;
     j = j|0;
-    return this.data[this.getKey(i, j)|0];
+    var key = this.getKey(i, j)|0;
+    return this.data[key];
 };
 
 /**
@@ -72,6 +73,10 @@ TupleDictionary.prototype.get = function(i, j) {
  * @param {Number} value
  */
 TupleDictionary.prototype.set = function(i, j, value) {
+    if(!value){
+        throw new Error("No data!");
+    }
+
     i = i|0;
     j = j|0;
     var key = this.getKey(i, j)|0;
@@ -82,6 +87,8 @@ TupleDictionary.prototype.set = function(i, j, value) {
     }
 
     this.data[key] = value;
+
+    return key;
 };
 
 /**
@@ -94,7 +101,7 @@ TupleDictionary.prototype.reset = function() {
     var l = keys.length|0;
     while(l--){
         var key = keys[l]|0;
-        delete data[key];
+        data[key] = undefined;
     }
 
     keys.length = 0;
