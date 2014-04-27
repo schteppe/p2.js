@@ -60,10 +60,7 @@ TupleDictionary.prototype.getByKey = function(key) {
  * @return {Number}
  */
 TupleDictionary.prototype.get = function(i, j) {
-    i = i|0;
-    j = j|0;
-    var key = this.getKey(i, j)|0;
-    return this.data[key];
+    return this.data[this.getKey(i, j)];
 };
 
 /**
@@ -77,12 +74,10 @@ TupleDictionary.prototype.set = function(i, j, value) {
         throw new Error("No data!");
     }
 
-    i = i|0;
-    j = j|0;
-    var key = this.getKey(i, j)|0;
+    var key = this.getKey(i, j);
 
     // Check if key already exists
-    if(!this.get(i, j)){
+    if(!this.data[key]){
         this.keys.push(key);
     }
 
@@ -95,16 +90,8 @@ TupleDictionary.prototype.set = function(i, j, value) {
  * @method reset
  */
 TupleDictionary.prototype.reset = function() {
-    var data = this.data,
-        keys = this.keys;
-
-    var l = keys.length|0;
-    while(l--){
-        var key = keys[l]|0;
-        data[key] = undefined;
-    }
-
-    keys.length = 0;
+    this.data.length = 0;
+    this.keys.length = 0;
 };
 
 /**
@@ -113,9 +100,9 @@ TupleDictionary.prototype.reset = function() {
 TupleDictionary.prototype.copy = function(dict) {
     this.reset();
     Utils.appendArray(this.keys, dict.keys);
-    var l = dict.keys.length|0;
+    var l = dict.keys.length;
     while(l--){
-        var key = dict.keys[l]|0;
+        var key = dict.keys[l];
         this.data[key] = dict.data[key];
     }
 };
