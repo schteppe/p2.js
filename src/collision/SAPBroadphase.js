@@ -81,6 +81,7 @@ SAPBroadphase.prototype.setWorld = function(world){
  * @return {Array}
  */
 SAPBroadphase.sortAxisList = function(a, axisIndex){
+    axisIndex = axisIndex|0;
     for(var i=1,l=a.length; i<l; i++) {
         var v = a[i];
         for(var j=i - 1;j>=0;j--) {
@@ -120,7 +121,7 @@ SAPBroadphase.prototype.getCollisionPairs = function(world){
     SAPBroadphase.sortAxisList(bodies, axisIndex);
 
     // Look through the X list
-    for(var i=0, N=bodies.length; i!==N; i++){
+    for(var i=0, N=bodies.length|0; i!==N; i++){
         var bi = bodies[i];
 
         for(var j=i+1; j<N; j++){

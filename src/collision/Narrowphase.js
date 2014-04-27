@@ -1866,8 +1866,7 @@ Narrowphase.prototype.circleHeightfield = function( circleBody,circleShape,circl
     // 2. 1. Get point on circle that is closest to the edge (scale normal with -radius)
     // 2. 2. Check if point is inside.
 
-    var found = false,
-        minDist = false;
+    var found = false;
 
     // Check all edges first
     for(var i=idxA; i<idxB; i++){
@@ -1894,48 +1893,40 @@ Narrowphase.prototype.circleHeightfield = function( circleBody,circleShape,circl
         var d = vec2.dot(dist,worldNormal);
         if(candidate[0] >= v0[0] && candidate[0] < v1[0] && d <= 0){
 
-            if(minDist === false || Math.abs(d) < minDist){
+            if(justTest){
+                return true;
+            }
 
-                // Store the candidate point, projected to the edge
-                vec2.scale(dist,worldNormal,-d);
-                vec2.add(minCandidate,candidate,dist);
-                vec2.copy(minCandidateNormal,worldNormal);
+            found = true;
 
-                found = true;
-                minDist = Math.abs(d);
+            // Store the candidate point, projected to the edge
+            vec2.scale(dist,worldNormal,-d);
+            vec2.add(minCandidate,candidate,dist);
+            vec2.copy(minCandidateNormal,worldNormal);
 
-                if(justTest)
-                    return true;
+            var c = this.createContactEquation(hfBody,circleBody,hfShape,circleShape);
+
+            // Normal is out of the heightfield
+            vec2.copy(c.normalA, minCandidateNormal);
+
+            // Vector from circle to heightfield
+            vec2.scale(c.contactPointB,  c.normalA, -radius);
+            add(c.contactPointB, c.contactPointB, circlePos);
+            sub(c.contactPointB, c.contactPointB, circleBody.position);
+
+            vec2.copy(c.contactPointA, minCandidate);
+            vec2.sub(c.contactPointA, c.contactPointA, hfBody.position);
+
+            this.contactEquations.push(c);
+
+            if(this.enableFriction){
+                this.frictionEquations.push( this.createFrictionFromContact(c) );
             }
         }
     }
 
-    if(found){
-
-        var c = this.createContactEquation(hfBody,circleBody,hfShape,circleShape);
-
-        // Normal is out of the heightfield
-        vec2.copy(c.normalA, minCandidateNormal);
-
-        // Vector from circle to heightfield
-        vec2.scale(c.contactPointB,  c.normalA, -radius);
-        add(c.contactPointB, c.contactPointB, circlePos);
-        sub(c.contactPointB, c.contactPointB, circleBody.position);
-
-        vec2.copy(c.contactPointA, minCandidate);
-        //vec2.sub(c.contactPointA, c.contactPointA, hfPos);
-        vec2.sub(c.contactPointA, c.contactPointA, hfBody.position);
-
-        this.contactEquations.push(c);
-
-        if(this.enableFriction)
-            this.frictionEquations.push( this.createFrictionFromContact(c) );
-
-        return 1;
-    }
-
-
     // Check all vertices
+    found = false;
     if(radius > 0){
         for(var i=idxA; i<=idxB; i++){
 
@@ -1948,6 +1939,8 @@ Narrowphase.prototype.circleHeightfield = function( circleBody,circleShape,circl
             if(vec2.squaredLength(dist) < radius*radius){
 
                 if(justTest) return true;
+
+                found = true;
 
                 var c = this.createContactEquation(hfBody,circleBody,hfShape,circleShape);
 
@@ -1968,10 +1961,12 @@ Narrowphase.prototype.circleHeightfield = function( circleBody,circleShape,circl
                 if(this.enableFriction){
                     this.frictionEquations.push(this.createFrictionFromContact(c));
                 }
-
-                return 1;
             }
         }
+    }
+
+    if(found){
+        return 1;
     }
 
     return 0;
