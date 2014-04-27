@@ -4,6 +4,7 @@ var vec2 = require('../math/vec2')
 ,   dot = vec2.dot
 ,   Utils = require('../utils/Utils')
 ,   TupleDictionary = require('../utils/TupleDictionary')
+,   Equation = require('../equations/Equation')
 ,   ContactEquation = require('../equations/ContactEquation')
 ,   FrictionEquation = require('../equations/FrictionEquation')
 ,   Circle = require('../shapes/Circle')
@@ -97,27 +98,27 @@ function Narrowphase(){
      * The stiffness value to use in the next contact equations.
      * @property {Number} stiffness
      */
-    this.stiffness = 1e7;
+    this.stiffness = Equation.DEFAULT_STIFFNESS;
 
     /**
      * The stiffness value to use in the next contact equations.
      * @property {Number} stiffness
      */
-    this.relaxation = 3;
+    this.relaxation = Equation.DEFAULT_RELAXATION;
 
     /**
      * The stiffness value to use in the next friction equations.
      * @property frictionStiffness
      * @type {Number}
      */
-    this.frictionStiffness = 1e7;
+    this.frictionStiffness = Equation.DEFAULT_STIFFNESS;
 
     /**
      * The relaxation value to use in the next friction equations.
      * @property frictionRelaxation
      * @type {Number}
      */
-    this.frictionRelaxation = 3;
+    this.frictionRelaxation = Equation.DEFAULT_RELAXATION;
 
 
     // Keep track of the colliding bodies last step
