@@ -27,7 +27,7 @@ OverlapKeeper.prototype.tick = function() {
     var l = current.keys.length;
     while(l--){
         var key = current.keys[l];
-        this.recordPool.push(current.get(key));
+        this.recordPool.push(current.getByKey(key));
     }
 
     // Clear last object
@@ -74,13 +74,15 @@ OverlapKeeper.prototype.getDiff = function(dictA, dictB, result){
     var last = dictA;
     var current = dictB;
 
+    result.length = 0;
+
     var l = current.keys.length;
     while(l--){
         var key = current.keys[l];
-
         var data = current.data[key];
+
         if(!data){
-            continue;
+            throw new Error('Key '+key+' had no data!');
         }
 
         var lastData = last.data[key];
@@ -94,7 +96,9 @@ OverlapKeeper.prototype.getDiff = function(dictA, dictB, result){
 };
 
 OverlapKeeper.prototype.isNewOverlap = function(shapeA, shapeB){
-    return !!!this.overlappingLastState.get(shapeA.id, shapeB.id);
+    var idA = shapeA.id|0,
+        idB = shapeB.id|0;
+    return !!!this.overlappingLastState.get(idA, idB) && !!this.overlappingCurrentState.get(idA, idB);
 };
 
 OverlapKeeper.prototype.getNewBodyOverlaps = function(result){
@@ -119,7 +123,7 @@ OverlapKeeper.prototype.getBodyDiff = function(overlaps, result){
         var data = overlaps[l];
 
         // Since we use body id's for the accumulator, these will be a subset of the original one
-        accumulator.set(data.bodyA.id, data.bodyB.id, data);
+        accumulator.set(data.bodyA.id|0, data.bodyB.id|0, data);
     }
 
     l = accumulator.keys.length;
