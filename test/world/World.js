@@ -199,14 +199,17 @@ exports.events = {
             endContactHits++;
         });
 
+        // First overlap - one new beginContact
         world.step(1/60);
         test.equal(beginContactHits, 1);
         test.equal(endContactHits, 0);
 
+        // Still overlapping - should maintain
         world.step(1/60);
         test.equal(beginContactHits, 1);
         test.equal(endContactHits, 0);
 
+        // End the overlap
         bodyA.position[0] = 10;
         world.step(1/60);
         test.equal(beginContactHits, 1);

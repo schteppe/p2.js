@@ -13,6 +13,20 @@ exports.tick = function(test){
     test.done();
 };
 
+function checkConsistent(dict){
+    for(var i=0; i<dict.keys.length; i++){
+        var data = dict.getByKey(dict.keys[i]);
+        if(!data){
+            var found = false;
+            for(var j=0; j<dict.data.length; j++){
+                if(dict.data[j]) found = true;
+            }
+            if(!found) return false;
+        }
+    }
+    return true;
+}
+
 exports.getEndOverlaps = function(test){
     var bodyA = new Body();
     var bodyB = new Body();
@@ -25,12 +39,21 @@ exports.getEndOverlaps = function(test){
     var result = keeper.getEndOverlaps();
     test.equal(result.length, 0);
 
+    test.ok(checkConsistent(keeper.overlappingLastState));
+    test.ok(checkConsistent(keeper.overlappingCurrentState));
+
     keeper.tick();
+
+    test.ok(checkConsistent(keeper.overlappingLastState));
+    test.ok(checkConsistent(keeper.overlappingCurrentState));
 
     var result = keeper.getEndOverlaps();
     test.equal(result.length, 1);
 
     keeper.tick();
+
+    test.ok(checkConsistent(keeper.overlappingLastState));
+    test.ok(checkConsistent(keeper.overlappingCurrentState));
 
     var result = keeper.getEndOverlaps();
     test.equal(result.length, 0);
@@ -53,7 +76,13 @@ exports.getNewOverlaps = function(test){
     test.equal(result[0].shapeA, shapeA);
     test.equal(result[0].shapeB, shapeB);
 
+    test.ok(checkConsistent(keeper.overlappingLastState));
+    test.ok(checkConsistent(keeper.overlappingCurrentState));
+
     keeper.tick();
+
+    test.ok(checkConsistent(keeper.overlappingLastState));
+    test.ok(checkConsistent(keeper.overlappingCurrentState));
 
     var result = keeper.getNewOverlaps();
     test.equal(result.length, 0);
@@ -76,6 +105,11 @@ exports.isNewOverlap = function(test){
 
     var result = keeper.isNewOverlap(shapeA, shapeB);
     test.equal(result, true);
+
+    keeper.tick();
+
+    var result = keeper.isNewOverlap(shapeA, shapeB);
+    test.equal(result, false);
 
     keeper.tick();
 
