@@ -36,7 +36,7 @@
     "z-schema": "~2.4.6"
   },
   "dependencies": {
-    "poly-decomp": "git://github.com/schteppe/poly-decomp.js",
+    "poly-decomp": "0.1.0",
     "gl-matrix": "2.1.0"
   }
 }
