@@ -40,9 +40,16 @@ EventEmitter.prototype = {
     has: function ( type, listener ) {
         if ( this._listeners === undefined ) return false;
         var listeners = this._listeners;
-        if ( listeners[ type ] !== undefined && listeners[ type ].indexOf( listener ) !== - 1 ) {
-            return true;
+        if(listener){
+            if ( listeners[ type ] !== undefined && listeners[ type ].indexOf( listener ) !== - 1 ) {
+                return true;
+            }
+        } else {
+            if ( listeners[ type ] !== undefined ) {
+                return true;
+            }
         }
+
         return false;
     },
 
