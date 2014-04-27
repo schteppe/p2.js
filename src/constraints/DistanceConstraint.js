@@ -29,8 +29,22 @@ function DistanceConstraint(bodyA,bodyB,distance,options){
      */
     this.distance = distance;
 
-    var localAnchorA = this.localAnchorA = vec2.create();
-    var localAnchorB = this.localAnchorB = vec2.create();
+    /**
+     * Local anchor in body A.
+     * @property localAnchorA
+     * @type {Array}
+     */
+    this.localAnchorA = vec2.create();
+
+    /**
+     * Local anchor in body B.
+     * @property localAnchorB
+     * @type {Array}
+     */
+    this.localAnchorB = vec2.create();
+
+    var localAnchorA = this.localAnchorA;
+    var localAnchorB = this.localAnchorB;
 
     var maxForce;
     if(typeof(options.maxForce)==="undefined" ){
