@@ -65,6 +65,19 @@ vec2.rotate = function(out,a,angle){
 };
 
 /**
+ * Rotate a vector 90 degrees clockwise
+ * @method rotate90cw
+ * @static
+ * @param  {Float32Array} out
+ * @param  {Float32Array} a
+ * @param  {Number} angle
+ */
+vec2.rotate90cw = function(out, a) {
+    out[0] = a[1];
+    out[1] = -a[0];
+};
+
+/**
  * Transform a point position to local frame.
  * @method toLocalFrame
  * @param  {Array} out

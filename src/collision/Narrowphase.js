@@ -245,7 +245,7 @@ Narrowphase.prototype.createFrictionFromContact = function(c){
     var eq = this.createFrictionEquation(c.bodyA, c.bodyB, c.shapeA, c.shapeB);
     vec2.copy(eq.contactPointA, c.contactPointA);
     vec2.copy(eq.contactPointB, c.contactPointB);
-    vec2.rotate(eq.t, c.normalA, -Math.PI / 2);
+    vec2.rotate90cw(eq.t, c.normalA);
     eq.contactEquation = c;
     return eq;
 };
@@ -501,7 +501,7 @@ Narrowphase.prototype.planeLine = function(planeBody, planeShape, planeOffset, p
     vec2.normalize(worldEdgeUnit, worldEdge);
 
     // Get tangent to the edge.
-    vec2.rotate(worldTangent, worldEdgeUnit, -Math.PI/2);
+    vec2.rotate90cw(worldTangent, worldEdgeUnit);
 
     vec2.rotate(worldNormal, yAxis, planeAngle);
 
@@ -804,7 +804,7 @@ Narrowphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
         vec2.normalize(worldEdgeUnit, worldEdge);
 
         // Get tangent to the edge. Points out of the Convex
-        vec2.rotate(worldTangent, worldEdgeUnit, -Math.PI/2);
+        vec2.rotate90cw(worldTangent, worldEdgeUnit);
 
         // Get point on circle, closest to the polygon
         vec2.scale(candidate,worldTangent,-circleShape.radius);
@@ -1038,8 +1038,9 @@ Narrowphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, just
         verts = convexShape.vertices;
 
     // Check if the particle is in the polygon at all
-    if(!pointInConvex(particleOffset,convexShape,convexOffset,convexAngle))
+    if(!pointInConvex(particleOffset,convexShape,convexOffset,convexAngle)){
         return 0;
+    }
 
     if(justTest) return true;
 
@@ -1060,7 +1061,7 @@ Narrowphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, just
         vec2.normalize(worldEdgeUnit, worldEdge);
 
         // Get tangent to the edge. Points out of the Convex
-        vec2.rotate(worldTangent, worldEdgeUnit, -Math.PI/2);
+        vec2.rotate90cw(worldTangent, worldEdgeUnit);
 
         // Check distance from the infinite line (spanned by the edge) to the particle
         sub(dist, particleOffset, worldVertex0);
@@ -1582,7 +1583,7 @@ Narrowphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
 
                 sub(worldEdge, worldPoint1, worldPoint0);
 
-                vec2.rotate(worldNormal, worldEdge, -Math.PI/2); // Normal points out of convex 1
+                vec2.rotate90cw(worldNormal, worldEdge); // Normal points out of convex 1
                 vec2.normalize(worldNormal,worldNormal);
 
                 sub(dist, worldPoint, worldPoint0);
@@ -1619,7 +1620,7 @@ Narrowphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
 
                 sub(worldEdge, worldPoint1, worldPoint0);
 
-                vec2.rotate(c.normalA, worldEdge, -Math.PI/2); // Normal points out of convex A
+                vec2.rotate90cw(c.normalA, worldEdge); // Normal points out of convex A
                 vec2.normalize(c.normalA,c.normalA);
 
                 sub(dist, worldPoint, worldPoint0); // From edge point to the penetrating point
@@ -1738,7 +1739,7 @@ Narrowphase.findSeparatingAxis = function(c1,offset1,angle1,c2,offset2,angle2,se
             sub(edge, worldPoint1, worldPoint0);
 
             // Get normal - just rotate 90 degrees since vertices are given in CCW
-            vec2.rotate(normal, edge, -Math.PI / 2);
+            vec2.rotate90cw(normal, edge);
             vec2.normalize(normal,normal);
 
             // Project hulls onto that normal
@@ -1797,14 +1798,13 @@ Narrowphase.getClosestEdge = function(c,angle,axis,flip){
     }
 
     var closestEdge = -1,
-        N = c.vertices.length,
-        halfPi = Math.PI / 2;
+        N = c.vertices.length;
     for(var i=0; i!==N; i++){
         // Get the edge
         sub(edge, c.vertices[(i+1)%N], c.vertices[i%N]);
 
         // Get normal - just rotate 90 degrees since vertices are given in CCW
-        vec2.rotate(normal, edge, -halfPi);
+        vec2.rotate90cw(normal, edge);
         vec2.normalize(normal,normal);
 
         var d = dot(normal,localAxis);
