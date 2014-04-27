@@ -500,7 +500,7 @@ World.prototype.step = function(dt,timeSinceLastCalled,maxSubSteps){
         internalSteps = Math.min(internalSteps,maxSubSteps);
 
         // Do some fixed steps to catch up
-        for(var i=0; i<internalSteps; i++){
+        for(var i=0; i!==internalSteps; i++){
             this.internalStep(dt);
         }
 
@@ -509,16 +509,17 @@ World.prototype.step = function(dt,timeSinceLastCalled,maxSubSteps){
 
         // Compute "Left over" time step
         var h = this.time % dt;
+        var h_div_dt = h/dt;
 
         for(var j=0; j!==this.bodies.length; j++){
             var b = this.bodies[j];
             if(b.motionState !== Body.STATIC && b.sleepState !== Body.SLEEPING){
                 // Interpolate
                 vec2.sub(interpvelo, b.position, b.previousPosition);
-                vec2.scale(interpvelo, interpvelo, h/dt);
+                vec2.scale(interpvelo, interpvelo, h_div_dt);
                 vec2.add(b.interpolatedPosition, b.position, interpvelo);
 
-                b.interpolatedAngle = b.angle + (b.angle - b.previousAngle) * h/dt;
+                b.interpolatedAngle = b.angle + (b.angle - b.previousAngle) * h_div_dt;
             } else {
                 // For static bodies, just copy. Who else will do it?
                 vec2.copy(b.interpolatedPosition, b.position);
@@ -677,6 +678,7 @@ World.prototype.internalStep = function(dt){
     }
 
     // Emit shape end overlap events
+    // TODO: check if there's any listener before doing this
     var last = this.overlappingShapesLastState;
     for(var i=0; i!==last.keys.length; i++){
         var key = last.keys[i];
