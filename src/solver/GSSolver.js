@@ -62,8 +62,9 @@ function GSSolver(options){
 GSSolver.prototype = new Solver();
 
 function setArrayZero(array){
-    for(var i=0; i!==array.length; i++){
-        array[i] = 0.0;
+    var l = array.length;
+    while(l--){
+        array[l] = +0.0;
     }
 }
 
@@ -224,7 +225,6 @@ GSSolver.iterateEquation = function(j,eq,eps,Bs,invCs,lambda,useZeroRHS,dt,iter)
         deltalambda = maxForce*dt - lambdaj;
     }
     lambda[j] += deltalambda;
-    //eq.multiplier = lambda[j] / dt;
     eq.addToWlambda(deltalambda);
 
     return deltalambda;
