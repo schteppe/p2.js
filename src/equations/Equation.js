@@ -177,33 +177,7 @@ Equation.prototype.computeGq = function(){
         ai = bi.angle,
         aj = bj.angle;
 
-    // Transform to the given body frames
-    /*
-    vec2.rotate(qi,this.xi,ai);
-    vec2.rotate(qj,this.xj,aj);
-    vec2.add(qi,qi,xi);
-    vec2.add(qj,qj,xj);
-    */
-
     return Gmult(G, qi, ai, qj, aj) + this.offset;
-};
-
-var tmp_i = vec2.create(),
-    tmp_j = vec2.create();
-Equation.prototype.transformedGmult = function(G,vi,wi,vj,wj){
-    // Transform velocity to the given body frames
-    // v_p = v + w x r
-    /*
-    vec2.rotate(tmp_i,this.xi,Math.PI / 2 + this.bi.angle); // Get r, and rotate 90 degrees. We get the "x r" part
-    vec2.rotate(tmp_j,this.xj,Math.PI / 2 + this.bj.angle);
-    vec2.scale(tmp_i,tmp_i,wi); // Temp vectors are now (w x r)
-    vec2.scale(tmp_j,tmp_j,wj);
-    vec2.add(tmp_i,tmp_i,vi);
-    vec2.add(tmp_j,tmp_j,vj);
-    */
-
-    // Note: angular velocity is same
-    return Gmult(G,vi,wi,vj,wj);
 };
 
 /**
@@ -219,7 +193,7 @@ Equation.prototype.computeGW = function(){
         vj = bj.velocity,
         wi = bi.angularVelocity,
         wj = bj.angularVelocity;
-    return this.transformedGmult(G,vi,wi,vj,wj) + this.relativeVelocity;
+    return Gmult(G,vi,wi,vj,wj) + this.relativeVelocity;
 };
 
 /**
@@ -261,7 +235,7 @@ Equation.prototype.computeGiMf = function(){
     vec2.scale(iMfi, fi,invMassi);
     vec2.scale(iMfj, fj,invMassj);
 
-    return this.transformedGmult(G,iMfi,ti*invIi,iMfj,tj*invIj);
+    return Gmult(G,iMfi,ti*invIi,iMfj,tj*invIj);
 };
 
 function getBodyInvMass(body){
