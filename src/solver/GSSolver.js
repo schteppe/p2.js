@@ -184,6 +184,13 @@ GSSolver.prototype.solve = function(h, world){
         for(i=0; i!==Nbodies; i++){
             bodies[i].addConstraintVelocity();
         }
+
+        // Set the .multiplier property of each equation
+        var l = Neq;
+        var invDt = 1/h;
+        while(l--){
+            equations[l].multiplier = lambda[l] * invDt;
+        }
     }
 };
 
@@ -211,7 +218,7 @@ GSSolver.iterateEquation = function(j,eq,eps,Bs,invCs,lambda,useZeroRHS,dt,iter)
         deltalambda = maxForce*dt - lambdaj;
     }
     lambda[j] += deltalambda;
-    eq.multiplier = lambda[j] / dt;
+    //eq.multiplier = lambda[j] / dt;
     eq.addToWlambda(deltalambda);
 
     return deltalambda;
