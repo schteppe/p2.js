@@ -96,8 +96,8 @@ var p2 = require('p2');
 | :--------------------------------------------------------------------------: |:------:|:-----:|:---------:|:------:|:--------:|:------:|:-------:|:-----------:|
 | [Circle](http://schteppe.github.io/p2.js/docs/classes/Circle.html)           | Yes    | Yes   | Yes       | Yes    | Yes      | Yes    | Yes     | Yes         |
 | [Plane](http://schteppe.github.io/p2.js/docs/classes/Plane.html)             | -      | -     | Yes       | Yes    | Yes      | Yes    | Yes     | -           |
-| [Rectangle](http://schteppe.github.io/p2.js/docs/classes/Rectangle.html)     | -      | -     | Yes       | Yes    | Yes      | (todo) | Yes     | (todo)      |
-| [Convex](http://schteppe.github.io/p2.js/docs/classes/Convex.html)           | -      | -     | -         | Yes    | Yes      | (todo) | Yes     | (todo)      |
+| [Rectangle](http://schteppe.github.io/p2.js/docs/classes/Rectangle.html)     | -      | -     | Yes       | Yes    | Yes      | (todo) | Yes     | Yes         |
+| [Convex](http://schteppe.github.io/p2.js/docs/classes/Convex.html)           | -      | -     | -         | Yes    | Yes      | (todo) | Yes     | Yes         |
 | [Particle](http://schteppe.github.io/p2.js/docs/classes/Particle.html)       | -      | -     | -         | -      | -        | -      | Yes     | (todo)      |
 | [Line](http://schteppe.github.io/p2.js/docs/classes/Line.html)               | -      | -     | -         | -      | -        | (todo) | (todo)  | (todo)      |
 | [Capsule](http://schteppe.github.io/p2.js/docs/classes/Capsule.html)         | -      | -     | -         | -      | -        | -      | Yes     | (todo)      |
