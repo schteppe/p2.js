@@ -276,6 +276,7 @@ Demo.prototype.handleMouseMove = function(physicsPosition){
         case Demo.DEFAULT:
         case Demo.DRAGGING:
             if(this.mouseConstraint){
+                p2.vec2.copy(this.mouseConstraint.pivotA, physicsPosition);
                 this.mouseConstraint.bodyA.wakeUp();
                 this.mouseConstraint.bodyB.wakeUp();
             }

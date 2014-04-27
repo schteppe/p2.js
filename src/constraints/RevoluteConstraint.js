@@ -25,6 +25,7 @@ var worldPivotA = vec2.create(),
  * @param {Number}  [options.maxForce]  The maximum force that should be applied to constrain the bodies.
  * @extends Constraint
  * @todo Ability to specify world points
+ * @todo put pivot parameters in the options object?
  */
 function RevoluteConstraint(bodyA, pivotA, bodyB, pivotB, options){
     options = options || {};
@@ -35,12 +36,12 @@ function RevoluteConstraint(bodyA, pivotA, bodyB, pivotB, options){
     /**
      * @property {Array} pivotA
      */
-    this.pivotA = pivotA;
+    this.pivotA = vec2.fromValues(pivotA[0],pivotA[1]);
 
     /**
      * @property {Array} pivotB
      */
-    this.pivotB = pivotB;
+    this.pivotB = vec2.fromValues(pivotB[0],pivotB[1]);
 
     // Equations to be fed to the solver
     var eqs = this.equations = [
