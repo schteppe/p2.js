@@ -3,6 +3,7 @@ var vec2 = require('../math/vec2')
 ,   add = vec2.add
 ,   dot = vec2.dot
 ,   Utils = require('../utils/Utils')
+,   TupleDictionary = require('../utils/TupleDictionary')
 ,   ContactEquation = require('../equations/ContactEquation')
 ,   FrictionEquation = require('../equations/FrictionEquation')
 ,   Circle = require('../shapes/Circle')
@@ -120,7 +121,7 @@ function Narrowphase(){
 
 
     // Keep track of the colliding bodies last step
-    this.collidingBodiesLastStep = { keys:[] };
+    this.collidingBodiesLastStep = new TupleDictionary();
 }
 
 /**
@@ -131,14 +132,9 @@ function Narrowphase(){
  * @return {Boolean}
  */
 Narrowphase.prototype.collidedLastStep = function(bi,bj){
-    var id1 = bi.id,
-        id2 = bj.id;
-    if(id1 > id2){
-        var tmp = id1;
-        id1 = id2;
-        id2 = tmp;
-    }
-    return !!this.collidingBodiesLastStep[id1 + " " + id2];
+    var id1 = bi.id|0,
+        id2 = bj.id|0;
+    return !!this.collidingBodiesLastStep.get(id1, id2);
 };
 
 // "for in" loops aren't optimised in chrome... is there a better way to handle last-step collision memory?
@@ -157,23 +153,12 @@ function clearObject(obj){
  * @param {World} world
  */
 Narrowphase.prototype.reset = function(world){
-
-    // Save the colliding bodies data
-    clearObject(this.collidingBodiesLastStep);
+    this.collidingBodiesLastStep.reset();
     for(var i=0; i!==this.contactEquations.length; i++){
         var eq = this.contactEquations[i],
-            id1 = eq.bodyA.id,
-            id2 = eq.bodyB.id;
-        if(id1 > id2){
-            var tmp = id1;
-            id1 = id2;
-            id2 = tmp;
-        }
-        var key = id1 + " " + id2;
-        if(!this.collidingBodiesLastStep[key]){
-            this.collidingBodiesLastStep[key] = true;
-            this.collidingBodiesLastStep.keys.push(key);
-        }
+            id1 = eq.bodyA.id|0,
+            id2 = eq.bodyB.id|0;
+        this.collidingBodiesLastStep.set(id1, id2, true);
     }
 
     if(this.reuseObjects){
