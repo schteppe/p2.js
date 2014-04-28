@@ -49,7 +49,7 @@ Utils.splice = function(array,index,howmany){
 
 //Check the type explicit to prevent IE errors
 //Utils.ARRAY_TYPE = Float32Array || Array;
-if (typeof Float32Array !== undefined){
+if (typeof Float32Array !== 'undefined'){
   Utils.ARRAY_TYPE = Float32Array;
 }else{
   Utils.ARRAY_TYPE = Array;
