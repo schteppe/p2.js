@@ -88,15 +88,18 @@ AABB.prototype.copy = function(aabb){
  */
 AABB.prototype.extend = function(aabb){
     // Loop over x and y
-    for(var i=0; i<2; i++){
+    var i = 2;
+    while(i--){
         // Extend lower bound
-        if(aabb.lowerBound[i] < this.lowerBound[i]){
-            this.lowerBound[i] = aabb.lowerBound[i];
+        var l = aabb.lowerBound[i];
+        if(this.lowerBound[i] > l){
+            this.lowerBound[i] = l;
         }
 
         // Upper
-        if(aabb.upperBound[i] > this.upperBound[i]){
-            this.upperBound[i] = aabb.upperBound[i];
+        var u = aabb.upperBound[i];
+        if(this.upperBound[i] < u){
+            this.upperBound[i] = u;
         }
     }
 };
