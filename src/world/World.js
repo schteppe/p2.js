@@ -503,8 +503,13 @@ World.prototype.step = function(dt,timeSinceLastCalled,maxSubSteps){
         internalSteps = Math.min(internalSteps,maxSubSteps);
 
         // Do some fixed steps to catch up
+        var t0 = performance.now();
         for(var i=0; i!==internalSteps; i++){
             this.internalStep(dt);
+            if(performance.now() - t0 > dt*1000){
+                // We are slower than real-time. Better bail out.
+                break;
+            }
         }
 
         // Increment internal clock
