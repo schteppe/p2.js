@@ -17,7 +17,9 @@ exports.solve = function(test){
         mass: 1,
         position:[0,1.001]
     });
-    var constraint = new DistanceConstraint(bodyA, bodyB, 1);
+    var constraint = new DistanceConstraint(bodyA, bodyB, {
+        distance:1
+    });
     world.addConstraint(constraint);
     var solver = new GSSolver({
         iterations: 10

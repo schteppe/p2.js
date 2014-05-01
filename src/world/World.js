@@ -1565,7 +1565,8 @@ World.prototype.fromJSON = function(json){
     // DistanceConstraint
     for(var i=0; i<json.distanceConstraints.length; i++){
         var c = json.distanceConstraints[i];
-        w.addConstraint(new DistanceConstraint( bodies[c.bodyA], bodies[c.bodyB], c.distance, {
+        w.addConstraint(new DistanceConstraint( bodies[c.bodyA], bodies[c.bodyB], {
+            distance: c.distance,
             maxForce:c.maxForce,
             collideConnected:c.collideConnected
         }));

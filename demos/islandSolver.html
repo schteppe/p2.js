@@ -45,7 +45,9 @@
                 if(lastBody){
                     // Connect the current body to the previous one
                     var dist = Math.abs(p.position[1]-lastBody.position[1]);
-                    var constraint = new p2.DistanceConstraint(p,lastBody, dist);
+                    var constraint = new p2.DistanceConstraint(p,lastBody, {
+                        distance: dist
+                    });
                     world.addConstraint(constraint);
                 } else {
                     p.velocity[0] = 1*i;

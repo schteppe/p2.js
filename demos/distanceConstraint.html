@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Distance constraint demo - p2.js physics engine</title>
+    <script src="../build/p2.js"></script>
+    <script src="js/jquery.js"></script>
+    <script src="js/pixi.js"></script>
+    <script src="js/Demo.js"></script>
+    <script src="js/PixiDemo.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <link href="css/demo.css" rel="stylesheet"/>
+    <link href="css/bootstrap.min.css" rel="stylesheet"/>
+    <meta name="description" content="How to use the DistanceConstraint.">
+</head>
+<body>
+    <script>
+
+        // Create physics world
+        var world = new p2.World({
+            doProfiling:true,
+            gravity : [0,-10],
+        });
+
+
+        // Create two circles
+        var circleShape = new p2.Circle(0.5);
+        var bodyA = new p2.Body({
+            mass: 1,
+            position: [-2, 1],
+        });
+        bodyA.addShape(circleShape);
+        world.addBody(bodyA);
+        var bodyB = new p2.Body({
+            mass: 1,
+            position: [-0.5, 1],
+        });
+        bodyB.addShape(circleShape);
+        world.addBody(bodyB);
+
+        // Create constraint.
+        // If target distance is not given as an option, then the current distance between the bodies is used.
+        var constraint = new p2.DistanceConstraint(bodyA, bodyB);
+        world.addConstraint(constraint);
+
+
+        // Create two boxes that must have distance 0 between their corners
+        var boxShape = new p2.Rectangle(0.5,0.5);
+        var boxBodyA = new p2.Body({
+            mass: 1,
+            position: [1.5, 1],
+        });
+        boxBodyA.addShape(boxShape);
+        world.addBody(boxBodyA);
+        var boxBodyB = new p2.Body({
+            mass: 1,
+            position: [2, 1],
+        });
+        boxBodyB.addShape(boxShape);
+        world.addBody(boxBodyB);
+
+        // Create constraint.
+        var constraint = new p2.DistanceConstraint(boxBodyA, boxBodyB, {
+            distance: 0,
+            localAnchorA: [boxShape.width/2, boxShape.height/2],
+            localAnchorB: [-boxShape.width/2, boxShape.height/2],
+        });
+        world.addConstraint(constraint);
+
+
+
+
+        // Create ground
+        var planeShape = new p2.Plane();
+        var plane = new p2.Body({
+            position : [0,-1],
+        });
+        plane.addShape(planeShape);
+        world.addBody(plane);
+
+        var demo = new PixiDemo(world);
+
+    </script>
+</body>
+</html>

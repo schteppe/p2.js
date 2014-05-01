@@ -52,7 +52,9 @@
             p.addShape(shape);
             if(lastBody){
                 var dist = Math.abs(p.position[1]-lastBody.position[1]);
-                var c = new p2.DistanceConstraint(p,lastBody,dist);
+                var c = new p2.DistanceConstraint(p,lastBody,{
+                    distance: dist
+                });
                 world.addConstraint(c);
             } else {
                 p.velocity[0] = 10;

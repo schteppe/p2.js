@@ -42,7 +42,9 @@
                 // Create a DistanceConstraint, it will constrain the
                 // current and the last body to have a fixed distance from each other
                 var dist = Math.abs(p.position[1]-lastBody.position[1]),
-                    c = new p2.DistanceConstraint(p,lastBody,dist);
+                    c = new p2.DistanceConstraint(p,lastBody,{
+                        distance: dist
+                    });
                 world.addConstraint(c);
                 constraints.push(c);
             } else {

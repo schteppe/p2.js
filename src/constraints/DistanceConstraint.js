@@ -1,6 +1,7 @@
 var Constraint = require('./Constraint')
 ,   Equation = require('../equations/Equation')
 ,   vec2 = require('../math/vec2')
+,   Utils = require('../utils/Utils')
 
 module.exports = DistanceConstraint;
 
@@ -12,13 +13,18 @@ module.exports = DistanceConstraint;
  * @author schteppe
  * @param {Body} bodyA
  * @param {Body} bodyB
- * @param {number} distance The distance to keep between the bodies.
  * @param {object} [options]
+ * @param {number} [options.distance] The distance to keep between the anchor points. Defaults to the current distance between the bodies.
+ * @param {Array} [options.localAnchorA] The anchor point for bodyA, defined locally in bodyA frame. Defaults to [0,0].
+ * @param {Array} [options.localAnchorB] The anchor point for bodyB, defined locally in bodyB frame. Defaults to [0,0].
  * @param {object} [options.maxForce=Number.MAX_VALUE] Maximum force to apply.
  * @extends Constraint
  */
-function DistanceConstraint(bodyA,bodyB,distance,options){
-    options = options || {};
+function DistanceConstraint(bodyA,bodyB,options){
+    options = Utils.defaults(options,{
+        localAnchorA:[0,0],
+        localAnchorB:[0,0]
+    });
 
     Constraint.call(this,bodyA,bodyB,Constraint.DISTANCE,options);
 
@@ -27,21 +33,28 @@ function DistanceConstraint(bodyA,bodyB,distance,options){
      * @property distance
      * @type {Number}
      */
-    this.distance = distance;
+    this.distance = 0;
+
+    if(typeof(options.distance) === 'number'){
+        this.distance = options.distance;
+    } else {
+        // Use the current world distance between the objects.
+        this.distance = vec2.dist(bodyA.position, bodyB.position);
+    }
 
     /**
      * Local anchor in body A.
      * @property localAnchorA
      * @type {Array}
      */
-    this.localAnchorA = vec2.create();
+    this.localAnchorA = vec2.fromValues(options.localAnchorA[0], options.localAnchorA[1]);
 
     /**
      * Local anchor in body B.
      * @property localAnchorB
      * @type {Array}
      */
-    this.localAnchorB = vec2.create();
+    this.localAnchorB = vec2.fromValues(options.localAnchorB[0], options.localAnchorB[1]);
 
     var localAnchorA = this.localAnchorA;
     var localAnchorB = this.localAnchorB;
@@ -85,11 +98,11 @@ function DistanceConstraint(bodyA,bodyB,distance,options){
         vec2.rotate(ri, localAnchorA, bodyA.angle);
         vec2.rotate(rj, localAnchorB, bodyB.angle);
 
-        vec2.add(r, xi, rj);
+        vec2.add(r, xj, rj);
         vec2.sub(r, r, ri);
         vec2.sub(r, r, xi);
 
-        vec2.sub(r, bodyB.position, bodyA.position);
+        //vec2.sub(r, bodyB.position, bodyA.position);
         return vec2.length(r) - that.distance;
     };
 
@@ -118,11 +131,17 @@ DistanceConstraint.prototype.update = function(){
     vec2.rotate(ri, this.localAnchorA, bodyA.angle);
     vec2.rotate(rj, this.localAnchorB, bodyB.angle);
 
+    vec2.add(n, xj, rj);
+    vec2.sub(n, n, ri);
+    vec2.sub(n, n, xi);
+    vec2.normalize(n,n);
+
+    //vec2.sub(n, bodyB.position, bodyA.position);
+
     // Caluclate cross products
     var rixn = vec2.crossLength(ri, n),
         rjxn = vec2.crossLength(rj, n);
 
-    /*
     // G = [-n -rixn n rjxn]
     G[0] = -n[0];
     G[1] = -n[1];
@@ -130,14 +149,13 @@ DistanceConstraint.prototype.update = function(){
     G[3] = n[0];
     G[4] = n[1];
     G[5] = rjxn;
-    */
 
-    vec2.sub(n, bodyB.position, bodyA.position);
-    vec2.normalize(n,n);
+    /*
     G[0] = -n[0];
     G[1] = -n[1];
     G[3] =  n[0];
     G[4] =  n[1];
+    */
 };
 
 /**
