@@ -46,15 +46,13 @@ Utils.splice = function(array,index,howmany){
  * @static
  * @property ARRAY_TYPE
  */
-
-//Check the type explicit to prevent IE errors
-//Utils.ARRAY_TYPE = Float32Array || Array;
-if (typeof Float32Array !== 'undefined'){
-  Utils.ARRAY_TYPE = Float32Array;
-}else{
-  Utils.ARRAY_TYPE = Array;
+if(typeof GLMAT_ARRAY_TYPE !== 'undefined') {
+    Utils.ARRAY_TYPE = GLMAT_ARRAY_TYPE;
+} else if (typeof Float32Array !== 'undefined'){
+    Utils.ARRAY_TYPE = Float32Array;
+} else {
+    Utils.ARRAY_TYPE = Array;
 }
-
 
 /**
  * Extend an object with the properties of another
