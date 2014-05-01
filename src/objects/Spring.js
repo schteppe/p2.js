@@ -154,28 +154,31 @@ Spring.prototype.applyForce = function(){
         ri = applyForce_ri,
         rj = applyForce_rj;
 
+    var hasOffsetA = (this.localAnchorA[0] || this.localAnchorA[1]);
+    var hasOffsetB = (this.localAnchorB[0] || this.localAnchorB[1]);
+
     // Get world anchors
     this.getWorldAnchorA(worldAnchorA);
     this.getWorldAnchorB(worldAnchorB);
-
-    // Get offset points
-    vec2.sub(ri, worldAnchorA, bodyA.position);
-    vec2.sub(rj, worldAnchorB, bodyB.position);
 
     // Compute distance vector between world anchor points
     vec2.sub(r, worldAnchorB, worldAnchorA);
     var rlen = vec2.len(r);
     vec2.normalize(r_unit,r);
 
-    //console.log(rlen)
-    //console.log("A",vec2.str(worldAnchorA),"B",vec2.str(worldAnchorB))
-
     // Compute relative velocity of the anchor points, u
     vec2.sub(u, bodyB.velocity, bodyA.velocity);
-    vec2.crossZV(tmp, bodyB.angularVelocity, rj);
-    vec2.add(u, u, tmp);
-    vec2.crossZV(tmp, bodyA.angularVelocity, ri);
-    vec2.sub(u, u, tmp);
+
+    if(hasOffsetA){
+        vec2.sub(ri, worldAnchorA, bodyA.position);
+        vec2.crossZV(tmp, bodyA.angularVelocity, ri);
+        vec2.sub(u, u, tmp);
+    }
+    if(hasOffsetB){
+        vec2.sub(rj, worldAnchorB, bodyB.position);
+        vec2.crossZV(tmp, bodyB.angularVelocity, rj);
+        vec2.add(u, u, tmp);
+    }
 
     // F = - k * ( x - L ) - D * ( u )
     vec2.scale(f, r_unit, -k*(rlen-l) - d*vec2.dot(u,r_unit));
@@ -185,8 +188,12 @@ Spring.prototype.applyForce = function(){
     vec2.add( bodyB.force, bodyB.force, f);
 
     // Angular force
-    var ri_x_f = vec2.crossLength(ri, f);
-    var rj_x_f = vec2.crossLength(rj, f);
-    bodyA.angularForce -= ri_x_f;
-    bodyB.angularForce += rj_x_f;
+    if(hasOffsetA){
+        var ri_x_f = vec2.crossLength(ri, f);
+        bodyA.angularForce -= ri_x_f;
+    }
+    if(hasOffsetB){
+        var rj_x_f = vec2.crossLength(rj, f);
+        bodyB.angularForce += rj_x_f;
+    }
 };
