@@ -1710,47 +1710,96 @@ Narrowphase.findSeparatingAxis = function(c1,offset1,angle1,c2,offset2,angle2,se
         span1 = fsa_tmp5,
         span2 = fsa_tmp6;
 
-    for(var j=0; j!==2; j++){
-        var c = c1,
-            angle = angle1;
-        if(j===1){
-            c = c2;
-            angle = angle2;
-        }
+    if(c1 instanceof Rectangle && c2 instanceof Rectangle){
 
-        for(var i=0; i!==c.vertices.length; i++){
-            // Get the world edge
-            vec2.rotate(worldPoint0, c.vertices[i], angle);
-            vec2.rotate(worldPoint1, c.vertices[(i+1)%c.vertices.length], angle);
-
-            sub(edge, worldPoint1, worldPoint0);
-
-            // Get normal - just rotate 90 degrees since vertices are given in CCW
-            vec2.rotate90cw(normal, edge);
-            vec2.normalize(normal,normal);
-
-            // Project hulls onto that normal
-            Narrowphase.projectConvexOntoAxis(c1,offset1,angle1,normal,span1);
-            Narrowphase.projectConvexOntoAxis(c2,offset2,angle2,normal,span2);
-
-            // Order by span position
-            var a=span1,
-                b=span2,
-                swapped = false;
-            if(span1[0] > span2[0]){
-                b=span1;
-                a=span2;
-                swapped = true;
+        for(var j=0; j!==2; j++){
+            var c = c1,
+                angle = angle1;
+            if(j===1){
+                c = c2;
+                angle = angle2;
             }
 
-            // Get separating distance
-            var dist = b[0] - a[1];
-            overlap = (dist <= Narrowphase.convexPrecision);
+            for(var i=0; i!==2; i++){
 
-            if(maxDist===null || dist > maxDist){
-                vec2.copy(sepAxis, normal);
-                maxDist = dist;
-                found = overlap;
+                // Get the world edge
+                if(i === 0){
+                    vec2.set(normal, 0, 1);
+                } else if(i === 1) {
+                    vec2.set(normal, 1, 0);
+                }
+                vec2.rotate(normal, normal, angle);
+
+                // Project hulls onto that normal
+                Narrowphase.projectConvexOntoAxis(c1,offset1,angle1,normal,span1);
+                Narrowphase.projectConvexOntoAxis(c2,offset2,angle2,normal,span2);
+
+                // Order by span position
+                var a=span1,
+                    b=span2,
+                    swapped = false;
+                if(span1[0] > span2[0]){
+                    b=span1;
+                    a=span2;
+                    swapped = true;
+                }
+
+                // Get separating distance
+                var dist = b[0] - a[1];
+                overlap = (dist <= Narrowphase.convexPrecision);
+
+                if(maxDist===null || dist > maxDist){
+                    vec2.copy(sepAxis, normal);
+                    maxDist = dist;
+                    found = overlap;
+                }
+            }
+        }
+
+    } else {
+
+        for(var j=0; j!==2; j++){
+            var c = c1,
+                angle = angle1;
+            if(j===1){
+                c = c2;
+                angle = angle2;
+            }
+
+            for(var i=0; i!==c.vertices.length; i++){
+                // Get the world edge
+                vec2.rotate(worldPoint0, c.vertices[i], angle);
+                vec2.rotate(worldPoint1, c.vertices[(i+1)%c.vertices.length], angle);
+
+                sub(edge, worldPoint1, worldPoint0);
+
+                // Get normal - just rotate 90 degrees since vertices are given in CCW
+                vec2.rotate90cw(normal, edge);
+                vec2.normalize(normal,normal);
+
+                // Project hulls onto that normal
+                Narrowphase.projectConvexOntoAxis(c1,offset1,angle1,normal,span1);
+                Narrowphase.projectConvexOntoAxis(c2,offset2,angle2,normal,span2);
+
+                // Order by span position
+                var a=span1,
+                    b=span2,
+                    swapped = false;
+                if(span1[0] > span2[0]){
+                    b=span1;
+                    a=span2;
+                    swapped = true;
+                }
+
+                // Get separating distance
+                var dist = b[0] - a[1];
+                overlap = (dist <= Narrowphase.convexPrecision);
+
+                if(maxDist===null || dist > maxDist){
+                    vec2.copy(sepAxis, normal);
+                    maxDist = dist;
+                    found = overlap;
+                }
             }
         }
     }
