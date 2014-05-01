@@ -73,6 +73,14 @@ Download either [p2.js](build/p2.js) or the minified [p2.min.js](build/p2.min.js
 ```html
 <script src="p2.js" type="text/javascript"></script>
 ```
+
+If you would like to use ordinary ```Array``` instead of ```Float32Array```, define ```GLMAT_ARRAY_TYPE``` globally before loading the library.
+
+```html
+<script type="text/javascript">GLMAT_ARRAY_TYPE = Array;</script>
+<script src="p2.js" type="text/javascript"></script>
+```
+
 ##### Node.js
 ```
 npm install p2
