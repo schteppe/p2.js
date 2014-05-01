@@ -226,10 +226,10 @@ Equation.prototype.computeGiMf = function(){
         ti = bi.angularForce,
         fj = bj.force,
         tj = bj.angularForce,
-        invMassi = getBodyInvMass(bi),
-        invMassj = getBodyInvMass(bj),
-        invIi = getBodyInvInertia(bi),
-        invIj = getBodyInvInertia(bj),
+        invMassi = bi.invMassSolve,
+        invMassj = bj.invMassSolve,
+        invIi = bi.invInertiaSolve,
+        invIj = bj.invInertiaSolve,
         G = this.G;
 
     vec2.scale(iMfi, fi,invMassi);
@@ -237,21 +237,6 @@ Equation.prototype.computeGiMf = function(){
 
     return Gmult(G,iMfi,ti*invIi,iMfj,tj*invIj);
 };
-
-function getBodyInvMass(body){
-    if(body.sleepState === Body.SLEEPING || body.motionState === Body.KINEMATIC){
-        return 0;
-    } else {
-        return body.invMass;
-    }
-}
-function getBodyInvInertia(body){
-    if(body.sleepState === Body.SLEEPING || body.motionState === Body.KINEMATIC){
-        return 0;
-    } else {
-        return body.invInertia;
-    }
-}
 
 /**
  * Computes G*inv(M)*G'
@@ -261,10 +246,10 @@ function getBodyInvInertia(body){
 Equation.prototype.computeGiMGt = function(){
     var bi = this.bodyA,
         bj = this.bodyB,
-        invMassi = getBodyInvMass(bi),
-        invMassj = getBodyInvMass(bj),
-        invIi = getBodyInvInertia(bi),
-        invIj = getBodyInvInertia(bj),
+        invMassi = bi.invMassSolve,
+        invMassj = bj.invMassSolve,
+        invIi = bi.invInertiaSolve,
+        invIj = bj.invInertiaSolve,
         G = this.G;
 
     return  G[0] * G[0] * invMassi +
@@ -295,10 +280,10 @@ Equation.prototype.addToWlambda = function(deltalambda){
         Gj = addToWlambda_Gj,
         ri = addToWlambda_ri,
         rj = addToWlambda_rj,
-        invMassi = getBodyInvMass(bi),
-        invMassj = getBodyInvMass(bj),
-        invIi = getBodyInvInertia(bi),
-        invIj = getBodyInvInertia(bj),
+        invMassi = bi.invMassSolve,
+        invMassj = bj.invMassSolve,
+        invIi = bi.invInertiaSolve,
+        invIj = bj.invInertiaSolve,
         Mdiag = addToWlambda_Mdiag,
         G = this.G;
 

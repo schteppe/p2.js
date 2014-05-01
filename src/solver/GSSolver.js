@@ -93,6 +93,15 @@ GSSolver.prototype.solve = function(h, world){
 
     this.usedIterations = 0;
 
+    if(Neq){
+        for(var i=0; i!==Nbodies; i++){
+            var b = bodies[i];
+
+            // Update solve mass
+            b.updateSolveMassProperties();
+        }
+    }
+
     // Things that does not change during iteration can be computed once
     if(lambda.length < Neq){
         lambda = this.lambda =  new Utils.ARRAY_TYPE(Neq + this.arrayStep);
@@ -118,9 +127,11 @@ GSSolver.prototype.solve = function(h, world){
 
     if(Neq !== 0){
 
-        // Reset vlambda
         for(i=0; i!==Nbodies; i++){
-            bodies[i].resetConstraintVelocity();
+            var b = bodies[i];
+
+            // Reset vlambda
+            b.resetConstraintVelocity();
         }
 
         if(maxFrictionIter){
@@ -132,10 +143,6 @@ GSSolver.prototype.solve = function(h, world){
 
                 for(j=0; j!==Neq; j++){
                     c = equations[j];
-
-                    if(c instanceof FrictionEquation){
-                        //continue;
-                    }
 
                     var deltalambda = GSSolver.iterateEquation(j,c,c.epsilon,Bs,invCs,lambda,useZeroRHS,h,iter);
                     deltalambdaTot += Math.abs(deltalambda);

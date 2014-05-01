@@ -94,6 +94,9 @@ function Body(options){
      */
     this.invInertia = 0;
 
+    this.invMassSolve = 0;
+    this.invInertiaSolve = 0;
+
     /**
      * Set to true if you want to fix the rotation of the body.
      * @property fixedRotation
@@ -356,6 +359,16 @@ Body.prototype = new EventEmitter();
 
 Body._idCounter = 0;
 
+Body.prototype.updateSolveMassProperties = function(){
+    if(this.sleepState === Body.SLEEPING || this.motionState === Body.KINEMATIC){
+        this.invMassSolve = 0;
+        this.invInertiaSolve = 0;
+    } else {
+        this.invMassSolve = this.invMass;
+        this.invInertiaSolve = this.invInertia;
+    }
+};
+
 /**
  * Set the total density of the body
  * @method setDensity
@@ -390,24 +403,26 @@ Body.prototype.updateAABB = function() {
     var shapes = this.shapes,
         shapeOffsets = this.shapeOffsets,
         shapeAngles = this.shapeAngles,
-        N = shapes.length;
+        N = shapes.length,
+        offset = tmp,
+        bodyAngle = this.angle;
 
     for(var i=0; i!==N; i++){
         var shape = shapes[i],
-            offset = tmp,
-            angle = shapeAngles[i] + this.angle;
+            angle = shapeAngles[i] + bodyAngle;
 
         // Get shape world offset
-        vec2.rotate(offset,shapeOffsets[i],this.angle);
-        vec2.add(offset,offset,this.position);
+        vec2.rotate(offset, shapeOffsets[i], bodyAngle);
+        vec2.add(offset, offset, this.position);
 
         // Get shape AABB
-        shape.computeAABB(shapeAABB,offset,angle);
+        shape.computeAABB(shapeAABB, offset, angle);
 
-        if(i===0)
+        if(i===0){
             this.aabb.copy(shapeAABB);
-        else
+        } else {
             this.aabb.extend(shapeAABB);
+        }
     }
 
     this.aabbNeedsUpdate = false;
