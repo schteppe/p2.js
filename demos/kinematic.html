@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Kinematic body demo - p2.js physics engine</title>
+    <script src="../build/p2.js"></script>
+    <script src="js/jquery.js"></script>
+    <script src="js/pixi.js"></script>
+    <script src="js/Demo.js"></script>
+    <script src="js/PixiDemo.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <link href="css/demo.css" rel="stylesheet"/>
+    <link href="css/bootstrap.min.css" rel="stylesheet"/>
+    <meta name="description" content="Demonstrates kinematic bodies.">
+</head>
+<body>
+    <script>
+
+        // Create a World
+        var world = new p2.World({
+            doProfiling:true,                       // Enable stats
+            gravity : [0,-10],                      // Set gravity
+        });
+
+        // Create ground
+        var planeShape = new p2.Plane();
+        var plane = new p2.Body({
+            position: [0,-2]
+        });
+        plane.addShape(planeShape);
+        world.addBody(plane);
+
+
+        // Create kinematic, moving box
+        var kinematicBody = new p2.Body({
+            mass: 0, // Note: mass is set to zero
+            position: [0, 0.5]
+        });
+        kinematicBody.motionState = p2.Body.KINEMATIC; // Set the motion state to kinematic
+        var boxShape = new p2.Rectangle(2,0.5);
+        kinematicBody.addShape(boxShape);
+        world.addBody(kinematicBody);
+
+
+        // Create dynamic box
+        var boxBody = new p2.Body({
+            mass: 1,
+            position: [0,2]
+        });
+        boxBody.addShape(new p2.Rectangle(0.5,0.5));
+        world.addBody(boxBody);
+
+        // Create dynamic circle connected to the kinematic body
+        var circleBody = new p2.Body({
+            mass: 1,
+            position: [0,-0.5],
+            velocity: [-1,0]
+        });
+        circleBody.addShape(new p2.Circle(0.25));
+        world.addBody(circleBody);
+
+        world.addConstraint(new p2.DistanceConstraint(kinematicBody, circleBody));
+
+
+
+        var demo = new PixiDemo(world);
+
+        world.on("postStep", function(){
+            // Kinematic bodies are controlled via velocity.
+            kinematicBody.velocity[1] = 2 * Math.sin(world.time * 2);
+        });
+
+    </script>
+</body>
+</html>

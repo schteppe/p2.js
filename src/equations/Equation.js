@@ -239,14 +239,14 @@ Equation.prototype.computeGiMf = function(){
 };
 
 function getBodyInvMass(body){
-    if(body.sleepState === Body.SLEEPING){
+    if(body.sleepState === Body.SLEEPING || body.motionState === Body.KINEMATIC){
         return 0;
     } else {
         return body.invMass;
     }
 }
 function getBodyInvInertia(body){
-    if(body.sleepState === Body.SLEEPING){
+    if(body.sleepState === Body.SLEEPING || body.motionState === Body.KINEMATIC){
         return 0;
     } else {
         return body.invInertia;
