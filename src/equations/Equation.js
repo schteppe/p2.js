@@ -140,14 +140,18 @@ Equation.prototype.update = function(){
     this.needsUpdate = false;
 };
 
-function Gmult(G,vi,wi,vj,wj){
+/**
+ * Compute gmult
+ * @return {Number}
+ */
+Equation.prototype.gmult = function(G,vi,wi,vj,wj){
     return  G[0] * vi[0] +
             G[1] * vi[1] +
             G[2] * wi +
             G[3] * vj[0] +
             G[4] * vj[1] +
             G[5] * wj;
-}
+};
 
 /**
  * Computes the RHS of the SPOOK equation
@@ -177,7 +181,7 @@ Equation.prototype.computeGq = function(){
         ai = bi.angle,
         aj = bj.angle;
 
-    return Gmult(G, qi, ai, qj, aj) + this.offset;
+    return this.gmult(G, qi, ai, qj, aj) + this.offset;
 };
 
 /**
@@ -193,7 +197,7 @@ Equation.prototype.computeGW = function(){
         vj = bj.velocity,
         wi = bi.angularVelocity,
         wj = bj.angularVelocity;
-    return Gmult(G,vi,wi,vj,wj) + this.relativeVelocity;
+    return this.gmult(G,vi,wi,vj,wj) + this.relativeVelocity;
 };
 
 /**
@@ -209,7 +213,7 @@ Equation.prototype.computeGWlambda = function(){
         vj = bj.vlambda,
         wi = bi.wlambda,
         wj = bj.wlambda;
-    return Gmult(G,vi,wi,vj,wj);
+    return this.gmult(G,vi,wi,vj,wj);
 };
 
 /**
@@ -235,7 +239,7 @@ Equation.prototype.computeGiMf = function(){
     vec2.scale(iMfi, fi,invMassi);
     vec2.scale(iMfj, fj,invMassj);
 
-    return Gmult(G,iMfi,ti*invIi,iMfj,tj*invIj);
+    return this.gmult(G,iMfi,ti*invIi,iMfj,tj*invIj);
 };
 
 /**

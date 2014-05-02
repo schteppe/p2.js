@@ -188,7 +188,7 @@ function PrismaticConstraint(bodyA, bodyB, options){
             vj = bj.velocity,
             wi = bi.angularVelocity,
             wj = bj.angularVelocity;
-        return this.transformedGmult(G,vi,wi,vj,wj) + that.motorSpeed;
+        return this.Gmult(G,vi,wi,vj,wj) + that.motorSpeed;
     };
 }
 
@@ -261,6 +261,7 @@ PrismaticConstraint.prototype.update = function(){
                  |
                 axis
      */
+
 
     if(this.upperLimitEnabled && relPosition > upperLimit){
         // Update contact constraint normal, etc
