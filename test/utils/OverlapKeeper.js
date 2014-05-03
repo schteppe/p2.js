@@ -30,8 +30,10 @@ function checkConsistent(dict){
 exports.getEndOverlaps = function(test){
     var bodyA = new Body();
     var bodyB = new Body();
+    var bodyC = new Body();
     var shapeA = new Circle(1);
     var shapeB = new Circle(1);
+    var shapeC = new Circle(1);
 
     var keeper = new OverlapKeeper();
     keeper.setOverlapping(bodyA, shapeA, bodyB, shapeB);
@@ -58,14 +60,30 @@ exports.getEndOverlaps = function(test){
     var result = keeper.getEndOverlaps();
     test.equal(result.length, 0);
 
+    keeper.tick();
+
+    keeper.setOverlapping(bodyA, shapeA, bodyB, shapeB);
+    keeper.setOverlapping(bodyC, shapeC, bodyB, shapeB);
+    keeper.setOverlapping(bodyC, shapeC, bodyA, shapeA);
+
+    var result = keeper.getEndOverlaps();
+    test.equal(result.length, 0);
+
+    keeper.tick();
+
+    var result = keeper.getEndOverlaps();
+    test.equal(result.length, 3);
+
     test.done();
 };
 
 exports.getNewOverlaps = function(test){
     var bodyA = new Body();
     var bodyB = new Body();
+    var bodyC = new Body();
     var shapeA = new Circle(1);
     var shapeB = new Circle(1);
+    var shapeC = new Circle(1);
     var keeper = new OverlapKeeper();
     keeper.setOverlapping(bodyA, shapeA, bodyB, shapeB);
 
@@ -91,6 +109,13 @@ exports.getNewOverlaps = function(test){
 
     var result = keeper.getNewOverlaps();
     test.equal(result.length, 0);
+
+    keeper.setOverlapping(bodyA, shapeA, bodyB, shapeB);
+    keeper.setOverlapping(bodyC, shapeC, bodyB, shapeB);
+    keeper.setOverlapping(bodyC, shapeC, bodyA, shapeA);
+
+    var result = keeper.getNewOverlaps();
+    test.equal(result.length, 3);
 
     test.done();
 };
@@ -120,11 +145,13 @@ exports.isNewOverlap = function(test){
 };
 
 exports.getNewBodyOverlaps = function(test){
+    var keeper = new OverlapKeeper();
     var bodyA = new Body();
     var bodyB = new Body();
-    var shapeA = new Circle(1);
-    var shapeB = new Circle(1);
-    var keeper = new OverlapKeeper();
+    var bodyC = new Body();
+    var shapeA = new Circle();
+    var shapeB = new Circle();
+    var shapeC = new Circle();
     keeper.setOverlapping(bodyA, shapeA, bodyB, shapeB);
 
     var result = keeper.getNewBodyOverlaps();
@@ -134,6 +161,16 @@ exports.getNewBodyOverlaps = function(test){
 
     var result = keeper.getNewBodyOverlaps();
     test.equal(result.length, 0);
+
+    keeper.tick();
+
+    keeper.setOverlapping(bodyA, shapeA, bodyB, shapeB);
+    keeper.setOverlapping(bodyC, shapeC, bodyB, shapeB);
+    keeper.setOverlapping(bodyC, shapeC, bodyA, shapeA);
+
+    var result = keeper.getNewBodyOverlaps();
+
+    test.equal(result.length, 6);
 
     test.done();
 };

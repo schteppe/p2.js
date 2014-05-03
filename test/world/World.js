@@ -217,4 +217,57 @@ exports.events = {
 
         test.done();
     },
+
+
+    beginContact2 : function(test){
+        var world = new World(),
+            // 3 circles, A overlaps B which overlaps C
+            bodyA = new Body({ mass:1, position:[-1.1,0] }),
+            bodyB = new Body({ mass:1, position:[0,0] }),
+            bodyC = new Body({ mass:1, position:[1.1,0] });
+        world.addBody(bodyA);
+        world.addBody(bodyB);
+        world.addBody(bodyC);
+        var shapeA = new Circle(1),
+            shapeB = new Circle(1),
+            shapeC = new Circle(1);
+        bodyA.addShape(shapeA);
+        bodyB.addShape(shapeB);
+        bodyC.addShape(shapeC);
+
+        var beginContactHits = 0,
+            endContactHits = 0;
+
+        world.on("beginContact",function(evt){
+            beginContactHits++;
+        });
+
+        world.on("endContact",function(evt){
+            endContactHits++;
+        });
+
+        // First overlap - two new beginContact
+        world.step(1/60);
+        test.equal(beginContactHits, 2);
+        test.equal(endContactHits, 0);
+
+        // Still overlapping - should not report anything
+        world.step(1/60);
+        test.equal(beginContactHits, 2);
+        test.equal(endContactHits, 0);
+
+        // End one overlap
+        bodyA.position[1] = 10;
+        world.step(1/60);
+        test.equal(beginContactHits, 2);
+        test.equal(endContactHits,1);
+
+        // End another overlap
+        bodyB.position[1] = -10;
+        world.step(1/60);
+        test.equal(beginContactHits, 2);
+        test.equal(endContactHits,2);
+
+        test.done();
+    },
 };
