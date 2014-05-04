@@ -568,6 +568,8 @@ World.prototype.internalStep = function(dt){
         rotate = vec2.rotate,
         islandManager = this.islandManager;
 
+    this.overlapKeeper.tick();
+
     this.lastTimeStep = dt;
 
     if(doProfiling){
@@ -701,7 +703,6 @@ World.prototype.internalStep = function(dt){
             this.emit(e);
         }
     }
-    this.overlapKeeper.tick();
 
     var preSolveEvent = this.preSolveEvent;
     preSolveEvent.contactEquations = np.contactEquations;

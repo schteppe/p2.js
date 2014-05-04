@@ -858,6 +858,16 @@ Body.prototype.getAngularVelocityFromPosition = function(timeStep){
 };
 
 /**
+ * Check if the body is overlapping another body. Note that this method only works if the body was added to a World and if at least one step was taken.
+ * @method overlaps
+ * @param  {Body} body
+ * @return {boolean}
+ */
+Body.prototype.overlaps = function(body){
+    return this.world.overlapKeeper.bodiesAreOverlapping(this, body);
+};
+
+/**
  * @event sleepy
  */
 Body.sleepyEvent = {
