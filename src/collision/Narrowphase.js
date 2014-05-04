@@ -219,6 +219,7 @@ Narrowphase.prototype.createFrictionEquation = function(bodyA,bodyB,shapeA,shape
     c.needsUpdate = true;
     c.stiffness = this.frictionStiffness;
     c.relaxation = this.frictionRelaxation;
+    c.contactEquations.length = 0;
     return c;
 };
 
@@ -1211,7 +1212,7 @@ Narrowphase.prototype.planeConvex = function( bi,si,xi,ai, bj,sj,xj,aj, justTest
     var numReported = 0;
     vec2.rotate(worldNormal, yAxis, planeAngle);
 
-    for(var i=0; i<convexShape.vertices.length; i++){
+    for(var i=0; i!==convexShape.vertices.length; i++){
         var v = convexShape.vertices[i];
         vec2.rotate(worldVertex, v, convexAngle);
         add(worldVertex, worldVertex, convexOffset);
@@ -1245,23 +1246,41 @@ Narrowphase.prototype.planeConvex = function( bi,si,xi,ai, bj,sj,xj,aj, justTest
             sub( c.contactPointA, c.contactPointA, planeBody.position);
 
             this.contactEquations.push(c);
+            /*
             if(this.enableFriction){
                 this.frictionEquations.push(this.createFrictionFromContact(c));
             }
+            */
         }
+    }
+
+    if(this.enableFriction && numReported){
+
+        // Only one friction equation needed here!
+        // Take the average contact point on the plane.
+        var eq = this.createFrictionEquation(planeBody, convexBody, planeShape, convexShape);
+        vec2.set(eq.contactPointA, 0, 0);
+        vec2.set(eq.contactPointB, 0, 0);
+        for(var i=0; i!==numReported; i++){
+            var c = this.contactEquations[this.contactEquations.length - 1 - i];
+            //this.frictionEquations.push(this.createFrictionFromContact(c));
+            vec2.add(eq.contactPointA, eq.contactPointA, c.contactPointA);
+            vec2.add(eq.contactPointB, eq.contactPointB, c.contactPointB);
+            eq.contactEquations.push(c);
+        }
+
+        var invNumReported = 1/numReported;
+        vec2.scale(eq.contactPointA, eq.contactPointA, invNumReported);
+        vec2.scale(eq.contactPointB, eq.contactPointB, invNumReported);
+
+        // Tangent is the plane tangent
+        vec2.set(eq.t, 0, 1);
+        vec2.rotate(eq.t, eq.t, planeAngle - Math.PI / 2);
+        this.frictionEquations.push(eq);
     }
 
     return numReported;
 };
-
-/**
- * @method convexPlane
- * @deprecated Use .planeConvex() instead!
- */
-Narrowphase.prototype.convexPlane = function( bi,si,xi,ai, bj,sj,xj,aj, justTest ){
-    console.warn("Narrowphase.prototype.convexPlane is deprecated. Use planeConvex instead!");
-    return this.planeConvex( bj,sj,xj,aj, bi,si,xi,ai, justTest );
-}
 
 /**
  * Narrowphase for particle vs plane
