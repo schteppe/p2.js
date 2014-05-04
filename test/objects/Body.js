@@ -1,6 +1,7 @@
-var Body = require(__dirname + '/../../src/objects/Body')
-    Circle = require(__dirname + '/../../src/shapes/Circle')
-    vec2 = require(__dirname + '/../../src/math/vec2')
+var Body = require(__dirname + '/../../src/objects/Body');
+var Circle = require(__dirname + '/../../src/shapes/Circle');
+var World = require(__dirname + '/../../src/world/World');
+var vec2 = require(__dirname + '/../../src/math/vec2');
 
 exports.construct = function(test){
 
@@ -64,6 +65,19 @@ exports.fromPolygon = function(test){
 
     test.ok(b.shapes.length > 0);
 
+    test.done();
+};
+
+exports.overlaps = function(test){
+    var bodyA = new Body({ mass: 1 });
+    var bodyB = new Body({ mass: 1 });
+    bodyA.addShape(new Circle());
+    bodyB.addShape(new Circle());
+    var world = new World();
+    world.addBody(bodyA);
+    world.addBody(bodyB);
+    world.step(1/60);
+    test.ok(bodyA.overlaps(bodyB));
     test.done();
 };
 
