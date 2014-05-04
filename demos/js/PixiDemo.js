@@ -1,3 +1,5 @@
+/* global PIXI */
+
 /**
  * Demo using Pixi.js as renderer
  * @class PixiDemo
@@ -25,11 +27,13 @@ function PixiDemo(world,options){
         useDeviceAspect : false,
         sleepOpacity : 0.2,
     };
-    for(var key in options)
+    for(var key in options){
         settings[key] = options[key];
+    }
 
-    if(settings.useDeviceAspect)
+    if(settings.useDeviceAspect){
         settings.height = $(window).height() / $(window).width() * settings.width;
+    }
 
     this.settings = settings;
     var ppu = this.pixelsPerLengthUnit =  settings.pixelsPerLengthUnit;
@@ -55,7 +59,7 @@ function PixiDemo(world,options){
         var path2 = [];
         for(var j=0; j<path.length; j++){
             var v = path[j];
-            path2.push([v[0]*ppu, that.settings.height -v[1]*ppu]);
+            path2.push([v[0]*ppu, v[1]*ppu]);
         }
 
         that.drawPath(g,path2,0xff0000,false,1,false);
@@ -68,14 +72,14 @@ function PixiDemo(world,options){
         var center = that.drawCircleCenter;
         var R = p2.vec2.dist(center, that.drawCirclePoint);
         var h = that.renderer.height;
-        that.drawCircle(g,center[0]*ppu,h-ppu*center[1],0,ppu*R,false,that.lineWidth);
+        that.drawCircle(g,center[0]*ppu,ppu*center[1],0,ppu*R,false,that.lineWidth);
     });
 }
 PixiDemo.prototype = Object.create(Demo.prototype);
 
 PixiDemo.prototype.stagePositionToPhysics = function(out,stagePosition){
     var x = stagePosition[0]/this.pixelsPerLengthUnit,
-        y = (this.renderer.height - stagePosition[1])/this.pixelsPerLengthUnit;
+        y = stagePosition[1]/this.pixelsPerLengthUnit;
     p2.vec2.set(out, x, y);
     return out;
 };
@@ -114,7 +118,9 @@ PixiDemo.prototype.init = function(){
     stage.addChild(this.contactGraphics);
 
     stage.position.x = renderer.width/2; // center at origin
-    stage.position.y = -renderer.height/2;
+    stage.position.y = renderer.height/2;
+    stage.scale.x = 1; // Flip Y direction.
+    stage.scale.y = -1;
 
     var lastX, lastY, lastMoveX, lastMoveY, startX, startY, down=false;
 
@@ -208,7 +214,7 @@ PixiDemo.prototype.init = function(){
 PixiDemo.prototype.centerCamera = function(x, y){
     var ppu = this.pixelsPerLengthUnit;
     this.stage.position.x = this.renderer.width/2 - ppu*x;
-    this.stage.position.y = -this.renderer.height/2 + ppu*y;
+    this.stage.position.y = this.renderer.height/2 + ppu*y;
 };
 
 /**
@@ -223,8 +229,8 @@ PixiDemo.prototype.centerCamera = function(x, y){
  * @param  {Number} lineWidth
  */
 PixiDemo.prototype.drawCircle = function(g,x,y,angle,radius,color,lineWidth,isSleeping){
-    lineWidth = typeof(lineWidth)=="number" ? lineWidth : 1;
-    color = typeof(color)=="number" ? color : 0xffffff;
+    lineWidth = typeof(lineWidth)==="number" ? lineWidth : 1;
+    color = typeof(color)==="number" ? color : 0xffffff;
     g.lineStyle(lineWidth, 0x000000, 1);
     g.beginFill(color, isSleeping ? this.sleepOpacity : 1.0);
     g.drawCircle(x, y, radius);
@@ -232,13 +238,13 @@ PixiDemo.prototype.drawCircle = function(g,x,y,angle,radius,color,lineWidth,isSl
 
     // line from center to edge
     g.moveTo(x,y);
-    g.lineTo(   x + radius*Math.cos(-angle),
-                y + radius*Math.sin(-angle) );
+    g.lineTo(   x + radius*Math.cos(angle),
+                y + radius*Math.sin(angle) );
 };
 
 PixiDemo.drawSpring = function(g,restLength,color,lineWidth){
-    lineWidth = typeof(lineWidth)=="number" ? lineWidth : 1;
-    color = typeof(color)=="undefined" ? 0xffffff : color;
+    lineWidth = typeof(lineWidth)==="number" ? lineWidth : 1;
+    color = typeof(color)==="undefined" ? 0xffffff : color;
     g.lineStyle(lineWidth, color, 1);
     if(restLength < lineWidth*10){
         restLength = lineWidth*10;
@@ -274,8 +280,8 @@ PixiDemo.drawSpring = function(g,restLength,color,lineWidth){
  * @todo Should consider an angle
  */
 PixiDemo.drawPlane = function(g, x0, x1, color, lineColor, lineWidth, diagMargin, diagSize, maxLength){
-    lineWidth = typeof(lineWidth)=="number" ? lineWidth : 1;
-    color = typeof(color)=="undefined" ? 0xffffff : color;
+    lineWidth = typeof(lineWidth)==="number" ? lineWidth : 1;
+    color = typeof(color)==="undefined" ? 0xffffff : color;
     g.lineStyle(lineWidth, lineColor, 1);
 
     // Draw a fill color
@@ -284,27 +290,19 @@ PixiDemo.drawPlane = function(g, x0, x1, color, lineColor, lineWidth, diagMargin
     var max = maxLength;
     g.moveTo(-max,0);
     g.lineTo(max,0);
-    g.lineTo(max,max);
-    g.lineTo(-max,max);
+    g.lineTo(max,-max);
+    g.lineTo(-max,-max);
     g.endFill();
 
     // Draw the actual plane
     g.lineStyle(lineWidth,lineColor);
     g.moveTo(-max,0);
     g.lineTo(max,0);
-
-    // Draw diagonal lines
-    /*
-    for(var i=0; x0 + i*diagMargin < x1; i++){
-        g.moveTo(x0 + i*diagMargin,            0);
-        g.lineTo(x0 + i*diagMargin +diagSize,  +diagSize);
-    }
-    */
 };
 
 PixiDemo.drawLine = function(g, len, color, lineWidth){
-    lineWidth = typeof(lineWidth)=="number" ? lineWidth : 1;
-    color = typeof(color)=="undefined" ? 0x000000 : color;
+    lineWidth = typeof(lineWidth)==="number" ? lineWidth : 1;
+    color = typeof(color)==="undefined" ? 0x000000 : color;
     g.lineStyle(lineWidth, color, 1);
 
     // Draw the actual plane
@@ -313,8 +311,8 @@ PixiDemo.drawLine = function(g, len, color, lineWidth){
 };
 
 PixiDemo.prototype.drawCapsule = function(g, x, y, angle, len, radius, color, fillColor, lineWidth, isSleeping){
-    lineWidth = typeof(lineWidth)=="number" ? lineWidth : 1;
-    color = typeof(color)=="undefined" ? 0x000000 : color;
+    lineWidth = typeof(lineWidth)==="number" ? lineWidth : 1;
+    color = typeof(color)==="undefined" ? 0x000000 : color;
     g.lineStyle(lineWidth, color, 1);
 
     // Draw circles at ends
@@ -436,13 +434,13 @@ PixiDemo.prototype.drawPath = function(g,path,color,fillColor,lineWidth,isSleepi
 
 PixiDemo.updateSpriteTransform = function(sprite,body,ppu,h){
     if(this.useInterpolatedPositions){
-        sprite.position.x =     body.interpolatedPosition[0] * ppu;
-        sprite.position.y = h - body.interpolatedPosition[1] * ppu;
-        sprite.rotation = -body.interpolatedAngle;
+        sprite.position.x = body.interpolatedPosition[0] * ppu;
+        sprite.position.y = body.interpolatedPosition[1] * ppu;
+        sprite.rotation = body.interpolatedAngle;
     } else {
-        sprite.position.x =     body.position[0] * ppu;
-        sprite.position.y = h - body.position[1] * ppu;
-        sprite.rotation = -body.angle;
+        sprite.position.x = body.position[0] * ppu;
+        sprite.position.y = body.position[1] * ppu;
+        sprite.rotation = body.angle;
     }
 };
 
@@ -496,10 +494,10 @@ PixiDemo.prototype.render = function(){
             sprite.scale.y = -1;
         }
 
-        var sxA = (     worldAnchorA[0] * pixelsPerLengthUnit ),
-            syA = ( h - worldAnchorA[1] * pixelsPerLengthUnit ),
-            sxB = (     worldAnchorB[0] * pixelsPerLengthUnit ),
-            syB = ( h - worldAnchorB[1] * pixelsPerLengthUnit );
+        var sxA = worldAnchorA[0] * pixelsPerLengthUnit,
+            syA = worldAnchorA[1] * pixelsPerLengthUnit,
+            sxB = worldAnchorB[0] * pixelsPerLengthUnit,
+            syB = worldAnchorB[1] * pixelsPerLengthUnit;
 
         // Spring position is the mean point between the anchors
         sprite.position.x = ( sxA + sxB ) / 2;
@@ -510,7 +508,7 @@ PixiDemo.prototype.render = function(){
         distVec[1] = syA - syB;
 
         // Compute angle
-        sprite.rotation = -Math.acos( p2.vec2.dot(X, distVec) / p2.vec2.length(distVec) );
+        sprite.rotation = Math.acos( p2.vec2.dot(X, distVec) / p2.vec2.length(distVec) );
 
         // And scale
         sprite.scale.x = p2.vec2.length(distVec) / (s.restLength * pixelsPerLengthUnit);
@@ -531,16 +529,16 @@ PixiDemo.prototype.render = function(){
                 bj = eq.bodyB,
                 ri = eq.contactPointA,
                 rj = eq.contactPointB,
-                xi = (     bi.position[0] * ppu ),
-                yi = ( h - bi.position[1] * ppu ),
-                xj = (     bj.position[0] * ppu ),
-                yj = ( h - bj.position[1] * ppu );
+                xi = bi.position[0] * ppu,
+                yi = bi.position[1] * ppu,
+                xj = bj.position[0] * ppu,
+                yj = bj.position[1] * ppu;
 
             g.moveTo(xi,yi);
-            g.lineTo(xi+ri[0]*ppu,yi-ri[1]*ppu);
+            g.lineTo(xi+ri[0]*ppu, yi+ri[1]*ppu);
 
             g.moveTo(xj,yj);
-            g.lineTo(xj+rj[0]*ppu,yj-rj[1]*ppu);
+            g.lineTo(xj+rj[0]*ppu, yj+rj[1]*ppu);
 
         }
     }
@@ -589,7 +587,7 @@ PixiDemo.prototype.drawRenderable = function(obj, graphics, color, lineColor){
             var path = [];
             for(var j=0; j!==obj.concavePath.length; j++){
                 var v = obj.concavePath[j];
-                path.push([v[0]*ppu, -v[1]*ppu]);
+                path.push([v[0]*ppu, v[1]*ppu]);
             }
             this.drawPath(graphics, path, lineColor, color, lw, isSleeping);
         } else {
@@ -601,10 +599,10 @@ PixiDemo.prototype.drawRenderable = function(obj, graphics, color, lineColor){
                 angle = angle || 0;
 
                 if(child instanceof p2.Circle){
-                    this.drawCircle(graphics,offset[0]*ppu,-offset[1]*ppu,angle,child.radius*ppu,color,lw,isSleeping);
+                    this.drawCircle(graphics, offset[0]*ppu, offset[1]*ppu, angle, child.radius*ppu,color,lw,isSleeping);
 
                 } else if(child instanceof p2.Particle){
-                    this.drawCircle(graphics,offset[0]*ppu,-offset[1]*ppu,angle,2*lw,lineColor,0);
+                    this.drawCircle(graphics, offset[0]*ppu, offset[1]*ppu, angle, 2*lw, lineColor, 0);
 
                 } else if(child instanceof p2.Plane){
                     // TODO use shape angle
@@ -614,10 +612,10 @@ PixiDemo.prototype.drawRenderable = function(obj, graphics, color, lineColor){
                     PixiDemo.drawLine(graphics, child.length*ppu, lineColor, lw);
 
                 } else if(child instanceof p2.Rectangle){
-                    this.drawRectangle(graphics, offset[0]*ppu, -offset[1]*ppu, angle, child.width*ppu, child.height*ppu, lineColor, color, lw, isSleeping);
+                    this.drawRectangle(graphics, offset[0]*ppu, offset[1]*ppu, angle, child.width*ppu, child.height*ppu, lineColor, color, lw, isSleeping);
 
                 } else if(child instanceof p2.Capsule){
-                    this.drawCapsule(graphics, offset[0]*ppu, -offset[1]*ppu, angle, child.length*ppu, child.radius*ppu, lineColor, color, lw, isSleeping);
+                    this.drawCapsule(graphics, offset[0]*ppu, offset[1]*ppu, angle, child.length*ppu, child.radius*ppu, lineColor, color, lw, isSleeping);
 
                 } else if(child instanceof p2.Convex){
                     // Scale verts
@@ -626,17 +624,17 @@ PixiDemo.prototype.drawRenderable = function(obj, graphics, color, lineColor){
                     for(var j=0; j!==child.vertices.length; j++){
                         var v = child.vertices[j];
                         p2.vec2.rotate(vrot, v, angle);
-                        verts.push([(vrot[0]+offset[0])*ppu, -(vrot[1]+offset[1])*ppu]);
+                        verts.push([(vrot[0]+offset[0])*ppu, (vrot[1]+offset[1])*ppu]);
                     }
                     this.drawConvex(graphics, verts, child.triangles, lineColor, color, lw, this.debugPolygons,[offset[0]*ppu,-offset[1]*ppu], isSleeping);
 
                 } else if(child instanceof p2.Heightfield){
-                    var path = [[0,100*ppu]];
+                    var path = [[0,-100*ppu]];
                     for(var j=0; j!==child.data.length; j++){
                         var v = child.data[j];
-                        path.push([j*child.elementWidth*ppu, -v*ppu]);
+                        path.push([j*child.elementWidth*ppu, v*ppu]);
                     }
-                    path.push([child.data.length*child.elementWidth*ppu,100*ppu]);
+                    path.push([child.data.length*child.elementWidth*ppu,-100*ppu]);
                     this.drawPath(graphics, path, lineColor, color, lw, isSleeping);
 
                 }
