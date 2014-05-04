@@ -20,7 +20,8 @@
         var world = new p2.World({
             doProfiling : true,
             gravity : [0,-10],
-            islandSplit : true
+            islandSplit : true,
+            broadphase: new p2.SAPBroadphase()
         });
 
         var N = 10,                         // Number of circles in each rope
