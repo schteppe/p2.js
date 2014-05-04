@@ -9,8 +9,8 @@ module.exports = OverlapKeeper;
  * @constructor
  */
 function OverlapKeeper() {
-    this.overlappingLastState = new TupleDictionary();
-    this.overlappingCurrentState = new TupleDictionary();
+    this.overlappingShapesLastState = new TupleDictionary();
+    this.overlappingShapesCurrentState = new TupleDictionary();
     this.recordPool = [];
     this.tmpDict = new TupleDictionary();
     this.tmpArray1 = [];
@@ -20,8 +20,8 @@ function OverlapKeeper() {
  * @method tick
  */
 OverlapKeeper.prototype.tick = function() {
-    var last = this.overlappingLastState;
-    var current = this.overlappingCurrentState;
+    var last = this.overlappingShapesLastState;
+    var current = this.overlappingShapesCurrentState;
 
     // Save old objects into pool
     var l = last.keys.length;
@@ -49,8 +49,8 @@ OverlapKeeper.prototype.tick = function() {
  * @method setOverlapping
  */
 OverlapKeeper.prototype.setOverlapping = function(bodyA, shapeA, bodyB, shapeB) {
-    var last = this.overlappingLastState;
-    var current = this.overlappingCurrentState;
+    var last = this.overlappingShapesLastState;
+    var current = this.overlappingShapesCurrentState;
 
     // Store current contact state
     if(!current.get(shapeA.id, shapeB.id)){
@@ -68,11 +68,24 @@ OverlapKeeper.prototype.setOverlapping = function(bodyA, shapeA, bodyB, shapeB) 
 };
 
 OverlapKeeper.prototype.getNewOverlaps = function(result){
-    return this.getDiff(this.overlappingLastState, this.overlappingCurrentState, result);
+    return this.getDiff(this.overlappingShapesLastState, this.overlappingShapesCurrentState, result);
 };
 
 OverlapKeeper.prototype.getEndOverlaps = function(result){
-    return this.getDiff(this.overlappingCurrentState, this.overlappingLastState, result);
+    return this.getDiff(this.overlappingShapesCurrentState, this.overlappingShapesLastState, result);
+};
+
+OverlapKeeper.prototype.bodiesAreOverlapping = function(bodyA, bodyB){
+    var current = this.overlappingShapesCurrentState;
+    var l = current.keys.length;
+    while(l--){
+        var key = current.keys[l];
+        var data = current.data[key];
+        if((data.bodyA === bodyA && data.bodyB === bodyB) || data.bodyA === bodyB && data.bodyB === bodyA){
+            return true;
+        }
+    }
+    return false;
 };
 
 OverlapKeeper.prototype.getDiff = function(dictA, dictB, result){
@@ -104,8 +117,8 @@ OverlapKeeper.prototype.getDiff = function(dictA, dictB, result){
 OverlapKeeper.prototype.isNewOverlap = function(shapeA, shapeB){
     var idA = shapeA.id|0,
         idB = shapeB.id|0;
-    var last = this.overlappingLastState;
-    var current = this.overlappingCurrentState;
+    var last = this.overlappingShapesLastState;
+    var current = this.overlappingShapesCurrentState;
     // Not in last but in new
     return !!!last.get(idA, idB) && !!current.get(idA, idB);
 };
