@@ -73,8 +73,10 @@ vec2.rotate = function(out,a,angle){
  * @param  {Number} angle
  */
 vec2.rotate90cw = function(out, a) {
-    out[0] = a[1];
-    out[1] = -a[0];
+    var x = a[0];
+    var y = a[1];
+    out[0] = y;
+    out[1] = -x;
 };
 
 /**
