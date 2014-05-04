@@ -239,6 +239,32 @@ Narrowphase.prototype.createFrictionFromContact = function(c){
     return eq;
 };
 
+// Take the average N latest contact point on the plane.
+Narrowphase.prototype.createFrictionFromAverage = function(numContacts){
+    if(!numContacts){
+        throw new Error("numContacts == 0!");
+    }
+    var c = this.contactEquations[this.contactEquations.length - 1];
+    var eq = this.createFrictionEquation(c.bodyA, c.bodyB, c.shapeA, c.shapeB);
+    vec2.set(eq.contactPointA, 0, 0);
+    vec2.set(eq.contactPointB, 0, 0);
+    vec2.set(eq.t, 0, 0);
+    for(var i=0; i!==numContacts; i++){
+        c = this.contactEquations[this.contactEquations.length - 1 - i];
+        vec2.add(eq.contactPointA, eq.contactPointA, c.contactPointA);
+        vec2.add(eq.contactPointB, eq.contactPointB, c.contactPointB);
+        vec2.add(eq.t, eq.t, c.normalA);
+        eq.contactEquations.push(c);
+    }
+
+    var invNumContacts = 1/numContacts;
+    vec2.scale(eq.contactPointA, eq.contactPointA, invNumContacts);
+    vec2.scale(eq.contactPointB, eq.contactPointB, invNumContacts);
+    vec2.normalize(eq.t, eq.t);
+    vec2.rotate90cw(eq.t, eq.t);
+    return eq;
+};
+
 /**
  * Convex/line narrowphase
  * @method convexLine
@@ -1246,38 +1272,18 @@ Narrowphase.prototype.planeConvex = function( bi,si,xi,ai, bj,sj,xj,aj, justTest
             sub( c.contactPointA, c.contactPointA, planeBody.position);
 
             this.contactEquations.push(c);
-            /*
+
             if(this.enableFriction){
                 this.frictionEquations.push(this.createFrictionFromContact(c));
             }
-            */
         }
     }
 
+    /*
     if(this.enableFriction && numReported){
-
-        // Only one friction equation needed here!
-        // Take the average contact point on the plane.
-        var eq = this.createFrictionEquation(planeBody, convexBody, planeShape, convexShape);
-        vec2.set(eq.contactPointA, 0, 0);
-        vec2.set(eq.contactPointB, 0, 0);
-        for(var i=0; i!==numReported; i++){
-            var c = this.contactEquations[this.contactEquations.length - 1 - i];
-            //this.frictionEquations.push(this.createFrictionFromContact(c));
-            vec2.add(eq.contactPointA, eq.contactPointA, c.contactPointA);
-            vec2.add(eq.contactPointB, eq.contactPointB, c.contactPointB);
-            eq.contactEquations.push(c);
-        }
-
-        var invNumReported = 1/numReported;
-        vec2.scale(eq.contactPointA, eq.contactPointA, invNumReported);
-        vec2.scale(eq.contactPointB, eq.contactPointB, invNumReported);
-
-        // Tangent is the plane tangent
-        vec2.set(eq.t, 0, 1);
-        vec2.rotate(eq.t, eq.t, planeAngle - Math.PI / 2);
-        this.frictionEquations.push(eq);
+        this.frictionEquations.push(this.createFrictionFromAverage(numReported));
     }
+    */
 
     return numReported;
 };
@@ -1646,11 +1652,18 @@ Narrowphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
                 this.contactEquations.push(c);
 
                 // Todo reduce to 1 friction equation if we have 2 contact points
-                if(this.enableFriction)
+                if(this.enableFriction){
                     this.frictionEquations.push(this.createFrictionFromContact(c));
+                }
             }
         }
     }
+
+    /*
+    if(this.enableFriction && numContacts){
+        this.frictionEquations.push(this.createFrictionFromAverage(numContacts));
+    }
+    */
 
     return numContacts;
 };
