@@ -24,10 +24,15 @@ OverlapKeeper.prototype.tick = function() {
     var current = this.overlappingCurrentState;
 
     // Save old objects into pool
-    var l = current.keys.length;
+    var l = last.keys.length;
     while(l--){
-        var key = current.keys[l];
-        this.recordPool.push(current.getByKey(key));
+        var key = last.keys[l];
+        var lastObject = last.getByKey(key);
+        var currentObject = current.getByKey(key);
+        if(lastObject && !currentObject){
+            // The record is only used in the "last" dict, and will be removed. We might as well pool it.
+            this.recordPool.push(lastObject);
+        }
     }
 
     // Clear last object
@@ -53,6 +58,7 @@ OverlapKeeper.prototype.setOverlapping = function(bodyA, shapeA, bodyB, shapeB) 
         var data;
         if(this.recordPool.length){
             data = this.recordPool.pop();
+            data.set(bodyA, shapeA, bodyB, shapeB);
         } else {
             data = new OverlapKeeperRecord(bodyA, shapeA, bodyB, shapeB);
         }
@@ -98,7 +104,10 @@ OverlapKeeper.prototype.getDiff = function(dictA, dictB, result){
 OverlapKeeper.prototype.isNewOverlap = function(shapeA, shapeB){
     var idA = shapeA.id|0,
         idB = shapeB.id|0;
-    return !!!this.overlappingLastState.get(idA, idB) && !!this.overlappingCurrentState.get(idA, idB);
+    var last = this.overlappingLastState;
+    var current = this.overlappingCurrentState;
+    // Not in last but in new
+    return !!!last.get(idA, idB) && !!current.get(idA, idB);
 };
 
 OverlapKeeper.prototype.getNewBodyOverlaps = function(result){
@@ -128,8 +137,10 @@ OverlapKeeper.prototype.getBodyDiff = function(overlaps, result){
 
     l = accumulator.keys.length;
     while(l--){
-        var data = accumulator.keys[l];
-        result.push(data.bodyA, data.bodyB);
+        var data = accumulator.getByKey(accumulator.keys[l]);
+        if(data){
+            result.push(data.bodyA, data.bodyB);
+        }
     }
 
     accumulator.reset();
@@ -142,7 +153,7 @@ OverlapKeeper.prototype.getBodyDiff = function(overlaps, result){
  * @param {Body} bodyA
  * @param {Shape} shapeA
  * @param {Body} bodyB
- * @param {Shape} shapeB [description]
+ * @param {Shape} shapeB
  */
 function OverlapKeeperRecord(bodyA, shapeA, bodyB, shapeB){
     /**

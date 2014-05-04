@@ -9,7 +9,29 @@ exports.construct = function(test){
 
 exports.tick = function(test){
     var keeper = new OverlapKeeper();
+
+    var bodyA = new Body();
+    var bodyB = new Body();
+    var shapeA = new Circle(1);
+    var shapeB = new Circle(1);
+
+    var keeper = new OverlapKeeper();
+    keeper.setOverlapping(bodyA, shapeA, bodyB, shapeB);
+
+    test.equal(keeper.recordPool.length, 0);
+
     keeper.tick();
+
+    test.equal(keeper.recordPool.length, 0);
+
+    keeper.tick();
+
+    test.equal(keeper.recordPool.length, 1);
+
+    keeper.setOverlapping(bodyA, shapeA, bodyB, shapeB);
+
+    test.equal(keeper.recordPool.length, 0);
+
     test.done();
 };
 
