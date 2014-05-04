@@ -233,7 +233,8 @@ Narrowphase.prototype.createFrictionFromContact = function(c){
     vec2.copy(eq.contactPointA, c.contactPointA);
     vec2.copy(eq.contactPointB, c.contactPointB);
     vec2.rotate90cw(eq.t, c.normalA);
-    eq.contactEquation = c;
+    eq.contactEquations.length = 0;
+    eq.contactEquations.push(c);
     return eq;
 };
 
