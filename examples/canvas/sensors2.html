@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>p2.js sensors</title>
+    <meta charset="utf-8">
+    <script src="../../build/p2.js"></script>
+  </head>
+  <body>
+
+    <canvas width="500" height="200" id="myCanvas"></canvas>
+
+    <script>
+      var w, h, canvas, ctx, world, circleBody, sensorSize=1.4, inactiveColor='green';
+
+      var sensors = [];
+
+      init();
+      animate();
+
+      function init(){
+
+        // Init canvas
+        canvas = document.getElementById("myCanvas");
+        w = canvas.width;
+        h = canvas.height;
+        ctx = canvas.getContext("2d");
+        ctx.fillStyle='green';
+
+        // Init world
+        world = new p2.World({ gravity:[0,0] });
+
+        // Add a circle
+        circleShape = new p2.Circle(0.3);
+        circleBody = new p2.Body({ mass:1 });
+        circleBody.damping = 0;
+        circleBody.addShape(circleShape);
+        circleBody.color = 'red';
+        world.addBody(circleBody);
+
+        // Add sensors
+        for(var i=0; i<4; i++){
+          sensorShape = new p2.Rectangle(sensorSize,sensorSize);
+          sensorShape.sensor = true;
+          var pos = [sensorSize/2,sensorSize/2];
+          if(i==1){
+            pos[0] *= -1;
+          } else if(i==2){
+            pos[1] *= -1;
+          } else if(i==3){
+            pos[0] *= -1;
+            pos[1] *= -1;
+          }
+          sensorBody = new p2.Body({
+            position:pos
+          });
+          sensorBody.damping = 0;
+          sensorBody.addShape(sensorShape);
+          sensorBody.active = false;
+          world.addBody(sensorBody);
+          sensors.push(sensorBody);
+        }
+
+        world.on("beginContact",function(event){
+          for(var i=0; i<sensors.length; i++){
+            var s = sensors[i];
+            if(event.bodyA == s || event.bodyB == s){
+              s.active = true;
+            }
+          }
+        });
+        world.on("endContact",function(event){
+          for(var i=0; i<sensors.length; i++){
+            var s = sensors[i];
+            if(event.bodyA == s || event.bodyB == s){
+              s.active = false;
+            }
+          }
+        });
+      }
+
+      function drawObjects(ctx){
+
+        // Draw sensors
+        for(var i=0; i<sensors.length; i++){
+          ctx.fillStyle = sensors[i].active ? 'red' : 'green';
+          ctx.fillRect(
+            sensors[i].position[0]-sensorSize/2,
+            sensors[i].position[1]-sensorSize/2,
+            sensorSize,
+            sensorSize
+          );
+        }
+
+        // Draw the circle
+        ctx.fillStyle = 'blue';
+        ctx.beginPath();
+        ctx.arc(circleBody.position[0], circleBody.position[1], circleShape.radius, 0, 2*Math.PI);
+        ctx.fill();
+
+      }
+
+      function render(){
+        ctx.clearRect(0,0,w,h);
+        ctx.save();
+        ctx.translate(w/2, h/2);
+        ctx.scale(50, -50);
+        drawObjects(ctx);
+        ctx.restore();
+      }
+
+      // Animation loop
+      function animate(){
+        requestAnimationFrame(animate);
+
+        circleBody.position[0] = 1*Math.cos(world.time);
+        circleBody.position[1] = 1*Math.sin(world.time);
+
+        world.step(1/60);
+
+        render();
+      }
+
+    </script>
+
+  </body>
+</html>
