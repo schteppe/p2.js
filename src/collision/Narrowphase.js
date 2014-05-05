@@ -552,6 +552,12 @@ Narrowphase.prototype.planeLine = function(planeBody, planeShape, planeOffset, p
         }
     }
 
+    /*
+    if(numContacts && this.enableFriction){
+        this.frictionEquations.push(this.createFrictionFromAverage(numContacts));
+    }
+    */
+
     return numContacts;
 };
 
@@ -1404,14 +1410,28 @@ Narrowphase.prototype.planeCapsule = function( bi,si,xi,ai, bj,sj,xj,aj, justTes
 
     circle.radius = sj.radius;
 
+    // Temporarily turn off friction
+    /*
+    var enableFrictionBefore = this.enableFriction;
+    this.enableFriction = false;
+    */
+
     // Do Narrowphase as two circles
     var numContacts1 = this.circlePlane(bj,circle,end1,0, bi,si,xi,ai, justTest),
         numContacts2 = this.circlePlane(bj,circle,end2,0, bi,si,xi,ai, justTest);
 
-    if(justTest)
+    // Restore friction
+    //this.enableFriction = enableFrictionBefore;
+
+    if(justTest){
         return numContacts1 || numContacts2;
-    else
-        return numContacts1 + numContacts2;
+    } else {
+        var numTotal = numContacts1 + numContacts2;
+        /*if(numTotal){
+            this.frictionEquations.push(this.createFrictionFromAverage(numTotal));
+        }*/
+        return numTotal;
+    }
 };
 
 /**
@@ -1421,7 +1441,7 @@ Narrowphase.prototype.planeCapsule = function( bi,si,xi,ai, bj,sj,xj,aj, justTes
 Narrowphase.prototype.capsulePlane = function( bi,si,xi,ai, bj,sj,xj,aj, justTest ){
     console.warn("Narrowphase.prototype.capsulePlane() is deprecated. Use .planeCapsule() instead!");
     return this.planeCapsule( bj,sj,xj,aj, bi,si,xi,ai, justTest );
-}
+};
 
 /**
  * Creates ContactEquations and FrictionEquations for a collision.
