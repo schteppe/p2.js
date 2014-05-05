@@ -236,14 +236,22 @@ Narrowphase.prototype.createFrictionFromAverage = function(numContacts){
     }
     var c = this.contactEquations[this.contactEquations.length - 1];
     var eq = this.createFrictionEquation(c.bodyA, c.bodyB, c.shapeA, c.shapeB);
+    var bodyA = c.bodyA;
+    var bodyB = c.bodyB;
     vec2.set(eq.contactPointA, 0, 0);
     vec2.set(eq.contactPointB, 0, 0);
     vec2.set(eq.t, 0, 0);
     for(var i=0; i!==numContacts; i++){
         c = this.contactEquations[this.contactEquations.length - 1 - i];
-        vec2.add(eq.contactPointA, eq.contactPointA, c.contactPointA);
-        vec2.add(eq.contactPointB, eq.contactPointB, c.contactPointB);
-        vec2.add(eq.t, eq.t, c.normalA);
+        if(c.bodyA === bodyA){
+            vec2.add(eq.t, eq.t, c.normalA);
+            vec2.add(eq.contactPointA, eq.contactPointA, c.contactPointA);
+            vec2.add(eq.contactPointB, eq.contactPointB, c.contactPointB);
+        } else {
+            vec2.sub(eq.t, eq.t, c.normalA);
+            vec2.add(eq.contactPointA, eq.contactPointA, c.contactPointB);
+            vec2.add(eq.contactPointB, eq.contactPointB, c.contactPointA);
+        }
         eq.contactEquations.push(c);
     }
 
@@ -399,41 +407,77 @@ Narrowphase.prototype.capsuleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTe
 
     var numContacts = 0;
 
+
     // Need 4 circle checks, between all
     for(var i=0; i<2; i++){
 
-        vec2.set(circlePosi,(i==0?-1:1)*si.length/2,0);
+        vec2.set(circlePosi,(i===0?-1:1)*si.length/2,0);
         vec2.rotate(circlePosi,circlePosi,ai);
         vec2.add(circlePosi,circlePosi,xi);
 
         for(var j=0; j<2; j++){
 
-            vec2.set(circlePosj,(j==0?-1:1)*sj.length/2, 0);
+            vec2.set(circlePosj,(j===0?-1:1)*sj.length/2, 0);
             vec2.rotate(circlePosj,circlePosj,aj);
             vec2.add(circlePosj,circlePosj,xj);
 
+            // Temporarily turn off friction
+            /*
+            var enableFrictionBefore = this.enableFriction;
+            this.enableFriction = false;
+            */
+
             var result = this.circleCircle(bi,si,circlePosi,ai, bj,sj,circlePosj,aj, justTest, si.radius, sj.radius);
 
-            if(justTest && result)
+            //this.enableFriction = enableFrictionBefore;
+
+            if(justTest && result){
                 return true;
+            }
 
             numContacts += result;
         }
     }
+
+    /*
+    // Temporarily turn off friction
+    var enableFrictionBefore = this.enableFriction;
+    this.enableFriction = false;
+    */
 
     // Check circles against the center rectangles
     var rect = capsuleCapsule_tempRect1;
     setConvexToCapsuleShapeMiddle(rect,si);
     var result1 = this.convexCapsule(bi,rect,xi,ai, bj,sj,xj,aj, justTest);
 
-    if(justTest && result1) return true;
+    //this.enableFriction = enableFrictionBefore;
+
+    if(justTest && result1){
+        return true;
+    }
     numContacts += result1;
+
+    /*
+    // Temporarily turn off friction
+    var enableFrictionBefore = this.enableFriction;
+    this.enableFriction = false;
+    */
 
     setConvexToCapsuleShapeMiddle(rect,sj);
     var result2 = this.convexCapsule(bj,rect,xj,aj, bi,si,xi,ai, justTest);
 
-    if(justTest && result2) return true;
+    //this.enableFriction = enableFrictionBefore;
+
+    if(justTest && result2){
+        return true;
+    }
     numContacts += result2;
+
+    /*
+    if(numContacts && this.enableFriction){
+        this.frictionEquations.push(this.createFrictionFromAverage(numContacts));
+    }
+    */
 
     return numContacts;
 };
@@ -2114,6 +2158,7 @@ Narrowphase.prototype.convexHeightfield = function( convexBody,convexShape,conve
     var numContacts = 0;
 
     // Loop over all edges
+    // TODO: If possible, construct a convex from several data points (need o check if the points make a convex shape)
     for(var i=idxA; i<idxB; i++){
 
         // Get points
