@@ -146,10 +146,13 @@ Narrowphase.prototype.collidedLastStep = function(bi,bj){
  */
 Narrowphase.prototype.reset = function(world){
     this.collidingBodiesLastStep.reset();
-    for(var i=0; i!==this.contactEquations.length; i++){
-        var eq = this.contactEquations[i],
-            id1 = eq.bodyA.id|0,
-            id2 = eq.bodyB.id|0;
+
+    var eqs = this.contactEquations;
+    var l = eqs.length;
+    while(l--){
+        var eq = eqs[l],
+            id1 = eq.bodyA.id,
+            id2 = eq.bodyB.id;
         this.collidingBodiesLastStep.set(id1, id2, true);
     }
 
@@ -224,7 +227,6 @@ Narrowphase.prototype.createFrictionFromContact = function(c){
     vec2.copy(eq.contactPointA, c.contactPointA);
     vec2.copy(eq.contactPointB, c.contactPointB);
     vec2.rotate90cw(eq.t, c.normalA);
-    eq.contactEquations.length = 0;
     eq.contactEquations.push(c);
     return eq;
 };
