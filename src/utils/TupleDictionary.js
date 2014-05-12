@@ -11,9 +11,9 @@ function TupleDictionary() {
     /**
      * The data storage
      * @property data
-     * @type {Array}
+     * @type {Object}
      */
-    this.data = [];
+    this.data = {};
 
     /**
      * Keys that are currently used.
@@ -90,8 +90,15 @@ TupleDictionary.prototype.set = function(i, j, value) {
  * @method reset
  */
 TupleDictionary.prototype.reset = function() {
-    this.data.length = 0;
-    this.keys.length = 0;
+    var data = this.data,
+        keys = this.keys;
+
+    var l = keys.length;
+    while(l--) {
+        delete data[keys[l]];
+    }
+
+    keys.length = 0;
 };
 
 /**
