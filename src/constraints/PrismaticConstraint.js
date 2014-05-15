@@ -188,7 +188,7 @@ function PrismaticConstraint(bodyA, bodyB, options){
             vj = bj.velocity,
             wi = bi.angularVelocity,
             wj = bj.angularVelocity;
-        return this.Gmult(G,vi,wi,vj,wj) + that.motorSpeed;
+        return this.gmult(G,vi,wi,vj,wj) + that.motorSpeed;
     };
 }
 
