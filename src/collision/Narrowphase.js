@@ -121,6 +121,14 @@ function Narrowphase(){
      */
     this.frictionRelaxation = Equation.DEFAULT_RELAXATION;
 
+    /**
+     * Enable reduction of friction equations. If disabled, a box on a plane will generate 2 contact equations and 2 friction equations. If enabled, there will be only one friction equation. Same kind of simplifications are made  for all collision types.
+     * @property enableFrictionReduction
+     * @type {Boolean}
+     * @deprecated This flag will be removed when the feature is stable enough.
+     * @default true
+     */
+    this.enableFrictionReduction = true;
 
     // Keep track of the colliding bodies last step
     this.collidingBodiesLastStep = new TupleDictionary();
@@ -402,6 +410,8 @@ var capsuleCapsule_tempRect1 = new Rectangle(1,1);
 Narrowphase.prototype[Shape.CAPSULE | Shape.CAPSULE] =
 Narrowphase.prototype.capsuleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTest){
 
+    var enableFrictionBefore;
+
     // Check the circles
     // Add offsets!
     var circlePosi = capsuleCapsule_tempVec1,
@@ -424,14 +434,16 @@ Narrowphase.prototype.capsuleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTe
             vec2.add(circlePosj,circlePosj,xj);
 
             // Temporarily turn off friction
-            /*
-            var enableFrictionBefore = this.enableFriction;
-            this.enableFriction = false;
-            */
+            if(this.enableFrictionReduction){
+                enableFrictionBefore = this.enableFriction;
+                this.enableFriction = false;
+            }
 
             var result = this.circleCircle(bi,si,circlePosi,ai, bj,sj,circlePosj,aj, justTest, si.radius, sj.radius);
 
-            //this.enableFriction = enableFrictionBefore;
+            if(this.enableFrictionReduction){
+                this.enableFriction = enableFrictionBefore;
+            }
 
             if(justTest && result){
                 return true;
@@ -441,45 +453,49 @@ Narrowphase.prototype.capsuleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTe
         }
     }
 
-    /*
-    // Temporarily turn off friction
-    var enableFrictionBefore = this.enableFriction;
-    this.enableFriction = false;
-    */
+    if(this.enableFrictionReduction){
+        // Temporarily turn off friction
+        enableFrictionBefore = this.enableFriction;
+        this.enableFriction = false;
+    }
 
     // Check circles against the center rectangles
     var rect = capsuleCapsule_tempRect1;
     setConvexToCapsuleShapeMiddle(rect,si);
     var result1 = this.convexCapsule(bi,rect,xi,ai, bj,sj,xj,aj, justTest);
 
-    //this.enableFriction = enableFrictionBefore;
+    if(this.enableFrictionReduction){
+        this.enableFriction = enableFrictionBefore;
+    }
 
     if(justTest && result1){
         return true;
     }
     numContacts += result1;
 
-    /*
-    // Temporarily turn off friction
-    var enableFrictionBefore = this.enableFriction;
-    this.enableFriction = false;
-    */
+    if(this.enableFrictionReduction){
+        // Temporarily turn off friction
+        var enableFrictionBefore = this.enableFriction;
+        this.enableFriction = false;
+    }
 
     setConvexToCapsuleShapeMiddle(rect,sj);
     var result2 = this.convexCapsule(bj,rect,xj,aj, bi,si,xi,ai, justTest);
 
-    //this.enableFriction = enableFrictionBefore;
+    if(this.enableFrictionReduction){
+        this.enableFriction = enableFrictionBefore;
+    }
 
     if(justTest && result2){
         return true;
     }
     numContacts += result2;
 
-    /*
-    if(numContacts && this.enableFriction){
-        this.frictionEquations.push(this.createFrictionFromAverage(numContacts));
+    if(this.enableFrictionReduction){
+        if(numContacts && this.enableFriction){
+            this.frictionEquations.push(this.createFrictionFromAverage(numContacts));
+        }
     }
-    */
 
     return numContacts;
 };
@@ -568,8 +584,9 @@ Narrowphase.prototype.planeLine = function(planeBody, planeShape, planeOffset, p
 
         if(d < 0){
 
-            if(justTest)
+            if(justTest){
                 return true;
+            }
 
             var c = this.createContactEquation(planeBody,lineBody,planeShape,lineShape);
             numContacts++;
@@ -592,17 +609,19 @@ Narrowphase.prototype.planeLine = function(planeBody, planeShape, planeOffset, p
             this.contactEquations.push(c);
 
             // TODO : only need one friction equation if both points touch
-            if(this.enableFriction){
-                this.frictionEquations.push(this.createFrictionFromContact(c));
+            if(!this.enableFrictionReduction){
+                if(this.enableFriction){
+                    this.frictionEquations.push(this.createFrictionFromContact(c));
+                }
             }
         }
     }
 
-    /*
-    if(numContacts && this.enableFriction){
-        this.frictionEquations.push(this.createFrictionFromAverage(numContacts));
+    if(!this.enableFrictionReduction){
+        if(numContacts && this.enableFriction){
+            this.frictionEquations.push(this.createFrictionFromAverage(numContacts));
+        }
     }
-    */
 
     return numContacts;
 };
@@ -1315,17 +1334,19 @@ Narrowphase.prototype.planeConvex = function( bi,si,xi,ai, bj,sj,xj,aj, justTest
 
             this.contactEquations.push(c);
 
-            if(this.enableFriction){
-                this.frictionEquations.push(this.createFrictionFromContact(c));
+            if(!this.enableFrictionReduction){
+                if(this.enableFriction){
+                    this.frictionEquations.push(this.createFrictionFromContact(c));
+                }
             }
         }
     }
 
-    /*
-    if(this.enableFriction && numReported){
-        this.frictionEquations.push(this.createFrictionFromAverage(numReported));
+    if(this.enableFrictionReduction){
+        if(this.enableFriction && numReported){
+            this.frictionEquations.push(this.createFrictionFromAverage(numReported));
+        }
     }
-    */
 
     return numReported;
 };
@@ -1456,26 +1477,32 @@ Narrowphase.prototype.planeCapsule = function( bi,si,xi,ai, bj,sj,xj,aj, justTes
 
     circle.radius = sj.radius;
 
+    var enableFrictionBefore;
+
     // Temporarily turn off friction
-    /*
-    var enableFrictionBefore = this.enableFriction;
-    this.enableFriction = false;
-    */
+    if(this.enableFrictionReduction){
+        enableFrictionBefore = this.enableFriction;
+        this.enableFriction = false;
+    }
 
     // Do Narrowphase as two circles
     var numContacts1 = this.circlePlane(bj,circle,end1,0, bi,si,xi,ai, justTest),
         numContacts2 = this.circlePlane(bj,circle,end2,0, bi,si,xi,ai, justTest);
 
     // Restore friction
-    //this.enableFriction = enableFrictionBefore;
+    if(this.enableFrictionReduction){
+        this.enableFriction = enableFrictionBefore;
+    }
 
     if(justTest){
         return numContacts1 || numContacts2;
     } else {
         var numTotal = numContacts1 + numContacts2;
-        /*if(numTotal){
-            this.frictionEquations.push(this.createFrictionFromAverage(numTotal));
-        }*/
+        if(this.enableFrictionReduction){
+            if(numTotal){
+                this.frictionEquations.push(this.createFrictionFromAverage(numTotal));
+            }
+        }
         return numTotal;
     }
 };
@@ -1708,18 +1735,20 @@ Narrowphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
                 this.contactEquations.push(c);
 
                 // Todo reduce to 1 friction equation if we have 2 contact points
-                if(this.enableFriction){
-                    this.frictionEquations.push(this.createFrictionFromContact(c));
+                if(!this.enableFrictionReduction){
+                    if(this.enableFriction){
+                        this.frictionEquations.push(this.createFrictionFromContact(c));
+                    }
                 }
             }
         }
     }
 
-    /*
-    if(this.enableFriction && numContacts){
-        this.frictionEquations.push(this.createFrictionFromAverage(numContacts));
+    if(this.enableFrictionReduction){
+        if(this.enableFriction && numContacts){
+            this.frictionEquations.push(this.createFrictionFromAverage(numContacts));
+        }
     }
-    */
 
     return numContacts;
 };
