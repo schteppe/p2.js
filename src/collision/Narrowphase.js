@@ -289,10 +289,11 @@ Narrowphase.prototype.createFrictionFromAverage = function(numContacts){
 Narrowphase.prototype[Shape.LINE | Shape.CONVEX] =
 Narrowphase.prototype.convexLine = function(bi,si,xi,ai, bj,sj,xj,aj, justTest){
     // TODO
-    if(justTest)
+    if(justTest){
         return false;
-    else
+    } else {
         return 0;
+    }
 };
 
 /**
@@ -311,10 +312,11 @@ Narrowphase.prototype.convexLine = function(bi,si,xi,ai, bj,sj,xj,aj, justTest){
 Narrowphase.prototype[Shape.LINE | Shape.RECTANGLE] =
 Narrowphase.prototype.lineRectangle = function(bi,si,xi,ai, bj,sj,xj,aj, justTest){
     // TODO
-    if(justTest)
+    if(justTest){
         return false;
-    else
+    } else {
         return 0;
+    }
 };
 
 function setConvexToCapsuleShapeMiddle(convexShape, capsuleShape){
@@ -357,8 +359,9 @@ Narrowphase.prototype.convexCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTes
     vec2.add(circlePos,circlePos,xj);
     var result2 = this.circleConvex(bj,sj,circlePos,aj, bi,si,xi,ai, justTest, sj.radius);
 
-    if(justTest && (result1 || result2))
+    if(justTest && (result1 || result2)){
         return true;
+    }
 
     // Check center rect
     var r = convexCapsule_tempRect;
@@ -384,10 +387,11 @@ Narrowphase.prototype.convexCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTes
 Narrowphase.prototype[Shape.CAPSULE | Shape.LINE] =
 Narrowphase.prototype.lineCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTest){
     // TODO
-    if(justTest)
+    if(justTest){
         return false;
-    else
+    } else {
         return 0;
+    }
 };
 
 var capsuleCapsule_tempVec1 = vec2.create();
@@ -516,10 +520,11 @@ Narrowphase.prototype.capsuleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTe
 Narrowphase.prototype[Shape.LINE | Shape.LINE] =
 Narrowphase.prototype.lineLine = function(bi,si,xi,ai, bj,sj,xj,aj, justTest){
     // TODO
-    if(justTest)
+    if(justTest){
         return false;
-    else
+    } else {
         return 0;
+    }
 };
 
 /**
@@ -546,7 +551,7 @@ Narrowphase.prototype.planeLine = function(planeBody, planeShape, planeOffset, p
         dist = tmp7,
         worldNormal = tmp8,
         worldTangent = tmp9,
-        verts = tmpArray
+        verts = tmpArray,
         numContacts = 0;
 
     // Get start and end points
@@ -657,7 +662,7 @@ Narrowphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj, justTest, 
         circleShape = si,
 
         lineRadius = lineRadius || 0,
-        circleRadius = typeof(circleRadius)!="undefined" ? circleRadius : circleShape.radius,
+        circleRadius = typeof(circleRadius)!=="undefined" ? circleRadius : circleShape.radius,
 
         orthoDist = tmp1,
         lineToCircleOrthoUnit = tmp2,
@@ -724,7 +729,9 @@ Narrowphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj, justTest, 
         if(pos > pos0 && pos < pos1){
             // We got contact!
 
-            if(justTest) return true;
+            if(justTest){
+                return true;
+            }
 
             var c = this.createContactEquation(circleBody,lineBody,si,sj);
 
@@ -761,7 +768,9 @@ Narrowphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj, justTest, 
 
         if(vec2.squaredLength(dist) < (circleRadius+lineRadius)*(circleRadius+lineRadius)){
 
-            if(justTest) return true;
+            if(justTest){
+                return true;
+            }
 
             var c = this.createContactEquation(circleBody,lineBody,si,sj);
 
@@ -831,7 +840,7 @@ Narrowphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
         circleOffset = xi,
         circleBody = bi,
         circleShape = si,
-        circleRadius = typeof(circleRadius)=="number" ? circleRadius : circleShape.radius;
+        circleRadius = typeof(circleRadius)==="number" ? circleRadius : circleShape.radius;
 
     var worldVertex0 = tmp1,
         worldVertex1 = tmp2,
@@ -864,7 +873,7 @@ Narrowphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
     // 2. 1. Get point on circle that is closest to the edge (scale normal with -radius)
     // 2. 2. Check if point is inside.
 
-    verts = convexShape.vertices;
+    var verts = convexShape.vertices;
 
     // Check all edges first
     for(var i=0; i!==verts.length+1; i++){
@@ -938,11 +947,12 @@ Narrowphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
 
     if(found){
 
-        if(justTest)
+        if(justTest){
             return true;
+        }
 
         var c = this.createContactEquation(circleBody,convexBody,si,sj);
-        vec2.sub(c.normalA, minCandidate, circleOffset)
+        vec2.sub(c.normalA, minCandidate, circleOffset);
         vec2.normalize(c.normalA, c.normalA);
 
         vec2.scale(c.contactPointA,  c.normalA, circleRadius);
@@ -955,8 +965,9 @@ Narrowphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
 
         this.contactEquations.push(c);
 
-        if(this.enableFriction)
+        if(this.enableFriction){
             this.frictionEquations.push( this.createFrictionFromContact(c) );
+        }
 
         return 1;
     }
@@ -995,7 +1006,9 @@ Narrowphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
             sub(dist, worldVertex, circleOffset);
             if(vec2.squaredLength(dist) < circleRadius*circleRadius){
 
-                if(justTest) return true;
+                if(justTest){
+                    return true;
+                }
 
                 var c = this.createContactEquation(circleBody,convexBody,si,sj);
 
@@ -1053,7 +1066,9 @@ function pointInConvex(worldPoint,convexShape,convexOffset,convexAngle){
         sub(r1, worldVertex1, point);
         var cross = vec2.crossLength(r0,r1);
 
-        if(lastCross===null) lastCross = cross;
+        if(lastCross===null){
+            lastCross = cross;
+        }
 
         // If we got a different sign of the distance vector, the point is out of the polygon
         if(cross*lastCross <= 0){
@@ -1062,7 +1077,7 @@ function pointInConvex(worldPoint,convexShape,convexOffset,convexAngle){
         lastCross = cross;
     }
     return true;
-};
+}
 
 /**
  * Particle/convex Narrowphase
@@ -1118,7 +1133,9 @@ Narrowphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, just
         return 0;
     }
 
-    if(justTest) return true;
+    if(justTest){
+        return true;
+    }
 
     // Check edges first
     var lastCross = null;
@@ -1203,8 +1220,9 @@ Narrowphase.prototype.particleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, just
 
         this.contactEquations.push(c);
 
-        if(this.enableFriction)
+        if(this.enableFriction){
             this.frictionEquations.push( this.createFrictionFromContact(c) );
+        }
 
         return 1;
     }
@@ -1383,8 +1401,12 @@ Narrowphase.prototype.particlePlane = function( bi,si,xi,ai, bj,sj,xj,aj, justTe
 
     var d = dot(dist, worldNormal);
 
-    if(d > 0) return 0;
-    if(justTest) return true;
+    if(d > 0){
+        return 0;
+    }
+    if(justTest){
+        return true;
+    }
 
     var c = this.createContactEquation(planeBody,particleBody,sj,si);
 
@@ -1430,8 +1452,12 @@ Narrowphase.prototype.circleParticle = function(   bi,si,xi,ai, bj,sj,xj,aj, jus
         dist = tmp1;
 
     sub(dist, particleOffset, circleOffset);
-    if(vec2.squaredLength(dist) > circleShape.radius*circleShape.radius) return 0;
-    if(justTest) return true;
+    if(vec2.squaredLength(dist) > circleShape.radius*circleShape.radius){
+        return 0;
+    }
+    if(justTest){
+        return true;
+    }
 
     var c = this.createContactEquation(circleBody,particleBody,si,sj);
     vec2.copy(c.normalA, dist);
@@ -1648,11 +1674,25 @@ Narrowphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
         if(k === 0){
             // Swap!
             var tmp;
-            tmp = closestEdgeA; closestEdgeA = closestEdgeB;    closestEdgeB = tmp;
-            tmp = shapeA;       shapeA = shapeB;                shapeB = tmp;
-            tmp = offsetA;      offsetA = offsetB;              offsetB = tmp;
-            tmp = angleA;       angleA = angleB;                angleB = tmp;
-            tmp = bodyA;        bodyA = bodyB;                  bodyB = tmp;
+            tmp = closestEdgeA;
+            closestEdgeA = closestEdgeB;
+            closestEdgeB = tmp;
+
+            tmp = shapeA;
+            shapeA = shapeB;
+            shapeB = tmp;
+
+            tmp = offsetA;
+            offsetA = offsetB;
+            offsetB = tmp;
+
+            tmp = angleA;
+            angleA = angleB;
+            angleB = tmp;
+
+            tmp = bodyA;
+            bodyA = bodyB;
+            bodyB = tmp;
         }
 
         // Loop over 2 points in convex B
@@ -1780,8 +1820,12 @@ Narrowphase.projectConvexOntoAxis = function(convexShape, convexOffset, convexAn
     for(var i=0; i<convexShape.vertices.length; i++){
         v = convexShape.vertices[i];
         value = dot(v,localAxis);
-        if(max === null || value > max) max = value;
-        if(min === null || value < min) min = value;
+        if(max === null || value > max){
+            max = value;
+        }
+        if(min === null || value < min){
+            min = value;
+        }
     }
 
     if(min > max){
@@ -1802,7 +1846,7 @@ var fsa_tmp1 = vec2.fromValues(0,0)
 ,   fsa_tmp3 = vec2.fromValues(0,0)
 ,   fsa_tmp4 = vec2.fromValues(0,0)
 ,   fsa_tmp5 = vec2.fromValues(0,0)
-,   fsa_tmp6 = vec2.fromValues(0,0)
+,   fsa_tmp6 = vec2.fromValues(0,0);
 
 /**
  * Find a separating axis between the shapes, that maximizes the separating distance between them.
@@ -1928,7 +1972,7 @@ Narrowphase.findSeparatingAxis = function(c1,offset1,angle1,c2,offset2,angle2,se
 // .getClosestEdge is called by other functions, need local tmp vectors
 var gce_tmp1 = vec2.fromValues(0,0)
 ,   gce_tmp2 = vec2.fromValues(0,0)
-,   gce_tmp3 = vec2.fromValues(0,0)
+,   gce_tmp3 = vec2.fromValues(0,0);
 
 /**
  * Get the edge that has a normal closest to an axis.
@@ -1952,7 +1996,8 @@ Narrowphase.getClosestEdge = function(c,angle,axis,flip){
     }
 
     var closestEdge = -1,
-        N = c.vertices.length;
+        N = c.vertices.length,
+        maxDot = -1;
     for(var i=0; i!==N; i++){
         // Get the edge
         sub(edge, c.vertices[(i+1)%N], c.vertices[i%N]);
@@ -1962,7 +2007,7 @@ Narrowphase.getClosestEdge = function(c,angle,axis,flip){
         vec2.normalize(normal,normal);
 
         var d = dot(normal,localAxis);
-        if(closestEdge == -1 || d > maxDot){
+        if(closestEdge === -1 || d > maxDot){
             closestEdge = i % N;
             maxDot = d;
         }
@@ -2010,19 +2055,28 @@ Narrowphase.prototype.circleHeightfield = function( circleBody,circleShape,circl
     /*if(idxB < 0 || idxA >= data.length)
         return justTest ? false : 0;*/
 
-    if(idxA < 0) idxA = 0;
-    if(idxB >= data.length) idxB = data.length-1;
+    if(idxA < 0){
+        idxA = 0;
+    }
+    if(idxB >= data.length){
+        idxB = data.length-1;
+    }
 
     // Get max and min
     var max = data[idxA],
         min = data[idxB];
     for(var i=idxA; i<idxB; i++){
-        if(data[i] < min) min = data[i];
-        if(data[i] > max) max = data[i];
+        if(data[i] < min){
+            min = data[i];
+        }
+        if(data[i] > max){
+            max = data[i];
+        }
     }
 
-    if(circlePos[1]-radius > max)
+    if(circlePos[1]-radius > max){
         return justTest ? false : 0;
+    }
 
     if(circlePos[1]+radius < min){
         // Below the minimum point... We can just guess.
@@ -2106,7 +2160,9 @@ Narrowphase.prototype.circleHeightfield = function( circleBody,circleShape,circl
 
             if(vec2.squaredLength(dist) < radius*radius){
 
-                if(justTest) return true;
+                if(justTest){
+                    return true;
+                }
 
                 found = true;
 
@@ -2170,15 +2226,23 @@ Narrowphase.prototype.convexHeightfield = function( convexBody,convexShape,conve
     var idxA = Math.floor( (convexBody.aabb.lowerBound[0] - hfPos[0]) / w ),
         idxB = Math.ceil(  (convexBody.aabb.upperBound[0] - hfPos[0]) / w );
 
-    if(idxA < 0) idxA = 0;
-    if(idxB >= data.length) idxB = data.length-1;
+    if(idxA < 0){
+        idxA = 0;
+    }
+    if(idxB >= data.length){
+        idxB = data.length-1;
+    }
 
     // Get max and min
     var max = data[idxA],
         min = data[idxB];
     for(var i=idxA; i<idxB; i++){
-        if(data[i] < min) min = data[i];
-        if(data[i] > max) max = data[i];
+        if(data[i] < min){
+            min = data[i];
+        }
+        if(data[i] > max){
+            max = data[i];
+        }
     }
 
     if(convexBody.aabb.lowerBound[1] > max){
