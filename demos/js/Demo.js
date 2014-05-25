@@ -84,14 +84,16 @@ function Demo(world){
     this.stats_Nsummed = 0;
     this.stats_average = -1;
 
-    this.w = $(window).width();
-    this.h = $(window).height();
+    var dpr = this.getDevicePixelRatio();
+    this.w = $(window).width() * dpr;
+    this.h = $(window).height() * dpr;
 
     this.init();
     this.resize(this.w,this.h);
     this.render();
     this.createStats();
     this.createMenu();
+    this.centerCamera(0, 0);
 
     var iter = -1;
     world.on("postStep",function(e){
@@ -116,7 +118,8 @@ function Demo(world){
     });
 
     $(window).resize(function(){
-        that.resize($(window).width(), $(window).height());
+        var dpr = that.getDevicePixelRatio();
+        that.resize($(window).width()*dpr, $(window).height()*dpr);
     });
 
     $(document).keydown(function(e){
@@ -187,6 +190,10 @@ Demo.DRAWPOLYGON =        4;
 Demo.DRAWINGPOLYGON  =    5;
 Demo.DRAWCIRCLE =         6;
 Demo.DRAWINGCIRCLE  =     7;
+
+Demo.prototype.getDevicePixelRatio = function() {
+    return window.devicePixelRatio || 1;
+};
 
 Demo.prototype.run = function(){
     var demo = this,

@@ -117,8 +117,11 @@ PixiDemo.prototype.init = function(){
     this.contactGraphics = new PIXI.Graphics();
     stage.addChild(this.contactGraphics);
 
-    stage.position.x = renderer.width/2; // center at origin
-    stage.position.y = renderer.height/2;
+    /*
+    var dpr = this.getDevicePixelRatio();
+    stage.position.x = renderer.width * dpr / 2; // center at origin
+    stage.position.y = renderer.height * dpr / 2;
+    */
     stage.scale.x = 1; // Flip Y direction.
     stage.scale.y = -1;
 
@@ -209,12 +212,15 @@ PixiDemo.prototype.init = function(){
         stage.position.y -= (scrollFactor) * (stage.position.y);
         stage.updateTransform();
     });
+
+    this.centerCamera(0, 0);
 };
 
 PixiDemo.prototype.centerCamera = function(x, y){
     var ppu = this.pixelsPerLengthUnit;
-    this.stage.position.x = this.renderer.width/2 - ppu*x;
-    this.stage.position.y = this.renderer.height/2 + ppu*y;
+    //var dpr = this.getDevicePixelRatio();
+    this.stage.position.x = this.renderer.width / 2 - ppu*x;
+    this.stage.position.y = this.renderer.height / 2 + ppu*y;
 };
 
 /**
@@ -693,21 +699,8 @@ PixiDemo.prototype.removeRenderable = function(obj){
 };
 
 PixiDemo.prototype.resize = function(w,h){
-    /*
     var renderer = this.renderer;
     var view = renderer.view;
-
     var ratio = w / h;
-    var pixiRatio = renderer.width / renderer.height;
-
-    if(ratio > pixiRatio){ // Screen is wider than our renderer
-        view.style.height = h + "px";
-        view.style.width =  (h * pixiRatio) +"px";
-        view.style.left = ( (w - h * pixiRatio) / 2 ) +"px";
-    } else { // Screen is narrower
-        view.style.height =  (w / pixiRatio) +"px";
-        view.style.width = w + "px";
-        view.style.top = ( (h - w / pixiRatio) / 2 ) +"px";
-    }
-    */
+    renderer.resize(w, h);
 };
