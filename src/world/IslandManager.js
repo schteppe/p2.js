@@ -56,7 +56,7 @@ IslandManager.getUnvisitedNode = function(nodes){
     var Nnodes = nodes.length;
     for(var i=0; i!==Nnodes; i++){
         var node = nodes[i];
-        if(!node.visited && node.body.motionState === Body.DYNAMIC){
+        if(!node.visited && node.body.type === Body.DYNAMIC){
             return node;
         }
     }
@@ -112,7 +112,7 @@ IslandManager.prototype.bfs = function(root,bds,eqs){
             this.visit(child,bds,eqs);
 
             // Only visit the children of this node if it's dynamic
-            if(child.body.motionState === Body.DYNAMIC){
+            if(child.body.type === Body.DYNAMIC){
                 queue.push(child);
             }
         }

@@ -18,7 +18,7 @@ var sample = {
         velocity : [0,0],
         angularVelocity : 0,
         force : [0,0],
-        motionState : 1,
+        type : 1,
         fixedRotation : false,
         //concavePath : [], // Not given
         capsuleShapes : [{
@@ -85,7 +85,7 @@ var sample = {
         velocity : [0,0],
         angularVelocity : 0,
         force : [0,0],
-        motionState : 1,
+        type : 1,
         fixedRotation : false,
         concavePath : [[0,0],[1,0],[1,1]],
         capsuleShapes :     [],
@@ -305,7 +305,7 @@ body_v1 = {
         velocity :          vec2_v1,
         angularVelocity :   num_v1,
         force :             vec2_v1,
-        motionState :       uint_v1,
+        type :       uint_v1,
         fixedRotation :     bool_v1,
         capsuleShapes :     { type:"array", additionalItems:false, items:capsuleShape_v1 },
         circleShapes :      { type:"array", additionalItems:false, items:circleShape_v1 },

@@ -226,7 +226,7 @@ Demo.prototype.handleMouseDown = function(physicsPosition){
             var b;
             while(result.length > 0){
                 b = result.shift();
-                if(b.motionState == p2.Body.STATIC)
+                if(b.type == p2.Body.STATIC)
                     b = null;
                 else
                     break;

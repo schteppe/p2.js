@@ -521,7 +521,7 @@ World.prototype.step = function(dt,timeSinceLastCalled,maxSubSteps){
 
         for(var j=0; j!==this.bodies.length; j++){
             var b = this.bodies[j];
-            if(b.motionState !== Body.STATIC && b.sleepState !== Body.SLEEPING){
+            if(b.type !== Body.STATIC && b.sleepState !== Body.SLEEPING){
                 // Interpolate
                 vec2.sub(interpvelo, b.position, b.previousPosition);
                 vec2.scale(interpvelo, interpvelo, h_div_dt);
@@ -592,7 +592,7 @@ World.prototype.internalStep = function(dt){
         for(var i=0; i!==Nbodies; i++){
             var b = bodies[i],
                 fi = b.force;
-            if(b.motionState !== Body.DYNAMIC || b.sleepState === Body.SLEEPING){
+            if(b.type !== Body.DYNAMIC || b.sleepState === Body.SLEEPING){
                 continue;
             }
             vec2.scale(mg,g,b.mass*b.gravityScale); // F=m*g
@@ -611,7 +611,7 @@ World.prototype.internalStep = function(dt){
     if(this.applyDamping){
         for(var i=0; i!==Nbodies; i++){
             var b = bodies[i];
-            if(b.motionState === Body.DYNAMIC){
+            if(b.type === Body.DYNAMIC){
                 b.applyDamping(dt);
             }
         }
@@ -756,7 +756,7 @@ World.prototype.internalStep = function(dt){
     for(var i=0; i!==Nbodies; i++){
         var body = bodies[i];
 
-        if(body.sleepState !== Body.SLEEPING && body.motionState !== Body.STATIC){
+        if(body.sleepState !== Body.SLEEPING && body.type !== Body.STATIC){
             World.integrateBody(body,dt);
         }
     }
@@ -889,9 +889,9 @@ World.prototype.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,cm,glen){
     np.enableFriction = cm.friction > 0;
     np.frictionCoefficient = cm.friction;
     var reducedMass;
-    if(bi.motionState === Body.STATIC || bi.motionState === Body.KINEMATIC){
+    if(bi.type === Body.STATIC || bi.type === Body.KINEMATIC){
         reducedMass = bj.mass;
-    } else if(bj.motionState === Body.STATIC || bj.motionState === Body.KINEMATIC){
+    } else if(bj.type === Body.STATIC || bj.type === Body.KINEMATIC){
         reducedMass = bi.mass;
     } else {
         reducedMass = (bi.mass*bj.mass)/(bi.mass+bj.mass);
@@ -919,10 +919,10 @@ World.prototype.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,cm,glen){
         if(numContacts){
 
             if( bi.allowSleep &&
-                bi.motionState === Body.DYNAMIC &&
+                bi.type === Body.DYNAMIC &&
                 bi.sleepState  === Body.SLEEPING &&
                 bj.sleepState  === Body.AWAKE &&
-                bj.motionState !== Body.STATIC
+                bj.type !== Body.STATIC
             ){
                 var speedSquaredB = vec2.squaredLength(bj.velocity) + Math.pow(bj.angularVelocity,2);
                 var speedLimitSquaredB = Math.pow(bj.sleepSpeedLimit,2);
@@ -932,10 +932,10 @@ World.prototype.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,cm,glen){
             }
 
             if( bj.allowSleep &&
-                bj.motionState === Body.DYNAMIC &&
+                bj.type === Body.DYNAMIC &&
                 bj.sleepState  === Body.SLEEPING &&
                 bi.sleepState  === Body.AWAKE &&
-                bi.motionState !== Body.STATIC
+                bi.type !== Body.STATIC
             ){
                 var speedSquaredA = vec2.squaredLength(bi.velocity) + Math.pow(bi.angularVelocity,2);
                 var speedLimitSquaredA = Math.pow(bi.sleepSpeedLimit,2);
@@ -1262,7 +1262,7 @@ World.prototype.toJSON = function(){
                 velocity : v2a(b.velocity),
                 angularVelocity : b.angularVelocity,
                 force : v2a(b.force),
-                motionState : b.motionState,
+                type : b.type,
                 fixedRotation : b.fixedRotation,
                 circleShapes :    [],
                 planeShapes :     [],
@@ -1438,7 +1438,7 @@ World.prototype.fromJSON = function(json){
             fixedRotation :     jb.fixedRotation,
         });
         b.id = jb.id;
-        b.motionState = jb.motionState;
+        b.type = jb.type;
 
         // Circle
         for(var j=0; j<jb.circleShapes.length; j++){

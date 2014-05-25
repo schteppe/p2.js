@@ -35,7 +35,7 @@
             mass: 0, // Note: mass is set to zero
             position: [0, 0.5]
         });
-        kinematicBody.motionState = p2.Body.KINEMATIC; // Set the motion state to kinematic
+        kinematicBody.type = p2.Body.KINEMATIC; // Set the motion state to kinematic
         var boxShape = new p2.Rectangle(2,0.5);
         kinematicBody.addShape(boxShape);
         world.addBody(kinematicBody);

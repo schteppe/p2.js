@@ -14,7 +14,7 @@ module.exports = Body;
  * @constructor
  * @extends EventEmitter
  * @param {Object}              [options]
- * @param {Number}              [options.mass=0]    A number >= 0. If zero, the .motionState will be set to Body.STATIC.
+ * @param {Number}              [options.mass=0]    A number >= 0. If zero, the .type will be set to Body.STATIC.
  * @param {Array}               [options.position]
  * @param {Array}               [options.velocity]
  * @param {Number}              [options.angle=0]
@@ -242,7 +242,7 @@ function Body(options){
      * * Dynamic bodies body can move and respond to collisions and forces.
      * * Kinematic bodies only moves according to its .velocity, and does not respond to collisions or force.
      *
-     * @property motionState
+     * @property type
      * @type {number}
      *
      * @example
@@ -250,21 +250,21 @@ function Body(options){
      *     var dynamicBody = new Body({
      *         mass : 1  // If mass is nonzero, the body becomes dynamic automatically
      *     });
-     *     dynamicBody.motionState == Body.DYNAMIC // true
+     *     dynamicBody.type == Body.DYNAMIC // true
      *
      * @example
      *     // This body will not move at all
      *     var staticBody = new Body({
      *         mass : 0 // Will make the body static
      *     });
-     *     staticBody.motionState == Body.STATIC // true
+     *     staticBody.type == Body.STATIC // true
      *
      * @example
      *     // This body will only move if you change its velocity
      *     var kinematicBody = new Body();
-     *     kinematicBody.motionState = Body.KINEMATIC;
+     *     kinematicBody.type = Body.KINEMATIC;
      */
-    this.motionState = this.mass === 0 ? Body.STATIC : Body.DYNAMIC;
+    this.type = this.mass === 0 ? Body.STATIC : Body.DYNAMIC;
 
     /**
      * Bounding circle radius.
@@ -360,7 +360,7 @@ Body.prototype = new EventEmitter();
 Body._idCounter = 0;
 
 Body.prototype.updateSolveMassProperties = function(){
-    if(this.sleepState === Body.SLEEPING || this.motionState === Body.KINEMATIC){
+    if(this.sleepState === Body.SLEEPING || this.type === Body.KINEMATIC){
         this.invMassSolve = 0;
         this.invInertiaSolve = 0;
     } else {
@@ -524,7 +524,7 @@ Body.prototype.removeShape = function(shape){
  *     body.updateMassProperties();
  */
 Body.prototype.updateMassProperties = function(){
-    if(this.motionState === Body.STATIC || this.motionState === Body.KINEMATIC){
+    if(this.type === Body.STATIC || this.type === Body.KINEMATIC){
 
         this.mass = Number.MAX_VALUE;
         this.invMass = 0;
@@ -755,7 +755,7 @@ Body.prototype.addConstraintVelocity = function(){
  * @param  {number} dt Current time step
  */
 Body.prototype.applyDamping = function(dt){
-    if(this.motionState === Body.DYNAMIC){ // Only for dynamic bodies
+    if(this.type === Body.DYNAMIC){ // Only for dynamic bodies
 
         // Since Math.pow generates garbage we check if we can reuse the scaling coefficient from last step
         if(dt !== this.lastDampingTimeStep){
@@ -805,7 +805,7 @@ Body.prototype.sleep = function(){
  * @brief Called every timestep to update internal sleep timer and change sleep state if needed.
  */
 Body.prototype.sleepTick = function(time, dontSleep, dt){
-    if(!this.allowSleep || this.motionState === Body.SLEEPING){
+    if(!this.allowSleep || this.type === Body.SLEEPING){
         return;
     }
 

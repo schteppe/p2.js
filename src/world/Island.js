@@ -65,7 +65,7 @@ Island.prototype.getBodies = function(result){
 Island.prototype.wantsToSleep = function(){
     for(var i=0; i<this.bodies.length; i++){
         var b = this.bodies[i];
-        if(b.motionState === Body.DYNAMIC && !b.wantsToSleep){
+        if(b.type === Body.DYNAMIC && !b.wantsToSleep){
             return false;
         }
     }

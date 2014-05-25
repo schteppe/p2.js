@@ -133,18 +133,18 @@ Broadphase.prototype.boundingVolumeCheck = function(bodyA, bodyB){
 Broadphase.canCollide = function(bodyA, bodyB){
 
     // Cannot collide static bodies
-    if(bodyA.motionState === Body.STATIC && bodyB.motionState === Body.STATIC){
+    if(bodyA.type === Body.STATIC && bodyB.type === Body.STATIC){
         return false;
     }
 
     // Cannot collide static vs kinematic bodies
-    if( (bodyA.motionState === Body.KINEMATIC && bodyB.motionState === Body.STATIC) ||
-        (bodyA.motionState === Body.STATIC    && bodyB.motionState === Body.KINEMATIC)){
+    if( (bodyA.type === Body.KINEMATIC && bodyB.type === Body.STATIC) ||
+        (bodyA.type === Body.STATIC    && bodyB.type === Body.KINEMATIC)){
         return false;
     }
 
     // Cannot collide kinematic vs kinematic
-    if(bodyA.motionState === Body.KINEMATIC && bodyB.motionState === Body.KINEMATIC){
+    if(bodyA.type === Body.KINEMATIC && bodyB.type === Body.KINEMATIC){
         return false;
     }
 
@@ -154,8 +154,8 @@ Broadphase.canCollide = function(bodyA, bodyB){
     }
 
     // Cannot collide if one is static and the other is sleeping
-    if( (bodyA.sleepState === Body.SLEEPING && bodyB.motionState === Body.STATIC) ||
-        (bodyB.sleepState === Body.SLEEPING && bodyA.motionState === Body.STATIC)){
+    if( (bodyA.sleepState === Body.SLEEPING && bodyB.type === Body.STATIC) ||
+        (bodyB.sleepState === Body.SLEEPING && bodyA.type === Body.STATIC)){
         return false;
     }
 

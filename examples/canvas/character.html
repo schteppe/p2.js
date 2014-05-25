@@ -74,7 +74,7 @@
             mass: 0, // Static
             position:platformPositions[i],
           });
-          platformBody.motionState = p2.Body.KINEMATIC;
+          platformBody.type = p2.Body.KINEMATIC;
           platformBody.addShape(platformShape);
           world.addBody(platformBody);
           platforms.push(platformBody);

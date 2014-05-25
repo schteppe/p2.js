@@ -10,7 +10,7 @@ exports.construct = function(test){
         mass : 0,
     });
     test.equal(body.invMass,0);
-    test.equal(body.motionState,Body.STATIC);
+    test.equal(body.type,Body.STATIC);
 
     // Setting things via options
     var o = {
