@@ -1,4 +1,4 @@
-/* global PIXI */
+/* global PIXI,$,Demo */
 
 /**
  * Demo using Pixi.js as renderer
@@ -144,7 +144,7 @@ PixiDemo.prototype.init = function(){
         that.handleMouseDown(init_physicsPosition);
     };
     container.mousemove = container.touchmove = function(e){
-        if(down && that.state == Demo.PANNING){
+        if(down && that.state === Demo.PANNING){
             stage.position.x = e.global.x-lastX+startX;
             stage.position.y = e.global.y-lastY+startY;
         }
@@ -174,7 +174,7 @@ PixiDemo.prototype.init = function(){
     // http://stackoverflow.com/questions/7691551/touchend-event-in-ios-webkit-not-firing
     $(document).bind("touchmove",function(e){
         e.preventDefault();
-    })
+    });
 
     $(window).bind('mousewheel', function(e){
         var scrollFactor = that.scrollFactor,
@@ -349,16 +349,16 @@ PixiDemo.prototype.drawCapsule = function(g, x, y, angle, len, radius, color, fi
 
 // Todo angle
 PixiDemo.prototype.drawRectangle = function(g,x,y,angle,w,h,color,fillColor,lineWidth,isSleeping){
-    lineWidth = typeof(lineWidth)=="number" ? lineWidth : 1;
-    color = typeof(color)=="undefined" ? 0x000000 : color;
+    lineWidth = typeof(lineWidth)==="number" ? lineWidth : 1;
+    color = typeof(color)==="undefined" ? 0x000000 : color;
     g.lineStyle(lineWidth);
     g.beginFill(fillColor, isSleeping ? this.sleepOpacity : 1.0);
     g.drawRect(x-w/2,y-h/2,w,h);
 };
 
 PixiDemo.prototype.drawConvex = function(g,verts,triangles,color,fillColor,lineWidth,debug,offset,isSleeping){
-    lineWidth = typeof(lineWidth)=="number" ? lineWidth : 1;
-    color = typeof(color)=="undefined" ? 0x000000 : color;
+    lineWidth = typeof(lineWidth)==="number" ? lineWidth : 1;
+    color = typeof(color)==="undefined" ? 0x000000 : color;
     if(!debug){
         g.lineStyle(lineWidth, color, 1);
         g.beginFill(fillColor, isSleeping ? this.sleepOpacity : 1.0);
@@ -366,10 +366,11 @@ PixiDemo.prototype.drawConvex = function(g,verts,triangles,color,fillColor,lineW
             var v = verts[i],
                 x = v[0],
                 y = v[1];
-            if(i==0)
+            if(i===0){
                 g.moveTo(x,y);
-            else
+            } else {
                 g.lineTo(x,y);
+            }
         }
         g.endFill();
         if(verts.length>2){
@@ -397,21 +398,22 @@ PixiDemo.prototype.drawConvex = function(g,verts,triangles,color,fillColor,lineW
 };
 
 PixiDemo.prototype.drawPath = function(g,path,color,fillColor,lineWidth,isSleeping){
-    lineWidth = typeof(lineWidth)=="number" ? lineWidth : 1;
-    color = typeof(color)=="undefined" ? 0x000000 : color;
+    lineWidth = typeof(lineWidth)==="number" ? lineWidth : 1;
+    color = typeof(color)==="undefined" ? 0x000000 : color;
     g.lineStyle(lineWidth, color, 1);
-    if(typeof(fillColor)=="number")
+    if(typeof(fillColor)==="number"){
         g.beginFill(fillColor, isSleeping ? this.sleepOpacity : 1.0);
+    }
     var lastx = null,
         lasty = null;
     for(var i=0; i<path.length; i++){
         var v = path[i],
             x = v[0],
             y = v[1];
-        if(x != lastx || y != lasty){
-            if(i==0)
+        if(x !== lastx || y !== lasty){
+            if(i===0){
                 g.moveTo(x,y);
-            else {
+            } else {
                 // Check if the lines are parallel
                 var p1x = lastx,
                     p1y = lasty,
@@ -420,8 +422,9 @@ PixiDemo.prototype.drawPath = function(g,path,color,fillColor,lineWidth,isSleepi
                     p3x = path[(i+1)%path.length][0],
                     p3y = path[(i+1)%path.length][1];
                 var area = ((p2x - p1x)*(p3y - p1y))-((p3x - p1x)*(p2y - p1y));
-                if(area!=0)
+                if(area !== 0){
                     g.lineTo(x,y);
+                }
             }
             lastx = x;
             lasty = y;
