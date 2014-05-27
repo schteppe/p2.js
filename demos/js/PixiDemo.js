@@ -119,14 +119,46 @@ PixiDemo.prototype.init = function(){
 
     var lastX, lastY, lastMoveX, lastMoveY, startX, startY, down=false;
 
+    var physicsPosA = p2.vec2.create();
+    var physicsPosB = p2.vec2.create();
+    var stagePos = p2.vec2.create();
+    var initPinchLength = 0;
+    var initScaleX = 1;
+    var initScaleY = 1;
+    var lastNumTouches = 0;
     container.mousedown = container.touchstart = function(e){
+        lastMoveX = e.global.x;
+        lastMoveY = e.global.y;
+
+        if(e.originalEvent.touches){
+            lastNumTouches = e.originalEvent.touches.length;
+        }
+
+        if(e.originalEvent.touches && e.originalEvent.touches.length === 2){
+
+            var touchA = that.container.interactionManager.touchs[0];
+            var touchB = that.container.interactionManager.touchs[1];
+
+            var pos = touchA.getLocalPosition(stage);
+            p2.vec2.set(stagePos, pos.x, pos.y);
+            that.stagePositionToPhysics(physicsPosA, stagePos);
+
+            var pos = touchB.getLocalPosition(stage);
+            p2.vec2.set(stagePos, pos.x, pos.y);
+            that.stagePositionToPhysics(physicsPosB, stagePos);
+
+            initPinchLength = p2.vec2.dist(physicsPosA, physicsPosB);
+
+            var initScaleX = stage.scale.x;
+            var initScaleY = stage.scale.y;
+
+            return;
+        }
         lastX = e.global.x;
         lastY = e.global.y;
         startX = stage.position.x;
         startY = stage.position.y;
         down = true;
-        lastMoveX = e.global.x;
-        lastMoveY = e.global.y;
 
         that.lastMousePos = e.global;
 
@@ -136,12 +168,52 @@ PixiDemo.prototype.init = function(){
         that.handleMouseDown(init_physicsPosition);
     };
     container.mousemove = container.touchmove = function(e){
-        if(down && that.state === Demo.PANNING){
-            stage.position.x = e.global.x-lastX+startX;
-            stage.position.y = e.global.y-lastY+startY;
+        if(e.originalEvent.touches){
+            if(lastNumTouches !== e.originalEvent.touches.length){
+                lastX = e.global.x;
+                lastY = e.global.y;
+                startX = stage.position.x;
+                startY = stage.position.y;
+            }
+
+            lastNumTouches = e.originalEvent.touches.length;
         }
+
         lastMoveX = e.global.x;
         lastMoveY = e.global.y;
+
+        if(e.originalEvent.touches && e.originalEvent.touches.length === 2){
+            var touchA = that.container.interactionManager.touchs[0];
+            var touchB = that.container.interactionManager.touchs[1];
+
+            var pos = touchA.getLocalPosition(stage);
+            p2.vec2.set(stagePos, pos.x, pos.y);
+            that.stagePositionToPhysics(physicsPosA, stagePos);
+
+            var pos = touchB.getLocalPosition(stage);
+            p2.vec2.set(stagePos, pos.x, pos.y);
+            that.stagePositionToPhysics(physicsPosB, stagePos);
+
+            var pinchLength = p2.vec2.dist(physicsPosA, physicsPosB);
+
+            // Get center
+            p2.vec2.add(physicsPosA, physicsPosA, physicsPosB);
+            p2.vec2.scale(physicsPosA, physicsPosA, 0.5);
+            that.zoom(
+                (touchA.global.x + touchB.global.x) * 0.5,
+                (touchA.global.y + touchB.global.y) * 0.5,
+                null,
+                pinchLength / initPinchLength * initScaleX, // zoom relative to the initial scale
+                pinchLength / initPinchLength * initScaleY
+            );
+
+            return;
+        }
+
+        if(down && that.state === Demo.PANNING){
+            stage.position.x = e.global.x - lastX + startX;
+            stage.position.y = e.global.y - lastY + startY;
+        }
 
         that.lastMousePos = e.global;
 
@@ -151,6 +223,10 @@ PixiDemo.prototype.init = function(){
         that.handleMouseMove(init_physicsPosition);
     };
     container.mouseup = container.touchend = function(e){
+        if(e.originalEvent.touches){
+            lastNumTouches = e.originalEvent.touches.length;
+        }
+
         down = false;
         lastMoveX = e.global.x;
         lastMoveY = e.global.y;
@@ -169,6 +245,9 @@ PixiDemo.prototype.init = function(){
     });
 
     $(window).bind('mousewheel', function(e){
+        var out = e.originalEvent.wheelDelta >= 0;
+        that.zoom(lastMoveX, lastMoveY, out);
+        /*
         var scrollFactor = that.scrollFactor,
             stage = that.stage;
         if (e.originalEvent.wheelDelta >= 0){
@@ -185,8 +264,10 @@ PixiDemo.prototype.init = function(){
             stage.position.y -= (scrollFactor) * (stage.position.y - lastMoveY);
         }
         stage.updateTransform();
+        */
     });
 
+    /*
     this.on('zoomin', function(e){
         var scrollFactor = that.scrollFactor,
             stage = that.stage;
@@ -204,8 +285,33 @@ PixiDemo.prototype.init = function(){
         stage.position.y -= (scrollFactor) * (stage.position.y);
         stage.updateTransform();
     });
+    */
 
     this.centerCamera(0, 0);
+};
+
+PixiDemo.prototype.zoom = function(x, y, zoomOut, actualScaleX, actualScaleY){
+    var scrollFactor = this.scrollFactor,
+        stage = this.stage;
+
+    if(typeof actualScaleX === 'undefined'){
+
+        if(!zoomOut){
+            scrollFactor *= -1;
+        }
+
+        stage.scale.x *= (1 + scrollFactor);
+        stage.scale.y *= (1 + scrollFactor);
+        stage.position.x += (scrollFactor) * (stage.position.x - x);
+        stage.position.y += (scrollFactor) * (stage.position.y - y);
+    } else {
+        stage.scale.x *= actualScaleX;
+        stage.scale.y *= actualScaleY;
+        stage.position.x += (actualScaleX - 1) * (stage.position.x - x);
+        stage.position.y += (actualScaleY - 1) * (stage.position.y - y);
+    }
+
+    stage.updateTransform();
 };
 
 PixiDemo.prototype.centerCamera = function(x, y){
