@@ -4708,6 +4708,7 @@ PIXI.WebGLGraphics.buildLine = function(graphicsData, webGLData)
     var points = graphicsData.points;
     if(points.length === 0)return;
 
+    /*
     // if the line width is an odd number add 0.5 to align to a whole pixel
     if(graphicsData.lineWidth%2)
     {
@@ -4715,6 +4716,7 @@ PIXI.WebGLGraphics.buildLine = function(graphicsData, webGLData)
             points[i] += 0.5;
         }
     }
+    */
 
     // get first and last point.. figure out the middle!
     var firstPoint = new PIXI.Point( points[0], points[1] );
@@ -4817,6 +4819,7 @@ PIXI.WebGLGraphics.buildLine = function(graphicsData, webGLData)
 
         denom = a1*b2 - a2*b1;
 
+        /*
         if(Math.abs(denom) < 0.1 )
         {
 
@@ -4829,6 +4832,7 @@ PIXI.WebGLGraphics.buildLine = function(graphicsData, webGLData)
 
             continue;
         }
+        */
 
         px = (b1*c2 - b2*c1)/denom;
         py = (a2*c1 - a1*c2)/denom;
