@@ -152,10 +152,7 @@
             localPivotA: [0,-headRadius-neckLength/2],
             localPivotB: [0,upperBodyLength/2],
         });
-        neckJoint.upperLimitEnabled = true;
-        neckJoint.upperLimit = Math.PI / 8;
-        neckJoint.lowerLimitEnabled = true;
-        neckJoint.lowerLimit = -Math.PI / 8;
+        neckJoint.setLimits(-Math.PI / 8, Math.PI / 8);
         world.addConstraint(neckJoint);
 
         // Knee joints
@@ -167,26 +164,22 @@
             localPivotA: [0, lowerLegLength/2],
             localPivotB:[0,-upperLegLength/2],
         });
-        leftKneeJoint .upperLimitEnabled = rightKneeJoint.upperLimitEnabled = true;
-        leftKneeJoint.upperLimit = rightKneeJoint.upperLimit = Math.PI / 8;
-        leftKneeJoint.lowerLimitEnabled = rightKneeJoint.lowerLimitEnabled = true;
-        leftKneeJoint.lowerLimit = rightKneeJoint.lowerLimit = -Math.PI / 8;
+        leftKneeJoint.setLimits(-Math.PI / 8, Math.PI / 8);
+        rightKneeJoint.setLimits(-Math.PI / 8, Math.PI / 8);
         world.addConstraint(leftKneeJoint);
         world.addConstraint(rightKneeJoint);
 
         // Hip joints
         var leftHipJoint = new p2.RevoluteConstraint(upperLeftLeg, pelvis, {
-            localPivotA:[0, upperLegLength/2],
-            localPivotB:        [-shouldersDistance/2,-pelvisLength/2],
+            localPivotA: [0, upperLegLength/2],
+            localPivotB: [-shouldersDistance/2,-pelvisLength/2],
         });
-        var rightHipJoint= new p2.RevoluteConstraint(upperRightLeg, pelvis, {
-            localPivotA:[0, upperLegLength/2],
-            localPivotB:        [shouldersDistance/2,-pelvisLength/2],
+        var rightHipJoint = new p2.RevoluteConstraint(upperRightLeg, pelvis, {
+            localPivotA: [0, upperLegLength/2],
+            localPivotB: [shouldersDistance/2,-pelvisLength/2],
         });
-        leftHipJoint .upperLimitEnabled = rightHipJoint.upperLimitEnabled =  true;
-        leftHipJoint.upperLimit =         rightHipJoint.upperLimit =         Math.PI / 8;
-        leftHipJoint.lowerLimitEnabled =  rightHipJoint.lowerLimitEnabled =  true;
-        leftHipJoint.lowerLimit =         rightHipJoint.lowerLimit =        -Math.PI / 8;
+        leftHipJoint.setLimits(-Math.PI / 8, Math.PI / 8);
+        rightHipJoint.setLimits(-Math.PI / 8, Math.PI / 8);
         world.addConstraint(leftHipJoint);
         world.addConstraint(rightHipJoint);
 
@@ -195,10 +188,7 @@
             localPivotA: [0,pelvisLength/2],
             localPivotB: [0,-upperBodyLength/2],
         });
-        spineJoint.upperLimitEnabled = true;
-        spineJoint.upperLimit = Math.PI / 8;
-        spineJoint.lowerLimitEnabled = true;
-        spineJoint.lowerLimit = -Math.PI / 8;
+        spineJoint.setLimits(-Math.PI / 8, Math.PI / 8);
         world.addConstraint(spineJoint);
 
         // Shoulders
@@ -210,12 +200,8 @@
             localPivotA:[shouldersDistance/2,  upperBodyLength/2],
             localPivotB:[-upperArmLength/2,0],
         });
-        leftShoulder.upperLimitEnabled =  rightShoulder.upperLimitEnabled =  true;
-        leftShoulder.lowerLimitEnabled =  rightShoulder.lowerLimitEnabled =  true;
-        leftShoulder.upperLimit =         Math.PI / 3;
-        rightShoulder.upperLimit =        Math.PI / 3;
-        leftShoulder.lowerLimit =         -Math.PI / 3;
-        rightShoulder.lowerLimit =        -Math.PI / 3;
+        leftShoulder.setLimits(-Math.PI / 3, Math.PI / 3);
+        rightShoulder.setLimits(-Math.PI / 3, Math.PI / 3);
         world.addConstraint(leftShoulder);
         world.addConstraint(rightShoulder);
 
@@ -228,10 +214,8 @@
             localPivotA:[-lowerArmLength/2,0],
             localPivotB:[upperArmLength/2,0],
         });
-        leftElbowJoint .upperLimitEnabled = rightElbowJoint.upperLimitEnabled =  true;
-        leftElbowJoint.upperLimit =         rightElbowJoint.upperLimit =         Math.PI / 8;
-        leftElbowJoint.lowerLimitEnabled =  rightElbowJoint.lowerLimitEnabled =  true;
-        leftElbowJoint.lowerLimit =         rightElbowJoint.lowerLimit =        -Math.PI / 8;
+        leftElbowJoint.setLimits(-Math.PI / 8, Math.PI / 8);
+        rightElbowJoint.setLimits(-Math.PI / 8, Math.PI / 8);
         world.addConstraint(leftElbowJoint);
         world.addConstraint(rightElbowJoint);
 

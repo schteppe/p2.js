@@ -2,7 +2,7 @@ var Constraint = require('./Constraint')
 ,   Equation = require('../equations/Equation')
 ,   RotationalVelocityEquation = require('../equations/RotationalVelocityEquation')
 ,   RotationalLockEquation = require('../equations/RotationalLockEquation')
-,   vec2 = require('../math/vec2')
+,   vec2 = require('../math/vec2');
 
 module.exports = RevoluteConstraint;
 
@@ -138,6 +138,30 @@ function RevoluteConstraint(bodyA, bodyB, options){
 }
 RevoluteConstraint.prototype = new Constraint();
 
+/**
+ * Set the constraint angle limits.
+ * @method setLimits
+ * @param {number} lower Lower angle limit.
+ * @param {number} upper Upper angle limit.
+ */
+RevoluteConstraint.prototype.setLimits = function (lower, upper) {
+    if(typeof(lower) === 'number'){
+        this.lowerLimit = lower;
+        this.lowerLimitEnabled = true;
+    } else {
+        this.lowerLimit = lower;
+        this.lowerLimitEnabled = false;
+    }
+
+    if(typeof(upper) === 'number'){
+        this.upperLimit = upper;
+        this.upperLimitEnabled = true;
+    } else {
+        this.upperLimit = upper;
+        this.upperLimitEnabled = false;
+    }
+};
+
 RevoluteConstraint.prototype.update = function(){
     var bodyA =  this.bodyA,
         bodyB =  this.bodyB,
@@ -157,20 +181,26 @@ RevoluteConstraint.prototype.update = function(){
 
     if(this.upperLimitEnabled && relAngle > upperLimit){
         upperLimitEquation.angle = upperLimit;
-        if(eqs.indexOf(upperLimitEquation)==-1)
+        if(eqs.indexOf(upperLimitEquation) === -1){
             eqs.push(upperLimitEquation);
+        }
     } else {
         var idx = eqs.indexOf(upperLimitEquation);
-        if(idx != -1) eqs.splice(idx,1);
+        if(idx !== -1){
+            eqs.splice(idx,1);
+        }
     }
 
     if(this.lowerLimitEnabled && relAngle < lowerLimit){
         lowerLimitEquation.angle = lowerLimit;
-        if(eqs.indexOf(lowerLimitEquation)==-1)
+        if(eqs.indexOf(lowerLimitEquation) === -1){
             eqs.push(lowerLimitEquation);
+        }
     } else {
         var idx = eqs.indexOf(lowerLimitEquation);
-        if(idx != -1) eqs.splice(idx,1);
+        if(idx !== -1){
+            eqs.splice(idx,1);
+        }
     }
 
     /*
@@ -223,7 +253,9 @@ RevoluteConstraint.prototype.update = function(){
  * @method enableMotor
  */
 RevoluteConstraint.prototype.enableMotor = function(){
-    if(this.motorEnabled) return;
+    if(this.motorEnabled){
+        return;
+    }
     this.equations.push(this.motorEquation);
     this.motorEnabled = true;
 };
@@ -233,7 +265,9 @@ RevoluteConstraint.prototype.enableMotor = function(){
  * @method disableMotor
  */
 RevoluteConstraint.prototype.disableMotor = function(){
-    if(!this.motorEnabled) return;
+    if(!this.motorEnabled){
+        return;
+    }
     var i = this.equations.indexOf(this.motorEquation);
     this.equations.splice(i,1);
     this.motorEnabled = false;
@@ -267,6 +301,8 @@ RevoluteConstraint.prototype.setMotorSpeed = function(speed){
  * @return  {Number} The current speed, or false if the motor is not enabled.
  */
 RevoluteConstraint.prototype.getMotorSpeed = function(){
-    if(!this.motorEnabled) return false;
+    if(!this.motorEnabled){
+        return false;
+    }
     return this.motorEquation.relativeVelocity;
 };
