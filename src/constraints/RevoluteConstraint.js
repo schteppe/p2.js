@@ -18,16 +18,17 @@ var worldPivotA = vec2.create(),
  * @constructor
  * @author schteppe
  * @param {Body}    bodyA
- * @param {Array}   pivotA              The point relative to the center of mass of bodyA which bodyA is constrained to.
- * @param {Body}    bodyB               Body that will be constrained in a similar way to the same point as bodyA. We will therefore get sort of a link between bodyA and bodyB. If not specified, bodyA will be constrained to a static point.
- * @param {Array}   pivotB              See pivotA.
+ * @param {Body}    bodyB
  * @param {Object}  [options]
- * @param {Number}  [options.maxForce]  The maximum force that should be applied to constrain the bodies.
+ * @param {Array}   [options.worldPivot]    The point point in the world. If specified, localPivotA and localPivotB are automatically computed.
+ * @param {Array}   [options.localPivotA]   The point relative to the center of mass of bodyA which bodyA is constrained to.
+ * @param {Array}   [options.localPivotB]   See localPivotA.
+ * @param {Number}  [options.maxForce]      The maximum force that should be applied to constrain the bodies.
  * @extends Constraint
  * @todo Ability to specify world points
  * @todo put pivot parameters in the options object?
  */
-function RevoluteConstraint(bodyA, pivotA, bodyB, pivotB, options){
+function RevoluteConstraint(bodyA, bodyB, options){
     options = options || {};
     Constraint.call(this,bodyA,bodyB,Constraint.REVOLUTE,options);
 
@@ -36,12 +37,25 @@ function RevoluteConstraint(bodyA, pivotA, bodyB, pivotB, options){
     /**
      * @property {Array} pivotA
      */
-    this.pivotA = vec2.fromValues(pivotA[0],pivotA[1]);
+    this.pivotA = vec2.create();
 
     /**
      * @property {Array} pivotB
      */
-    this.pivotB = vec2.fromValues(pivotB[0],pivotB[1]);
+    this.pivotB = vec2.create();
+
+    if(options.worldPivot){
+        // Compute pivotA and pivotB
+        vec2.sub(this.pivotA, options.worldPivot, bodyA.position);
+        vec2.sub(this.pivotB, options.worldPivot, bodyB.position);
+        // Rotate to local coordinate system
+        vec2.rotate(this.pivotA, this.pivotA, -bodyA.angle);
+        vec2.rotate(this.pivotB, this.pivotB, -bodyB.angle);
+    } else {
+        // Get pivotA and pivotB
+        vec2.copy(this.pivotA, options.localPivotA);
+        vec2.copy(this.pivotB, options.localPivotB);
+    }
 
     // Equations to be fed to the solver
     var eqs = this.equations = [

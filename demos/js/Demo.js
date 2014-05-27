@@ -246,8 +246,10 @@ Demo.prototype.handleMouseDown = function(physicsPosition){
                 var localPoint = p2.vec2.create();
                 b.toLocalFrame(localPoint,physicsPosition);
                 this.world.addBody(this.nullBody);
-                this.mouseConstraint = new p2.RevoluteConstraint(  this.nullBody, physicsPosition,
-                                                                    b,             localPoint);
+                this.mouseConstraint = new p2.RevoluteConstraint(this.nullBody, b, {
+                    localPivotA: physicsPosition,
+                    localPivotB: localPoint
+                });
                 this.world.addConstraint(this.mouseConstraint);
             } else {
                 this.setState(Demo.PANNING);

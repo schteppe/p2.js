@@ -45,8 +45,12 @@
         world.addBody(dummyBody);
 
         // Hinge em
-        var c1 = new p2.RevoluteConstraint(dummyBody,[-2,0],bodyA,[0,0]),
-            c2 = new p2.RevoluteConstraint(dummyBody,[ 2,0],bodyB,[0,0]);
+        var c1 = new p2.RevoluteConstraint(dummyBody, bodyA, {
+            worldPivot: bodyA.position
+        });
+        var c2 = new p2.RevoluteConstraint(dummyBody, bodyB, {
+            worldPivot: bodyB.position
+        });
         world.addConstraint(c1);
         world.addConstraint(c2);
 

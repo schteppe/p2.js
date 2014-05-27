@@ -66,10 +66,14 @@
         var localChassisPivot1 = [-0.5, -0.3];  // Where to hinge first wheel on the chassis
         var localChassisPivot2 = [ 0.5, -0.3];  // Where to hinge second wheel on the chassis
         var localWheelPivot = [0,0];            // Where the hinge is in the wheel (center)
-        var revoluteBack = new p2.RevoluteConstraint(chassisBody, localChassisPivot1, wheelBody1, localWheelPivot, {
+        var revoluteBack = new p2.RevoluteConstraint(chassisBody, wheelBody1, {
+            localPivotA: localChassisPivot1,
+            localPivotB: localWheelPivot,
             collideConnected: false
         });
-        var revoluteFront = new p2.RevoluteConstraint(chassisBody, localChassisPivot2, wheelBody2, localWheelPivot, {
+        var revoluteFront = new p2.RevoluteConstraint(chassisBody, wheelBody2, {
+            localPivotA: localChassisPivot2,
+            localPivotB: localWheelPivot,
             collideConnected: false
         });
         world.addConstraint(revoluteBack);

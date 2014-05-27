@@ -148,8 +148,10 @@
 
 
         // Neck joint
-        var neckJoint = new p2.RevoluteConstraint(head,      [0,-headRadius-neckLength/2],
-                                                  upperBody, [0,upperBodyLength/2]);
+        var neckJoint = new p2.RevoluteConstraint(head, upperBody, {
+            localPivotA: [0,-headRadius-neckLength/2],
+            localPivotB: [0,upperBodyLength/2],
+        });
         neckJoint.upperLimitEnabled = true;
         neckJoint.upperLimit = Math.PI / 8;
         neckJoint.lowerLimitEnabled = true;
@@ -157,10 +159,14 @@
         world.addConstraint(neckJoint);
 
         // Knee joints
-        var leftKneeJoint = new p2.RevoluteConstraint(  lowerLeftLeg,  [0, lowerLegLength/2],
-                                                        upperLeftLeg,  [0,-upperLegLength/2]);
-        var rightKneeJoint= new p2.RevoluteConstraint(  lowerRightLeg, [0, lowerLegLength/2],
-                                                        upperRightLeg, [0,-upperLegLength/2]);
+        var leftKneeJoint = new p2.RevoluteConstraint(lowerLeftLeg, upperLeftLeg, {
+            localPivotA: [0, lowerLegLength/2],
+            localPivotB: [0,-upperLegLength/2],
+        });
+        var rightKneeJoint= new p2.RevoluteConstraint(lowerRightLeg, upperRightLeg, {
+            localPivotA: [0, lowerLegLength/2],
+            localPivotB:[0,-upperLegLength/2],
+        });
         leftKneeJoint .upperLimitEnabled = rightKneeJoint.upperLimitEnabled = true;
         leftKneeJoint.upperLimit = rightKneeJoint.upperLimit = Math.PI / 8;
         leftKneeJoint.lowerLimitEnabled = rightKneeJoint.lowerLimitEnabled = true;
@@ -169,10 +175,14 @@
         world.addConstraint(rightKneeJoint);
 
         // Hip joints
-        var leftHipJoint = new p2.RevoluteConstraint(  upperLeftLeg,  [0, upperLegLength/2],
-                                                       pelvis,        [-shouldersDistance/2,-pelvisLength/2]);
-        var rightHipJoint= new p2.RevoluteConstraint(  upperRightLeg, [0, upperLegLength/2],
-                                                       pelvis,        [shouldersDistance/2,-pelvisLength/2]);
+        var leftHipJoint = new p2.RevoluteConstraint(upperLeftLeg, pelvis, {
+            localPivotA:[0, upperLegLength/2],
+            localPivotB:        [-shouldersDistance/2,-pelvisLength/2],
+        });
+        var rightHipJoint= new p2.RevoluteConstraint(upperRightLeg, pelvis, {
+            localPivotA:[0, upperLegLength/2],
+            localPivotB:        [shouldersDistance/2,-pelvisLength/2],
+        });
         leftHipJoint .upperLimitEnabled = rightHipJoint.upperLimitEnabled =  true;
         leftHipJoint.upperLimit =         rightHipJoint.upperLimit =         Math.PI / 8;
         leftHipJoint.lowerLimitEnabled =  rightHipJoint.lowerLimitEnabled =  true;
@@ -181,8 +191,10 @@
         world.addConstraint(rightHipJoint);
 
         // Spine
-        var spineJoint = new p2.RevoluteConstraint(pelvis,    [0,pelvisLength/2],
-                                                   upperBody, [0,-upperBodyLength/2]);
+        var spineJoint = new p2.RevoluteConstraint(pelvis, upperBody, {
+            localPivotA: [0,pelvisLength/2],
+            localPivotB: [0,-upperBodyLength/2],
+        });
         spineJoint.upperLimitEnabled = true;
         spineJoint.upperLimit = Math.PI / 8;
         spineJoint.lowerLimitEnabled = true;
@@ -190,10 +202,14 @@
         world.addConstraint(spineJoint);
 
         // Shoulders
-        var leftShoulder = new p2.RevoluteConstraint(  upperBody,     [-shouldersDistance/2, upperBodyLength/2],
-                                                       upperLeftArm,  [upperArmLength/2,0]);
-        var rightShoulder= new p2.RevoluteConstraint(  upperBody,     [shouldersDistance/2,  upperBodyLength/2],
-                                                       upperRightArm, [-upperArmLength/2,0]);
+        var leftShoulder = new p2.RevoluteConstraint(upperBody, upperLeftArm, {
+            localPivotA:[-shouldersDistance/2, upperBodyLength/2],
+            localPivotB:[upperArmLength/2,0],
+        });
+        var rightShoulder= new p2.RevoluteConstraint(upperBody, upperRightArm, {
+            localPivotA:[shouldersDistance/2,  upperBodyLength/2],
+            localPivotB:[-upperArmLength/2,0],
+        });
         leftShoulder.upperLimitEnabled =  rightShoulder.upperLimitEnabled =  true;
         leftShoulder.lowerLimitEnabled =  rightShoulder.lowerLimitEnabled =  true;
         leftShoulder.upperLimit =         Math.PI / 3;
@@ -204,10 +220,14 @@
         world.addConstraint(rightShoulder);
 
         // Elbow joint
-        var leftElbowJoint = new p2.RevoluteConstraint(lowerLeftArm,  [lowerArmLength/2, 0],
-                                                       upperLeftArm,  [-upperArmLength/2,0]);
-        var rightElbowJoint= new p2.RevoluteConstraint(lowerRightArm, [-lowerArmLength/2,0],
-                                                       upperRightArm, [upperArmLength/2,0]);
+        var leftElbowJoint = new p2.RevoluteConstraint(lowerLeftArm, upperLeftArm, {
+            localPivotA: [lowerArmLength/2, 0],
+            localPivotB: [-upperArmLength/2,0],
+        });
+        var rightElbowJoint= new p2.RevoluteConstraint(lowerRightArm, upperRightArm, {
+            localPivotA:[-lowerArmLength/2,0],
+            localPivotB:[upperArmLength/2,0],
+        });
         leftElbowJoint .upperLimitEnabled = rightElbowJoint.upperLimitEnabled =  true;
         leftElbowJoint.upperLimit =         rightElbowJoint.upperLimit =         Math.PI / 8;
         leftElbowJoint.lowerLimitEnabled =  rightElbowJoint.lowerLimitEnabled =  true;

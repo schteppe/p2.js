@@ -38,7 +38,8 @@
         world.addBody(circleBody);
 
         // Constrain it to the world
-        var c = new p2.RevoluteConstraint(circleBody, [0,0], dummyBody, [0,0], {
+        var c = new p2.RevoluteConstraint(circleBody, dummyBody, {
+            worldPivot: [0, 0],
             collideConnected: false
         });
         c.enableMotor();
@@ -54,7 +55,9 @@
         world.addBody(armBody);
 
         // Constrain arm to circle
-        var c2 = new p2.RevoluteConstraint(circleBody, [R*0.7,0], armBody, [L/2,0], {
+        var c2 = new p2.RevoluteConstraint(circleBody, armBody, {
+            localPivotA: [R*0.7, 0],
+            localPivotB: [L/2,0],
             collideConnected: false
         });
         world.addConstraint(c2);
@@ -68,7 +71,9 @@
         world.addBody(pistonBody);
 
         // Connect piston to arm
-        var c3 = new p2.RevoluteConstraint(pistonBody, [0,0], armBody, [-L/2,0], {
+        var c3 = new p2.RevoluteConstraint(pistonBody, armBody, {
+            localPivotA: [0,0],
+            localPivotB: [-L/2,0],
             collideConnected: false
         });
         world.addConstraint(c3);

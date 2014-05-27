@@ -1576,7 +1576,9 @@ World.prototype.fromJSON = function(json){
     // RevoluteConstraint
     for(var i=0; i<json.revoluteConstraints.length; i++){
         var c = json.revoluteConstraints[i];
-        var revolute = new RevoluteConstraint(bodies[c.bodyA], c.pivotA, bodies[c.bodyB], c.pivotB, {
+        var revolute = new RevoluteConstraint(bodies[c.bodyA], bodies[c.bodyB], {
+            localPivotA: c.pivotA,
+            localPivotB: c.pivotB,
             maxForce: c.maxForce,
             collideConnected: c.collideConnected
         });

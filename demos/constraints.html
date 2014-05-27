@@ -37,24 +37,24 @@
         var groundBody = new p2.Body();
         world.addBody(groundBody);
 
-        world.addConstraint( new p2.RevoluteConstraint(line, [0.5,0], groundBody, [-1.5,0]) );
+        var revolute = new p2.RevoluteConstraint(line, groundBody, {
+            worldPivot: [-1.5, 0]
+        });
+        world.addConstraint(revolute);
 
         // Create circle rope
         var shape = new p2.Circle(r);
         var lastBody;
         for(var i=N-1; i>=0; i--){
             var x = 0;
-            var y = (N-i - N/2)*r*2.1;
+            var y = (N-i - N/2) * r * 2.1;
             var p = new p2.Body({
                 mass: i==0 ? 0 : 1,
                 position: [x,y],
             });
             p.addShape(shape);
             if(lastBody){
-                var dist = Math.abs(p.position[1]-lastBody.position[1]);
-                var c = new p2.DistanceConstraint(p,lastBody,{
-                    distance: dist
-                });
+                var c = new p2.DistanceConstraint(p, lastBody);
                 world.addConstraint(c);
             } else {
                 p.velocity[0] = 10;
@@ -79,7 +79,9 @@
         world.addBody(bodyB);
         var pivotA = [0,2];
         var pivotB = [0,-2];
-        var cr = new p2.RevoluteConstraint(bodyA, pivotA, bodyB, pivotB);
+        var cr = new p2.RevoluteConstraint(bodyA, bodyB, {
+            worldPivot: [3, 2]
+        });
         cr.upperLimitEnabled = true;
         cr.upperLimit = Math.PI / 4;
         cr.lowerLimitEnabled = true;
