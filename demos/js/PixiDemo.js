@@ -320,6 +320,25 @@ PixiDemo.prototype.centerCamera = function(x, y){
 };
 
 /**
+ * Make sure that a rectangle is visible in the canvas.
+ * @param  {number} centerX
+ * @param  {number} centerY
+ * @param  {number} width
+ * @param  {number} height
+ */
+PixiDemo.prototype.frame = function(centerX, centerY, width, height){
+    var ratio = this.renderer.width / this.renderer.height;
+    if(ratio < width / height){
+        this.stage.scale.x = this.renderer.width / width;
+        this.stage.scale.y = -this.stage.scale.x;
+    } else {
+        this.stage.scale.y = -this.renderer.height / height;
+        this.stage.scale.x = -this.stage.scale.y;
+    }
+    this.centerCamera(centerX, centerY);
+};
+
+/**
  * Draw a circle onto a graphics object
  * @method drawCircle
  * @static
