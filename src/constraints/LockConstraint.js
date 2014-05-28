@@ -22,9 +22,8 @@ function LockConstraint(bodyA, bodyB, options){
     options = options || {};
 
     Constraint.call(this,bodyA,bodyB,Constraint.LOCK,options);
+
     var maxForce = ( typeof(options.maxForce)==="undefined" ? Number.MAX_VALUE : options.maxForce );
-    var localOffsetB = options.localOffsetB || vec2.fromValues(0,0);
-    localOffsetB = vec2.fromValues(localOffsetB[0],localOffsetB[1]);
 
     var localAngleB = options.localAngleB || 0;
 
@@ -85,13 +84,26 @@ function LockConstraint(bodyA, bodyB, options){
      * The offset of bodyB in bodyA's frame.
      * @property {Array} localOffsetB
      */
-    this.localOffsetB = localOffsetB;
+    this.localOffsetB = vec2.create();
+    if(options.localOffsetB){
+        vec2.copy(this.localOffsetB, options.localOffsetB);
+    } else {
+        // Construct from current positions
+        vec2.sub(this.localOffsetB, bodyB.position, bodyA.position);
+        vec2.rotate(this.localOffsetB, this.localOffsetB, -bodyA.angle);
+    }
 
     /**
      * The offset angle of bodyB in bodyA's frame.
      * @property {Number} localAngleB
      */
-    this.localAngleB =  localAngleB;
+    this.localAngleB = 0;
+    if(typeof(options.localAngleB) === 'number'){
+        this.localAngleB = options.localAngleB;
+    } else {
+        // Construct
+        this.localAngleB = bodyB.angle - bodyA.angle;
+    }
 
     this.equations.push(x, y, rot);
     this.setMaxForce(maxForce);

@@ -39,10 +39,7 @@
 
         // Create constraint.
         // This will lock bodyB to bodyA
-        var constraint = new p2.LockConstraint(bodyA, bodyB, {
-            localOffsetB : [2,0],       // Position of bodyB, in bodyA's local coordinate system
-            localAngleB : Math.PI / 4   // and rotation
-        });
+        var constraint = new p2.LockConstraint(bodyA, bodyB);
         world.addConstraint(constraint);
 
         // Create a beam made of locked rectangles
@@ -60,8 +57,6 @@
             if(lastBody){
                 // Connect current body to the last one
                 var constraint = new p2.LockConstraint(lastBody, body, {
-                    localOffsetB : [boxShape.width*r,0],
-                    localAngleB : 0,
                     collideConnected : false
                 });
                 world.addConstraint(constraint);
