@@ -23,6 +23,7 @@ module.exports = PrismaticConstraint;
  * @param {Boolean} [options.disableRotationalLock]   If set to true, bodyB will be free to rotate around its anchor point.
  * @param {Number}  [options.upperLimit]
  * @param {Number}  [options.lowerLimit]
+ * @todo Ability to create using only a point and a worldAxis
  */
 function PrismaticConstraint(bodyA, bodyB, options){
     options = options || {};
