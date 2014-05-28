@@ -250,21 +250,35 @@ function Body(options){
      *     var dynamicBody = new Body({
      *         mass : 1  // If mass is nonzero, the body becomes dynamic automatically
      *     });
-     *     dynamicBody.type == Body.DYNAMIC // true
+     *     console.log(dynamicBody.type == Body.DYNAMIC); // true
      *
      * @example
      *     // This body will not move at all
      *     var staticBody = new Body({
-     *         mass : 0 // Will make the body static
+     *         type: Body.STATIC
      *     });
-     *     staticBody.type == Body.STATIC // true
+     *     console.log(staticBody.type == Body.STATIC); // true
+     *
+     * @example
+     *     // Bodies are static by default
+     *     var body = new Body();
+     *     console.log(body.type == Body.STATIC); // true
      *
      * @example
      *     // This body will only move if you change its velocity
-     *     var kinematicBody = new Body();
-     *     kinematicBody.type = Body.KINEMATIC;
+     *     var kinematicBody = new Body({
+     *         type: Body.KINEMATIC
+     *     });
      */
-    this.type = this.mass === 0 ? Body.STATIC : Body.DYNAMIC;
+    this.type = Body.STATIC;
+
+    if(typeof(options.type) !== 'undefined'){
+        this.type = options.type;
+    } else if(!options.mass){
+        this.type = Body.STATIC;
+    } else {
+        this.type = Body.DYNAMIC;
+    }
 
     /**
      * Bounding circle radius.

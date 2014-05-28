@@ -32,10 +32,9 @@
 
         // Create kinematic, moving box
         var kinematicBody = new p2.Body({
-            mass: 0, // Note: mass is set to zero
+            type: p2.Body.KINEMATIC,
             position: [0, 0.5]
         });
-        kinematicBody.type = p2.Body.KINEMATIC; // Set the motion state to kinematic
         var boxShape = new p2.Rectangle(2,0.5);
         kinematicBody.addShape(boxShape);
         world.addBody(kinematicBody);
