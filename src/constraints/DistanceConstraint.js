@@ -81,6 +81,12 @@ function DistanceConstraint(bodyA,bodyB,options){
     var normal = new Equation(bodyA,bodyB,-maxForce,maxForce); // Just in the normal direction
     this.equations = [ normal ];
 
+    /**
+     * Max force to apply.
+     * @property {number} maxForce
+     */
+    this.maxForce = maxForce;
+
     // g = (xi - xj).dot(n)
     // dg/dt = (vi - vj).dot(n) = G*W = [n 0 -n 0] * [vi wi vj wj]'
 
@@ -120,6 +126,36 @@ function DistanceConstraint(bodyA,bodyB,options){
 
     // Make the contact constraint bilateral
     this.setMaxForce(maxForce);
+
+    /**
+     * If the upper limit is enabled or not.
+     * @property {Boolean} upperLimitEnabled
+     */
+    this.upperLimitEnabled = false;
+
+    /**
+     * The upper constraint limit.
+     * @property {number} upperLimit
+     */
+    this.upperLimit = 1;
+
+    /**
+     * If the lower limit is enabled or not.
+     * @property {Boolean} lowerLimitEnabled
+     */
+    this.lowerLimitEnabled = false;
+
+    /**
+     * The lower constraint limit.
+     * @property {number} lowerLimit
+     */
+    this.lowerLimit = 0;
+
+    /**
+     * Current constraint position. This is equal to the current distance between the world anchor points.
+     * @property {number} position
+     */
+    this.position = 0;
 }
 DistanceConstraint.prototype = new Constraint();
 
@@ -137,18 +173,47 @@ DistanceConstraint.prototype.update = function(){
         distance = this.distance,
         xi = bodyA.position,
         xj = bodyB.position,
+        normalEquation = this.equations[0],
         G = normal.G;
 
     // Transform local anchors to world
     vec2.rotate(ri, this.localAnchorA, bodyA.angle);
     vec2.rotate(rj, this.localAnchorB, bodyB.angle);
 
+    // Get world anchor points and normal
     vec2.add(n, xj, rj);
     vec2.sub(n, n, ri);
     vec2.sub(n, n, xi);
-    vec2.normalize(n,n);
+    this.position = vec2.length(n);
 
-    //vec2.sub(n, bodyB.position, bodyA.position);
+    var violating = false;
+    if(this.upperLimitEnabled){
+        if(this.position > this.upperLimit){
+            normalEquation.maxForce = 0;
+            normalEquation.minForce = -this.maxForce;
+            this.distance = this.upperLimit;
+            violating = true;
+        }
+    }
+
+    if(this.lowerLimitEnabled){
+        if(this.position < this.lowerLimit){
+            normalEquation.maxForce = this.maxForce;
+            normalEquation.minForce = 0;
+            this.distance = this.lowerLimit;
+            violating = true;
+        }
+    }
+
+    if((this.lowerLimitEnabled || this.upperLimitEnabled) && !violating){
+        // No constraint needed.
+        normalEquation.enabled = false;
+        return;
+    }
+
+    normalEquation.enabled = true;
+
+    vec2.normalize(n,n);
 
     // Caluclate cross products
     var rixn = vec2.crossLength(ri, n),
@@ -161,13 +226,6 @@ DistanceConstraint.prototype.update = function(){
     G[3] = n[0];
     G[4] = n[1];
     G[5] = rjxn;
-
-    /*
-    G[0] = -n[0];
-    G[1] = -n[1];
-    G[3] =  n[0];
-    G[4] =  n[1];
-    */
 };
 
 /**

@@ -40,7 +40,10 @@
         // If target distance is not given as an option, then the current distance between the bodies is used.
         var constraint1 = new p2.DistanceConstraint(bodyA, bodyB);
         world.addConstraint(constraint1);
-
+        constraint1.upperLimitEnabled = true;
+        constraint1.lowerLimitEnabled = true;
+        constraint1.upperLimit = 2;
+        constraint1.lowerLimit = 1.5;
 
         // Create two boxes that must have distance 0 between their corners
         var boxShape = new p2.Rectangle(0.5,0.5);
