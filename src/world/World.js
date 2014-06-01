@@ -998,7 +998,7 @@ World.prototype.addSpring = function(s){
  */
 World.prototype.removeSpring = function(s){
     var idx = this.springs.indexOf(s);
-    if(idx===-1){
+    if(idx!==-1){
         Utils.splice(this.springs,idx,1);
     }
 };
