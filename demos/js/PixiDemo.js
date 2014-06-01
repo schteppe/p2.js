@@ -68,8 +68,18 @@ function PixiDemo(world,options){
         g.clear();
         var center = that.drawCircleCenter;
         var R = p2.vec2.dist(center, that.drawCirclePoint);
-        var h = that.renderer.height;
         that.drawCircle(g,center[0], center[1], 0, R,false, that.lineWidth);
+    });
+
+    // Update draw circle
+    this.on("drawRectangleChange",function(e){
+        var g = that.drawShapeGraphics;
+        g.clear();
+        var start = that.drawRectStart;
+        var end = that.drawRectEnd;
+        var width = start[0] - end[0];
+        var height = start[1] - end[1];
+        that.drawRectangle(g, start[0] - width/2, start[1] - height/2, 0, width, height, false, false, that.lineWidth, false);
     });
 }
 PixiDemo.prototype = Object.create(Demo.prototype);
@@ -427,7 +437,8 @@ PixiDemo.prototype.drawCapsule = function(g, x, y, angle, len, radius, color, fi
 // Todo angle
 PixiDemo.prototype.drawRectangle = function(g,x,y,angle,w,h,color,fillColor,lineWidth,isSleeping){
     lineWidth = typeof(lineWidth)==="number" ? lineWidth : 1;
-    color = typeof(color)==="undefined" ? 0x000000 : color;
+    color = typeof(color)==="number" ? color : 0xffffff;
+    fillColor = typeof(fillColor)==="number" ? fillColor : 0xffffff;
     g.lineStyle(lineWidth);
     g.beginFill(fillColor, isSleeping ? this.sleepOpacity : 1.0);
     g.drawRect(x-w/2,y-h/2,w,h);

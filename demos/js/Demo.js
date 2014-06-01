@@ -55,6 +55,9 @@ function Demo(world){
     this.drawCircleCenter = p2.vec2.create();
     this.drawCirclePoint = p2.vec2.create();
     this.drawCircleChangeEvent = { type : "drawCircleChange" };
+    this.drawRectangleChangeEvent = { type : "drawRectangleChange" };
+    this.drawRectStart = p2.vec2.create();
+    this.drawRectEnd = p2.vec2.create();
 
     this.stateChangeEvent = { type : "stateChange", state:null };
 
@@ -150,6 +153,9 @@ function Demo(world){
                 case "A": // toggle draw circle mode
                     that.setState(s == Demo.DRAWCIRCLE ? Demo.DEFAULT : s = Demo.DRAWCIRCLE);
                     break;
+                case "F": // toggle draw rectangle mode
+                    that.setState(s == Demo.DRAWRECTANGLE ? Demo.DEFAULT : s = Demo.DRAWRECTANGLE);
+                    break;
                 default:
                     that.keydownEvent.keyCode = e.keyCode;
                     that.keydownEvent.originalEvent = e;
@@ -190,6 +196,8 @@ Demo.DRAWPOLYGON =        4;
 Demo.DRAWINGPOLYGON  =    5;
 Demo.DRAWCIRCLE =         6;
 Demo.DRAWINGCIRCLE  =     7;
+Demo.DRAWRECTANGLE =      8;
+Demo.DRAWINGRECTANGLE  =  9;
 
 Demo.prototype.getDevicePixelRatio = function() {
     return window.devicePixelRatio || 1;
@@ -273,6 +281,14 @@ Demo.prototype.handleMouseDown = function(physicsPosition){
             p2.vec2.copy(this.drawCirclePoint, physicsPosition);
             this.emit(this.drawCircleChangeEvent);
             break;
+
+        case Demo.DRAWRECTANGLE:
+            // Start drawing a circle
+            this.setState(Demo.DRAWINGRECTANGLE);
+            p2.vec2.copy(this.drawRectStart,physicsPosition);
+            p2.vec2.copy(this.drawRectEnd, physicsPosition);
+            this.emit(this.drawRectangleChangeEvent);
+            break;
     }
 };
 
@@ -306,6 +322,12 @@ Demo.prototype.handleMouseMove = function(physicsPosition){
             // drawing a circle - change the circle radius point to current
             p2.vec2.copy(this.drawCirclePoint, physicsPosition);
             this.emit(this.drawCircleChangeEvent);
+            break;
+
+        case Demo.DRAWINGRECTANGLE:
+            // drawing a rectangle - change the end point to current
+            p2.vec2.copy(this.drawRectEnd, physicsPosition);
+            this.emit(this.drawRectangleChangeEvent);
             break;
     }
 };
@@ -361,6 +383,35 @@ Demo.prototype.handleMouseUp = function(physicsPosition){
             }
             p2.vec2.copy(this.drawCircleCenter,this.drawCirclePoint);
             this.emit(this.drawCircleChangeEvent);
+            break;
+
+        case Demo.DRAWINGRECTANGLE:
+            // End this drawing state
+            this.setState(Demo.DRAWRECTANGLE);
+            // Make sure first point is upper left
+            var start = this.drawRectStart;
+            var end = this.drawRectEnd;
+            for(var i=0; i<2; i++){
+                if(start[i] > end[i]){
+                    var tmp = end[i];
+                    end[i] = start[i];
+                    start[i] = tmp;
+                }
+            }
+            var width = Math.abs(start[0] - end[0]);
+            var height = Math.abs(start[1] - end[1]);
+            if(width > 0 && height > 0){
+                // Create box
+                b = new p2.Body({
+                    mass : 1,
+                    position : [this.drawRectStart[0] + width*0.5, this.drawRectStart[1] + height*0.5]
+                });
+                var rectangleShape = new p2.Rectangle(width, height);
+                b.addShape(rectangleShape);
+                this.world.addBody(b);
+            }
+            p2.vec2.copy(this.drawRectEnd,this.drawRectStart);
+            this.emit(this.drawRectangleChangeEvent);
             break;
     }
 
@@ -522,6 +573,7 @@ Demo.prototype.createMenu = function(){
                         "<button class='btn' id='menu-tools-default'>Pick/pan</button>",
                         "<button class='btn' id='menu-tools-polygon'>Polygon</button>",
                         "<button class='btn' id='menu-tools-circle'>Circle</button>",
+                        "<button class='btn' id='menu-tools-rectangle'>Rectangle</button>",
                     "</div>",
                 "</fieldset>",
 
@@ -686,6 +738,8 @@ Demo.prototype.updateTools = function(){
         case Demo.DRAWPOLYGON:    id = "#menu-tools-polygon"; break;
         case Demo.DRAWINGCIRCLE:
         case Demo.DRAWCIRCLE:     id = "#menu-tools-circle";  break;
+        case Demo.DRAWINGRECTANGLE:
+        case Demo.DRAWRECTANGLE:  id = "#menu-tools-rectangle";  break;
         default:
             console.warn("Demo: uncaught state: "+this.state);
             break;
