@@ -31,7 +31,7 @@
         world.addBody(plane);
 
         // Create chassis
-        var chassisBody = new p2.Body({ mass : 1, position:[-4,1] }),
+        var chassisBody = new p2.Body({ mass : 1, position:[0,1] }),
             chassisShape = new p2.Rectangle(1,0.5);
         chassisBody.addShape(chassisShape);
         world.addBody(chassisBody);
@@ -72,10 +72,8 @@
             localAxisA : [0,1],
             disableRotationalLock : true,
         });
-        c1.upperLimitEnabled = c2.upperLimitEnabled = true;
-        c1.upperLimit = c2.upperLimit = 0.2;
-        c1.lowerLimitEnabled = c2.lowerLimitEnabled = true;
-        c1.lowerLimit = c2.lowerLimit = -0.4;
+        c1.setLimits(-0.4, 0.2);
+        c2.setLimits(-0.4, 0.2);
         world.addConstraint(c1);
         world.addConstraint(c2);
 

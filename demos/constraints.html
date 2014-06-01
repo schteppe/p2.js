@@ -82,10 +82,7 @@
         var cr = new p2.RevoluteConstraint(bodyA, bodyB, {
             worldPivot: [3, 2]
         });
-        cr.upperLimitEnabled = true;
-        cr.upperLimit = Math.PI / 4;
-        cr.lowerLimitEnabled = true;
-        cr.lowerLimit = -Math.PI / 4;
+        cr.setLimits(-Math.PI / 4, Math.PI / 4);
         world.addConstraint(cr);
 
         var demo = new PixiDemo(world);

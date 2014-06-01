@@ -84,10 +84,8 @@
             localAxisA : [0,1],
             disableRotationalLock : true,
         });
-        c1.upperLimitEnabled = c2.upperLimitEnabled = true;
-        c1.upperLimit = c2.upperLimit = 0.2;
-        c1.lowerLimitEnabled = c2.lowerLimitEnabled = true;
-        c1.lowerLimit = c2.lowerLimit = -0.4;
+        c1.setLimits(-0.4, 0.2);
+        c2.setLimits(-0.4, 0.2);
         world.addConstraint(c1);
         world.addConstraint(c2);
 
