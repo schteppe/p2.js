@@ -247,45 +247,7 @@ PixiDemo.prototype.init = function(){
     $(window).bind('mousewheel', function(e){
         var out = e.originalEvent.wheelDelta >= 0;
         that.zoom(lastMoveX, lastMoveY, out);
-        /*
-        var scrollFactor = that.scrollFactor,
-            stage = that.stage;
-        if (e.originalEvent.wheelDelta >= 0){
-            // Zoom in
-            stage.scale.x *= (1+scrollFactor);
-            stage.scale.y *= (1+scrollFactor);
-            stage.position.x += (scrollFactor) * (stage.position.x - lastMoveX);
-            stage.position.y += (scrollFactor) * (stage.position.y - lastMoveY);
-        } else {
-            // Zoom out
-            stage.scale.x *= (1-scrollFactor);
-            stage.scale.y *= (1-scrollFactor);
-            stage.position.x -= (scrollFactor) * (stage.position.x - lastMoveX);
-            stage.position.y -= (scrollFactor) * (stage.position.y - lastMoveY);
-        }
-        stage.updateTransform();
-        */
     });
-
-    /*
-    this.on('zoomin', function(e){
-        var scrollFactor = that.scrollFactor,
-            stage = that.stage;
-        stage.scale.x *= (1+scrollFactor);
-        stage.scale.y *= (1+scrollFactor);
-        stage.position.x += (scrollFactor) * (stage.position.x);
-        stage.position.y += (scrollFactor) * (stage.position.y);
-        stage.updateTransform();
-    }).on('zoomout', function(e){
-        var scrollFactor = that.scrollFactor,
-            stage = that.stage;
-        stage.scale.x *= (1-scrollFactor);
-        stage.scale.y *= (1-scrollFactor);
-        stage.position.x -= (scrollFactor) * (stage.position.x);
-        stage.position.y -= (scrollFactor) * (stage.position.y);
-        stage.updateTransform();
-    });
-    */
 
     this.centerCamera(0, 0);
 };
