@@ -29,20 +29,6 @@ function DistanceConstraint(bodyA,bodyB,options){
     Constraint.call(this,bodyA,bodyB,Constraint.DISTANCE,options);
 
     /**
-     * The distance to keep.
-     * @property distance
-     * @type {Number}
-     */
-    this.distance = 0;
-
-    if(typeof(options.distance) === 'number'){
-        this.distance = options.distance;
-    } else {
-        // Use the current world distance between the objects.
-        this.distance = vec2.dist(bodyA.position, bodyB.position);
-    }
-
-    /**
      * Local anchor in body A.
      * @property localAnchorA
      * @type {Array}
@@ -58,6 +44,32 @@ function DistanceConstraint(bodyA,bodyB,options){
 
     var localAnchorA = this.localAnchorA;
     var localAnchorB = this.localAnchorB;
+
+    /**
+     * The distance to keep.
+     * @property distance
+     * @type {Number}
+     */
+    this.distance = 0;
+
+    if(typeof(options.distance) === 'number'){
+        this.distance = options.distance;
+    } else {
+        // Use the current world distance between the world anchor points.
+        var worldAnchorA = vec2.create(),
+            worldAnchorB = vec2.create(),
+            r = vec2.create();
+
+        // Transform local anchors to world
+        vec2.rotate(worldAnchorA, localAnchorA, bodyA.angle);
+        vec2.rotate(worldAnchorB, localAnchorB, bodyB.angle);
+
+        vec2.add(r, bodyB.position, worldAnchorB);
+        vec2.sub(r, r, worldAnchorA);
+        vec2.sub(r, r, bodyA.position);
+
+        this.distance = vec2.length(r);
+    }
 
     var maxForce;
     if(typeof(options.maxForce)==="undefined" ){
