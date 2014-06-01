@@ -556,7 +556,7 @@ PixiDemo.prototype.drawPath = function(g,path,color,fillColor,lineWidth,isSleepi
     }
 };
 
-PixiDemo.updateSpriteTransform = function(sprite,body,h){
+PixiDemo.prototype.updateSpriteTransform = function(sprite,body){
     if(this.useInterpolatedPositions){
         sprite.position.x = body.interpolatedPosition[0];
         sprite.position.y = body.interpolatedPosition[1];
@@ -580,7 +580,7 @@ PixiDemo.prototype.render = function(){
 
     // Update body transforms
     for(var i=0; i!==this.bodies.length; i++){
-        PixiDemo.updateSpriteTransform(this.sprites[i],this.bodies[i],h);
+        this.updateSpriteTransform(this.sprites[i],this.bodies[i]);
     }
 
     // Update graphics if the body changed sleepState

@@ -48,7 +48,7 @@ function Demo(world){
     this.nullBody = new p2.Body();
     this.pickPrecision = 5;
 
-    this.useInterpolatedPositions = false;
+    this.useInterpolatedPositions = true;
 
     this.drawPoints = [];
     this.drawPointsChangeEvent = { type : "drawPointsChange" };
@@ -204,7 +204,7 @@ Demo.prototype.run = function(){
             var now = Date.now() / 1000,
                 timeSinceLastCall = now-lastCallTime;
             lastCallTime = now;
-            demo.world.step(demo.timeStep,timeSinceLastCall,demo.maxSubSteps);
+            demo.world.step(demo.timeStep, timeSinceLastCall, demo.maxSubSteps);
         }
         demo.render();
         requestAnimationFrame(update);
