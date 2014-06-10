@@ -1890,7 +1890,9 @@ Narrowphase.findSeparatingAxis = function(c1,offset1,angle1,c2,offset2,angle2,se
                 } else if(i === 1) {
                     vec2.set(normal, 1, 0);
                 }
-                vec2.rotate(normal, normal, angle);
+                if(angle !== 0){
+                    vec2.rotate(normal, normal, angle);
+                }
 
                 // Project hulls onto that normal
                 Narrowphase.projectConvexOntoAxis(c1,offset1,angle1,normal,span1);
