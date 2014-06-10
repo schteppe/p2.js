@@ -13,29 +13,28 @@ module.exports = Rectangle;
  * @extends Convex
  */
 function Rectangle(width, height){
-    width = width || 1;
-    height = height || 1;
-
-    var verts = [   vec2.fromValues(-width/2, -height/2),
-                    vec2.fromValues( width/2, -height/2),
-                    vec2.fromValues( width/2,  height/2),
-                    vec2.fromValues(-width/2,  height/2)];
 
     /**
      * Total width of the rectangle
      * @property width
      * @type {Number}
      */
-    this.width = width;
+    this.width = width || 1;
 
     /**
      * Total height of the rectangle
      * @property height
      * @type {Number}
      */
-    this.height = height;
+    this.height = height || 1;
 
-    Convex.call(this,verts);
+    var verts = [   vec2.fromValues(-width/2, -height/2),
+                    vec2.fromValues( width/2, -height/2),
+                    vec2.fromValues( width/2,  height/2),
+                    vec2.fromValues(-width/2,  height/2)];
+    var axes = [vec2.fromValues(1, 0), vec2.fromValues(0, 1)];
+
+    Convex.call(this, verts, axes);
 
     this.type = Shape.RECTANGLE;
 }

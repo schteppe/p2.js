@@ -1,7 +1,7 @@
 var Shape = require('./Shape')
 ,   vec2 = require('../math/vec2')
 ,   polyk = require('../math/polyk')
-,   decomp = require('poly-decomp')
+,   decomp = require('poly-decomp');
 
 module.exports = Convex;
 
@@ -10,9 +10,10 @@ module.exports = Convex;
  * @class Convex
  * @constructor
  * @extends Shape
- * @param {Array} vertices An array of Float32Array vertices that span this shape. Vertices are given in counter-clockwise (CCW) direction.
+ * @param {Array} vertices An array of vertices that span this shape. Vertices are given in counter-clockwise (CCW) direction.
+ * @param {Array} axes An array of unit length vectors
  */
-function Convex(vertices){
+function Convex(vertices, axes){
 
     /**
      * Vertices defined in the local frame.
@@ -21,11 +22,43 @@ function Convex(vertices){
      */
     this.vertices = [];
 
+    /**
+     * Axes defined in the local frame.
+     * @property axes
+     * @type {Array}
+     */
+    this.axes = [];
+
     // Copy the verts
     for(var i=0; i<vertices.length; i++){
         var v = vec2.create();
         vec2.copy(v,vertices[i]);
         this.vertices.push(v);
+    }
+
+    if(axes){
+        // Copy the axes
+        for(var i=0; i < axes.length; i++){
+            var axis = vec2.create();
+            vec2.copy(axis, axes[i]);
+            this.axes.push(axis);
+        }
+    } else {
+        // Construct axes from the vertex data
+        for(var i = 0; i < vertices.length; i++){
+            // Get the world edge
+            var worldPoint0 = vertices[i];
+            var worldPoint1 = vertices[(i+1) % vertices.length];
+
+            var normal = vec2.create();
+            vec2.sub(normal, worldPoint1, worldPoint0);
+
+            // Get normal - just rotate 90 degrees since vertices are given in CCW
+            vec2.rotate90cw(normal, normal);
+            vec2.normalize(normal, normal);
+
+            this.axes.push(normal);
+        }
     }
 
     /**
@@ -54,15 +87,71 @@ function Convex(vertices){
      */
     this.boundingRadius = 0;
 
-
-    Shape.call(this,Shape.CONVEX);
+    Shape.call(this, Shape.CONVEX);
 
     this.updateBoundingRadius();
     this.updateArea();
-    if(this.area < 0)
+    if(this.area < 0){
         throw new Error("Convex vertices must be given in conter-clockwise winding.");
-};
+    }
+}
 Convex.prototype = new Shape();
+
+var tmpVec1 = vec2.create();
+var tmpVec2 = vec2.create();
+
+/**
+ * Project a Convex onto a world-oriented axis
+ * @method projectOntoAxis
+ * @static
+ * @param  {Array} offset
+ * @param  {Array} localAxis
+ * @param  {Array} result
+ */
+Convex.prototype.projectOntoLocalAxis = function(localAxis, result){
+    var max=null,
+        min=null,
+        v,
+        value,
+        localAxis = tmpVec1;
+
+    // Get projected position of all vertices
+    for(var i=0; i<this.vertices.length; i++){
+        v = this.vertices[i];
+        value = vec2.dot(v, localAxis);
+        if(max === null || value > max){
+            max = value;
+        }
+        if(min === null || value < min){
+            min = value;
+        }
+    }
+
+    if(min > max){
+        var t = min;
+        min = max;
+        max = t;
+    }
+
+    vec2.set(result, min, max);
+};
+
+Convex.prototype.projectOntoWorldAxis = function(localAxis, shapeOffset, shapeAngle, result){
+    var worldAxis = tmpVec2;
+
+    this.projectOntoLocalAxis(localAxis, result);
+
+    // Project the position of the body onto the axis - need to add this to the result
+    if(shapeAngle !== 0){
+        vec2.rotate(worldAxis, localAxis, shapeAngle);
+    } else {
+        worldAxis = localAxis;
+    }
+    var offset = vec2.dot(shapeOffset, worldAxis);
+
+    vec2.set(result, result[0] + offset, result[1] + offset);
+};
+
 
 /**
  * Update the .triangles property
@@ -134,7 +223,7 @@ Convex.prototype.updateCenterOfMass = function(){
 
         // Get mass for the triangle (density=1 in this case)
         // http://math.stackexchange.com/questions/80198/area-of-triangle-via-vectors
-        var m = Convex.triangleArea(a,b,c)
+        var m = Convex.triangleArea(a,b,c);
         totalArea += m;
 
         // Add to center of mass
@@ -177,7 +266,9 @@ Convex.prototype.updateBoundingRadius = function(){
 
     for(var i=0; i!==verts.length; i++){
         var l2 = vec2.squaredLength(verts[i]);
-        if(l2 > r2) r2 = l2;
+        if(l2 > r2){
+            r2 = l2;
+        }
     }
 
     this.boundingRadius = Math.sqrt(r2);
@@ -194,7 +285,7 @@ Convex.prototype.updateBoundingRadius = function(){
  */
 Convex.triangleArea = function(a,b,c){
     return (((b[0] - a[0])*(c[1] - a[1]))-((c[0] - a[0])*(b[1] - a[1]))) * 0.5;
-}
+};
 
 /**
  * Update the .area
@@ -225,5 +316,5 @@ Convex.prototype.updateArea = function(){
  * @param  {Number} angle
  */
 Convex.prototype.computeAABB = function(out, position, angle){
-   out.setFromPoints(this.vertices,position,angle);
+    out.setFromPoints(this.vertices, position, angle);
 };
