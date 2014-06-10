@@ -40,6 +40,7 @@ var tmp = vec2.create();
  * Set the AABB bounds from a set of points.
  * @method setFromPoints
  * @param {Array} points An array of vec2's.
+ * @todo Should instead of rotating all vertices compute two AABB axes and project the points to them. This will be cheaper than doing sines and cosines.
  */
 AABB.prototype.setFromPoints = function(points,position,angle){
     var l = this.lowerBound,
@@ -49,8 +50,8 @@ AABB.prototype.setFromPoints = function(points,position,angle){
     for(var i=0; i<points.length; i++){
         var p = points[i];
 
-        if(typeof(angle) === "number"){
-            vec2.rotate(tmp,p,angle);
+        if(typeof(angle) === "number" && angle !== 0){
+            vec2.rotate(tmp, p, angle);
             p = tmp;
         }
 
