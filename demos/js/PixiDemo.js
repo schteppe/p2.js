@@ -611,8 +611,8 @@ PixiDemo.prototype.render = function(){
     }
 
     // Clear contacts
-    this.contactGraphics.clear();
     if(this.drawContacts){
+        this.contactGraphics.clear();
         this.stage.removeChild(this.contactGraphics);
         this.stage.addChild(this.contactGraphics);
 
@@ -636,6 +636,10 @@ PixiDemo.prototype.render = function(){
             g.lineTo(xj+rj[0], yj+rj[1]);
 
         }
+        this.contactGraphics.cleared = false;
+    } else if(!this.contactGraphics.cleared){
+        this.contactGraphics.clear();
+        this.contactGraphics.cleared = true;
     }
 
     this.renderer.render(this.container);
