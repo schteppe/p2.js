@@ -1968,6 +1968,48 @@ Narrowphase.findSeparatingAxis = function(c1,offset1,angle1,c2,offset2,angle2,se
         }
     }
 
+
+    /*
+    // Needs to be tested some more
+    for(var j=0; j!==2; j++){
+        var c = c1,
+            angle = angle1;
+        if(j===1){
+            c = c2;
+            angle = angle2;
+        }
+
+        for(var i=0; i!==c.axes.length; i++){
+
+            var normal = c.axes[i];
+
+            // Project hulls onto that normal
+            Narrowphase.projectConvexOntoAxis(c1, offset1, angle1, normal, span1);
+            Narrowphase.projectConvexOntoAxis(c2, offset2, angle2, normal, span2);
+
+            // Order by span position
+            var a=span1,
+                b=span2,
+                swapped = false;
+            if(span1[0] > span2[0]){
+                b=span1;
+                a=span2;
+                swapped = true;
+            }
+
+            // Get separating distance
+            var dist = b[0] - a[1];
+            overlap = (dist <= Narrowphase.convexPrecision);
+
+            if(maxDist===null || dist > maxDist){
+                vec2.copy(sepAxis, normal);
+                maxDist = dist;
+                found = overlap;
+            }
+        }
+    }
+    */
+
     return found;
 };
 
