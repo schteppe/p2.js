@@ -56,12 +56,17 @@ vec2.crossZV = function(out, zcomp, vec){
  * @param  {Number} angle
  */
 vec2.rotate = function(out,a,angle){
-    var c = Math.cos(angle),
-        s = Math.sin(angle),
-        x = a[0],
-        y = a[1];
-    out[0] = c*x -s*y;
-    out[1] = s*x +c*y;
+    if(angle !== 0){
+        var c = Math.cos(angle),
+            s = Math.sin(angle),
+            x = a[0],
+            y = a[1];
+        out[0] = c*x -s*y;
+        out[1] = s*x +c*y;
+    } else {
+        out[0] = a[0];
+        out[1] = a[1];
+    }
 };
 
 /**
