@@ -1726,7 +1726,7 @@ Narrowphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
 
                 var d = dot(worldNormal,dist);
 
-                if(d <= precision){
+                if((i === closestEdgeA && d <= precision) || (i !== closestEdgeA && d <= 0)){
                     insideNumEdges++;
                 }
             }
