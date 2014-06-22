@@ -74,7 +74,7 @@ var corner1 = vec2.create(),
  * @param  {Number} angle
  */
 Rectangle.prototype.computeAABB = function(out, position, angle){
-   out.setFromPoints(this.vertices,position,angle);
+    out.setFromPoints(this.vertices,position,angle,this.contactSkinSize);
 };
 
 Rectangle.prototype.updateArea = function(){

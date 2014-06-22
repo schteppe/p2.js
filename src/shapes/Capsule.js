@@ -48,7 +48,7 @@ Capsule.prototype.computeMomentOfInertia = function(mass){
  * @method updateBoundingRadius
  */
 Capsule.prototype.updateBoundingRadius = function(){
-    this.boundingRadius = this.radius + this.length/2;
+    this.boundingRadius = this.radius + this.length/2 + this.contactSkinSize;
 };
 
 /**
@@ -71,9 +71,12 @@ Capsule.prototype.computeAABB = function(out, position, angle){
 
     // Compute center position of one of the the circles, world oriented, but with local offset
     vec2.set(r,this.length,0);
-    vec2.rotate(r,r,angle);
+    if(angle !== 0){
+        vec2.rotate(r,r,angle);
+    }
 
     // Get bounds
+    radius += this.contactSkinSize;
     vec2.set(out.upperBound,  Math.max(r[0]+radius, -r[0]+radius),
                               Math.max(r[1]+radius, -r[1]+radius));
     vec2.set(out.lowerBound,  Math.min(r[0]-radius, -r[0]-radius),

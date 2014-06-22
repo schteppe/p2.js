@@ -27,7 +27,7 @@ Line.prototype.computeMomentOfInertia = function(mass){
 };
 
 Line.prototype.updateBoundingRadius = function(){
-    this.boundingRadius = this.length/2;
+    this.boundingRadius = this.length/2 + this.contactSkinSize;
 };
 
 var points = [vec2.create(),vec2.create()];
@@ -39,9 +39,9 @@ var points = [vec2.create(),vec2.create()];
  * @param  {Number} angle
  */
 Line.prototype.computeAABB = function(out, position, angle){
-    var l = this.length;
-    vec2.set(points[0], -l/2,  0);
-    vec2.set(points[1],  l/2,  0);
-    out.setFromPoints(points,position,angle);
+    var l2 = this.length / 2;
+    vec2.set(points[0], -l2,  0);
+    vec2.set(points[1],  l2,  0);
+    out.setFromPoints(points,position,angle,this.contactSkinSize);
 };
 

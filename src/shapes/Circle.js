@@ -38,7 +38,7 @@ Circle.prototype.computeMomentOfInertia = function(mass){
  * @return {Number}
  */
 Circle.prototype.updateBoundingRadius = function(){
-    this.boundingRadius = this.radius;
+    this.boundingRadius = this.radius + this.contactSkinSize;
 };
 
 /**
@@ -56,7 +56,7 @@ Circle.prototype.updateArea = function(){
  * @param  {Number} angle
  */
 Circle.prototype.computeAABB = function(out, position, angle){
-    var r = this.radius;
+    var r = this.radius + this.contactSkinSize;
     vec2.set(out.upperBound,  r,  r);
     vec2.set(out.lowerBound, -r, -r);
     if(position){

@@ -1,6 +1,9 @@
 var Convex = require(__dirname + '/../../src/shapes/Convex')
 ,   vec2 =   require(__dirname + '/../../src/math/vec2')
 ,   AABB =   require(__dirname + '/../../src/collision/AABB')
+,   Shape =   require(__dirname + '/../../src/shapes/Shape')
+
+Shape.DEFAULT_CONTACTSKINSIZE = 0;
 
 exports.construct = function(test){
     new Convex([]);

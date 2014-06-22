@@ -5,6 +5,8 @@ var AABB = require(__dirname + '/../../src/collision/AABB')
 ,   Plane = require(__dirname + '/../../src/shapes/Plane')
 ,   Shape = require(__dirname + '/../../src/shapes/Shape');
 
+Shape.DEFAULT_CONTACTSKINSIZE = 0;
+
 exports.construct = function(test){
     var shape = new Shape();
     test.done();

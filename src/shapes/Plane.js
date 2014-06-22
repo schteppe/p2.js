@@ -46,19 +46,19 @@ Plane.prototype.computeAABB = function(out, position, angle){
     if(a == 0){
         // y goes from -inf to 0
         set(out.lowerBound, -Number.MAX_VALUE, -Number.MAX_VALUE);
-        set(out.upperBound,  Number.MAX_VALUE,  0);
+        set(out.upperBound,  Number.MAX_VALUE,  this.contactSkinSize);
     } else if(a == Math.PI / 2){
         // x goes from 0 to inf
-        set(out.lowerBound,                 0, -Number.MAX_VALUE);
-        set(out.upperBound,  Number.MAX_VALUE,  Number.MAX_VALUE);
+        set(out.lowerBound, -this.contactSkinSize, -Number.MAX_VALUE);
+        set(out.upperBound,      Number.MAX_VALUE,  Number.MAX_VALUE);
     } else if(a == Math.PI){
         // y goes from 0 to inf
-        set(out.lowerBound, -Number.MAX_VALUE, 0);
+        set(out.lowerBound, -Number.MAX_VALUE, -this.contactSkinSize);
         set(out.upperBound,  Number.MAX_VALUE, Number.MAX_VALUE);
     } else if(a == 3*Math.PI/2){
         // x goes from -inf to 0
-        set(out.lowerBound, -Number.MAX_VALUE, -Number.MAX_VALUE);
-        set(out.upperBound,                 0,  Number.MAX_VALUE);
+        set(out.lowerBound, -Number.MAX_VALUE,     -Number.MAX_VALUE);
+        set(out.upperBound,  this.contactSkinSize,  Number.MAX_VALUE);
     } else {
         // Set max bounds
         set(out.lowerBound, -Number.MAX_VALUE, -Number.MAX_VALUE);

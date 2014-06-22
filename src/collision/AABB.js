@@ -41,7 +41,7 @@ var tmp = vec2.create();
  * @method setFromPoints
  * @param {Array} points An array of vec2's.
  */
-AABB.prototype.setFromPoints = function(points, position, angle){
+AABB.prototype.setFromPoints = function(points, position, angle, skinSize){
     var l = this.lowerBound,
         u = this.upperBound;
 
@@ -85,6 +85,13 @@ AABB.prototype.setFromPoints = function(points, position, angle){
     if(position){
         vec2.add(this.lowerBound, this.lowerBound, position);
         vec2.add(this.upperBound, this.upperBound, position);
+    }
+
+    if(skinSize){
+        this.lowerBound[0] -= skinSize;
+        this.lowerBound[1] -= skinSize;
+        this.upperBound[0] += skinSize;
+        this.upperBound[1] += skinSize;
     }
 };
 

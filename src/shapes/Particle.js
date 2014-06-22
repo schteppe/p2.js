@@ -18,7 +18,7 @@ Particle.prototype.computeMomentOfInertia = function(mass){
 };
 
 Particle.prototype.updateBoundingRadius = function(){
-    this.boundingRadius = 0;
+    this.boundingRadius = this.contactSkinSize;
 };
 
 /**
@@ -28,7 +28,10 @@ Particle.prototype.updateBoundingRadius = function(){
  * @param  {Number} angle
  */
 Particle.prototype.computeAABB = function(out, position, angle){
-    var l = this.length;
     vec2.copy(out.lowerBound, position);
     vec2.copy(out.upperBound, position);
+    out.lowerBound[0] -= this.contactSkinSize;
+    out.lowerBound[1] -= this.contactSkinSize;
+    out.lowerBound[0] += this.contactSkinSize;
+    out.lowerBound[1] += this.contactSkinSize;
 };
