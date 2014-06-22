@@ -124,6 +124,10 @@ PixiDemo.prototype.init = function(){
     this.contactGraphics = new PIXI.Graphics();
     stage.addChild(this.contactGraphics);
 
+    // Graphics object for AABBs
+    this.aabbGraphics = new PIXI.Graphics();
+    stage.addChild(this.aabbGraphics);
+
     stage.scale.x = 200; // Flip Y direction.
     stage.scale.y = -200;
 
@@ -649,6 +653,24 @@ PixiDemo.prototype.render = function(){
     } else if(!this.contactGraphics.cleared){
         this.contactGraphics.clear();
         this.contactGraphics.cleared = true;
+    }
+
+    // Draw AABBs
+    if(this.drawAABBs){
+        this.aabbGraphics.clear();
+        this.stage.removeChild(this.aabbGraphics);
+        this.stage.addChild(this.aabbGraphics);
+        var g = this.aabbGraphics;
+        g.lineStyle(this.lineWidth,0x000000,1);
+
+        for(var i=0; i!==this.world.bodies.length; i++){
+            var aabb = this.world.bodies[i].getAABB();
+            g.drawRect(aabb.lowerBound[0], aabb.lowerBound[1], aabb.upperBound[0] - aabb.lowerBound[0], aabb.upperBound[1] - aabb.lowerBound[1]);
+        }
+        this.aabbGraphics.cleared = false;
+    } else if(!this.aabbGraphics.cleared){
+        this.aabbGraphics.clear();
+        this.aabbGraphics.cleared = true;
     }
 
     this.renderer.render(this.container);

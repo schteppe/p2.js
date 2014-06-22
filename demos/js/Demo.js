@@ -48,7 +48,7 @@ function Demo(world){
     this.nullBody = new p2.Body();
     this.pickPrecision = 5;
 
-    this.useInterpolatedPositions = true;
+    this.useInterpolatedPositions = false;
 
     this.drawPoints = [];
     this.drawPointsChangeEvent = { type : "drawPointsChange" };
@@ -81,6 +81,9 @@ function Demo(world){
 
     // If constraints should be drawn
     this.drawConstraints = false;
+
+    // If AABBs should be drawn
+    this.drawAABBs = false;
 
     this.stats_sum = 0;
     this.stats_N = 100;
@@ -146,6 +149,9 @@ function Demo(world){
                 case "C": // toggle draw contacts & constraints
                     that.drawContacts = !that.drawContacts;
                     that.drawConstraints = !that.drawConstraints;
+                    break;
+                case "T": // toggle draw AABBs
+                    that.drawAABBs = !that.drawAABBs;
                     break;
                 case "D": // toggle draw polygon mode
                     that.setState(s == Demo.DRAWPOLYGON ? Demo.DEFAULT : s = Demo.DRAWPOLYGON);
