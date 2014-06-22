@@ -363,7 +363,7 @@ PixiDemo.drawSpring = function(g,restLength,color,lineWidth){
 /**
  * Draw a finite plane onto a PIXI.Graphics.
  * @method drawPlane
- * @param  {Graphics} g
+ * @param  {PIXI.Graphics} g
  * @param  {Number} x0
  * @param  {Number} x1
  * @param  {Number} color
@@ -393,14 +393,23 @@ PixiDemo.drawPlane = function(g, x0, x1, color, lineColor, lineWidth, diagMargin
     g.lineTo(max,0);
 };
 
-PixiDemo.drawLine = function(g, len, color, lineWidth){
+
+PixiDemo.drawLine = function(g, offset, angle, len, color, lineWidth){
     lineWidth = typeof(lineWidth)==="number" ? lineWidth : 1;
     color = typeof(color)==="undefined" ? 0x000000 : color;
     g.lineStyle(lineWidth, color, 1);
 
-    // Draw the actual plane
-    g.moveTo(-len/2,0);
-    g.lineTo( len/2,0);
+    var startPoint = p2.vec2.fromValues(-len/2,0);
+    var endPoint = p2.vec2.fromValues(len/2,0);
+
+    p2.vec2.rotate(startPoint, startPoint, angle);
+    p2.vec2.rotate(endPoint, endPoint, angle);
+
+    p2.vec2.add(startPoint, startPoint, offset);
+    p2.vec2.add(endPoint, endPoint, offset);
+
+    g.moveTo(startPoint[0], startPoint[1]);
+    g.lineTo(endPoint[0], endPoint[1]);
 };
 
 PixiDemo.prototype.drawCapsule = function(g, x, y, angle, len, radius, color, fillColor, lineWidth, isSleeping){
@@ -707,7 +716,7 @@ PixiDemo.prototype.drawRenderable = function(obj, graphics, color, lineColor){
                     PixiDemo.drawPlane(graphics, -10, 10, color, lineColor, lw, lw*10, lw*10, 100);
 
                 } else if(child instanceof p2.Line){
-                    PixiDemo.drawLine(graphics, child.length, lineColor, lw);
+                    PixiDemo.drawLine(graphics, offset, angle, child.length, lineColor, lw);
 
                 } else if(child instanceof p2.Rectangle){
                     this.drawRectangle(graphics, offset[0], offset[1], angle, child.width, child.height, lineColor, color, lw, isSleeping);
