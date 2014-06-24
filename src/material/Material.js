@@ -4,16 +4,16 @@ module.exports = Material;
  * Defines a physics material.
  * @class Material
  * @constructor
- * @param string name
+ * @param {number} material identifier
  * @author schteppe
  */
-function Material(){
+function Material(id){
     /**
      * The material identifier
      * @property id
      * @type {Number}
      */
-    this.id = Material.idCounter++;
+    this.id = id || Material.idCounter++;
 };
 
 Material.idCounter = 0;
