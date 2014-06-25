@@ -817,35 +817,41 @@ Narrowphase.prototype.circleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTes
 };
 
 /**
- * Circle/convex Narrowphase
+ * Circle/convex Narrowphase.
  * @method circleConvex
- * @param  {Body} bi
- * @param  {Circle} si
- * @param  {Array} xi
- * @param  {Number} ai
- * @param  {Body} bj
- * @param  {Convex} sj
- * @param  {Array} xj
- * @param  {Number} aj
- * @todo contactSkin
+ * @param  {Body} circleBody
+ * @param  {Circle} circleShape
+ * @param  {Array} circleOffset
+ * @param  {Number} circleAngle
+ * @param  {Body} convexBody
+ * @param  {Convex} convexShape
+ * @param  {Array} convexOffset
+ * @param  {Number} convexAngle
+ * @param  {Boolean} justTest
+ * @param  {Number} circleRadius
+ * @todo full contactSkin support
  */
 Narrowphase.prototype[Shape.CIRCLE | Shape.CONVEX] =
 Narrowphase.prototype[Shape.CIRCLE | Shape.RECTANGLE] =
-Narrowphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTest, circleRadius){
-    var convexShape = sj,
-        convexAngle = aj,
-        convexBody = bj,
-        convexOffset = xj,
-        circleOffset = xi,
-        circleBody = bi,
-        circleShape = si,
-        circleRadius = typeof(circleRadius)==="number" ? circleRadius : circleShape.radius;
+Narrowphase.prototype.circleConvex = function(
+    circleBody,
+    circleShape,
+    circleOffset,
+    circleAngle,
+    convexBody,
+    convexShape,
+    convexOffset,
+    convexAngle,
+    justTest,
+    circleRadius
+){
+    var circleRadius = typeof(circleRadius)==="number" ? circleRadius : circleShape.radius;
 
     var worldVertex0 = tmp1,
         worldVertex1 = tmp2,
         worldEdge = tmp3,
         worldEdgeUnit = tmp4,
-        worldTangent = tmp5,
+        worldNormal = tmp5,
         centerDist = tmp6,
         convexToCircle = tmp7,
         orthoDist = tmp8,
@@ -888,56 +894,21 @@ Narrowphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
         vec2.normalize(worldEdgeUnit, worldEdge);
 
         // Get tangent to the edge. Points out of the Convex
-        vec2.rotate90cw(worldTangent, worldEdgeUnit);
+        vec2.rotate90cw(worldNormal, worldEdgeUnit);
 
         // Get point on circle, closest to the polygon
-        vec2.scale(candidate,worldTangent,-circleShape.radius);
+        vec2.scale(candidate,worldNormal,-circleShape.radius);
         add(candidate,candidate,circleOffset);
 
         if(pointInConvex(candidate,convexShape,convexOffset,convexAngle)){
 
             vec2.sub(candidateDist,worldVertex0,candidate);
-            var candidateDistance = Math.abs(vec2.dot(candidateDist,worldTangent));
-
-            /*
-            // Check distance from the plane spanned by the edge vs the circle
-            sub(dist, circleOffset, worldVertex0);
-            var d = dot(dist, worldTangent);
-            sub(centerDist, worldVertex0, convexOffset);
-
-            sub(convexToCircle, circleOffset, convexOffset);
-
-            if(d < circleRadius && dot(centerDist,convexToCircle) > 0){
-
-                // Now project the circle onto the edge
-                vec2.scale(orthoDist, worldTangent, d);
-                sub(projectedPoint, circleOffset, orthoDist);
-
-
-                // Check if the point is within the edge span
-                var pos =  dot(worldEdgeUnit, projectedPoint);
-                var pos0 = dot(worldEdgeUnit, worldVertex0);
-                var pos1 = dot(worldEdgeUnit, worldVertex1);
-
-                if(pos > pos0 && pos < pos1){
-                    // We got contact!
-
-                    if(justTest) return true;
-
-                    if(closestEdgeDistance === null || d*d<closestEdgeDistance*closestEdgeDistance){
-                        closestEdgeDistance = d;
-                        closestEdge = i;
-                        vec2.copy(closestEdgeOrthoDist, orthoDist);
-                        vec2.copy(closestEdgeProjectedPoint, projectedPoint);
-                    }
-                }
-            }
-            */
+            var candidateDistance = Math.abs(vec2.dot(candidateDist,worldNormal));
 
             if(candidateDistance < minCandidateDistance){
                 vec2.copy(minCandidate,candidate);
                 minCandidateDistance = candidateDistance;
-                vec2.scale(closestEdgeProjectedPoint,worldTangent,candidateDistance);
+                vec2.scale(closestEdgeProjectedPoint,worldNormal,candidateDistance);
                 vec2.add(closestEdgeProjectedPoint,closestEdgeProjectedPoint,candidate);
                 found = true;
             }
@@ -950,7 +921,7 @@ Narrowphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
             return true;
         }
 
-        var c = this.createContactEquation(circleBody,convexBody,si,sj);
+        var c = this.createContactEquation(circleBody,convexBody,circleShape,convexShape);
         vec2.sub(c.normalA, minCandidate, circleOffset);
         vec2.normalize(c.normalA, c.normalA);
 
@@ -971,30 +942,6 @@ Narrowphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
         return 1;
     }
 
-    /*
-    if(closestEdge != -1){
-        var c = this.createContactEquation(circleBody,convexBody);
-
-        vec2.scale(c.normalA, closestEdgeOrthoDist, -1);
-        vec2.normalize(c.normalA, c.normalA);
-
-        vec2.scale(c.contactPointA,  c.normalA, circleRadius);
-        add(c.contactPointA, c.contactPointA, circleOffset);
-        sub(c.contactPointA, c.contactPointA, circleBody.position);
-
-        sub(c.contactPointB, closestEdgeProjectedPoint, convexOffset);
-        add(c.contactPointB, c.contactPointB, convexOffset);
-        sub(c.contactPointB, c.contactPointB, convexBody.position);
-
-        this.contactEquations.push(c);
-
-        if(this.enableFriction)
-            this.frictionEquations.push( this.createFrictionFromContact(c) );
-
-        return true;
-    }
-    */
-
     // Check all vertices
     if(circleRadius > 0){
         for(var i=0; i<verts.length; i++){
@@ -1009,7 +956,7 @@ Narrowphase.prototype.circleConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
                     return true;
                 }
 
-                var c = this.createContactEquation(circleBody,convexBody,si,sj);
+                var c = this.createContactEquation(circleBody,convexBody,circleShape,convexShape);
 
                 vec2.copy(c.normalA, dist);
                 vec2.normalize(c.normalA,c.normalA);
