@@ -130,20 +130,25 @@ function Narrowphase(){
      */
     this.enableFrictionReduction = true;
 
-    // Keep track of the colliding bodies last step
+    /**
+     * Keeps track of the colliding bodies last step.
+     * @private
+     * @property collidingBodiesLastStep
+     * @type {TupleDictionary}
+     */
     this.collidingBodiesLastStep = new TupleDictionary();
 }
 
 /**
  * Check if the bodies were in contact since the last reset().
  * @method collidedLastStep
- * @param  {Body} bi
- * @param  {Body} bj
+ * @param  {Body} bodyA
+ * @param  {Body} bodyB
  * @return {Boolean}
  */
-Narrowphase.prototype.collidedLastStep = function(bi,bj){
-    var id1 = bi.id|0,
-        id2 = bj.id|0;
+Narrowphase.prototype.collidedLastStep = function(bodyA, bodyB){
+    var id1 = bodyA.id|0,
+        id2 = bodyB.id|0;
     return !!this.collidingBodiesLastStep.get(id1, id2);
 };
 
@@ -184,7 +189,7 @@ Narrowphase.prototype.reset = function(world){
  * @param  {Body} bodyB
  * @return {ContactEquation}
  */
-Narrowphase.prototype.createContactEquation = function(bodyA,bodyB,shapeA,shapeB){
+Narrowphase.prototype.createContactEquation = function(bodyA, bodyB, shapeA, shapeB){
     var c = this.reusableContactEquations.length ? this.reusableContactEquations.pop() : new ContactEquation(bodyA,bodyB);
     c.bodyA = bodyA;
     c.bodyB = bodyB;
@@ -207,7 +212,7 @@ Narrowphase.prototype.createContactEquation = function(bodyA,bodyB,shapeA,shapeB
  * @param  {Body} bodyB
  * @return {FrictionEquation}
  */
-Narrowphase.prototype.createFrictionEquation = function(bodyA,bodyB,shapeA,shapeB){
+Narrowphase.prototype.createFrictionEquation = function(bodyA, bodyB, shapeA, shapeB){
     var c = this.reusableFrictionEquations.length ? this.reusableFrictionEquations.pop() : new FrictionEquation(bodyA,bodyB);
     c.bodyA = bodyA;
     c.bodyB = bodyB;
@@ -276,18 +281,29 @@ Narrowphase.prototype.createFrictionFromAverage = function(numContacts){
 /**
  * Convex/line narrowphase
  * @method convexLine
- * @param  {Body}       bi
- * @param  {Convex}     si
- * @param  {Array}      xi
- * @param  {Number}     ai
- * @param  {Body}       bj
- * @param  {Line}       sj
- * @param  {Array}      xj
- * @param  {Number}     aj
+ * @param  {Body}       convexBody
+ * @param  {Convex}     convexShape
+ * @param  {Array}      convexOffset
+ * @param  {Number}     convexAngle
+ * @param  {Body}       lineBody
+ * @param  {Line}       lineShape
+ * @param  {Array}      lineOffset
+ * @param  {Number}     lineAngle
+ * @param {boolean}     justTest
  * @todo Implement me!
  */
 Narrowphase.prototype[Shape.LINE | Shape.CONVEX] =
-Narrowphase.prototype.convexLine = function(bi,si,xi,ai, bj,sj,xj,aj, justTest){
+Narrowphase.prototype.convexLine = function(
+    convexBody,
+    convexShape,
+    convexOffset,
+    convexAngle,
+    lineBody,
+    lineShape,
+    lineOffset,
+    lineAngle,
+    justTest
+){
     // TODO
     if(justTest){
         return false;
@@ -299,18 +315,29 @@ Narrowphase.prototype.convexLine = function(bi,si,xi,ai, bj,sj,xj,aj, justTest){
 /**
  * Line/rectangle narrowphase
  * @method lineRectangle
- * @param  {Body}       bi
- * @param  {Line}       si
- * @param  {Array}      xi
- * @param  {Number}     ai
- * @param  {Body}       bj
- * @param  {Rectangle}  sj
- * @param  {Array}      xj
- * @param  {Number}     aj
+ * @param  {Body}       lineBody
+ * @param  {Line}       lineShape
+ * @param  {Array}      lineOffset
+ * @param  {Number}     lineAngle
+ * @param  {Body}       rectangleBody
+ * @param  {Rectangle}  rectangleShape
+ * @param  {Array}      rectangleOffset
+ * @param  {Number}     rectangleAngle
+ * @param  {Boolean}    justTest
  * @todo Implement me!
  */
 Narrowphase.prototype[Shape.LINE | Shape.RECTANGLE] =
-Narrowphase.prototype.lineRectangle = function(bi,si,xi,ai, bj,sj,xj,aj, justTest){
+Narrowphase.prototype.lineRectangle = function(
+    lineBody,
+    lineShape,
+    lineOffset,
+    lineAngle,
+    rectangleBody,
+    rectangleShape,
+    rectangleOffset,
+    rectangleAngle,
+    justTest
+){
     // TODO
     if(justTest){
         return false;
@@ -332,31 +359,41 @@ var convexCapsule_tempRect = new Rectangle(1,1),
 /**
  * Convex/capsule narrowphase
  * @method convexCapsule
- * @param  {Body}       bi
- * @param  {Convex}     si
- * @param  {Array}      xi
- * @param  {Number}     ai
- * @param  {Body}       bj
- * @param  {Capsule}    sj
- * @param  {Array}      xj
- * @param  {Number}     aj
+ * @param  {Body}       convexBody
+ * @param  {Convex}     convexShape
+ * @param  {Array}      convexPosition
+ * @param  {Number}     convexAngle
+ * @param  {Body}       capsuleBody
+ * @param  {Capsule}    capsuleShape
+ * @param  {Array}      capsulePosition
+ * @param  {Number}     capsuleAngle
  */
 Narrowphase.prototype[Shape.CAPSULE | Shape.CONVEX] =
 Narrowphase.prototype[Shape.CAPSULE | Shape.RECTANGLE] =
-Narrowphase.prototype.convexCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTest){
+Narrowphase.prototype.convexCapsule = function(
+    convexBody,
+    convexShape,
+    convexPosition,
+    convexAngle,
+    capsuleBody,
+    capsuleShape,
+    capsulePosition,
+    capsuleAngle,
+    justTest
+){
 
     // Check the circles
     // Add offsets!
     var circlePos = convexCapsule_tempVec;
-    vec2.set(circlePos, sj.length/2,0);
-    vec2.rotate(circlePos,circlePos,aj);
-    vec2.add(circlePos,circlePos,xj);
-    var result1 = this.circleConvex(bj,sj,circlePos,aj, bi,si,xi,ai, justTest, sj.radius);
+    vec2.set(circlePos, capsuleShape.length/2,0);
+    vec2.rotate(circlePos,circlePos,capsuleAngle);
+    vec2.add(circlePos,circlePos,capsulePosition);
+    var result1 = this.circleConvex(capsuleBody,capsuleShape,circlePos,capsuleAngle, convexBody,convexShape,convexPosition,convexAngle, justTest, capsuleShape.radius);
 
-    vec2.set(circlePos,-sj.length/2, 0);
-    vec2.rotate(circlePos,circlePos,aj);
-    vec2.add(circlePos,circlePos,xj);
-    var result2 = this.circleConvex(bj,sj,circlePos,aj, bi,si,xi,ai, justTest, sj.radius);
+    vec2.set(circlePos,-capsuleShape.length/2, 0);
+    vec2.rotate(circlePos,circlePos,capsuleAngle);
+    vec2.add(circlePos,circlePos,capsulePosition);
+    var result2 = this.circleConvex(capsuleBody,capsuleShape,circlePos,capsuleAngle, convexBody,convexShape,convexPosition,convexAngle, justTest, capsuleShape.radius);
 
     if(justTest && (result1 || result2)){
         return true;
@@ -364,8 +401,8 @@ Narrowphase.prototype.convexCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTes
 
     // Check center rect
     var r = convexCapsule_tempRect;
-    setConvexToCapsuleShapeMiddle(r,sj);
-    var result = this.convexConvex(bi,si,xi,ai, bj,r,xj,aj, justTest);
+    setConvexToCapsuleShapeMiddle(r,capsuleShape);
+    var result = this.convexConvex(convexBody,convexShape,convexPosition,convexAngle, capsuleBody,r,capsulePosition,capsuleAngle, justTest);
 
     return result + result1 + result2;
 };
