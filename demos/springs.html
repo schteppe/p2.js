@@ -55,7 +55,7 @@
             for(var j=0; j<M-1; j++){
                 var bodyA = bodies[i][j];
                 var bodyB = bodies[i][j+1];
-                var spring = new p2.Spring(bodyA,bodyB, {
+                var spring = new p2.LinearSpring(bodyA,bodyB, {
                     stiffness: k,
                     restLength: l,
                     damping : d
@@ -69,7 +69,7 @@
             for(var j=0; j<M; j++){
                 var bodyA = bodies[i][j];
                 var bodyB = bodies[i+1][j];
-                var spring = new p2.Spring(bodyA,bodyB,{
+                var spring = new p2.LinearSpring(bodyA,bodyB,{
                     stiffness: k,
                     restLength: l,
                     damping : d
@@ -83,7 +83,7 @@
             for(var j=0; j<M-1; j++){
                 var a = bodies[i][j];
                 var b = bodies[i+1][j+1];
-                var spring = new p2.Spring(a,b, {
+                var spring = new p2.LinearSpring(a,b, {
                     stiffness: k,
                     restLength: Math.sqrt(l*l + l*l)
                 });
@@ -95,7 +95,7 @@
             for(var j=0; j<M-1; j++){
                 var a = bodies[i+1][j];
                 var b = bodies[i][j+1];
-                var spring = new p2.Spring(a,b, {
+                var spring = new p2.LinearSpring(a,b, {
                     stiffness: k,
                     restLength: Math.sqrt(l*l + l*l)
                 });
@@ -138,7 +138,7 @@
         box2.addShape(boxShape);
         world.addBody(box1);
         world.addBody(box2);
-        var s = new p2.Spring(box1, box2, {
+        var s = new p2.LinearSpring(box1, box2, {
             restLength : 1,
             stiffness : 10,
             localAnchorA : [0,0.5],
@@ -155,7 +155,7 @@
         });
         capsuleBody.addShape(capsuleShape);
         world.addBody(capsuleBody);
-        var s = new p2.Spring(capsuleBody, plane, {
+        var s = new p2.LinearSpring(capsuleBody, plane, {
             restLength : 1,
             stiffness : 10,
             localAnchorA : [-capsuleShape.length/2,0],

@@ -96,7 +96,7 @@
             damping = 5,
             restLength = 0.5;
         // Left spring
-        world.addSpring(new p2.Spring(chassisBody, wheelBody1, {
+        world.addSpring(new p2.LinearSpring(chassisBody, wheelBody1, {
             restLength : restLength,
             stiffness : stiffness,
             damping : damping,
@@ -104,7 +104,7 @@
             localAnchorB : [0,0],
         }));
         // Right spring
-        world.addSpring(new p2.Spring(chassisBody, wheelBody2, {
+        world.addSpring(new p2.LinearSpring(chassisBody, wheelBody2, {
             restLength : restLength,
             stiffness : stiffness,
             damping : damping,

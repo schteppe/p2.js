@@ -33,6 +33,8 @@ module.exports = {
     Shape :                         require('./shapes/Shape'),
     Solver :                        require('./solver/Solver'),
     Spring :                        require('./objects/Spring'),
+    LinearSpring :                  require('./objects/LinearSpring'),
+    RotationalSpring :              require('./objects/RotationalSpring'),
     Utils :                         require('./utils/Utils'),
     World :                         require('./world/World'),
     vec2 :                          require('./math/vec2'),

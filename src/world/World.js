@@ -12,7 +12,7 @@ var  GSSolver = require('../solver/GSSolver')
 ,    EventEmitter = require('../events/EventEmitter')
 ,    Body = require('../objects/Body')
 ,    Shape = require('../shapes/Shape')
-,    Spring = require('../objects/Spring')
+,    LinearSpring = require('../objects/LinearSpring')
 ,    Material = require('../material/Material')
 ,    ContactMaterial = require('../material/ContactMaterial')
 ,    DistanceConstraint = require('../constraints/DistanceConstraint')
@@ -28,6 +28,7 @@ var  GSSolver = require('../solver/GSSolver')
 ,    Utils = require('../utils/Utils')
 ,    OverlapKeeper = require('../utils/OverlapKeeper')
 ,    IslandManager = require('./IslandManager')
+,    RotationalSpring = require('../objects/RotationalSpring')
 
 module.exports = World;
 
@@ -1511,7 +1512,7 @@ World.prototype.fromJSON = function(json){
             this.error = "instance.springs["+i+"] references instance.body["+js.bodyB+"], which does not exist.";
             return false;
         }
-        var s = new Spring(bodyA, bodyB, {
+        var s = new LinearSpring(bodyA, bodyB, {
             stiffness : js.stiffness,
             damping : js.damping,
             restLength : js.restLength,
