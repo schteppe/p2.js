@@ -20,7 +20,7 @@ function Circle(radius){
     this.radius = radius || 1;
 
     Shape.call(this,Shape.CIRCLE);
-};
+}
 Circle.prototype = new Shape();
 
 /**
@@ -38,7 +38,7 @@ Circle.prototype.computeMomentOfInertia = function(mass){
  * @return {Number}
  */
 Circle.prototype.updateBoundingRadius = function(){
-    this.boundingRadius = this.radius + this.contactSkinSize;
+    this.boundingRadius = this.radius;
 };
 
 /**
@@ -56,7 +56,7 @@ Circle.prototype.updateArea = function(){
  * @param  {Number} angle
  */
 Circle.prototype.computeAABB = function(out, position, angle){
-    var r = this.radius + this.contactSkinSize;
+    var r = this.radius;
     vec2.set(out.upperBound,  r,  r);
     vec2.set(out.lowerBound, -r, -r);
     if(position){

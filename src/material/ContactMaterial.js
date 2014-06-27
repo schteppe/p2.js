@@ -93,6 +93,12 @@ function ContactMaterial(materialA, materialB, options){
      * @property {Number} surfaceVelocity
      */
     this.surfaceVelocity = typeof(options.surfaceVelocity)    !== "undefined" ?   Number(options.surfaceVelocity)    : 0;
+
+    /**
+     * Offset to be set on ContactEquations. A positive value will make the bodies penetrate more into each other. Can be useful in scenes where contacts need to be more persistent, for example when stacking. Aka "cure for nervous contacts".
+     * @type {Number}
+     */
+    this.contactSkinSize = 0.005;
 }
 
 ContactMaterial.idCounter = 0;

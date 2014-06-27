@@ -4,8 +4,6 @@ var World = require(__dirname + '/../../src/world/World');
 var vec2 = require(__dirname + '/../../src/math/vec2');
 var Shape = require(__dirname + '/../../src/shapes/Shape');
 
-Shape.DEFAULT_CONTACTSKINSIZE = 0;
-
 exports.construct = function(test){
 
     // Static via mass=0

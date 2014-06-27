@@ -97,20 +97,8 @@ function Shape(type){
      */
     this.sensor = false;
 
-    /**
-     * The size of the "skin" around the shape that will trigger contacts if crossed by another shape.
-     * @type {Number}
-     */
-    this.contactSkinSize = Shape.DEFAULT_CONTACTSKINSIZE;
-
     this.updateArea();
 }
-
-/**
- * @static
- * @property {Number} DEFAULT_CONTACTSKINSIZE
- */
-Shape.DEFAULT_CONTACTSKINSIZE = 0.01;
 
 Shape.idCounter = 0;
 

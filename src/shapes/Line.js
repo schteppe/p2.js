@@ -1,5 +1,5 @@
 var Shape = require('./Shape')
-,   vec2 = require('../math/vec2')
+,   vec2 = require('../math/vec2');
 
 module.exports = Line;
 
@@ -27,7 +27,7 @@ Line.prototype.computeMomentOfInertia = function(mass){
 };
 
 Line.prototype.updateBoundingRadius = function(){
-    this.boundingRadius = this.length/2 + this.contactSkinSize;
+    this.boundingRadius = this.length/2;
 };
 
 var points = [vec2.create(),vec2.create()];
@@ -42,6 +42,6 @@ Line.prototype.computeAABB = function(out, position, angle){
     var l2 = this.length / 2;
     vec2.set(points[0], -l2,  0);
     vec2.set(points[1],  l2,  0);
-    out.setFromPoints(points,position,angle,this.contactSkinSize);
+    out.setFromPoints(points,position,angle,0);
 };
 

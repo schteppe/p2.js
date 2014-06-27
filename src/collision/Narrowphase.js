@@ -137,6 +137,13 @@ function Narrowphase(){
      * @type {TupleDictionary}
      */
     this.collidingBodiesLastStep = new TupleDictionary();
+
+    /**
+     * Contact skin size value to use in the next contact equations.
+     * @property {Number} collidingBodiesLastStep
+     * @default 0.01
+     */
+    this.contactSkinSize = 0.01;
 }
 
 /**
@@ -201,6 +208,7 @@ Narrowphase.prototype.createContactEquation = function(bodyA, bodyB, shapeA, sha
     c.relaxation = this.relaxation;
     c.needsUpdate = true;
     c.enabled = true;
+    c.offset = this.contactSkinSize;
 
     return c;
 };
@@ -622,7 +630,7 @@ Narrowphase.prototype.planeLine = function(planeBody, planeShape, planeOffset, p
 
         var d = dot(dist,worldNormal);
 
-        if(d < lineShape.contactSkinSize + planeShape.contactSkinSize){
+        if(d < 0){
 
             if(justTest){
                 return true;
@@ -743,7 +751,7 @@ Narrowphase.prototype.circleLine = function(bi,si,xi,ai, bj,sj,xj,aj, justTest, 
 
     sub(lineToCircle, circleOffset, lineOffset);
 
-    var radiusSum = circleRadius + circleShape.contactSkinSize + lineRadius + lineShape.contactSkinSize;
+    var radiusSum = circleRadius + lineRadius;
 
     if(Math.abs(d) < radiusSum){
 
@@ -866,7 +874,6 @@ Narrowphase.prototype.circleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTes
  * @param  {Number} convexAngle
  * @param  {Boolean} justTest
  * @param  {Number} circleRadius
- * @todo full contactSkin support
  */
 Narrowphase.prototype[Shape.CIRCLE | Shape.CONVEX] =
 Narrowphase.prototype[Shape.CIRCLE | Shape.RECTANGLE] =
@@ -987,7 +994,7 @@ Narrowphase.prototype.circleConvex = function(
             add(worldVertex, worldVertex, convexOffset);
 
             sub(dist, worldVertex, circleOffset);
-            if(vec2.squaredLength(dist) < Math.pow(circleRadius + circleShape.contactSkinSize + convexShape.contactSkinSize, 2)){
+            if(vec2.squaredLength(dist) < Math.pow(circleRadius, 2)){
 
                 if(justTest){
                     return true;
@@ -1028,7 +1035,6 @@ var pic_worldVertex0 = vec2.create(),
 
 /*
  * Check if a point is in a polygon
- * @todo contactSkin
  */
 function pointInConvex(worldPoint,convexShape,convexOffset,convexAngle){
     var worldVertex0 = pic_worldVertex0,
@@ -1079,7 +1085,6 @@ function pointInConvex(worldPoint,convexShape,convexOffset,convexAngle){
  * @param  {Number} aj
  * @todo use pointInConvex and code more similar to circleConvex
  * @todo don't transform each vertex, but transform the particle position to convex-local instead
- * @todo contactSkin
  */
 Narrowphase.prototype[Shape.PARTICLE | Shape.CONVEX] =
 Narrowphase.prototype[Shape.PARTICLE | Shape.RECTANGLE] =
@@ -1245,7 +1250,7 @@ Narrowphase.prototype.circleCircle = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
         radiusB = radiusB || shapeB.radius;
 
     sub(dist,xi,xj);
-    var r = radiusA + radiusB + si.contactSkinSize + sj.contactSkinSize;
+    var r = radiusA + radiusB;
     if(vec2.squaredLength(dist) > Math.pow(r,2)){
         return 0;
     }
@@ -1313,7 +1318,7 @@ Narrowphase.prototype.planeConvex = function( bi,si,xi,ai, bj,sj,xj,aj, justTest
 
         sub(dist, worldVertex, planeOffset);
 
-        if(dot(dist,worldNormal) <= si.contactSkinSize + sj.contactSkinSize){
+        if(dot(dist,worldNormal) <= 0){
 
             if(justTest){
                 return true;
@@ -1390,7 +1395,7 @@ Narrowphase.prototype.particlePlane = function( bi,si,xi,ai, bj,sj,xj,aj, justTe
 
     var d = dot(dist, worldNormal);
 
-    if(d > si.contactSkinSize + sj.contactSkinSize){
+    if(d > 0){
         return 0;
     }
     if(justTest){
@@ -1441,7 +1446,7 @@ Narrowphase.prototype.circleParticle = function(   bi,si,xi,ai, bj,sj,xj,aj, jus
         dist = tmp1;
 
     sub(dist, particleOffset, circleOffset);
-    if(vec2.squaredLength(dist) > Math.pow(circleShape.radius + circleShape.contactSkinSize + particleShape.contactSkinSize, 2)){
+    if(vec2.squaredLength(dist) > Math.pow(circleShape.radius, 2)){
         return 0;
     }
     if(justTest){
@@ -1567,7 +1572,7 @@ Narrowphase.prototype.circlePlane = function(   bi,si,xi,ai, bj,sj,xj,aj, justTe
     // Normal direction distance
     var d = dot(worldNormal, planeToCircle);
 
-    if(d > circleShape.radius + si.contactSkinSize + sj.contactSkinSize){
+    if(d > circleShape.radius){
         return 0; // No overlap. Abort.
     }
 
@@ -1629,7 +1634,7 @@ Narrowphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
         dist = tmp8,
         worldNormal = tmp9,
         numContacts = 0,
-        precision = typeof(precision) === 'number' ? precision : si.contactSkinSize + sj.contactSkinSize;
+        precision = typeof(precision) === 'number' ? precision : 0;
 
     var found = Narrowphase.findSeparatingAxis(si,xi,ai,sj,xj,aj,sepAxis);
     if(!found){
@@ -1899,7 +1904,7 @@ Narrowphase.findSeparatingAxis = function(c1,offset1,angle1,c2,offset2,angle2,se
 
                 // Get separating distance
                 var dist = b[0] - a[1];
-                overlap = (dist <= c1.contactSkinSize + c2.contactSkinSize);
+                overlap = (dist <= 0);
 
                 if(maxDist===null || dist > maxDist){
                     vec2.copy(sepAxis, normal);
@@ -1946,7 +1951,7 @@ Narrowphase.findSeparatingAxis = function(c1,offset1,angle1,c2,offset2,angle2,se
 
                 // Get separating distance
                 var dist = b[0] - a[1];
-                overlap = (dist <= c1.contactSkinSize + c2.contactSkinSize);
+                overlap = (dist <= 0);
 
                 if(maxDist===null || dist > maxDist){
                     vec2.copy(sepAxis, normal);
@@ -2146,7 +2151,7 @@ Narrowphase.prototype.circleHeightfield = function( circleBody,circleShape,circl
 
         // Check if it is in the element "stick"
         var d = vec2.dot(dist,worldNormal);
-        if(candidate[0] >= v0[0] && candidate[0] < v1[0] && d <= circleShape.contactSkinSize + hfShape.contactSkinSize){
+        if(candidate[0] >= v0[0] && candidate[0] < v1[0] && d <= 0){
 
             if(justTest){
                 return true;
@@ -2191,7 +2196,7 @@ Narrowphase.prototype.circleHeightfield = function( circleBody,circleShape,circl
 
             vec2.sub(dist, circlePos, v0);
 
-            if(vec2.squaredLength(dist) < Math.pow(radius + circleShape.contactSkinSize + hfShape.contactSkinSize, 2)){
+            if(vec2.squaredLength(dist) < Math.pow(radius, 2)){
 
                 if(justTest){
                     return true;

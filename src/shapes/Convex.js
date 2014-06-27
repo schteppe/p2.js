@@ -107,7 +107,6 @@ var tmpVec2 = vec2.create();
  * @param  {Array} offset
  * @param  {Array} localAxis
  * @param  {Array} result
- * @todo Use contactskin?
  */
 Convex.prototype.projectOntoLocalAxis = function(localAxis, result){
     var max=null,
@@ -272,7 +271,7 @@ Convex.prototype.updateBoundingRadius = function(){
         }
     }
 
-    this.boundingRadius = Math.sqrt(r2) + this.contactSkinSize;
+    this.boundingRadius = Math.sqrt(r2);
 };
 
 /**
@@ -317,5 +316,5 @@ Convex.prototype.updateArea = function(){
  * @param  {Number} angle
  */
 Convex.prototype.computeAABB = function(out, position, angle){
-    out.setFromPoints(this.vertices, position, angle, this.contactSkinSize);
+    out.setFromPoints(this.vertices, position, angle, 0);
 };

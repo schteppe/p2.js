@@ -1,5 +1,5 @@
 var Shape = require('./Shape')
-,   vec2 = require('../math/vec2')
+,   vec2 = require('../math/vec2');
 
 module.exports = Particle;
 
@@ -11,14 +11,14 @@ module.exports = Particle;
  */
 function Particle(){
     Shape.call(this,Shape.PARTICLE);
-};
+}
 Particle.prototype = new Shape();
 Particle.prototype.computeMomentOfInertia = function(mass){
     return 0; // Can't rotate a particle
 };
 
 Particle.prototype.updateBoundingRadius = function(){
-    this.boundingRadius = this.contactSkinSize;
+    this.boundingRadius = 0;
 };
 
 /**
@@ -30,8 +30,4 @@ Particle.prototype.updateBoundingRadius = function(){
 Particle.prototype.computeAABB = function(out, position, angle){
     vec2.copy(out.lowerBound, position);
     vec2.copy(out.upperBound, position);
-    out.lowerBound[0] -= this.contactSkinSize;
-    out.lowerBound[1] -= this.contactSkinSize;
-    out.lowerBound[0] += this.contactSkinSize;
-    out.lowerBound[1] += this.contactSkinSize;
 };

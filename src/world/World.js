@@ -904,6 +904,7 @@ World.prototype.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,cm,glen){
     np.frictionRelaxation = cm.frictionRelaxation;
     np.stiffness = cm.stiffness;
     np.relaxation = cm.relaxation;
+    np.contactSkinSize = cm.contactSkinSize;
 
     var resolver = np[si.type | sj.type],
         numContacts = 0;

@@ -48,7 +48,7 @@ Capsule.prototype.computeMomentOfInertia = function(mass){
  * @method updateBoundingRadius
  */
 Capsule.prototype.updateBoundingRadius = function(){
-    this.boundingRadius = this.radius + this.length/2 + this.contactSkinSize;
+    this.boundingRadius = this.radius + this.length/2;
 };
 
 /**
@@ -76,7 +76,6 @@ Capsule.prototype.computeAABB = function(out, position, angle){
     }
 
     // Get bounds
-    radius += this.contactSkinSize;
     vec2.set(out.upperBound,  Math.max(r[0]+radius, -r[0]+radius),
                               Math.max(r[1]+radius, -r[1]+radius));
     vec2.set(out.lowerBound,  Math.min(r[0]-radius, -r[0]-radius),

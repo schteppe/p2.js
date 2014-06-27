@@ -103,7 +103,7 @@ ContactEquation.prototype.computeB = function(a,b,h){
         Gq = 0;
         GW = (1/b)*(1+this.restitution) * this.computeGW();
     } else {
-        Gq = vec2.dot(n,penetrationVec);
+        Gq = vec2.dot(n,penetrationVec) + this.offset;
         GW = this.computeGW();
     }
 

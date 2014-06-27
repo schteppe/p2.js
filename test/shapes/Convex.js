@@ -3,8 +3,6 @@ var Convex = require(__dirname + '/../../src/shapes/Convex')
 ,   AABB =   require(__dirname + '/../../src/collision/AABB')
 ,   Shape =   require(__dirname + '/../../src/shapes/Shape')
 
-Shape.DEFAULT_CONTACTSKINSIZE = 0;
-
 exports.construct = function(test){
     new Convex([]);
 
