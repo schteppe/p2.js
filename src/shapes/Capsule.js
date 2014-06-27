@@ -70,7 +70,7 @@ Capsule.prototype.computeAABB = function(out, position, angle){
     var radius = this.radius;
 
     // Compute center position of one of the the circles, world oriented, but with local offset
-    vec2.set(r,this.length,0);
+    vec2.set(r,this.length / 2,0);
     if(angle !== 0){
         vec2.rotate(r,r,angle);
     }
