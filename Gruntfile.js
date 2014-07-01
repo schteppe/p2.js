@@ -18,9 +18,13 @@ module.exports = function(grunt) {
         },
 
         uglify : {
-            build : {
+            build: {
                 src : ['build/p2.js'],
                 dest : 'build/p2.min.js'
+            },
+            demo: {
+                src : ['build/p2.demo.js'],
+                dest : 'build/p2.demo.min.js'
             }
         },
 
@@ -52,6 +56,13 @@ module.exports = function(grunt) {
                     'test'
                 ]
             },
+        },
+
+        concat: {
+            debug: {
+                src: ['demos/js/pixi.js', 'demos/js/jquery.js', 'demos/js/bootstrap.min.js', 'demos/js/Demo.js', 'demos/js/PixiDemo.js'],
+                dest: 'build/p2.demo.js',
+            }
         }
     });
 
@@ -60,8 +71,9 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-browserify');
     grunt.loadNpmTasks('grunt-contrib-nodeunit');
     grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-contrib-concat');
 
-    grunt.registerTask('default', ['grabVec2','browserify','webworkerify','uglify','addLicense']);
+    grunt.registerTask('default', ['grabVec2','browserify','webworkerify','concat','uglify','addLicense']);
     grunt.registerTask('test', ['nodeunit']);
 
     grunt.registerTask('webworkerify','Fixes the browserify bundle so it works in Web Workers',function(){
