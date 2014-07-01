@@ -436,8 +436,8 @@ World.prototype.getContactMaterial = function(materialA,materialB){
     var cmats = this.contactMaterials;
     for(var i=0, N=cmats.length; i!==N; i++){
         var cm = cmats[i];
-        if( (cm.materialA === materialA) && (cm.materialB === materialB) ||
-            (cm.materialA === materialB) && (cm.materialB === materialA) ){
+        if( (cm.materialA.id === materialA.id) && (cm.materialB.id === materialB.id) ||
+            (cm.materialA.id === materialB.id) && (cm.materialB.id === materialA.id) ){
             return cm;
         }
     }
