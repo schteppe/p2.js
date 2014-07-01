@@ -1,9 +1,6 @@
-* {
+html,body {
     margin:0;
     padding:0;
-}
-
-html,body {
     width:100%;
     height:100%;
 }
@@ -12,14 +9,6 @@ body {
     overflow: hidden;
     background:white;
     font: 13px Helvetica, arial, freesans, clean, sans-serif;
-}
-
-#step {
-    position:absolute;
-    top:0;
-    left:0;
-    padding:4px;
-    background-color: white;
 }
 
 #menu {
@@ -51,10 +40,6 @@ body {
     margin:10px;
 }
 
-#step,#contacts {
-    display:none;
-}
-
 button {
     padding:2px 4px;
     margin-right:  4px;
@@ -69,15 +54,3 @@ canvas {
     width:100%;
     display:block;
 }
-
-/*
-fieldset {
-    border: 1px solid #ddd;
-    padding:10px;
-    margin-top:15px;
-}
-
-legend {
-    font-weight: bold;
-}
-*/
