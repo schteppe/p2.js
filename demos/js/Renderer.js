@@ -93,10 +93,6 @@ function Renderer(scenes){
 
     this.addedGlobals = [];
 
-    var dpr = this.getDevicePixelRatio();
-    this.w = window.innerWidth * dpr;
-    this.h = window.innerHeight * dpr;
-
     this.settings = {
         tool: Renderer.DEFAULT,
         fullscreen: function(){
@@ -127,15 +123,14 @@ function Renderer(scenes){
     };
 
     this.init();
-    this.resize(this.w,this.h);
+    this.resizeToFit();
     this.render();
     this.createStats();
     this.addLogo();
     this.centerCamera(0, 0);
 
     window.onresize = function(){
-        var dpr = that.getDevicePixelRatio();
-        that.resize(window.innerWidth * dpr, window.innerHeight * dpr);
+        that.resizeToFit();
     };
 
     this.setUpKeyboard();
@@ -228,11 +223,19 @@ Renderer.prototype.printConsoleMessage = function(){
     ].join('\n'));
 };
 
+Renderer.prototype.resizeToFit = function(){
+    var dpr = this.getDevicePixelRatio();
+    var rect = this.elementContainer.getBoundingClientRect();
+    var w = rect.width * dpr;
+    var h = rect.height * dpr;
+    this.resize(w, h);
+}
+
 /**
  * Sets up dat.gui
  */
 Renderer.prototype.setupGUI = function() {
-    if(!window.dat){
+    if(typeof(dat) === 'undefined'){
         return;
     }
 
@@ -321,6 +324,9 @@ Renderer.prototype.setupGUI = function() {
  * Updates dat.gui. Call whenever you change demo.settings.
  */
 Renderer.prototype.updateGUI = function() {
+    if(!this.gui){
+        return;
+    }
     function updateControllers(folder){
         // First level
         for (var i in folder.__controllers){

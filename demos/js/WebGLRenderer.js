@@ -120,9 +120,11 @@ WebGLRenderer.prototype.init = function(){
     var el = this.element = this.renderer.view;
     el.tabIndex = 1;
     el.classList.add(Renderer.elementClass);
+    el.setAttribute('style','width:100%;');
 
     var div = this.elementContainer = document.createElement('div');
     div.classList.add(Renderer.containerClass);
+    div.setAttribute('style','width:100%; height:100%');
     div.appendChild(el);
     document.body.appendChild(div);
     el.focus();
