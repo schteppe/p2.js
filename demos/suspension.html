@@ -12,120 +12,124 @@
 <body>
     <script>
 
-        // Create the physics world
-        var world = new p2.World({
-            doProfiling:true,
-            gravity : [0,-10],
-        });
+        // Create demo application
+        var app = new p2.WebGLRenderer(function(){
 
-        // Set high friction so the wheels don't slip
-        world.defaultContactMaterial.friction = 100;
+            // Create the physics world
+            var world = new p2.World({
+                doProfiling:true,
+                gravity : [0,-10],
+            });
 
-        // Create ground
-        var planeShape = new p2.Plane();
-        var plane = new p2.Body();
-        plane.addShape(planeShape);
-        world.addBody(plane);
+            this.setWorld(world);
 
-        // Create chassis
-        var chassisBody = new p2.Body({ mass : 1, position:[0,1] }),
-            chassisShape = new p2.Rectangle(1,0.5);
-        chassisBody.addShape(chassisShape);
-        world.addBody(chassisBody);
+            // Set high friction so the wheels don't slip
+            world.defaultContactMaterial.friction = 100;
 
-        // Create wheels
-        var wheelBody1 = new p2.Body({ mass : 1, position:[chassisBody.position[0] - 0.5,0.7] }),
-            wheelBody2 = new p2.Body({ mass : 1, position:[chassisBody.position[0] + 0.5,0.7] }),
-            wheelShape = new p2.Circle(0.3);
-        wheelBody1.addShape(wheelShape);
-        wheelBody2.addShape(wheelShape);
-        world.addBody(wheelBody1);
-        world.addBody(wheelBody2);
+            // Create ground
+            var planeShape = new p2.Plane();
+            var plane = new p2.Body();
+            plane.addShape(planeShape);
+            world.addBody(plane);
 
-        // Disable collisions between chassis and wheels
-        var WHEELS =  1, // Define bits for each shape type
-            CHASSIS = 2,
-            GROUND =  4,
-            OTHER =   8;
+            // Create chassis
+            var chassisBody = new p2.Body({ mass : 1, position:[0,1] }),
+                chassisShape = new p2.Rectangle(1,0.5);
+            chassisBody.addShape(chassisShape);
+            world.addBody(chassisBody);
 
-        wheelShape  .collisionGroup =   WHEELS; // Assign groups
-        chassisShape.collisionGroup =   CHASSIS;
-        planeShape  .collisionGroup =   GROUND;
+            // Create wheels
+            var wheelBody1 = new p2.Body({ mass : 1, position:[chassisBody.position[0] - 0.5,0.7] }),
+                wheelBody2 = new p2.Body({ mass : 1, position:[chassisBody.position[0] + 0.5,0.7] }),
+                wheelShape = new p2.Circle(0.3);
+            wheelBody1.addShape(wheelShape);
+            wheelBody2.addShape(wheelShape);
+            world.addBody(wheelBody1);
+            world.addBody(wheelBody2);
 
-        wheelShape  .collisionMask =    GROUND | OTHER;             // Wheels can only collide with ground
-        chassisShape.collisionMask =    GROUND | OTHER;             // Chassis can only collide with ground
-        planeShape  .collisionMask =    WHEELS | CHASSIS | OTHER;   // Ground can collide with wheels and chassis
+            // Disable collisions between chassis and wheels
+            var WHEELS =  1, // Define bits for each shape type
+                CHASSIS = 2,
+                GROUND =  4,
+                OTHER =   8;
 
-        // Constrain wheels to chassis
-        var c1 = new p2.PrismaticConstraint(chassisBody,wheelBody1,{
-            localAnchorA : [-0.5,-0.3],
-            localAnchorB : [0,0],
-            localAxisA : [0,1],
-            disableRotationalLock : true,
-        });
-        var c2 = new p2.PrismaticConstraint(chassisBody,wheelBody2,{
-            localAnchorA : [ 0.5,-0.3],
-            localAnchorB : [0,0],
-            localAxisA : [0,1],
-            disableRotationalLock : true,
-        });
-        c1.setLimits(-0.4, 0.2);
-        c2.setLimits(-0.4, 0.2);
-        world.addConstraint(c1);
-        world.addConstraint(c2);
+            wheelShape  .collisionGroup =   WHEELS; // Assign groups
+            chassisShape.collisionGroup =   CHASSIS;
+            planeShape  .collisionGroup =   GROUND;
 
-        // Add springs for the suspension
-        var stiffness = 100,
-            damping = 5,
-            restLength = 0.5;
-        // Left spring
-        world.addSpring(new p2.LinearSpring(chassisBody, wheelBody1, {
-            restLength : restLength,
-            stiffness : stiffness,
-            damping : damping,
-            localAnchorA : [-0.5,0],
-            localAnchorB : [0,0],
-        }));
-        // Right spring
-        world.addSpring(new p2.LinearSpring(chassisBody, wheelBody2, {
-            restLength : restLength,
-            stiffness : stiffness,
-            damping : damping,
-            localAnchorA : [0.5,0],
-            localAnchorB : [0,0],
-        }));
+            wheelShape  .collisionMask =    GROUND | OTHER;             // Wheels can only collide with ground
+            chassisShape.collisionMask =    GROUND | OTHER;             // Chassis can only collide with ground
+            planeShape  .collisionMask =    WHEELS | CHASSIS | OTHER;   // Ground can collide with wheels and chassis
 
-        var demo = new p2.WebGLRenderer(world);
+            // Constrain wheels to chassis
+            var c1 = new p2.PrismaticConstraint(chassisBody,wheelBody1,{
+                localAnchorA : [-0.5,-0.3],
+                localAnchorB : [0,0],
+                localAxisA : [0,1],
+                disableRotationalLock : true,
+            });
+            var c2 = new p2.PrismaticConstraint(chassisBody,wheelBody2,{
+                localAnchorA : [ 0.5,-0.3],
+                localAnchorB : [0,0],
+                localAxisA : [0,1],
+                disableRotationalLock : true,
+            });
+            c1.setLimits(-0.4, 0.2);
+            c2.setLimits(-0.4, 0.2);
+            world.addConstraint(c1);
+            world.addConstraint(c2);
 
-        demo.newShapeCollisionGroup = OTHER;
-        demo.newShapeCollisionMask =  GROUND|WHEELS|CHASSIS|OTHER;
+            // Add springs for the suspension
+            var stiffness = 100,
+                damping = 5,
+                restLength = 0.5;
+            // Left spring
+            world.addSpring(new p2.LinearSpring(chassisBody, wheelBody1, {
+                restLength : restLength,
+                stiffness : stiffness,
+                damping : damping,
+                localAnchorA : [-0.5,0],
+                localAnchorB : [0,0],
+            }));
+            // Right spring
+            world.addSpring(new p2.LinearSpring(chassisBody, wheelBody2, {
+                restLength : restLength,
+                stiffness : stiffness,
+                damping : damping,
+                localAnchorA : [0.5,0],
+                localAnchorB : [0,0],
+            }));
 
-        // Apply current engine torque after each step
-        var torque = 0;
-        world.on("postStep",function(evt){
-            var max = 100;
-            if(wheelBody1.angularVelocity*torque < max) wheelBody1.angularForce += torque;
-            if(wheelBody2.angularVelocity*torque < max) wheelBody2.angularForce += torque;
-        });
+            this.newShapeCollisionGroup = OTHER;
+            this.newShapeCollisionMask =  GROUND|WHEELS|CHASSIS|OTHER;
 
-        // Change the current engine torque with the left/right keys
-        demo.on("keydown",function(evt){
-            t = 5;
-            switch(evt.keyCode){
-                case 39: // right
-                    torque = -t;
-                    break;
-                case 37: // left
-                    torque = t;
-                    break;
-            }
-        });
-        demo.on("keyup",function(){
-            torque = 0;
-        });
+            // Apply current engine torque after each step
+            var torque = 0;
+            world.on("postStep",function(evt){
+                var max = 100;
+                if(wheelBody1.angularVelocity*torque < max) wheelBody1.angularForce += torque;
+                if(wheelBody2.angularVelocity*torque < max) wheelBody2.angularForce += torque;
+            });
 
-        world.on("addBody",function(evt){
-            evt.body.setDensity(1);
+            // Change the current engine torque with the left/right keys
+            this.on("keydown",function(evt){
+                t = 5;
+                switch(evt.keyCode){
+                    case 39: // right
+                        torque = -t;
+                        break;
+                    case 37: // left
+                        torque = t;
+                        break;
+                }
+            });
+            this.on("keyup",function(){
+                torque = 0;
+            });
+
+            world.on("addBody",function(evt){
+                evt.body.setDensity(1);
+            });
         });
 
     </script>

@@ -12,153 +12,157 @@
 <body>
     <script>
 
-        var vec2 = p2.vec2;
+        // Create demo application
+        var app = new p2.WebGLRenderer(function(){
 
-        var world = new p2.World({
-            doProfiling : true,
-            gravity : [0,-5]
-        });
+            var world = new p2.World({
+                doProfiling : true,
+                gravity : [0,-5]
+            });
 
-        world.solver.tolerance = 0.001;
+            this.setWorld(world);
 
-        var bodies = [];
-        var N=10,
-            M=10,
-            timeStep = 1/60,
-            k=1000,
-            d=10,
-            l=0.35,
-            m=1;
+            world.solver.tolerance = 0.001;
 
-        // Create particle bodies
-        var particleShape = new p2.Particle();
-        for(var i=0; i<N; i++){
-            bodies.push([]);
-            for(var j=0; j<M; j++){
-                var p = new p2.Body({
-                    mass: m,//j==M-1 ? 0 : m,
-                    position : [(i-N/2)*l*1.05, (j-M/2)*l*1.05]
-                });
-                p.addShape(particleShape);
-                bodies[i].push(p);
-                world.addBody(p);
+            var bodies = [];
+            var N=10,
+                M=10,
+                timeStep = 1/60,
+                k=1000,
+                d=10,
+                l=0.35,
+                m=1;
+
+            var vec2 = p2.vec2;
+
+            // Create particle bodies
+            var particleShape = new p2.Particle();
+            for(var i=0; i<N; i++){
+                bodies.push([]);
+                for(var j=0; j<M; j++){
+                    var p = new p2.Body({
+                        mass: m,//j==M-1 ? 0 : m,
+                        position : [(i-N/2)*l*1.05, (j-M/2)*l*1.05]
+                    });
+                    p.addShape(particleShape);
+                    bodies[i].push(p);
+                    world.addBody(p);
+                }
             }
-        }
 
-        // Vertical springs
-        for(var i=0; i<N; i++){
-            for(var j=0; j<M-1; j++){
-                var bodyA = bodies[i][j];
-                var bodyB = bodies[i][j+1];
-                var spring = new p2.LinearSpring(bodyA,bodyB, {
-                    stiffness: k,
-                    restLength: l,
-                    damping : d
-                });
-                world.addSpring(spring);
+            // Vertical springs
+            for(var i=0; i<N; i++){
+                for(var j=0; j<M-1; j++){
+                    var bodyA = bodies[i][j];
+                    var bodyB = bodies[i][j+1];
+                    var spring = new p2.LinearSpring(bodyA,bodyB, {
+                        stiffness: k,
+                        restLength: l,
+                        damping : d
+                    });
+                    world.addSpring(spring);
+                }
             }
-        }
 
-        // Horizontal springs
-        for(var i=0; i<N-1; i++){
-            for(var j=0; j<M; j++){
-                var bodyA = bodies[i][j];
-                var bodyB = bodies[i+1][j];
-                var spring = new p2.LinearSpring(bodyA,bodyB,{
-                    stiffness: k,
-                    restLength: l,
-                    damping : d
-                });
-                world.addSpring(spring);
+            // Horizontal springs
+            for(var i=0; i<N-1; i++){
+                for(var j=0; j<M; j++){
+                    var bodyA = bodies[i][j];
+                    var bodyB = bodies[i+1][j];
+                    var spring = new p2.LinearSpring(bodyA,bodyB,{
+                        stiffness: k,
+                        restLength: l,
+                        damping : d
+                    });
+                    world.addSpring(spring);
+                }
             }
-        }
 
-        // Diagonal right/down springs
-        for(var i=0; i<N-1; i++){
-            for(var j=0; j<M-1; j++){
-                var a = bodies[i][j];
-                var b = bodies[i+1][j+1];
-                var spring = new p2.LinearSpring(a,b, {
-                    stiffness: k,
-                    restLength: Math.sqrt(l*l + l*l)
-                });
-                world.addSpring(spring);
+            // Diagonal right/down springs
+            for(var i=0; i<N-1; i++){
+                for(var j=0; j<M-1; j++){
+                    var a = bodies[i][j];
+                    var b = bodies[i+1][j+1];
+                    var spring = new p2.LinearSpring(a,b, {
+                        stiffness: k,
+                        restLength: Math.sqrt(l*l + l*l)
+                    });
+                    world.addSpring(spring);
+                }
             }
-        }
-        // Diagonal left/down springs
-        for(var i=0; i<N-1; i++){
-            for(var j=0; j<M-1; j++){
-                var a = bodies[i+1][j];
-                var b = bodies[i][j+1];
-                var spring = new p2.LinearSpring(a,b, {
-                    stiffness: k,
-                    restLength: Math.sqrt(l*l + l*l)
-                });
-                world.addSpring(spring);
+            // Diagonal left/down springs
+            for(var i=0; i<N-1; i++){
+                for(var j=0; j<M-1; j++){
+                    var a = bodies[i+1][j];
+                    var b = bodies[i][j+1];
+                    var spring = new p2.LinearSpring(a,b, {
+                        stiffness: k,
+                        restLength: Math.sqrt(l*l + l*l)
+                    });
+                    world.addSpring(spring);
+                }
             }
-        }
 
-        // Create ground
-        var planeShape = new p2.Plane();
-        var plane = new p2.Body({
-            position : [0, (-M/2)*l*1.05 - 0.1]
-        });
-        plane.addShape(planeShape);
-        world.addBody(plane);
+            // Create ground
+            var planeShape = new p2.Plane();
+            var plane = new p2.Body({
+                position : [0, (-M/2)*l*1.05 - 0.1]
+            });
+            plane.addShape(planeShape);
+            world.addBody(plane);
 
-        // Create circle
-        var radius = 1;
-        var circleShape = new p2.Circle(radius);
-        var circle = new p2.Body({
-            mass : 1,
-            position : [0, (M/2)*l*1.05 + radius],
-            angularVelocity:1,
-        });
-        circle.addShape(circleShape);
-        world.addBody(circle);
-
-
-        // Create connected boxes
-        var boxShape = new p2.Rectangle(radius,radius);
-        var box1 = new p2.Body({
-            mass : 1,
-            position : [-3, (M/2)*l*1.05 + radius],
-        });
-        var box2 = new p2.Body({
-            mass : 1,
-            position : [-4, (M/2)*l*1.05 + radius],
-            angularVelocity : -2
-        });
-        box1.addShape(boxShape);
-        box2.addShape(boxShape);
-        world.addBody(box1);
-        world.addBody(box2);
-        var s = new p2.LinearSpring(box1, box2, {
-            restLength : 1,
-            stiffness : 10,
-            localAnchorA : [0,0.5],
-            localAnchorB : [0,0.5],
-        });
-        world.addSpring(s);
+            // Create circle
+            var radius = 1;
+            var circleShape = new p2.Circle(radius);
+            var circle = new p2.Body({
+                mass : 1,
+                position : [0, (M/2)*l*1.05 + radius],
+                angularVelocity:1,
+            });
+            circle.addShape(circleShape);
+            world.addBody(circle);
 
 
-        // Create capsule
-        var capsuleShape = new p2.Capsule(1,0.25);
-        var capsuleBody = new p2.Body({
-            mass: 1,
-            position : [4,1]
-        });
-        capsuleBody.addShape(capsuleShape);
-        world.addBody(capsuleBody);
-        var s = new p2.LinearSpring(capsuleBody, plane, {
-            restLength : 1,
-            stiffness : 10,
-            localAnchorA : [-capsuleShape.length/2,0],
-            worldAnchorB : [4-capsuleShape.length/2,2],
-        });
-        world.addSpring(s);
+            // Create connected boxes
+            var boxShape = new p2.Rectangle(radius,radius);
+            var box1 = new p2.Body({
+                mass : 1,
+                position : [-3, (M/2)*l*1.05 + radius],
+            });
+            var box2 = new p2.Body({
+                mass : 1,
+                position : [-4, (M/2)*l*1.05 + radius],
+                angularVelocity : -2
+            });
+            box1.addShape(boxShape);
+            box2.addShape(boxShape);
+            world.addBody(box1);
+            world.addBody(box2);
+            var s = new p2.LinearSpring(box1, box2, {
+                restLength : 1,
+                stiffness : 10,
+                localAnchorA : [0,0.5],
+                localAnchorB : [0,0.5],
+            });
+            world.addSpring(s);
 
-        var demo = new p2.WebGLRenderer(world);
+
+            // Create capsule
+            var capsuleShape = new p2.Capsule(1,0.25);
+            var capsuleBody = new p2.Body({
+                mass: 1,
+                position : [4,1]
+            });
+            capsuleBody.addShape(capsuleShape);
+            world.addBody(capsuleBody);
+            var s = new p2.LinearSpring(capsuleBody, plane, {
+                restLength : 1,
+                stiffness : 10,
+                localAnchorA : [-capsuleShape.length/2,0],
+                worldAnchorB : [4-capsuleShape.length/2,2],
+            });
+            world.addSpring(s);
+        });
 
     </script>
 </bodyBody>

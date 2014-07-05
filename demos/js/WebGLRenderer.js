@@ -1,6 +1,10 @@
 /* global PIXI,Renderer */
 
+(function(p2){
+
 p2.WebGLRenderer = WebGLRenderer;
+
+var Renderer = p2.Renderer;
 
 /**
  * Renderer using Pixi.js
@@ -860,3 +864,5 @@ WebGLRenderer.prototype.resize = function(w,h){
     var ratio = w / h;
     renderer.resize(w, h);
 };
+
+})(p2);

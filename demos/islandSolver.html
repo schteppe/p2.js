@@ -12,58 +12,71 @@
 <body>
     <script>
 
-        // Create a world with island splitting enabled.
-        // The island splitting will cut the scene into independent islands and treat them as separate simulations. This can improve performance.
-        var world = new p2.World({
-            doProfiling : true,
-            gravity : [0,-10],
-            islandSplit : true,
-            broadphase: new p2.SAPBroadphase()
-        });
+        var interval;
 
-        var N = 10,                         // Number of circles in each rope
-            M = 10,                         // Number of ropes
-            r = 0.1;                        // Circle radius
+        // Create demo application
+        var app = new p2.WebGLRenderer({
 
-        world.solver.tolerance = 0.1;
-        world.solver.iterations = N;
+            setup: function(){
 
-        // Create circle ropes
-        for(var j=0; j<M; j++){
-            var shape = new p2.Circle(r);
-            var lastBody;
-            for(var i=N; i>=0; i--){
-                var x = (j+0.5-M/2)*r*8;
-                var y = (N/2-i)*r*2.1;
-                var p = new p2.Body({
-                    mass: i==0 ? 0 : 1,
-                    position: [x, y]
+                // Create a world with island splitting enabled.
+                // The island splitting will cut the scene into independent islands and treat them as separate simulations. This can improve performance.
+                var world = new p2.World({
+                    doProfiling : true,
+                    gravity : [0,-10],
+                    islandSplit : true,
+                    broadphase: new p2.SAPBroadphase()
                 });
-                p.addShape(shape);
-                if(lastBody){
-                    // Connect the current body to the previous one
-                    var dist = Math.abs(p.position[1]-lastBody.position[1]);
-                    var constraint = new p2.DistanceConstraint(p,lastBody, {
-                        distance: dist
-                    });
-                    world.addConstraint(constraint);
-                } else {
-                    p.velocity[0] = 1*i;
+
+                this.setWorld(world);
+
+                var N = 10,                         // Number of circles in each rope
+                    M = 10,                         // Number of ropes
+                    r = 0.1;                        // Circle radius
+
+                world.solver.tolerance = 0.1;
+                world.solver.iterations = N;
+
+                // Create circle ropes
+                for(var j=0; j<M; j++){
+                    var shape = new p2.Circle(r);
+                    var lastBody;
+                    for(var i=N; i>=0; i--){
+                        var x = (j+0.5-M/2)*r*8;
+                        var y = (N/2-i)*r*2.1;
+                        var p = new p2.Body({
+                            mass: i==0 ? 0 : 1,
+                            position: [x, y]
+                        });
+                        p.addShape(shape);
+                        if(lastBody){
+                            // Connect the current body to the previous one
+                            var dist = Math.abs(p.position[1]-lastBody.position[1]);
+                            var constraint = new p2.DistanceConstraint(p,lastBody, {
+                                distance: dist
+                            });
+                            world.addConstraint(constraint);
+                        } else {
+                            p.velocity[0] = 1*i;
+                        }
+                        lastBody = p;
+                        world.addBody(p);
+                    }
+                    lastBody = null;
                 }
-                lastBody = p;
-                world.addBody(p);
+
+                // Print the number of independent islands to console repeatedly.
+                // This will output 10 if the ropes don't touch.
+                interval = setInterval(function(){
+                    var numIslands = world.islandManager.islands.length;
+                    console.log("Number of islands:",numIslands);
+                },1000);
+            },
+
+            teardown: function(){
+                clearInterval(interval);
             }
-            lastBody = null;
-        }
-
-        // Print the number of independent islands to console repeatedly.
-        // This will output 10 if the ropes don't touch.
-        setInterval(function(){
-            var numIslands = world.islandManager.islands.length;
-            console.log("Number of islands:",numIslands);
-        },1000);
-
-        var demo = new p2.WebGLRenderer(world);
+        });
 
     </script>
 </body>

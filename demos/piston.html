@@ -11,80 +11,86 @@
 </head>
 <body>
     <script>
-        var R = 0.7,L=R*3;
-        var world = new p2.World({
-            doProfiling:true,
-            gravity : [0,0],
-        });
-        world.solver.iterations = 30;
-        world.solver.tolerance = 0.01;
 
-        // Create static dummy body that we can constrain other bodies to
-        var dummyBody = new p2.Body({
-            mass: 0,
-        });
-        world.addBody(dummyBody);
+        // Create demo application
+        var app = new p2.WebGLRenderer(function(){
 
-        // Create circle
-        var shape = new p2.Circle(R),
-            circleBody = new p2.Body({
-                mass: 1,
-                position: [0,0],
+            var R = 0.7,L=R*3;
+            var world = new p2.World({
+                doProfiling:true,
+                gravity : [0,0],
             });
-        circleBody.addShape(shape);
-        world.addBody(circleBody);
 
-        // Constrain it to the world
-        var c = new p2.RevoluteConstraint(circleBody, dummyBody, {
-            worldPivot: [0, 0],
-            collideConnected: false
+            this.setWorld(world);
+
+            world.solver.iterations = 30;
+            world.solver.tolerance = 0.01;
+
+            // Create static dummy body that we can constrain other bodies to
+            var dummyBody = new p2.Body({
+                mass: 0,
+            });
+            world.addBody(dummyBody);
+
+            // Create circle
+            var shape = new p2.Circle(R),
+                circleBody = new p2.Body({
+                    mass: 1,
+                    position: [0,0],
+                });
+            circleBody.addShape(shape);
+            world.addBody(circleBody);
+
+            // Constrain it to the world
+            var c = new p2.RevoluteConstraint(circleBody, dummyBody, {
+                worldPivot: [0, 0],
+                collideConnected: false
+            });
+            c.enableMotor();
+            c.setMotorSpeed(5);
+            world.addConstraint(c);
+
+            // Create arm
+            var armShape =  new p2.Rectangle(L,0.1*L);
+            var armBody = new p2.Body({
+                mass:1,
+            });
+            armBody.addShape(armShape);
+            world.addBody(armBody);
+
+            // Constrain arm to circle
+            var c2 = new p2.RevoluteConstraint(circleBody, armBody, {
+                localPivotA: [R*0.7, 0],
+                localPivotB: [L/2,0],
+                collideConnected: false
+            });
+            world.addConstraint(c2);
+
+            // Piston
+            var pistonShape = new p2.Rectangle(1,1);
+            var pistonBody = new p2.Body({
+                mass: 1,
+            });
+            pistonBody.addShape(pistonShape);
+            world.addBody(pistonBody);
+
+            // Connect piston to arm
+            var c3 = new p2.RevoluteConstraint(pistonBody, armBody, {
+                localPivotA: [0,0],
+                localPivotB: [-L/2,0],
+                collideConnected: false
+            });
+            world.addConstraint(c3);
+
+            // Prismatic constraint to keep the piston along a line
+            var c4 = new p2.PrismaticConstraint(dummyBody, pistonBody, {
+                localAnchorA : [ 0, 0],
+                localAnchorB : [ 0, 0],
+                localAxisA :   [ 1, 0],
+                collideConnected : false
+            });
+            world.addConstraint(c4);
         });
-        c.enableMotor();
-        c.setMotorSpeed(5);
-        world.addConstraint(c);
-
-        // Create arm
-        var armShape =  new p2.Rectangle(L,0.1*L);
-        var armBody = new p2.Body({
-            mass:1,
-        });
-        armBody.addShape(armShape);
-        world.addBody(armBody);
-
-        // Constrain arm to circle
-        var c2 = new p2.RevoluteConstraint(circleBody, armBody, {
-            localPivotA: [R*0.7, 0],
-            localPivotB: [L/2,0],
-            collideConnected: false
-        });
-        world.addConstraint(c2);
-
-        // Piston
-        var pistonShape = new p2.Rectangle(1,1);
-        var pistonBody = new p2.Body({
-            mass: 1,
-        });
-        pistonBody.addShape(pistonShape);
-        world.addBody(pistonBody);
-
-        // Connect piston to arm
-        var c3 = new p2.RevoluteConstraint(pistonBody, armBody, {
-            localPivotA: [0,0],
-            localPivotB: [-L/2,0],
-            collideConnected: false
-        });
-        world.addConstraint(c3);
-
-        // Prismatic constraint to keep the piston along a line
-        var c4 = new p2.PrismaticConstraint(dummyBody, pistonBody, {
-            localAnchorA : [ 0, 0],
-            localAnchorB : [ 0, 0],
-            localAxisA :   [ 1, 0],
-            collideConnected : false
-        });
-        world.addConstraint(c4);
-
-        var demo = new p2.WebGLRenderer(world);
 
     </script>
 </body>

@@ -11,32 +11,36 @@
 </head>
 <body>
     <script>
-        var N=10, r=0.1;
 
-        var world = new p2.World({
-            doProfiling:true,
-            gravity : [0,-10],
+        // Create demo application
+        var app = new p2.WebGLRenderer(function(){
+            var N = 10, r = 0.1;
+
+            var world = new p2.World({
+                doProfiling:true,
+                gravity : [0,-10],
+            });
+
+            this.setWorld(world);
+
+            world.solver.tolerance = 0.01;
+
+            var bodyA = new p2.Body({
+                mass: 1,
+                position: [-1,0],
+                fixedRotation: true,
+            });
+            bodyA.addShape(new p2.Rectangle(1,1));
+            world.addBody(bodyA);
+
+            // Create ground
+            var planeShape = new p2.Plane();
+            var plane = new p2.Body({
+                position:[0,-1],
+            });
+            plane.addShape(planeShape);
+            world.addBody(plane);
         });
-
-        world.solver.tolerance = 0.01;
-
-        var bodyA = new p2.Body({
-            mass: 1,
-            position: [-1,0],
-            fixedRotation: true,
-        });
-        bodyA.addShape(new p2.Rectangle(1,1));
-        world.addBody(bodyA);
-
-        // Create ground
-        var planeShape = new p2.Plane();
-        var plane = new p2.Body({
-            position:[0,-1],
-        });
-        plane.addShape(planeShape);
-        world.addBody(plane);
-
-        var demo = new p2.WebGLRenderer(world);
 
     </script>
 </body>

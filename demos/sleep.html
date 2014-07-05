@@ -12,37 +12,41 @@
 <body>
     <script>
 
-        var world = new p2.World({
-            doProfiling:true,
-            gravity : [0,-10],
-        });
+        // Create demo application
+        var app = new p2.WebGLRenderer(function(){
 
-        var radius = 0.15;
-        for(var i=0; i<20; i++){
-            var circleBody = new p2.Body({
-                mass: 1,
-                position: [0,i*2*radius],
+            var world = new p2.World({
+                doProfiling:true,
+                gravity : [0,-10],
             });
-            circleBody.allowSleep = true;
-            circleBody.sleepSpeedLimit = 1; // Body will feel sleepy if speed<1 (speed is the norm of velocity)
-            circleBody.sleepTimeLimit =  1; // Body falls asleep after 1s of sleepiness
-            circleBody.addShape(new p2.Circle(radius));
-            circleBody.damping = 0.2;
-            world.addBody(circleBody);
-        }
 
-        // Create ground
-        var planeShape = new p2.Plane();
-        var plane = new p2.Body({
-            position:[0,-1],
+            this.setWorld(world);
+
+            var radius = 0.15;
+            for(var i=0; i<20; i++){
+                var circleBody = new p2.Body({
+                    mass: 1,
+                    position: [0,i*2*radius],
+                });
+                circleBody.allowSleep = true;
+                circleBody.sleepSpeedLimit = 1; // Body will feel sleepy if speed<1 (speed is the norm of velocity)
+                circleBody.sleepTimeLimit =  1; // Body falls asleep after 1s of sleepiness
+                circleBody.addShape(new p2.Circle(radius));
+                circleBody.damping = 0.2;
+                world.addBody(circleBody);
+            }
+
+            // Create ground
+            var planeShape = new p2.Plane();
+            var plane = new p2.Body({
+                position:[0,-1],
+            });
+            plane.addShape(planeShape);
+            world.addBody(plane);
+
+            // Allow sleeping
+            world.enableBodySleeping = true;
         });
-        plane.addShape(planeShape);
-        world.addBody(plane);
-
-        // Allow sleeping
-        world.enableBodySleeping = true;
-
-        var demo = new p2.WebGLRenderer(world);
 
     </script>
 </body>

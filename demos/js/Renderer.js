@@ -1,3 +1,7 @@
+/* global dat,p2 */
+
+(function(p2){
+
 // shim layer with setTimeout fallback
 var requestAnimFrame =  window.requestAnimationFrame       ||
                         window.webkitRequestAnimationFrame ||
@@ -22,19 +26,29 @@ p2.Renderer = Renderer;
  * Base class for rendering a p2 physics scene.
  * @class Renderer
  * @constructor
- * @param {World} world
+ * @param {object} scenes One or more scene definitions. See setScene.
  */
-function Renderer(world){
+function Renderer(scenes){
     p2.EventEmitter.call(this);
 
     var that = this;
 
-    this.world = world;
-    this.initialState = world.toJSON();
+    if(scenes.setup){
+        // Only one scene given, without name
+        scenes = {
+            'default': scenes
+        };
+    } else if(typeof(scenes)==='function'){
+        scenes = {
+            'default': {
+                setup: scenes
+            }
+        };
+    }
+
+    this.scenes = scenes;
 
     this.state = Renderer.DEFAULT;
-
-    this.maxSubSteps = 3;
 
     // Bodies to draw
     this.bodies=[];
@@ -60,16 +74,6 @@ function Renderer(world){
 
     this.stateChangeEvent = { type : "stateChange", state:null };
 
-    this.keydownEvent = {
-        type:"keydown",
-        originalEvent : null,
-        keyCode : 0,
-    };
-    this.keyupEvent = {
-        type:"keyup",
-        originalEvent : null,
-        keyCode : 0,
-    };
 
     // Default collision masks for new shapes
     this.newShapeCollisionMask = 1;
@@ -98,11 +102,11 @@ function Renderer(world){
         },
 
         'paused [p]': false,
-        'manualStep [s]': function(){ world.step(world.lastTimeStep); },
+        'manualStep [s]': function(){ that.world.step(that.world.lastTimeStep); },
         fps: 60,
         maxSubSteps: 3,
-        gravityX: world.gravity[0],
-        gravityY: world.gravity[1],
+        gravityX: 0,
+        gravityY: -10,
         bodySleeping: false,
         islandSleeping: false,
 
@@ -110,7 +114,7 @@ function Renderer(world){
         'drawAABBs [t]': false,
         drawConstraints: false,
 
-        iterations: world.solver.iterations,
+        iterations: 10,
         stiffness: 1000000,
         relaxation: 4,
         tolerance: 0.0001,
@@ -123,110 +127,20 @@ function Renderer(world){
     this.addLogo();
     this.centerCamera(0, 0);
 
-    var iter = -1;
-    world.on("postStep",function(e){
-        that.updateStats();
-
-        // If the number of iterations changed - update the input value
-        var solver = that.world.solver;
-        if("subsolver" in solver)
-            solver = solver.subsolver;
-    }).on("addBody",function(e){
-        that.addVisual(e.body);
-    }).on("removeBody",function(e){
-        that.removeVisual(e.body);
-    }).on("addSpring",function(e){
-        that.addVisual(e.spring);
-    }).on("removeSpring",function(e){
-        that.removeVisual(e.spring);
-    });
-
     window.onresize = function(){
         var dpr = that.getDevicePixelRatio();
         that.resize(window.innerWidth * dpr, window.innerHeight * dpr);
     };
 
     this.setUpKeyboard();
+    this.setupGUI();
 
-    // Add initial bodies
-    for(var i=0; i<world.bodies.length; i++){
-        this.addVisual(world.bodies[i]);
-    }
-    for(var i=0; i<world.springs.length; i++){
-        this.addVisual(world.springs[i]);
-    }
+    // Set first scene
+    this.setSceneByIndex(0);
 
-    if(window.dat){
-        var gui = this.gui = new dat.GUI();
-        gui.domElement.setAttribute('style',disableSelectionCSS.join(';'));
+    this.startRenderingLoop();
 
-        var settings = this.settings;
-
-        gui.add(settings, 'tool', Renderer.toolStateMap).onChange(function(state){
-            that.setState(parseInt(state));
-        });
-        gui.add(settings, 'fullscreen');
-
-        // World folder
-        var worldFolder = gui.addFolder('World');
-        worldFolder.open();
-        worldFolder.add(settings, 'paused [p]').onChange(function(p){
-            that.paused = p;
-        });
-        worldFolder.add(settings, 'manualStep [s]');
-        worldFolder.add(settings, 'fps', 60, 60*10).step(60).onChange(function(freq){
-            that.timeStep = 1 / freq;
-        });
-        worldFolder.add(settings, 'maxSubSteps', 0, 10).step(1);
-        var maxg = 100;
-
-        function changeGravity(){
-            if(!isNaN(settings.gravityX) && !isNaN(settings.gravityY)){
-                p2.vec2.set(world.gravity, settings.gravityX, settings.gravityY);
-            }
-        }
-
-        worldFolder.add(settings, 'gravityX', -maxg, maxg).onChange(changeGravity);
-        worldFolder.add(settings, 'gravityY', -maxg, maxg).onChange(changeGravity);
-        worldFolder.add(settings, 'bodySleeping').onChange(function(enable){
-            world.enableBodySleeping = enable;
-        });
-        worldFolder.add(settings, 'islandSleeping').onChange(function(enable){
-            world.enableIslandSleeping = enable;
-        });
-
-        // Render mode
-        var renderingFolder = gui.addFolder('Rendering');
-        renderingFolder.open();
-        renderingFolder.add(settings,'drawContacts [c]').onChange(function(draw){
-            that.drawContacts = draw;
-        });
-        renderingFolder.add(settings,'drawAABBs [t]').onChange(function(draw){
-            that.drawAABBs = draw;
-        });
-
-        // Solver folder
-        var solverFolder = gui.addFolder('Solver');
-        solverFolder.open();
-        solverFolder.add(settings, 'iterations', 1, 100).step(1).onChange(function(it){
-            world.solver.iterations = it;
-        });
-        solverFolder.add(settings, 'stiffness', 10, 10000000).onChange(function(k){
-            that.setEquationParameters();
-        });
-        solverFolder.add(settings, 'relaxation', 0, 20).step(0.1).onChange(function(d){
-            that.setEquationParameters();
-        });
-        solverFolder.add(settings, 'tolerance', 0, 10).step(0.01).onChange(function(t){
-            world.solver.tolerance = t;
-        });
-
-        // Scene picker
-        sceneFolder = gui.addFolder('Scenes');
-        sceneFolder.open();
-    }
-
-    this.run();
+    this.printConsoleMessage();
 }
 Renderer.prototype = new p2.EventEmitter();
 
@@ -251,6 +165,17 @@ for(var key in Renderer.toolStateMap){
     Renderer.stateToolMap[Renderer.toolStateMap[key]] = key;
 }
 
+Renderer.keydownEvent = {
+    type:"keydown",
+    originalEvent : null,
+    keyCode : 0,
+};
+Renderer.keyupEvent = {
+    type:"keyup",
+    originalEvent : null,
+    keyCode : 0,
+};
+
 Object.defineProperty(Renderer.prototype, 'drawContacts', {
     get: function() {
         return this.settings['drawContacts [c]'];
@@ -271,8 +196,113 @@ Object.defineProperty(Renderer.prototype, 'drawAABBs', {
     }
 });
 
+Object.defineProperty(Renderer.prototype, 'paused', {
+    get: function() {
+        return this.settings['paused [p]'];
+    },
+    set: function(value) {
+        this.settings['paused [p]'] = value;
+        this.updateGUI();
+    }
+});
+
 Renderer.prototype.getDevicePixelRatio = function() {
     return window.devicePixelRatio || 1;
+};
+
+Renderer.prototype.printConsoleMessage = function(){
+    console.log([
+        'p2.js v' + p2.version,
+    ].join('\n'));
+};
+
+/**
+ * Sets up dat.gui
+ */
+Renderer.prototype.setupGUI = function() {
+    if(!window.dat){
+        return;
+    }
+
+    var that = this;
+
+    var gui = this.gui = new dat.GUI();
+    gui.domElement.setAttribute('style',disableSelectionCSS.join(';'));
+
+    var settings = this.settings;
+
+    gui.add(settings, 'tool', Renderer.toolStateMap).onChange(function(state){
+        that.setState(parseInt(state));
+    });
+    gui.add(settings, 'fullscreen');
+
+    // World folder
+    var worldFolder = gui.addFolder('World');
+    worldFolder.open();
+    worldFolder.add(settings, 'paused [p]').onChange(function(p){
+        that.paused = p;
+    });
+    worldFolder.add(settings, 'manualStep [s]');
+    worldFolder.add(settings, 'fps', 60, 60*10).step(60).onChange(function(freq){
+        that.timeStep = 1 / freq;
+    });
+    worldFolder.add(settings, 'maxSubSteps', 0, 10).step(1);
+    var maxg = 100;
+
+    function changeGravity(){
+        if(!isNaN(settings.gravityX) && !isNaN(settings.gravityY)){
+            p2.vec2.set(that.world.gravity, settings.gravityX, settings.gravityY);
+        }
+    }
+
+    worldFolder.add(settings, 'gravityX', -maxg, maxg).onChange(changeGravity);
+    worldFolder.add(settings, 'gravityY', -maxg, maxg).onChange(changeGravity);
+    worldFolder.add(settings, 'bodySleeping').onChange(function(enable){
+        that.world.enableBodySleeping = enable;
+    });
+    worldFolder.add(settings, 'islandSleeping').onChange(function(enable){
+        that.world.enableIslandSleeping = enable;
+    });
+
+    // Rendering
+    var renderingFolder = gui.addFolder('Rendering');
+    renderingFolder.open();
+    renderingFolder.add(settings,'drawContacts [c]').onChange(function(draw){
+        that.drawContacts = draw;
+    });
+    renderingFolder.add(settings,'drawAABBs [t]').onChange(function(draw){
+        that.drawAABBs = draw;
+    });
+
+    // Solver
+    var solverFolder = gui.addFolder('Solver');
+    solverFolder.open();
+    solverFolder.add(settings, 'iterations', 1, 100).step(1).onChange(function(it){
+        that.world.solver.iterations = it;
+    });
+    solverFolder.add(settings, 'stiffness', 10).onChange(function(k){
+        that.setEquationParameters();
+    });
+    solverFolder.add(settings, 'relaxation', 0, 20).step(0.1).onChange(function(d){
+        that.setEquationParameters();
+    });
+    solverFolder.add(settings, 'tolerance', 0, 10).step(0.01).onChange(function(t){
+        that.world.solver.tolerance = t;
+    });
+
+    // Scene picker
+    var sceneFolder = gui.addFolder('Scenes');
+    sceneFolder.open();
+
+    // Add scenes
+    var i = 1;
+    for(var sceneName in this.scenes){
+        var guiLabel = sceneName + ' [' + (i++) + ']';
+        this.settings[guiLabel] = function(){
+            that.setScene(that.scenes[sceneName]);
+        };
+        sceneFolder.add(settings, guiLabel);
+    }
 };
 
 /**
@@ -293,9 +323,82 @@ Renderer.prototype.updateGUI = function() {
     updateControllers(this.gui);
 };
 
+Renderer.prototype.setWorld = function(world){
+    this.world = world;
+
+    var that = this;
+
+    world.on("postStep",function(e){
+        that.updateStats();
+    }).on("addBody",function(e){
+        that.addVisual(e.body);
+    }).on("removeBody",function(e){
+        that.removeVisual(e.body);
+    }).on("addSpring",function(e){
+        that.addVisual(e.spring);
+    }).on("removeSpring",function(e){
+        that.removeVisual(e.spring);
+    });
+};
+
+/**
+ * Sets the current scene to the scene definition given.
+ * @param {object} sceneDefinition
+ * @param {function} sceneDefinition.setup
+ * @param {function} [sceneDefinition.teardown]
+ */
+Renderer.prototype.setScene = function(sceneDefinition){
+    if(typeof(sceneDefinition) === 'string'){
+        sceneDefinition = this.scenes[sceneDefinition];
+    }
+
+    this.removeAllVisuals();
+    if(this.currentScene && this.currentScene.teardown){
+        this.currentScene.teardown();
+    }
+    if(this.world){
+        this.world.clear();
+    }
+
+    this.currentScene = sceneDefinition;
+    this.world = null;
+    sceneDefinition.setup.call(this);
+    if(!this.world){
+        throw new Error('The .setup function in the scene definition must run this.setWorld(world);');
+    }
+
+    // Set the GUI parameters from the loaded world
+    var settings = this.settings;
+    settings.iterations = this.world.solver.iterations;
+    settings.tolerance = this.world.solver.tolerance;
+    settings.gravityX = this.world.gravity[0];
+    settings.gravityY = this.world.gravity[1];
+    settings.bodySleeping = this.world.enableBodySleeping;
+    settings.islandSleeping = this.world.enableIslandSleeping;
+    this.updateGUI();
+};
+
+/**
+ * Set scene by its position in which it was given. Starts at 0.
+ * @param {number} index
+ */
+Renderer.prototype.setSceneByIndex = function(index){
+    var i = 0;
+    for(var key in this.scenes){
+        if(i === index){
+            this.setScene(this.scenes[key]);
+            break;
+        }
+        i++;
+    }
+};
+
 Renderer.elementClass = 'p2-canvas';
 Renderer.containerClass = 'p2-container';
 
+/**
+ * Adds all needed keyboard callbacks
+ */
 Renderer.prototype.setUpKeyboard = function() {
     var that = this;
 
@@ -304,20 +407,16 @@ Renderer.prototype.setUpKeyboard = function() {
             return;
         }
         var s = that.state;
-        switch(String.fromCharCode(e.keyCode)){
+        var ch = String.fromCharCode(e.keyCode);
+        switch(ch){
         case "P": // pause
-            that.settings['paused [p]'] = that.paused = !that.paused;
+            that.paused = !that.paused;
             break;
         case "S": // step
             that.world.step(that.world.lastTimeStep);
             break;
         case "R": // restart
-            // TODO: use teardown &setup
-            that.removeAllVisuals();
-            var result = that.world.fromJSON(that.initialState);
-            if(!result){
-                console.warn("Not everything could be loaded from JSON!");
-            }
+            that.setScene(that.currentScene);
             break;
         case "C": // toggle draw contacts & constraints
             that.drawContacts = !that.drawContacts;
@@ -338,10 +437,21 @@ Renderer.prototype.setUpKeyboard = function() {
         case "Q": // set default
             that.setState(Renderer.DEFAULT);
             break;
+        case "1":
+        case "2":
+        case "3":
+        case "4":
+        case "5":
+        case "6":
+        case "7":
+        case "8":
+        case "9":
+            that.setSceneByIndex(parseInt(ch) - 1);
+            break;
         default:
-            that.keydownEvent.keyCode = e.keyCode;
-            that.keydownEvent.originalEvent = e;
-            that.emit(that.keydownEvent);
+            Renderer.keydownEvent.keyCode = e.keyCode;
+            Renderer.keydownEvent.originalEvent = e;
+            that.emit(Renderer.keydownEvent);
             break;
         }
         that.updateGUI();
@@ -351,16 +461,19 @@ Renderer.prototype.setUpKeyboard = function() {
         if(e.keyCode){
             switch(String.fromCharCode(e.keyCode)){
             default:
-                that.keyupEvent.keyCode = e.keyCode;
-                that.keyupEvent.originalEvent = e;
-                that.emit(that.keyupEvent);
+                Renderer.keyupEvent.keyCode = e.keyCode;
+                Renderer.keyupEvent.originalEvent = e;
+                that.emit(Renderer.keyupEvent);
                 break;
             }
         }
     };
 };
 
-Renderer.prototype.run = function(){
+/**
+ * Start the rendering loop
+ */
+Renderer.prototype.startRenderingLoop = function(){
     var demo = this,
         lastCallTime = Date.now() / 1000;
 
@@ -377,12 +490,16 @@ Renderer.prototype.run = function(){
     requestAnimFrame(update);
 };
 
-Renderer.prototype.setState = function(s){
-    this.state = s;
-    this.stateChangeEvent.state = s;
+/**
+ * Set the app state.
+ * @param {number} state
+ */
+Renderer.prototype.setState = function(state){
+    this.state = state;
+    this.stateChangeEvent.state = state;
     this.emit(this.stateChangeEvent);
-    if(Renderer.stateToolMap[s]){
-        this.settings.tool = s;
+    if(Renderer.stateToolMap[state]){
+        this.settings.tool = state;
         this.updateGUI();
     }
 };
@@ -393,63 +510,64 @@ Renderer.prototype.setState = function(s){
 Renderer.prototype.handleMouseDown = function(physicsPosition){
     switch(this.state){
 
-        case Renderer.DEFAULT:
+    case Renderer.DEFAULT:
 
-            // Check if the clicked point overlaps bodies
-            var result = this.world.hitTest(physicsPosition,world.bodies,this.pickPrecision);
+        // Check if the clicked point overlaps bodies
+        var result = this.world.hitTest(physicsPosition, this.world.bodies, this.pickPrecision);
 
-            // Remove static bodies
-            var b;
-            while(result.length > 0){
-                b = result.shift();
-                if(b.type == p2.Body.STATIC)
-                    b = null;
-                else
-                    break;
-            }
-
-            if(b){
-                b.wakeUp();
-                this.setState(Renderer.DRAGGING);
-                // Add mouse joint to the body
-                var localPoint = p2.vec2.create();
-                b.toLocalFrame(localPoint,physicsPosition);
-                this.world.addBody(this.nullBody);
-                this.mouseConstraint = new p2.RevoluteConstraint(this.nullBody, b, {
-                    localPivotA: physicsPosition,
-                    localPivotB: localPoint
-                });
-                this.world.addConstraint(this.mouseConstraint);
+        // Remove static bodies
+        var b;
+        while(result.length > 0){
+            b = result.shift();
+            if(b.type === p2.Body.STATIC){
+                b = null;
             } else {
-                this.setState(Renderer.PANNING);
+                break;
             }
-            break;
+        }
 
-        case Renderer.DRAWPOLYGON:
-            // Start drawing a polygon
-            this.setState(Renderer.DRAWINGPOLYGON);
-            this.drawPoints = [];
-            var copy = p2.vec2.create();
-            p2.vec2.copy(copy,physicsPosition);
-            this.drawPoints.push(copy);
-            this.emit(this.drawPointsChangeEvent);
-            break;
+        if(b){
+            b.wakeUp();
+            this.setState(Renderer.DRAGGING);
+            // Add mouse joint to the body
+            var localPoint = p2.vec2.create();
+            b.toLocalFrame(localPoint,physicsPosition);
+            this.world.addBody(this.nullBody);
+            this.mouseConstraint = new p2.RevoluteConstraint(this.nullBody, b, {
+                localPivotA: physicsPosition,
+                localPivotB: localPoint
+            });
+            this.world.addConstraint(this.mouseConstraint);
+        } else {
+            this.setState(Renderer.PANNING);
+        }
+        break;
 
-        case Renderer.DRAWCIRCLE:
-            // Start drawing a circle
-            this.setState(Renderer.DRAWINGCIRCLE);
-            p2.vec2.copy(this.drawCircleCenter,physicsPosition);
-            p2.vec2.copy(this.drawCirclePoint, physicsPosition);
-            this.emit(this.drawCircleChangeEvent);
-            break;
+    case Renderer.DRAWPOLYGON:
+        // Start drawing a polygon
+        this.setState(Renderer.DRAWINGPOLYGON);
+        this.drawPoints = [];
+        var copy = p2.vec2.create();
+        p2.vec2.copy(copy,physicsPosition);
+        this.drawPoints.push(copy);
+        this.emit(this.drawPointsChangeEvent);
+        break;
 
-        case Renderer.DRAWRECTANGLE:
-            // Start drawing a circle
-            this.setState(Renderer.DRAWINGRECTANGLE);
-            p2.vec2.copy(this.drawRectStart,physicsPosition);
-            p2.vec2.copy(this.drawRectEnd, physicsPosition);
-            this.emit(this.drawRectangleChangeEvent);
-            break;
+    case Renderer.DRAWCIRCLE:
+        // Start drawing a circle
+        this.setState(Renderer.DRAWINGCIRCLE);
+        p2.vec2.copy(this.drawCircleCenter,physicsPosition);
+        p2.vec2.copy(this.drawCirclePoint, physicsPosition);
+        this.emit(this.drawCircleChangeEvent);
+        break;
+
+    case Renderer.DRAWRECTANGLE:
+        // Start drawing a circle
+        this.setState(Renderer.DRAWINGRECTANGLE);
+        p2.vec2.copy(this.drawRectStart,physicsPosition);
+        p2.vec2.copy(this.drawRectEnd, physicsPosition);
+        this.emit(this.drawRectangleChangeEvent);
+        break;
     }
 };
 
@@ -459,37 +577,37 @@ Renderer.prototype.handleMouseDown = function(physicsPosition){
 Renderer.prototype.handleMouseMove = function(physicsPosition){
     var sampling = 0.4;
     switch(this.state){
-        case Renderer.DEFAULT:
-        case Renderer.DRAGGING:
-            if(this.mouseConstraint){
-                p2.vec2.copy(this.mouseConstraint.pivotA, physicsPosition);
-                this.mouseConstraint.bodyA.wakeUp();
-                this.mouseConstraint.bodyB.wakeUp();
-            }
-            break;
+    case Renderer.DEFAULT:
+    case Renderer.DRAGGING:
+        if(this.mouseConstraint){
+            p2.vec2.copy(this.mouseConstraint.pivotA, physicsPosition);
+            this.mouseConstraint.bodyA.wakeUp();
+            this.mouseConstraint.bodyB.wakeUp();
+        }
+        break;
 
-        case Renderer.DRAWINGPOLYGON:
-            // drawing a polygon - add new point
-            var sqdist = p2.vec2.dist(physicsPosition,this.drawPoints[this.drawPoints.length-1]);
-            if(sqdist > sampling*sampling){
-                var copy = [0,0];
-                p2.vec2.copy(copy,physicsPosition);
-                this.drawPoints.push(copy);
-                this.emit(this.drawPointsChangeEvent);
-            }
-            break;
+    case Renderer.DRAWINGPOLYGON:
+        // drawing a polygon - add new point
+        var sqdist = p2.vec2.dist(physicsPosition,this.drawPoints[this.drawPoints.length-1]);
+        if(sqdist > sampling*sampling){
+            var copy = [0,0];
+            p2.vec2.copy(copy,physicsPosition);
+            this.drawPoints.push(copy);
+            this.emit(this.drawPointsChangeEvent);
+        }
+        break;
 
-        case Renderer.DRAWINGCIRCLE:
-            // drawing a circle - change the circle radius point to current
-            p2.vec2.copy(this.drawCirclePoint, physicsPosition);
-            this.emit(this.drawCircleChangeEvent);
-            break;
+    case Renderer.DRAWINGCIRCLE:
+        // drawing a circle - change the circle radius point to current
+        p2.vec2.copy(this.drawCirclePoint, physicsPosition);
+        this.emit(this.drawCircleChangeEvent);
+        break;
 
-        case Renderer.DRAWINGRECTANGLE:
-            // drawing a rectangle - change the end point to current
-            p2.vec2.copy(this.drawRectEnd, physicsPosition);
-            this.emit(this.drawRectangleChangeEvent);
-            break;
+    case Renderer.DRAWINGRECTANGLE:
+        // drawing a rectangle - change the end point to current
+        p2.vec2.copy(this.drawRectEnd, physicsPosition);
+        this.emit(this.drawRectangleChangeEvent);
+        break;
     }
 };
 
@@ -502,78 +620,80 @@ Renderer.prototype.handleMouseUp = function(physicsPosition){
 
     switch(this.state){
 
-        case Renderer.DEFAULT:
-            break;
+    case Renderer.DEFAULT:
+        break;
 
-        case Renderer.DRAGGING:
-            // Drop constraint
-            this.world.removeConstraint(this.mouseConstraint);
-            this.mouseConstraint = null;
-            this.world.removeBody(this.nullBody);
+    case Renderer.DRAGGING:
+        // Drop constraint
+        this.world.removeConstraint(this.mouseConstraint);
+        this.mouseConstraint = null;
+        this.world.removeBody(this.nullBody);
+        this.setState(Renderer.DEFAULT);
+        break;
 
-        case Renderer.PANNING:
-            this.setState(Renderer.DEFAULT);
-            break;
+    case Renderer.PANNING:
+        this.setState(Renderer.DEFAULT);
+        break;
 
-        case Renderer.DRAWINGPOLYGON:
-            // End this drawing state
-            this.setState(Renderer.DRAWPOLYGON);
-            if(this.drawPoints.length > 3){
-                // Create polygon
-                b = new p2.Body({ mass : 1 });
-                if(b.fromPolygon(this.drawPoints,{
-                    removeCollinearPoints : 0.01,
-                })){
-                    this.world.addBody(b);
-                }
-            }
-            this.drawPoints = [];
-            this.emit(this.drawPointsChangeEvent);
-            break;
-
-        case Renderer.DRAWINGCIRCLE:
-            // End this drawing state
-            this.setState(Renderer.DRAWCIRCLE);
-            var R = p2.vec2.dist(this.drawCircleCenter,this.drawCirclePoint);
-            if(R > 0){
-                // Create circle
-                b = new p2.Body({ mass : 1, position : this.drawCircleCenter });
-                var circle = new p2.Circle(R);
-                b.addShape(circle);
+    case Renderer.DRAWINGPOLYGON:
+        // End this drawing state
+        this.setState(Renderer.DRAWPOLYGON);
+        if(this.drawPoints.length > 3){
+            // Create polygon
+            b = new p2.Body({ mass : 1 });
+            if(b.fromPolygon(this.drawPoints,{
+                removeCollinearPoints : 0.01,
+            })){
                 this.world.addBody(b);
             }
-            p2.vec2.copy(this.drawCircleCenter,this.drawCirclePoint);
-            this.emit(this.drawCircleChangeEvent);
-            break;
+        }
+        this.drawPoints = [];
+        this.emit(this.drawPointsChangeEvent);
+        break;
 
-        case Renderer.DRAWINGRECTANGLE:
-            // End this drawing state
-            this.setState(Renderer.DRAWRECTANGLE);
-            // Make sure first point is upper left
-            var start = this.drawRectStart;
-            var end = this.drawRectEnd;
-            for(var i=0; i<2; i++){
-                if(start[i] > end[i]){
-                    var tmp = end[i];
-                    end[i] = start[i];
-                    start[i] = tmp;
-                }
+    case Renderer.DRAWINGCIRCLE:
+        // End this drawing state
+        this.setState(Renderer.DRAWCIRCLE);
+        var R = p2.vec2.dist(this.drawCircleCenter,this.drawCirclePoint);
+        if(R > 0){
+            // Create circle
+            b = new p2.Body({ mass : 1, position : this.drawCircleCenter });
+            var circle = new p2.Circle(R);
+            b.addShape(circle);
+            this.world.addBody(b);
+        }
+        p2.vec2.copy(this.drawCircleCenter,this.drawCirclePoint);
+        this.emit(this.drawCircleChangeEvent);
+        break;
+
+    case Renderer.DRAWINGRECTANGLE:
+        // End this drawing state
+        this.setState(Renderer.DRAWRECTANGLE);
+        // Make sure first point is upper left
+        var start = this.drawRectStart;
+        var end = this.drawRectEnd;
+        for(var i=0; i<2; i++){
+            if(start[i] > end[i]){
+                var tmp = end[i];
+                end[i] = start[i];
+                start[i] = tmp;
             }
-            var width = Math.abs(start[0] - end[0]);
-            var height = Math.abs(start[1] - end[1]);
-            if(width > 0 && height > 0){
-                // Create box
-                b = new p2.Body({
-                    mass : 1,
-                    position : [this.drawRectStart[0] + width*0.5, this.drawRectStart[1] + height*0.5]
-                });
-                var rectangleShape = new p2.Rectangle(width, height);
-                b.addShape(rectangleShape);
-                this.world.addBody(b);
-            }
-            p2.vec2.copy(this.drawRectEnd,this.drawRectStart);
-            this.emit(this.drawRectangleChangeEvent);
-            break;
+        }
+        var width = Math.abs(start[0] - end[0]);
+        var height = Math.abs(start[1] - end[1]);
+        if(width > 0 && height > 0){
+            // Create box
+            b = new p2.Body({
+                mass : 1,
+                position : [this.drawRectStart[0] + width*0.5, this.drawRectStart[1] + height*0.5]
+            });
+            var rectangleShape = new p2.Rectangle(width, height);
+            b.addShape(rectangleShape);
+            this.world.addBody(b);
+        }
+        p2.vec2.copy(this.drawRectEnd,this.drawRectStart);
+        this.emit(this.drawRectangleChangeEvent);
+        break;
     }
 
     if(b){
@@ -592,7 +712,7 @@ Renderer.prototype.handleMouseUp = function(physicsPosition){
 Renderer.prototype.updateStats = function(){
     this.stats_sum += this.world.lastStepTime;
     this.stats_Nsummed++;
-    if(this.stats_Nsummed == this.stats_N){
+    if(this.stats_Nsummed === this.stats_N){
         this.stats_average = this.stats_sum/this.stats_N;
         this.stats_sum = 0.0;
         this.stats_Nsummed = 0;
@@ -616,8 +736,9 @@ Renderer.prototype.addVisual = function(obj){
             this.bodies.push(obj);
             this.addRenderable(obj);
         }
-    } else
+    } else {
         throw new Error("Visual type not recognized.");
+    }
 };
 
 /**
@@ -626,10 +747,12 @@ Renderer.prototype.addVisual = function(obj){
 Renderer.prototype.removeAllVisuals = function(){
     var bodies = this.bodies,
         springs = this.springs;
-    while(bodies.length)
+    while(bodies.length){
         this.removeVisual(bodies[bodies.length-1]);
-    while(springs.length)
+    }
+    while(springs.length){
         this.removeVisual(springs[springs.length-1]);
+    }
 };
 
 /**
@@ -640,12 +763,14 @@ Renderer.prototype.removeVisual = function(obj){
     this.removeRenderable(obj);
     if(obj instanceof p2.Spring){
         var idx = this.springs.indexOf(obj);
-        if(idx != -1)
+        if(idx !== -1){
             this.springs.splice(idx,1);
+        }
     } else if(obj instanceof p2.Body){
         var idx = this.bodies.indexOf(obj);
-        if(idx != -1)
+        if(idx !== -1){
             this.bodies.splice(idx,1);
+        }
     } else {
         console.error("Visual type not recognized...");
     }
@@ -710,3 +835,5 @@ Renderer.prototype.setEquationParameters = function(){
         relaxation: this.settings.relaxation
     });
 };
+
+})(p2);

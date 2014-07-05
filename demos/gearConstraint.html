@@ -12,50 +12,54 @@
 <body>
     <script>
 
-        var shape = new p2.Circle(1);
+        // Create demo application
+        var app = new p2.WebGLRenderer(function(){
 
-        var world = new p2.World({
-            doProfiling:true,
-            gravity : [0,-10],
+            var shape = new p2.Circle(1);
+
+            var world = new p2.World({
+                doProfiling:true,
+                gravity : [0,-10],
+            });
+
+            this.setWorld(world);
+
+            // Create first circle
+            var bodyA = new p2.Body({
+                mass: 1,
+                position: [-2,0],
+                angle: Math.PI/2,
+                angularVelocity : -5,
+            });
+            bodyA.addShape(shape);
+            world.addBody(bodyA);
+
+            // Create second circle
+            var bodyB = new p2.Body({
+                mass: 1,
+                position: [2,0],
+            });
+            bodyB.addShape(shape);
+            world.addBody(bodyB);
+
+            // Create a dummy body that we can hinge them to
+            var dummyBody = new p2.Body();
+            world.addBody(dummyBody);
+
+            // Hinge em
+            var c1 = new p2.RevoluteConstraint(dummyBody, bodyA, {
+                worldPivot: bodyA.position
+            });
+            var c2 = new p2.RevoluteConstraint(dummyBody, bodyB, {
+                worldPivot: bodyB.position
+            });
+            world.addConstraint(c1);
+            world.addConstraint(c2);
+
+            // Add gear
+            var gear = new p2.GearConstraint(bodyA,bodyB,{ ratio: 2 });
+            world.addConstraint(gear);
         });
-
-        // Create first circle
-        var bodyA = new p2.Body({
-            mass: 1,
-            position: [-2,0],
-            angle: Math.PI/2,
-            angularVelocity : -5,
-        });
-        bodyA.addShape(shape);
-        world.addBody(bodyA);
-
-        // Create second circle
-        var bodyB = new p2.Body({
-            mass: 1,
-            position: [2,0],
-        });
-        bodyB.addShape(shape);
-        world.addBody(bodyB);
-
-        // Create a dummy body that we can hinge them to
-        var dummyBody = new p2.Body();
-        world.addBody(dummyBody);
-
-        // Hinge em
-        var c1 = new p2.RevoluteConstraint(dummyBody, bodyA, {
-            worldPivot: bodyA.position
-        });
-        var c2 = new p2.RevoluteConstraint(dummyBody, bodyB, {
-            worldPivot: bodyB.position
-        });
-        world.addConstraint(c1);
-        world.addConstraint(c2);
-
-        // Add gear
-        var gear = new p2.GearConstraint(bodyA,bodyB,{ ratio: 2 });
-        world.addConstraint(gear);
-
-        var demo = new p2.WebGLRenderer(world);
 
     </script>
 </body>
