@@ -3,7 +3,7 @@ p2.js
 
 2D rigid body physics engine written in JavaScript. Includes collision detection, contacts, friction, restitution, motors, springs, advanced constraints and various shape types.
 
-[Demos](#demos) | [Examples](#examples) | [Documentation](http://schteppe.github.io/p2.js/docs/) | [Download](https://raw.github.com/schteppe/p2.js/master/build/p2.js)
+[Demos](#demos) | [Examples](#examples) | [Documentation](http://schteppe.github.io/p2.js/docs/) | [Download](https://raw.github.com/schteppe/p2.js/master/build/p2.js) | [CDN](http://cdnjs.com/libraries/p2.js)
 
 ### Demos
 * [Car](http://schteppe.github.io/p2.js/demos/car.html)
@@ -37,34 +37,53 @@ Examples showing how to use p2.js with your favorite renderer.
 * [Canvas: Asteroids game](http://schteppe.github.io/p2.js/examples/canvas/asteroids.html)
 * [Pixi.js: Box on plane](http://schteppe.github.io/p2.js/examples/pixijs/box.html)
 
-More examples coming soon.
-
 ### Sample code
 The following example uses the [World](http://schteppe.github.io/p2.js/docs/classes/World.html), [Circle](http://schteppe.github.io/p2.js/docs/classes/Circle.html), [Body](http://schteppe.github.io/p2.js/docs/classes/Body.html) and [Plane](http://schteppe.github.io/p2.js/docs/classes/Plane.html) classes to set up a simple physics scene with a ball on a plane.
 ```js
-// Setup our world
-var world = new p2.World({ gravity:[0,-9.82] });
+// Create a physics world, where bodies and constraints live
+var world = new p2.World({
+    gravity:[0, -9.82]
+});
 
-// Create a circle
-var radius = 1,
-    circleShape = new p2.Circle(radius),
-    circleBody = new p2.Body({ mass:5, position:[0,10] });
+// Create an empty dynamic body
+var circleBody = new p2.Body({
+    mass: 5,
+    position: [0, 10]
+});
+
+// Add a circle shape to the body.
+var radius = 1;
+var circleShape = new p2.Circle(radius);
 circleBody.addShape(circleShape);
 
-// Create a plane
-var groundShape = new p2.Plane(),
-    groundBody = new p2.Body({ mass:0 });
-groundBody.addShape(groundShape);
-
-// Add the bodies to the world
+// ...and add the body to the world.
+// If we don't add it to the world, it won't be simulated.
 world.addBody(circleBody);
+
+// Create an infinite ground plane.
+var groundBody = new p2.Body({
+    mass: 0 // Setting mass to 0 makes the body static
+});
+var groundShape = new p2.Plane();
+groundBody.addShape(groundShape);
 world.addBody(groundBody);
 
-// Step the simulation
+// To get the trajectories of the bodies,
+// we must step the world forward in time.
+// This is done using a fixed time step size.
+var timeStep = 1 / 60; // seconds
+
+// The "Game loop". Could be replaced by, for example, requestAnimationFrame.
 setInterval(function(){
-    world.step(1.0/60.0);
+
+    // The step method moves the bodies forward in time.
+    world.step(timeStep);
+    
+    // Print the circle position to console.
+    // Could be replaced by a render call.
     console.log("Circle y position: " + circleBody.position[1]);
-}, 1000.0/60.0);
+    
+}, 1000 * timeStep);
 ```
 
 ### Install
