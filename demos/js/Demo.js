@@ -1,12 +1,3 @@
-(function($){
-    $.fn.disableSelection = function() {
-        return this
-                 .attr('unselectable', 'on')
-                 .css('user-select', 'none')
-                 .on('selectstart', false);
-    };
-})(jQuery);
-
 // shim layer with setTimeout fallback
 var requestAnimFrame =  window.requestAnimationFrame       ||
                         window.webkitRequestAnimationFrame ||
@@ -16,6 +7,14 @@ var requestAnimFrame =  window.requestAnimationFrame       ||
                         function( callback ){
                             window.setTimeout(callback, 1000 / 60);
                         };
+
+var disableSelectionCSS = [
+    "-ms-user-select: none",
+    "-moz-user-select: -moz-none",
+    "-khtml-user-select: none",
+    "-webkit-user-select: none",
+    "user-select: none"
+];
 
 /**
  * Base class for rendering of a scene.
@@ -83,8 +82,8 @@ function Demo(world){
     this.stats_average = -1;
 
     var dpr = this.getDevicePixelRatio();
-    this.w = $(window).width() * dpr;
-    this.h = $(window).height() * dpr;
+    this.w = window.innerWidth * dpr;
+    this.h = window.innerHeight * dpr;
 
     this.settings = {
         tool: Demo.DEFAULT,
@@ -130,10 +129,6 @@ function Demo(world){
         var solver = that.world.solver;
         if("subsolver" in solver)
             solver = solver.subsolver;
-        if(iter != solver.iterations){
-            $("#menu-solver-iterations").val(solver.iterations);
-            iter = solver.iterations;
-        }
     }).on("addBody",function(e){
         that.addVisual(e.body);
     }).on("removeBody",function(e){
@@ -144,10 +139,10 @@ function Demo(world){
         that.removeVisual(e.spring);
     });
 
-    $(window).resize(function(){
+    window.onresize = function(){
         var dpr = that.getDevicePixelRatio();
-        that.resize($(window).width()*dpr, $(window).height()*dpr);
-    });
+        that.resize(window.innerWidth * dpr, window.innerHeight * dpr);
+    };
 
     this.setUpKeyboard();
 
@@ -159,14 +154,9 @@ function Demo(world){
         this.addVisual(world.springs[i]);
     }
 
-    this.on("stateChange",function(e){
-        that.updateTools();
-    });
-    this.updateTools();
-
     if(window.dat){
         var gui = this.gui = new dat.GUI();
-        $(gui.domElement).disableSelection();
+        gui.domElement.setAttribute('style',disableSelectionCSS.join(';'));
 
         var settings = this.settings;
 
@@ -307,7 +297,7 @@ Demo.containerClass = 'p2-container';
 Demo.prototype.setUpKeyboard = function() {
     var that = this;
 
-    $(this.elementContainer).keydown(function(e){
+    this.elementContainer.onkeydown = function(e){
         if(!e.keyCode){
             return;
         }
@@ -353,7 +343,9 @@ Demo.prototype.setUpKeyboard = function() {
             break;
         }
         that.updateGUI();
-    }).keyup(function(e){
+    };
+
+    this.elementContainer.onkeyup = function(e){
         if(e.keyCode){
             switch(String.fromCharCode(e.keyCode)){
             default:
@@ -363,7 +355,7 @@ Demo.prototype.setUpKeyboard = function() {
                 break;
             }
         }
-    });
+    };
 };
 
 Demo.prototype.run = function(){
@@ -681,13 +673,26 @@ Demo.prototype.createStats = function(){
 };
 
 Demo.prototype.addLogo = function(){
-    $("body").append($([
-        "<div style='position:absolute; left:10px; top:15px; text-align:center; font: 13px Helvetica, arial, freesans, clean, sans-serif;'>",
+    var css = [
+        'position:absolute',
+        'left:10px',
+        'top:15px',
+        'text-align:center',
+        'font: 13px Helvetica, arial, freesans, clean, sans-serif',
+    ].concat(disableSelectionCSS);
+
+    var div = document.createElement('div');
+    div.innerHTML = [
+        "<div style='"+css.join(';')+"' user-select='none'>",
         "<h1 style='margin:0px'><a href='http://github.com/schteppe/p2.js' style='color:black; text-decoration:none;'>p2.js</a></h1>",
         "<p style='margin:5px'>Physics Engine</p>",
         '<a style="color:black; text-decoration:none;" href="https://twitter.com/share" class="twitter-share-button" data-via="schteppe" data-count="none" data-hashtags="p2js">Tweet</a>',
-        "<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>",
-        "</div>"].join("")).disableSelection());
+        "</div>"
+    ].join("");
+    this.elementContainer.appendChild(div);
+
+    // Twitter button script
+    !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');
 };
 
 Demo.zoomInEvent = {
@@ -702,26 +707,4 @@ Demo.prototype.setEquationParameters = function(){
         stiffness: this.settings.stiffness,
         relaxation: this.settings.relaxation
     });
-};
-
-Demo.prototype.updateTools = function(){
-    $("#menu-tools button").removeClass("active");
-    var id;
-    switch(this.state){
-        case Demo.PANNING:
-        case Demo.DRAGGING:
-        case Demo.DEFAULT:        id = "#menu-tools-default"; break;
-        case Demo.DRAWINGPOLYGON:
-        case Demo.DRAWPOLYGON:    id = "#menu-tools-polygon"; break;
-        case Demo.DRAWINGCIRCLE:
-        case Demo.DRAWCIRCLE:     id = "#menu-tools-circle";  break;
-        case Demo.DRAWINGRECTANGLE:
-        case Demo.DRAWRECTANGLE:  id = "#menu-tools-rectangle";  break;
-        default:
-            console.warn("Demo: uncaught state: "+this.state);
-            break;
-    }
-    if(id){
-        $(id).addClass("active");
-    }
 };

@@ -1,4 +1,4 @@
-/* global PIXI,$,Demo */
+/* global PIXI,Demo */
 
 /**
  * Demo using Pixi.js as renderer
@@ -30,7 +30,7 @@ function PixiDemo(world,options){
     }
 
     if(settings.useDeviceAspect){
-        settings.height = $(window).height() / $(window).width() * settings.width;
+        settings.height = window.innerHeight / window.innerWidth * settings.width;
     }
 
     //this.settings = settings;
@@ -118,10 +118,11 @@ PixiDemo.prototype.init = function(){
     var div = this.elementContainer = document.createElement('div');
     div.classList.add(Demo.containerClass);
     div.appendChild(el);
-    $(document.body).append(div);
-    $(el).focus().on("contextmenu",function(e){
+    document.body.appendChild(div);
+    el.focus();
+    el.oncontextmenu = function(e){
         return false;
-    });
+    };
 
     this.container.addChild(stage);
 
@@ -263,19 +264,44 @@ PixiDemo.prototype.init = function(){
     };
 
     // http://stackoverflow.com/questions/7691551/touchend-event-in-ios-webkit-not-firing
-    $(this.element).bind("touchmove",function(e){
+    this.element.ontouchmove = function(e){
         e.preventDefault();
-    });
+    };
 
-    $(this.element).bind('mousewheel', function(e){
-        var out = e.originalEvent.wheelDelta >= 0;
-        that.zoom(lastMoveX, lastMoveY, out);
-    });
+    function MouseWheelHandler(e) {
+        // cross-browser wheel delta
+        e = window.event || e; // old IE support
+        //var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
+
+        var o = e,
+            d = o.detail, w = o.wheelDelta,
+            n = 225, n1 = n-1;
+
+        // Normalize delta: http://stackoverflow.com/a/13650579/2285811
+        var f;
+        d = d ? w && (f = w/d) ? d/f : -d/1.35 : w/120;
+        // Quadratic scale if |d| > 1
+        d = d < 1 ? d < -1 ? (-Math.pow(d, 2) - n1) / n : d : (Math.pow(d, 2) + n1) / n;
+        // Delta *should* not be greater than 2...
+        var delta = Math.min(Math.max(d / 2, -1), 1);
+
+        var out = delta >= 0;
+        if(typeof lastMoveX !== 'undefined'){
+            that.zoom(lastMoveX, lastMoveY, out, undefined, undefined, delta);
+        }
+    }
+
+    if (el.addEventListener) {
+        el.addEventListener("mousewheel", MouseWheelHandler, false); // IE9, Chrome, Safari, Opera
+        el.addEventListener("DOMMouseScroll", MouseWheelHandler, false); // Firefox
+    } else {
+        el.attachEvent("onmousewheel", MouseWheelHandler); // IE 6/7/8
+    }
 
     this.centerCamera(0, 0);
 };
 
-PixiDemo.prototype.zoom = function(x, y, zoomOut, actualScaleX, actualScaleY){
+PixiDemo.prototype.zoom = function(x, y, zoomOut, actualScaleX, actualScaleY, multiplier){
     var scrollFactor = this.scrollFactor,
         stage = this.stage;
 
@@ -284,6 +310,8 @@ PixiDemo.prototype.zoom = function(x, y, zoomOut, actualScaleX, actualScaleY){
         if(!zoomOut){
             scrollFactor *= -1;
         }
+
+        scrollFactor *= Math.abs(multiplier);
 
         stage.scale.x *= (1 + scrollFactor);
         stage.scale.y *= (1 + scrollFactor);
