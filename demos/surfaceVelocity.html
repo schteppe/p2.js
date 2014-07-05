@@ -24,8 +24,8 @@
             this.setWorld(world);
 
             // Create ground
-            var planeShape = new p2.Plane(),
-                plane = new p2.Body();
+            planeShape = new p2.Plane();
+            plane = new p2.Body();
             plane.addShape(planeShape);
             world.addBody(plane);
 
@@ -52,8 +52,8 @@
             // Create static platform box
             var platformBody2 = new p2.Body({
                     mass: 0, // static
-                    position: [0.5,2]
-                })
+                    position: [0.5, 2]
+                }),
                 platformShape2 = new p2.Rectangle(3,0.2);
             platformBody2.addShape(platformShape2);
             world.addBody(platformBody2);

@@ -12,10 +12,12 @@
 <body>
     <script>
 
+        var R = 0.7,
+            L = R * 3;
+
         // Create demo application
         var app = new p2.WebGLRenderer(function(){
 
-            var R = 0.7,L=R*3;
             var world = new p2.World({
                 doProfiling:true,
                 gravity : [0,0],

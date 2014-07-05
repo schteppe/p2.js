@@ -12,14 +12,14 @@
 <body>
     <script>
 
+        var enablePositionNoise = true, // Add some noise in circle positions
+            N = 15,         // Number of circles in x direction
+            M = 15,         // and in y
+            r = 0.07,       // circle radius
+            d = 2.2;        // Distance between circle centers
+
         // Create demo application
         var app = new p2.WebGLRenderer(function(){
-
-            var disturb = true, // Add some noise in circle positions
-                N = 15,         // Number of circles in x direction
-                M = 15,         // and in y
-                r = 0.07,       // circle radius
-                d = 2.2;        // Distance between circle centers
 
             // Create the world
             var world = new p2.World({
@@ -46,7 +46,7 @@
             var shape = new p2.Circle(r);
             for(var i=0; i<N; i++){
                 for(var j=M-1; j>=0; j--){
-                    var x = (i-N/2)*r*d+(disturb ? Math.random()*r : 0);
+                    var x = (i-N/2)*r*d+(enablePositionNoise ? Math.random()*r : 0);
                     var y = (j-M/2)*r*d;
                     var p = new p2.Body({
                         mass: 1,

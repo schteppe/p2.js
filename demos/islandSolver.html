@@ -14,6 +14,10 @@
 
         var interval;
 
+        var N = 10,  // Number of circles in each rope
+            M = 10,  // Number of ropes
+            r = 0.1; // Circle radius
+
         // Create demo application
         var app = new p2.WebGLRenderer({
 
@@ -29,10 +33,6 @@
                 });
 
                 this.setWorld(world);
-
-                var N = 10,                         // Number of circles in each rope
-                    M = 10,                         // Number of ropes
-                    r = 0.1;                        // Circle radius
 
                 world.solver.tolerance = 0.1;
                 world.solver.iterations = N;

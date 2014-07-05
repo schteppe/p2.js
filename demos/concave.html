@@ -30,7 +30,6 @@
 
             world.solver.iterations = 20;
             world.solver.tolerance = 0.01;
-            //world.enableBodySleeping = true;
             world.islandSplit = true;
 
             // Enable dynamic friction. A bit more expensive than without, but gives more accurate friction
@@ -46,7 +45,7 @@
             world.addBody(plane);
 
             // Create a concave body
-            var concaveBody = new p2.Body({
+            concaveBody = new p2.Body({
                 mass : 1,
                 position:[0,2]
             });

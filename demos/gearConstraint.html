@@ -25,7 +25,7 @@
             this.setWorld(world);
 
             // Create first circle
-            var bodyA = new p2.Body({
+            bodyA = new p2.Body({
                 mass: 1,
                 position: [-2,0],
                 angle: Math.PI/2,
@@ -35,7 +35,7 @@
             world.addBody(bodyA);
 
             // Create second circle
-            var bodyB = new p2.Body({
+            bodyB = new p2.Body({
                 mass: 1,
                 position: [2,0],
             });
@@ -47,18 +47,18 @@
             world.addBody(dummyBody);
 
             // Hinge em
-            var c1 = new p2.RevoluteConstraint(dummyBody, bodyA, {
+            revoluteA = new p2.RevoluteConstraint(dummyBody, bodyA, {
                 worldPivot: bodyA.position
             });
-            var c2 = new p2.RevoluteConstraint(dummyBody, bodyB, {
+            revoluteB = new p2.RevoluteConstraint(dummyBody, bodyB, {
                 worldPivot: bodyB.position
             });
-            world.addConstraint(c1);
-            world.addConstraint(c2);
+            world.addConstraint(revoluteA);
+            world.addConstraint(revoluteB);
 
             // Add gear
-            var gear = new p2.GearConstraint(bodyA,bodyB,{ ratio: 2 });
-            world.addConstraint(gear);
+            gearConstraint = new p2.GearConstraint(bodyA,bodyB,{ ratio: 2 });
+            world.addConstraint(gearConstraint);
         });
 
     </script>

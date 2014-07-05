@@ -12,6 +12,9 @@
 <body>
     <script>
 
+        var radius = 0.15,
+            N = 20;
+
         // Create demo application
         var app = new p2.WebGLRenderer(function(){
 
@@ -22,8 +25,7 @@
 
             this.setWorld(world);
 
-            var radius = 0.15;
-            for(var i=0; i<20; i++){
+            for(var i=0; i<N; i++){
                 var circleBody = new p2.Body({
                     mass: 1,
                     position: [0,i*2*radius],

@@ -54,13 +54,13 @@
 
             // When the materials of the plane and the first circle meet, they should yield
             // a contact friction of 0.3. We tell p2 this by creating a ContactMaterial.
-            var cm = new p2.ContactMaterial(planeShape.material, shape.material, {
+            frictionContactMaterial = new p2.ContactMaterial(planeShape.material, shape.material, {
                 friction : 0.3,
             });
-            world.addContactMaterial(cm);
+            world.addContactMaterial(frictionContactMaterial);
 
             // When the plane and the slippery circle meet, the friction should be 0 (slippery). Add a new ContactMaterial.
-            var slipperyContactMaterial = new p2.ContactMaterial(planeShape.material, slipperyShape.material, {
+            slipperyContactMaterial = new p2.ContactMaterial(planeShape.material, slipperyShape.material, {
                 friction : 0.0,
             });
             world.addContactMaterial(slipperyContactMaterial);

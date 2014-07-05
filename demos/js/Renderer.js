@@ -22,6 +22,7 @@ var disableSelectionCSS = [
 
 p2.Renderer = Renderer;
 
+
 /**
  * Base class for rendering a p2 physics scene.
  * @class Renderer
@@ -30,6 +31,9 @@ p2.Renderer = Renderer;
  */
 function Renderer(scenes){
     p2.EventEmitter.call(this);
+
+    // Expose globally
+    window.app = this;
 
     var that = this;
 
@@ -87,6 +91,8 @@ function Renderer(scenes){
     this.stats_Nsummed = 0;
     this.stats_average = -1;
 
+    this.addedGlobals = [];
+
     var dpr = this.getDevicePixelRatio();
     this.w = window.innerWidth * dpr;
     this.h = window.innerHeight * dpr;
@@ -135,12 +141,13 @@ function Renderer(scenes){
     this.setUpKeyboard();
     this.setupGUI();
 
+    this.printConsoleMessage();
+
     // Set first scene
     this.setSceneByIndex(0);
 
     this.startRenderingLoop();
 
-    this.printConsoleMessage();
 }
 Renderer.prototype = new p2.EventEmitter();
 
@@ -217,7 +224,7 @@ Renderer.prototype.printConsoleMessage = function(){
         'Did you know you can interact with the physics here in the console? Try executing the following:',
         '',
         '  world.gravity[1] = 10;',
-        '',
+        ''
     ].join('\n'));
 };
 
@@ -367,12 +374,37 @@ Renderer.prototype.setScene = function(sceneDefinition){
         this.world.clear();
     }
 
+    for(var i=0; i<this.addedGlobals.length; i++){
+        delete window[this.addedGlobals];
+    }
+
+    var preGlobalVars = Object.keys(window);
+
     this.currentScene = sceneDefinition;
     this.world = null;
     sceneDefinition.setup.call(this);
     if(!this.world){
         throw new Error('The .setup function in the scene definition must run this.setWorld(world);');
     }
+
+    var postGlobalVars = Object.keys(window);
+    var added = [];
+    for(var i = 0; i < postGlobalVars.length; i++){
+        if(preGlobalVars.indexOf(postGlobalVars[i]) === -1 && postGlobalVars[i] !== 'world'){
+            added.push(postGlobalVars[i]);
+        }
+    }
+    if(added.length){
+        added.sort();
+        console.log([
+            'The following variables were exposed globally from this physics scene.',
+            '',
+            '  ' + added.join(', '),
+            ''
+        ].join('\n'));
+    }
+
+    this.addedGlobals = added;
 
     // Set the GUI parameters from the loaded world
     var settings = this.settings;

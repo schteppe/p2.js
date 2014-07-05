@@ -12,6 +12,10 @@
 <body>
     <script>
 
+        var stiffness = 100,
+            damping = 5,
+            restLength = 0.5;
+
         // Create demo application
         var app = new p2.WebGLRenderer(function(){
 
@@ -80,9 +84,6 @@
             world.addConstraint(c2);
 
             // Add springs for the suspension
-            var stiffness = 100,
-                damping = 5,
-                restLength = 0.5;
             // Left spring
             world.addSpring(new p2.LinearSpring(chassisBody, wheelBody1, {
                 restLength : restLength,

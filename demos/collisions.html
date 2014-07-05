@@ -12,11 +12,12 @@
 <body>
     <script>
 
+        var size = 0.23,
+            dropHeight = size*2,
+            dist = size * 2;
+
         // Create demo application
         var app = new p2.WebGLRenderer(function(){
-            var size = 0.23,
-                dropHeight = size*2,
-                dist = size * 2;
 
             var world = new p2.World({
                 doProfiling:true,

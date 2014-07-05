@@ -28,54 +28,52 @@
             world.defaultContactMaterial.friction = 100;
 
             // Create ground shape (plane)
-            var planeShape = new p2.Plane();
+            planeShape = new p2.Plane();
 
             // Create a body for the ground
-            var planeBody = new p2.Body({
+            planeBody = new p2.Body({
                 mass:0  // Mass == 0 makes the body static
             });
             planeBody.addShape(planeShape); // Add the shape to the body
             world.addBody(planeBody);       // Add the body to the World
 
             // Add circle bump in the center
-            var bumpShape = new p2.Circle(2); // Circle shape of radius 2
-            var bump = new p2.Body({
+            circleShape = new p2.Circle(2); // Circle shape of radius 2
+            circleBody = new p2.Body({
                 position:[0, -1] // Set initial position
             });
-            bump.addShape(bumpShape);
-            world.addBody(bump);
+            circleBody.addShape(circleShape);
+            world.addBody(circleBody);
 
             // Create chassis for our car
-            var chassisBody = new p2.Body({
+            chassisBody = new p2.Body({
                 mass : 1,        // Setting mass > 0 makes it dynamic
                 position: [-4,1] // Initial position
             });
-            var chassisShape = new p2.Rectangle(1,0.5);                     // Chassis shape is a rectangle
+            chassisShape = new p2.Rectangle(1,0.5);                     // Chassis shape is a rectangle
             chassisBody.addShape(chassisShape);
             world.addBody(chassisBody);
 
             // Create wheels
-            var wheelBody1 = new p2.Body({ mass : 1, position:[chassisBody.position[0] - 0.5,0.7] }),
-                wheelBody2 = new p2.Body({ mass : 1, position:[chassisBody.position[0] + 0.5,0.7] }),
-                wheelShape = new p2.Circle(0.2);
-            wheelBody1.addShape(wheelShape);
-            wheelBody2.addShape(wheelShape);
+            wheelBody1 = new p2.Body({ mass : 1, position:[chassisBody.position[0] - 0.5,0.7] });
+            wheelBody2 = new p2.Body({ mass : 1, position:[chassisBody.position[0] + 0.5,0.7] });
+            wheelShape1 = new p2.Circle(0.2);
+            wheelShape2 = new p2.Circle(0.2);
+            wheelBody1.addShape(wheelShape1);
+            wheelBody2.addShape(wheelShape2);
             world.addBody(wheelBody1);
             world.addBody(wheelBody2);
 
             // Constrain wheels to chassis with revolute constraints.
             // Revolutes lets the connected bodies rotate around a shared point.
-            var localChassisPivot1 = [-0.5, -0.3];  // Where to hinge first wheel on the chassis
-            var localChassisPivot2 = [ 0.5, -0.3];  // Where to hinge second wheel on the chassis
-            var localWheelPivot = [0,0];            // Where the hinge is in the wheel (center)
-            var revoluteBack = new p2.RevoluteConstraint(chassisBody, wheelBody1, {
-                localPivotA: localChassisPivot1,
-                localPivotB: localWheelPivot,
+            revoluteBack = new p2.RevoluteConstraint(chassisBody, wheelBody1, {
+                localPivotA: [-0.5, -0.3],   // Where to hinge first wheel on the chassis
+                localPivotB: [0, 0],
                 collideConnected: false
             });
-            var revoluteFront = new p2.RevoluteConstraint(chassisBody, wheelBody2, {
-                localPivotA: localChassisPivot2,
-                localPivotB: localWheelPivot,
+            revoluteFront = new p2.RevoluteConstraint(chassisBody, wheelBody2, {
+                localPivotA: [0.5, -0.3], // Where to hinge second wheel on the chassis
+                localPivotB: [0, 0],      // Where the hinge is in the wheel (center)
                 collideConnected: false
             });
             world.addConstraint(revoluteBack);

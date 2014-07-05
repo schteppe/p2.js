@@ -12,6 +12,20 @@
 <body>
     <script>
 
+        var shouldersDistance = 0.5,
+            upperArmLength = 0.4,
+            lowerArmLength = 0.4,
+            upperArmSize = 0.2,
+            lowerArmSize = 0.2,
+            neckLength = 0.1,
+            headRadius = 0.25,
+            upperBodyLength = 0.6,
+            pelvisLength = 0.4,
+            upperLegLength = 0.5,
+            upperLegSize = 0.2,
+            lowerLegSize = 0.2,
+            lowerLegLength = 0.5;
+
         // Create demo application
         var app = new p2.WebGLRenderer(function(){
 
@@ -20,20 +34,6 @@
                 GROUND =    Math.pow(2,3),
                 OTHER =     Math.pow(2,4),
                 bodyPartShapes = [];
-
-            var shouldersDistance = 0.5,
-                upperArmLength = 0.4,
-                lowerArmLength = 0.4,
-                upperArmSize = 0.2,
-                lowerArmSize = 0.2,
-                neckLength = 0.1,
-                headRadius = 0.25,
-                upperBodyLength = 0.6,
-                pelvisLength = 0.4,
-                upperLegLength = 0.5,
-                upperLegSize = 0.2,
-                lowerLegSize = 0.2,
-                lowerLegLength = 0.5;
 
             var headShape =      new p2.Circle(headRadius),
                 upperArmShape =  new p2.Rectangle(upperArmLength,upperArmSize),
