@@ -3,10 +3,7 @@
 <head>
     <title>Sleep demo - p2.js physics engine</title>
     <script src="../build/p2.js"></script>
-    <script src="js/dat.gui.js"></script>
-    <script src="js/pixi.js"></script>
-    <script src="js/Demo.js"></script>
-    <script src="js/PixiDemo.js"></script>
+    <script src="../build/p2.renderer.js"></script>
     <link href="css/demo.css" rel="stylesheet"/>
     <meta name="description" content="How to enable and use body sleeping.">
     <meta charset="utf-8">
@@ -45,7 +42,7 @@
         // Allow sleeping
         world.enableBodySleeping = true;
 
-        var demo = new PixiDemo(world);
+        var demo = new p2.WebGLRenderer(world);
 
     </script>
 </body>

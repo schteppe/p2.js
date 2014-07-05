@@ -23,8 +23,8 @@ module.exports = function(grunt) {
                 dest : 'build/p2.min.js'
             },
             demo: {
-                src : ['build/p2.demo.js'],
-                dest : 'build/p2.demo.min.js'
+                src : ['build/p2.renderer.js'],
+                dest : 'build/p2.renderer.min.js'
             }
         },
 
@@ -59,9 +59,9 @@ module.exports = function(grunt) {
         },
 
         concat: {
-            debug: {
-                src: ['demos/js/pixi.js', 'demos/js/jquery.js', 'demos/js/bootstrap.min.js', 'demos/js/Demo.js', 'demos/js/PixiDemo.js'],
-                dest: 'build/p2.demo.js',
+            renderer: {
+                src: ['demos/js/pixi.js', 'demos/js/dat.gui.js', 'demos/js/Renderer.js', 'demos/js/WebGLRenderer.js'],
+                dest: 'build/p2.renderer.js',
             }
         }
     });

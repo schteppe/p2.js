@@ -1,10 +1,12 @@
-/* global PIXI,Demo */
+/* global PIXI,Renderer */
+
+p2.WebGLRenderer = WebGLRenderer;
 
 /**
- * Demo using Pixi.js as renderer
- * @class PixiDemo
+ * Renderer using Pixi.js
+ * @class WebGLRenderer
  * @constructor
- * @extends Demo
+ * @extends Renderer
  * @param {World}   world                       The world to render.
  * @param {Object}  [options]
  * @param {Number}  options.lineWidth
@@ -12,7 +14,7 @@
  * @param {Number}  options.width               Num pixels in horizontal direction
  * @param {Number}  options.height              Num pixels in vertical direction
  */
-function PixiDemo(world,options){
+function WebGLRenderer(world,options){
     options = options || {};
 
     var that = this;
@@ -42,7 +44,7 @@ function PixiDemo(world,options){
     this.springSprites = [];
     this.debugPolygons = false;
 
-    Demo.call(this,world);
+    Renderer.call(this,world);
 
     for(var key in settings){
         this.settings[key] = settings[key];
@@ -86,9 +88,9 @@ function PixiDemo(world,options){
         that.drawRectangle(g, start[0] - width/2, start[1] - height/2, 0, width, height, false, false, that.lineWidth, false);
     });
 }
-PixiDemo.prototype = Object.create(Demo.prototype);
+WebGLRenderer.prototype = Object.create(Renderer.prototype);
 
-PixiDemo.prototype.stagePositionToPhysics = function(out,stagePosition){
+WebGLRenderer.prototype.stagePositionToPhysics = function(out,stagePosition){
     var x = stagePosition[0],
         y = stagePosition[1];
     p2.vec2.set(out, x, y);
@@ -100,7 +102,7 @@ PixiDemo.prototype.stagePositionToPhysics = function(out,stagePosition){
  */
 var init_stagePosition = p2.vec2.create(),
     init_physicsPosition = p2.vec2.create();
-PixiDemo.prototype.init = function(){
+WebGLRenderer.prototype.init = function(){
     var w = this.w,
         h = this.h,
         s = this.settings;
@@ -113,10 +115,10 @@ PixiDemo.prototype.init = function(){
 
     var el = this.element = this.renderer.view;
     el.tabIndex = 1;
-    el.classList.add(Demo.elementClass);
+    el.classList.add(Renderer.elementClass);
 
     var div = this.elementContainer = document.createElement('div');
-    div.classList.add(Demo.containerClass);
+    div.classList.add(Renderer.containerClass);
     div.appendChild(el);
     document.body.appendChild(div);
     el.focus();
@@ -234,7 +236,7 @@ PixiDemo.prototype.init = function(){
             return;
         }
 
-        if(down && that.state === Demo.PANNING){
+        if(down && that.state === Renderer.PANNING){
             stage.position.x = e.global.x - lastX + startX;
             stage.position.y = e.global.y - lastY + startY;
         }
@@ -301,7 +303,7 @@ PixiDemo.prototype.init = function(){
     this.centerCamera(0, 0);
 };
 
-PixiDemo.prototype.zoom = function(x, y, zoomOut, actualScaleX, actualScaleY, multiplier){
+WebGLRenderer.prototype.zoom = function(x, y, zoomOut, actualScaleX, actualScaleY, multiplier){
     var scrollFactor = this.scrollFactor,
         stage = this.stage;
 
@@ -327,7 +329,7 @@ PixiDemo.prototype.zoom = function(x, y, zoomOut, actualScaleX, actualScaleY, mu
     stage.updateTransform();
 };
 
-PixiDemo.prototype.centerCamera = function(x, y){
+WebGLRenderer.prototype.centerCamera = function(x, y){
     this.stage.position.x = this.renderer.width / 2 - this.stage.scale.x * x;
     this.stage.position.y = this.renderer.height / 2 - this.stage.scale.y * y;
 };
@@ -339,7 +341,7 @@ PixiDemo.prototype.centerCamera = function(x, y){
  * @param  {number} width
  * @param  {number} height
  */
-PixiDemo.prototype.frame = function(centerX, centerY, width, height){
+WebGLRenderer.prototype.frame = function(centerX, centerY, width, height){
     var ratio = this.renderer.width / this.renderer.height;
     if(ratio < width / height){
         this.stage.scale.x = this.renderer.width / width;
@@ -362,7 +364,7 @@ PixiDemo.prototype.frame = function(centerX, centerY, width, height){
  * @param  {Number} color
  * @param  {Number} lineWidth
  */
-PixiDemo.prototype.drawCircle = function(g,x,y,angle,radius,color,lineWidth,isSleeping){
+WebGLRenderer.prototype.drawCircle = function(g,x,y,angle,radius,color,lineWidth,isSleeping){
     lineWidth = typeof(lineWidth)==="number" ? lineWidth : 1;
     color = typeof(color)==="number" ? color : 0xffffff;
     g.lineStyle(lineWidth, 0x000000, 1);
@@ -376,7 +378,7 @@ PixiDemo.prototype.drawCircle = function(g,x,y,angle,radius,color,lineWidth,isSl
                 y + radius*Math.sin(angle) );
 };
 
-PixiDemo.drawSpring = function(g,restLength,color,lineWidth){
+WebGLRenderer.drawSpring = function(g,restLength,color,lineWidth){
     lineWidth = typeof(lineWidth)==="number" ? lineWidth : 1;
     color = typeof(color)==="undefined" ? 0xffffff : color;
     g.lineStyle(lineWidth, color, 1);
@@ -413,7 +415,7 @@ PixiDemo.drawSpring = function(g,restLength,color,lineWidth){
  * @param  {Number} diagSize
  * @todo Should consider an angle
  */
-PixiDemo.drawPlane = function(g, x0, x1, color, lineColor, lineWidth, diagMargin, diagSize, maxLength){
+WebGLRenderer.drawPlane = function(g, x0, x1, color, lineColor, lineWidth, diagMargin, diagSize, maxLength){
     lineWidth = typeof(lineWidth)==="number" ? lineWidth : 1;
     color = typeof(color)==="undefined" ? 0xffffff : color;
     g.lineStyle(lineWidth, lineColor, 1);
@@ -435,7 +437,7 @@ PixiDemo.drawPlane = function(g, x0, x1, color, lineColor, lineWidth, diagMargin
 };
 
 
-PixiDemo.drawLine = function(g, offset, angle, len, color, lineWidth){
+WebGLRenderer.drawLine = function(g, offset, angle, len, color, lineWidth){
     lineWidth = typeof(lineWidth)==="number" ? lineWidth : 1;
     color = typeof(color)==="undefined" ? 0x000000 : color;
     g.lineStyle(lineWidth, color, 1);
@@ -453,7 +455,7 @@ PixiDemo.drawLine = function(g, offset, angle, len, color, lineWidth){
     g.lineTo(endPoint[0], endPoint[1]);
 };
 
-PixiDemo.prototype.drawCapsule = function(g, x, y, angle, len, radius, color, fillColor, lineWidth, isSleeping){
+WebGLRenderer.prototype.drawCapsule = function(g, x, y, angle, len, radius, color, fillColor, lineWidth, isSleeping){
     lineWidth = typeof(lineWidth)==="number" ? lineWidth : 1;
     color = typeof(color)==="undefined" ? 0x000000 : color;
     g.lineStyle(lineWidth, color, 1);
@@ -485,7 +487,7 @@ PixiDemo.prototype.drawCapsule = function(g, x, y, angle, len, radius, color, fi
 };
 
 // Todo angle
-PixiDemo.prototype.drawRectangle = function(g,x,y,angle,w,h,color,fillColor,lineWidth,isSleeping){
+WebGLRenderer.prototype.drawRectangle = function(g,x,y,angle,w,h,color,fillColor,lineWidth,isSleeping){
     lineWidth = typeof(lineWidth)==="number" ? lineWidth : 1;
     color = typeof(color)==="number" ? color : 0xffffff;
     fillColor = typeof(fillColor)==="number" ? fillColor : 0xffffff;
@@ -494,7 +496,7 @@ PixiDemo.prototype.drawRectangle = function(g,x,y,angle,w,h,color,fillColor,line
     g.drawRect(x-w/2,y-h/2,w,h);
 };
 
-PixiDemo.prototype.drawConvex = function(g,verts,triangles,color,fillColor,lineWidth,debug,offset,isSleeping){
+WebGLRenderer.prototype.drawConvex = function(g,verts,triangles,color,fillColor,lineWidth,debug,offset,isSleeping){
     lineWidth = typeof(lineWidth)==="number" ? lineWidth : 1;
     color = typeof(color)==="undefined" ? 0x000000 : color;
     if(!debug){
@@ -535,7 +537,7 @@ PixiDemo.prototype.drawConvex = function(g,verts,triangles,color,fillColor,lineW
     }
 };
 
-PixiDemo.prototype.drawPath = function(g,path,color,fillColor,lineWidth,isSleeping){
+WebGLRenderer.prototype.drawPath = function(g,path,color,fillColor,lineWidth,isSleeping){
     lineWidth = typeof(lineWidth)==="number" ? lineWidth : 1;
     color = typeof(color)==="undefined" ? 0x000000 : color;
     g.lineStyle(lineWidth, color, 1);
@@ -579,7 +581,7 @@ PixiDemo.prototype.drawPath = function(g,path,color,fillColor,lineWidth,isSleepi
     }
 };
 
-PixiDemo.prototype.updateSpriteTransform = function(sprite,body){
+WebGLRenderer.prototype.updateSpriteTransform = function(sprite,body){
     if(this.useInterpolatedPositions){
         sprite.position.x = body.interpolatedPosition[0];
         sprite.position.y = body.interpolatedPosition[1];
@@ -595,7 +597,7 @@ var X = p2.vec2.fromValues(1,0),
     distVec = p2.vec2.fromValues(0,0),
     worldAnchorA = p2.vec2.fromValues(0,0),
     worldAnchorB = p2.vec2.fromValues(0,0);
-PixiDemo.prototype.render = function(){
+WebGLRenderer.prototype.render = function(){
     var w = this.renderer.width,
         h = this.renderer.height,
         springSprites = this.springSprites,
@@ -736,7 +738,7 @@ function randomPastelHex(){
     return rgbToHex(red,green,blue);
 }
 
-PixiDemo.prototype.drawRenderable = function(obj, graphics, color, lineColor){
+WebGLRenderer.prototype.drawRenderable = function(obj, graphics, color, lineColor){
     var lw = this.lineWidth;
 
     var zero = [0,0];
@@ -772,10 +774,10 @@ PixiDemo.prototype.drawRenderable = function(obj, graphics, color, lineColor){
 
                 } else if(child instanceof p2.Plane){
                     // TODO use shape angle
-                    PixiDemo.drawPlane(graphics, -10, 10, color, lineColor, lw, lw*10, lw*10, 100);
+                    WebGLRenderer.drawPlane(graphics, -10, 10, color, lineColor, lw, lw*10, lw*10, 100);
 
                 } else if(child instanceof p2.Line){
-                    PixiDemo.drawLine(graphics, offset, angle, child.length, lineColor, lw);
+                    WebGLRenderer.drawLine(graphics, offset, angle, child.length, lineColor, lw);
 
                 } else if(child instanceof p2.Rectangle){
                     this.drawRectangle(graphics, offset[0], offset[1], angle, child.width, child.height, lineColor, color, lw, isSleeping);
@@ -809,11 +811,11 @@ PixiDemo.prototype.drawRenderable = function(obj, graphics, color, lineColor){
 
     } else if(obj instanceof p2.Spring){
         var restLengthPixels = obj.restLength;
-        PixiDemo.drawSpring(graphics,restLengthPixels,0x000000,lw);
+        WebGLRenderer.drawSpring(graphics,restLengthPixels,0x000000,lw);
     }
 };
 
-PixiDemo.prototype.addRenderable = function(obj){
+WebGLRenderer.prototype.addRenderable = function(obj){
     var lw = this.lineWidth;
 
     // Random color
@@ -836,7 +838,7 @@ PixiDemo.prototype.addRenderable = function(obj){
     }
 };
 
-PixiDemo.prototype.removeRenderable = function(obj){
+WebGLRenderer.prototype.removeRenderable = function(obj){
     if(obj instanceof p2.Body){
         var i = this.bodies.indexOf(obj);
         if(i!==-1){
@@ -852,7 +854,7 @@ PixiDemo.prototype.removeRenderable = function(obj){
     }
 };
 
-PixiDemo.prototype.resize = function(w,h){
+WebGLRenderer.prototype.resize = function(w,h){
     var renderer = this.renderer;
     var view = renderer.view;
     var ratio = w / h;

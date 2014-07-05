@@ -3,10 +3,7 @@
 <head>
     <title>Concave shapes demo - p2.js physics engine</title>
     <script src="../build/p2.js"></script>
-    <script src="js/dat.gui.js"></script>
-    <script src="js/pixi.js"></script>
-    <script src="js/Demo.js"></script>
-    <script src="js/PixiDemo.js"></script>
+    <script src="../build/p2.renderer.js"></script>
     <link href="css/demo.css" rel="stylesheet"/>
     <meta name="description" content="Demonstrates concave shapes and how to use Body.fromPolygon().">
     <meta charset="utf-8">
@@ -62,11 +59,11 @@
         world.addBody(concaveBody);
 
         // Create demo application
-        var demo = new PixiDemo(world);
+        var demo = new p2.WebGLRenderer(world);
         demo.frame(0, 1, 6, 8);
 
         // Enable shape drawing
-        demo.setState(Demo.DRAWPOLYGON);
+        demo.setState(p2.Renderer.DRAWPOLYGON);
 
         // Automatically set the density of bodies that the user draws on the screen
         world.on("addBody",function(evt){

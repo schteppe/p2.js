@@ -16,13 +16,15 @@ var disableSelectionCSS = [
     "user-select: none"
 ];
 
+p2.Renderer = Renderer;
+
 /**
- * Base class for rendering of a scene.
- * @class Demo
+ * Base class for rendering a p2 physics scene.
+ * @class Renderer
  * @constructor
  * @param {World} world
  */
-function Demo(world){
+function Renderer(world){
     p2.EventEmitter.call(this);
 
     var that = this;
@@ -30,7 +32,7 @@ function Demo(world){
     this.world = world;
     this.initialState = world.toJSON();
 
-    this.state = Demo.DEFAULT;
+    this.state = Renderer.DEFAULT;
 
     this.maxSubSteps = 3;
 
@@ -86,7 +88,7 @@ function Demo(world){
     this.h = window.innerHeight * dpr;
 
     this.settings = {
-        tool: Demo.DEFAULT,
+        tool: Renderer.DEFAULT,
         fullscreen: function(){
             var el = document.body;
             var requestFullscreen = el.requestFullscreen || el.msRequestFullscreen || el.mozRequestFullScreen || el.webkitRequestFullscreen;
@@ -160,7 +162,7 @@ function Demo(world){
 
         var settings = this.settings;
 
-        gui.add(settings, 'tool', Demo.toolStateMap).onChange(function(state){
+        gui.add(settings, 'tool', Renderer.toolStateMap).onChange(function(state){
             that.setState(parseInt(state));
         });
         gui.add(settings, 'fullscreen');
@@ -226,30 +228,30 @@ function Demo(world){
 
     this.run();
 }
-Demo.prototype = new p2.EventEmitter();
+Renderer.prototype = new p2.EventEmitter();
 
-Demo.DEFAULT =            1;
-Demo.PANNING =            2;
-Demo.DRAGGING =           3;
-Demo.DRAWPOLYGON =        4;
-Demo.DRAWINGPOLYGON  =    5;
-Demo.DRAWCIRCLE =         6;
-Demo.DRAWINGCIRCLE  =     7;
-Demo.DRAWRECTANGLE =      8;
-Demo.DRAWINGRECTANGLE  =  9;
+Renderer.DEFAULT =            1;
+Renderer.PANNING =            2;
+Renderer.DRAGGING =           3;
+Renderer.DRAWPOLYGON =        4;
+Renderer.DRAWINGPOLYGON  =    5;
+Renderer.DRAWCIRCLE =         6;
+Renderer.DRAWINGCIRCLE  =     7;
+Renderer.DRAWRECTANGLE =      8;
+Renderer.DRAWINGRECTANGLE  =  9;
 
-Demo.toolStateMap = {
-    'pick/pan [q]': Demo.DEFAULT,
-    'polygon [d]': Demo.DRAWPOLYGON,
-    'circle [a]': Demo.DRAWCIRCLE,
-    'rectangle [f]': Demo.DRAWRECTANGLE
+Renderer.toolStateMap = {
+    'pick/pan [q]': Renderer.DEFAULT,
+    'polygon [d]': Renderer.DRAWPOLYGON,
+    'circle [a]': Renderer.DRAWCIRCLE,
+    'rectangle [f]': Renderer.DRAWRECTANGLE
 };
-Demo.stateToolMap = {};
-for(var key in Demo.toolStateMap){
-    Demo.stateToolMap[Demo.toolStateMap[key]] = key;
+Renderer.stateToolMap = {};
+for(var key in Renderer.toolStateMap){
+    Renderer.stateToolMap[Renderer.toolStateMap[key]] = key;
 }
 
-Object.defineProperty(Demo.prototype, 'drawContacts', {
+Object.defineProperty(Renderer.prototype, 'drawContacts', {
     get: function() {
         return this.settings['drawContacts [c]'];
     },
@@ -259,7 +261,7 @@ Object.defineProperty(Demo.prototype, 'drawContacts', {
     }
 });
 
-Object.defineProperty(Demo.prototype, 'drawAABBs', {
+Object.defineProperty(Renderer.prototype, 'drawAABBs', {
     get: function() {
         return this.settings['drawAABBs [t]'];
     },
@@ -269,14 +271,14 @@ Object.defineProperty(Demo.prototype, 'drawAABBs', {
     }
 });
 
-Demo.prototype.getDevicePixelRatio = function() {
+Renderer.prototype.getDevicePixelRatio = function() {
     return window.devicePixelRatio || 1;
 };
 
 /**
  * Updates dat.gui. Call whenever you change demo.settings.
  */
-Demo.prototype.updateGUI = function() {
+Renderer.prototype.updateGUI = function() {
     function updateControllers(folder){
         // First level
         for (var i in folder.__controllers){
@@ -291,10 +293,10 @@ Demo.prototype.updateGUI = function() {
     updateControllers(this.gui);
 };
 
-Demo.elementClass = 'p2-canvas';
-Demo.containerClass = 'p2-container';
+Renderer.elementClass = 'p2-canvas';
+Renderer.containerClass = 'p2-container';
 
-Demo.prototype.setUpKeyboard = function() {
+Renderer.prototype.setUpKeyboard = function() {
     var that = this;
 
     this.elementContainer.onkeydown = function(e){
@@ -325,16 +327,16 @@ Demo.prototype.setUpKeyboard = function() {
             that.drawAABBs = !that.drawAABBs;
             break;
         case "D": // toggle draw polygon mode
-            that.setState(s === Demo.DRAWPOLYGON ? Demo.DEFAULT : s = Demo.DRAWPOLYGON);
+            that.setState(s === Renderer.DRAWPOLYGON ? Renderer.DEFAULT : s = Renderer.DRAWPOLYGON);
             break;
         case "A": // toggle draw circle mode
-            that.setState(s === Demo.DRAWCIRCLE ? Demo.DEFAULT : s = Demo.DRAWCIRCLE);
+            that.setState(s === Renderer.DRAWCIRCLE ? Renderer.DEFAULT : s = Renderer.DRAWCIRCLE);
             break;
         case "F": // toggle draw rectangle mode
-            that.setState(s === Demo.DRAWRECTANGLE ? Demo.DEFAULT : s = Demo.DRAWRECTANGLE);
+            that.setState(s === Renderer.DRAWRECTANGLE ? Renderer.DEFAULT : s = Renderer.DRAWRECTANGLE);
             break;
         case "Q": // set default
-            that.setState(Demo.DEFAULT);
+            that.setState(Renderer.DEFAULT);
             break;
         default:
             that.keydownEvent.keyCode = e.keyCode;
@@ -358,7 +360,7 @@ Demo.prototype.setUpKeyboard = function() {
     };
 };
 
-Demo.prototype.run = function(){
+Renderer.prototype.run = function(){
     var demo = this,
         lastCallTime = Date.now() / 1000;
 
@@ -375,11 +377,11 @@ Demo.prototype.run = function(){
     requestAnimFrame(update);
 };
 
-Demo.prototype.setState = function(s){
+Renderer.prototype.setState = function(s){
     this.state = s;
     this.stateChangeEvent.state = s;
     this.emit(this.stateChangeEvent);
-    if(Demo.stateToolMap[s]){
+    if(Renderer.stateToolMap[s]){
         this.settings.tool = s;
         this.updateGUI();
     }
@@ -388,10 +390,10 @@ Demo.prototype.setState = function(s){
 /**
  * Should be called by subclasses whenever there's a mousedown event
  */
-Demo.prototype.handleMouseDown = function(physicsPosition){
+Renderer.prototype.handleMouseDown = function(physicsPosition){
     switch(this.state){
 
-        case Demo.DEFAULT:
+        case Renderer.DEFAULT:
 
             // Check if the clicked point overlaps bodies
             var result = this.world.hitTest(physicsPosition,world.bodies,this.pickPrecision);
@@ -408,7 +410,7 @@ Demo.prototype.handleMouseDown = function(physicsPosition){
 
             if(b){
                 b.wakeUp();
-                this.setState(Demo.DRAGGING);
+                this.setState(Renderer.DRAGGING);
                 // Add mouse joint to the body
                 var localPoint = p2.vec2.create();
                 b.toLocalFrame(localPoint,physicsPosition);
@@ -419,13 +421,13 @@ Demo.prototype.handleMouseDown = function(physicsPosition){
                 });
                 this.world.addConstraint(this.mouseConstraint);
             } else {
-                this.setState(Demo.PANNING);
+                this.setState(Renderer.PANNING);
             }
             break;
 
-        case Demo.DRAWPOLYGON:
+        case Renderer.DRAWPOLYGON:
             // Start drawing a polygon
-            this.setState(Demo.DRAWINGPOLYGON);
+            this.setState(Renderer.DRAWINGPOLYGON);
             this.drawPoints = [];
             var copy = p2.vec2.create();
             p2.vec2.copy(copy,physicsPosition);
@@ -433,17 +435,17 @@ Demo.prototype.handleMouseDown = function(physicsPosition){
             this.emit(this.drawPointsChangeEvent);
             break;
 
-        case Demo.DRAWCIRCLE:
+        case Renderer.DRAWCIRCLE:
             // Start drawing a circle
-            this.setState(Demo.DRAWINGCIRCLE);
+            this.setState(Renderer.DRAWINGCIRCLE);
             p2.vec2.copy(this.drawCircleCenter,physicsPosition);
             p2.vec2.copy(this.drawCirclePoint, physicsPosition);
             this.emit(this.drawCircleChangeEvent);
             break;
 
-        case Demo.DRAWRECTANGLE:
+        case Renderer.DRAWRECTANGLE:
             // Start drawing a circle
-            this.setState(Demo.DRAWINGRECTANGLE);
+            this.setState(Renderer.DRAWINGRECTANGLE);
             p2.vec2.copy(this.drawRectStart,physicsPosition);
             p2.vec2.copy(this.drawRectEnd, physicsPosition);
             this.emit(this.drawRectangleChangeEvent);
@@ -454,11 +456,11 @@ Demo.prototype.handleMouseDown = function(physicsPosition){
 /**
  * Should be called by subclasses whenever there's a mousedown event
  */
-Demo.prototype.handleMouseMove = function(physicsPosition){
+Renderer.prototype.handleMouseMove = function(physicsPosition){
     var sampling = 0.4;
     switch(this.state){
-        case Demo.DEFAULT:
-        case Demo.DRAGGING:
+        case Renderer.DEFAULT:
+        case Renderer.DRAGGING:
             if(this.mouseConstraint){
                 p2.vec2.copy(this.mouseConstraint.pivotA, physicsPosition);
                 this.mouseConstraint.bodyA.wakeUp();
@@ -466,7 +468,7 @@ Demo.prototype.handleMouseMove = function(physicsPosition){
             }
             break;
 
-        case Demo.DRAWINGPOLYGON:
+        case Renderer.DRAWINGPOLYGON:
             // drawing a polygon - add new point
             var sqdist = p2.vec2.dist(physicsPosition,this.drawPoints[this.drawPoints.length-1]);
             if(sqdist > sampling*sampling){
@@ -477,13 +479,13 @@ Demo.prototype.handleMouseMove = function(physicsPosition){
             }
             break;
 
-        case Demo.DRAWINGCIRCLE:
+        case Renderer.DRAWINGCIRCLE:
             // drawing a circle - change the circle radius point to current
             p2.vec2.copy(this.drawCirclePoint, physicsPosition);
             this.emit(this.drawCircleChangeEvent);
             break;
 
-        case Demo.DRAWINGRECTANGLE:
+        case Renderer.DRAWINGRECTANGLE:
             // drawing a rectangle - change the end point to current
             p2.vec2.copy(this.drawRectEnd, physicsPosition);
             this.emit(this.drawRectangleChangeEvent);
@@ -494,28 +496,28 @@ Demo.prototype.handleMouseMove = function(physicsPosition){
 /**
  * Should be called by subclasses whenever there's a mouseup event
  */
-Demo.prototype.handleMouseUp = function(physicsPosition){
+Renderer.prototype.handleMouseUp = function(physicsPosition){
 
     var b;
 
     switch(this.state){
 
-        case Demo.DEFAULT:
+        case Renderer.DEFAULT:
             break;
 
-        case Demo.DRAGGING:
+        case Renderer.DRAGGING:
             // Drop constraint
             this.world.removeConstraint(this.mouseConstraint);
             this.mouseConstraint = null;
             this.world.removeBody(this.nullBody);
 
-        case Demo.PANNING:
-            this.setState(Demo.DEFAULT);
+        case Renderer.PANNING:
+            this.setState(Renderer.DEFAULT);
             break;
 
-        case Demo.DRAWINGPOLYGON:
+        case Renderer.DRAWINGPOLYGON:
             // End this drawing state
-            this.setState(Demo.DRAWPOLYGON);
+            this.setState(Renderer.DRAWPOLYGON);
             if(this.drawPoints.length > 3){
                 // Create polygon
                 b = new p2.Body({ mass : 1 });
@@ -529,9 +531,9 @@ Demo.prototype.handleMouseUp = function(physicsPosition){
             this.emit(this.drawPointsChangeEvent);
             break;
 
-        case Demo.DRAWINGCIRCLE:
+        case Renderer.DRAWINGCIRCLE:
             // End this drawing state
-            this.setState(Demo.DRAWCIRCLE);
+            this.setState(Renderer.DRAWCIRCLE);
             var R = p2.vec2.dist(this.drawCircleCenter,this.drawCirclePoint);
             if(R > 0){
                 // Create circle
@@ -544,9 +546,9 @@ Demo.prototype.handleMouseUp = function(physicsPosition){
             this.emit(this.drawCircleChangeEvent);
             break;
 
-        case Demo.DRAWINGRECTANGLE:
+        case Renderer.DRAWINGRECTANGLE:
             // End this drawing state
-            this.setState(Demo.DRAWRECTANGLE);
+            this.setState(Renderer.DRAWRECTANGLE);
             // Make sure first point is upper left
             var start = this.drawRectStart;
             var end = this.drawRectEnd;
@@ -587,7 +589,7 @@ Demo.prototype.handleMouseUp = function(physicsPosition){
 /**
  * Update stats
  */
-Demo.prototype.updateStats = function(){
+Renderer.prototype.updateStats = function(){
     this.stats_sum += this.world.lastStepTime;
     this.stats_Nsummed++;
     if(this.stats_Nsummed == this.stats_N){
@@ -605,7 +607,7 @@ Demo.prototype.updateStats = function(){
  * Add an object to the demo
  * @param  {mixed} obj Either Body or Spring
  */
-Demo.prototype.addVisual = function(obj){
+Renderer.prototype.addVisual = function(obj){
     if(obj instanceof p2.Spring){
         this.springs.push(obj);
         this.addRenderable(obj);
@@ -621,7 +623,7 @@ Demo.prototype.addVisual = function(obj){
 /**
  * Removes all visuals from the scene
  */
-Demo.prototype.removeAllVisuals = function(){
+Renderer.prototype.removeAllVisuals = function(){
     var bodies = this.bodies,
         springs = this.springs;
     while(bodies.length)
@@ -634,7 +636,7 @@ Demo.prototype.removeAllVisuals = function(){
  * Remove an object from the demo
  * @param  {mixed} obj Either Body or Spring
  */
-Demo.prototype.removeVisual = function(obj){
+Renderer.prototype.removeVisual = function(obj){
     this.removeRenderable(obj);
     if(obj instanceof p2.Spring){
         var idx = this.springs.indexOf(obj);
@@ -653,7 +655,7 @@ Demo.prototype.removeVisual = function(obj){
  * Create the container/divs for stats
  * @todo  integrate in new menu
  */
-Demo.prototype.createStats = function(){
+Renderer.prototype.createStats = function(){
     /*
     var stepDiv = document.createElement("div");
     var vecsDiv = document.createElement("div");
@@ -672,7 +674,7 @@ Demo.prototype.createStats = function(){
     */
 };
 
-Demo.prototype.addLogo = function(){
+Renderer.prototype.addLogo = function(){
     var css = [
         'position:absolute',
         'left:10px',
@@ -695,14 +697,14 @@ Demo.prototype.addLogo = function(){
     !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');
 };
 
-Demo.zoomInEvent = {
+Renderer.zoomInEvent = {
     type:"zoomin"
 };
-Demo.zoomOutEvent = {
+Renderer.zoomOutEvent = {
     type:"zoomout"
 };
 
-Demo.prototype.setEquationParameters = function(){
+Renderer.prototype.setEquationParameters = function(){
     this.world.setGlobalEquationParameters({
         stiffness: this.settings.stiffness,
         relaxation: this.settings.relaxation
