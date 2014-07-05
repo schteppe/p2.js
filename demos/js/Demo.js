@@ -8,14 +8,14 @@
 })(jQuery);
 
 // shim layer with setTimeout fallback
-var requestAnimationFrame =     window.requestAnimationFrame       ||
-                                window.webkitRequestAnimationFrame ||
-                                window.mozRequestAnimationFrame    ||
-                                window.oRequestAnimationFrame      ||
-                                window.msRequestAnimationFrame     ||
-                                function( callback ){
-                                    window.setTimeout(callback, 1000 / 60);
-                                };
+var requestAnimFrame =  window.requestAnimationFrame       ||
+                        window.webkitRequestAnimationFrame ||
+                        window.mozRequestAnimationFrame    ||
+                        window.oRequestAnimationFrame      ||
+                        window.msRequestAnimationFrame     ||
+                        function( callback ){
+                            window.setTimeout(callback, 1000 / 60);
+                        };
 
 /**
  * Base class for rendering of a scene.
@@ -29,8 +29,7 @@ function Demo(world){
     var that = this;
 
     this.world = world;
-    //var serializer = this.serializer = new p2extras.Serializer();
-    this.initialState = world.toJSON();//serializer.serialize(world);
+    this.initialState = world.toJSON();
 
     this.state = Demo.DEFAULT;
 
@@ -39,7 +38,6 @@ function Demo(world){
     // Bodies to draw
     this.bodies=[];
     this.springs=[];
-    this.paused = false;
     this.timeStep = 1/60;
     this.relaxation = p2.Equation.DEFAULT_RELAXATION;
     this.stiffness = p2.Equation.DEFAULT_STIFFNESS;
@@ -76,14 +74,8 @@ function Demo(world){
     this.newShapeCollisionMask = 1;
     this.newShapeCollisionGroup = 1;
 
-    // If contacts should be drawn
-    this.drawContacts = false;
-
     // If constraints should be drawn
     this.drawConstraints = false;
-
-    // If AABBs should be drawn
-    this.drawAABBs = false;
 
     this.stats_sum = 0;
     this.stats_N = 100;
@@ -94,11 +86,40 @@ function Demo(world){
     this.w = $(window).width() * dpr;
     this.h = $(window).height() * dpr;
 
+    this.settings = {
+        tool: Demo.DEFAULT,
+        fullscreen: function(){
+            var el = document.body;
+            var requestFullscreen = el.requestFullscreen || el.msRequestFullscreen || el.mozRequestFullScreen || el.webkitRequestFullscreen;
+            if(requestFullscreen){
+                requestFullscreen.call(el);
+            }
+        },
+
+        'paused [p]': false,
+        'manualStep [s]': function(){ world.step(world.lastTimeStep); },
+        fps: 60,
+        maxSubSteps: 3,
+        gravityX: world.gravity[0],
+        gravityY: world.gravity[1],
+        bodySleeping: false,
+        islandSleeping: false,
+
+        'drawContacts [c]': false,
+        'drawAABBs [t]': false,
+        drawConstraints: false,
+
+        iterations: world.solver.iterations,
+        stiffness: 1000000,
+        relaxation: 4,
+        tolerance: 0.0001,
+    };
+
     this.init();
     this.resize(this.w,this.h);
     this.render();
     this.createStats();
-    this.createMenu();
+    this.addLogo();
     this.centerCamera(0, 0);
 
     var iter = -1;
@@ -128,69 +149,91 @@ function Demo(world){
         that.resize($(window).width()*dpr, $(window).height()*dpr);
     });
 
-    $(document).keydown(function(e){
-        if(e.keyCode){
-            var s = that.state;
-            switch(String.fromCharCode(e.keyCode)){
-                case "P": // pause
-                    that.paused = !that.paused;
-                    break;
-                case "S": // step
-                    that.world.step(that.world.lastTimeStep);
-                    break;
-                case "R": // restart
-                    that.removeAllVisuals();
-                    var result = that.world.fromJSON(that.initialState);
-                    if(!result) console.warn("Not everything could be loaded from JSON!");
-                    /*var result = that.serializer.deserialize(that.initialState,that.world,p2);
-                    if(!result)
-                        console.error(that.serializer.error,that.serializer.validateResult);*/
-                    break;
-                case "C": // toggle draw contacts & constraints
-                    that.drawContacts = !that.drawContacts;
-                    that.drawConstraints = !that.drawConstraints;
-                    break;
-                case "T": // toggle draw AABBs
-                    that.drawAABBs = !that.drawAABBs;
-                    break;
-                case "D": // toggle draw polygon mode
-                    that.setState(s == Demo.DRAWPOLYGON ? Demo.DEFAULT : s = Demo.DRAWPOLYGON);
-                    break;
-                case "A": // toggle draw circle mode
-                    that.setState(s == Demo.DRAWCIRCLE ? Demo.DEFAULT : s = Demo.DRAWCIRCLE);
-                    break;
-                case "F": // toggle draw rectangle mode
-                    that.setState(s == Demo.DRAWRECTANGLE ? Demo.DEFAULT : s = Demo.DRAWRECTANGLE);
-                    break;
-                default:
-                    that.keydownEvent.keyCode = e.keyCode;
-                    that.keydownEvent.originalEvent = e;
-                    that.emit(that.keydownEvent);
-                    break;
-            }
-        }
-    }).keyup(function(e){
-        if(e.keyCode){
-            switch(String.fromCharCode(e.keyCode)){
-                default:
-                    that.keyupEvent.keyCode = e.keyCode;
-                    that.keyupEvent.originalEvent = e;
-                    that.emit(that.keyupEvent);
-                    break;
-            }
-        }
-    });
+    this.setUpKeyboard();
 
     // Add initial bodies
-    for(var i=0; i<world.bodies.length; i++)
+    for(var i=0; i<world.bodies.length; i++){
         this.addVisual(world.bodies[i]);
-    for(var i=0; i<world.springs.length; i++)
+    }
+    for(var i=0; i<world.springs.length; i++){
         this.addVisual(world.springs[i]);
+    }
 
     this.on("stateChange",function(e){
         that.updateTools();
     });
     this.updateTools();
+
+    if(window.dat){
+        var gui = this.gui = new dat.GUI();
+        $(gui.domElement).disableSelection();
+
+        var settings = this.settings;
+
+        gui.add(settings, 'tool', Demo.toolStateMap).onChange(function(state){
+            that.setState(parseInt(state));
+        });
+        gui.add(settings, 'fullscreen');
+
+        // World folder
+        var worldFolder = gui.addFolder('World');
+        worldFolder.open();
+        worldFolder.add(settings, 'paused [p]').onChange(function(p){
+            that.paused = p;
+        });
+        worldFolder.add(settings, 'manualStep [s]');
+        worldFolder.add(settings, 'fps', 60, 60*10).step(60).onChange(function(freq){
+            that.timeStep = 1 / freq;
+        });
+        worldFolder.add(settings, 'maxSubSteps', 0, 10).step(1);
+        var maxg = 100;
+
+        function changeGravity(){
+            if(!isNaN(settings.gravityX) && !isNaN(settings.gravityY)){
+                p2.vec2.set(world.gravity, settings.gravityX, settings.gravityY);
+            }
+        }
+
+        worldFolder.add(settings, 'gravityX', -maxg, maxg).onChange(changeGravity);
+        worldFolder.add(settings, 'gravityY', -maxg, maxg).onChange(changeGravity);
+        worldFolder.add(settings, 'bodySleeping').onChange(function(enable){
+            world.enableBodySleeping = enable;
+        });
+        worldFolder.add(settings, 'islandSleeping').onChange(function(enable){
+            world.enableIslandSleeping = enable;
+        });
+
+        // Render mode
+        var renderingFolder = gui.addFolder('Rendering');
+        renderingFolder.open();
+        renderingFolder.add(settings,'drawContacts [c]').onChange(function(draw){
+            that.drawContacts = draw;
+        });
+        renderingFolder.add(settings,'drawAABBs [t]').onChange(function(draw){
+            that.drawAABBs = draw;
+        });
+
+        // Solver folder
+        var solverFolder = gui.addFolder('Solver');
+        solverFolder.open();
+        solverFolder.add(settings, 'iterations', 1, 100).step(1).onChange(function(it){
+            world.solver.iterations = it;
+        });
+        solverFolder.add(settings, 'stiffness', 10, 10000000).onChange(function(k){
+            that.setEquationParameters();
+        });
+        solverFolder.add(settings, 'relaxation', 0, 20).step(0.1).onChange(function(d){
+            that.setEquationParameters();
+        });
+        solverFolder.add(settings, 'tolerance', 0, 10).step(0.01).onChange(function(t){
+            world.solver.tolerance = t;
+        });
+
+        // Scene picker
+        sceneFolder = gui.addFolder('Scenes');
+        sceneFolder.open();
+    }
+
     this.run();
 }
 Demo.prototype = new p2.EventEmitter();
@@ -205,8 +248,122 @@ Demo.DRAWINGCIRCLE  =     7;
 Demo.DRAWRECTANGLE =      8;
 Demo.DRAWINGRECTANGLE  =  9;
 
+Demo.toolStateMap = {
+    'pick/pan [q]': Demo.DEFAULT,
+    'polygon [d]': Demo.DRAWPOLYGON,
+    'circle [a]': Demo.DRAWCIRCLE,
+    'rectangle [f]': Demo.DRAWRECTANGLE
+};
+Demo.stateToolMap = {};
+for(var key in Demo.toolStateMap){
+    Demo.stateToolMap[Demo.toolStateMap[key]] = key;
+}
+
+Object.defineProperty(Demo.prototype, 'drawContacts', {
+    get: function() {
+        return this.settings['drawContacts [c]'];
+    },
+    set: function(value) {
+        this.settings['drawContacts [c]'] = value;
+        this.updateGUI();
+    }
+});
+
+Object.defineProperty(Demo.prototype, 'drawAABBs', {
+    get: function() {
+        return this.settings['drawAABBs [t]'];
+    },
+    set: function(value) {
+        this.settings['drawAABBs [t]'] = value;
+        this.updateGUI();
+    }
+});
+
 Demo.prototype.getDevicePixelRatio = function() {
     return window.devicePixelRatio || 1;
+};
+
+/**
+ * Updates dat.gui. Call whenever you change demo.settings.
+ */
+Demo.prototype.updateGUI = function() {
+    function updateControllers(folder){
+        // First level
+        for (var i in folder.__controllers){
+            folder.__controllers[i].updateDisplay();
+        }
+
+        // Second level
+        for (var f in folder.__folders){
+            updateControllers(folder.__folders[f]);
+        }
+    }
+    updateControllers(this.gui);
+};
+
+Demo.elementClass = 'p2-canvas';
+Demo.containerClass = 'p2-container';
+
+Demo.prototype.setUpKeyboard = function() {
+    var that = this;
+
+    $(this.elementContainer).keydown(function(e){
+        if(!e.keyCode){
+            return;
+        }
+        var s = that.state;
+        switch(String.fromCharCode(e.keyCode)){
+        case "P": // pause
+            that.settings['paused [p]'] = that.paused = !that.paused;
+            break;
+        case "S": // step
+            that.world.step(that.world.lastTimeStep);
+            break;
+        case "R": // restart
+            // TODO: use teardown &setup
+            that.removeAllVisuals();
+            var result = that.world.fromJSON(that.initialState);
+            if(!result){
+                console.warn("Not everything could be loaded from JSON!");
+            }
+            break;
+        case "C": // toggle draw contacts & constraints
+            that.drawContacts = !that.drawContacts;
+            that.drawConstraints = !that.drawConstraints;
+            break;
+        case "T": // toggle draw AABBs
+            that.drawAABBs = !that.drawAABBs;
+            break;
+        case "D": // toggle draw polygon mode
+            that.setState(s === Demo.DRAWPOLYGON ? Demo.DEFAULT : s = Demo.DRAWPOLYGON);
+            break;
+        case "A": // toggle draw circle mode
+            that.setState(s === Demo.DRAWCIRCLE ? Demo.DEFAULT : s = Demo.DRAWCIRCLE);
+            break;
+        case "F": // toggle draw rectangle mode
+            that.setState(s === Demo.DRAWRECTANGLE ? Demo.DEFAULT : s = Demo.DRAWRECTANGLE);
+            break;
+        case "Q": // set default
+            that.setState(Demo.DEFAULT);
+            break;
+        default:
+            that.keydownEvent.keyCode = e.keyCode;
+            that.keydownEvent.originalEvent = e;
+            that.emit(that.keydownEvent);
+            break;
+        }
+        that.updateGUI();
+    }).keyup(function(e){
+        if(e.keyCode){
+            switch(String.fromCharCode(e.keyCode)){
+            default:
+                that.keyupEvent.keyCode = e.keyCode;
+                that.keyupEvent.originalEvent = e;
+                that.emit(that.keyupEvent);
+                break;
+            }
+        }
+    });
 };
 
 Demo.prototype.run = function(){
@@ -218,18 +375,22 @@ Demo.prototype.run = function(){
             var now = Date.now() / 1000,
                 timeSinceLastCall = now-lastCallTime;
             lastCallTime = now;
-            demo.world.step(demo.timeStep, timeSinceLastCall, demo.maxSubSteps);
+            demo.world.step(demo.timeStep, timeSinceLastCall, demo.settings.maxSubSteps);
         }
         demo.render();
-        requestAnimationFrame(update);
+        requestAnimFrame(update);
     }
-    requestAnimationFrame(update);
+    requestAnimFrame(update);
 };
 
 Demo.prototype.setState = function(s){
     this.state = s;
     this.stateChangeEvent.state = s;
     this.emit(this.stateChangeEvent);
+    if(Demo.stateToolMap[s]){
+        this.settings.tool = s;
+        this.updateGUI();
+    }
 };
 
 /**
@@ -519,204 +680,14 @@ Demo.prototype.createStats = function(){
     */
 };
 
-Demo.prototype.createMenu = function(){
-    var that = this,
-        playHtml = "<b class='icon-play'></b>",
-        pauseHtml = "<b class='icon-pause'></b>";
-
-    // Insert logo
+Demo.prototype.addLogo = function(){
     $("body").append($([
-        "<div id='logo'>",
-        "<h1><a href='http://github.com/schteppe/p2.js'>p2.js</a></h1>",
-        "<p>Physics Engine</p>",
-        '<a href="https://twitter.com/share" class="twitter-share-button" data-via="schteppe" data-count="none" data-hashtags="p2js">Tweet</a>',
+        "<div style='position:absolute; left:10px; top:15px; text-align:center; font: 13px Helvetica, arial, freesans, clean, sans-serif;'>",
+        "<h1 style='margin:0px'><a href='http://github.com/schteppe/p2.js' style='color:black; text-decoration:none;'>p2.js</a></h1>",
+        "<p style='margin:5px'>Physics Engine</p>",
+        '<a style="color:black; text-decoration:none;" href="https://twitter.com/share" class="twitter-share-button" data-via="schteppe" data-count="none" data-hashtags="p2js">Tweet</a>',
         "<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>",
         "</div>"].join("")).disableSelection());
-
-    // Get title
-    var title = "Untitled demo";
-    $title = $(document).find("title");
-    if($title)
-        title = $title.text();
-    title = title
-        .replace(/\s\-\s.*$/,"")
-        .replace(/\s+demo$/,"");
-
-    // Get description
-    var description = "";
-    $desc = $("meta[name=description]");
-    if($desc)
-        description = $desc.attr("content");
-
-    var info = "";
-    if(title && description)
-        info  = ("<h4>"+title+"</h4>"+
-                 "<p>"+description+"</p>");
-
-    // Insert menu
-    var $menucontainer = $([
-        "<div id='menu-container'>",
-            "<button class='btn' id='menu-container-open'>Open menu</button>",
-            "<div id='menu' class='well'>",
-                "<button class='btn' id='menu-hide'>Hide menu</button>",
-
-                "<button class='btn' id='menu-fullscreen'>Full screen</button>",
-                "<button class='btn' id='menu-zoom-in'><i class='icon-zoom-in'></i></button>",
-                "<button class='btn' id='menu-zoom-out'><i class='icon-zoom-out'></i></button>",
-
-                info,
-
-                "<fieldset id='menu-controls-container'>",
-                    "<h4>Simulation control</h4>",
-                    "<button class='btn' id='menu-restart'><b class='icon-fast-backward'></b></button>",
-                    "<button class='btn' id='menu-playpause'>"+pauseHtml+"</button>",
-                    "<button class='btn' id='menu-step'><b class='icon-step-forward'></b></button>",
-                "</fieldset>",
-
-                "<fieldset id='menu-tools'>",
-                    "<h4>Tools</h4>",
-                    "<div class='btn-group'>",
-                        "<button class='btn' id='menu-tools-default'>Pick/pan</button>",
-                        "<button class='btn' id='menu-tools-polygon'>Polygon</button>",
-                        "<button class='btn' id='menu-tools-circle'>Circle</button>",
-                        "<button class='btn' id='menu-tools-rectangle'>Rectangle</button>",
-                    "</div>",
-                "</fieldset>",
-
-                "<fieldset id='menu-solver-container'>",
-                    "<h4>Solver</h4>",
-
-                    "<div class='input-prepend input-block-level'>",
-                      "<span class='add-on'>Iterations</span>",
-                      "<input id='menu-solver-iterations' type='number' min='1' value='"+this.world.solver.iterations+"'>",
-                    "</div>",
-
-                    "<div class='input-prepend input-block-level'>",
-                      "<span class='add-on'>Relaxation</span>",
-                      "<input id='menu-solver-relaxation' type='number' step='any' min='0' value='"+this.relaxation+"'>",
-                    "</div>",
-
-                    "<div class='input-prepend input-block-level'>",
-                      "<span class='add-on'>Stiffness</span>",
-                      "<input id='menu-solver-stiffness' type='number' step='any' min='0' value='"+this.stiffness+"'>",
-                    "</div>",
-
-                    "<div class='input-prepend input-block-level'>",
-                      "<span class='add-on'>Tolerance</span>",
-                      "<input id='menu-solver-tolerance' type='number' step='any' min='0' value='"+this.world.solver.tolerance+"'>",
-                    "</div>",
-
-                "</fieldset>",
-
-            "</div>",
-        "</div>"
-    ].join("\n")).disableSelection();
-    $("body").append($menucontainer);
-
-    var $menu = $("#menu").hide(),
-        $openButton = $("#menu-container-open");
-
-    // Hide menu
-    $("#menu-hide").click(function(e){
-        $menu.hide();
-        $openButton.show();
-    });
-
-    // Open menu
-    $("#menu-container-open").click(function(e){
-        $menu.show();
-        $openButton.hide();
-    });
-
-    // Play/pause
-    $("#menu-playpause").click(function(e){
-        that.paused = !that.paused;
-        if(that.paused) $(this).html(playHtml);
-        else            $(this).html(pauseHtml);
-    }).tooltip({
-        title : "Play or pause simulation [p]",
-    });
-
-    // Step
-    $("#menu-step").click(function(e){
-        that.world.step(that.world.lastTimeStep);
-    }).tooltip({
-        title : "Step simulation [s]",
-    });
-
-    // Restart
-    $("#menu-restart").click(function(e){
-        // Until Demo gets a restart() method
-        that.removeAllVisuals();
-        that.world.fromJSON(that.initialState);
-        //that.serializer.deserialize(that.initialState,that.world,p2);
-    }).tooltip({
-        title : "Restart simulation [r]",
-    }),
-
-    // Zoom in
-    $("#menu-zoom-in").click(function(e){
-        that.emit(Demo.zoomInEvent);
-    });
-    $("#menu-zoom-out").click(function(e){
-        that.emit(Demo.zoomOutEvent);
-    });
-
-    $("#menu-fullscreen").click(function(evt){
-        var elem = document.body;
-        if (elem.requestFullscreen) {
-          elem.requestFullscreen();
-        } else if (elem.msRequestFullscreen) {
-          elem.msRequestFullscreen();
-        } else if (elem.mozRequestFullScreen) {
-          elem.mozRequestFullScreen();
-        } else if (elem.webkitRequestFullscreen) {
-          elem.webkitRequestFullscreen();
-        }
-    });
-
-    $("#menu-solver-iterations").change(function(e){
-        var solver = that.world.solver;
-        solver.iterations = parseInt($(this).val());
-    }).tooltip({
-        title : '# timesteps needed for stabilization'
-    });
-    $("#menu-solver-relaxation").change(function(e){
-        that.relaxation = parseFloat($(this).val());
-        that.setEquationParameters();
-    }).tooltip({
-        title : '# timesteps needed for stabilization'
-    });
-    $("#menu-solver-stiffness").change(function(e){
-        that.stiffness = parseFloat($(this).val());
-        that.setEquationParameters();
-    }).tooltip({
-        title : "Constraint stiffness",
-    });
-    $("#menu-solver-tolerance").change(function(e){
-        var tolerance = parseFloat($(this).val());
-        if(tolerance >= 0){
-            that.world.solver.tolerance = tolerance;
-        }
-    }).tooltip({
-        title : "Solver tolerance",
-    });
-
-    $("#menu-tools-default").click(function(e){
-        that.setState(Demo.DEFAULT);
-    }).tooltip({
-        title : "Pick and pan tool",
-    });
-    $("#menu-tools-polygon").click(function(e){
-        that.setState(Demo.DRAWPOLYGON);
-    }).tooltip({
-        title : "Draw polygon [d]",
-    });
-    $("#menu-tools-circle").click(function(e){
-        that.setState(Demo.DRAWCIRCLE);
-    }).tooltip({
-        title : "Draw circle [a]",
-    });
 };
 
 Demo.zoomInEvent = {
@@ -728,8 +699,8 @@ Demo.zoomOutEvent = {
 
 Demo.prototype.setEquationParameters = function(){
     this.world.setGlobalEquationParameters({
-        stiffness: this.stiffness,
-        relaxation: this.relaxation
+        stiffness: this.settings.stiffness,
+        relaxation: this.settings.relaxation
     });
 };
 

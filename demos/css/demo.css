@@ -7,10 +7,11 @@ html,body {
 
 body {
     overflow: hidden;
-    background:white;
-    font: 13px Helvetica, arial, freesans, clean, sans-serif;
+    /* background:white;
+    font: 13px Helvetica, arial, freesans, clean, sans-serif; */
 }
 
+/*
 #menu {
     width:300px;
     background-color: #eee;
@@ -24,6 +25,7 @@ body {
     left:0;
     padding:10px;
 }
+*/
 
 #logo {
     position : absolute;
@@ -36,6 +38,7 @@ body {
     text-decoration: none;
 }
 
+/*
 #menu-container-open {
     margin:10px;
 }
@@ -50,6 +53,7 @@ label {
     display:block;
 }
 
+*/
 canvas {
     width:100%;
     display:block;

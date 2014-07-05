@@ -33,7 +33,7 @@ function PixiDemo(world,options){
         settings.height = $(window).height() / $(window).width() * settings.width;
     }
 
-    this.settings = settings;
+    //this.settings = settings;
     this.lineWidth =            settings.lineWidth;
     this.scrollFactor =         settings.scrollFactor;
     this.sleepOpacity =         settings.sleepOpacity;
@@ -43,6 +43,10 @@ function PixiDemo(world,options){
     this.debugPolygons = false;
 
     Demo.call(this,world);
+
+    for(var key in settings){
+        this.settings[key] = settings[key];
+    }
 
     this.pickPrecision = 0.1;
 
@@ -106,11 +110,16 @@ PixiDemo.prototype.init = function(){
     var renderer =  this.renderer =     PIXI.autoDetectRenderer(s.width, s.height, null, null, true);
     var stage =     this.stage =        new PIXI.DisplayObjectContainer();
     var container = this.container =    new PIXI.Stage(0xFFFFFF,true);
-    document.body.appendChild(this.renderer.view);
 
-    this.element = this.renderer.view;
+    var el = this.element = this.renderer.view;
+    el.tabIndex = 1;
+    el.classList.add(Demo.elementClass);
 
-    $(this.renderer.view).on("contextmenu",function(e){
+    var div = this.elementContainer = document.createElement('div');
+    div.classList.add(Demo.containerClass);
+    div.appendChild(el);
+    $(document.body).append(div);
+    $(el).focus().on("contextmenu",function(e){
         return false;
     });
 
@@ -254,11 +263,11 @@ PixiDemo.prototype.init = function(){
     };
 
     // http://stackoverflow.com/questions/7691551/touchend-event-in-ios-webkit-not-firing
-    $(document).bind("touchmove",function(e){
+    $(this.element).bind("touchmove",function(e){
         e.preventDefault();
     });
 
-    $(window).bind('mousewheel', function(e){
+    $(this.element).bind('mousewheel', function(e){
         var out = e.originalEvent.wheelDelta >= 0;
         that.zoom(lastMoveX, lastMoveY, out);
     });
