@@ -50,6 +50,12 @@ module.exports = function(grunt) {
                     'default'
                 ]
             },
+            renderer: {
+                files: 'demos/js/*Renderer.js',
+                tasks: [
+                    'concat:renderer'
+                ]
+            },
             test: {
                 files: ['src/**/*', 'test/**/*'],
                 tasks: [
