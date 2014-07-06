@@ -60,6 +60,12 @@ if(!performance.now){
  * @param {Boolean}         [options.islandSplit=false]
  * @param {Boolean}         [options.doProfiling=false]
  * @extends EventEmitter
+ *
+ * @example
+ *     var world = new World({
+ *         gravity: [0, -9.81],
+ *         broadphase: new SAPBroadphase()
+ *     });
  */
 function World(options){
     EventEmitter.apply(this);

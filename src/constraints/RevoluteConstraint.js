@@ -30,13 +30,13 @@ var worldPivotA = vec2.create(),
  *     // This will create a revolute constraint between two bodies with pivot point in between them.
  *     var bodyA = new Body({ mass: 1, position: [-1, 0] });
  *     var bodyB = new Body({ mass: 1, position: [1, 0] });
- *     var constraint = new p2.RevoluteConstraint(bodyA, bodyB, {
+ *     var constraint = new RevoluteConstraint(bodyA, bodyB, {
  *         worldPivot: [0, 0]
  *     });
  *     world.addConstraint(constraint);
  *
  *     // Using body-local pivot points, the constraint could have been constructed like this:
- *     var constraint = new p2.RevoluteConstraint(bodyA, bodyB, {
+ *     var constraint = new RevoluteConstraint(bodyA, bodyB, {
  *         localPivotA: [1, 0],
  *         localPivotB: [-1, 0]
  *     });
