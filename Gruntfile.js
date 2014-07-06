@@ -80,13 +80,8 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-concat');
 
-    grunt.registerTask('default', ['browserify','webworkerify','concat','uglify','addLicense']);
+    grunt.registerTask('default', ['test','jshint','browserify','concat','uglify','addLicense']);
     grunt.registerTask('test', ['nodeunit']);
-
-    grunt.registerTask('webworkerify','Fixes the browserify bundle so it works in Web Workers',function(){
-        var src = fs.readFileSync("build/p2.js");
-        fs.writeFileSync("build/p2.js",src.toString().replace("global.p2","self.p2"));
-    });
 
     grunt.registerTask('addLicense','Adds the LICENSE to the top of the built files',function(){
         var text = fs.readFileSync("LICENSE").toString();
