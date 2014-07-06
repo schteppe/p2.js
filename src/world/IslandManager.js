@@ -1,7 +1,7 @@
 var vec2 = require('../math/vec2')
 ,   Island = require('./Island')
 ,   IslandNode = require('./IslandNode')
-,   Body = require('../objects/Body')
+,   Body = require('../objects/Body');
 
 module.exports = IslandManager;
 

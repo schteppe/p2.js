@@ -3,7 +3,7 @@
  * @class EventEmitter
  * @constructor
  */
-var EventEmitter = function () {}
+var EventEmitter = function () {};
 
 module.exports = EventEmitter;
 
@@ -19,7 +19,9 @@ EventEmitter.prototype = {
      */
     on: function ( type, listener, context ) {
         listener.context = context || this;
-        if ( this._listeners === undefined ) this._listeners = {};
+        if ( this._listeners === undefined ){
+            this._listeners = {};
+        }
         var listeners = this._listeners;
         if ( listeners[ type ] === undefined ) {
             listeners[ type ] = [];
@@ -38,7 +40,9 @@ EventEmitter.prototype = {
      * @return {Boolean}
      */
     has: function ( type, listener ) {
-        if ( this._listeners === undefined ) return false;
+        if ( this._listeners === undefined ){
+            return false;
+        }
         var listeners = this._listeners;
         if(listener){
             if ( listeners[ type ] !== undefined && listeners[ type ].indexOf( listener ) !== - 1 ) {
@@ -61,7 +65,9 @@ EventEmitter.prototype = {
      * @return {EventEmitter} The self object, for chainability.
      */
     off: function ( type, listener ) {
-        if ( this._listeners === undefined ) return this;
+        if ( this._listeners === undefined ){
+            return this;
+        }
         var listeners = this._listeners;
         var index = listeners[ type ].indexOf( listener );
         if ( index !== - 1 ) {
@@ -78,7 +84,9 @@ EventEmitter.prototype = {
      * @return {EventEmitter} The self object, for chainability.
      */
     emit: function ( event ) {
-        if ( this._listeners === undefined ) return this;
+        if ( this._listeners === undefined ){
+            return this;
+        }
         var listeners = this._listeners;
         var listenerArray = listeners[ event.type ];
         if ( listenerArray !== undefined ) {

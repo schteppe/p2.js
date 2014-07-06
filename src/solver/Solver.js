@@ -1,5 +1,5 @@
 var Utils = require('../utils/Utils')
-,   EventEmitter = require('../events/EventEmitter')
+,   EventEmitter = require('../events/EventEmitter');
 
 module.exports = Solver;
 

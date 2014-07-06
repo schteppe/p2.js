@@ -1,3 +1,6 @@
+/* global performance */
+/*jshint -W020 */
+
 var  GSSolver = require('../solver/GSSolver')
 ,    Solver = require('../solver/Solver')
 ,    NaiveBroadphase = require('../collision/NaiveBroadphase')
@@ -28,7 +31,7 @@ var  GSSolver = require('../solver/GSSolver')
 ,    Utils = require('../utils/Utils')
 ,    OverlapKeeper = require('../utils/OverlapKeeper')
 ,    IslandManager = require('./IslandManager')
-,    RotationalSpring = require('../objects/RotationalSpring')
+,    RotationalSpring = require('../objects/RotationalSpring');
 
 module.exports = World;
 
@@ -1108,13 +1111,16 @@ World.prototype.enableBodyCollision = function(bodyA,bodyB){
 
 
 function v2a(v){
-    if(!v) return v;
+    if(!v){
+        return v;
+    }
     return [v[0],v[1]];
 }
 
 function extend(a,b){
-    for(var key in b)
+    for(var key in b){
         a[key] = b[key];
+    }
 }
 
 function contactMaterialToJSON(cm){

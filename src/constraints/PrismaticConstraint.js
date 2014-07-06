@@ -2,7 +2,7 @@ var Constraint = require('./Constraint')
 ,   ContactEquation = require('../equations/ContactEquation')
 ,   Equation = require('../equations/Equation')
 ,   vec2 = require('../math/vec2')
-,   RotationalLockEquation = require('../equations/RotationalLockEquation')
+,   RotationalLockEquation = require('../equations/RotationalLockEquation');
 
 module.exports = PrismaticConstraint;
 
@@ -33,9 +33,9 @@ function PrismaticConstraint(bodyA, bodyB, options){
     var localAnchorA = vec2.fromValues(0,0),
         localAxisA = vec2.fromValues(1,0),
         localAnchorB = vec2.fromValues(0,0);
-    if(options.localAnchorA) vec2.copy(localAnchorA, options.localAnchorA);
-    if(options.localAxisA)   vec2.copy(localAxisA,   options.localAxisA);
-    if(options.localAnchorB) vec2.copy(localAnchorB, options.localAnchorB);
+    if(options.localAnchorA){ vec2.copy(localAnchorA, options.localAnchorA); }
+    if(options.localAxisA){ vec2.copy(localAxisA,   options.localAxisA); }
+    if(options.localAnchorB){ vec2.copy(localAnchorB, options.localAnchorB); }
 
     /**
      * @property localAnchorA
@@ -73,7 +73,7 @@ function PrismaticConstraint(bodyA, bodyB, options){
 
      */
 
-    var maxForce = this.maxForce = typeof(options.maxForce)!="undefined" ? options.maxForce : Number.MAX_VALUE;
+    var maxForce = this.maxForce = typeof(options.maxForce)!=="undefined" ? options.maxForce : Number.MAX_VALUE;
 
     // Translational part
     var trans = new Equation(bodyA,bodyB,-maxForce,maxForce);
@@ -271,11 +271,14 @@ PrismaticConstraint.prototype.update = function(){
         vec2.sub(upperLimitEquation.contactPointB, worldAnchorB, bodyB.position);
         vec2.scale(tmp,worldAxisA,upperLimit);
         vec2.add(upperLimitEquation.contactPointA,upperLimitEquation.contactPointA,tmp);
-        if(eqs.indexOf(upperLimitEquation)==-1)
+        if(eqs.indexOf(upperLimitEquation) === -1){
             eqs.push(upperLimitEquation);
+        }
     } else {
         var idx = eqs.indexOf(upperLimitEquation);
-        if(idx != -1) eqs.splice(idx,1);
+        if(idx !== -1){
+            eqs.splice(idx,1);
+        }
     }
 
     if(this.lowerLimitEnabled && relPosition < lowerLimit){
@@ -285,11 +288,14 @@ PrismaticConstraint.prototype.update = function(){
         vec2.sub(lowerLimitEquation.contactPointB, worldAnchorB, bodyB.position);
         vec2.scale(tmp,worldAxisA,lowerLimit);
         vec2.sub(lowerLimitEquation.contactPointB,lowerLimitEquation.contactPointB,tmp);
-        if(eqs.indexOf(lowerLimitEquation)==-1)
+        if(eqs.indexOf(lowerLimitEquation) === -1){
             eqs.push(lowerLimitEquation);
+        }
     } else {
         var idx = eqs.indexOf(lowerLimitEquation);
-        if(idx != -1) eqs.splice(idx,1);
+        if(idx !== -1){
+            eqs.splice(idx,1);
+        }
     }
 };
 
@@ -298,7 +304,9 @@ PrismaticConstraint.prototype.update = function(){
  * @method enableMotor
  */
 PrismaticConstraint.prototype.enableMotor = function(){
-    if(this.motorEnabled) return;
+    if(this.motorEnabled){
+        return;
+    }
     this.equations.push(this.motorEquation);
     this.motorEnabled = true;
 };
@@ -308,7 +316,9 @@ PrismaticConstraint.prototype.enableMotor = function(){
  * @method disableMotor
  */
 PrismaticConstraint.prototype.disableMotor = function(){
-    if(!this.motorEnabled) return;
+    if(!this.motorEnabled){
+        return;
+    }
     var i = this.equations.indexOf(this.motorEquation);
     this.equations.splice(i,1);
     this.motorEnabled = false;

@@ -40,22 +40,23 @@ Plane.prototype.updateBoundingRadius = function(){
 Plane.prototype.computeAABB = function(out, position, angle){
     var a = 0,
         set = vec2.set;
-    if(typeof(angle) == "number")
+    if(typeof(angle) === "number"){
         a = angle % (2*Math.PI);
+    }
 
-    if(a == 0){
+    if(a === 0){
         // y goes from -inf to 0
         set(out.lowerBound, -Number.MAX_VALUE, -Number.MAX_VALUE);
         set(out.upperBound,  Number.MAX_VALUE,  0);
-    } else if(a == Math.PI / 2){
+    } else if(a === Math.PI / 2){
         // x goes from 0 to inf
         set(out.lowerBound, 0, -Number.MAX_VALUE);
         set(out.upperBound,      Number.MAX_VALUE,  Number.MAX_VALUE);
-    } else if(a == Math.PI){
+    } else if(a === Math.PI){
         // y goes from 0 to inf
         set(out.lowerBound, -Number.MAX_VALUE, 0);
         set(out.upperBound,  Number.MAX_VALUE, Number.MAX_VALUE);
-    } else if(a == 3*Math.PI/2){
+    } else if(a === 3*Math.PI/2){
         // x goes from -inf to 0
         set(out.lowerBound, -Number.MAX_VALUE,     -Number.MAX_VALUE);
         set(out.upperBound,  0,  Number.MAX_VALUE);

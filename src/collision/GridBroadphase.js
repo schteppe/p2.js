@@ -3,7 +3,7 @@ var Circle = require('../shapes/Circle')
 ,   Particle = require('../shapes/Particle')
 ,   Broadphase = require('../collision/Broadphase')
 ,   vec2 = require('../math/vec2')
-,   Utils = require('../utils/Utils')
+,   Utils = require('../utils/Utils');
 
 module.exports = GridBroadphase;
 

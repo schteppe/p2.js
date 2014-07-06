@@ -75,7 +75,9 @@ function Shape(type){
      * @type {Number}
      */
     this.collisionMask =  1;
-    if(type) this.updateBoundingRadius();
+    if(type){
+        this.updateBoundingRadius();
+    }
 
     /**
      * Material to use in collisions for this Shape. If this is set to null, the world will use default material properties instead.
