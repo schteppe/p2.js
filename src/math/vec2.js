@@ -3,7 +3,7 @@
  * @class vec2
  */
 
-var vec2 = require('../../build/vec2').vec2;
+var vec2 = require('./gl-matrix-vec2').vec2;
 
 /**
  * Make a cross product and only return the z component

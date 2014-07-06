@@ -100,6 +100,6 @@ module.exports = function(grunt) {
     grunt.registerTask('grabVec2','Grabs the vec2 class from the gl-matrix library.',function(){
         var common = fs.readFileSync("node_modules/gl-matrix/src/gl-matrix/common.js").toString();
         var vec2 = fs.readFileSync("node_modules/gl-matrix/src/gl-matrix/vec2.js").toString();
-        fs.writeFileSync("build/vec2.js",common+'\n'+vec2);
+        fs.writeFileSync("src/math/gl-matrix-vec2.js",common+'\n'+vec2);
     });
 };
