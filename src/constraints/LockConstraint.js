@@ -1,6 +1,6 @@
 var Constraint = require('./Constraint')
 ,   vec2 = require('../math/vec2')
-,   Equation = require('../equations/Equation')
+,   Equation = require('../equations/Equation');
 
 module.exports = LockConstraint;
 
@@ -13,8 +13,8 @@ module.exports = LockConstraint;
  * @param {Body} bodyA
  * @param {Body} bodyB
  * @param {Object} [options]
- * @param {Array}  [options.localOffsetB] The offset of bodyB in bodyA's frame. Default is the zero vector.
- * @param {number} [options.localAngleB=0]  The angle of bodyB in bodyA's frame.
+ * @param {Array}  [options.localOffsetB] The offset of bodyB in bodyA's frame. If not given the offset is computed from current positions.
+ * @param {number} [options.localAngleB] The angle of bodyB in bodyA's frame. If not given, the angle is computed from current angles.
  * @param {number} [options.maxForce]
  * @extends Constraint
  */

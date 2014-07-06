@@ -67,13 +67,6 @@ function Equation(bodyA, bodyB, minForce, maxForce){
         this.G[i]=0;
     }
 
-    // Constraint frames for body i and j
-    /*
-    this.xi = vec2.create();
-    this.xj = vec2.create();
-    this.ai = 0;
-    this.aj = 0;
-    */
     this.offset = 0;
 
     this.a = 0;
@@ -141,7 +134,8 @@ Equation.prototype.update = function(){
 };
 
 /**
- * Compute gmult
+ * Multiply a jacobian entry with corresponding positions or velocities
+ * @method gmult
  * @return {Number}
  */
 Equation.prototype.gmult = function(G,vi,wi,vj,wj){
@@ -166,7 +160,7 @@ Equation.prototype.computeB = function(a,b,h){
 };
 
 /**
- * Computes G*q, where q are the generalized body coordinates
+ * Computes G\*q, where q are the generalized body coordinates
  * @method computeGq
  * @return {Number}
  */
@@ -185,7 +179,7 @@ Equation.prototype.computeGq = function(){
 };
 
 /**
- * Computes G*W, where W are the body velocities
+ * Computes G\*W, where W are the body velocities
  * @method computeGW
  * @return {Number}
  */
@@ -201,7 +195,7 @@ Equation.prototype.computeGW = function(){
 };
 
 /**
- * Computes G*Wlambda, where W are the body velocities
+ * Computes G\*Wlambda, where W are the body velocities
  * @method computeGWlambda
  * @return {Number}
  */
@@ -217,7 +211,7 @@ Equation.prototype.computeGWlambda = function(){
 };
 
 /**
- * Computes G*inv(M)*f, where M is the mass matrix with diagonal blocks for each body, and f are the forces on the bodies.
+ * Computes G\*inv(M)\*f, where M is the mass matrix with diagonal blocks for each body, and f are the forces on the bodies.
  * @method computeGiMf
  * @return {Number}
  */
@@ -243,7 +237,7 @@ Equation.prototype.computeGiMf = function(){
 };
 
 /**
- * Computes G*inv(M)*G'
+ * Computes G\*inv(M)\*G'
  * @method computeGiMGt
  * @return {Number}
  */
@@ -313,7 +307,7 @@ Equation.prototype.addToWlambda = function(deltalambda){
 };
 
 /**
- * Compute the denominator part of the SPOOK equation: C = G*inv(M)*G' + eps
+ * Compute the denominator part of the SPOOK equation: C = G\*inv(M)\*G' + eps
  * @method computeInvC
  * @param  {Number} eps
  * @return {Number}

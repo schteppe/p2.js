@@ -20,11 +20,26 @@ var worldPivotA = vec2.create(),
  * @param {Body}    bodyA
  * @param {Body}    bodyB
  * @param {Object}  [options]
- * @param {Array}   [options.worldPivot]    The point point in the world. If specified, localPivotA and localPivotB are automatically computed.
- * @param {Array}   [options.localPivotA]   The point relative to the center of mass of bodyA which bodyA is constrained to.
- * @param {Array}   [options.localPivotB]   See localPivotA.
- * @param {Number}  [options.maxForce]      The maximum force that should be applied to constrain the bodies.
+ * @param {Array}   [options.worldPivot] A pivot point given in world coordinates. If specified, localPivotA and localPivotB are automatically computed from this value.
+ * @param {Array}   [options.localPivotA] The point relative to the center of mass of bodyA which bodyA is constrained to.
+ * @param {Array}   [options.localPivotB] See localPivotA.
+ * @param {Number}  [options.maxForce] The maximum force that should be applied to constrain the bodies.
  * @extends Constraint
+ *
+ * @example
+ *     // This will create a revolute constraint between two bodies with pivot point in between them.
+ *     var bodyA = new Body({ mass: 1, position: [-1, 0] });
+ *     var bodyB = new Body({ mass: 1, position: [1, 0] });
+ *     var constraint = new p2.RevoluteConstraint(bodyA, bodyB, {
+ *         worldPivot: [0, 0]
+ *     });
+ *     world.addConstraint(constraint);
+ *
+ *     // Using body-local pivot points, the constraint could have been constructed like this:
+ *     var constraint = new p2.RevoluteConstraint(bodyA, bodyB, {
+ *         localPivotA: [1, 0],
+ *         localPivotB: [-1, 0]
+ *     });
  */
 function RevoluteConstraint(bodyA, bodyB, options){
     options = options || {};

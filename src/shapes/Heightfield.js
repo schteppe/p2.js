@@ -9,10 +9,11 @@ module.exports = Heightfield;
  * @class Heightfield
  * @extends Shape
  * @constructor
- * @param {Array} data
- * @param {Number} maxValue
- * @param {Number} elementWidth
- * @todo Should take maxValue as an option and also be able to compute it itself if not given.
+ * @param {Array} data An array of Y values that will be used to construct the terrain.
+ * @param {object} options
+ * @param {Number} [options.minValue] Minimum value of the data points in the data array. Will be computed automatically if not given.
+ * @param {Number} [options.maxValue] Maximum value.
+ * @param {Number} [options.elementWidth=0.1] World spacing between the data points in X direction.
  * @todo Should be possible to use along all axes, not just y
  */
 function Heightfield(data, options){

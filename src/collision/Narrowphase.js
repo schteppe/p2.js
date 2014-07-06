@@ -1654,11 +1654,6 @@ Narrowphase.prototype.circlePlane = function(   bi,si,xi,ai, bj,sj,xj,aj, justTe
 };
 
 /**
- * @deprecated
- */
-Narrowphase.convexPrecision = 1e-7;
-
-/**
  * Convex/convex Narrowphase.See <a href="http://www.altdevblogaday.com/2011/05/13/contact-generation-between-3d-convex-meshes/">this article</a> for more info.
  * @method convexConvex
  * @param  {Body} bi

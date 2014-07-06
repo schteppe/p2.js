@@ -17,6 +17,7 @@ function OverlapKeeper() {
 }
 
 /**
+ * Ticks one step forward in time. This will move the current overlap state to the "old" overlap state, and create a new one as current.
  * @method tick
  */
 OverlapKeeper.prototype.tick = function() {
@@ -47,6 +48,10 @@ OverlapKeeper.prototype.tick = function() {
 
 /**
  * @method setOverlapping
+ * @param {Body} bodyA
+ * @param {Body} shapeA
+ * @param {Body} bodyB
+ * @param {Body} shapeB
  */
 OverlapKeeper.prototype.setOverlapping = function(bodyA, shapeA, bodyB, shapeB) {
     var last = this.overlappingShapesLastState;
@@ -75,6 +80,13 @@ OverlapKeeper.prototype.getEndOverlaps = function(result){
     return this.getDiff(this.overlappingShapesCurrentState, this.overlappingShapesLastState, result);
 };
 
+/**
+ * Checks if two bodies are currently overlapping.
+ * @method bodiesAreOverlapping
+ * @param  {Body} bodyA
+ * @param  {Body} bodyB
+ * @return {boolean}
+ */
 OverlapKeeper.prototype.bodiesAreOverlapping = function(bodyA, bodyB){
     var current = this.overlappingShapesCurrentState;
     var l = current.keys.length;
@@ -163,6 +175,8 @@ OverlapKeeper.prototype.getBodyDiff = function(overlaps, result){
 
 /**
  * Overlap data container for the OverlapKeeper
+ * @class OverlapKeeperRecord
+ * @constructor
  * @param {Body} bodyA
  * @param {Shape} shapeA
  * @param {Body} bodyB
@@ -187,6 +201,14 @@ function OverlapKeeperRecord(bodyA, shapeA, bodyB, shapeB){
     this.bodyB = bodyB;
 }
 
+/**
+ * Set the data for the record
+ * @method set
+ * @param {Body} bodyA
+ * @param {Shape} shapeA
+ * @param {Body} bodyB
+ * @param {Shape} shapeB
+ */
 OverlapKeeperRecord.prototype.set = function(bodyA, shapeA, bodyB, shapeB){
     OverlapKeeperRecord.call(this, bodyA, shapeA, bodyB, shapeB);
 };

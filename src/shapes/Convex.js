@@ -64,7 +64,7 @@ function Convex(vertices, axes){
     /**
      * The center of mass of the Convex
      * @property centerOfMass
-     * @type {Float32Array}
+     * @type {Array}
      */
     this.centerOfMass = vec2.fromValues(0,0);
 

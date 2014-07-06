@@ -10,7 +10,7 @@ function IslandNode(body){
 
 	/**
 	 * The body that is contained in this node.
-	 * @property {Body}
+	 * @property {Body} body
 	 */
     this.body = body;
 

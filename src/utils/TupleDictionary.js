@@ -17,13 +17,14 @@ function TupleDictionary() {
 
     /**
      * Keys that are currently used.
-     * @type {Array}
+     * @property {Array} keys
      */
     this.keys = [];
 }
 
 /**
  * Generate a key given two integers
+ * @method getKey
  * @param  {number} i
  * @param  {number} j
  * @return {string}
@@ -64,6 +65,7 @@ TupleDictionary.prototype.get = function(i, j) {
 };
 
 /**
+ * Set a value.
  * @method set
  * @param  {Number} i
  * @param  {Number} j
@@ -87,6 +89,7 @@ TupleDictionary.prototype.set = function(i, j, value) {
 };
 
 /**
+ * Remove all data.
  * @method reset
  */
 TupleDictionary.prototype.reset = function() {
@@ -102,7 +105,9 @@ TupleDictionary.prototype.reset = function() {
 };
 
 /**
+ * Copy another TupleDictionary. Note that all data in this dictionary will be removed.
  * @method copy
+ * @param {TupleDictionary} dict The TupleDictionary to copy into this one.
  */
 TupleDictionary.prototype.copy = function(dict) {
     this.reset();

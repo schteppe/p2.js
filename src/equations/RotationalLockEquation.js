@@ -12,11 +12,15 @@ module.exports = RotationalLockEquation;
  * @param {Body} bodyA
  * @param {Body} bodyB
  * @param {Object} [options]
- * @param {Number} [options.angle] Angle to add to the local vector in body i.
+ * @param {Number} [options.angle] Angle to add to the local vector in bodyA.
  */
 function RotationalLockEquation(bodyA, bodyB, options){
     options = options || {};
     Equation.call(this, bodyA, bodyB, -Number.MAX_VALUE, Number.MAX_VALUE);
+
+    /**
+     * @property {number} angle
+     */
     this.angle = options.angle || 0;
 
     var G = this.G;

@@ -4,7 +4,7 @@ var Equation = require("./Equation"),
 module.exports = ContactEquation;
 
 /**
- * Non-penetration constraint equation. Tries to make the ri and rj vectors the same point.
+ * Non-penetration constraint equation. Tries to make the contactPointA and contactPointB vectors coincide, while keeping the applied force repulsive.
  *
  * @class ContactEquation
  * @constructor

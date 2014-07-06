@@ -22,8 +22,9 @@ module.exports = ContactMaterial;
 function ContactMaterial(materialA, materialB, options){
     options = options || {};
 
-    if(!(materialA instanceof Material) || !(materialB instanceof Material))
+    if(!(materialA instanceof Material) || !(materialB instanceof Material)){
         throw new Error("First two arguments must be Material instances.");
+    }
 
     /**
      * The contact material identifier
@@ -96,6 +97,7 @@ function ContactMaterial(materialA, materialB, options){
 
     /**
      * Offset to be set on ContactEquations. A positive value will make the bodies penetrate more into each other. Can be useful in scenes where contacts need to be more persistent, for example when stacking. Aka "cure for nervous contacts".
+     * @property contactSkinSize
      * @type {Number}
      */
     this.contactSkinSize = 0.005;

@@ -2,7 +2,7 @@ var vec2 = require('../math/vec2')
 ,   decomp = require('poly-decomp')
 ,   Convex = require('../shapes/Convex')
 ,   AABB = require('../collision/AABB')
-,   EventEmitter = require('../events/EventEmitter')
+,   EventEmitter = require('../events/EventEmitter');
 
 module.exports = Body;
 
@@ -210,7 +210,9 @@ function Body(options){
      *     }
      */
     this.force = vec2.create();
-    if(options.force) vec2.copy(this.force, options.force);
+    if(options.force){
+        vec2.copy(this.force, options.force);
+    }
 
     /**
      * The angular force acting on the body. See {{#crossLink "Body/force:property"}}{{/crossLink}}.
@@ -225,7 +227,7 @@ function Body(options){
      * @type {Number}
      * @default 0.1
      */
-    this.damping = typeof(options.damping)=="number" ? options.damping : 0.1;
+    this.damping = typeof(options.damping) === "number" ? options.damping : 0.1;
 
     /**
      * The angular force acting on the body. Should be a value between 0 and 1.
@@ -233,7 +235,7 @@ function Body(options){
      * @type {Number}
      * @default 0.1
      */
-    this.angularDamping = typeof(options.angularDamping)=="number" ? options.angularDamping : 0.1;
+    this.angularDamping = typeof(options.angularDamping) === "number" ? options.angularDamping : 0.1;
 
     /**
      * The type of motion this body has. Should be one of: {{#crossLink "Body/STATIC:property"}}Body.STATIC{{/crossLink}}, {{#crossLink "Body/DYNAMIC:property"}}Body.DYNAMIC{{/crossLink}} and {{#crossLink "Body/KINEMATIC:property"}}Body.KINEMATIC{{/crossLink}}.
@@ -246,28 +248,22 @@ function Body(options){
      * @type {number}
      *
      * @example
-     *     // This body will move and interact with other bodies
-     *     var dynamicBody = new Body({
-     *         mass : 1  // If mass is nonzero, the body becomes dynamic automatically
-     *     });
-     *     console.log(dynamicBody.type == Body.DYNAMIC); // true
-     *
-     * @example
-     *     // This body will not move at all
-     *     var staticBody = new Body({
-     *         type: Body.STATIC
-     *     });
-     *     console.log(staticBody.type == Body.STATIC); // true
-     *
-     * @example
-     *     // Bodies are static by default
+     *     // Bodies are static by default. Static bodies will never move.
      *     var body = new Body();
      *     console.log(body.type == Body.STATIC); // true
      *
      * @example
-     *     // This body will only move if you change its velocity
+     *     // By setting the mass of a body to a nonzero number, the body
+     *     // will become dynamic and will move and interact with other bodies.
+     *     var dynamicBody = new Body({
+     *         mass : 1
+     *     });
+     *     console.log(dynamicBody.type == Body.DYNAMIC); // true
+     *
+     * @example
+     *     // Kinematic bodies will only move if you change their velocity.
      *     var kinematicBody = new Body({
-     *         type: Body.KINEMATIC
+     *         type: Body.KINEMATIC // Type can be set via the options object.
      *     });
      */
     this.type = Body.STATIC;
@@ -640,8 +636,9 @@ Body.prototype.fromPolygon = function(path,options){
     options = options || {};
 
     // Remove all shapes
-    for(var i=this.shapes.length; i>=0; --i)
+    for(var i=this.shapes.length; i>=0; --i){
         this.removeShape(this.shapes[i]);
+    }
 
     var p = new decomp.Polygon();
     p.vertices = path;
@@ -649,13 +646,15 @@ Body.prototype.fromPolygon = function(path,options){
     // Make it counter-clockwise
     p.makeCCW();
 
-    if(typeof(options.removeCollinearPoints)=="number"){
+    if(typeof(options.removeCollinearPoints) === "number"){
         p.removeCollinearPoints(options.removeCollinearPoints);
     }
 
     // Check if any line segment intersects the path itself
-    if(typeof(options.skipSimpleCheck) == "undefined"){
-        if(!p.isSimple()) return false;
+    if(typeof(options.skipSimpleCheck) === "undefined"){
+        if(!p.isSimple()){
+            return false;
+        }
     }
 
     // Save this path for later
@@ -668,8 +667,11 @@ Body.prototype.fromPolygon = function(path,options){
 
     // Slow or fast decomp?
     var convexes;
-    if(options.optimalDecomp)   convexes = p.decomp();
-    else                        convexes = p.quickDecomp();
+    if(options.optimalDecomp){
+        convexes = p.decomp();
+    } else {
+        convexes = p.quickDecomp();
+    }
 
     var cm = vec2.create();
 
