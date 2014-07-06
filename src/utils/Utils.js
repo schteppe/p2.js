@@ -1,3 +1,5 @@
+/* global P2_ARRAY_TYPE */
+
 module.exports = Utils;
 
 /**
@@ -5,7 +7,7 @@ module.exports = Utils;
  * @class Utils
  * @constructor
  */
-function Utils(){};
+function Utils(){}
 
 /**
  * Append the values in array b to the array a. See <a href="http://stackoverflow.com/questions/1374126/how-to-append-an-array-to-an-existing-javascript-array/1374131#1374131">this</a> for an explanation.
@@ -41,13 +43,18 @@ Utils.splice = function(array,index,howmany){
 };
 
 /**
- * The array type to use for internal numeric computations.
- * @type {Array}
+ * The array type to use for internal numeric computations throughout the library. Float32Array is used if it is available, but falls back on Array. If you want to set array type manually, inject it via the global variable P2_ARRAY_TYPE. See example below.
  * @static
- * @property ARRAY_TYPE
+ * @property {function} ARRAY_TYPE
+ * @example
+ *     <script>
+ *         <!-- Inject your preferred array type before loading p2.js -->
+ *         P2_ARRAY_TYPE = Array;
+ *     </script>
+ *     <script src="p2.js"></script>
  */
-if(typeof GLMAT_ARRAY_TYPE !== 'undefined') {
-    Utils.ARRAY_TYPE = GLMAT_ARRAY_TYPE;
+if(typeof P2_ARRAY_TYPE !== 'undefined') {
+    Utils.ARRAY_TYPE = P2_ARRAY_TYPE;
 } else if (typeof Float32Array !== 'undefined'){
     Utils.ARRAY_TYPE = Float32Array;
 } else {
@@ -68,11 +75,12 @@ Utils.extend = function(a,b){
 };
 
 /**
- * Extend an object with the properties of another
+ * Extend an options object with default values.
  * @static
- * @method extend
- * @param  {object} a
- * @param  {object} b
+ * @method defaults
+ * @param  {object} options The options object. May be falsy: in this case, a new object is created and returned.
+ * @param  {object} defaults An object containing default values.
+ * @return {object} The modified options object.
  */
 Utils.defaults = function(options, defaults){
     options = options || {};

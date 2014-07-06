@@ -37,7 +37,6 @@
     "grunt-contrib-concat": "^0.4.0"
   },
   "dependencies": {
-    "poly-decomp": "0.1.0",
-    "gl-matrix": "2.1.0"
+    "poly-decomp": "0.1.0"
   }
 }
