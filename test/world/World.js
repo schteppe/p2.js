@@ -1,16 +1,7 @@
 var World = require(__dirname + '/../../src/world/World')
 ,   Body = require(__dirname + '/../../src/objects/Body')
 ,   Circle = require(__dirname + '/../../src/shapes/Circle')
-,   Convex = require(__dirname + '/../../src/shapes/Convex')
-,   pkg = require(__dirname + '/../../package.json')
-,   schema = require("./schema").schema
-,   sample = require("./schema").sample
-,   ZSchema = require("z-schema");
-
-var validator = new ZSchema({
-    sync: true,
-    strict: true
-});
+,   Convex = require(__dirname + '/../../src/shapes/Convex');
 
 exports.construct = function(test){
     var world = new World();
@@ -68,24 +59,6 @@ exports.disableBodyCollision = function(test){
     world.enableBodyCollision(bodyA,bodyB);
     world.step(1/60);
     test.equal(world.narrowphase.contactEquations.length,1);
-    test.done();
-};
-
-exports.fromJSON = function(test){
-    var valid = validator.validate(sample, schema);
-    if (!valid) {
-        console.log(JSON.stringify(validator.getLastError().errors,2,2));
-    }
-    test.ok(valid, 'Sample JSON invalid!');
-
-    // Try a JSON1 -> World -> JSON2 roundtrip and see if JSON1 === JSON2
-    var world = new World();
-    world.fromJSON(sample);
-    var json = world.toJSON();
-    test.ok(!!json);
-    for(var key in sample){
-        test.deepEqual(json[key],sample[key],key+" didnt survive roundtrip!");
-    }
     test.done();
 };
 
@@ -150,23 +123,6 @@ exports.runNarrowphase = function(test){
 };
 
 exports.step = function(test){
-    // STUB
-    test.done();
-};
-
-exports.toJSON = function(test){
-    var world = new World();
-    var json = world.toJSON();
-    var valid = validator.validate(json, schema);
-    if (!valid) {
-        console.log(JSON.stringify(validator.getLastError().errors,2,2));
-    }
-    test.ok(valid, 'Sample JSON invalid!');
-
-    test.done();
-};
-
-exports.upgradeJSON = function(test){
     // STUB
     test.done();
 };

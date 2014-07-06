@@ -325,17 +325,13 @@ function World(options){
     };
 
     /**
-     * Enable / disable automatic body sleeping. Sleeping can improve performance. You might need to {{#crossLink "Body/wakeUp:method"}}wake up{{/crossLink}} the bodies if they fall asleep when they shouldn't. If you want to enable sleeping in the world, but want to disable it for a particular body, see {{#crossLink "Body/allowSleep:property"}}Body.allowSleep{{/crossLink}}.
-     * @property allowSleep
-     * @type {Boolean}
+     * How to deactivate bodies during simulation. Possible modes are: {{#crossLink "World/NO_SLEEPING:property"}}, {{#crossLink "World/BODY_SLEEPING:property"}} and {{#crossLink "World/ISLAND_SLEEPING:property"}}.
+     * If sleeping is enabled, you might need to {{#crossLink "Body/wakeUp:method"}}wake up{{/crossLink}} the bodies if they fall asleep when they shouldn't. If you want to enable sleeping in the world, but want to disable it for a particular body, see {{#crossLink "Body/allowSleep:property"}}Body.allowSleep{{/crossLink}}.
+     * @property sleepMode
+     * @type {number}
+     * @default World.NO_SLEEPING
      */
-    this.enableBodySleeping = false;
-
-    /**
-     * Enable or disable island sleeping. Note that you must enable {{#crossLink "World/islandSplit:property"}}.islandSplit{{/crossLink}} for this to work.
-     * @property {Boolean} enableIslandSleeping
-     */
-    this.enableIslandSleeping = false;
+    this.sleepMode = World.NO_SLEEPING;
 
     /**
      * Fired when two shapes starts start to overlap. Fired in the narrowphase, during step.
@@ -391,6 +387,27 @@ function World(options){
     this.overlapKeeper = new OverlapKeeper();
 }
 World.prototype = new Object(EventEmitter.prototype);
+
+/**
+ * Never deactivate bodies.
+ * @static
+ * @property {number} NO_SLEEPING
+ */
+World.NO_SLEEPING = 1;
+
+/**
+ * Deactivate individual bodies if they are sleepy.
+ * @static
+ * @property {number} BODY_SLEEPING
+ */
+World.BODY_SLEEPING = 2;
+
+/**
+ * Deactivates bodies that are in contact, if all of them are sleepy. Note that you must enable {{#crossLink "World/islandSplit:property"}}.islandSplit{{/crossLink}} for this to work.
+ * @static
+ * @property {number} ISLAND_SLEEPING
+ */
+World.ISLAND_SLEEPING = 4;
 
 /**
  * Add a constraint to the simulation.
@@ -789,11 +806,11 @@ World.prototype.internalStep = function(dt){
     }
 
     // Sleeping update
-    if(this.enableBodySleeping){
+    if(this.sleepMode === World.BODY_SLEEPING){
         for(i=0; i!==Nbodies; i++){
             bodies[i].sleepTick(this.time, false, dt);
         }
-    } else if(this.enableIslandSleeping && this.islandSplit){
+    } else if(this.sleepMode === World.ISLAND_SLEEPING && this.islandSplit){
 
         // Tell all bodies to sleep tick but dont sleep yet
         for(i=0; i!==Nbodies; i++){
@@ -1113,526 +1130,6 @@ function contactMaterialToJSON(cm){
         frictionRelaxation :    cm.frictionRelaxation,
     };
 }
-
-/**
- * Convert the world to a JSON-serializable Object.
- *
- * @method toJSON
- * @return {Object}
- * @deprecated Should use Serializer instead.
- */
-World.prototype.toJSON = function(){
-    var world = this;
-
-    var json = {
-        p2 :                        pkg.version,
-        bodies :                    [],
-        springs :                   [],
-        solver :                    {},
-        gravity :                   v2a(world.gravity),
-        broadphase :                {},
-        distanceConstraints :       [],
-        revoluteConstraints :       [],
-        prismaticConstraints :      [],
-        lockConstraints :           [],
-        gearConstraints :           [],
-        contactMaterials :          [],
-        materials :                 [],
-        defaultContactMaterial :    contactMaterialToJSON(world.defaultContactMaterial),
-        islandSplit :               world.islandSplit,
-        enableIslandSleeping :      world.enableIslandSleeping,
-        enableBodySleeping :        world.enableBodySleeping,
-    };
-
-    // Solver
-    var js = json.solver,
-        s = world.solver;
-    if(s.type === Solver.GS){
-        js.type = "GSSolver";
-        js.iterations = s.iterations;
-    }
-
-    // Broadphase
-    var jb = json.broadphase,
-        wb = world.broadphase;
-    if(wb.type === Broadphase.NAIVE){
-        jb.type = "NaiveBroadphase";
-    } else if(wb.type === Broadphase.SAP) {
-        jb.type = "SAPBroadphase";
-        //jb.axisIndex = wb.axisIndex;
-    } else {
-        console.error("Broadphase not supported: "+wb.type);
-    }
-
-    // Serialize springs
-    for(var i=0; i!==world.springs.length; i++){
-        var s = world.springs[i];
-        json.springs.push({
-            bodyA :         world.bodies.indexOf(s.bodyA),
-            bodyB :         world.bodies.indexOf(s.bodyB),
-            stiffness :     s.stiffness,
-            damping :       s.damping,
-            restLength :    s.restLength,
-            localAnchorA :  v2a(s.localAnchorA),
-            localAnchorB :  v2a(s.localAnchorB),
-        });
-    }
-
-    // Serialize constraints
-    for(var i=0; i<world.constraints.length; i++){
-        var c = world.constraints[i];
-        var jc = {
-            bodyA : world.bodies.indexOf(c.bodyA),
-            bodyB : world.bodies.indexOf(c.bodyB),
-            collideConnected : c.collideConnected
-        };
-
-        switch(c.type){
-
-        case Constraint.DISTANCE:
-            extend(jc,{
-                distance : c.distance,
-                maxForce : c.getMaxForce(),
-            });
-            json.distanceConstraints.push(jc);
-            break;
-
-        case Constraint.REVOLUTE:
-            extend(jc,{
-                pivotA :            v2a(c.pivotA),
-                pivotB :            v2a(c.pivotB),
-                maxForce :          c.maxForce,
-                motorSpeed :        c.getMotorSpeed() || 0,
-                motorEnabled :       !!c.getMotorSpeed(),
-                lowerLimit :        c.lowerLimit,
-                lowerLimitEnabled : c.lowerLimitEnabled,
-                upperLimit :        c.upperLimit,
-                upperLimitEnabled : c.upperLimitEnabled,
-            });
-            json.revoluteConstraints.push(jc);
-            break;
-
-        case Constraint.PRISMATIC:
-            extend(jc,{
-                localAxisA :    v2a(c.localAxisA),
-                localAnchorA :  v2a(c.localAnchorA),
-                localAnchorB :  v2a(c.localAnchorB),
-                maxForce :      c.maxForce,
-                upperLimitEnabled : c.upperLimitEnabled,
-                lowerLimitEnabled : c.lowerLimitEnabled,
-                upperLimit : c.upperLimit,
-                lowerLimit : c.lowerLimit,
-                motorEnabled : c.motorEnabled,
-                motorSpeed : c.motorSpeed,
-            });
-            json.prismaticConstraints.push(jc);
-            break;
-
-        case Constraint.LOCK:
-            extend(jc,{
-                localOffsetB :  v2a(c.localOffsetB),
-                localAngleB :   c.localAngleB,
-                maxForce :      c.getMaxForce(),
-            });
-            json.lockConstraints.push(jc);
-            break;
-
-        case Constraint.GEAR:
-            extend(jc,{
-                angle :     c.angle,
-                ratio :     c.ratio,
-                maxForce :  c.maxForce || 1e6, // correct?
-            });
-            json.gearConstraints.push(jc);
-            break;
-
-        default:
-            console.error("Constraint not supported yet: ",c.type);
-            break;
-        }
-    }
-
-    // Serialize bodies
-    for(var i=0; i!==world.bodies.length; i++){
-        var b = world.bodies[i],
-            ss = b.shapes,
-            jsonBody = {
-                id : b.id,
-                mass : b.mass,
-                angle : b.angle,
-                position : v2a(b.position),
-                velocity : v2a(b.velocity),
-                angularVelocity : b.angularVelocity,
-                force : v2a(b.force),
-                type : b.type,
-                fixedRotation : b.fixedRotation,
-                circleShapes :    [],
-                planeShapes :     [],
-                particleShapes :  [],
-                lineShapes :      [],
-                rectangleShapes : [],
-                convexShapes :    [],
-                capsuleShapes :   [],
-            };
-
-        if(b.concavePath){
-            jsonBody.concavePath = b.concavePath;
-        }
-
-        for(var j=0; j<ss.length; j++){
-            var s = ss[j],
-                jsonShape = {};
-
-            jsonShape.offset = v2a(b.shapeOffsets[j]);
-            jsonShape.angle = b.shapeAngles[j];
-            jsonShape.collisionGroup = s.collisionGroup;
-            jsonShape.collisionMask = s.collisionMask;
-            jsonShape.material = s.material ? s.material.id : null;
-
-            // Check type
-            switch(s.type){
-
-            case Shape.CIRCLE:
-                extend(jsonShape,{ radius : s.radius, });
-                jsonBody.circleShapes.push(jsonShape);
-                break;
-
-            case Shape.PLANE:
-                jsonBody.planeShapes.push(jsonShape);
-                break;
-
-            case Shape.PARTICLE:
-                jsonBody.particleShapes.push(jsonShape);
-                break;
-
-            case Shape.LINE:
-                jsonShape.length = s.length;
-                jsonBody.lineShapes.push(jsonShape);
-                break;
-
-            case Shape.RECTANGLE:
-                extend(jsonShape,{   width : s.width,
-                                     height : s.height });
-                jsonBody.rectangleShapes.push(jsonShape);
-                break;
-
-            case Shape.CONVEX:
-                var verts = [];
-                for(var k=0; k<s.vertices.length; k++){
-                    verts.push(v2a(s.vertices[k]));
-                }
-                extend(jsonShape,{ vertices : verts });
-                jsonBody.convexShapes.push(jsonShape);
-                break;
-
-            case Shape.CAPSULE:
-                extend(jsonShape,{ length : s.length, radius : s.radius });
-                jsonBody.capsuleShapes.push(jsonShape);
-                break;
-
-            default:
-                console.error("Shape type not supported yet!");
-                break;
-            }
-        }
-
-        json.bodies.push(jsonBody);
-    }
-
-    // Serialize contactmaterials
-    for(var i=0; i<world.contactMaterials.length; i++){
-        var cm = world.contactMaterials[i];
-        json.contactMaterials.push(contactMaterialToJSON(cm));
-    }
-
-    // Serialize materials
-    var mats = {};
-    // Get unique materials first
-    for(var i=0; i<world.contactMaterials.length; i++){
-        var cm = world.contactMaterials[i];
-        mats[cm.materialA.id+''] = cm.materialA;
-        mats[cm.materialB.id+''] = cm.materialB;
-    }
-    for(var matId in mats){
-        var m = mats[parseInt(matId)];
-        json.materials.push({
-            id : m.id,
-        });
-    }
-
-    return json;
-};
-
-/**
- * Load a scene from a serialized state in JSON format.
- *
- * @method fromJSON
- * @param  {Object} json
- * @return {Boolean} True on success, else false.
- */
-World.prototype.fromJSON = function(json){
-    this.clear();
-
-    if(!json.p2){
-        return false;
-    }
-
-    var w = this;
-
-    // Set gravity
-    vec2.copy(w.gravity, json.gravity);
-
-    w.islandSplit =           json.islandSplit;
-    w.enableIslandSleeping =  json.enableIslandSleeping;
-    w.enableBodySleeping =    json.enableBodySleeping;
-
-    // Set solver
-    switch(json.solver.type){
-    case "GSSolver":
-        var js = json.solver,
-            s = new GSSolver();
-        w.solver = s;
-        s.iterations = js.iterations;
-        break;
-    default:
-        throw new Error("Solver type not recognized: "+json.solver.type);
-    }
-
-    // Broadphase
-    switch(json.broadphase.type){
-    case "NaiveBroadphase":
-        w.broadphase = new NaiveBroadphase();
-        break;
-
-    case "SAPBroadphase":
-        w.broadphase = new SAPBroadphase();
-        break;
-    }
-    w.broadphase.setWorld(w);
-
-
-    var bodies = w.bodies;
-
-    // Load materials
-    var id2material = {};
-    for(var i=0; i!==json.materials.length; i++){
-        var jm = json.materials[i];
-        var m = new Material();
-        id2material[jm.id+""] = m;
-        m.id = jm.id;
-    }
-
-    // Load default material
-    w.defaultMaterial.id = json.defaultContactMaterial.materialA;
-
-    // Load bodies
-    for(var i=0; i!==json.bodies.length; i++){
-        var jb = json.bodies[i];
-
-        // Create body
-        var b = new Body({
-            mass :              jb.mass,
-            position :          jb.position,
-            angle :             jb.angle,
-            velocity :          jb.velocity,
-            angularVelocity :   jb.angularVelocity,
-            force :             jb.force,
-            fixedRotation :     jb.fixedRotation,
-        });
-        b.id = jb.id;
-        b.type = jb.type;
-
-        // Circle
-        for(var j=0; j<jb.circleShapes.length; j++){
-            var s = jb.circleShapes[j];
-            addShape(b, new Circle(s.radius), s);
-        }
-
-        // Plane
-        for(var j=0; j<jb.planeShapes.length; j++){
-            var s = jb.planeShapes[j];
-            addShape(b, new Plane(), s);
-        }
-
-        // Particle
-        for(var j=0; j<jb.particleShapes.length; j++){
-            var s = jb.particleShapes[j];
-            addShape(b, new Particle(), s);
-        }
-
-        // Line
-        for(var j=0; j<jb.lineShapes.length; j++){
-            var s = jb.lineShapes[j];
-            addShape(b, new Line(s.length), s);
-        }
-
-        // Rectangle
-        for(var j=0; j<jb.rectangleShapes.length; j++){
-            var s = jb.rectangleShapes[j];
-            addShape(b, new Rectangle(s.width,s.height), s);
-        }
-
-        // Convex
-        for(var j=0; j<jb.convexShapes.length; j++){
-            var s = jb.convexShapes[j];
-            addShape(b, new Convex(s.vertices), s);
-        }
-
-        // Capsule
-        for(var j=0; j<jb.capsuleShapes.length; j++){
-            var s = jb.capsuleShapes[j];
-            addShape(b, new Capsule(s.length, s.radius), s);
-        }
-
-        function addShape(body, shape, shapeJSON){
-            shape.collisionMask = shapeJSON.collisionMask;
-            shape.collisionGroup = shapeJSON.collisionGroup;
-            if(shapeJSON.material){
-                shape.material = id2material[shapeJSON.material+""];
-            }
-            body.addShape(shape, shapeJSON.offset, shapeJSON.angle);
-        }
-
-        if(jb.concavePath){
-            b.concavePath = jb.concavePath;
-        }
-
-        w.addBody(b);
-    }
-
-    // Load springs
-    for(var i=0; i<json.springs.length; i++){
-        var js = json.springs[i];
-        var bodyA = bodies[js.bodyA],
-            bodyB = bodies[js.bodyB];
-        if(!bodyA){
-            this.error = "instance.springs["+i+"] references instance.body["+js.bodyA+"], which does not exist.";
-            return false;
-        }
-        if(!bodyB){
-            this.error = "instance.springs["+i+"] references instance.body["+js.bodyB+"], which does not exist.";
-            return false;
-        }
-        var s = new LinearSpring(bodyA, bodyB, {
-            stiffness : js.stiffness,
-            damping : js.damping,
-            restLength : js.restLength,
-            localAnchorA : js.localAnchorA,
-            localAnchorB : js.localAnchorB,
-        });
-        w.addSpring(s);
-    }
-
-    // Load contact materials
-    for(var i=0; i<json.contactMaterials.length; i++){
-        var jm = json.contactMaterials[i],
-            matA = id2material[jm.materialA+""],
-            matB = id2material[jm.materialB+""];
-
-        if(!matA){
-            this.error = "Reference to material id "+jm.materialA+": material not found";
-            return false;
-        }
-        if(!matB){
-            this.error = "Reference to material id "+jm.materialB+": material not found";
-            return false;
-        }
-
-        var cm = new ContactMaterial(matA, matB, {
-            friction :              jm.friction,
-            restitution :           jm.restitution,
-            stiffness :             jm.stiffness,
-            relaxation :            jm.relaxation,
-            frictionStiffness :     jm.frictionStiffness,
-            frictionRelaxation :    jm.frictionRelaxation,
-        });
-        cm.id = jm.id;
-        w.addContactMaterial(cm);
-    }
-
-    // Load default contact material
-    var jm = json.defaultContactMaterial,
-        matA = w.defaultMaterial,
-        matB = w.defaultMaterial;
-    var cm = new ContactMaterial(matA, matB, {
-        friction :              jm.friction,
-        restitution :           jm.restitution,
-        stiffness :             jm.stiffness,
-        relaxation :            jm.relaxation,
-        frictionStiffness :     jm.frictionStiffness,
-        frictionRelaxation :    jm.frictionRelaxation,
-    });
-    cm.id = jm.id;
-    w.defaultContactMaterial = cm;
-
-    // DistanceConstraint
-    for(var i=0; i<json.distanceConstraints.length; i++){
-        var c = json.distanceConstraints[i];
-        w.addConstraint(new DistanceConstraint( bodies[c.bodyA], bodies[c.bodyB], {
-            distance: c.distance,
-            maxForce:c.maxForce,
-            collideConnected:c.collideConnected
-        }));
-    }
-
-    // RevoluteConstraint
-    for(var i=0; i<json.revoluteConstraints.length; i++){
-        var c = json.revoluteConstraints[i];
-        var revolute = new RevoluteConstraint(bodies[c.bodyA], bodies[c.bodyB], {
-            localPivotA: c.pivotA,
-            localPivotB: c.pivotB,
-            maxForce: c.maxForce,
-            collideConnected: c.collideConnected
-        });
-        if(c.motorEnabled){
-            revolute.enableMotor();
-        }
-        revolute.setMotorSpeed(c.motorSpeed);
-        revolute.lowerLimit = c.lowerLimit;
-        revolute.upperLimit = c.upperLimit;
-        revolute.lowerLimitEnabled = c.lowerLimitEnabled;
-        revolute.upperLimitEnabled = c.upperLimitEnabled;
-        w.addConstraint(revolute);
-    }
-
-    // PrismaticConstraint
-    for(var i=0; i<json.prismaticConstraints.length; i++){
-        var c = json.prismaticConstraints[i],
-            p = new PrismaticConstraint(bodies[c.bodyA], bodies[c.bodyB], {
-                maxForce : c.maxForce,
-                localAxisA : c.localAxisA,
-                localAnchorA : c.localAnchorA,
-                localAnchorB : c.localAnchorB,
-                collideConnected: c.collideConnected
-            });
-        p.motorSpeed = c.motorSpeed;
-        w.addConstraint(p);
-    }
-
-    // LockConstraint
-    for(var i=0; i<json.lockConstraints.length; i++){
-        var c = json.lockConstraints[i];
-        w.addConstraint(new LockConstraint(bodies[c.bodyA], bodies[c.bodyB], {
-            maxForce :     c.maxForce,
-            localOffsetB : c.localOffsetB,
-            localAngleB :  c.localAngleB,
-            collideConnected: c.collideConnected
-        }));
-    }
-
-    // GearConstraint
-    for(var i=0; i<json.gearConstraints.length; i++){
-        var c = json.gearConstraints[i];
-        w.addConstraint(new GearConstraint(bodies[c.bodyA], bodies[c.bodyB], {
-            maxForce :      c.maxForce,
-            angle :         c.angle,
-            ratio :         c.ratio,
-            collideConnected: c.collideConnected
-        }));
-    }
-
-    return true;
-};
 
 /**
  * Resets the World, removes all bodies, constraints and springs.

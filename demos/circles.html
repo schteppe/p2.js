@@ -40,7 +40,7 @@
             world.solver.tolerance = 0.02;
 
             // Enables sleeping of bodies
-            world.enableBodySleeping = true;
+            world.sleepMode = p2.World.BODY_SLEEPING;
 
             // Create circle bodies
             var shape = new p2.Circle(r);

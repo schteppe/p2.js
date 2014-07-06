@@ -109,8 +109,7 @@ function Renderer(scenes){
         maxSubSteps: 3,
         gravityX: 0,
         gravityY: -10,
-        bodySleeping: false,
-        islandSleeping: false,
+        sleepMode: p2.World.NO_SLEEPING,
 
         'drawContacts [c]': false,
         'drawAABBs [t]': false,
@@ -269,14 +268,14 @@ Renderer.prototype.setupGUI = function() {
             p2.vec2.set(that.world.gravity, settings.gravityX, settings.gravityY);
         }
     }
-
     worldFolder.add(settings, 'gravityX', -maxg, maxg).onChange(changeGravity);
     worldFolder.add(settings, 'gravityY', -maxg, maxg).onChange(changeGravity);
-    worldFolder.add(settings, 'bodySleeping').onChange(function(enable){
-        that.world.enableBodySleeping = enable;
-    });
-    worldFolder.add(settings, 'islandSleeping').onChange(function(enable){
-        that.world.enableIslandSleeping = enable;
+    worldFolder.add(settings, 'sleepMode', {
+        NO_SLEEPING: p2.World.NO_SLEEPING,
+        BODY_SLEEPING: p2.World.BODY_SLEEPING,
+        ISLAND_SLEEPING: p2.World.ISLAND_SLEEPING,
+    }).onChange(function(mode){
+        that.world.sleepMode = parseInt(mode);
     });
 
     // Rendering
@@ -418,8 +417,7 @@ Renderer.prototype.setScene = function(sceneDefinition){
     settings.tolerance = this.world.solver.tolerance;
     settings.gravityX = this.world.gravity[0];
     settings.gravityY = this.world.gravity[1];
-    settings.bodySleeping = this.world.enableBodySleeping;
-    settings.islandSleeping = this.world.enableIslandSleeping;
+    settings.sleepMode = this.world.sleepMode;
     this.updateGUI();
 };
 
