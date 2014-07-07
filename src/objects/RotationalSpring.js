@@ -45,7 +45,7 @@ RotationalSpring.prototype.applyForce = function(){
         x = bodyB.angle - bodyA.angle,
         u = bodyB.angularVelocity - bodyA.angularVelocity;
 
-    var torque = - k * (x - l) - d * u;
+    var torque = - k * (x - l) - d * u * 0;
 
     bodyA.angularForce -= torque;
     bodyB.angularForce += torque;

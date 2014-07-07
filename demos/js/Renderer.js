@@ -771,7 +771,7 @@ Renderer.prototype.updateStats = function(){
  * @param  {mixed} obj Either Body or Spring
  */
 Renderer.prototype.addVisual = function(obj){
-    if(obj instanceof p2.Spring){
+    if(obj instanceof p2.LinearSpring){
         this.springs.push(obj);
         this.addRenderable(obj);
     } else if(obj instanceof p2.Body){
@@ -779,8 +779,6 @@ Renderer.prototype.addVisual = function(obj){
             this.bodies.push(obj);
             this.addRenderable(obj);
         }
-    } else {
-        throw new Error("Visual type not recognized.");
     }
 };
 
@@ -804,7 +802,7 @@ Renderer.prototype.removeAllVisuals = function(){
  */
 Renderer.prototype.removeVisual = function(obj){
     this.removeRenderable(obj);
-    if(obj instanceof p2.Spring){
+    if(obj instanceof p2.LinearSpring){
         var idx = this.springs.indexOf(obj);
         if(idx !== -1){
             this.springs.splice(idx,1);
