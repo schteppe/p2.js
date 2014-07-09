@@ -38,10 +38,10 @@ Examples showing how to use p2.js with your favorite renderer.
 * [Canvas: Box on plane](http://schteppe.github.io/p2.js/examples/canvas/box.html)
 * [Canvas: Character demo](http://schteppe.github.io/p2.js/examples/canvas/character.html)
 * [Canvas: Circle on plane](http://schteppe.github.io/p2.js/examples/canvas/circle.html)
-* [Canvas: Interpolation](http://schteppe.github.io/p2.js/examples/pixijs/interpolation.html)
-* [Canvas: Mousejoint](http://schteppe.github.io/p2.js/examples/pixijs/mouseJoint.html)
-* [Canvas: Sensors](http://schteppe.github.io/p2.js/examples/pixijs/sensors.html)
-* [Canvas: Sensors 2](http://schteppe.github.io/p2.js/examples/pixijs/sensors2.html)
+* [Canvas: Interpolation](http://schteppe.github.io/p2.js/examples/canvas/interpolation.html)
+* [Canvas: Mousejoint](http://schteppe.github.io/p2.js/examples/canvas/mouseJoint.html)
+* [Canvas: Sensors](http://schteppe.github.io/p2.js/examples/canvas/sensors.html)
+* [Canvas: Sensors 2](http://schteppe.github.io/p2.js/examples/canvas/sensors2.html)
 * [Pixi.js: Box on plane](http://schteppe.github.io/p2.js/examples/pixijs/box.html)
 
 ### Sample code
