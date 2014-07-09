@@ -12,11 +12,13 @@ p2.js
 * [Compound objects](http://schteppe.github.io/p2.js/demos/compound.html)
 * [Concave objects](http://schteppe.github.io/p2.js/demos/concave.html)
 * [Constraints](http://schteppe.github.io/p2.js/demos/constraints.html)
+* [DistanceConstraint](http://schteppe.github.io/p2.js/demos/distanceConstraint.html)
 * [Fixed rotation](http://schteppe.github.io/p2.js/demos/fixedRotation.html)
 * [Friction](http://schteppe.github.io/p2.js/demos/friction.html)
 * [Gear constraint](http://schteppe.github.io/p2.js/demos/gearConstraint.html)
 * [Heightfield](http://schteppe.github.io/p2.js/demos/heightfield.html)
 * [Island solver](http://schteppe.github.io/p2.js/demos/islandSolver.html)
+* [Kinematic body](http://schteppe.github.io/p2.js/demos/kinematic.html)
 * [Lock constraint](http://schteppe.github.io/p2.js/demos/lock.html)
 * [Piston](http://schteppe.github.io/p2.js/demos/piston.html)
 * [Prismatic constraint](http://schteppe.github.io/p2.js/demos/prismatic.html)
@@ -25,16 +27,21 @@ p2.js
 * [Restitution](http://schteppe.github.io/p2.js/demos/restitution.html)
 * [Sleep](http://schteppe.github.io/p2.js/demos/sleep.html)
 * [Springs](http://schteppe.github.io/p2.js/demos/springs.html)
-* [Tearable constraints](http://schteppe.github.io/p2.js/demos/tearable.html)
 * [Surface velocity](http://schteppe.github.io/p2.js/demos/surfaceVelocity.html)
 * [Suspension](http://schteppe.github.io/p2.js/demos/suspension.html)
+* [Tearable constraints](http://schteppe.github.io/p2.js/demos/tearable.html)
 
 ### Examples
 Examples showing how to use p2.js with your favorite renderer.
 
-* [Canvas: Circle on plane](http://schteppe.github.io/p2.js/examples/canvas/circle.html)
-* [Canvas: Box on plane](http://schteppe.github.io/p2.js/examples/canvas/box.html)
 * [Canvas: Asteroids game](http://schteppe.github.io/p2.js/examples/canvas/asteroids.html)
+* [Canvas: Box on plane](http://schteppe.github.io/p2.js/examples/canvas/box.html)
+* [Canvas: Character demo](http://schteppe.github.io/p2.js/examples/canvas/character.html)
+* [Canvas: Circle on plane](http://schteppe.github.io/p2.js/examples/canvas/circle.html)
+* [Canvas: Interpolation](http://schteppe.github.io/p2.js/examples/pixijs/interpolation.html)
+* [Canvas: Mousejoint](http://schteppe.github.io/p2.js/examples/pixijs/mouseJoint.html)
+* [Canvas: Sensors](http://schteppe.github.io/p2.js/examples/pixijs/sensors.html)
+* [Canvas: Sensors 2](http://schteppe.github.io/p2.js/examples/pixijs/sensors2.html)
 * [Pixi.js: Box on plane](http://schteppe.github.io/p2.js/examples/pixijs/box.html)
 
 ### Sample code
@@ -78,11 +85,11 @@ setInterval(function(){
 
     // The step method moves the bodies forward in time.
     world.step(timeStep);
-    
+
     // Print the circle position to console.
     // Could be replaced by a render call.
     console.log("Circle y position: " + circleBody.position[1]);
-    
+
 }, 1000 * timeStep);
 ```
 
