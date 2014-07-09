@@ -840,12 +840,12 @@ Body.prototype.sleep = function(){
     this.emit(Body.sleepEvent);
 };
 
-//var velo2 = vec2.create();
-
 /**
+ * Called every timestep to update internal sleep timer and change sleep state if needed.
  * @method sleepTick
- * @param float time The world time in seconds
- * @brief Called every timestep to update internal sleep timer and change sleep state if needed.
+ * @param {number} time The world time in seconds
+ * @param {boolean} dontSleep
+ * @param {number} dt
  */
 Body.prototype.sleepTick = function(time, dontSleep, dt){
     if(!this.allowSleep || this.type === Body.SLEEPING){

@@ -157,7 +157,7 @@ vec2.centroid = function(out, a, b, c){
  * Creates a new, empty vec2
  * @static
  * @method create
- * @returns {Array} a new 2D vector
+ * @return {Array} a new 2D vector
  */
 vec2.create = function() {
     var out = new Utils.ARRAY_TYPE(2);
@@ -171,7 +171,7 @@ vec2.create = function() {
  * @static
  * @method clone
  * @param {Array} a vector to clone
- * @returns {Array} a new 2D vector
+ * @return {Array} a new 2D vector
  */
 vec2.clone = function(a) {
     var out = new Utils.ARRAY_TYPE(2);
@@ -186,7 +186,7 @@ vec2.clone = function(a) {
  * @method fromValues
  * @param {Number} x X component
  * @param {Number} y Y component
- * @returns {Array} a new 2D vector
+ * @return {Array} a new 2D vector
  */
 vec2.fromValues = function(x, y) {
     var out = new Utils.ARRAY_TYPE(2);
@@ -201,7 +201,7 @@ vec2.fromValues = function(x, y) {
  * @method copy
  * @param {Array} out the receiving vector
  * @param {Array} a the source vector
- * @returns {Array} out
+ * @return {Array} out
  */
 vec2.copy = function(out, a) {
     out[0] = a[0];
@@ -216,7 +216,7 @@ vec2.copy = function(out, a) {
  * @param {Array} out the receiving vector
  * @param {Number} x X component
  * @param {Number} y Y component
- * @returns {Array} out
+ * @return {Array} out
  */
 vec2.set = function(out, x, y) {
     out[0] = x;
@@ -231,7 +231,7 @@ vec2.set = function(out, x, y) {
  * @param {Array} out the receiving vector
  * @param {Array} a the first operand
  * @param {Array} b the second operand
- * @returns {Array} out
+ * @return {Array} out
  */
 vec2.add = function(out, a, b) {
     out[0] = a[0] + b[0];
@@ -246,7 +246,7 @@ vec2.add = function(out, a, b) {
  * @param {Array} out the receiving vector
  * @param {Array} a the first operand
  * @param {Array} b the second operand
- * @returns {Array} out
+ * @return {Array} out
  */
 vec2.subtract = function(out, a, b) {
     out[0] = a[0] - b[0];
@@ -268,7 +268,7 @@ vec2.sub = vec2.subtract;
  * @param {Array} out the receiving vector
  * @param {Array} a the first operand
  * @param {Array} b the second operand
- * @returns {Array} out
+ * @return {Array} out
  */
 vec2.multiply = function(out, a, b) {
     out[0] = a[0] * b[0];
@@ -290,7 +290,7 @@ vec2.mul = vec2.multiply;
  * @param {Array} out the receiving vector
  * @param {Array} a the first operand
  * @param {Array} b the second operand
- * @returns {Array} out
+ * @return {Array} out
  */
 vec2.divide = function(out, a, b) {
     out[0] = a[0] / b[0];
@@ -312,7 +312,7 @@ vec2.div = vec2.divide;
  * @param {Array} out the receiving vector
  * @param {Array} a the vector to scale
  * @param {Number} b amount to scale the vector by
- * @returns {Array} out
+ * @return {Array} out
  */
 vec2.scale = function(out, a, b) {
     out[0] = a[0] * b;
@@ -326,7 +326,7 @@ vec2.scale = function(out, a, b) {
  * @method distance
  * @param {Array} a the first operand
  * @param {Array} b the second operand
- * @returns {Number} distance between a and b
+ * @return {Number} distance between a and b
  */
 vec2.distance = function(a, b) {
     var x = b[0] - a[0],
@@ -347,7 +347,7 @@ vec2.dist = vec2.distance;
  * @method squaredDistance
  * @param {Array} a the first operand
  * @param {Array} b the second operand
- * @returns {Number} squared distance between a and b
+ * @return {Number} squared distance between a and b
  */
 vec2.squaredDistance = function(a, b) {
     var x = b[0] - a[0],
@@ -367,7 +367,7 @@ vec2.sqrDist = vec2.squaredDistance;
  * @static
  * @method length
  * @param {Array} a vector to calculate length of
- * @returns {Number} length of a
+ * @return {Number} length of a
  */
 vec2.length = function (a) {
     var x = a[0],
@@ -387,7 +387,7 @@ vec2.len = vec2.length;
  * @static
  * @method squaredLength
  * @param {Array} a vector to calculate squared length of
- * @returns {Number} squared length of a
+ * @return {Number} squared length of a
  */
 vec2.squaredLength = function (a) {
     var x = a[0],
@@ -408,7 +408,7 @@ vec2.sqrLen = vec2.squaredLength;
  * @method negate
  * @param {Array} out the receiving vector
  * @param {Array} a vector to negate
- * @returns {Array} out
+ * @return {Array} out
  */
 vec2.negate = function(out, a) {
     out[0] = -a[0];
@@ -422,7 +422,7 @@ vec2.negate = function(out, a) {
  * @method normalize
  * @param {Array} out the receiving vector
  * @param {Array} a vector to normalize
- * @returns {Array} out
+ * @return {Array} out
  */
 vec2.normalize = function(out, a) {
     var x = a[0],
@@ -443,7 +443,7 @@ vec2.normalize = function(out, a) {
  * @method dot
  * @param {Array} a the first operand
  * @param {Array} b the second operand
- * @returns {Number} dot product of a and b
+ * @return {Number} dot product of a and b
  */
 vec2.dot = function (a, b) {
     return a[0] * b[0] + a[1] * b[1];
@@ -454,7 +454,7 @@ vec2.dot = function (a, b) {
  * @static
  * @method str
  * @param {Array} vec vector to represent as a string
- * @returns {String} string representation of the vector
+ * @return {String} string representation of the vector
  */
 vec2.str = function (a) {
     return 'vec2(' + a[0] + ', ' + a[1] + ')';
