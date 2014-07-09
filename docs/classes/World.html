@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.5.0</em>
+            <em>API Docs for: 0.6.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -85,6 +85,8 @@
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
+                <li><a href="../classes/LinearSpring.html">LinearSpring</a></li>
+            
                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
@@ -92,6 +94,10 @@
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
                 <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
+            
+                <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
+            
+                <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
             
                 <li><a href="../classes/Particle.html">Particle</a></li>
             
@@ -105,6 +111,8 @@
             
                 <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
             
+                <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
+            
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
                 <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
@@ -114,6 +122,8 @@
                 <li><a href="../classes/Solver.html">Solver</a></li>
             
                 <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
             
                 <li><a href="../classes/Utils.html">Utils</a></li>
             
@@ -172,7 +182,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_world_World.js.html#l46"><code>src&#x2F;world&#x2F;World.js:46</code></a>
+            Defined in: <a href="../files/src_world_World.js.html#l51"><code>src&#x2F;world&#x2F;World.js:51</code></a>
         </div>
     
 
@@ -233,7 +243,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l46"><code>src&#x2F;world&#x2F;World.js:46</code></a>
+        <a href="../files/src_world_World.js.html#l51"><code>src&#x2F;world&#x2F;World.js:51</code></a>
         
         </p>
 
@@ -271,8 +281,9 @@
                             
                             <li class="param">
                                 
-                                    <code class="param-name">solver</code>
+                                    <code class="param-name optional">[solver]</code>
                                     <span class="type"><a href="../classes/Solver.html" class="crosslink">Solver</a></span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
                                 
 
                                 <div class="param-description">
@@ -285,8 +296,9 @@
                             
                             <li class="param">
                                 
-                                    <code class="param-name">gravity</code>
+                                    <code class="param-name optional">[gravity]</code>
                                     <span class="type">Array</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
                                 
 
                                 <div class="param-description">
@@ -299,8 +311,9 @@
                             
                             <li class="param">
                                 
-                                    <code class="param-name">broadphase</code>
+                                    <code class="param-name optional">[broadphase]</code>
                                     <span class="type"><a href="../classes/Broadphase.html" class="crosslink">Broadphase</a></span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
                                 
 
                                 <div class="param-description">
@@ -313,8 +326,9 @@
                             
                             <li class="param">
                                 
-                                    <code class="param-name">islandSplit</code>
+                                    <code class="param-name optional">[islandSplit=false]</code>
                                     <span class="type">Boolean</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
                                 
 
                                 <div class="param-description">
@@ -326,8 +340,9 @@
                             
                             <li class="param">
                                 
-                                    <code class="param-name">doProfiling</code>
+                                    <code class="param-name optional">[doProfiling=false]</code>
                                     <span class="type">Boolean</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
                                 
 
                                 <div class="param-description">
@@ -347,6 +362,18 @@
 
     
 
+    
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre class="code prettyprint"><code>var world = new World({
+    gravity: [0, -9.81],
+    broadphase: new SAPBroadphase()
+});</code></pre>
+
+            </div>
+        </div>
     
 </div>
 
@@ -437,13 +464,6 @@
                         
                             <li class="index-item method">
                                 <a href="#method_enableCollision">enableCollision</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method">
-                                <a href="#method_fromJSON">fromJSON</a>
 
                                 
                                 
@@ -570,15 +590,6 @@
                                 
                             </li>
                         
-                            <li class="index-item method deprecated">
-                                <a href="#method_toJSON">toJSON</a>
-
-                                
-                                
-                                    <span class="flag deprecated">deprecated</span>
-                                
-                            </li>
-                        
                     </ul>
                 </div>
             
@@ -588,13 +599,6 @@
                     <h3>Properties</h3>
 
                     <ul class="index-list properties extends">
-                        
-                            <li class="index-item property">
-                                <a href="#property_allowSleep">allowSleep</a>
-
-                                
-                                
-                            </li>
                         
                             <li class="index-item property">
                                 <a href="#property_applyDamping">applyDamping</a>
@@ -627,6 +631,15 @@
                             <li class="index-item property private">
                                 <a href="#property_bodiesToBeRemoved">bodiesToBeRemoved</a>
 
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_BODY_SLEEPING">BODY_SLEEPING</a>
+
+                                
+                                    <span class="flag static">static</span>
                                 
                                 
                             </li>
@@ -688,13 +701,6 @@
                             </li>
                         
                             <li class="index-item property">
-                                <a href="#property_enableIslandSleeping">enableIslandSleeping</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
                                 <a href="#property_frictionGravity">frictionGravity</a>
 
                                 
@@ -704,6 +710,15 @@
                             <li class="index-item property">
                                 <a href="#property_gravity">gravity</a>
 
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_ISLAND_SLEEPING">ISLAND_SLEEPING</a>
+
+                                
+                                    <span class="flag static">static</span>
                                 
                                 
                             </li>
@@ -738,6 +753,22 @@
                         
                             <li class="index-item property">
                                 <a href="#property_narrowphase">narrowphase</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_NO_SLEEPING">NO_SLEEPING</a>
+
+                                
+                                    <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_sleepMode">sleepMode</a>
 
                                 
                                 
@@ -1018,7 +1049,7 @@ world.addBody(body);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l389"><code>src&#x2F;world&#x2F;World.js:389</code></a>
+        <a href="../files/src_world_World.js.html#l421"><code>src&#x2F;world&#x2F;World.js:421</code></a>
         
         </p>
 
@@ -1106,7 +1137,7 @@ world.addBody(body);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l399"><code>src&#x2F;world&#x2F;World.js:399</code></a>
+        <a href="../files/src_world_World.js.html#l431"><code>src&#x2F;world&#x2F;World.js:431</code></a>
         
         </p>
 
@@ -1272,7 +1303,7 @@ world.addBody(body);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l1660"><code>src&#x2F;world&#x2F;World.js:1660</code></a>
+        <a href="../files/src_world_World.js.html#l1146"><code>src&#x2F;world&#x2F;World.js:1146</code></a>
         
         </p>
 
@@ -1331,7 +1362,7 @@ world.addBody(body);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l1702"><code>src&#x2F;world&#x2F;World.js:1702</code></a>
+        <a href="../files/src_world_World.js.html#l1188"><code>src&#x2F;world&#x2F;World.js:1188</code></a>
         
         </p>
 
@@ -1518,7 +1549,7 @@ world.addBody(body);</code></pre>
             
         
         
-        <a href="../files/src_events_EventEmitter.js.html#l66"><code>src&#x2F;events&#x2F;EventEmitter.js:66</code></a>
+        <a href="../files/src_events_EventEmitter.js.html#l79"><code>src&#x2F;events&#x2F;EventEmitter.js:79</code></a>
         
         </p>
 
@@ -1704,112 +1735,6 @@ world.addBody(body);</code></pre>
 </div>
 
                 
-                    <div id="method_fromJSON" class="method item">
-    <h3 class="name"><code>fromJSON</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>json</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-        <span class="returns-inline">
-            <span class="type">Boolean</span>
-        </span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_world_World.js.html#l1392"><code>src&#x2F;world&#x2F;World.js:1392</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Load a scene from a serialized state in JSON format.</p>
-
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">json</code>
-                        <span class="type">Object</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                
-                    
-                        <span class="type">Boolean</span>:
-                    
-                    <p>True on success, else false.</p>
-
-                
-            </div>
-        </div>
-    
-
-    
-</div>
-
-                
                     <div id="method_getBodyById" class="method item">
     <h3 class="name"><code>getBodyById</code></h3>
 
@@ -1935,7 +1860,7 @@ world.addBody(body);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l421"><code>src&#x2F;world&#x2F;World.js:421</code></a>
+        <a href="../files/src_world_World.js.html#l453"><code>src&#x2F;world&#x2F;World.js:453</code></a>
         
         </p>
 
@@ -2059,7 +1984,7 @@ world.addBody(body);</code></pre>
             
         
         
-        <a href="../files/src_events_EventEmitter.js.html#l33"><code>src&#x2F;events&#x2F;EventEmitter.js:33</code></a>
+        <a href="../files/src_events_EventEmitter.js.html#l35"><code>src&#x2F;events&#x2F;EventEmitter.js:35</code></a>
         
         </p>
 
@@ -2190,7 +2115,7 @@ world.addBody(body);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l1717"><code>src&#x2F;world&#x2F;World.js:1717</code></a>
+        <a href="../files/src_world_World.js.html#l1203"><code>src&#x2F;world&#x2F;World.js:1203</code></a>
         
         </p>
 
@@ -2333,7 +2258,7 @@ world.addBody(body);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l829"><code>src&#x2F;world&#x2F;World.js:829</code></a>
+        <a href="../files/src_world_World.js.html#l854"><code>src&#x2F;world&#x2F;World.js:854</code></a>
         
         </p>
 
@@ -2438,7 +2363,7 @@ world.addBody(body);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l529"><code>src&#x2F;world&#x2F;World.js:529</code></a>
+        <a href="../files/src_world_World.js.html#l569"><code>src&#x2F;world&#x2F;World.js:569</code></a>
         
         </p>
 
@@ -2533,7 +2458,7 @@ world.addBody(body);</code></pre>
             
         
         
-        <a href="../files/src_events_EventEmitter.js.html#l49"><code>src&#x2F;events&#x2F;EventEmitter.js:49</code></a>
+        <a href="../files/src_events_EventEmitter.js.html#l60"><code>src&#x2F;events&#x2F;EventEmitter.js:60</code></a>
         
         </p>
 
@@ -2862,7 +2787,7 @@ world.addBody(body);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l441"><code>src&#x2F;world&#x2F;World.js:441</code></a>
+        <a href="../files/src_world_World.js.html#l473"><code>src&#x2F;world&#x2F;World.js:473</code></a>
         
         </p>
 
@@ -2950,7 +2875,7 @@ world.addBody(body);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l408"><code>src&#x2F;world&#x2F;World.js:408</code></a>
+        <a href="../files/src_world_World.js.html#l440"><code>src&#x2F;world&#x2F;World.js:440</code></a>
         
         </p>
 
@@ -3180,7 +3105,7 @@ world.addBody(body);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l862"><code>src&#x2F;world&#x2F;World.js:862</code></a>
+        <a href="../files/src_world_World.js.html#l887"><code>src&#x2F;world&#x2F;World.js:887</code></a>
         
         </p>
 
@@ -3403,7 +3328,7 @@ world.addBody(body);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l1768"><code>src&#x2F;world&#x2F;World.js:1768</code></a>
+        <a href="../files/src_world_World.js.html#l1254"><code>src&#x2F;world&#x2F;World.js:1254</code></a>
         
         </p>
 
@@ -3524,7 +3449,7 @@ world.addBody(body);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l1829"><code>src&#x2F;world&#x2F;World.js:1829</code></a>
+        <a href="../files/src_world_World.js.html#l1315"><code>src&#x2F;world&#x2F;World.js:1315</code></a>
         
         </p>
 
@@ -3612,7 +3537,7 @@ world.addBody(body);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l1818"><code>src&#x2F;world&#x2F;World.js:1818</code></a>
+        <a href="../files/src_world_World.js.html#l1304"><code>src&#x2F;world&#x2F;World.js:1304</code></a>
         
         </p>
 
@@ -3712,7 +3637,7 @@ world.addBody(body);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l466"><code>src&#x2F;world&#x2F;World.js:466</code></a>
+        <a href="../files/src_world_World.js.html#l498"><code>src&#x2F;world&#x2F;World.js:498</code></a>
         
         </p>
 
@@ -3805,132 +3730,12 @@ world.step(0.01);</code></pre>
 </div>
 
                 
-                    <div id="method_toJSON" class="method item deprecated">
-    <h3 class="name"><code>toJSON</code></h3>
-
-    
-        <span class="paren">()</span>
-    
-
-    
-        <span class="returns-inline">
-            <span class="type">Object</span>
-        </span>
-    
-
-    
-        <span class="flag deprecated" title="Should use Serializer instead.">deprecated</span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_world_World.js.html#l1143"><code>src&#x2F;world&#x2F;World.js:1143</code></a>
-        
-        </p>
-
-
-        
-            <p>Deprecated: Should use Serializer instead.</p>
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Convert the world to a JSON-serializable Object.</p>
-
-    </div>
-
-    
-
-    
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                
-                    
-                        <span class="type">Object</span>:
-                    
-                
-            </div>
-        </div>
-    
-
-    
-</div>
-
-                
             </div>
         
 
         
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
-
-                
-                    <div id="property_allowSleep" class="property item">
-    <h3 class="name"><code>allowSleep</code></h3>
-    <span class="type">Boolean</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_world_World.js.html#l322"><code>src&#x2F;world&#x2F;World.js:322</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Enable / disable automatic body sleeping. Sleeping can improve performance. You might need to <a href="../classes/Body.html#method_wakeUp" class="crosslink">wake up</a> the bodies if they fall asleep when they shouldn&#39;t. If you want to enable sleeping in the world, but want to disable it for a particular body, see <a href="../classes/Body.html#property_allowSleep" class="crosslink">Body.allowSleep</a>.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
 
                 
                     <div id="property_applyDamping" class="property item">
@@ -3956,7 +3761,7 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l190"><code>src&#x2F;world&#x2F;World.js:190</code></a>
+        <a href="../files/src_world_World.js.html#l204"><code>src&#x2F;world&#x2F;World.js:204</code></a>
         
         </p>
 
@@ -4001,7 +3806,7 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l197"><code>src&#x2F;world&#x2F;World.js:197</code></a>
+        <a href="../files/src_world_World.js.html#l211"><code>src&#x2F;world&#x2F;World.js:211</code></a>
         
         </p>
 
@@ -4046,7 +3851,7 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l183"><code>src&#x2F;world&#x2F;World.js:183</code></a>
+        <a href="../files/src_world_World.js.html#l197"><code>src&#x2F;world&#x2F;World.js:197</code></a>
         
         </p>
 
@@ -4091,7 +3896,7 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l72"><code>src&#x2F;world&#x2F;World.js:72</code></a>
+        <a href="../files/src_world_World.js.html#l83"><code>src&#x2F;world&#x2F;World.js:83</code></a>
         
         </p>
 
@@ -4138,7 +3943,7 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l231"><code>src&#x2F;world&#x2F;World.js:231</code></a>
+        <a href="../files/src_world_World.js.html#l245"><code>src&#x2F;world&#x2F;World.js:245</code></a>
         
         </p>
 
@@ -4149,6 +3954,53 @@ world.step(0.01);</code></pre>
 
     <div class="description">
         <p>Bodies that are scheduled to be removed at the end of the step.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_BODY_SLEEPING" class="property item">
+    <h3 class="name"><code>BODY_SLEEPING</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_World.js.html#l407"><code>src&#x2F;world&#x2F;World.js:407</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Deactivate individual bodies if they are sleepy.</p>
 
     </div>
 
@@ -4183,7 +4035,7 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l147"><code>src&#x2F;world&#x2F;World.js:147</code></a>
+        <a href="../files/src_world_World.js.html#l161"><code>src&#x2F;world&#x2F;World.js:161</code></a>
         
         </p>
 
@@ -4228,7 +4080,7 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l156"><code>src&#x2F;world&#x2F;World.js:156</code></a>
+        <a href="../files/src_world_World.js.html#l170"><code>src&#x2F;world&#x2F;World.js:170</code></a>
         
         </p>
 
@@ -4273,7 +4125,7 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l211"><code>src&#x2F;world&#x2F;World.js:211</code></a>
+        <a href="../files/src_world_World.js.html#l225"><code>src&#x2F;world&#x2F;World.js:225</code></a>
         
         </p>
 
@@ -4318,7 +4170,7 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l170"><code>src&#x2F;world&#x2F;World.js:170</code></a>
+        <a href="../files/src_world_World.js.html#l184"><code>src&#x2F;world&#x2F;World.js:184</code></a>
         
         </p>
 
@@ -4363,7 +4215,7 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l164"><code>src&#x2F;world&#x2F;World.js:164</code></a>
+        <a href="../files/src_world_World.js.html#l178"><code>src&#x2F;world&#x2F;World.js:178</code></a>
         
         </p>
 
@@ -4410,7 +4262,7 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l78"><code>src&#x2F;world&#x2F;World.js:78</code></a>
+        <a href="../files/src_world_World.js.html#l89"><code>src&#x2F;world&#x2F;World.js:89</code></a>
         
         </p>
 
@@ -4455,7 +4307,7 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l131"><code>src&#x2F;world&#x2F;World.js:131</code></a>
+        <a href="../files/src_world_World.js.html#l145"><code>src&#x2F;world&#x2F;World.js:145</code></a>
         
         </p>
 
@@ -4500,7 +4352,7 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l246"><code>src&#x2F;world&#x2F;World.js:246</code></a>
+        <a href="../files/src_world_World.js.html#l260"><code>src&#x2F;world&#x2F;World.js:260</code></a>
         
         </p>
 
@@ -4511,51 +4363,6 @@ world.step(0.01);</code></pre>
 
     <div class="description">
         <p>Set to true if you want to the world to emit the &quot;impact&quot; event. Turning this off could improve performance.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_enableIslandSleeping" class="property item">
-    <h3 class="name"><code>enableIslandSleeping</code></h3>
-    <span class="type">Boolean</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_world_World.js.html#l329"><code>src&#x2F;world&#x2F;World.js:329</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Enable or disable island sleeping. Note that you must enable <a href="../classes/World.html#property_islandSplit" class="crosslink">.islandSplit</a> for this to work.</p>
 
     </div>
 
@@ -4590,7 +4397,7 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l113"><code>src&#x2F;world&#x2F;World.js:113</code></a>
+        <a href="../files/src_world_World.js.html#l127"><code>src&#x2F;world&#x2F;World.js:127</code></a>
         
         </p>
 
@@ -4635,7 +4442,7 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l105"><code>src&#x2F;world&#x2F;World.js:105</code></a>
+        <a href="../files/src_world_World.js.html#l116"><code>src&#x2F;world&#x2F;World.js:116</code></a>
         
         </p>
 
@@ -4646,6 +4453,53 @@ world.step(0.01);</code></pre>
 
     <div class="description">
         <p>Gravity in the world. This is applied on all bodies in the beginning of each step().</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_ISLAND_SLEEPING" class="property item">
+    <h3 class="name"><code>ISLAND_SLEEPING</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_World.js.html#l414"><code>src&#x2F;world&#x2F;World.js:414</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Deactivates bodies that are in contact, if all of them are sleepy. Note that you must enable <a href="../classes/World.html#property_islandSplit" class="crosslink">.islandSplit</a> for this to work.</p>
 
     </div>
 
@@ -4680,7 +4534,7 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l99"><code>src&#x2F;world&#x2F;World.js:99</code></a>
+        <a href="../files/src_world_World.js.html#l110"><code>src&#x2F;world&#x2F;World.js:110</code></a>
         
         </p>
 
@@ -4725,7 +4579,7 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l240"><code>src&#x2F;world&#x2F;World.js:240</code></a>
+        <a href="../files/src_world_World.js.html#l254"><code>src&#x2F;world&#x2F;World.js:254</code></a>
         
         </p>
 
@@ -4770,7 +4624,7 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l139"><code>src&#x2F;world&#x2F;World.js:139</code></a>
+        <a href="../files/src_world_World.js.html#l153"><code>src&#x2F;world&#x2F;World.js:153</code></a>
         
         </p>
 
@@ -4815,7 +4669,7 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l176"><code>src&#x2F;world&#x2F;World.js:176</code></a>
+        <a href="../files/src_world_World.js.html#l190"><code>src&#x2F;world&#x2F;World.js:190</code></a>
         
         </p>
 
@@ -4860,7 +4714,7 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l91"><code>src&#x2F;world&#x2F;World.js:91</code></a>
+        <a href="../files/src_world_World.js.html#l102"><code>src&#x2F;world&#x2F;World.js:102</code></a>
         
         </p>
 
@@ -4874,6 +4728,101 @@ world.step(0.01);</code></pre>
 
     </div>
 
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_NO_SLEEPING" class="property item">
+    <h3 class="name"><code>NO_SLEEPING</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_World.js.html#l400"><code>src&#x2F;world&#x2F;World.js:400</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Never deactivate bodies.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_sleepMode" class="property item">
+    <h3 class="name"><code>sleepMode</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_World.js.html#l336"><code>src&#x2F;world&#x2F;World.js:336</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>How to deactivate bodies during simulation. Possible modes are: <a href="../classes/World.html#property_NO_SLEEPING" class="crosslink">World.NO_SLEEPING</a>, <a href="../classes/World.html#property_BODY_SLEEPING" class="crosslink">World.BODY_SLEEPING</a> and <a href="../classes/World.html#property_ISLAND_SLEEPING" class="crosslink">World.ISLAND_SLEEPING</a>.
+If sleeping is enabled, you might need to <a href="../classes/Body.html#method_wakeUp" class="crosslink">wake up</a> the bodies if they fall asleep when they shouldn&#39;t. If you want to enable sleeping in the world, but want to disable it for a particular body, see <a href="../classes/Body.html#property_allowSleep" class="crosslink">Body.allowSleep</a>.</p>
+
+    </div>
+
+    
+        <p><strong>Default:</strong> World.NO_SLEEPING</p>
     
 
     
@@ -4905,7 +4854,7 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l204"><code>src&#x2F;world&#x2F;World.js:204</code></a>
+        <a href="../files/src_world_World.js.html#l218"><code>src&#x2F;world&#x2F;World.js:218</code></a>
         
         </p>
 
@@ -4950,7 +4899,7 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l85"><code>src&#x2F;world&#x2F;World.js:85</code></a>
+        <a href="../files/src_world_World.js.html#l96"><code>src&#x2F;world&#x2F;World.js:96</code></a>
         
         </p>
 
@@ -4995,7 +4944,7 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l64"><code>src&#x2F;world&#x2F;World.js:64</code></a>
+        <a href="../files/src_world_World.js.html#l75"><code>src&#x2F;world&#x2F;World.js:75</code></a>
         
         </p>
 
@@ -5040,7 +4989,7 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l225"><code>src&#x2F;world&#x2F;World.js:225</code></a>
+        <a href="../files/src_world_World.js.html#l239"><code>src&#x2F;world&#x2F;World.js:239</code></a>
         
         </p>
 
@@ -5085,7 +5034,7 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l218"><code>src&#x2F;world&#x2F;World.js:218</code></a>
+        <a href="../files/src_world_World.js.html#l232"><code>src&#x2F;world&#x2F;World.js:232</code></a>
         
         </p>
 
@@ -5130,7 +5079,7 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l125"><code>src&#x2F;world&#x2F;World.js:125</code></a>
+        <a href="../files/src_world_World.js.html#l139"><code>src&#x2F;world&#x2F;World.js:139</code></a>
         
         </p>
 
@@ -5175,7 +5124,7 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l119"><code>src&#x2F;world&#x2F;World.js:119</code></a>
+        <a href="../files/src_world_World.js.html#l133"><code>src&#x2F;world&#x2F;World.js:133</code></a>
         
         </p>
 
@@ -5230,7 +5179,7 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l265"><code>src&#x2F;world&#x2F;World.js:265</code></a>
+        <a href="../files/src_world_World.js.html#l279"><code>src&#x2F;world&#x2F;World.js:279</code></a>
         
         </p>
 
@@ -5297,7 +5246,7 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l285"><code>src&#x2F;world&#x2F;World.js:285</code></a>
+        <a href="../files/src_world_World.js.html#l299"><code>src&#x2F;world&#x2F;World.js:299</code></a>
         
         </p>
 
@@ -5364,7 +5313,7 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l335"><code>src&#x2F;world&#x2F;World.js:335</code></a>
+        <a href="../files/src_world_World.js.html#l345"><code>src&#x2F;world&#x2F;World.js:345</code></a>
         
         </p>
 
@@ -5491,7 +5440,7 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l353"><code>src&#x2F;world&#x2F;World.js:353</code></a>
+        <a href="../files/src_world_World.js.html#l363"><code>src&#x2F;world&#x2F;World.js:363</code></a>
         
         </p>
 
@@ -5618,7 +5567,7 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l295"><code>src&#x2F;world&#x2F;World.js:295</code></a>
+        <a href="../files/src_world_World.js.html#l309"><code>src&#x2F;world&#x2F;World.js:309</code></a>
         
         </p>
 
@@ -5700,7 +5649,7 @@ world.step(0.01);</code></pre>
             
         
         
-        <a href="../files/src_world_World.js.html#l310"><code>src&#x2F;world&#x2F;World.js:310</code></a>
+        <a href="../files/src_world_World.js.html#l324"><code>src&#x2F;world&#x2F;World.js:324</code></a>
         
         </p>
 
@@ -5770,7 +5719,7 @@ prevent collisions between objects that you don&#39;t want.</p>
             
         
         
-        <a href="../files/src_world_World.js.html#l257"><code>src&#x2F;world&#x2F;World.js:257</code></a>
+        <a href="../files/src_world_World.js.html#l271"><code>src&#x2F;world&#x2F;World.js:271</code></a>
         
         </p>
 
@@ -5814,7 +5763,7 @@ prevent collisions between objects that you don&#39;t want.</p>
             
         
         
-        <a href="../files/src_world_World.js.html#l370"><code>src&#x2F;world&#x2F;World.js:370</code></a>
+        <a href="../files/src_world_World.js.html#l380"><code>src&#x2F;world&#x2F;World.js:380</code></a>
         
         </p>
 
@@ -5898,7 +5847,7 @@ prevent collisions between objects that you don&#39;t want.</p>
             
         
         
-        <a href="../files/src_world_World.js.html#l275"><code>src&#x2F;world&#x2F;World.js:275</code></a>
+        <a href="../files/src_world_World.js.html#l289"><code>src&#x2F;world&#x2F;World.js:289</code></a>
         
         </p>
 

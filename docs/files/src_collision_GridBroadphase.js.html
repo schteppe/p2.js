@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.5.0</em>
+            <em>API Docs for: 0.6.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -85,6 +85,8 @@
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
+                <li><a href="../classes/LinearSpring.html">LinearSpring</a></li>
+            
                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
@@ -92,6 +94,10 @@
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
                 <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
+            
+                <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
+            
+                <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
             
                 <li><a href="../classes/Particle.html">Particle</a></li>
             
@@ -105,6 +111,8 @@
             
                 <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
             
+                <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
+            
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
                 <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
@@ -114,6 +122,8 @@
                 <li><a href="../classes/Solver.html">Solver</a></li>
             
                 <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
             
                 <li><a href="../classes/Utils.html">Utils</a></li>
             
@@ -169,7 +179,7 @@ var Circle = require(&#x27;../shapes/Circle&#x27;)
 ,   Particle = require(&#x27;../shapes/Particle&#x27;)
 ,   Broadphase = require(&#x27;../collision/Broadphase&#x27;)
 ,   vec2 = require(&#x27;../math/vec2&#x27;)
-,   Utils = require(&#x27;../utils/Utils&#x27;)
+,   Utils = require(&#x27;../utils/Utils&#x27;);
 
 module.exports = GridBroadphase;
 
@@ -188,10 +198,9 @@ module.exports = GridBroadphase;
  * @todo Should have an option for dynamic scene size
  */
 function GridBroadphase(options){
-    options = options || {};
     Broadphase.apply(this);
 
-    Utils.extend(options,{
+    options = Utils.defaults(options,{
         xmin:   -100,
         xmax:   100,
         ymin:   -100,

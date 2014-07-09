@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.5.0</em>
+            <em>API Docs for: 0.6.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -85,6 +85,8 @@
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
+                <li><a href="../classes/LinearSpring.html">LinearSpring</a></li>
+            
                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
@@ -92,6 +94,10 @@
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
                 <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
+            
+                <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
+            
+                <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
             
                 <li><a href="../classes/Particle.html">Particle</a></li>
             
@@ -105,6 +111,8 @@
             
                 <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
             
+                <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
+            
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
                 <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
@@ -114,6 +122,8 @@
                 <li><a href="../classes/Solver.html">Solver</a></li>
             
                 <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
             
                 <li><a href="../classes/Utils.html">Utils</a></li>
             
@@ -200,13 +210,13 @@
             
                 <li class="arg">
                     
-                        <code>w</code>
+                        <code>width</code>
                     
                 </li>
             
                 <li class="arg">
                     
-                        <code>h</code>
+                        <code>height</code>
                     
                 </li>
             
@@ -261,7 +271,7 @@
             
                 <li class="param">
                     
-                        <code class="param-name">w</code>
+                        <code class="param-name">width</code>
                         <span class="type">Number</span>
                     
 
@@ -277,7 +287,7 @@
             
                 <li class="param">
                     
-                        <code class="param-name">h</code>
+                        <code class="param-name">height</code>
                         <span class="type">Number</span>
                     
 
@@ -381,6 +391,13 @@
                         
                             <li class="index-item property inherited">
                                 <a href="#property_area">area</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_axes">axes</a>
 
                                 
                                 
@@ -538,7 +555,7 @@
             
         
         
-        <a href="../files/src_shapes_Rectangle.js.html#l68"><code>src&#x2F;shapes&#x2F;Rectangle.js:68</code></a>
+        <a href="../files/src_shapes_Rectangle.js.html#l70"><code>src&#x2F;shapes&#x2F;Rectangle.js:70</code></a>
         
         </p>
 
@@ -660,7 +677,7 @@
             
         
         
-        <a href="../files/src_shapes_Rectangle.js.html#l41"><code>src&#x2F;shapes&#x2F;Rectangle.js:41</code></a>
+        <a href="../files/src_shapes_Rectangle.js.html#l43"><code>src&#x2F;shapes&#x2F;Rectangle.js:43</code></a>
         
         </p>
 
@@ -750,7 +767,7 @@
             
         
         
-        <a href="../files/src_shapes_Convex.js.html#l199"><code>src&#x2F;shapes&#x2F;Convex.js:199</code></a>
+        <a href="../files/src_shapes_Convex.js.html#l290"><code>src&#x2F;shapes&#x2F;Convex.js:290</code></a>
         
         </p>
 
@@ -805,7 +822,7 @@
             
         
         
-        <a href="../files/src_shapes_Rectangle.js.html#l53"><code>src&#x2F;shapes&#x2F;Rectangle.js:53</code></a>
+        <a href="../files/src_shapes_Rectangle.js.html#l55"><code>src&#x2F;shapes&#x2F;Rectangle.js:55</code></a>
         
         </p>
 
@@ -857,7 +874,7 @@
             
         
         
-        <a href="../files/src_shapes_Convex.js.html#l106"><code>src&#x2F;shapes&#x2F;Convex.js:106</code></a>
+        <a href="../files/src_shapes_Convex.js.html#l195"><code>src&#x2F;shapes&#x2F;Convex.js:195</code></a>
         
         </p>
 
@@ -909,7 +926,7 @@
             
         
         
-        <a href="../files/src_shapes_Convex.js.html#l67"><code>src&#x2F;shapes&#x2F;Convex.js:67</code></a>
+        <a href="../files/src_shapes_Convex.js.html#l156"><code>src&#x2F;shapes&#x2F;Convex.js:156</code></a>
         
         </p>
 
@@ -960,7 +977,7 @@
             
         
         
-        <a href="../files/src_shapes_Shape.js.html#l87"><code>src&#x2F;shapes&#x2F;Shape.js:87</code></a>
+        <a href="../files/src_shapes_Shape.js.html#l89"><code>src&#x2F;shapes&#x2F;Shape.js:89</code></a>
         
         </p>
 
@@ -971,6 +988,48 @@
 
     <div class="description">
         <p>Area of this shape.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_axes" class="property item inherited">
+    <h3 class="name"><code>axes</code></h3>
+    <span class="type">Array</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Convex.html#property_axes">Convex</a>:
+            
+        
+        
+        <a href="../files/src_shapes_Convex.js.html#l25"><code>src&#x2F;shapes&#x2F;Convex.js:25</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Axes defined in the local frame.</p>
 
     </div>
 
@@ -1005,7 +1064,7 @@
             
         
         
-        <a href="../files/src_shapes_Convex.js.html#l50"><code>src&#x2F;shapes&#x2F;Convex.js:50</code></a>
+        <a href="../files/src_shapes_Convex.js.html#l83"><code>src&#x2F;shapes&#x2F;Convex.js:83</code></a>
         
         </p>
 
@@ -1029,7 +1088,7 @@
                 
                     <div id="property_centerOfMass" class="property item inherited">
     <h3 class="name"><code>centerOfMass</code></h3>
-    <span class="type">Float32Array</span>
+    <span class="type">Array</span>
 
     
 
@@ -1047,7 +1106,7 @@
             
         
         
-        <a href="../files/src_shapes_Convex.js.html#l31"><code>src&#x2F;shapes&#x2F;Convex.js:31</code></a>
+        <a href="../files/src_shapes_Convex.js.html#l64"><code>src&#x2F;shapes&#x2F;Convex.js:64</code></a>
         
         </p>
 
@@ -1205,7 +1264,7 @@ if(shapeA.collisionGroup &amp; shapeB.collisionMask)!=0 &amp;&amp; (shapeB.colli
             
         
         
-        <a href="../files/src_shapes_Rectangle.js.html#l28"><code>src&#x2F;shapes&#x2F;Rectangle.js:28</code></a>
+        <a href="../files/src_shapes_Rectangle.js.html#l24"><code>src&#x2F;shapes&#x2F;Rectangle.js:24</code></a>
         
         </p>
 
@@ -1289,7 +1348,7 @@ if(shapeA.collisionGroup &amp; shapeB.collisionMask)!=0 &amp;&amp; (shapeB.colli
             
         
         
-        <a href="../files/src_shapes_Shape.js.html#l80"><code>src&#x2F;shapes&#x2F;Shape.js:80</code></a>
+        <a href="../files/src_shapes_Shape.js.html#l82"><code>src&#x2F;shapes&#x2F;Shape.js:82</code></a>
         
         </p>
 
@@ -1331,7 +1390,7 @@ if(shapeA.collisionGroup &amp; shapeB.collisionMask)!=0 &amp;&amp; (shapeB.colli
             
         
         
-        <a href="../files/src_shapes_Shape.js.html#l94"><code>src&#x2F;shapes&#x2F;Shape.js:94</code></a>
+        <a href="../files/src_shapes_Shape.js.html#l96"><code>src&#x2F;shapes&#x2F;Shape.js:96</code></a>
         
         </p>
 
@@ -1373,7 +1432,7 @@ if(shapeA.collisionGroup &amp; shapeB.collisionMask)!=0 &amp;&amp; (shapeB.colli
             
         
         
-        <a href="../files/src_shapes_Convex.js.html#l38"><code>src&#x2F;shapes&#x2F;Convex.js:38</code></a>
+        <a href="../files/src_shapes_Convex.js.html#l71"><code>src&#x2F;shapes&#x2F;Convex.js:71</code></a>
         
         </p>
 
@@ -1467,7 +1526,7 @@ if(shapeA.collisionGroup &amp; shapeB.collisionMask)!=0 &amp;&amp; (shapeB.colli
             
         
         
-        <a href="../files/src_shapes_Convex.js.html#l17"><code>src&#x2F;shapes&#x2F;Convex.js:17</code></a>
+        <a href="../files/src_shapes_Convex.js.html#l18"><code>src&#x2F;shapes&#x2F;Convex.js:18</code></a>
         
         </p>
 
@@ -1512,7 +1571,7 @@ if(shapeA.collisionGroup &amp; shapeB.collisionMask)!=0 &amp;&amp; (shapeB.colli
             
         
         
-        <a href="../files/src_shapes_Rectangle.js.html#l21"><code>src&#x2F;shapes&#x2F;Rectangle.js:21</code></a>
+        <a href="../files/src_shapes_Rectangle.js.html#l17"><code>src&#x2F;shapes&#x2F;Rectangle.js:17</code></a>
         
         </p>
 

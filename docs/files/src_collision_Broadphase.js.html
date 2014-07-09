@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.5.0</em>
+            <em>API Docs for: 0.6.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -85,6 +85,8 @@
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
+                <li><a href="../classes/LinearSpring.html">LinearSpring</a></li>
+            
                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
@@ -92,6 +94,10 @@
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
                 <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
+            
+                <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
+            
+                <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
             
                 <li><a href="../classes/Particle.html">Particle</a></li>
             
@@ -105,6 +111,8 @@
             
                 <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
             
+                <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
+            
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
                 <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
@@ -114,6 +122,8 @@
                 <li><a href="../classes/Solver.html">Solver</a></li>
             
                 <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
             
                 <li><a href="../classes/Utils.html">Utils</a></li>
             
@@ -164,8 +174,8 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
-var vec2 = require(&#x27;../math/vec2&#x27;)
-var Body = require(&#x27;../objects/Body&#x27;)
+var vec2 = require(&#x27;../math/vec2&#x27;);
+var Body = require(&#x27;../objects/Body&#x27;);
 
 module.exports = Broadphase;
 
@@ -299,18 +309,18 @@ Broadphase.prototype.boundingVolumeCheck = function(bodyA, bodyB){
 Broadphase.canCollide = function(bodyA, bodyB){
 
     // Cannot collide static bodies
-    if(bodyA.motionState === Body.STATIC &amp;&amp; bodyB.motionState === Body.STATIC){
+    if(bodyA.type === Body.STATIC &amp;&amp; bodyB.type === Body.STATIC){
         return false;
     }
 
     // Cannot collide static vs kinematic bodies
-    if( (bodyA.motionState === Body.KINEMATIC &amp;&amp; bodyB.motionState === Body.STATIC) ||
-        (bodyA.motionState === Body.STATIC    &amp;&amp; bodyB.motionState === Body.KINEMATIC)){
+    if( (bodyA.type === Body.KINEMATIC &amp;&amp; bodyB.type === Body.STATIC) ||
+        (bodyA.type === Body.STATIC    &amp;&amp; bodyB.type === Body.KINEMATIC)){
         return false;
     }
 
     // Cannot collide kinematic vs kinematic
-    if(bodyA.motionState === Body.KINEMATIC &amp;&amp; bodyB.motionState === Body.KINEMATIC){
+    if(bodyA.type === Body.KINEMATIC &amp;&amp; bodyB.type === Body.KINEMATIC){
         return false;
     }
 
@@ -320,8 +330,8 @@ Broadphase.canCollide = function(bodyA, bodyB){
     }
 
     // Cannot collide if one is static and the other is sleeping
-    if( (bodyA.sleepState === Body.SLEEPING &amp;&amp; bodyB.motionState === Body.STATIC) ||
-        (bodyB.sleepState === Body.SLEEPING &amp;&amp; bodyA.motionState === Body.STATIC)){
+    if( (bodyA.sleepState === Body.SLEEPING &amp;&amp; bodyB.type === Body.STATIC) ||
+        (bodyB.sleepState === Body.SLEEPING &amp;&amp; bodyA.type === Body.STATIC)){
         return false;
     }
 

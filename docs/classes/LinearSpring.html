@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>PrismaticConstraint - p2.js</title>
+    <title>LinearSpring - p2.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -170,19 +170,19 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>PrismaticConstraint Class</h1>
+                        <h1>LinearSpring Class</h1>
 <div class="box meta">
     
 
     
         <div class="extends">
-            Extends <a href="../classes/Constraint.html" class="crosslink">Constraint</a>
+            Extends <a href="../classes/Spring.html" class="crosslink">Spring</a>
         </div>
     
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_constraints_PrismaticConstraint.js.html#l9"><code>src&#x2F;constraints&#x2F;PrismaticConstraint.js:9</code></a>
+            Defined in: <a href="../files/src_objects_LinearSpring.js.html#l7"><code>src&#x2F;objects&#x2F;LinearSpring.js:7</code></a>
         </div>
     
 
@@ -194,15 +194,16 @@
 
 
 <div class="box intro">
-    <p>Constraint that only allows bodies to move along a line, relative to each other. See <a href="http://www.iforce2d.net/b2dtut/joints-prismatic">this tutorial</a>.</p>
+    <p>A spring, connecting two bodies.</p>
+<p>The Spring explicitly adds force and angularForce to the bodies.</p>
 
 </div>
 
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_PrismaticConstraint" class="method item">
-    <h3 class="name"><code>PrismaticConstraint</code></h3>
+        <div id="method_LinearSpring" class="method item">
+    <h3 class="name"><code>LinearSpring</code></h3>
 
     
         <div class="args">
@@ -255,7 +256,7 @@
             
         
         
-        <a href="../files/src_constraints_PrismaticConstraint.js.html#l9"><code>src&#x2F;constraints&#x2F;PrismaticConstraint.js:9</code></a>
+        <a href="../files/src_objects_LinearSpring.js.html#l7"><code>src&#x2F;objects&#x2F;LinearSpring.js:7</code></a>
         
         </p>
 
@@ -323,14 +324,73 @@
                             
                             <li class="param">
                                 
-                                    <code class="param-name optional">[maxForce]</code>
+                                    <code class="param-name optional">[restLength]</code>
                                     <span class="type">Number</span>
                                     <span class="flag optional" title="This parameter is optional.">optional</span>
                                 
 
                                 <div class="param-description">
-                                    <p>Max force to be applied by the constraint</p>
+                                    <p>A number &gt; 0. Default is the current distance between the world anchor points.</p>
 
+                                </div>
+
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[stiffness=100]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
+
+                                <div class="param-description">
+                                    <p>Spring constant (see Hookes Law). A number &gt;= 0.</p>
+
+                                </div>
+
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[damping=1]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
+
+                                <div class="param-description">
+                                    <p>A number &gt;= 0. Default: 1</p>
+
+                                </div>
+
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[worldAnchorA]</code>
+                                    <span class="type">Array</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
+
+                                <div class="param-description">
+                                    <p>Where to hook the spring to body A, in world coordinates. Overrides the option &quot;localAnchorA&quot; if given.</p>
+
+                                </div>
+
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[worldAnchorB]</code>
+                                    <span class="type">Array</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
+
+                                <div class="param-description">
+                                    
                                 </div>
 
                                 
@@ -344,7 +404,7 @@
                                 
 
                                 <div class="param-description">
-                                    <p>Body A&#39;s anchor point, defined in its own local frame.</p>
+                                    <p>Where to hook the spring to body A, in local body coordinates. Defaults to the body center.</p>
 
                                 </div>
 
@@ -355,65 +415,6 @@
                                 
                                     <code class="param-name optional">[localAnchorB]</code>
                                     <span class="type">Array</span>
-                                    <span class="flag optional" title="This parameter is optional.">optional</span>
-                                
-
-                                <div class="param-description">
-                                    <p>Body B&#39;s anchor point, defined in its own local frame.</p>
-
-                                </div>
-
-                                
-                            </li>
-                            
-                            <li class="param">
-                                
-                                    <code class="param-name optional">[localAxisA]</code>
-                                    <span class="type">Array</span>
-                                    <span class="flag optional" title="This parameter is optional.">optional</span>
-                                
-
-                                <div class="param-description">
-                                    <p>An axis, defined in body A frame, that body B&#39;s anchor point may slide along.</p>
-
-                                </div>
-
-                                
-                            </li>
-                            
-                            <li class="param">
-                                
-                                    <code class="param-name optional">[disableRotationalLock]</code>
-                                    <span class="type">Boolean</span>
-                                    <span class="flag optional" title="This parameter is optional.">optional</span>
-                                
-
-                                <div class="param-description">
-                                    <p>If set to true, bodyB will be free to rotate around its anchor point.</p>
-
-                                </div>
-
-                                
-                            </li>
-                            
-                            <li class="param">
-                                
-                                    <code class="param-name optional">[upperLimit]</code>
-                                    <span class="type">Number</span>
-                                    <span class="flag optional" title="This parameter is optional.">optional</span>
-                                
-
-                                <div class="param-description">
-                                    
-                                </div>
-
-                                
-                            </li>
-                            
-                            <li class="param">
-                                
-                                    <code class="param-name optional">[lowerLimit]</code>
-                                    <span class="type">Number</span>
                                     <span class="flag optional" title="This parameter is optional.">optional</span>
                                 
 
@@ -464,43 +465,36 @@
 
                     <ul class="index-list methods extends">
                         
-                            <li class="index-item method">
-                                <a href="#method_disableMotor">disableMotor</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method">
-                                <a href="#method_enableMotor">enableMotor</a>
+                            <li class="index-item method inherited">
+                                <a href="#method_applyForce">applyForce</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item method">
-                                <a href="#method_setLimits">setLimits</a>
+                                <a href="#method_getWorldAnchorA">getWorldAnchorA</a>
 
                                 
                                 
                             </li>
                         
-                            <li class="index-item method inherited">
-                                <a href="#method_setRelaxation">setRelaxation</a>
+                            <li class="index-item method">
+                                <a href="#method_getWorldAnchorB">getWorldAnchorB</a>
 
                                 
                                 
                             </li>
                         
-                            <li class="index-item method inherited">
-                                <a href="#method_setStiffness">setStiffness</a>
+                            <li class="index-item method">
+                                <a href="#method_setWorldAnchorA">setWorldAnchorA</a>
 
                                 
                                 
                             </li>
                         
-                            <li class="index-item method inherited">
-                                <a href="#method_update">update</a>
+                            <li class="index-item method">
+                                <a href="#method_setWorldAnchorB">setWorldAnchorB</a>
 
                                 
                                 
@@ -531,14 +525,7 @@
                             </li>
                         
                             <li class="index-item property inherited">
-                                <a href="#property_collideConnected">collideConnected</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property inherited">
-                                <a href="#property_equations">equations</a>
+                                <a href="#property_damping">damping</a>
 
                                 
                                 
@@ -559,63 +546,14 @@
                             </li>
                         
                             <li class="index-item property">
-                                <a href="#property_localAxisA">localAxisA</a>
+                                <a href="#property_restLength">restLength</a>
 
                                 
                                 
                             </li>
                         
-                            <li class="index-item property">
-                                <a href="#property_lowerLimit">lowerLimit</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_lowerLimitEnabled">lowerLimitEnabled</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_motorEnabled">motorEnabled</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_motorEquation">motorEquation</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_motorSpeed">motorSpeed</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_position">position</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_upperLimit">upperLimit</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_upperLimitEnabled">upperLimitEnabled</a>
+                            <li class="index-item property inherited">
+                                <a href="#property_stiffness">stiffness</a>
 
                                 
                                 
@@ -635,399 +573,8 @@
                 <h2 class="off-left">Methods</h2>
 
                 
-                    <div id="method_disableMotor" class="method item">
-    <h3 class="name"><code>disableMotor</code></h3>
-
-    
-        <span class="paren">()</span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_constraints_PrismaticConstraint.js.html#l314"><code>src&#x2F;constraints&#x2F;PrismaticConstraint.js:314</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Disable the rotational motor</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_enableMotor" class="method item">
-    <h3 class="name"><code>enableMotor</code></h3>
-
-    
-        <span class="paren">()</span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_constraints_PrismaticConstraint.js.html#l302"><code>src&#x2F;constraints&#x2F;PrismaticConstraint.js:302</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Enable the motor</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_setLimits" class="method item">
-    <h3 class="name"><code>setLimits</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>lower</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>upper</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_constraints_PrismaticConstraint.js.html#l327"><code>src&#x2F;constraints&#x2F;PrismaticConstraint.js:327</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Set the constraint limits.</p>
-
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">lower</code>
-                        <span class="type">Number</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>Lower limit.</p>
-
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">upper</code>
-                        <span class="type">Number</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>Upper limit.</p>
-
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_setRelaxation" class="method item inherited">
-    <h3 class="name"><code>setRelaxation</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>relaxation</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/Constraint.html#method_setRelaxation">Constraint</a>:
-            
-        
-        
-        <a href="../files/src_constraints_Constraint.js.html#l94"><code>src&#x2F;constraints&#x2F;Constraint.js:94</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Set relaxation for this constraint.</p>
-
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">relaxation</code>
-                        <span class="type">Number</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_setStiffness" class="method item inherited">
-    <h3 class="name"><code>setStiffness</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>stiffness</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/Constraint.html#method_setStiffness">Constraint</a>:
-            
-        
-        
-        <a href="../files/src_constraints_Constraint.js.html#l80"><code>src&#x2F;constraints&#x2F;Constraint.js:80</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Set stiffness for this constraint.</p>
-
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">stiffness</code>
-                        <span class="type">Number</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_update" class="method item">
-    <h3 class="name"><code>update</code></h3>
+                    <div id="method_applyForce" class="method item">
+    <h3 class="name"><code>applyForce</code></h3>
 
     
         <span class="paren">()</span>
@@ -1050,15 +597,15 @@
     <div class="meta">
         
             <p>Inherited from
-            <a href="../classes/Constraint.html#method_update">
-                Constraint
+            <a href="../classes/Spring.html#method_applyForce">
+                Spring
             </a>
             
             but overwritten in
             
         
         
-        <a href="../files/src_constraints_PrismaticConstraint.js.html#l205"><code>src&#x2F;constraints&#x2F;PrismaticConstraint.js:205</code></a>
+        <a href="../files/src_objects_LinearSpring.js.html#l111"><code>src&#x2F;objects&#x2F;LinearSpring.js:111</code></a>
         
         </p>
 
@@ -1069,10 +616,364 @@
     </div>
 
     <div class="description">
-        <p>Update the constraint equations. Should be done if any of the bodies changed position, before solving.</p>
+        <p>Apply the spring force to the connected bodies.</p>
 
     </div>
 
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_getWorldAnchorA" class="method item">
+    <h3 class="name"><code>getWorldAnchorA</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>result</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_LinearSpring.js.html#l83"><code>src&#x2F;objects&#x2F;LinearSpring.js:83</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Get the anchor point on body A, in world coordinates.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">result</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The vector to store the result in.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_getWorldAnchorB" class="method item">
+    <h3 class="name"><code>getWorldAnchorB</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>result</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_LinearSpring.js.html#l92"><code>src&#x2F;objects&#x2F;LinearSpring.js:92</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Get the anchor point on body B, in world coordinates.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">result</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The vector to store the result in.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_setWorldAnchorA" class="method item">
+    <h3 class="name"><code>setWorldAnchorA</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>worldAnchorA</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_LinearSpring.js.html#l65"><code>src&#x2F;objects&#x2F;LinearSpring.js:65</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Set the anchor point on body A, using world coordinates.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">worldAnchorA</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_setWorldAnchorB" class="method item">
+    <h3 class="name"><code>setWorldAnchorB</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>worldAnchorB</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_LinearSpring.js.html#l74"><code>src&#x2F;objects&#x2F;LinearSpring.js:74</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Set the anchor point on body B, using world coordinates.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">worldAnchorB</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
     
 
     
@@ -1105,11 +1006,11 @@
         
             
                 <p>Inherited from
-                <a href="../classes/Constraint.html#property_bodyA">Constraint</a>:
+                <a href="../classes/Spring.html#property_bodyA">Spring</a>:
             
         
         
-        <a href="../files/src_constraints_Constraint.js.html#l33"><code>src&#x2F;constraints&#x2F;Constraint.js:33</code></a>
+        <a href="../files/src_objects_Spring.js.html#l41"><code>src&#x2F;objects&#x2F;Spring.js:41</code></a>
         
         </p>
 
@@ -1119,7 +1020,7 @@
     </div>
 
     <div class="description">
-        <p>First body participating in the constraint.</p>
+        <p>First connected body.</p>
 
     </div>
 
@@ -1147,11 +1048,11 @@
         
             
                 <p>Inherited from
-                <a href="../classes/Constraint.html#property_bodyB">Constraint</a>:
+                <a href="../classes/Spring.html#property_bodyB">Spring</a>:
             
         
         
-        <a href="../files/src_constraints_Constraint.js.html#l40"><code>src&#x2F;constraints&#x2F;Constraint.js:40</code></a>
+        <a href="../files/src_objects_Spring.js.html#l48"><code>src&#x2F;objects&#x2F;Spring.js:48</code></a>
         
         </p>
 
@@ -1161,7 +1062,7 @@
     </div>
 
     <div class="description">
-        <p>Second body participating in the constraint.</p>
+        <p>Second connected body.</p>
 
     </div>
 
@@ -1173,9 +1074,9 @@
 </div>
 
                 
-                    <div id="property_collideConnected" class="property item inherited">
-    <h3 class="name"><code>collideConnected</code></h3>
-    <span class="type">Boolean</span>
+                    <div id="property_damping" class="property item inherited">
+    <h3 class="name"><code>damping</code></h3>
+    <span class="type">Number</span>
 
     
 
@@ -1189,11 +1090,11 @@
         
             
                 <p>Inherited from
-                <a href="../classes/Constraint.html#property_collideConnected">Constraint</a>:
+                <a href="../classes/Spring.html#property_damping">Spring</a>:
             
         
         
-        <a href="../files/src_constraints_Constraint.js.html#l47"><code>src&#x2F;constraints&#x2F;Constraint.js:47</code></a>
+        <a href="../files/src_objects_Spring.js.html#l34"><code>src&#x2F;objects&#x2F;Spring.js:34</code></a>
         
         </p>
 
@@ -1203,51 +1104,7 @@
     </div>
 
     <div class="description">
-        <p>Set to true if you want the connected bodies to collide.</p>
-
-    </div>
-
-    
-        <p><strong>Default:</strong> true</p>
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_equations" class="property item inherited">
-    <h3 class="name"><code>equations</code></h3>
-    <span class="type">Array</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/Constraint.html#property_equations">Constraint</a>:
-            
-        
-        
-        <a href="../files/src_constraints_Constraint.js.html#l25"><code>src&#x2F;constraints&#x2F;Constraint.js:25</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Equations to be solved in this constraint</p>
+        <p>Damping of the spring.</p>
 
     </div>
 
@@ -1282,7 +1139,7 @@
             
         
         
-        <a href="../files/src_constraints_PrismaticConstraint.js.html#l40"><code>src&#x2F;constraints&#x2F;PrismaticConstraint.js:40</code></a>
+        <a href="../files/src_objects_LinearSpring.js.html#l31"><code>src&#x2F;objects&#x2F;LinearSpring.js:31</code></a>
         
         </p>
 
@@ -1292,7 +1149,8 @@
     </div>
 
     <div class="description">
-        
+        <p>Anchor for bodyA in local bodyA coordinates.</p>
+
     </div>
 
     
@@ -1326,7 +1184,7 @@
             
         
         
-        <a href="../files/src_constraints_PrismaticConstraint.js.html#l46"><code>src&#x2F;constraints&#x2F;PrismaticConstraint.js:46</code></a>
+        <a href="../files/src_objects_LinearSpring.js.html#l38"><code>src&#x2F;objects&#x2F;LinearSpring.js:38</code></a>
         
         </p>
 
@@ -1336,7 +1194,8 @@
     </div>
 
     <div class="description">
-        
+        <p>Anchor for bodyB in local bodyB coordinates.</p>
+
     </div>
 
     
@@ -1347,52 +1206,8 @@
 </div>
 
                 
-                    <div id="property_localAxisA" class="property item">
-    <h3 class="name"><code>localAxisA</code></h3>
-    <span class="type">Array</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_constraints_PrismaticConstraint.js.html#l52"><code>src&#x2F;constraints&#x2F;PrismaticConstraint.js:52</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_lowerLimit" class="property item">
-    <h3 class="name"><code>lowerLimit</code></h3>
+                    <div id="property_restLength" class="property item">
+    <h3 class="name"><code>restLength</code></h3>
     <span class="type">Number</span>
 
     
@@ -1414,7 +1229,7 @@
             
         
         
-        <a href="../files/src_constraints_PrismaticConstraint.js.html#l137"><code>src&#x2F;constraints&#x2F;PrismaticConstraint.js:137</code></a>
+        <a href="../files/src_objects_LinearSpring.js.html#l56"><code>src&#x2F;objects&#x2F;LinearSpring.js:56</code></a>
         
         </p>
 
@@ -1424,7 +1239,7 @@
     </div>
 
     <div class="description">
-        <p>Lower constraint limit. The constraint position is forced to be larger than this value.</p>
+        <p>Rest length of the spring.</p>
 
     </div>
 
@@ -1436,143 +1251,8 @@
 </div>
 
                 
-                    <div id="property_lowerLimitEnabled" class="property item">
-    <h3 class="name"><code>lowerLimitEnabled</code></h3>
-    <span class="type">Boolean</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_constraints_PrismaticConstraint.js.html#l123"><code>src&#x2F;constraints&#x2F;PrismaticConstraint.js:123</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Set to true to enable lower limit.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_motorEnabled" class="property item">
-    <h3 class="name"><code>motorEnabled</code></h3>
-    <span class="type">Boolean</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_constraints_PrismaticConstraint.js.html#l166"><code>src&#x2F;constraints&#x2F;PrismaticConstraint.js:166</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>The current motor state. Enable or disable the motor using .enableMotor</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_motorEquation" class="property item">
-    <h3 class="name"><code>motorEquation</code></h3>
-    <span class="type"><a href="../classes/Equation.html" class="crosslink">Equation</a></span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_constraints_PrismaticConstraint.js.html#l159"><code>src&#x2F;constraints&#x2F;PrismaticConstraint.js:159</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Equation used for the motor.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_motorSpeed" class="property item">
-    <h3 class="name"><code>motorSpeed</code></h3>
+                    <div id="property_stiffness" class="property item inherited">
+    <h3 class="name"><code>stiffness</code></h3>
     <span class="type">Number</span>
 
     
@@ -1586,15 +1266,12 @@
     <div class="meta">
         
             
-                
-                <p>
-                
-                Defined in
-                
+                <p>Inherited from
+                <a href="../classes/Spring.html#property_stiffness">Spring</a>:
             
         
         
-        <a href="../files/src_constraints_PrismaticConstraint.js.html#l173"><code>src&#x2F;constraints&#x2F;PrismaticConstraint.js:173</code></a>
+        <a href="../files/src_objects_Spring.js.html#l27"><code>src&#x2F;objects&#x2F;Spring.js:27</code></a>
         
         </p>
 
@@ -1604,142 +1281,7 @@
     </div>
 
     <div class="description">
-        <p>Set the target speed for the motor.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_position" class="property item">
-    <h3 class="name"><code>position</code></h3>
-    <span class="type">Number</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_constraints_PrismaticConstraint.js.html#l114"><code>src&#x2F;constraints&#x2F;PrismaticConstraint.js:114</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>The position of anchor A relative to anchor B, along the constraint axis.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_upperLimit" class="property item">
-    <h3 class="name"><code>upperLimit</code></h3>
-    <span class="type">Number</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_constraints_PrismaticConstraint.js.html#l144"><code>src&#x2F;constraints&#x2F;PrismaticConstraint.js:144</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Upper constraint limit. The constraint position is forced to be smaller than this value.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_upperLimitEnabled" class="property item">
-    <h3 class="name"><code>upperLimitEnabled</code></h3>
-    <span class="type">Boolean</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_constraints_PrismaticConstraint.js.html#l130"><code>src&#x2F;constraints&#x2F;PrismaticConstraint.js:130</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Set to true to enable upper limit.</p>
+        <p>Stiffness of the spring.</p>
 
     </div>
 

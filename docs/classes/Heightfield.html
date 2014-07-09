@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.5.0</em>
+            <em>API Docs for: 0.6.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -85,6 +85,8 @@
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
+                <li><a href="../classes/LinearSpring.html">LinearSpring</a></li>
+            
                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
@@ -92,6 +94,10 @@
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
                 <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
+            
+                <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
+            
+                <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
             
                 <li><a href="../classes/Particle.html">Particle</a></li>
             
@@ -105,6 +111,8 @@
             
                 <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
             
+                <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
+            
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
                 <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
@@ -114,6 +122,8 @@
                 <li><a href="../classes/Solver.html">Solver</a></li>
             
                 <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
             
                 <li><a href="../classes/Utils.html">Utils</a></li>
             
@@ -172,7 +182,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_shapes_Heightfield.js.html#l6"><code>src&#x2F;shapes&#x2F;Heightfield.js:6</code></a>
+            Defined in: <a href="../files/src_shapes_Heightfield.js.html#l7"><code>src&#x2F;shapes&#x2F;Heightfield.js:7</code></a>
         </div>
     
 
@@ -206,13 +216,7 @@
             
                 <li class="arg">
                     
-                        <code>maxValue</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>elementWidth</code>
+                        <code>options</code>
                     
                 </li>
             
@@ -245,7 +249,7 @@
             
         
         
-        <a href="../files/src_shapes_Heightfield.js.html#l6"><code>src&#x2F;shapes&#x2F;Heightfield.js:6</code></a>
+        <a href="../files/src_shapes_Heightfield.js.html#l7"><code>src&#x2F;shapes&#x2F;Heightfield.js:7</code></a>
         
         </p>
 
@@ -274,7 +278,8 @@
                     
 
                     <div class="param-description">
-                         
+                        <p>An array of Y values that will be used to construct the terrain.</p>
+
                     </div>
 
                     
@@ -282,8 +287,8 @@
             
                 <li class="param">
                     
-                        <code class="param-name">maxValue</code>
-                        <span class="type">Number</span>
+                        <code class="param-name">options</code>
+                        <span class="type">Object</span>
                     
 
                     
@@ -293,20 +298,54 @@
                     </div>
 
                     
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">elementWidth</code>
-                        <span class="type">Number</span>
-                    
+                        <ul class="params-list">
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[minValue]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
 
-                    
+                                <div class="param-description">
+                                    <p>Minimum value of the data points in the data array. Will be computed automatically if not given.</p>
 
-                    <div class="param-description">
-                         
-                    </div>
+                                </div>
 
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[maxValue]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
+
+                                <div class="param-description">
+                                    <p>Maximum value.</p>
+
+                                </div>
+
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[elementWidth=0.1]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
+
+                                <div class="param-description">
+                                    <p>World spacing between the data points in X direction.</p>
+
+                                </div>
+
+                                
+                            </li>
+                            
+                        </ul>
                     
                 </li>
             
@@ -316,6 +355,28 @@
 
     
 
+    
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre class="code prettyprint"><code>// Generate some height data (y-values).
+var data = [];
+for(var i = 0; i &lt; 1000; i++){
+    var y = 0.5 * Math.cos(0.2 * i);
+    data.push(y);
+}
+
+// Create the heightfield shape
+var heightfieldShape = new Heightfield(data, {
+    elementWidth: 1 // Distance between the data points in X direction
+});
+var heightfieldBody = new Body();
+heightfieldBody.addShape(heightfieldShape);
+world.addBody(heightfieldBody);</code></pre>
+
+            </div>
+        </div>
     
 </div>
 
@@ -447,6 +508,13 @@
                                 
                             </li>
                         
+                            <li class="index-item property">
+                                <a href="#property_minValue">minValue</a>
+
+                                
+                                
+                            </li>
+                        
                             <li class="index-item property inherited">
                                 <a href="#property_sensor">sensor</a>
 
@@ -529,7 +597,7 @@
             
         
         
-        <a href="../files/src_shapes_Heightfield.js.html#l63"><code>src&#x2F;shapes&#x2F;Heightfield.js:63</code></a>
+        <a href="../files/src_shapes_Heightfield.js.html#l106"><code>src&#x2F;shapes&#x2F;Heightfield.js:106</code></a>
         
         </p>
 
@@ -651,7 +719,7 @@
             
         
         
-        <a href="../files/src_shapes_Heightfield.js.html#l41"><code>src&#x2F;shapes&#x2F;Heightfield.js:41</code></a>
+        <a href="../files/src_shapes_Heightfield.js.html#l84"><code>src&#x2F;shapes&#x2F;Heightfield.js:84</code></a>
         
         </p>
 
@@ -737,7 +805,7 @@
             
         
         
-        <a href="../files/src_shapes_Shape.js.html#l172"><code>src&#x2F;shapes&#x2F;Shape.js:172</code></a>
+        <a href="../files/src_shapes_Shape.js.html#l174"><code>src&#x2F;shapes&#x2F;Shape.js:174</code></a>
         
         </p>
 
@@ -793,7 +861,7 @@
             
         
         
-        <a href="../files/src_shapes_Shape.js.html#l163"><code>src&#x2F;shapes&#x2F;Shape.js:163</code></a>
+        <a href="../files/src_shapes_Shape.js.html#l165"><code>src&#x2F;shapes&#x2F;Shape.js:165</code></a>
         
         </p>
 
@@ -856,7 +924,7 @@
             
         
         
-        <a href="../files/src_shapes_Shape.js.html#l87"><code>src&#x2F;shapes&#x2F;Shape.js:87</code></a>
+        <a href="../files/src_shapes_Shape.js.html#l89"><code>src&#x2F;shapes&#x2F;Shape.js:89</code></a>
         
         </p>
 
@@ -1056,7 +1124,7 @@ if(shapeA.collisionGroup &amp; shapeB.collisionMask)!=0 &amp;&amp; (shapeB.colli
             
         
         
-        <a href="../files/src_shapes_Heightfield.js.html#l19"><code>src&#x2F;shapes&#x2F;Heightfield.js:19</code></a>
+        <a href="../files/src_shapes_Heightfield.js.html#l56"><code>src&#x2F;shapes&#x2F;Heightfield.js:56</code></a>
         
         </p>
 
@@ -1101,7 +1169,7 @@ if(shapeA.collisionGroup &amp; shapeB.collisionMask)!=0 &amp;&amp; (shapeB.colli
             
         
         
-        <a href="../files/src_shapes_Heightfield.js.html#l31"><code>src&#x2F;shapes&#x2F;Heightfield.js:31</code></a>
+        <a href="../files/src_shapes_Heightfield.js.html#l74"><code>src&#x2F;shapes&#x2F;Heightfield.js:74</code></a>
         
         </p>
 
@@ -1185,7 +1253,7 @@ if(shapeA.collisionGroup &amp; shapeB.collisionMask)!=0 &amp;&amp; (shapeB.colli
             
         
         
-        <a href="../files/src_shapes_Shape.js.html#l80"><code>src&#x2F;shapes&#x2F;Shape.js:80</code></a>
+        <a href="../files/src_shapes_Shape.js.html#l82"><code>src&#x2F;shapes&#x2F;Shape.js:82</code></a>
         
         </p>
 
@@ -1230,7 +1298,52 @@ if(shapeA.collisionGroup &amp; shapeB.collisionMask)!=0 &amp;&amp; (shapeB.colli
             
         
         
-        <a href="../files/src_shapes_Heightfield.js.html#l25"><code>src&#x2F;shapes&#x2F;Heightfield.js:25</code></a>
+        <a href="../files/src_shapes_Heightfield.js.html#l62"><code>src&#x2F;shapes&#x2F;Heightfield.js:62</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Max value of the data</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_minValue" class="property item">
+    <h3 class="name"><code>minValue</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_shapes_Heightfield.js.html#l68"><code>src&#x2F;shapes&#x2F;Heightfield.js:68</code></a>
         
         </p>
 
@@ -1272,7 +1385,7 @@ if(shapeA.collisionGroup &amp; shapeB.collisionMask)!=0 &amp;&amp; (shapeB.colli
             
         
         
-        <a href="../files/src_shapes_Shape.js.html#l94"><code>src&#x2F;shapes&#x2F;Shape.js:94</code></a>
+        <a href="../files/src_shapes_Shape.js.html#l96"><code>src&#x2F;shapes&#x2F;Shape.js:96</code></a>
         
         </p>
 

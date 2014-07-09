@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>ContactMaterial - p2.js</title>
+    <title>RotationalSpring - p2.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -170,15 +170,19 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>ContactMaterial Class</h1>
+                        <h1>RotationalSpring Class</h1>
 <div class="box meta">
     
 
     
+        <div class="extends">
+            Extends <a href="../classes/Spring.html" class="crosslink">Spring</a>
+        </div>
+    
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_material_ContactMaterial.js.html#l6"><code>src&#x2F;material&#x2F;ContactMaterial.js:6</code></a>
+            Defined in: <a href="../files/src_objects_RotationalSpring.js.html#l6"><code>src&#x2F;objects&#x2F;RotationalSpring.js:6</code></a>
         </div>
     
 
@@ -190,15 +194,16 @@
 
 
 <div class="box intro">
-    <p>Defines what happens when two materials meet, such as what friction coefficient to use. You can also set other things such as restitution, surface velocity and constraint parameters.</p>
+    <p>A rotational spring, connecting two bodies rotation. This spring explicitly adds angularForce (torque) to the bodies.</p>
+<p>The spring can be combined with a <a href="../classes/RevoluteConstraint.html" class="crosslink">RevoluteConstraint</a> to make, for example, a mouse trap.</p>
 
 </div>
 
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_ContactMaterial" class="method item">
-    <h3 class="name"><code>ContactMaterial</code></h3>
+        <div id="method_RotationalSpring" class="method item">
+    <h3 class="name"><code>RotationalSpring</code></h3>
 
     
         <div class="args">
@@ -206,13 +211,13 @@
             
                 <li class="arg">
                     
-                        <code>materialA</code>
+                        <code>bodyA</code>
                     
                 </li>
             
                 <li class="arg">
                     
-                        <code>materialB</code>
+                        <code>bodyB</code>
                     
                 </li>
             
@@ -251,7 +256,7 @@
             
         
         
-        <a href="../files/src_material_ContactMaterial.js.html#l6"><code>src&#x2F;material&#x2F;ContactMaterial.js:6</code></a>
+        <a href="../files/src_objects_RotationalSpring.js.html#l6"><code>src&#x2F;objects&#x2F;RotationalSpring.js:6</code></a>
         
         </p>
 
@@ -273,8 +278,8 @@
             
                 <li class="param">
                     
-                        <code class="param-name">materialA</code>
-                        <span class="type"><a href="../classes/Material.html" class="crosslink">Material</a></span>
+                        <code class="param-name">bodyA</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
                     
 
                     
@@ -288,8 +293,8 @@
             
                 <li class="param">
                     
-                        <code class="param-name">materialB</code>
-                        <span class="type"><a href="../classes/Material.html" class="crosslink">Material</a></span>
+                        <code class="param-name">bodyB</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
                     
 
                     
@@ -319,13 +324,13 @@
                             
                             <li class="param">
                                 
-                                    <code class="param-name optional">[friction=0.3]</code>
+                                    <code class="param-name optional">[restAngle]</code>
                                     <span class="type">Number</span>
                                     <span class="flag optional" title="This parameter is optional.">optional</span>
                                 
 
                                 <div class="param-description">
-                                    <p>Friction coefficient.</p>
+                                    <p>The relative angle of bodies at which the spring is at rest. If not given, it&#39;s set to the current relative angle between the bodies.</p>
 
                                 </div>
 
@@ -334,13 +339,13 @@
                             
                             <li class="param">
                                 
-                                    <code class="param-name optional">[restitution=0]</code>
+                                    <code class="param-name optional">[stiffness=100]</code>
                                     <span class="type">Number</span>
                                     <span class="flag optional" title="This parameter is optional.">optional</span>
                                 
 
                                 <div class="param-description">
-                                    <p>Restitution coefficient aka &quot;bounciness&quot;.</p>
+                                    <p>Spring constant (see Hookes Law). A number &gt;= 0.</p>
 
                                 </div>
 
@@ -349,73 +354,13 @@
                             
                             <li class="param">
                                 
-                                    <code class="param-name optional">[stiffness]</code>
+                                    <code class="param-name optional">[damping=1]</code>
                                     <span class="type">Number</span>
                                     <span class="flag optional" title="This parameter is optional.">optional</span>
                                 
 
                                 <div class="param-description">
-                                    <p>ContactEquation stiffness.</p>
-
-                                </div>
-
-                                
-                            </li>
-                            
-                            <li class="param">
-                                
-                                    <code class="param-name optional">[relaxation]</code>
-                                    <span class="type">Number</span>
-                                    <span class="flag optional" title="This parameter is optional.">optional</span>
-                                
-
-                                <div class="param-description">
-                                    <p>ContactEquation relaxation.</p>
-
-                                </div>
-
-                                
-                            </li>
-                            
-                            <li class="param">
-                                
-                                    <code class="param-name optional">[frictionStiffness]</code>
-                                    <span class="type">Number</span>
-                                    <span class="flag optional" title="This parameter is optional.">optional</span>
-                                
-
-                                <div class="param-description">
-                                    <p>FrictionEquation stiffness.</p>
-
-                                </div>
-
-                                
-                            </li>
-                            
-                            <li class="param">
-                                
-                                    <code class="param-name optional">[frictionRelaxation]</code>
-                                    <span class="type">Number</span>
-                                    <span class="flag optional" title="This parameter is optional.">optional</span>
-                                
-
-                                <div class="param-description">
-                                    <p>FrictionEquation relaxation.</p>
-
-                                </div>
-
-                                
-                            </li>
-                            
-                            <li class="param">
-                                
-                                    <code class="param-name optional">[surfaceVelocity=0]</code>
-                                    <span class="type">Number</span>
-                                    <span class="flag optional" title="This parameter is optional.">optional</span>
-                                
-
-                                <div class="param-description">
-                                    <p>Surface velocity.</p>
+                                    <p>A number &gt;= 0.</p>
 
                                 </div>
 
@@ -443,6 +388,8 @@
         <li class="api-class-tab index"><a href="#index">Index</a></li>
 
         
+            <li class="api-class-tab methods"><a href="#methods">Methods</a></li>
+        
         
             <li class="api-class-tab properties"><a href="#properties">Properties</a></li>
         
@@ -455,85 +402,58 @@
             <h2 class="off-left">Item Index</h2>
 
             
+                <div class="index-section methods">
+                    <h3>Methods</h3>
+
+                    <ul class="index-list methods extends">
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_applyForce">applyForce</a>
+
+                                
+                                
+                            </li>
+                        
+                    </ul>
+                </div>
+            
 
             
                 <div class="index-section properties">
                     <h3>Properties</h3>
 
-                    <ul class="index-list properties">
+                    <ul class="index-list properties extends">
                         
-                            <li class="index-item property">
-                                <a href="#property_contactSkinSize">contactSkinSize</a>
+                            <li class="index-item property inherited">
+                                <a href="#property_bodyA">bodyA</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_bodyB">bodyB</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_damping">damping</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item property">
-                                <a href="#property_friction">friction</a>
+                                <a href="#property_restAngle">restAngle</a>
 
                                 
                                 
                             </li>
                         
-                            <li class="index-item property">
-                                <a href="#property_frictionRelaxation">frictionRelaxation</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_frictionStiffness">frictionStiffness</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_id">id</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_materialA">materialA</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_materialB">materialB</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_relaxation">relaxation</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_restitution">restitution</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
+                            <li class="index-item property inherited">
                                 <a href="#property_stiffness">stiffness</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_surfaceVelocity">surfaceVelocity</a>
 
                                 
                                 
@@ -549,14 +469,201 @@
         </div>
 
         
+            <div id="methods" class="api-class-tabpanel">
+                <h2 class="off-left">Methods</h2>
+
+                
+                    <div id="method_applyForce" class="method item">
+    <h3 class="name"><code>applyForce</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            <p>Inherited from
+            <a href="../classes/Spring.html#method_applyForce">
+                Spring
+            </a>
+            
+            but overwritten in
+            
+        
+        
+        <a href="../files/src_objects_RotationalSpring.js.html#l35"><code>src&#x2F;objects&#x2F;RotationalSpring.js:35</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Apply the spring force to the connected bodies.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+            </div>
+        
 
         
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
                 
-                    <div id="property_contactSkinSize" class="property item">
-    <h3 class="name"><code>contactSkinSize</code></h3>
+                    <div id="property_bodyA" class="property item inherited">
+    <h3 class="name"><code>bodyA</code></h3>
+    <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Spring.html#property_bodyA">Spring</a>:
+            
+        
+        
+        <a href="../files/src_objects_Spring.js.html#l41"><code>src&#x2F;objects&#x2F;Spring.js:41</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>First connected body.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_bodyB" class="property item inherited">
+    <h3 class="name"><code>bodyB</code></h3>
+    <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Spring.html#property_bodyB">Spring</a>:
+            
+        
+        
+        <a href="../files/src_objects_Spring.js.html#l48"><code>src&#x2F;objects&#x2F;Spring.js:48</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Second connected body.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_damping" class="property item inherited">
+    <h3 class="name"><code>damping</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Spring.html#property_damping">Spring</a>:
+            
+        
+        
+        <a href="../files/src_objects_Spring.js.html#l34"><code>src&#x2F;objects&#x2F;Spring.js:34</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Damping of the spring.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_restAngle" class="property item">
+    <h3 class="name"><code>restAngle</code></h3>
     <span class="type">Number</span>
 
     
@@ -578,7 +685,7 @@
             
         
         
-        <a href="../files/src_material_ContactMaterial.js.html#l98"><code>src&#x2F;material&#x2F;ContactMaterial.js:98</code></a>
+        <a href="../files/src_objects_RotationalSpring.js.html#l26"><code>src&#x2F;objects&#x2F;RotationalSpring.js:26</code></a>
         
         </p>
 
@@ -588,7 +695,7 @@
     </div>
 
     <div class="description">
-        <p>Offset to be set on ContactEquations. A positive value will make the bodies penetrate more into each other. Can be useful in scenes where contacts need to be more persistent, for example when stacking. Aka &quot;cure for nervous contacts&quot;.</p>
+        <p>Rest angle of the spring.</p>
 
     </div>
 
@@ -600,367 +707,7 @@
 </div>
 
                 
-                    <div id="property_friction" class="property item">
-    <h3 class="name"><code>friction</code></h3>
-    <span class="type">Number</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_material_ContactMaterial.js.html#l50"><code>src&#x2F;material&#x2F;ContactMaterial.js:50</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Friction to use in the contact of these two materials</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_frictionRelaxation" class="property item">
-    <h3 class="name"><code>frictionRelaxation</code></h3>
-    <span class="type">Number</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_material_ContactMaterial.js.html#l85"><code>src&#x2F;material&#x2F;ContactMaterial.js:85</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Relaxation of the resulting FrictionEquation that this ContactMaterial generate</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_frictionStiffness" class="property item">
-    <h3 class="name"><code>frictionStiffness</code></h3>
-    <span class="type">Number</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_material_ContactMaterial.js.html#l78"><code>src&#x2F;material&#x2F;ContactMaterial.js:78</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Stiffness of the resulting FrictionEquation that this ContactMaterial generate</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_id" class="property item">
-    <h3 class="name"><code>id</code></h3>
-    <span class="type">Number</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_material_ContactMaterial.js.html#l29"><code>src&#x2F;material&#x2F;ContactMaterial.js:29</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>The contact material identifier</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_materialA" class="property item">
-    <h3 class="name"><code>materialA</code></h3>
-    <span class="type"><a href="../classes/Material.html" class="crosslink">Material</a></span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_material_ContactMaterial.js.html#l36"><code>src&#x2F;material&#x2F;ContactMaterial.js:36</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>First material participating in the contact material</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_materialB" class="property item">
-    <h3 class="name"><code>materialB</code></h3>
-    <span class="type"><a href="../classes/Material.html" class="crosslink">Material</a></span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_material_ContactMaterial.js.html#l43"><code>src&#x2F;material&#x2F;ContactMaterial.js:43</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Second material participating in the contact material</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_relaxation" class="property item">
-    <h3 class="name"><code>relaxation</code></h3>
-    <span class="type">Number</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_material_ContactMaterial.js.html#l71"><code>src&#x2F;material&#x2F;ContactMaterial.js:71</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Relaxation of the resulting ContactEquation that this ContactMaterial generate</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_restitution" class="property item">
-    <h3 class="name"><code>restitution</code></h3>
-    <span class="type">Number</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_material_ContactMaterial.js.html#l57"><code>src&#x2F;material&#x2F;ContactMaterial.js:57</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Restitution to use in the contact of these two materials</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_stiffness" class="property item">
+                    <div id="property_stiffness" class="property item inherited">
     <h3 class="name"><code>stiffness</code></h3>
     <span class="type">Number</span>
 
@@ -975,15 +722,12 @@
     <div class="meta">
         
             
-                
-                <p>
-                
-                Defined in
-                
+                <p>Inherited from
+                <a href="../classes/Spring.html#property_stiffness">Spring</a>:
             
         
         
-        <a href="../files/src_material_ContactMaterial.js.html#l64"><code>src&#x2F;material&#x2F;ContactMaterial.js:64</code></a>
+        <a href="../files/src_objects_Spring.js.html#l27"><code>src&#x2F;objects&#x2F;Spring.js:27</code></a>
         
         </p>
 
@@ -993,52 +737,7 @@
     </div>
 
     <div class="description">
-        <p>Stiffness of the resulting ContactEquation that this ContactMaterial generate</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_surfaceVelocity" class="property item">
-    <h3 class="name"><code>surfaceVelocity</code></h3>
-    <span class="type">Number</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_material_ContactMaterial.js.html#l92"><code>src&#x2F;material&#x2F;ContactMaterial.js:92</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Will add surface velocity to this material. If bodyA rests on top if bodyB, and the surface velocity is positive, bodyA will slide to the right.</p>
+        <p>Stiffness of the spring.</p>
 
     </div>
 

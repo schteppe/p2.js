@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.5.0</em>
+            <em>API Docs for: 0.6.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -85,6 +85,8 @@
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
+                <li><a href="../classes/LinearSpring.html">LinearSpring</a></li>
+            
                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
@@ -92,6 +94,10 @@
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
                 <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
+            
+                <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
+            
+                <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
             
                 <li><a href="../classes/Particle.html">Particle</a></li>
             
@@ -105,6 +111,8 @@
             
                 <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
             
+                <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
+            
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
                 <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
@@ -114,6 +122,8 @@
                 <li><a href="../classes/Solver.html">Solver</a></li>
             
                 <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
             
                 <li><a href="../classes/Utils.html">Utils</a></li>
             
@@ -278,7 +288,7 @@ shapes that are used for collisions.</p>
                                 
 
                                 <div class="param-description">
-                                    <p>A number &gt;= 0. If zero, the .motionState will be set to Body.STATIC.</p>
+                                    <p>A number &gt;= 0. If zero, the .type will be set to Body.STATIC.</p>
 
                                 </div>
 
@@ -394,6 +404,28 @@ shapes that are used for collisions.</p>
     
 
     
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre class="code prettyprint"><code>// Create a typical dynamic body
+var body = new Body({
+    mass: 1,
+    position: [0, 0],
+    angle: 0,
+    velocity: [0, 0],
+    angularVelocity: 0
+});
+
+// Add a circular shape to the body
+body.addShape(new Circle(1));
+
+// Add the body to the world
+world.addBody(body);</code></pre>
+
+            </div>
+        </div>
+    
 </div>
 
     </div>
@@ -468,6 +500,13 @@ shapes that are used for collisions.</p>
                             </li>
                         
                             <li class="index-item method">
+                                <a href="#method_getAABB">getAABB</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
                                 <a href="#method_getArea">getArea</a>
 
                                 
@@ -490,6 +529,13 @@ shapes that are used for collisions.</p>
                         
                             <li class="index-item method inherited">
                                 <a href="#method_on">on</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_overlaps">overlaps</a>
 
                                 
                                 
@@ -743,13 +789,6 @@ shapes that are used for collisions.</p>
                             </li>
                         
                             <li class="index-item property">
-                                <a href="#property_motionState">motionState</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
                                 <a href="#property_position">position</a>
 
                                 
@@ -841,6 +880,13 @@ shapes that are used for collisions.</p>
                         
                             <li class="index-item property private">
                                 <a href="#property_timeLastSleepy">timeLastSleepy</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_type">type</a>
 
                                 
                                 
@@ -971,7 +1017,7 @@ shapes that are used for collisions.</p>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l437"><code>src&#x2F;objects&#x2F;Body.js:437</code></a>
+        <a href="../files/src_objects_Body.js.html#l491"><code>src&#x2F;objects&#x2F;Body.js:491</code></a>
         
         </p>
 
@@ -1104,7 +1150,7 @@ body.addShape(shape,[0,1],Math.PI/2);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l666"><code>src&#x2F;objects&#x2F;Body.js:666</code></a>
+        <a href="../files/src_objects_Body.js.html#l726"><code>src&#x2F;objects&#x2F;Body.js:726</code></a>
         
         </p>
 
@@ -1169,7 +1215,7 @@ body.addShape(shape,[0,1],Math.PI/2);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l735"><code>src&#x2F;objects&#x2F;Body.js:735</code></a>
+        <a href="../files/src_objects_Body.js.html#l795"><code>src&#x2F;objects&#x2F;Body.js:795</code></a>
         
         </p>
 
@@ -1264,7 +1310,7 @@ body.addShape(shape,[0,1],Math.PI/2);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l546"><code>src&#x2F;objects&#x2F;Body.js:546</code></a>
+        <a href="../files/src_objects_Body.js.html#l600"><code>src&#x2F;objects&#x2F;Body.js:600</code></a>
         
         </p>
 
@@ -1370,7 +1416,7 @@ body.addShape(shape,[0,1],Math.PI/2);</code></pre>
             
         
         
-        <a href="../files/src_events_EventEmitter.js.html#l66"><code>src&#x2F;events&#x2F;EventEmitter.js:66</code></a>
+        <a href="../files/src_events_EventEmitter.js.html#l79"><code>src&#x2F;events&#x2F;EventEmitter.js:79</code></a>
         
         </p>
 
@@ -1499,7 +1545,7 @@ body.addShape(shape,[0,1],Math.PI/2);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l587"><code>src&#x2F;objects&#x2F;Body.js:587</code></a>
+        <a href="../files/src_objects_Body.js.html#l641"><code>src&#x2F;objects&#x2F;Body.js:641</code></a>
         
         </p>
 
@@ -1625,6 +1671,61 @@ body.addShape(shape,[0,1],Math.PI/2);</code></pre>
 </div>
 
                 
+                    <div id="method_getAABB" class="method item">
+    <h3 class="name"><code>getAABB</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Body.js.html#l421"><code>src&#x2F;objects&#x2F;Body.js:421</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Get the AABB from the body. The AABB is updated if necessary.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
                     <div id="method_getArea" class="method item">
     <h3 class="name"><code>getArea</code></h3>
 
@@ -1661,7 +1762,7 @@ body.addShape(shape,[0,1],Math.PI/2);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l367"><code>src&#x2F;objects&#x2F;Body.js:367</code></a>
+        <a href="../files/src_objects_Body.js.html#l408"><code>src&#x2F;objects&#x2F;Body.js:408</code></a>
         
         </p>
 
@@ -1745,7 +1846,7 @@ body.addShape(shape,[0,1],Math.PI/2);</code></pre>
             
         
         
-        <a href="../files/src_events_EventEmitter.js.html#l33"><code>src&#x2F;events&#x2F;EventEmitter.js:33</code></a>
+        <a href="../files/src_events_EventEmitter.js.html#l35"><code>src&#x2F;events&#x2F;EventEmitter.js:35</code></a>
         
         </p>
 
@@ -1867,7 +1968,7 @@ body.addShape(shape,[0,1],Math.PI/2);</code></pre>
             
         
         
-        <a href="../files/src_events_EventEmitter.js.html#l49"><code>src&#x2F;events&#x2F;EventEmitter.js:49</code></a>
+        <a href="../files/src_events_EventEmitter.js.html#l60"><code>src&#x2F;events&#x2F;EventEmitter.js:60</code></a>
         
         </p>
 
@@ -2066,6 +2167,110 @@ body.addShape(shape,[0,1],Math.PI/2);</code></pre>
 </div>
 
                 
+                    <div id="method_overlaps" class="method item">
+    <h3 class="name"><code>overlaps</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>body</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Boolean</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Body.js.html#l903"><code>src&#x2F;objects&#x2F;Body.js:903</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Check if the body is overlapping another body. Note that this method only works if the body was added to a World and if at least one step was taken.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">body</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Boolean</span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
                     <div id="method_removeShape" class="method item">
     <h3 class="name"><code>removeShape</code></h3>
 
@@ -2112,7 +2317,7 @@ body.addShape(shape,[0,1],Math.PI/2);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l479"><code>src&#x2F;objects&#x2F;Body.js:479</code></a>
+        <a href="../files/src_objects_Body.js.html#l533"><code>src&#x2F;objects&#x2F;Body.js:533</code></a>
         
         </p>
 
@@ -2204,7 +2409,7 @@ body.addShape(shape,[0,1],Math.PI/2);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l357"><code>src&#x2F;objects&#x2F;Body.js:357</code></a>
+        <a href="../files/src_objects_Body.js.html#l398"><code>src&#x2F;objects&#x2F;Body.js:398</code></a>
         
         </p>
 
@@ -2259,7 +2464,7 @@ body.addShape(shape,[0,1],Math.PI/2);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l712"><code>src&#x2F;objects&#x2F;Body.js:712</code></a>
+        <a href="../files/src_objects_Body.js.html#l772"><code>src&#x2F;objects&#x2F;Body.js:772</code></a>
         
         </p>
 
@@ -2314,7 +2519,7 @@ body.addShape(shape,[0,1],Math.PI/2);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l770"><code>src&#x2F;objects&#x2F;Body.js:770</code></a>
+        <a href="../files/src_objects_Body.js.html#l830"><code>src&#x2F;objects&#x2F;Body.js:830</code></a>
         
         </p>
 
@@ -2346,7 +2551,19 @@ body.addShape(shape,[0,1],Math.PI/2);</code></pre>
             
                 <li class="arg">
                     
-                        <code>float</code>
+                        <code>time</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>dontSleep</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>dt</code>
                     
                 </li>
             
@@ -2379,7 +2596,7 @@ body.addShape(shape,[0,1],Math.PI/2);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l785"><code>src&#x2F;objects&#x2F;Body.js:785</code></a>
+        <a href="../files/src_objects_Body.js.html#l843"><code>src&#x2F;objects&#x2F;Body.js:843</code></a>
         
         </p>
 
@@ -2390,7 +2607,8 @@ body.addShape(shape,[0,1],Math.PI/2);</code></pre>
     </div>
 
     <div class="description">
-        
+        <p>Called every timestep to update internal sleep timer and change sleep state if needed.</p>
+
     </div>
 
     
@@ -2401,15 +2619,45 @@ body.addShape(shape,[0,1],Math.PI/2);</code></pre>
             
                 <li class="param">
                     
-                        <code class="param-name">float</code>
-                        <span class="type">Object</span>
+                        <code class="param-name">time</code>
+                        <span class="type">Number</span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>time The world time in seconds</p>
+                        <p>The world time in seconds</p>
 
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">dontSleep</code>
+                        <span class="type">Boolean</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">dt</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
                     </div>
 
                     
@@ -2473,7 +2721,7 @@ body.addShape(shape,[0,1],Math.PI/2);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l567"><code>src&#x2F;objects&#x2F;Body.js:567</code></a>
+        <a href="../files/src_objects_Body.js.html#l621"><code>src&#x2F;objects&#x2F;Body.js:621</code></a>
         
         </p>
 
@@ -2584,7 +2832,7 @@ body.addShape(shape,[0,1],Math.PI/2);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l577"><code>src&#x2F;objects&#x2F;Body.js:577</code></a>
+        <a href="../files/src_objects_Body.js.html#l631"><code>src&#x2F;objects&#x2F;Body.js:631</code></a>
         
         </p>
 
@@ -2679,7 +2927,7 @@ body.addShape(shape,[0,1],Math.PI/2);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l383"><code>src&#x2F;objects&#x2F;Body.js:383</code></a>
+        <a href="../files/src_objects_Body.js.html#l435"><code>src&#x2F;objects&#x2F;Body.js:435</code></a>
         
         </p>
 
@@ -2734,7 +2982,7 @@ body.addShape(shape,[0,1],Math.PI/2);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l414"><code>src&#x2F;objects&#x2F;Body.js:414</code></a>
+        <a href="../files/src_objects_Body.js.html#l468"><code>src&#x2F;objects&#x2F;Body.js:468</code></a>
         
         </p>
 
@@ -2790,7 +3038,7 @@ are changed.</p>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l499"><code>src&#x2F;objects&#x2F;Body.js:499</code></a>
+        <a href="../files/src_objects_Body.js.html#l553"><code>src&#x2F;objects&#x2F;Body.js:553</code></a>
         
         </p>
 
@@ -2856,7 +3104,7 @@ body.updateMassProperties();</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l756"><code>src&#x2F;objects&#x2F;Body.js:756</code></a>
+        <a href="../files/src_objects_Body.js.html#l816"><code>src&#x2F;objects&#x2F;Body.js:816</code></a>
         
         </p>
 
@@ -2911,7 +3159,7 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
             
         
         
-        <a href="../files/src_objects_Body.js.html#l273"><code>src&#x2F;objects&#x2F;Body.js:273</code></a>
+        <a href="../files/src_objects_Body.js.html#l302"><code>src&#x2F;objects&#x2F;Body.js:302</code></a>
         
         </p>
 
@@ -2956,7 +3204,7 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
             
         
         
-        <a href="../files/src_objects_Body.js.html#l280"><code>src&#x2F;objects&#x2F;Body.js:280</code></a>
+        <a href="../files/src_objects_Body.js.html#l309"><code>src&#x2F;objects&#x2F;Body.js:309</code></a>
         
         </p>
 
@@ -3013,7 +3261,7 @@ console.log(body.aabbNeedsUpdate); // false</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l294"><code>src&#x2F;objects&#x2F;Body.js:294</code></a>
+        <a href="../files/src_objects_Body.js.html#l323"><code>src&#x2F;objects&#x2F;Body.js:323</code></a>
         
         </p>
 
@@ -3060,7 +3308,7 @@ console.log(body.aabbNeedsUpdate); // false</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l166"><code>src&#x2F;objects&#x2F;Body.js:166</code></a>
+        <a href="../files/src_objects_Body.js.html#l185"><code>src&#x2F;objects&#x2F;Body.js:185</code></a>
         
         </p>
 
@@ -3122,7 +3370,7 @@ function normalizeAngle(angle){
             
         
         
-        <a href="../files/src_objects_Body.js.html#l227"><code>src&#x2F;objects&#x2F;Body.js:227</code></a>
+        <a href="../files/src_objects_Body.js.html#l248"><code>src&#x2F;objects&#x2F;Body.js:248</code></a>
         
         </p>
 
@@ -3169,7 +3417,7 @@ function normalizeAngle(angle){
             
         
         
-        <a href="../files/src_objects_Body.js.html#l212"><code>src&#x2F;objects&#x2F;Body.js:212</code></a>
+        <a href="../files/src_objects_Body.js.html#l233"><code>src&#x2F;objects&#x2F;Body.js:233</code></a>
         
         </p>
 
@@ -3214,7 +3462,7 @@ function normalizeAngle(angle){
             
         
         
-        <a href="../files/src_objects_Body.js.html#l183"><code>src&#x2F;objects&#x2F;Body.js:183</code></a>
+        <a href="../files/src_objects_Body.js.html#l202"><code>src&#x2F;objects&#x2F;Body.js:202</code></a>
         
         </p>
 
@@ -3261,7 +3509,7 @@ function normalizeAngle(angle){
             
         
         
-        <a href="../files/src_objects_Body.js.html#l888"><code>src&#x2F;objects&#x2F;Body.js:888</code></a>
+        <a href="../files/src_objects_Body.js.html#l958"><code>src&#x2F;objects&#x2F;Body.js:958</code></a>
         
         </p>
 
@@ -3305,7 +3553,7 @@ function normalizeAngle(angle){
             
         
         
-        <a href="../files/src_objects_Body.js.html#l266"><code>src&#x2F;objects&#x2F;Body.js:266</code></a>
+        <a href="../files/src_objects_Body.js.html#l295"><code>src&#x2F;objects&#x2F;Body.js:295</code></a>
         
         </p>
 
@@ -3350,7 +3598,7 @@ function normalizeAngle(angle){
             
         
         
-        <a href="../files/src_objects_Body.js.html#l219"><code>src&#x2F;objects&#x2F;Body.js:219</code></a>
+        <a href="../files/src_objects_Body.js.html#l240"><code>src&#x2F;objects&#x2F;Body.js:240</code></a>
         
         </p>
 
@@ -3399,7 +3647,7 @@ function normalizeAngle(angle){
             
         
         
-        <a href="../files/src_objects_Body.js.html#l864"><code>src&#x2F;objects&#x2F;Body.js:864</code></a>
+        <a href="../files/src_objects_Body.js.html#l934"><code>src&#x2F;objects&#x2F;Body.js:934</code></a>
         
         </p>
 
@@ -3444,7 +3692,7 @@ function normalizeAngle(angle){
             
         
         
-        <a href="../files/src_objects_Body.js.html#l97"><code>src&#x2F;objects&#x2F;Body.js:97</code></a>
+        <a href="../files/src_objects_Body.js.html#l116"><code>src&#x2F;objects&#x2F;Body.js:116</code></a>
         
         </p>
 
@@ -3489,7 +3737,7 @@ function normalizeAngle(angle){
             
         
         
-        <a href="../files/src_objects_Body.js.html#l190"><code>src&#x2F;objects&#x2F;Body.js:190</code></a>
+        <a href="../files/src_objects_Body.js.html#l209"><code>src&#x2F;objects&#x2F;Body.js:209</code></a>
         
         </p>
 
@@ -3552,7 +3800,7 @@ for(var i=0; i&lt;numSteps; i++){
             
         
         
-        <a href="../files/src_objects_Body.js.html#l331"><code>src&#x2F;objects&#x2F;Body.js:331</code></a>
+        <a href="../files/src_objects_Body.js.html#l360"><code>src&#x2F;objects&#x2F;Body.js:360</code></a>
         
         </p>
 
@@ -3599,7 +3847,7 @@ for(var i=0; i&lt;numSteps; i++){
             
         
         
-        <a href="../files/src_objects_Body.js.html#l31"><code>src&#x2F;objects&#x2F;Body.js:31</code></a>
+        <a href="../files/src_objects_Body.js.html#l47"><code>src&#x2F;objects&#x2F;Body.js:47</code></a>
         
         </p>
 
@@ -3644,7 +3892,7 @@ for(var i=0; i&lt;numSteps; i++){
             
         
         
-        <a href="../files/src_objects_Body.js.html#l83"><code>src&#x2F;objects&#x2F;Body.js:83</code></a>
+        <a href="../files/src_objects_Body.js.html#l99"><code>src&#x2F;objects&#x2F;Body.js:99</code></a>
         
         </p>
 
@@ -3689,7 +3937,7 @@ for(var i=0; i&lt;numSteps; i++){
             
         
         
-        <a href="../files/src_objects_Body.js.html#l121"><code>src&#x2F;objects&#x2F;Body.js:121</code></a>
+        <a href="../files/src_objects_Body.js.html#l140"><code>src&#x2F;objects&#x2F;Body.js:140</code></a>
         
         </p>
 
@@ -3734,7 +3982,7 @@ for(var i=0; i&lt;numSteps; i++){
             
         
         
-        <a href="../files/src_objects_Body.js.html#l114"><code>src&#x2F;objects&#x2F;Body.js:114</code></a>
+        <a href="../files/src_objects_Body.js.html#l133"><code>src&#x2F;objects&#x2F;Body.js:133</code></a>
         
         </p>
 
@@ -3779,7 +4027,7 @@ for(var i=0; i&lt;numSteps; i++){
             
         
         
-        <a href="../files/src_objects_Body.js.html#l90"><code>src&#x2F;objects&#x2F;Body.js:90</code></a>
+        <a href="../files/src_objects_Body.js.html#l106"><code>src&#x2F;objects&#x2F;Body.js:106</code></a>
         
         </p>
 
@@ -3824,7 +4072,7 @@ for(var i=0; i&lt;numSteps; i++){
             
         
         
-        <a href="../files/src_objects_Body.js.html#l76"><code>src&#x2F;objects&#x2F;Body.js:76</code></a>
+        <a href="../files/src_objects_Body.js.html#l92"><code>src&#x2F;objects&#x2F;Body.js:92</code></a>
         
         </p>
 
@@ -3871,7 +4119,7 @@ for(var i=0; i&lt;numSteps; i++){
             
         
         
-        <a href="../files/src_objects_Body.js.html#l880"><code>src&#x2F;objects&#x2F;Body.js:880</code></a>
+        <a href="../files/src_objects_Body.js.html#l950"><code>src&#x2F;objects&#x2F;Body.js:950</code></a>
         
         </p>
 
@@ -3916,7 +4164,7 @@ for(var i=0; i&lt;numSteps; i++){
             
         
         
-        <a href="../files/src_objects_Body.js.html#l69"><code>src&#x2F;objects&#x2F;Body.js:69</code></a>
+        <a href="../files/src_objects_Body.js.html#l85"><code>src&#x2F;objects&#x2F;Body.js:85</code></a>
         
         </p>
 
@@ -3932,77 +4180,6 @@ for(var i=0; i&lt;numSteps; i++){
 
     
 
-    
-
-    
-</div>
-
-                
-                    <div id="property_motionState" class="property item">
-    <h3 class="name"><code>motionState</code></h3>
-    <span class="type">Number</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_objects_Body.js.html#l235"><code>src&#x2F;objects&#x2F;Body.js:235</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>The type of motion this body has. Should be one of: <a href="../classes/Body.html#property_STATIC" class="crosslink">Body.STATIC</a>, <a href="../classes/Body.html#property_DYNAMIC" class="crosslink">Body.DYNAMIC</a> and <a href="../classes/Body.html#property_KINEMATIC" class="crosslink">Body.KINEMATIC</a>.</p>
-<ul>
-<li>Static bodies do not move, and they do not respond to forces or collision.</li>
-<li>Dynamic bodies body can move and respond to collisions and forces.</li>
-<li>Kinematic bodies only moves according to its .velocity, and does not respond to collisions or force.</li>
-</ul>
-
-    </div>
-
-    
-
-    
-        <div class="example">
-            <h4>Example:</h4>
-
-            <div class="example-content">
-                <pre class="code prettyprint"><code>// This body will move and interact with other bodies
-var dynamicBody = new Body({
-    mass : 1  // If mass is nonzero, the body becomes dynamic automatically
-});
-dynamicBody.motionState == Body.DYNAMIC // true</code></pre>
-<pre class="code prettyprint"><code>// This body will not move at all
-var staticBody = new Body({
-    mass : 0 // Will make the body static
-});
-staticBody.motionState == Body.STATIC // true</code></pre>
-<pre class="code prettyprint"><code>// This body will only move if you change its velocity
-var kinematicBody = new Body();
-kinematicBody.motionState = Body.KINEMATIC;</code></pre>
-
-            </div>
-        </div>
     
 
     
@@ -4032,7 +4209,7 @@ kinematicBody.motionState = Body.KINEMATIC;</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l104"><code>src&#x2F;objects&#x2F;Body.js:104</code></a>
+        <a href="../files/src_objects_Body.js.html#l123"><code>src&#x2F;objects&#x2F;Body.js:123</code></a>
         
         </p>
 
@@ -4077,7 +4254,7 @@ kinematicBody.motionState = Body.KINEMATIC;</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l135"><code>src&#x2F;objects&#x2F;Body.js:135</code></a>
+        <a href="../files/src_objects_Body.js.html#l154"><code>src&#x2F;objects&#x2F;Body.js:154</code></a>
         
         </p>
 
@@ -4122,7 +4299,7 @@ kinematicBody.motionState = Body.KINEMATIC;</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l128"><code>src&#x2F;objects&#x2F;Body.js:128</code></a>
+        <a href="../files/src_objects_Body.js.html#l147"><code>src&#x2F;objects&#x2F;Body.js:147</code></a>
         
         </p>
 
@@ -4167,7 +4344,7 @@ kinematicBody.motionState = Body.KINEMATIC;</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l62"><code>src&#x2F;objects&#x2F;Body.js:62</code></a>
+        <a href="../files/src_objects_Body.js.html#l78"><code>src&#x2F;objects&#x2F;Body.js:78</code></a>
         
         </p>
 
@@ -4212,7 +4389,7 @@ kinematicBody.motionState = Body.KINEMATIC;</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l54"><code>src&#x2F;objects&#x2F;Body.js:54</code></a>
+        <a href="../files/src_objects_Body.js.html#l70"><code>src&#x2F;objects&#x2F;Body.js:70</code></a>
         
         </p>
 
@@ -4258,7 +4435,7 @@ array of Array.</p>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l45"><code>src&#x2F;objects&#x2F;Body.js:45</code></a>
+        <a href="../files/src_objects_Body.js.html#l61"><code>src&#x2F;objects&#x2F;Body.js:61</code></a>
         
         </p>
 
@@ -4306,7 +4483,7 @@ defined by .shapeOffsets[i] and .shapeAngles[i].</p>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l902"><code>src&#x2F;objects&#x2F;Body.js:902</code></a>
+        <a href="../files/src_objects_Body.js.html#l972"><code>src&#x2F;objects&#x2F;Body.js:972</code></a>
         
         </p>
 
@@ -4350,7 +4527,7 @@ defined by .shapeOffsets[i] and .shapeAngles[i].</p>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l315"><code>src&#x2F;objects&#x2F;Body.js:315</code></a>
+        <a href="../files/src_objects_Body.js.html#l344"><code>src&#x2F;objects&#x2F;Body.js:344</code></a>
         
         </p>
 
@@ -4397,7 +4574,7 @@ defined by .shapeOffsets[i] and .shapeAngles[i].</p>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l304"><code>src&#x2F;objects&#x2F;Body.js:304</code></a>
+        <a href="../files/src_objects_Body.js.html#l333"><code>src&#x2F;objects&#x2F;Body.js:333</code></a>
         
         </p>
 
@@ -4445,7 +4622,7 @@ defined by .shapeOffsets[i] and .shapeAngles[i].</p>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l323"><code>src&#x2F;objects&#x2F;Body.js:323</code></a>
+        <a href="../files/src_objects_Body.js.html#l352"><code>src&#x2F;objects&#x2F;Body.js:352</code></a>
         
         </p>
 
@@ -4494,7 +4671,7 @@ defined by .shapeOffsets[i] and .shapeAngles[i].</p>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l895"><code>src&#x2F;objects&#x2F;Body.js:895</code></a>
+        <a href="../files/src_objects_Body.js.html#l965"><code>src&#x2F;objects&#x2F;Body.js:965</code></a>
         
         </p>
 
@@ -4540,7 +4717,7 @@ defined by .shapeOffsets[i] and .shapeAngles[i].</p>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l872"><code>src&#x2F;objects&#x2F;Body.js:872</code></a>
+        <a href="../files/src_objects_Body.js.html#l942"><code>src&#x2F;objects&#x2F;Body.js:942</code></a>
         
         </p>
 
@@ -4587,7 +4764,7 @@ defined by .shapeOffsets[i] and .shapeAngles[i].</p>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l338"><code>src&#x2F;objects&#x2F;Body.js:338</code></a>
+        <a href="../files/src_objects_Body.js.html#l367"><code>src&#x2F;objects&#x2F;Body.js:367</code></a>
         
         </p>
 
@@ -4603,6 +4780,77 @@ defined by .shapeOffsets[i] and .shapeAngles[i].</p>
 
     
 
+    
+
+    
+</div>
+
+                
+                    <div id="property_type" class="property item">
+    <h3 class="name"><code>type</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Body.js.html#l256"><code>src&#x2F;objects&#x2F;Body.js:256</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The type of motion this body has. Should be one of: <a href="../classes/Body.html#property_STATIC" class="crosslink">Body.STATIC</a>, <a href="../classes/Body.html#property_DYNAMIC" class="crosslink">Body.DYNAMIC</a> and <a href="../classes/Body.html#property_KINEMATIC" class="crosslink">Body.KINEMATIC</a>.</p>
+<ul>
+<li>Static bodies do not move, and they do not respond to forces or collision.</li>
+<li>Dynamic bodies body can move and respond to collisions and forces.</li>
+<li>Kinematic bodies only moves according to its .velocity, and does not respond to collisions or force.</li>
+</ul>
+
+    </div>
+
+    
+
+    
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre class="code prettyprint"><code>// Bodies are static by default. Static bodies will never move.
+var body = new Body();
+console.log(body.type == Body.STATIC); // true</code></pre>
+<pre class="code prettyprint"><code>// By setting the mass of a body to a nonzero number, the body
+// will become dynamic and will move and interact with other bodies.
+var dynamicBody = new Body({
+    mass : 1
+});
+console.log(dynamicBody.type == Body.DYNAMIC); // true</code></pre>
+<pre class="code prettyprint"><code>// Kinematic bodies will only move if you change their velocity.
+var kinematicBody = new Body({
+    type: Body.KINEMATIC // Type can be set via the options object.
+});</code></pre>
+
+            </div>
+        </div>
     
 
     
@@ -4632,7 +4880,7 @@ defined by .shapeOffsets[i] and .shapeAngles[i].</p>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l142"><code>src&#x2F;objects&#x2F;Body.js:142</code></a>
+        <a href="../files/src_objects_Body.js.html#l161"><code>src&#x2F;objects&#x2F;Body.js:161</code></a>
         
         </p>
 
@@ -4677,7 +4925,7 @@ defined by .shapeOffsets[i] and .shapeAngles[i].</p>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l152"><code>src&#x2F;objects&#x2F;Body.js:152</code></a>
+        <a href="../files/src_objects_Body.js.html#l171"><code>src&#x2F;objects&#x2F;Body.js:171</code></a>
         
         </p>
 
@@ -4722,7 +4970,7 @@ defined by .shapeOffsets[i] and .shapeAngles[i].</p>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l159"><code>src&#x2F;objects&#x2F;Body.js:159</code></a>
+        <a href="../files/src_objects_Body.js.html#l178"><code>src&#x2F;objects&#x2F;Body.js:178</code></a>
         
         </p>
 
@@ -4767,7 +5015,7 @@ defined by .shapeOffsets[i] and .shapeAngles[i].</p>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l38"><code>src&#x2F;objects&#x2F;Body.js:38</code></a>
+        <a href="../files/src_objects_Body.js.html#l54"><code>src&#x2F;objects&#x2F;Body.js:54</code></a>
         
         </p>
 
@@ -4822,7 +5070,7 @@ defined by .shapeOffsets[i] and .shapeAngles[i].</p>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l850"><code>src&#x2F;objects&#x2F;Body.js:850</code></a>
+        <a href="../files/src_objects_Body.js.html#l920"><code>src&#x2F;objects&#x2F;Body.js:920</code></a>
         
         </p>
 
@@ -4865,7 +5113,7 @@ defined by .shapeOffsets[i] and .shapeAngles[i].</p>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l843"><code>src&#x2F;objects&#x2F;Body.js:843</code></a>
+        <a href="../files/src_objects_Body.js.html#l913"><code>src&#x2F;objects&#x2F;Body.js:913</code></a>
         
         </p>
 
@@ -4908,7 +5156,7 @@ defined by .shapeOffsets[i] and .shapeAngles[i].</p>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l857"><code>src&#x2F;objects&#x2F;Body.js:857</code></a>
+        <a href="../files/src_objects_Body.js.html#l927"><code>src&#x2F;objects&#x2F;Body.js:927</code></a>
         
         </p>
 

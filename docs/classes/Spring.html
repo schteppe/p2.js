@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.5.0</em>
+            <em>API Docs for: 0.6.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -85,6 +85,8 @@
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
+                <li><a href="../classes/LinearSpring.html">LinearSpring</a></li>
+            
                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
@@ -92,6 +94,10 @@
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
                 <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
+            
+                <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
+            
+                <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
             
                 <li><a href="../classes/Particle.html">Particle</a></li>
             
@@ -105,6 +111,8 @@
             
                 <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
             
+                <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
+            
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
                 <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
@@ -114,6 +122,8 @@
                 <li><a href="../classes/Solver.html">Solver</a></li>
             
                 <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
             
                 <li><a href="../classes/Utils.html">Utils</a></li>
             
@@ -168,7 +178,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_objects_Spring.js.html#l5"><code>src&#x2F;objects&#x2F;Spring.js:5</code></a>
+            Defined in: <a href="../files/src_objects_Spring.js.html#l6"><code>src&#x2F;objects&#x2F;Spring.js:6</code></a>
         </div>
     
 
@@ -180,7 +190,7 @@
 
 
 <div class="box intro">
-    <p>A spring, connecting two bodies. The Spring explicitly adds force and angularForce to the bodies and does therefore not put load on the solver.</p>
+    <p>A spring, connecting two bodies. The Spring explicitly adds force and angularForce to the bodies and does therefore not put load on the constraint solver.</p>
 
 </div>
 
@@ -241,7 +251,7 @@
             
         
         
-        <a href="../files/src_objects_Spring.js.html#l5"><code>src&#x2F;objects&#x2F;Spring.js:5</code></a>
+        <a href="../files/src_objects_Spring.js.html#l6"><code>src&#x2F;objects&#x2F;Spring.js:6</code></a>
         
         </p>
 
@@ -309,21 +319,6 @@
                             
                             <li class="param">
                                 
-                                    <code class="param-name optional">[restLength=1]</code>
-                                    <span class="type">Number</span>
-                                    <span class="flag optional" title="This parameter is optional.">optional</span>
-                                
-
-                                <div class="param-description">
-                                    <p>A number &gt; 0. Default: 1</p>
-
-                                </div>
-
-                                
-                            </li>
-                            
-                            <li class="param">
-                                
                                     <code class="param-name optional">[stiffness=100]</code>
                                     <span class="type">Number</span>
                                     <span class="flag optional" title="This parameter is optional.">optional</span>
@@ -354,35 +349,6 @@
                             
                             <li class="param">
                                 
-                                    <code class="param-name optional">[worldAnchorA]</code>
-                                    <span class="type">Array</span>
-                                    <span class="flag optional" title="This parameter is optional.">optional</span>
-                                
-
-                                <div class="param-description">
-                                    <p>Where to hook the spring to body A, in world coordinates. Overrides the option &quot;localAnchorA&quot; if given.</p>
-
-                                </div>
-
-                                
-                            </li>
-                            
-                            <li class="param">
-                                
-                                    <code class="param-name optional">[worldAnchorB]</code>
-                                    <span class="type">Array</span>
-                                    <span class="flag optional" title="This parameter is optional.">optional</span>
-                                
-
-                                <div class="param-description">
-                                    
-                                </div>
-
-                                
-                            </li>
-                            
-                            <li class="param">
-                                
                                     <code class="param-name optional">[localAnchorA]</code>
                                     <span class="type">Array</span>
                                     <span class="flag optional" title="This parameter is optional.">optional</span>
@@ -399,6 +365,35 @@
                             <li class="param">
                                 
                                     <code class="param-name optional">[localAnchorB]</code>
+                                    <span class="type">Array</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[worldAnchorA]</code>
+                                    <span class="type">Array</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
+
+                                <div class="param-description">
+                                    <p>Where to hook the spring to body A, in world coordinates. Overrides the option &quot;localAnchorA&quot; if given.</p>
+
+                                </div>
+
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[worldAnchorB]</code>
                                     <span class="type">Array</span>
                                     <span class="flag optional" title="This parameter is optional.">optional</span>
                                 
@@ -457,34 +452,6 @@
                                 
                             </li>
                         
-                            <li class="index-item method">
-                                <a href="#method_getWorldAnchorA">getWorldAnchorA</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method">
-                                <a href="#method_getWorldAnchorB">getWorldAnchorB</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method">
-                                <a href="#method_setWorldAnchorA">setWorldAnchorA</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method">
-                                <a href="#method_setWorldAnchorB">setWorldAnchorB</a>
-
-                                
-                                
-                            </li>
-                        
                     </ul>
                 </div>
             
@@ -511,27 +478,6 @@
                         
                             <li class="index-item property">
                                 <a href="#property_damping">damping</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_localAnchorA">localAnchorA</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_localAnchorB">localAnchorB</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_restLength">restLength</a>
 
                                 
                                 
@@ -590,7 +536,7 @@
             
         
         
-        <a href="../files/src_objects_Spring.js.html#l125"><code>src&#x2F;objects&#x2F;Spring.js:125</code></a>
+        <a href="../files/src_objects_Spring.js.html#l56"><code>src&#x2F;objects&#x2F;Spring.js:56</code></a>
         
         </p>
 
@@ -605,360 +551,6 @@
 
     </div>
 
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_getWorldAnchorA" class="method item">
-    <h3 class="name"><code>getWorldAnchorA</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>result</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_objects_Spring.js.html#l97"><code>src&#x2F;objects&#x2F;Spring.js:97</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Get the anchor point on body A, in world coordinates.</p>
-
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">result</code>
-                        <span class="type">Array</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>The vector to store the result in.</p>
-
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_getWorldAnchorB" class="method item">
-    <h3 class="name"><code>getWorldAnchorB</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>result</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_objects_Spring.js.html#l106"><code>src&#x2F;objects&#x2F;Spring.js:106</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Get the anchor point on body B, in world coordinates.</p>
-
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">result</code>
-                        <span class="type">Array</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>The vector to store the result in.</p>
-
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_setWorldAnchorA" class="method item">
-    <h3 class="name"><code>setWorldAnchorA</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>worldAnchorA</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_objects_Spring.js.html#l79"><code>src&#x2F;objects&#x2F;Spring.js:79</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Set the anchor point on body A, using world coordinates.</p>
-
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">worldAnchorA</code>
-                        <span class="type">Array</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_setWorldAnchorB" class="method item">
-    <h3 class="name"><code>setWorldAnchorB</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>worldAnchorB</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_objects_Spring.js.html#l88"><code>src&#x2F;objects&#x2F;Spring.js:88</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Set the anchor point on body B, using world coordinates.</p>
-
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">worldAnchorB</code>
-                        <span class="type">Array</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
     
 
     
@@ -998,7 +590,7 @@
             
         
         
-        <a href="../files/src_objects_Spring.js.html#l45"><code>src&#x2F;objects&#x2F;Spring.js:45</code></a>
+        <a href="../files/src_objects_Spring.js.html#l41"><code>src&#x2F;objects&#x2F;Spring.js:41</code></a>
         
         </p>
 
@@ -1043,7 +635,7 @@
             
         
         
-        <a href="../files/src_objects_Spring.js.html#l52"><code>src&#x2F;objects&#x2F;Spring.js:52</code></a>
+        <a href="../files/src_objects_Spring.js.html#l48"><code>src&#x2F;objects&#x2F;Spring.js:48</code></a>
         
         </p>
 
@@ -1088,7 +680,7 @@
             
         
         
-        <a href="../files/src_objects_Spring.js.html#l38"><code>src&#x2F;objects&#x2F;Spring.js:38</code></a>
+        <a href="../files/src_objects_Spring.js.html#l34"><code>src&#x2F;objects&#x2F;Spring.js:34</code></a>
         
         </p>
 
@@ -1099,141 +691,6 @@
 
     <div class="description">
         <p>Damping of the spring.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_localAnchorA" class="property item">
-    <h3 class="name"><code>localAnchorA</code></h3>
-    <span class="type">Array</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_objects_Spring.js.html#l59"><code>src&#x2F;objects&#x2F;Spring.js:59</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Anchor for bodyA in local bodyA coordinates.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_localAnchorB" class="property item">
-    <h3 class="name"><code>localAnchorB</code></h3>
-    <span class="type">Array</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_objects_Spring.js.html#l66"><code>src&#x2F;objects&#x2F;Spring.js:66</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Anchor for bodyB in local bodyB coordinates.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_restLength" class="property item">
-    <h3 class="name"><code>restLength</code></h3>
-    <span class="type">Number</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_objects_Spring.js.html#l24"><code>src&#x2F;objects&#x2F;Spring.js:24</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Rest length of the spring.</p>
 
     </div>
 
@@ -1268,7 +725,7 @@
             
         
         
-        <a href="../files/src_objects_Spring.js.html#l31"><code>src&#x2F;objects&#x2F;Spring.js:31</code></a>
+        <a href="../files/src_objects_Spring.js.html#l27"><code>src&#x2F;objects&#x2F;Spring.js:27</code></a>
         
         </p>
 

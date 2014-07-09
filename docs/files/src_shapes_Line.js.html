@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.5.0</em>
+            <em>API Docs for: 0.6.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -85,6 +85,8 @@
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
+                <li><a href="../classes/LinearSpring.html">LinearSpring</a></li>
+            
                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
@@ -92,6 +94,10 @@
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
                 <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
+            
+                <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
+            
+                <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
             
                 <li><a href="../classes/Particle.html">Particle</a></li>
             
@@ -105,6 +111,8 @@
             
                 <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
             
+                <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
+            
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
                 <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
@@ -114,6 +122,8 @@
                 <li><a href="../classes/Solver.html">Solver</a></li>
             
                 <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
             
                 <li><a href="../classes/Utils.html">Utils</a></li>
             
@@ -165,7 +175,7 @@
 <div class="file">
     <pre class="code prettyprint linenums">
 var Shape = require(&#x27;./Shape&#x27;)
-,   vec2 = require(&#x27;../math/vec2&#x27;)
+,   vec2 = require(&#x27;../math/vec2&#x27;);
 
 module.exports = Line;
 
@@ -183,10 +193,10 @@ function Line(length){
      * @property length
      * @type {Number}
      */
-    this.length = length;
+    this.length = length || 1;
 
     Shape.call(this,Shape.LINE);
-};
+}
 Line.prototype = new Shape();
 Line.prototype.computeMomentOfInertia = function(mass){
     return mass * Math.pow(this.length,2) / 12;
@@ -205,10 +215,10 @@ var points = [vec2.create(),vec2.create()];
  * @param  {Number} angle
  */
 Line.prototype.computeAABB = function(out, position, angle){
-    var l = this.length;
-    vec2.set(points[0], -l/2,  0);
-    vec2.set(points[1],  l/2,  0);
-    out.setFromPoints(points,position,angle);
+    var l2 = this.length / 2;
+    vec2.set(points[0], -l2,  0);
+    vec2.set(points[1],  l2,  0);
+    out.setFromPoints(points,position,angle,0);
 };
 
 

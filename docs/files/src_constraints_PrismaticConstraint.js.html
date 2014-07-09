@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.5.0</em>
+            <em>API Docs for: 0.6.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -85,6 +85,8 @@
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
+                <li><a href="../classes/LinearSpring.html">LinearSpring</a></li>
+            
                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
@@ -92,6 +94,10 @@
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
                 <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
+            
+                <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
+            
+                <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
             
                 <li><a href="../classes/Particle.html">Particle</a></li>
             
@@ -105,6 +111,8 @@
             
                 <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
             
+                <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
+            
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
                 <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
@@ -114,6 +122,8 @@
                 <li><a href="../classes/Solver.html">Solver</a></li>
             
                 <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
             
                 <li><a href="../classes/Utils.html">Utils</a></li>
             
@@ -168,7 +178,7 @@ var Constraint = require(&#x27;./Constraint&#x27;)
 ,   ContactEquation = require(&#x27;../equations/ContactEquation&#x27;)
 ,   Equation = require(&#x27;../equations/Equation&#x27;)
 ,   vec2 = require(&#x27;../math/vec2&#x27;)
-,   RotationalLockEquation = require(&#x27;../equations/RotationalLockEquation&#x27;)
+,   RotationalLockEquation = require(&#x27;../equations/RotationalLockEquation&#x27;);
 
 module.exports = PrismaticConstraint;
 
@@ -189,6 +199,7 @@ module.exports = PrismaticConstraint;
  * @param {Boolean} [options.disableRotationalLock]   If set to true, bodyB will be free to rotate around its anchor point.
  * @param {Number}  [options.upperLimit]
  * @param {Number}  [options.lowerLimit]
+ * @todo Ability to create using only a point and a worldAxis
  */
 function PrismaticConstraint(bodyA, bodyB, options){
     options = options || {};
@@ -198,9 +209,9 @@ function PrismaticConstraint(bodyA, bodyB, options){
     var localAnchorA = vec2.fromValues(0,0),
         localAxisA = vec2.fromValues(1,0),
         localAnchorB = vec2.fromValues(0,0);
-    if(options.localAnchorA) vec2.copy(localAnchorA, options.localAnchorA);
-    if(options.localAxisA)   vec2.copy(localAxisA,   options.localAxisA);
-    if(options.localAnchorB) vec2.copy(localAnchorB, options.localAnchorB);
+    if(options.localAnchorA){ vec2.copy(localAnchorA, options.localAnchorA); }
+    if(options.localAxisA){ vec2.copy(localAxisA,   options.localAxisA); }
+    if(options.localAnchorB){ vec2.copy(localAnchorB, options.localAnchorB); }
 
     /**
      * @property localAnchorA
@@ -238,7 +249,7 @@ function PrismaticConstraint(bodyA, bodyB, options){
 
      */
 
-    var maxForce = this.maxForce = typeof(options.maxForce)!=&quot;undefined&quot; ? options.maxForce : Number.MAX_VALUE;
+    var maxForce = this.maxForce = typeof(options.maxForce)!==&quot;undefined&quot; ? options.maxForce : Number.MAX_VALUE;
 
     // Translational part
     var trans = new Equation(bodyA,bodyB,-maxForce,maxForce);
@@ -354,7 +365,7 @@ function PrismaticConstraint(bodyA, bodyB, options){
             vj = bj.velocity,
             wi = bi.angularVelocity,
             wj = bj.angularVelocity;
-        return this.transformedGmult(G,vi,wi,vj,wj) + that.motorSpeed;
+        return this.gmult(G,vi,wi,vj,wj) + that.motorSpeed;
     };
 }
 
@@ -428,6 +439,7 @@ PrismaticConstraint.prototype.update = function(){
                 axis
      */
 
+
     if(this.upperLimitEnabled &amp;&amp; relPosition &gt; upperLimit){
         // Update contact constraint normal, etc
         vec2.scale(upperLimitEquation.normalA, worldAxisA, -1);
@@ -435,11 +447,14 @@ PrismaticConstraint.prototype.update = function(){
         vec2.sub(upperLimitEquation.contactPointB, worldAnchorB, bodyB.position);
         vec2.scale(tmp,worldAxisA,upperLimit);
         vec2.add(upperLimitEquation.contactPointA,upperLimitEquation.contactPointA,tmp);
-        if(eqs.indexOf(upperLimitEquation)==-1)
+        if(eqs.indexOf(upperLimitEquation) === -1){
             eqs.push(upperLimitEquation);
+        }
     } else {
         var idx = eqs.indexOf(upperLimitEquation);
-        if(idx != -1) eqs.splice(idx,1);
+        if(idx !== -1){
+            eqs.splice(idx,1);
+        }
     }
 
     if(this.lowerLimitEnabled &amp;&amp; relPosition &lt; lowerLimit){
@@ -449,11 +464,14 @@ PrismaticConstraint.prototype.update = function(){
         vec2.sub(lowerLimitEquation.contactPointB, worldAnchorB, bodyB.position);
         vec2.scale(tmp,worldAxisA,lowerLimit);
         vec2.sub(lowerLimitEquation.contactPointB,lowerLimitEquation.contactPointB,tmp);
-        if(eqs.indexOf(lowerLimitEquation)==-1)
+        if(eqs.indexOf(lowerLimitEquation) === -1){
             eqs.push(lowerLimitEquation);
+        }
     } else {
         var idx = eqs.indexOf(lowerLimitEquation);
-        if(idx != -1) eqs.splice(idx,1);
+        if(idx !== -1){
+            eqs.splice(idx,1);
+        }
     }
 };
 
@@ -462,7 +480,9 @@ PrismaticConstraint.prototype.update = function(){
  * @method enableMotor
  */
 PrismaticConstraint.prototype.enableMotor = function(){
-    if(this.motorEnabled) return;
+    if(this.motorEnabled){
+        return;
+    }
     this.equations.push(this.motorEquation);
     this.motorEnabled = true;
 };
@@ -472,11 +492,38 @@ PrismaticConstraint.prototype.enableMotor = function(){
  * @method disableMotor
  */
 PrismaticConstraint.prototype.disableMotor = function(){
-    if(!this.motorEnabled) return;
+    if(!this.motorEnabled){
+        return;
+    }
     var i = this.equations.indexOf(this.motorEquation);
     this.equations.splice(i,1);
     this.motorEnabled = false;
 };
+
+/**
+ * Set the constraint limits.
+ * @method setLimits
+ * @param {number} lower Lower limit.
+ * @param {number} upper Upper limit.
+ */
+PrismaticConstraint.prototype.setLimits = function (lower, upper) {
+    if(typeof(lower) === &#x27;number&#x27;){
+        this.lowerLimit = lower;
+        this.lowerLimitEnabled = true;
+    } else {
+        this.lowerLimit = lower;
+        this.lowerLimitEnabled = false;
+    }
+
+    if(typeof(upper) === &#x27;number&#x27;){
+        this.upperLimit = upper;
+        this.upperLimitEnabled = true;
+    } else {
+        this.upperLimit = upper;
+        this.upperLimitEnabled = false;
+    }
+};
+
 
     </pre>
 </div>

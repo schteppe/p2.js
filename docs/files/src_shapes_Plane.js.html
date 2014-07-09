@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.5.0</em>
+            <em>API Docs for: 0.6.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -85,6 +85,8 @@
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
+                <li><a href="../classes/LinearSpring.html">LinearSpring</a></li>
+            
                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
@@ -92,6 +94,10 @@
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
                 <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
+            
+                <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
+            
+                <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
             
                 <li><a href="../classes/Particle.html">Particle</a></li>
             
@@ -105,6 +111,8 @@
             
                 <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
             
+                <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
+            
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
                 <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
@@ -114,6 +122,8 @@
                 <li><a href="../classes/Solver.html">Solver</a></li>
             
                 <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
             
                 <li><a href="../classes/Utils.html">Utils</a></li>
             
@@ -166,7 +176,7 @@
     <pre class="code prettyprint linenums">
 var Shape =  require(&#x27;./Shape&#x27;)
 ,    vec2 =  require(&#x27;../math/vec2&#x27;)
-,    Utils = require(&#x27;../utils/Utils&#x27;)
+,    Utils = require(&#x27;../utils/Utils&#x27;);
 
 module.exports = Plane;
 
@@ -178,7 +188,7 @@ module.exports = Plane;
  */
 function Plane(){
     Shape.call(this,Shape.PLANE);
-};
+}
 Plane.prototype = new Shape();
 
 /**
@@ -206,25 +216,26 @@ Plane.prototype.updateBoundingRadius = function(){
 Plane.prototype.computeAABB = function(out, position, angle){
     var a = 0,
         set = vec2.set;
-    if(typeof(angle) == &quot;number&quot;)
+    if(typeof(angle) === &quot;number&quot;){
         a = angle % (2*Math.PI);
+    }
 
-    if(a == 0){
+    if(a === 0){
         // y goes from -inf to 0
         set(out.lowerBound, -Number.MAX_VALUE, -Number.MAX_VALUE);
         set(out.upperBound,  Number.MAX_VALUE,  0);
-    } else if(a == Math.PI / 2){
+    } else if(a === Math.PI / 2){
         // x goes from 0 to inf
-        set(out.lowerBound,                 0, -Number.MAX_VALUE);
-        set(out.upperBound,  Number.MAX_VALUE,  Number.MAX_VALUE);
-    } else if(a == Math.PI){
+        set(out.lowerBound, 0, -Number.MAX_VALUE);
+        set(out.upperBound,      Number.MAX_VALUE,  Number.MAX_VALUE);
+    } else if(a === Math.PI){
         // y goes from 0 to inf
         set(out.lowerBound, -Number.MAX_VALUE, 0);
         set(out.upperBound,  Number.MAX_VALUE, Number.MAX_VALUE);
-    } else if(a == 3*Math.PI/2){
+    } else if(a === 3*Math.PI/2){
         // x goes from -inf to 0
-        set(out.lowerBound, -Number.MAX_VALUE, -Number.MAX_VALUE);
-        set(out.upperBound,                 0,  Number.MAX_VALUE);
+        set(out.lowerBound, -Number.MAX_VALUE,     -Number.MAX_VALUE);
+        set(out.upperBound,  0,  Number.MAX_VALUE);
     } else {
         // Set max bounds
         set(out.lowerBound, -Number.MAX_VALUE, -Number.MAX_VALUE);

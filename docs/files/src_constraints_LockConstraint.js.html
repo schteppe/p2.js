@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.5.0</em>
+            <em>API Docs for: 0.6.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -85,6 +85,8 @@
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
+                <li><a href="../classes/LinearSpring.html">LinearSpring</a></li>
+            
                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
@@ -92,6 +94,10 @@
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
                 <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
+            
+                <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
+            
+                <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
             
                 <li><a href="../classes/Particle.html">Particle</a></li>
             
@@ -105,6 +111,8 @@
             
                 <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
             
+                <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
+            
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
                 <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
@@ -114,6 +122,8 @@
                 <li><a href="../classes/Solver.html">Solver</a></li>
             
                 <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
             
                 <li><a href="../classes/Utils.html">Utils</a></li>
             
@@ -166,7 +176,7 @@
     <pre class="code prettyprint linenums">
 var Constraint = require(&#x27;./Constraint&#x27;)
 ,   vec2 = require(&#x27;../math/vec2&#x27;)
-,   Equation = require(&#x27;../equations/Equation&#x27;)
+,   Equation = require(&#x27;../equations/Equation&#x27;);
 
 module.exports = LockConstraint;
 
@@ -179,8 +189,8 @@ module.exports = LockConstraint;
  * @param {Body} bodyA
  * @param {Body} bodyB
  * @param {Object} [options]
- * @param {Array}  [options.localOffsetB] The offset of bodyB in bodyA&#x27;s frame. Default is the zero vector.
- * @param {number} [options.localAngleB=0]  The angle of bodyB in bodyA&#x27;s frame.
+ * @param {Array}  [options.localOffsetB] The offset of bodyB in bodyA&#x27;s frame. If not given the offset is computed from current positions.
+ * @param {number} [options.localAngleB] The angle of bodyB in bodyA&#x27;s frame. If not given, the angle is computed from current angles.
  * @param {number} [options.maxForce]
  * @extends Constraint
  */
@@ -188,9 +198,8 @@ function LockConstraint(bodyA, bodyB, options){
     options = options || {};
 
     Constraint.call(this,bodyA,bodyB,Constraint.LOCK,options);
+
     var maxForce = ( typeof(options.maxForce)===&quot;undefined&quot; ? Number.MAX_VALUE : options.maxForce );
-    var localOffsetB = options.localOffsetB || vec2.fromValues(0,0);
-    localOffsetB = vec2.fromValues(localOffsetB[0],localOffsetB[1]);
 
     var localAngleB = options.localAngleB || 0;
 
@@ -251,13 +260,26 @@ function LockConstraint(bodyA, bodyB, options){
      * The offset of bodyB in bodyA&#x27;s frame.
      * @property {Array} localOffsetB
      */
-    this.localOffsetB = localOffsetB;
+    this.localOffsetB = vec2.create();
+    if(options.localOffsetB){
+        vec2.copy(this.localOffsetB, options.localOffsetB);
+    } else {
+        // Construct from current positions
+        vec2.sub(this.localOffsetB, bodyB.position, bodyA.position);
+        vec2.rotate(this.localOffsetB, this.localOffsetB, -bodyA.angle);
+    }
 
     /**
      * The offset angle of bodyB in bodyA&#x27;s frame.
      * @property {Number} localAngleB
      */
-    this.localAngleB =  localAngleB;
+    this.localAngleB = 0;
+    if(typeof(options.localAngleB) === &#x27;number&#x27;){
+        this.localAngleB = options.localAngleB;
+    } else {
+        // Construct
+        this.localAngleB = bodyB.angle - bodyA.angle;
+    }
 
     this.equations.push(x, y, rot);
     this.setMaxForce(maxForce);

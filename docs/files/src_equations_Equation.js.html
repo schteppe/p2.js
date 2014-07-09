@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.5.0</em>
+            <em>API Docs for: 0.6.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -85,6 +85,8 @@
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
+                <li><a href="../classes/LinearSpring.html">LinearSpring</a></li>
+            
                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
@@ -92,6 +94,10 @@
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
                 <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
+            
+                <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
+            
+                <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
             
                 <li><a href="../classes/Particle.html">Particle</a></li>
             
@@ -105,6 +111,8 @@
             
                 <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
             
+                <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
+            
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
                 <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
@@ -114,6 +122,8 @@
                 <li><a href="../classes/Solver.html">Solver</a></li>
             
                 <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
             
                 <li><a href="../classes/Utils.html">Utils</a></li>
             
@@ -233,13 +243,6 @@ function Equation(bodyA, bodyB, minForce, maxForce){
         this.G[i]=0;
     }
 
-    // Constraint frames for body i and j
-    /*
-    this.xi = vec2.create();
-    this.xj = vec2.create();
-    this.ai = 0;
-    this.aj = 0;
-    */
     this.offset = 0;
 
     this.a = 0;
@@ -306,14 +309,19 @@ Equation.prototype.update = function(){
     this.needsUpdate = false;
 };
 
-function Gmult(G,vi,wi,vj,wj){
+/**
+ * Multiply a jacobian entry with corresponding positions or velocities
+ * @method gmult
+ * @return {Number}
+ */
+Equation.prototype.gmult = function(G,vi,wi,vj,wj){
     return  G[0] * vi[0] +
             G[1] * vi[1] +
             G[2] * wi +
             G[3] * vj[0] +
             G[4] * vj[1] +
             G[5] * wj;
-}
+};
 
 /**
  * Computes the RHS of the SPOOK equation
@@ -328,7 +336,7 @@ Equation.prototype.computeB = function(a,b,h){
 };
 
 /**
- * Computes G*q, where q are the generalized body coordinates
+ * Computes G\*q, where q are the generalized body coordinates
  * @method computeGq
  * @return {Number}
  */
@@ -343,37 +351,11 @@ Equation.prototype.computeGq = function(){
         ai = bi.angle,
         aj = bj.angle;
 
-    // Transform to the given body frames
-    /*
-    vec2.rotate(qi,this.xi,ai);
-    vec2.rotate(qj,this.xj,aj);
-    vec2.add(qi,qi,xi);
-    vec2.add(qj,qj,xj);
-    */
-
-    return Gmult(G, qi, ai, qj, aj) + this.offset;
-};
-
-var tmp_i = vec2.create(),
-    tmp_j = vec2.create();
-Equation.prototype.transformedGmult = function(G,vi,wi,vj,wj){
-    // Transform velocity to the given body frames
-    // v_p = v + w x r
-    /*
-    vec2.rotate(tmp_i,this.xi,Math.PI / 2 + this.bi.angle); // Get r, and rotate 90 degrees. We get the &quot;x r&quot; part
-    vec2.rotate(tmp_j,this.xj,Math.PI / 2 + this.bj.angle);
-    vec2.scale(tmp_i,tmp_i,wi); // Temp vectors are now (w x r)
-    vec2.scale(tmp_j,tmp_j,wj);
-    vec2.add(tmp_i,tmp_i,vi);
-    vec2.add(tmp_j,tmp_j,vj);
-    */
-
-    // Note: angular velocity is same
-    return Gmult(G,vi,wi,vj,wj);
+    return this.gmult(G, qi, ai, qj, aj) + this.offset;
 };
 
 /**
- * Computes G*W, where W are the body velocities
+ * Computes G\*W, where W are the body velocities
  * @method computeGW
  * @return {Number}
  */
@@ -385,11 +367,11 @@ Equation.prototype.computeGW = function(){
         vj = bj.velocity,
         wi = bi.angularVelocity,
         wj = bj.angularVelocity;
-    return this.transformedGmult(G,vi,wi,vj,wj) + this.relativeVelocity;
+    return this.gmult(G,vi,wi,vj,wj) + this.relativeVelocity;
 };
 
 /**
- * Computes G*Wlambda, where W are the body velocities
+ * Computes G\*Wlambda, where W are the body velocities
  * @method computeGWlambda
  * @return {Number}
  */
@@ -401,11 +383,11 @@ Equation.prototype.computeGWlambda = function(){
         vj = bj.vlambda,
         wi = bi.wlambda,
         wj = bj.wlambda;
-    return Gmult(G,vi,wi,vj,wj);
+    return this.gmult(G,vi,wi,vj,wj);
 };
 
 /**
- * Computes G*inv(M)*f, where M is the mass matrix with diagonal blocks for each body, and f are the forces on the bodies.
+ * Computes G\*inv(M)\*f, where M is the mass matrix with diagonal blocks for each body, and f are the forces on the bodies.
  * @method computeGiMf
  * @return {Number}
  */
@@ -418,45 +400,30 @@ Equation.prototype.computeGiMf = function(){
         ti = bi.angularForce,
         fj = bj.force,
         tj = bj.angularForce,
-        invMassi = getBodyInvMass(bi),
-        invMassj = getBodyInvMass(bj),
-        invIi = getBodyInvInertia(bi),
-        invIj = getBodyInvInertia(bj),
+        invMassi = bi.invMassSolve,
+        invMassj = bj.invMassSolve,
+        invIi = bi.invInertiaSolve,
+        invIj = bj.invInertiaSolve,
         G = this.G;
 
     vec2.scale(iMfi, fi,invMassi);
     vec2.scale(iMfj, fj,invMassj);
 
-    return this.transformedGmult(G,iMfi,ti*invIi,iMfj,tj*invIj);
+    return this.gmult(G,iMfi,ti*invIi,iMfj,tj*invIj);
 };
 
-function getBodyInvMass(body){
-    if(body.sleepState === Body.SLEEPING){
-        return 0;
-    } else {
-        return body.invMass;
-    }
-}
-function getBodyInvInertia(body){
-    if(body.sleepState === Body.SLEEPING){
-        return 0;
-    } else {
-        return body.invInertia;
-    }
-}
-
 /**
- * Computes G*inv(M)*G&#x27;
+ * Computes G\*inv(M)\*G&#x27;
  * @method computeGiMGt
  * @return {Number}
  */
 Equation.prototype.computeGiMGt = function(){
     var bi = this.bodyA,
         bj = this.bodyB,
-        invMassi = getBodyInvMass(bi),
-        invMassj = getBodyInvMass(bj),
-        invIi = getBodyInvInertia(bi),
-        invIj = getBodyInvInertia(bj),
+        invMassi = bi.invMassSolve,
+        invMassj = bj.invMassSolve,
+        invIi = bi.invInertiaSolve,
+        invIj = bj.invInertiaSolve,
         G = this.G;
 
     return  G[0] * G[0] * invMassi +
@@ -487,10 +454,10 @@ Equation.prototype.addToWlambda = function(deltalambda){
         Gj = addToWlambda_Gj,
         ri = addToWlambda_ri,
         rj = addToWlambda_rj,
-        invMassi = getBodyInvMass(bi),
-        invMassj = getBodyInvMass(bj),
-        invIi = getBodyInvInertia(bi),
-        invIj = getBodyInvInertia(bj),
+        invMassi = bi.invMassSolve,
+        invMassj = bj.invMassSolve,
+        invIi = bi.invInertiaSolve,
+        invIj = bj.invInertiaSolve,
         Mdiag = addToWlambda_Mdiag,
         G = this.G;
 
@@ -516,7 +483,7 @@ Equation.prototype.addToWlambda = function(deltalambda){
 };
 
 /**
- * Compute the denominator part of the SPOOK equation: C = G*inv(M)*G&#x27; + eps
+ * Compute the denominator part of the SPOOK equation: C = G\*inv(M)\*G&#x27; + eps
  * @method computeInvC
  * @param  {Number} eps
  * @return {Number}

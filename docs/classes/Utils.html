@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.5.0</em>
+            <em>API Docs for: 0.6.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -85,6 +85,8 @@
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
+                <li><a href="../classes/LinearSpring.html">LinearSpring</a></li>
+            
                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
@@ -92,6 +94,10 @@
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
                 <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
+            
+                <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
+            
+                <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
             
                 <li><a href="../classes/Particle.html">Particle</a></li>
             
@@ -105,6 +111,8 @@
             
                 <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
             
+                <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
+            
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
                 <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
@@ -114,6 +122,8 @@
                 <li><a href="../classes/Solver.html">Solver</a></li>
             
                 <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
             
                 <li><a href="../classes/Utils.html">Utils</a></li>
             
@@ -168,7 +178,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_utils_Utils.js.html#l3"><code>src&#x2F;utils&#x2F;Utils.js:3</code></a>
+            Defined in: <a href="../files/src_utils_Utils.js.html#l5"><code>src&#x2F;utils&#x2F;Utils.js:5</code></a>
         </div>
     
 
@@ -219,7 +229,7 @@
             
         
         
-        <a href="../files/src_utils_Utils.js.html#l3"><code>src&#x2F;utils&#x2F;Utils.js:3</code></a>
+        <a href="../files/src_utils_Utils.js.html#l5"><code>src&#x2F;utils&#x2F;Utils.js:5</code></a>
         
         </p>
 
@@ -269,6 +279,15 @@
                         
                             <li class="index-item method">
                                 <a href="#method_appendArray">appendArray</a>
+
+                                
+                                    <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_defaults">defaults</a>
 
                                 
                                     <span class="flag static">static</span>
@@ -377,7 +396,7 @@
             
         
         
-        <a href="../files/src_utils_Utils.js.html#l10"><code>src&#x2F;utils&#x2F;Utils.js:10</code></a>
+        <a href="../files/src_utils_Utils.js.html#l12"><code>src&#x2F;utils&#x2F;Utils.js:12</code></a>
         
         </p>
 
@@ -438,6 +457,137 @@
 </div>
 
                 
+                    <div id="method_defaults" class="method item">
+    <h3 class="name"><code>defaults</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>options</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>defaults</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Object</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_utils_Utils.js.html#l77"><code>src&#x2F;utils&#x2F;Utils.js:77</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Extend an options object with default values.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">options</code>
+                        <span class="type">Object</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The options object. May be falsy: in this case, a new object is created and returned.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">defaults</code>
+                        <span class="type">Object</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>An object containing default values.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Object</span>:
+                    
+                    <p>The modified options object.</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
                     <div id="method_extend" class="method item">
     <h3 class="name"><code>extend</code></h3>
 
@@ -488,7 +638,7 @@
             
         
         
-        <a href="../files/src_utils_Utils.js.html#l51"><code>src&#x2F;utils&#x2F;Utils.js:51</code></a>
+        <a href="../files/src_utils_Utils.js.html#l64"><code>src&#x2F;utils&#x2F;Utils.js:64</code></a>
         
         </p>
 
@@ -605,7 +755,7 @@
             
         
         
-        <a href="../files/src_utils_Utils.js.html#l27"><code>src&#x2F;utils&#x2F;Utils.js:27</code></a>
+        <a href="../files/src_utils_Utils.js.html#l29"><code>src&#x2F;utils&#x2F;Utils.js:29</code></a>
         
         </p>
 
@@ -691,7 +841,7 @@
                 
                     <div id="property_ARRAY_TYPE" class="property item">
     <h3 class="name"><code>ARRAY_TYPE</code></h3>
-    <span class="type">Array</span>
+    <span class="type">Function</span>
 
     
 
@@ -714,7 +864,7 @@
             
         
         
-        <a href="../files/src_utils_Utils.js.html#l43"><code>src&#x2F;utils&#x2F;Utils.js:43</code></a>
+        <a href="../files/src_utils_Utils.js.html#l45"><code>src&#x2F;utils&#x2F;Utils.js:45</code></a>
         
         </p>
 
@@ -724,12 +874,25 @@
     </div>
 
     <div class="description">
-        <p>The array type to use for internal numeric computations.</p>
+        <p>The array type to use for internal numeric computations throughout the library. Float32Array is used if it is available, but falls back on Array. If you want to set array type manually, inject it via the global variable P2_ARRAY_TYPE. See example below.</p>
 
     </div>
 
     
 
+    
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre class="code prettyprint"><code>&lt;script&gt;
+    &lt;!-- Inject your preferred array type before loading p2.js --&gt;
+    P2_ARRAY_TYPE = Array;
+&lt;/script&gt;
+&lt;script src=&quot;p2.js&quot;&gt;&lt;/script&gt;</code></pre>
+
+            </div>
+        </div>
     
 
     

@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.5.0</em>
+            <em>API Docs for: 0.6.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -85,6 +85,8 @@
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
+                <li><a href="../classes/LinearSpring.html">LinearSpring</a></li>
+            
                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
@@ -92,6 +94,10 @@
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
                 <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
+            
+                <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
+            
+                <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
             
                 <li><a href="../classes/Particle.html">Particle</a></li>
             
@@ -105,6 +111,8 @@
             
                 <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
             
+                <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
+            
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
                 <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
@@ -114,6 +122,8 @@
                 <li><a href="../classes/Solver.html">Solver</a></li>
             
                 <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
             
                 <li><a href="../classes/Utils.html">Utils</a></li>
             
@@ -228,8 +238,9 @@ function GSSolver(options){
 GSSolver.prototype = new Solver();
 
 function setArrayZero(array){
-    for(var i=0; i!==array.length; i++){
-        array[i] = 0.0;
+    var l = array.length;
+    while(l--){
+        array[l] = +0.0;
     }
 }
 
@@ -258,6 +269,15 @@ GSSolver.prototype.solve = function(h, world){
 
     this.usedIterations = 0;
 
+    if(Neq){
+        for(var i=0; i!==Nbodies; i++){
+            var b = bodies[i];
+
+            // Update solve mass
+            b.updateSolveMassProperties();
+        }
+    }
+
     // Things that does not change during iteration can be computed once
     if(lambda.length &lt; Neq){
         lambda = this.lambda =  new Utils.ARRAY_TYPE(Neq + this.arrayStep);
@@ -283,9 +303,11 @@ GSSolver.prototype.solve = function(h, world){
 
     if(Neq !== 0){
 
-        // Reset vlambda
         for(i=0; i!==Nbodies; i++){
-            bodies[i].resetConstraintVelocity();
+            var b = bodies[i];
+
+            // Reset vlambda
+            b.resetConstraintVelocity();
         }
 
         if(maxFrictionIter){
@@ -297,10 +319,6 @@ GSSolver.prototype.solve = function(h, world){
 
                 for(j=0; j!==Neq; j++){
                     c = equations[j];
-
-                    if(c instanceof FrictionEquation){
-                        //continue;
-                    }
 
                     var deltalambda = GSSolver.iterateEquation(j,c,c.epsilon,Bs,invCs,lambda,useZeroRHS,h,iter);
                     deltalambdaTot += Math.abs(deltalambda);
@@ -314,11 +332,17 @@ GSSolver.prototype.solve = function(h, world){
                 }
             }
 
+            GSSolver.updateMultipliers(equations, lambda, 1/h);
+
             // Set computed friction force
             for(j=0; j!==Neq; j++){
                 var eq = equations[j];
                 if(eq instanceof FrictionEquation){
-                    var f = eq.contactEquation.multiplier * eq.frictionCoefficient;
+                    var f = 0.0;
+                    for(var k=0; k!==eq.contactEquations.length; k++){
+                        f += eq.contactEquations[k].multiplier;
+                    }
+                    f *= eq.frictionCoefficient / eq.contactEquations.length;
                     eq.maxForce =  f;
                     eq.minForce = -f;
                 }
@@ -350,6 +374,17 @@ GSSolver.prototype.solve = function(h, world){
         for(i=0; i!==Nbodies; i++){
             bodies[i].addConstraintVelocity();
         }
+
+        GSSolver.updateMultipliers(equations, lambda, 1/h);
+    }
+};
+
+// Sets the .multiplier property of each equation
+GSSolver.updateMultipliers = function(equations, lambda, invDt){
+    // Set the .multiplier property of each equation
+    var l = equations.length;
+    while(l--){
+        equations[l].multiplier = lambda[l] * invDt;
     }
 };
 
@@ -377,7 +412,6 @@ GSSolver.iterateEquation = function(j,eq,eps,Bs,invCs,lambda,useZeroRHS,dt,iter)
         deltalambda = maxForce*dt - lambdaj;
     }
     lambda[j] += deltalambda;
-    eq.multiplier = lambda[j] / dt;
     eq.addToWlambda(deltalambda);
 
     return deltalambda;

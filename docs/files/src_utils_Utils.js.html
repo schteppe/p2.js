@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.5.0</em>
+            <em>API Docs for: 0.6.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -85,6 +85,8 @@
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
+                <li><a href="../classes/LinearSpring.html">LinearSpring</a></li>
+            
                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
@@ -92,6 +94,10 @@
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
                 <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
+            
+                <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
+            
+                <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
             
                 <li><a href="../classes/Particle.html">Particle</a></li>
             
@@ -105,6 +111,8 @@
             
                 <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
             
+                <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
+            
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
                 <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
@@ -114,6 +122,8 @@
                 <li><a href="../classes/Solver.html">Solver</a></li>
             
                 <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
             
                 <li><a href="../classes/Utils.html">Utils</a></li>
             
@@ -164,6 +174,8 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
+/* global P2_ARRAY_TYPE */
+
 module.exports = Utils;
 
 /**
@@ -171,7 +183,7 @@ module.exports = Utils;
  * @class Utils
  * @constructor
  */
-function Utils(){};
+function Utils(){}
 
 /**
  * Append the values in array b to the array a. See &lt;a href=&quot;http://stackoverflow.com/questions/1374126/how-to-append-an-array-to-an-existing-javascript-array/1374131#1374131&quot;&gt;this&lt;/a&gt; for an explanation.
@@ -207,12 +219,23 @@ Utils.splice = function(array,index,howmany){
 };
 
 /**
- * The array type to use for internal numeric computations.
- * @type {Array}
+ * The array type to use for internal numeric computations throughout the library. Float32Array is used if it is available, but falls back on Array. If you want to set array type manually, inject it via the global variable P2_ARRAY_TYPE. See example below.
  * @static
- * @property ARRAY_TYPE
+ * @property {function} ARRAY_TYPE
+ * @example
+ *     &lt;script&gt;
+ *         &lt;!-- Inject your preferred array type before loading p2.js --&gt;
+ *         P2_ARRAY_TYPE = Array;
+ *     &lt;/script&gt;
+ *     &lt;script src=&quot;p2.js&quot;&gt;&lt;/script&gt;
  */
-Utils.ARRAY_TYPE = Float32Array || Array;
+if(typeof P2_ARRAY_TYPE !== &#x27;undefined&#x27;) {
+    Utils.ARRAY_TYPE = P2_ARRAY_TYPE;
+} else if (typeof Float32Array !== &#x27;undefined&#x27;){
+    Utils.ARRAY_TYPE = Float32Array;
+} else {
+    Utils.ARRAY_TYPE = Array;
+}
 
 /**
  * Extend an object with the properties of another
@@ -225,6 +248,24 @@ Utils.extend = function(a,b){
     for(var key in b){
         a[key] = b[key];
     }
+};
+
+/**
+ * Extend an options object with default values.
+ * @static
+ * @method defaults
+ * @param  {object} options The options object. May be falsy: in this case, a new object is created and returned.
+ * @param  {object} defaults An object containing default values.
+ * @return {object} The modified options object.
+ */
+Utils.defaults = function(options, defaults){
+    options = options || {};
+    for(var key in defaults){
+        if(!(key in options)){
+            options[key] = defaults[key];
+        }
+    }
+    return options;
 };
 
     </pre>

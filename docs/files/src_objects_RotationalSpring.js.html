@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/material/Material.js - p2.js</title>
+    <title>src/objects/RotationalSpring.js - p2.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -170,29 +170,62 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: src/material/Material.js</h1>
+                        <h1 class="file-heading">File: src/objects/RotationalSpring.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
-module.exports = Material;
+var vec2 = require(&#x27;../math/vec2&#x27;);
+var Spring = require(&#x27;./Spring&#x27;);
+
+module.exports = RotationalSpring;
 
 /**
- * Defines a physics material.
- * @class Material
+ * A rotational spring, connecting two bodies rotation. This spring explicitly adds angularForce (torque) to the bodies.
+ *
+ * The spring can be combined with a {{#crossLink &quot;RevoluteConstraint&quot;}}{{/crossLink}} to make, for example, a mouse trap.
+ *
+ * @class RotationalSpring
+ * @extends Spring
  * @constructor
- * @param {number} id Material identifier
- * @author schteppe
+ * @param {Body} bodyA
+ * @param {Body} bodyB
+ * @param {Object} [options]
+ * @param {number} [options.restAngle] The relative angle of bodies at which the spring is at rest. If not given, it&#x27;s set to the current relative angle between the bodies.
+ * @param {number} [options.stiffness=100] Spring constant (see Hookes Law). A number &gt;= 0.
+ * @param {number} [options.damping=1] A number &gt;= 0.
  */
-function Material(id){
-    /**
-     * The material identifier
-     * @property id
-     * @type {Number}
-     */
-    this.id = id || Material.idCounter++;
-}
+function RotationalSpring(bodyA, bodyB, options){
+    options = options || {};
 
-Material.idCounter = 0;
+    Spring.call(this, bodyA, bodyB, options);
+
+    /**
+     * Rest angle of the spring.
+     * @property restAngle
+     * @type {number}
+     */
+    this.restAngle = typeof(options.restAngle) === &quot;number&quot; ? options.restAngle : bodyB.angle - bodyA.angle;
+}
+RotationalSpring.prototype = new Spring();
+
+/**
+ * Apply the spring force to the connected bodies.
+ * @method applyForce
+ */
+RotationalSpring.prototype.applyForce = function(){
+    var k = this.stiffness,
+        d = this.damping,
+        l = this.restAngle,
+        bodyA = this.bodyA,
+        bodyB = this.bodyB,
+        x = bodyB.angle - bodyA.angle,
+        u = bodyB.angularVelocity - bodyA.angularVelocity;
+
+    var torque = - k * (x - l) - d * u * 0;
+
+    bodyA.angularForce -= torque;
+    bodyB.angularForce += torque;
+};
 
     </pre>
 </div>

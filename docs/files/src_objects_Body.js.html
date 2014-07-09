@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.5.0</em>
+            <em>API Docs for: 0.6.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -85,6 +85,8 @@
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
+                <li><a href="../classes/LinearSpring.html">LinearSpring</a></li>
+            
                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
@@ -92,6 +94,10 @@
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
                 <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
+            
+                <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
+            
+                <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
             
                 <li><a href="../classes/Particle.html">Particle</a></li>
             
@@ -105,6 +111,8 @@
             
                 <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
             
+                <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
+            
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
                 <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
@@ -114,6 +122,8 @@
                 <li><a href="../classes/Solver.html">Solver</a></li>
             
                 <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
             
                 <li><a href="../classes/Utils.html">Utils</a></li>
             
@@ -168,7 +178,7 @@ var vec2 = require(&#x27;../math/vec2&#x27;)
 ,   decomp = require(&#x27;poly-decomp&#x27;)
 ,   Convex = require(&#x27;../shapes/Convex&#x27;)
 ,   AABB = require(&#x27;../collision/AABB&#x27;)
-,   EventEmitter = require(&#x27;../events/EventEmitter&#x27;)
+,   EventEmitter = require(&#x27;../events/EventEmitter&#x27;);
 
 module.exports = Body;
 
@@ -180,7 +190,7 @@ module.exports = Body;
  * @constructor
  * @extends EventEmitter
  * @param {Object}              [options]
- * @param {Number}              [options.mass=0]    A number &gt;= 0. If zero, the .motionState will be set to Body.STATIC.
+ * @param {Number}              [options.mass=0]    A number &gt;= 0. If zero, the .type will be set to Body.STATIC.
  * @param {Array}               [options.position]
  * @param {Array}               [options.velocity]
  * @param {Number}              [options.angle=0]
@@ -188,6 +198,22 @@ module.exports = Body;
  * @param {Array}               [options.force]
  * @param {Number}              [options.angularForce=0]
  * @param {Number}              [options.fixedRotation=false]
+ *
+ * @example
+ *     // Create a typical dynamic body
+ *     var body = new Body({
+ *         mass: 1,
+ *         position: [0, 0],
+ *         angle: 0,
+ *         velocity: [0, 0],
+ *         angularVelocity: 0
+ *     });
+ *
+ *     // Add a circular shape to the body
+ *     body.addShape(new Circle(1));
+ *
+ *     // Add the body to the world
+ *     world.addBody(body);
  */
 function Body(options){
     options = options || {};
@@ -259,6 +285,9 @@ function Body(options){
      * @type {number}
      */
     this.invInertia = 0;
+
+    this.invMassSolve = 0;
+    this.invInertiaSolve = 0;
 
     /**
      * Set to true if you want to fix the rotation of the body.
@@ -373,7 +402,9 @@ function Body(options){
      *     }
      */
     this.force = vec2.create();
-    if(options.force) vec2.copy(this.force, options.force);
+    if(options.force){
+        vec2.copy(this.force, options.force);
+    }
 
     /**
      * The angular force acting on the body. See {{#crossLink &quot;Body/force:property&quot;}}{{/crossLink}}.
@@ -388,7 +419,7 @@ function Body(options){
      * @type {Number}
      * @default 0.1
      */
-    this.damping = typeof(options.damping)==&quot;number&quot; ? options.damping : 0.1;
+    this.damping = typeof(options.damping) === &quot;number&quot; ? options.damping : 0.1;
 
     /**
      * The angular force acting on the body. Should be a value between 0 and 1.
@@ -396,7 +427,7 @@ function Body(options){
      * @type {Number}
      * @default 0.1
      */
-    this.angularDamping = typeof(options.angularDamping)==&quot;number&quot; ? options.angularDamping : 0.1;
+    this.angularDamping = typeof(options.angularDamping) === &quot;number&quot; ? options.angularDamping : 0.1;
 
     /**
      * The type of motion this body has. Should be one of: {{#crossLink &quot;Body/STATIC:property&quot;}}Body.STATIC{{/crossLink}}, {{#crossLink &quot;Body/DYNAMIC:property&quot;}}Body.DYNAMIC{{/crossLink}} and {{#crossLink &quot;Body/KINEMATIC:property&quot;}}Body.KINEMATIC{{/crossLink}}.
@@ -405,29 +436,37 @@ function Body(options){
      * * Dynamic bodies body can move and respond to collisions and forces.
      * * Kinematic bodies only moves according to its .velocity, and does not respond to collisions or force.
      *
-     * @property motionState
+     * @property type
      * @type {number}
      *
      * @example
-     *     // This body will move and interact with other bodies
+     *     // Bodies are static by default. Static bodies will never move.
+     *     var body = new Body();
+     *     console.log(body.type == Body.STATIC); // true
+     *
+     * @example
+     *     // By setting the mass of a body to a nonzero number, the body
+     *     // will become dynamic and will move and interact with other bodies.
      *     var dynamicBody = new Body({
-     *         mass : 1  // If mass is nonzero, the body becomes dynamic automatically
+     *         mass : 1
      *     });
-     *     dynamicBody.motionState == Body.DYNAMIC // true
+     *     console.log(dynamicBody.type == Body.DYNAMIC); // true
      *
      * @example
-     *     // This body will not move at all
-     *     var staticBody = new Body({
-     *         mass : 0 // Will make the body static
+     *     // Kinematic bodies will only move if you change their velocity.
+     *     var kinematicBody = new Body({
+     *         type: Body.KINEMATIC // Type can be set via the options object.
      *     });
-     *     staticBody.motionState == Body.STATIC // true
-     *
-     * @example
-     *     // This body will only move if you change its velocity
-     *     var kinematicBody = new Body();
-     *     kinematicBody.motionState = Body.KINEMATIC;
      */
-    this.motionState = this.mass === 0 ? Body.STATIC : Body.DYNAMIC;
+    this.type = Body.STATIC;
+
+    if(typeof(options.type) !== &#x27;undefined&#x27;){
+        this.type = options.type;
+    } else if(!options.mass){
+        this.type = Body.STATIC;
+    } else {
+        this.type = Body.DYNAMIC;
+    }
 
     /**
      * Bounding circle radius.
@@ -514,11 +553,23 @@ function Body(options){
     this.lastAngularDampingScale = 1;
     this.lastDampingTimeStep = -1;
 
+    this._wakeUpAfterNarrowphase = false;
+
     this.updateMassProperties();
 }
 Body.prototype = new EventEmitter();
 
 Body._idCounter = 0;
+
+Body.prototype.updateSolveMassProperties = function(){
+    if(this.sleepState === Body.SLEEPING || this.type === Body.KINEMATIC){
+        this.invMassSolve = 0;
+        this.invInertiaSolve = 0;
+    } else {
+        this.invMassSolve = this.invMass;
+        this.invInertiaSolve = this.invInertia;
+    }
+};
 
 /**
  * Set the total density of the body
@@ -543,6 +594,17 @@ Body.prototype.getArea = function() {
     return totalArea;
 };
 
+/**
+ * Get the AABB from the body. The AABB is updated if necessary.
+ * @method getAABB
+ */
+Body.prototype.getAABB = function(){
+    if(this.aabbNeedsUpdate){
+        this.updateAABB();
+    }
+    return this.aabb;
+};
+
 var shapeAABB = new AABB(),
     tmp = vec2.create();
 
@@ -554,24 +616,26 @@ Body.prototype.updateAABB = function() {
     var shapes = this.shapes,
         shapeOffsets = this.shapeOffsets,
         shapeAngles = this.shapeAngles,
-        N = shapes.length;
+        N = shapes.length,
+        offset = tmp,
+        bodyAngle = this.angle;
 
     for(var i=0; i!==N; i++){
         var shape = shapes[i],
-            offset = tmp,
-            angle = shapeAngles[i] + this.angle;
+            angle = shapeAngles[i] + bodyAngle;
 
         // Get shape world offset
-        vec2.rotate(offset,shapeOffsets[i],this.angle);
-        vec2.add(offset,offset,this.position);
+        vec2.rotate(offset, shapeOffsets[i], bodyAngle);
+        vec2.add(offset, offset, this.position);
 
         // Get shape AABB
-        shape.computeAABB(shapeAABB,offset,angle);
+        shape.computeAABB(shapeAABB, offset, angle);
 
-        if(i===0)
+        if(i===0){
             this.aabb.copy(shapeAABB);
-        else
+        } else {
             this.aabb.extend(shapeAABB);
+        }
     }
 
     this.aabbNeedsUpdate = false;
@@ -673,7 +737,7 @@ Body.prototype.removeShape = function(shape){
  *     body.updateMassProperties();
  */
 Body.prototype.updateMassProperties = function(){
-    if(this.motionState === Body.STATIC || this.motionState === Body.KINEMATIC){
+    if(this.type === Body.STATIC || this.type === Body.KINEMATIC){
 
         this.mass = Number.MAX_VALUE;
         this.invMass = 0;
@@ -764,8 +828,9 @@ Body.prototype.fromPolygon = function(path,options){
     options = options || {};
 
     // Remove all shapes
-    for(var i=this.shapes.length; i&gt;=0; --i)
+    for(var i=this.shapes.length; i&gt;=0; --i){
         this.removeShape(this.shapes[i]);
+    }
 
     var p = new decomp.Polygon();
     p.vertices = path;
@@ -773,13 +838,15 @@ Body.prototype.fromPolygon = function(path,options){
     // Make it counter-clockwise
     p.makeCCW();
 
-    if(typeof(options.removeCollinearPoints)==&quot;number&quot;){
+    if(typeof(options.removeCollinearPoints) === &quot;number&quot;){
         p.removeCollinearPoints(options.removeCollinearPoints);
     }
 
     // Check if any line segment intersects the path itself
-    if(typeof(options.skipSimpleCheck) == &quot;undefined&quot;){
-        if(!p.isSimple()) return false;
+    if(typeof(options.skipSimpleCheck) === &quot;undefined&quot;){
+        if(!p.isSimple()){
+            return false;
+        }
     }
 
     // Save this path for later
@@ -792,8 +859,11 @@ Body.prototype.fromPolygon = function(path,options){
 
     // Slow or fast decomp?
     var convexes;
-    if(options.optimalDecomp)   convexes = p.decomp();
-    else                        convexes = p.quickDecomp();
+    if(options.optimalDecomp){
+        convexes = p.decomp();
+    } else {
+        convexes = p.quickDecomp();
+    }
 
     var cm = vec2.create();
 
@@ -904,7 +974,7 @@ Body.prototype.addConstraintVelocity = function(){
  * @param  {number} dt Current time step
  */
 Body.prototype.applyDamping = function(dt){
-    if(this.motionState === Body.DYNAMIC){ // Only for dynamic bodies
+    if(this.type === Body.DYNAMIC){ // Only for dynamic bodies
 
         // Since Math.pow generates garbage we check if we can reuse the scaling coefficient from last step
         if(dt !== this.lastDampingTimeStep){
@@ -946,15 +1016,15 @@ Body.prototype.sleep = function(){
     this.emit(Body.sleepEvent);
 };
 
-//var velo2 = vec2.create();
-
 /**
+ * Called every timestep to update internal sleep timer and change sleep state if needed.
  * @method sleepTick
- * @param float time The world time in seconds
- * @brief Called every timestep to update internal sleep timer and change sleep state if needed.
+ * @param {number} time The world time in seconds
+ * @param {boolean} dontSleep
+ * @param {number} dt
  */
 Body.prototype.sleepTick = function(time, dontSleep, dt){
-    if(!this.allowSleep || this.motionState === Body.SLEEPING){
+    if(!this.allowSleep || this.type === Body.SLEEPING){
         return;
     }
 
@@ -1004,6 +1074,16 @@ Body.prototype.getVelocityFromPosition = function(store, timeStep){
 };
 Body.prototype.getAngularVelocityFromPosition = function(timeStep){
     return (this.angle - this.previousAngle) / timeStep;
+};
+
+/**
+ * Check if the body is overlapping another body. Note that this method only works if the body was added to a World and if at least one step was taken.
+ * @method overlaps
+ * @param  {Body} body
+ * @return {boolean}
+ */
+Body.prototype.overlaps = function(body){
+    return this.world.overlapKeeper.bodiesAreOverlapping(this, body);
 };
 
 /**

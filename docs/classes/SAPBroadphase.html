@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.5.0</em>
+            <em>API Docs for: 0.6.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -85,6 +85,8 @@
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
+                <li><a href="../classes/LinearSpring.html">LinearSpring</a></li>
+            
                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
@@ -92,6 +94,10 @@
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
                 <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
+            
+                <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
+            
+                <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
             
                 <li><a href="../classes/Particle.html">Particle</a></li>
             
@@ -105,6 +111,8 @@
             
                 <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
             
+                <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
+            
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
                 <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
@@ -114,6 +122,8 @@
                 <li><a href="../classes/Solver.html">Solver</a></li>
             
                 <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
             
                 <li><a href="../classes/Utils.html">Utils</a></li>
             
@@ -172,7 +182,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_collision_SAPBroadphase.js.html#l11"><code>src&#x2F;collision&#x2F;SAPBroadphase.js:11</code></a>
+            Defined in: <a href="../files/src_collision_SAPBroadphase.js.html#l6"><code>src&#x2F;collision&#x2F;SAPBroadphase.js:6</code></a>
         </div>
     
 
@@ -223,7 +233,7 @@
             
         
         
-        <a href="../files/src_collision_SAPBroadphase.js.html#l11"><code>src&#x2F;collision&#x2F;SAPBroadphase.js:11</code></a>
+        <a href="../files/src_collision_SAPBroadphase.js.html#l6"><code>src&#x2F;collision&#x2F;SAPBroadphase.js:6</code></a>
         
         </p>
 
@@ -285,15 +295,6 @@
                                 
                             </li>
                         
-                            <li class="index-item method">
-                                <a href="#method_checkBounds">checkBounds</a>
-
-                                
-                                    <span class="flag static">static</span>
-                                
-                                
-                            </li>
-                        
                             <li class="index-item method inherited">
                                 <a href="#method_getCollisionPairs">getCollisionPairs</a>
 
@@ -309,14 +310,7 @@
                             </li>
                         
                             <li class="index-item method">
-                                <a href="#method_sortAxisListX">sortAxisListX</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method">
-                                <a href="#method_sortAxisListY">sortAxisListY</a>
+                                <a href="#method_sortAxisList">sortAxisList</a>
 
                                 
                                 
@@ -333,14 +327,14 @@
                     <ul class="index-list properties extends">
                         
                             <li class="index-item property">
-                                <a href="#property_axisListX">axisListX</a>
+                                <a href="#property_axisIndex">axisIndex</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item property">
-                                <a href="#property_axisListY">axisListY</a>
+                                <a href="#property_axisList">axisList</a>
 
                                 
                                 
@@ -628,154 +622,6 @@
 </div>
 
                 
-                    <div id="method_checkBounds" class="method item">
-    <h3 class="name"><code>checkBounds</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>bi</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>bj</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>axisIndex</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-        <span class="returns-inline">
-            <span class="type">Boolean</span>
-        </span>
-    
-
-    
-
-    
-
-    
-
-    
-        <span class="flag static">static</span>
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_collision_SAPBroadphase.js.html#l201"><code>src&#x2F;collision&#x2F;SAPBroadphase.js:201</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Check if the bounds of two bodies overlap, along the given SAP axis.</p>
-
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">bi</code>
-                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">bj</code>
-                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">axisIndex</code>
-                        <span class="type">Number</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                
-                    
-                        <span class="type">Boolean</span>:
-                    
-                
-            </div>
-        </div>
-    
-
-    
-</div>
-
-                
                     <div id="method_getCollisionPairs" class="method item">
     <h3 class="name"><code>getCollisionPairs</code></h3>
 
@@ -822,7 +668,7 @@
             
         
         
-        <a href="../files/src_collision_SAPBroadphase.js.html#l126"><code>src&#x2F;collision&#x2F;SAPBroadphase.js:126</code></a>
+        <a href="../files/src_collision_SAPBroadphase.js.html#l98"><code>src&#x2F;collision&#x2F;SAPBroadphase.js:98</code></a>
         
         </p>
 
@@ -922,7 +768,7 @@
             
         
         
-        <a href="../files/src_collision_SAPBroadphase.js.html#l62"><code>src&#x2F;collision&#x2F;SAPBroadphase.js:62</code></a>
+        <a href="../files/src_collision_SAPBroadphase.js.html#l53"><code>src&#x2F;collision&#x2F;SAPBroadphase.js:53</code></a>
         
         </p>
 
@@ -968,8 +814,8 @@
 </div>
 
                 
-                    <div id="method_sortAxisListX" class="method item">
-    <h3 class="name"><code>sortAxisListX</code></h3>
+                    <div id="method_sortAxisList" class="method item">
+    <h3 class="name"><code>sortAxisList</code></h3>
 
     
         <div class="args">
@@ -978,6 +824,12 @@
                 <li class="arg">
                     
                         <code>a</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>axisIndex</code>
                     
                 </li>
             
@@ -1014,7 +866,7 @@
             
         
         
-        <a href="../files/src_collision_SAPBroadphase.js.html#l86"><code>src&#x2F;collision&#x2F;SAPBroadphase.js:86</code></a>
+        <a href="../files/src_collision_SAPBroadphase.js.html#l76"><code>src&#x2F;collision&#x2F;SAPBroadphase.js:76</code></a>
         
         </p>
 
@@ -1025,7 +877,7 @@
     </div>
 
     <div class="description">
-        <p>Sorts bodies along the X axis.</p>
+        <p>Sorts bodies along an axis.</p>
 
     </div>
 
@@ -1050,99 +902,10 @@
                     
                 </li>
             
-            </ul>
-        </div>
-    
-
-    
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                
-                    
-                        <span class="type">Array</span>:
-                    
-                
-            </div>
-        </div>
-    
-
-    
-</div>
-
-                
-                    <div id="method_sortAxisListY" class="method item">
-    <h3 class="name"><code>sortAxisListY</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>a</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-        <span class="returns-inline">
-            <span class="type">Array</span>
-        </span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_collision_SAPBroadphase.js.html#l105"><code>src&#x2F;collision&#x2F;SAPBroadphase.js:105</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Sorts bodies along the Y axis.</p>
-
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
                 <li class="param">
                     
-                        <code class="param-name">a</code>
-                        <span class="type">Array</span>
+                        <code class="param-name">axisIndex</code>
+                        <span class="type">Number</span>
                     
 
                     
@@ -1184,9 +947,9 @@
                 <h2 class="off-left">Properties</h2>
 
                 
-                    <div id="property_axisListX" class="property item">
-    <h3 class="name"><code>axisListX</code></h3>
-    <span class="type">Array</span>
+                    <div id="property_axisIndex" class="property item">
+    <h3 class="name"><code>axisIndex</code></h3>
+    <span class="type">Number</span>
 
     
 
@@ -1207,7 +970,7 @@
             
         
         
-        <a href="../files/src_collision_SAPBroadphase.js.html#l21"><code>src&#x2F;collision&#x2F;SAPBroadphase.js:21</code></a>
+        <a href="../files/src_collision_SAPBroadphase.js.html#l30"><code>src&#x2F;collision&#x2F;SAPBroadphase.js:30</code></a>
         
         </p>
 
@@ -1217,7 +980,7 @@
     </div>
 
     <div class="description">
-        <p>List of bodies currently in the broadphase.</p>
+        <p>The axis to sort along.</p>
 
     </div>
 
@@ -1229,8 +992,8 @@
 </div>
 
                 
-                    <div id="property_axisListY" class="property item">
-    <h3 class="name"><code>axisListY</code></h3>
+                    <div id="property_axisList" class="property item">
+    <h3 class="name"><code>axisList</code></h3>
     <span class="type">Array</span>
 
     
@@ -1252,7 +1015,7 @@
             
         
         
-        <a href="../files/src_collision_SAPBroadphase.js.html#l28"><code>src&#x2F;collision&#x2F;SAPBroadphase.js:28</code></a>
+        <a href="../files/src_collision_SAPBroadphase.js.html#l16"><code>src&#x2F;collision&#x2F;SAPBroadphase.js:16</code></a>
         
         </p>
 
@@ -1381,7 +1144,7 @@
             
         
         
-        <a href="../files/src_collision_SAPBroadphase.js.html#l35"><code>src&#x2F;collision&#x2F;SAPBroadphase.js:35</code></a>
+        <a href="../files/src_collision_SAPBroadphase.js.html#l23"><code>src&#x2F;collision&#x2F;SAPBroadphase.js:23</code></a>
         
         </p>
 

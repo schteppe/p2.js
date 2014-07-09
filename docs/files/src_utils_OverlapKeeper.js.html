@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/material/Material.js - p2.js</title>
+    <title>src/utils/OverlapKeeper.js - p2.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -170,29 +170,224 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: src/material/Material.js</h1>
+                        <h1 class="file-heading">File: src/utils/OverlapKeeper.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
-module.exports = Material;
+var TupleDictionary = require(&#x27;./TupleDictionary&#x27;);
+var Utils = require(&#x27;./Utils&#x27;);
+
+module.exports = OverlapKeeper;
 
 /**
- * Defines a physics material.
- * @class Material
+ * Keeps track of overlaps in the current state and the last step state.
+ * @class OverlapKeeper
  * @constructor
- * @param {number} id Material identifier
- * @author schteppe
  */
-function Material(id){
-    /**
-     * The material identifier
-     * @property id
-     * @type {Number}
-     */
-    this.id = id || Material.idCounter++;
+function OverlapKeeper() {
+    this.overlappingShapesLastState = new TupleDictionary();
+    this.overlappingShapesCurrentState = new TupleDictionary();
+    this.recordPool = [];
+    this.tmpDict = new TupleDictionary();
+    this.tmpArray1 = [];
 }
 
-Material.idCounter = 0;
+/**
+ * Ticks one step forward in time. This will move the current overlap state to the &quot;old&quot; overlap state, and create a new one as current.
+ * @method tick
+ */
+OverlapKeeper.prototype.tick = function() {
+    var last = this.overlappingShapesLastState;
+    var current = this.overlappingShapesCurrentState;
+
+    // Save old objects into pool
+    var l = last.keys.length;
+    while(l--){
+        var key = last.keys[l];
+        var lastObject = last.getByKey(key);
+        var currentObject = current.getByKey(key);
+        if(lastObject &amp;&amp; !currentObject){
+            // The record is only used in the &quot;last&quot; dict, and will be removed. We might as well pool it.
+            this.recordPool.push(lastObject);
+        }
+    }
+
+    // Clear last object
+    last.reset();
+
+    // Transfer from new object to old
+    last.copy(current);
+
+    // Clear current object
+    current.reset();
+};
+
+/**
+ * @method setOverlapping
+ * @param {Body} bodyA
+ * @param {Body} shapeA
+ * @param {Body} bodyB
+ * @param {Body} shapeB
+ */
+OverlapKeeper.prototype.setOverlapping = function(bodyA, shapeA, bodyB, shapeB) {
+    var last = this.overlappingShapesLastState;
+    var current = this.overlappingShapesCurrentState;
+
+    // Store current contact state
+    if(!current.get(shapeA.id, shapeB.id)){
+
+        var data;
+        if(this.recordPool.length){
+            data = this.recordPool.pop();
+            data.set(bodyA, shapeA, bodyB, shapeB);
+        } else {
+            data = new OverlapKeeperRecord(bodyA, shapeA, bodyB, shapeB);
+        }
+
+        current.set(shapeA.id, shapeB.id, data);
+    }
+};
+
+OverlapKeeper.prototype.getNewOverlaps = function(result){
+    return this.getDiff(this.overlappingShapesLastState, this.overlappingShapesCurrentState, result);
+};
+
+OverlapKeeper.prototype.getEndOverlaps = function(result){
+    return this.getDiff(this.overlappingShapesCurrentState, this.overlappingShapesLastState, result);
+};
+
+/**
+ * Checks if two bodies are currently overlapping.
+ * @method bodiesAreOverlapping
+ * @param  {Body} bodyA
+ * @param  {Body} bodyB
+ * @return {boolean}
+ */
+OverlapKeeper.prototype.bodiesAreOverlapping = function(bodyA, bodyB){
+    var current = this.overlappingShapesCurrentState;
+    var l = current.keys.length;
+    while(l--){
+        var key = current.keys[l];
+        var data = current.data[key];
+        if((data.bodyA === bodyA &amp;&amp; data.bodyB === bodyB) || data.bodyA === bodyB &amp;&amp; data.bodyB === bodyA){
+            return true;
+        }
+    }
+    return false;
+};
+
+OverlapKeeper.prototype.getDiff = function(dictA, dictB, result){
+    var result = result || [];
+    var last = dictA;
+    var current = dictB;
+
+    result.length = 0;
+
+    var l = current.keys.length;
+    while(l--){
+        var key = current.keys[l];
+        var data = current.data[key];
+
+        if(!data){
+            throw new Error(&#x27;Key &#x27;+key+&#x27; had no data!&#x27;);
+        }
+
+        var lastData = last.data[key];
+        if(!lastData){
+            // Not overlapping in last state, but in current.
+            result.push(data);
+        }
+    }
+
+    return result;
+};
+
+OverlapKeeper.prototype.isNewOverlap = function(shapeA, shapeB){
+    var idA = shapeA.id|0,
+        idB = shapeB.id|0;
+    var last = this.overlappingShapesLastState;
+    var current = this.overlappingShapesCurrentState;
+    // Not in last but in new
+    return !!!last.get(idA, idB) &amp;&amp; !!current.get(idA, idB);
+};
+
+OverlapKeeper.prototype.getNewBodyOverlaps = function(result){
+    this.tmpArray1.length = 0;
+    var overlaps = this.getNewOverlaps(this.tmpArray1);
+    return this.getBodyDiff(overlaps, result);
+};
+
+OverlapKeeper.prototype.getEndBodyOverlaps = function(result){
+    this.tmpArray1.length = 0;
+    var overlaps = this.getEndOverlaps(this.tmpArray1);
+    return this.getBodyDiff(overlaps, result);
+};
+
+OverlapKeeper.prototype.getBodyDiff = function(overlaps, result){
+    result = result || [];
+    var accumulator = this.tmpDict;
+
+    var l = overlaps.length;
+
+    while(l--){
+        var data = overlaps[l];
+
+        // Since we use body id&#x27;s for the accumulator, these will be a subset of the original one
+        accumulator.set(data.bodyA.id|0, data.bodyB.id|0, data);
+    }
+
+    l = accumulator.keys.length;
+    while(l--){
+        var data = accumulator.getByKey(accumulator.keys[l]);
+        if(data){
+            result.push(data.bodyA, data.bodyB);
+        }
+    }
+
+    accumulator.reset();
+
+    return result;
+};
+
+/**
+ * Overlap data container for the OverlapKeeper
+ * @class OverlapKeeperRecord
+ * @constructor
+ * @param {Body} bodyA
+ * @param {Shape} shapeA
+ * @param {Body} bodyB
+ * @param {Shape} shapeB
+ */
+function OverlapKeeperRecord(bodyA, shapeA, bodyB, shapeB){
+    /**
+     * @property {Shape} shapeA
+     */
+    this.shapeA = shapeA;
+    /**
+     * @property {Shape} shapeB
+     */
+    this.shapeB = shapeB;
+    /**
+     * @property {Body} bodyA
+     */
+    this.bodyA = bodyA;
+    /**
+     * @property {Body} bodyB
+     */
+    this.bodyB = bodyB;
+}
+
+/**
+ * Set the data for the record
+ * @method set
+ * @param {Body} bodyA
+ * @param {Shape} shapeA
+ * @param {Body} bodyB
+ * @param {Shape} shapeB
+ */
+OverlapKeeperRecord.prototype.set = function(bodyA, shapeA, bodyB, shapeB){
+    OverlapKeeperRecord.call(this, bodyA, shapeA, bodyB, shapeB);
+};
 
     </pre>
 </div>

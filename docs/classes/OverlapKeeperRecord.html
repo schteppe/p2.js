@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>EventEmitter - p2.js</title>
+    <title>OverlapKeeperRecord - p2.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -170,7 +170,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>EventEmitter Class</h1>
+                        <h1>OverlapKeeperRecord Class</h1>
 <div class="box meta">
     
 
@@ -178,7 +178,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_events_EventEmitter.js.html#l1"><code>src&#x2F;events&#x2F;EventEmitter.js:1</code></a>
+            Defined in: <a href="../files/src_utils_OverlapKeeper.js.html#l176"><code>src&#x2F;utils&#x2F;OverlapKeeper.js:176</code></a>
         </div>
     
 
@@ -190,18 +190,46 @@
 
 
 <div class="box intro">
-    <p>Base class for objects that dispatches events.</p>
+    <p>Overlap data container for the OverlapKeeper</p>
 
 </div>
 
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_EventEmitter" class="method item">
-    <h3 class="name"><code>EventEmitter</code></h3>
+        <div id="method_OverlapKeeperRecord" class="method item">
+    <h3 class="name"><code>OverlapKeeperRecord</code></h3>
 
     
-        <span class="paren">()</span>
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>bodyA</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>shapeA</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>bodyB</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>shapeB</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
     
 
     
@@ -229,7 +257,7 @@
             
         
         
-        <a href="../files/src_events_EventEmitter.js.html#l1"><code>src&#x2F;events&#x2F;EventEmitter.js:1</code></a>
+        <a href="../files/src_utils_OverlapKeeper.js.html#l176"><code>src&#x2F;utils&#x2F;OverlapKeeper.js:176</code></a>
         
         </p>
 
@@ -243,6 +271,74 @@
         
     </div>
 
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">bodyA</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">shapeA</code>
+                        <span class="type"><a href="../classes/Shape.html" class="crosslink">Shape</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">bodyB</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">shapeB</code>
+                        <span class="type"><a href="../classes/Shape.html" class="crosslink">Shape</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
     
 
     
@@ -261,6 +357,8 @@
             <li class="api-class-tab methods"><a href="#methods">Methods</a></li>
         
         
+            <li class="api-class-tab properties"><a href="#properties">Properties</a></li>
+        
         
         
     </ul>
@@ -276,28 +374,45 @@
                     <ul class="index-list methods">
                         
                             <li class="index-item method">
-                                <a href="#method_emit">emit</a>
+                                <a href="#method_set">set</a>
 
                                 
                                 
                             </li>
                         
-                            <li class="index-item method">
-                                <a href="#method_has">has</a>
+                    </ul>
+                </div>
+            
+
+            
+                <div class="index-section properties">
+                    <h3>Properties</h3>
+
+                    <ul class="index-list properties">
+                        
+                            <li class="index-item property">
+                                <a href="#property_bodyA">bodyA</a>
 
                                 
                                 
                             </li>
                         
-                            <li class="index-item method">
-                                <a href="#method_off">off</a>
+                            <li class="index-item property">
+                                <a href="#property_bodyB">bodyB</a>
 
                                 
                                 
                             </li>
                         
-                            <li class="index-item method">
-                                <a href="#method_on">on</a>
+                            <li class="index-item property">
+                                <a href="#property_shapeA">shapeA</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_shapeB">shapeB</a>
 
                                 
                                 
@@ -310,8 +425,6 @@
             
 
             
-
-            
         </div>
 
         
@@ -319,8 +432,8 @@
                 <h2 class="off-left">Methods</h2>
 
                 
-                    <div id="method_emit" class="method item">
-    <h3 class="name"><code>emit</code></h3>
+                    <div id="method_set" class="method item">
+    <h3 class="name"><code>set</code></h3>
 
     
         <div class="args">
@@ -328,7 +441,25 @@
             
                 <li class="arg">
                     
-                        <code>event</code>
+                        <code>bodyA</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>shapeA</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>bodyB</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>shapeB</code>
                     
                 </li>
             
@@ -336,10 +467,6 @@
         </div>
     
 
-    
-        <span class="returns-inline">
-            <span class="type"><a href="../classes/EventEmitter.html" class="crosslink">EventEmitter</a></span>
-        </span>
     
 
     
@@ -365,7 +492,7 @@
             
         
         
-        <a href="../files/src_events_EventEmitter.js.html#l79"><code>src&#x2F;events&#x2F;EventEmitter.js:79</code></a>
+        <a href="../files/src_utils_OverlapKeeper.js.html#l204"><code>src&#x2F;utils&#x2F;OverlapKeeper.js:204</code></a>
         
         </p>
 
@@ -376,7 +503,7 @@
     </div>
 
     <div class="description">
-        <p>Emit an event.</p>
+        <p>Set the data for the record</p>
 
     </div>
 
@@ -388,8 +515,8 @@
             
                 <li class="param">
                     
-                        <code class="param-name">event</code>
-                        <span class="type">Object</span>
+                        <code class="param-name">bodyA</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
                     
 
                     
@@ -399,22 +526,50 @@
                     </div>
 
                     
-                        <ul class="params-list">
-                            
-                            <li class="param">
-                                
-                                    <code class="param-name">type</code>
-                                    <span class="type">String</span>
-                                
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">shapeA</code>
+                        <span class="type"><a href="../classes/Shape.html" class="crosslink">Shape</a></span>
+                    
 
-                                <div class="param-description">
-                                    
-                                </div>
+                    
 
-                                
-                            </li>
-                            
-                        </ul>
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">bodyB</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">shapeB</code>
+                        <span class="type"><a href="../classes/Shape.html" class="crosslink">Shape</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
                     
                 </li>
             
@@ -423,57 +578,22 @@
     
 
     
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                
-                    
-                        <span class="type"><a href="../classes/EventEmitter.html" class="crosslink">EventEmitter</a></span>:
-                    
-                    <p>The self object, for chainability.</p>
-
-                
-            </div>
-        </div>
-    
 
     
 </div>
 
                 
-                    <div id="method_has" class="method item">
-    <h3 class="name"><code>has</code></h3>
+            </div>
+        
 
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>type</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>listener</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
+        
+            <div id="properties" class="api-class-tabpanel">
+                <h2 class="off-left">Properties</h2>
 
-    
-        <span class="returns-inline">
-            <span class="type">Boolean</span>
-        </span>
-    
-
-    
-
-    
+                
+                    <div id="property_bodyA" class="property item">
+    <h3 class="name"><code>bodyA</code></h3>
+    <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
 
     
 
@@ -494,10 +614,9 @@
             
         
         
-        <a href="../files/src_events_EventEmitter.js.html#l35"><code>src&#x2F;events&#x2F;EventEmitter.js:35</code></a>
+        <a href="../files/src_utils_OverlapKeeper.js.html#l194"><code>src&#x2F;utils&#x2F;OverlapKeeper.js:194</code></a>
         
         </p>
-
 
         
 
@@ -505,100 +624,20 @@
     </div>
 
     <div class="description">
-        <p>Check if an event listener is added</p>
-
+        
     </div>
 
     
-        <div class="params">
-            <h4>Parameters:</h4>
 
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">type</code>
-                        <span class="type">String</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">listener</code>
-                        <span class="type">Function</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                
-                    
-                        <span class="type">Boolean</span>:
-                    
-                
-            </div>
-        </div>
     
 
     
 </div>
 
                 
-                    <div id="method_off" class="method item">
-    <h3 class="name"><code>off</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>type</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>listener</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-        <span class="returns-inline">
-            <span class="type"><a href="../classes/EventEmitter.html" class="crosslink">EventEmitter</a></span>
-        </span>
-    
-
-    
-
-    
+                    <div id="property_bodyB" class="property item">
+    <h3 class="name"><code>bodyB</code></h3>
+    <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
 
     
 
@@ -619,10 +658,9 @@
             
         
         
-        <a href="../files/src_events_EventEmitter.js.html#l60"><code>src&#x2F;events&#x2F;EventEmitter.js:60</code></a>
+        <a href="../files/src_utils_OverlapKeeper.js.html#l198"><code>src&#x2F;utils&#x2F;OverlapKeeper.js:198</code></a>
         
         </p>
-
 
         
 
@@ -630,102 +668,20 @@
     </div>
 
     <div class="description">
-        <p>Remove an event listener</p>
-
+        
     </div>
 
     
-        <div class="params">
-            <h4>Parameters:</h4>
 
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">type</code>
-                        <span class="type">String</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">listener</code>
-                        <span class="type">Function</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                
-                    
-                        <span class="type"><a href="../classes/EventEmitter.html" class="crosslink">EventEmitter</a></span>:
-                    
-                    <p>The self object, for chainability.</p>
-
-                
-            </div>
-        </div>
     
 
     
 </div>
 
                 
-                    <div id="method_on" class="method item">
-    <h3 class="name"><code>on</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>type</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>listener</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-        <span class="returns-inline">
-            <span class="type"><a href="../classes/EventEmitter.html" class="crosslink">EventEmitter</a></span>
-        </span>
-    
-
-    
-
-    
+                    <div id="property_shapeA" class="property item">
+    <h3 class="name"><code>shapeA</code></h3>
+    <span class="type"><a href="../classes/Shape.html" class="crosslink">Shape</a></span>
 
     
 
@@ -746,10 +702,9 @@
             
         
         
-        <a href="../files/src_events_EventEmitter.js.html#l13"><code>src&#x2F;events&#x2F;EventEmitter.js:13</code></a>
+        <a href="../files/src_utils_OverlapKeeper.js.html#l186"><code>src&#x2F;utils&#x2F;OverlapKeeper.js:186</code></a>
         
         </p>
-
 
         
 
@@ -757,64 +712,55 @@
     </div>
 
     <div class="description">
-        <p>Add an event listener</p>
-
+        
     </div>
 
     
-        <div class="params">
-            <h4>Parameters:</h4>
 
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">type</code>
-                        <span class="type">String</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">listener</code>
-                        <span class="type">Function</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
     
 
     
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                
-                    
-                        <span class="type"><a href="../classes/EventEmitter.html" class="crosslink">EventEmitter</a></span>:
-                    
-                    <p>The self object, for chainability.</p>
+</div>
 
                 
-            </div>
-        </div>
+                    <div id="property_shapeB" class="property item">
+    <h3 class="name"><code>shapeB</code></h3>
+    <span class="type"><a href="../classes/Shape.html" class="crosslink">Shape</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_utils_OverlapKeeper.js.html#l190"><code>src&#x2F;utils&#x2F;OverlapKeeper.js:190</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+
     
 
     
@@ -822,8 +768,6 @@
 
                 
             </div>
-        
-
         
 
         

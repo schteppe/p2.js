@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.5.0</em>
+            <em>API Docs for: 0.6.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -85,6 +85,8 @@
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
+                <li><a href="../classes/LinearSpring.html">LinearSpring</a></li>
+            
                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
@@ -92,6 +94,10 @@
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
                 <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
+            
+                <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
+            
+                <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
             
                 <li><a href="../classes/Particle.html">Particle</a></li>
             
@@ -105,6 +111,8 @@
             
                 <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
             
+                <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
+            
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
                 <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
@@ -114,6 +122,8 @@
                 <li><a href="../classes/Solver.html">Solver</a></li>
             
                 <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
             
                 <li><a href="../classes/Utils.html">Utils</a></li>
             
@@ -184,7 +194,7 @@
 
 
 <div class="box intro">
-    <p>Non-penetration constraint equation. Tries to make the ri and rj vectors the same point.</p>
+    <p>Non-penetration constraint equation. Tries to make the contactPointA and contactPointB vectors coincide, while keeping the applied force repulsive.</p>
 
 </div>
 
@@ -376,6 +386,13 @@
                         
                             <li class="index-item method inherited">
                                 <a href="#method_computeInvC">computeInvC</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_gmult">gmult</a>
 
                                 
                                 
@@ -577,7 +594,7 @@
             
         
         
-        <a href="../files/src_equations_Equation.js.html#l311"><code>src&#x2F;equations&#x2F;Equation.js:311</code></a>
+        <a href="../files/src_equations_Equation.js.html#l268"><code>src&#x2F;equations&#x2F;Equation.js:268</code></a>
         
         </p>
 
@@ -656,7 +673,7 @@
             
         
         
-        <a href="../files/src_equations_Equation.js.html#l152"><code>src&#x2F;equations&#x2F;Equation.js:152</code></a>
+        <a href="../files/src_equations_Equation.js.html#l150"><code>src&#x2F;equations&#x2F;Equation.js:150</code></a>
         
         </p>
 
@@ -724,7 +741,7 @@
             
         
         
-        <a href="../files/src_equations_Equation.js.html#l241"><code>src&#x2F;equations&#x2F;Equation.js:241</code></a>
+        <a href="../files/src_equations_Equation.js.html#l213"><code>src&#x2F;equations&#x2F;Equation.js:213</code></a>
         
         </p>
 
@@ -735,7 +752,7 @@
     </div>
 
     <div class="description">
-        <p>Computes G<em>inv(M)</em>f, where M is the mass matrix with diagonal blocks for each body, and f are the forces on the bodies.</p>
+        <p>Computes G*inv(M)*f, where M is the mass matrix with diagonal blocks for each body, and f are the forces on the bodies.</p>
 
     </div>
 
@@ -792,7 +809,7 @@
             
         
         
-        <a href="../files/src_equations_Equation.js.html#l282"><code>src&#x2F;equations&#x2F;Equation.js:282</code></a>
+        <a href="../files/src_equations_Equation.js.html#l239"><code>src&#x2F;equations&#x2F;Equation.js:239</code></a>
         
         </p>
 
@@ -803,7 +820,7 @@
     </div>
 
     <div class="description">
-        <p>Computes G<em>inv(M)</em>G&#39;</p>
+        <p>Computes G*inv(M)*G&#39;</p>
 
     </div>
 
@@ -860,7 +877,7 @@
             
         
         
-        <a href="../files/src_equations_Equation.js.html#l164"><code>src&#x2F;equations&#x2F;Equation.js:164</code></a>
+        <a href="../files/src_equations_Equation.js.html#l162"><code>src&#x2F;equations&#x2F;Equation.js:162</code></a>
         
         </p>
 
@@ -928,7 +945,7 @@
             
         
         
-        <a href="../files/src_equations_Equation.js.html#l209"><code>src&#x2F;equations&#x2F;Equation.js:209</code></a>
+        <a href="../files/src_equations_Equation.js.html#l181"><code>src&#x2F;equations&#x2F;Equation.js:181</code></a>
         
         </p>
 
@@ -996,7 +1013,7 @@
             
         
         
-        <a href="../files/src_equations_Equation.js.html#l225"><code>src&#x2F;equations&#x2F;Equation.js:225</code></a>
+        <a href="../files/src_equations_Equation.js.html#l197"><code>src&#x2F;equations&#x2F;Equation.js:197</code></a>
         
         </p>
 
@@ -1074,7 +1091,7 @@
             
         
         
-        <a href="../files/src_equations_Equation.js.html#l352"><code>src&#x2F;equations&#x2F;Equation.js:352</code></a>
+        <a href="../files/src_equations_Equation.js.html#l309"><code>src&#x2F;equations&#x2F;Equation.js:309</code></a>
         
         </p>
 
@@ -1085,7 +1102,7 @@
     </div>
 
     <div class="description">
-        <p>Compute the denominator part of the SPOOK equation: C = G<em>inv(M)</em>G&#39; + eps</p>
+        <p>Compute the denominator part of the SPOOK equation: C = G*inv(M)*G&#39; + eps</p>
 
     </div>
 
@@ -1112,6 +1129,74 @@
             
             </ul>
         </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Number</span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_gmult" class="method item inherited">
+    <h3 class="name"><code>gmult</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Number</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Equation.html#method_gmult">Equation</a>:
+            
+        
+        
+        <a href="../files/src_equations_Equation.js.html#l136"><code>src&#x2F;equations&#x2F;Equation.js:136</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Multiply a jacobian entry with corresponding positions or velocities</p>
+
+    </div>
+
     
 
     
@@ -1161,7 +1246,7 @@
             
         
         
-        <a href="../files/src_equations_Equation.js.html#l127"><code>src&#x2F;equations&#x2F;Equation.js:127</code></a>
+        <a href="../files/src_equations_Equation.js.html#l120"><code>src&#x2F;equations&#x2F;Equation.js:120</code></a>
         
         </p>
 
@@ -1386,7 +1471,7 @@
             
         
         
-        <a href="../files/src_equations_Equation.js.html#l103"><code>src&#x2F;equations&#x2F;Equation.js:103</code></a>
+        <a href="../files/src_equations_Equation.js.html#l96"><code>src&#x2F;equations&#x2F;Equation.js:96</code></a>
         
         </p>
 
@@ -1599,7 +1684,7 @@
             
         
         
-        <a href="../files/src_equations_Equation.js.html#l90"><code>src&#x2F;equations&#x2F;Equation.js:90</code></a>
+        <a href="../files/src_equations_Equation.js.html#l83"><code>src&#x2F;equations&#x2F;Equation.js:83</code></a>
         
         </p>
 
@@ -1641,7 +1726,7 @@
             
         
         
-        <a href="../files/src_equations_Equation.js.html#l84"><code>src&#x2F;equations&#x2F;Equation.js:84</code></a>
+        <a href="../files/src_equations_Equation.js.html#l77"><code>src&#x2F;equations&#x2F;Equation.js:77</code></a>
         
         </p>
 
@@ -1728,7 +1813,7 @@
             
         
         
-        <a href="../files/src_equations_Equation.js.html#l97"><code>src&#x2F;equations&#x2F;Equation.js:97</code></a>
+        <a href="../files/src_equations_Equation.js.html#l90"><code>src&#x2F;equations&#x2F;Equation.js:90</code></a>
         
         </p>
 

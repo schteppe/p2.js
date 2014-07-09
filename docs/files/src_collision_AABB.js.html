@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.5.0</em>
+            <em>API Docs for: 0.6.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -85,6 +85,8 @@
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
+                <li><a href="../classes/LinearSpring.html">LinearSpring</a></li>
+            
                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
@@ -92,6 +94,10 @@
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
                 <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
+            
+                <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
+            
+                <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
             
                 <li><a href="../classes/Particle.html">Particle</a></li>
             
@@ -105,6 +111,8 @@
             
                 <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
             
+                <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
+            
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
                 <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
@@ -114,6 +122,8 @@
                 <li><a href="../classes/Solver.html">Solver</a></li>
             
                 <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
             
                 <li><a href="../classes/Utils.html">Utils</a></li>
             
@@ -207,16 +217,33 @@ var tmp = vec2.create();
  * @method setFromPoints
  * @param {Array} points An array of vec2&#x27;s.
  */
-AABB.prototype.setFromPoints = function(points,position,angle){
+AABB.prototype.setFromPoints = function(points, position, angle, skinSize){
     var l = this.lowerBound,
         u = this.upperBound;
-    vec2.set(l,  Number.MAX_VALUE,  Number.MAX_VALUE);
-    vec2.set(u, -Number.MAX_VALUE, -Number.MAX_VALUE);
-    for(var i=0; i&lt;points.length; i++){
+
+    if(typeof(angle) !== &quot;number&quot;){
+        angle = 0;
+    }
+
+    // Set to the first point
+    if(angle !== 0){
+        vec2.rotate(l, points[0], angle);
+    } else {
+        vec2.copy(l, points[0]);
+    }
+    vec2.copy(u, l);
+
+    // Compute cosines and sines just once
+    var cosAngle = Math.cos(angle),
+        sinAngle = Math.sin(angle);
+    for(var i = 1; i&lt;points.length; i++){
         var p = points[i];
 
-        if(typeof(angle) === &quot;number&quot;){
-            vec2.rotate(tmp,p,angle);
+        if(angle !== 0){
+            var x = p[0],
+                y = p[1];
+            tmp[0] = cosAngle * x -sinAngle * y;
+            tmp[1] = sinAngle * x +cosAngle * y;
             p = tmp;
         }
 
@@ -234,6 +261,13 @@ AABB.prototype.setFromPoints = function(points,position,angle){
     if(position){
         vec2.add(this.lowerBound, this.lowerBound, position);
         vec2.add(this.upperBound, this.upperBound, position);
+    }
+
+    if(skinSize){
+        this.lowerBound[0] -= skinSize;
+        this.lowerBound[1] -= skinSize;
+        this.upperBound[0] += skinSize;
+        this.upperBound[1] += skinSize;
     }
 };
 
@@ -254,15 +288,18 @@ AABB.prototype.copy = function(aabb){
  */
 AABB.prototype.extend = function(aabb){
     // Loop over x and y
-    for(var i=0; i&lt;2; i++){
+    var i = 2;
+    while(i--){
         // Extend lower bound
-        if(aabb.lowerBound[i] &lt; this.lowerBound[i]){
-            this.lowerBound[i] = aabb.lowerBound[i];
+        var l = aabb.lowerBound[i];
+        if(this.lowerBound[i] &gt; l){
+            this.lowerBound[i] = l;
         }
 
         // Upper
-        if(aabb.upperBound[i] &gt; this.upperBound[i]){
-            this.upperBound[i] = aabb.upperBound[i];
+        var u = aabb.upperBound[i];
+        if(this.upperBound[i] &lt; u){
+            this.upperBound[i] = u;
         }
     }
 };

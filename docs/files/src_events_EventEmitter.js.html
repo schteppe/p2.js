@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.5.0</em>
+            <em>API Docs for: 0.6.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -85,6 +85,8 @@
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
+                <li><a href="../classes/LinearSpring.html">LinearSpring</a></li>
+            
                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
@@ -92,6 +94,10 @@
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
                 <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
+            
+                <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
+            
+                <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
             
                 <li><a href="../classes/Particle.html">Particle</a></li>
             
@@ -105,6 +111,8 @@
             
                 <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
             
+                <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
+            
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
                 <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
@@ -114,6 +122,8 @@
                 <li><a href="../classes/Solver.html">Solver</a></li>
             
                 <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
             
                 <li><a href="../classes/Utils.html">Utils</a></li>
             
@@ -169,7 +179,7 @@
  * @class EventEmitter
  * @constructor
  */
-var EventEmitter = function () {}
+var EventEmitter = function () {};
 
 module.exports = EventEmitter;
 
@@ -185,7 +195,9 @@ EventEmitter.prototype = {
      */
     on: function ( type, listener, context ) {
         listener.context = context || this;
-        if ( this._listeners === undefined ) this._listeners = {};
+        if ( this._listeners === undefined ){
+            this._listeners = {};
+        }
         var listeners = this._listeners;
         if ( listeners[ type ] === undefined ) {
             listeners[ type ] = [];
@@ -204,11 +216,20 @@ EventEmitter.prototype = {
      * @return {Boolean}
      */
     has: function ( type, listener ) {
-        if ( this._listeners === undefined ) return false;
-        var listeners = this._listeners;
-        if ( listeners[ type ] !== undefined &amp;&amp; listeners[ type ].indexOf( listener ) !== - 1 ) {
-            return true;
+        if ( this._listeners === undefined ){
+            return false;
         }
+        var listeners = this._listeners;
+        if(listener){
+            if ( listeners[ type ] !== undefined &amp;&amp; listeners[ type ].indexOf( listener ) !== - 1 ) {
+                return true;
+            }
+        } else {
+            if ( listeners[ type ] !== undefined ) {
+                return true;
+            }
+        }
+
         return false;
     },
 
@@ -220,7 +241,9 @@ EventEmitter.prototype = {
      * @return {EventEmitter} The self object, for chainability.
      */
     off: function ( type, listener ) {
-        if ( this._listeners === undefined ) return this;
+        if ( this._listeners === undefined ){
+            return this;
+        }
         var listeners = this._listeners;
         var index = listeners[ type ].indexOf( listener );
         if ( index !== - 1 ) {
@@ -237,7 +260,9 @@ EventEmitter.prototype = {
      * @return {EventEmitter} The self object, for chainability.
      */
     emit: function ( event ) {
-        if ( this._listeners === undefined ) return this;
+        if ( this._listeners === undefined ){
+            return this;
+        }
         var listeners = this._listeners;
         var listenerArray = listeners[ event.type ];
         if ( listenerArray !== undefined ) {

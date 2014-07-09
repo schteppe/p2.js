@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.5.0</em>
+            <em>API Docs for: 0.6.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -85,6 +85,8 @@
             
                 <li><a href="../classes/Line.html">Line</a></li>
             
+                <li><a href="../classes/LinearSpring.html">LinearSpring</a></li>
+            
                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
@@ -92,6 +94,10 @@
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
                 <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
+            
+                <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
+            
+                <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
             
                 <li><a href="../classes/Particle.html">Particle</a></li>
             
@@ -105,6 +111,8 @@
             
                 <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
             
+                <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
+            
                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
             
                 <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
@@ -114,6 +122,8 @@
                 <li><a href="../classes/Solver.html">Solver</a></li>
             
                 <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
             
                 <li><a href="../classes/Utils.html">Utils</a></li>
             
@@ -165,7 +175,8 @@
 <div class="file">
     <pre class="code prettyprint linenums">
 var Shape = require(&#x27;./Shape&#x27;)
-,    vec2 = require(&#x27;../math/vec2&#x27;);
+,    vec2 = require(&#x27;../math/vec2&#x27;)
+,    Utils = require(&#x27;../utils/Utils&#x27;);
 
 module.exports = Heightfield;
 
@@ -174,13 +185,49 @@ module.exports = Heightfield;
  * @class Heightfield
  * @extends Shape
  * @constructor
- * @param {Array} data
- * @param {Number} maxValue
- * @param {Number} elementWidth
- * @todo Should take maxValue as an option and also be able to compute it itself if not given.
+ * @param {Array} data An array of Y values that will be used to construct the terrain.
+ * @param {object} options
+ * @param {Number} [options.minValue] Minimum value of the data points in the data array. Will be computed automatically if not given.
+ * @param {Number} [options.maxValue] Maximum value.
+ * @param {Number} [options.elementWidth=0.1] World spacing between the data points in X direction.
  * @todo Should be possible to use along all axes, not just y
+ *
+ * @example
+ *     // Generate some height data (y-values).
+ *     var data = [];
+ *     for(var i = 0; i &lt; 1000; i++){
+ *         var y = 0.5 * Math.cos(0.2 * i);
+ *         data.push(y);
+ *     }
+ *
+ *     // Create the heightfield shape
+ *     var heightfieldShape = new Heightfield(data, {
+ *         elementWidth: 1 // Distance between the data points in X direction
+ *     });
+ *     var heightfieldBody = new Body();
+ *     heightfieldBody.addShape(heightfieldShape);
+ *     world.addBody(heightfieldBody);
  */
-function Heightfield(data,maxValue,elementWidth){
+function Heightfield(data, options){
+    options = Utils.defaults(options, {
+        maxValue : null,
+        minValue : null,
+        elementWidth : 0.1
+    });
+
+    if(options.minValue === null || options.maxValue === null){
+        options.maxValue = data[0];
+        options.minValue = data[0];
+        for(var i=0; i !== data.length; i++){
+            var v = data[i];
+            if(v &gt; options.maxValue){
+                options.maxValue = v;
+            }
+            if(v &lt; options.minValue){
+                options.minValue = v;
+            }
+        }
+    }
 
     /**
      * An array of numbers, or height values, that are spread out along the x axis.
@@ -192,13 +239,19 @@ function Heightfield(data,maxValue,elementWidth){
      * Max value of the data
      * @property {number} maxValue
      */
-    this.maxValue = maxValue;
+    this.maxValue = options.maxValue;
+
+    /**
+     * Max value of the data
+     * @property {number} minValue
+     */
+    this.minValue = options.minValue;
 
     /**
      * The width of each element
      * @property {number} elementWidth
      */
-    this.elementWidth = elementWidth;
+    this.elementWidth = options.elementWidth;
 
     Shape.call(this,Shape.HEIGHTFIELD);
 }
