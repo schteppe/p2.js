@@ -11,7 +11,12 @@ module.exports = Convex;
  * @constructor
  * @extends Shape
  * @param {Array} vertices An array of vertices that span this shape. Vertices are given in counter-clockwise (CCW) direction.
- * @param {Array} axes An array of unit length vectors
+ * @param {Array} [axes] An array of unit length vectors, representing the symmetry axes in the convex.
+ * @example
+ *     // Create a box
+ *     var vertices = [[-1,-1], [1,-1], [1,1], [-1,1]];
+ *     var convexShape = new Convex(vertices);
+ *     body.addShape(convexShape);
  */
 function Convex(vertices, axes){
 

@@ -8,8 +8,13 @@ module.exports = Capsule;
  * @class Capsule
  * @constructor
  * @extends Shape
- * @param {Number} [length] The distance between the end points
- * @param {Number} [radius] Radius of the capsule
+ * @param {Number} [length=1] The distance between the end points
+ * @param {Number} [radius=1] Radius of the capsule
+ * @example
+ *     var radius = 1;
+ *     var length = 2;
+ *     var capsuleShape = new Capsule(length, radius);
+ *     body.addShape(capsuleShape);
  */
 function Capsule(length, radius){
 

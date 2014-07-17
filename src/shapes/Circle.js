@@ -9,6 +9,11 @@ module.exports = Circle;
  * @extends Shape
  * @constructor
  * @param {number} [radius=1] The radius of this circle
+ *
+ * @example
+ *     var radius = 1;
+ *     var circleShape = new Circle(radius);
+ *     body.addShape(circleShape);
  */
 function Circle(radius){
 

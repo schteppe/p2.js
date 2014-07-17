@@ -8,8 +8,8 @@ module.exports = Rectangle;
  * Rectangle shape class.
  * @class Rectangle
  * @constructor
- * @param {Number} width Width
- * @param {Number} height Height
+ * @param {Number} [width=1] Width
+ * @param {Number} [height=1] Height
  * @extends Convex
  */
 function Rectangle(width, height){
