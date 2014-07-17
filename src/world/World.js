@@ -726,7 +726,7 @@ World.prototype.internalStep = function(dt){
             e.shapeA = data.shapeA;
             e.shapeB = data.shapeB;
             e.bodyA = data.bodyA;
-            e.bodyB = data.bodyA;
+            e.bodyB = data.bodyB;
             this.emit(e);
         }
     }
