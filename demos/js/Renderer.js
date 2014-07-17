@@ -29,8 +29,10 @@ p2.Renderer = Renderer;
  * @constructor
  * @param {object} scenes One or more scene definitions. See setScene.
  */
-function Renderer(scenes){
+function Renderer(scenes, options){
     p2.EventEmitter.call(this);
+
+    options = options || {};
 
     // Expose globally
     window.app = this;
@@ -134,6 +136,13 @@ function Renderer(scenes){
 
     this.setUpKeyboard();
     this.setupGUI();
+
+    if(typeof(options.hideGUI) === 'undefined'){
+        options.hideGUI = 'auto';
+    }
+    if((options.hideGUI === 'auto' && window.innerWidth < 600) || options.hideGUI === true){
+        this.gui.close();
+    }
 
     this.printConsoleMessage();
 
