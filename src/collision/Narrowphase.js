@@ -140,7 +140,7 @@ function Narrowphase(){
 
     /**
      * Contact skin size value to use in the next contact equations.
-     * @property {Number} collidingBodiesLastStep
+     * @property {Number} contactSkinSize
      * @default 0.01
      */
     this.contactSkinSize = 0.01;

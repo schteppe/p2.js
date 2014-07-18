@@ -164,7 +164,7 @@ function World(options){
      * @property broadphase
      * @type {Broadphase}
      */
-    this.broadphase = options.broadphase || new NaiveBroadphase();
+    this.broadphase = options.broadphase || new NaiveBroadphase(); // @todo default should be SAP.
     this.broadphase.setWorld(this);
 
     /**

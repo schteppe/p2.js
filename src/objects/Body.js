@@ -118,7 +118,7 @@ function Body(options){
      * @property fixedRotation
      * @type {Boolean}
      */
-    this.fixedRotation = !!options.fixedRotation || false;
+    this.fixedRotation = !!options.fixedRotation;
 
     /**
      * The position of the body
