@@ -606,9 +606,7 @@ World.prototype.internalStep = function(dt){
     // Update approximate friction gravity.
     if(this.useWorldGravityAsFrictionGravity){
         var gravityLen = vec2.length(this.gravity);
-        if(gravityLen === 0 && this.useFrictionGravityOnZeroGravity){
-            // Leave friction gravity as it is.
-        } else {
+        if(!(gravityLen === 0 && this.useFrictionGravityOnZeroGravity)){
             // Nonzero gravity. Use it.
             this.frictionGravity = gravityLen;
         }

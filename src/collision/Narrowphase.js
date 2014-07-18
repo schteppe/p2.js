@@ -2161,10 +2161,12 @@ Narrowphase.prototype.circleHeightfield = function( circleBody,circleShape,circl
         return justTest ? false : 0;
     }
 
+    /*
     if(circlePos[1]+radius < min){
         // Below the minimum point... We can just guess.
         // TODO
     }
+    */
 
     // 1. Check so center of circle is not inside the field. If it is, this wont work...
     // 2. For each edge
