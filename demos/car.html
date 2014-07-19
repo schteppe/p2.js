@@ -17,9 +17,7 @@
 
             // Create a World
             var world = new p2.World({
-                doProfiling:true,                    // Enable stats
-                gravity : [0,-10],                   // Set gravity to -10 in y direction
-                broadphase : new p2.SAPBroadphase(), // Broadphase algorithm
+                gravity: [0,-10] // Set gravity to -10 in y direction
             });
 
             this.setWorld(world);

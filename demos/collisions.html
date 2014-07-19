@@ -20,9 +20,7 @@
         var app = new p2.WebGLRenderer(function(){
 
             var world = new p2.World({
-                doProfiling:true,
-                gravity : [0,-10],
-                broadphase : new p2.SAPBroadphase(),
+                gravity : [0,-10]
             });
 
             this.setWorld(world);
