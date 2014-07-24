@@ -1,10 +1,10 @@
-var Constraint = require('./Constraint')
-,   ContactEquation = require('../equations/ContactEquation')
-,   Equation = require('../equations/Equation')
-,   vec2 = require('../math/vec2')
-,   RotationalLockEquation = require('../equations/RotationalLockEquation');
+import Constraint from './Constraint';
+import ContactEquation from '../equations/ContactEquation';
+import Equation from '../equations/Equation';
+import vec2 from '../math/vec2';
+import RotationalLockEquation from '../equations/RotationalLockEquation';
 
-module.exports = PrismaticConstraint;
+export default PrismaticConstraint;
 
 /**
  * Constraint that only allows bodies to move along a line, relative to each other. See <a href="http://www.iforce2d.net/b2dtut/joints-prismatic">this tutorial</a>.

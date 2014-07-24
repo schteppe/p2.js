@@ -1,9 +1,9 @@
-var Constraint = require('./Constraint')
-,   Equation = require('../equations/Equation')
-,   vec2 = require('../math/vec2')
-,   Utils = require('../utils/Utils');
+import Constraint from './Constraint';
+import Equation from '../equations/Equation';
+import vec2 from '../math/vec2';
+import Utils from '../utils/Utils';
 
-module.exports = DistanceConstraint;
+export default DistanceConstraint;
 
 /**
  * Constraint that tries to keep the distance between two bodies constant.

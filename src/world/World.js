@@ -1,39 +1,38 @@
 /* global performance */
 /*jshint -W020 */
 
-var  GSSolver = require('../solver/GSSolver')
-,    Solver = require('../solver/Solver')
-,    NaiveBroadphase = require('../collision/NaiveBroadphase')
-,    vec2 = require('../math/vec2')
-,    Circle = require('../shapes/Circle')
-,    Rectangle = require('../shapes/Rectangle')
-,    Convex = require('../shapes/Convex')
-,    Line = require('../shapes/Line')
-,    Plane = require('../shapes/Plane')
-,    Capsule = require('../shapes/Capsule')
-,    Particle = require('../shapes/Particle')
-,    EventEmitter = require('../events/EventEmitter')
-,    Body = require('../objects/Body')
-,    Shape = require('../shapes/Shape')
-,    LinearSpring = require('../objects/LinearSpring')
-,    Material = require('../material/Material')
-,    ContactMaterial = require('../material/ContactMaterial')
-,    DistanceConstraint = require('../constraints/DistanceConstraint')
-,    Constraint = require('../constraints/Constraint')
-,    LockConstraint = require('../constraints/LockConstraint')
-,    RevoluteConstraint = require('../constraints/RevoluteConstraint')
-,    PrismaticConstraint = require('../constraints/PrismaticConstraint')
-,    GearConstraint = require('../constraints/GearConstraint')
-,    pkg = require('../../package.json')
-,    Broadphase = require('../collision/Broadphase')
-,    SAPBroadphase = require('../collision/SAPBroadphase')
-,    Narrowphase = require('../collision/Narrowphase')
-,    Utils = require('../utils/Utils')
-,    OverlapKeeper = require('../utils/OverlapKeeper')
-,    IslandManager = require('./IslandManager')
-,    RotationalSpring = require('../objects/RotationalSpring');
+import GSSolver from '../solver/GSSolver';
+import Solver from '../solver/Solver';
+import NaiveBroadphase from '../collision/NaiveBroadphase';
+import vec2 from '../math/vec2';
+import Circle from '../shapes/Circle';
+import Rectangle from '../shapes/Rectangle';
+import Convex from '../shapes/Convex';
+import Line from '../shapes/Line';
+import Plane from '../shapes/Plane';
+import Capsule from '../shapes/Capsule';
+import Particle from '../shapes/Particle';
+import EventEmitter from '../events/EventEmitter';
+import Body from '../objects/Body';
+import Shape from '../shapes/Shape';
+import LinearSpring from '../objects/LinearSpring';
+import Material from '../material/Material';
+import ContactMaterial from '../material/ContactMaterial';
+import DistanceConstraint from '../constraints/DistanceConstraint';
+import Constraint from '../constraints/Constraint';
+import LockConstraint from '../constraints/LockConstraint';
+import RevoluteConstraint from '../constraints/RevoluteConstraint';
+import PrismaticConstraint from '../constraints/PrismaticConstraint';
+import GearConstraint from '../constraints/GearConstraint';
+import Broadphase from '../collision/Broadphase';
+import SAPBroadphase from '../collision/SAPBroadphase';
+import Narrowphase from '../collision/Narrowphase';
+import Utils from '../utils/Utils';
+import OverlapKeeper from '../utils/OverlapKeeper';
+import IslandManager from './IslandManager';
+import RotationalSpring from '../objects/RotationalSpring';
 
-module.exports = World;
+export default World;
 
 if(typeof performance === 'undefined'){
     performance = {};

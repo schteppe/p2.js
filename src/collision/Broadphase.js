@@ -1,7 +1,7 @@
-var vec2 = require('../math/vec2');
-var Body = require('../objects/Body');
+import vec2 from '../math/vec2';
+import Body from '../objects/Body';
 
-module.exports = Broadphase;
+export default Broadphase;
 
 /**
  * Base class for broadphase implementations.

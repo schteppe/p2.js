@@ -1,22 +1,23 @@
-var vec2 = require('../math/vec2')
-,   sub = vec2.sub
-,   add = vec2.add
-,   dot = vec2.dot
-,   Utils = require('../utils/Utils')
-,   TupleDictionary = require('../utils/TupleDictionary')
-,   Equation = require('../equations/Equation')
-,   ContactEquation = require('../equations/ContactEquation')
-,   FrictionEquation = require('../equations/FrictionEquation')
-,   Circle = require('../shapes/Circle')
-,   Convex = require('../shapes/Convex')
-,   Shape = require('../shapes/Shape')
-,   Body = require('../objects/Body')
-,   Rectangle = require('../shapes/Rectangle');
+import vec2 from '../math/vec2';
+import Utils from '../utils/Utils';
+import TupleDictionary from '../utils/TupleDictionary';
+import Equation from '../equations/Equation';
+import ContactEquation from '../equations/ContactEquation';
+import FrictionEquation from '../equations/FrictionEquation';
+import Circle from '../shapes/Circle';
+import Convex from '../shapes/Convex';
+import Shape from '../shapes/Shape';
+import Body from '../objects/Body';
+import Rectangle from '../shapes/Rectangle';
 
-module.exports = Narrowphase;
+export default Narrowphase;
 
 // Temp things
 var yAxis = vec2.fromValues(0,1);
+
+var sub = vec2.sub
+,   add = vec2.add
+,   dot = vec2.dot;
 
 var tmp1 = vec2.fromValues(0,0)
 ,   tmp2 = vec2.fromValues(0,0)

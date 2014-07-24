@@ -1,8 +1,8 @@
-var vec2 = require('../math/vec2')
-,   Shape = require('./Shape')
-,   Convex = require('./Convex');
+import vec2 from '../math/vec2';
+import Shape from './Shape';
+import Convex from './Convex';
 
-module.exports = Rectangle;
+export default Rectangle;
 
 /**
  * Rectangle shape class.

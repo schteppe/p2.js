@@ -1,4 +1,4 @@
-module.exports = IslandNode;
+export default IslandNode;
 
 /**
  * Holds a body and keeps track of some additional properties needed for graph traversal.

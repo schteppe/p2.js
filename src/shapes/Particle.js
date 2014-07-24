@@ -1,7 +1,7 @@
-var Shape = require('./Shape')
-,   vec2 = require('../math/vec2');
+import Shape from './Shape';
+import vec2 from '../math/vec2';
 
-module.exports = Particle;
+export default Particle;
 
 /**
  * Particle shape class.

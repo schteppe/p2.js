@@ -1,11 +1,11 @@
-var Circle = require('../shapes/Circle')
-,   Plane = require('../shapes/Plane')
-,   Particle = require('../shapes/Particle')
-,   Broadphase = require('../collision/Broadphase')
-,   vec2 = require('../math/vec2')
-,   Utils = require('../utils/Utils');
+import Circle from '../shapes/Circle';
+import Plane from '../shapes/Plane';
+import Particle from '../shapes/Particle';
+import Broadphase from '../collision/Broadphase';
+import vec2 from '../math/vec2';
+import Utils from '../utils/Utils';
 
-module.exports = GridBroadphase;
+export default GridBroadphase;
 
 /**
  * Broadphase that uses axis-aligned bins.

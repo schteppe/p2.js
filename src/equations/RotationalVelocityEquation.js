@@ -1,7 +1,7 @@
-var Equation = require("./Equation"),
-    vec2 = require('../math/vec2');
+import Equation from "./Equation";
+import vec2 from '../math/vec2';
 
-module.exports = RotationalVelocityEquation;
+export default RotationalVelocityEquation;
 
 /**
  * Syncs rotational velocity of two bodies, or sets a relative velocity (motor).

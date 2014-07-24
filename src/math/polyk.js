@@ -28,6 +28,8 @@
         OTHER DEALINGS IN THE SOFTWARE.
     */
 
+export default PolyK;
+
     var PolyK = {};
 
     /*
@@ -114,8 +116,8 @@
         var tgs = [];
         var avl = [];
         for(var i=0; i<n; i++) avl.push(i);
-
         var i = 0;
+
         var al = n;
         while(al > 3)
         {
@@ -474,4 +476,3 @@
     for(var i=0; i<10; i++) PolyK._tp.push(new PolyK._P(0,0));
         */
 
-module.exports = PolyK;

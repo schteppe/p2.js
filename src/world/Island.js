@@ -1,6 +1,6 @@
-var Body = require('../objects/Body');
+import Body from '../objects/Body';
 
-module.exports = Island;
+export default Island;
 
 /**
  * An island of bodies connected with equations.

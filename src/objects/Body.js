@@ -1,10 +1,12 @@
-var vec2 = require('../math/vec2')
-,   decomp = require('poly-decomp')
-,   Convex = require('../shapes/Convex')
-,   AABB = require('../collision/AABB')
-,   EventEmitter = require('../events/EventEmitter');
+import vec2 from '../math/vec2';
+// import decomp from 'poly-decomp';
+import Convex from '../shapes/Convex';
+import AABB from '../collision/AABB';
+import EventEmitter from '../events/EventEmitter';
 
-module.exports = Body;
+var decomp; // TODO: Import from npm
+
+export default Body;
 
 /**
  * A rigid body. Has got a center of mass, position, velocity and a number of

@@ -25,9 +25,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
  * @class vec2
  */
 
-var vec2 = module.exports = {};
+var vec2 = {};
 
-var Utils = require('../utils/Utils');
+export default vec2;
+
+import Utils from '../utils/Utils';
 
 /**
  * Make a cross product and only return the z component

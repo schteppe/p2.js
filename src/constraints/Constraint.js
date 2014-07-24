@@ -1,6 +1,6 @@
-module.exports = Constraint;
+export default Constraint;
 
-var Utils = require('../utils/Utils');
+import Utils from '../utils/Utils';
 
 /**
  * Base constraint class.

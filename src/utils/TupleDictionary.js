@@ -1,6 +1,6 @@
-var Utils = require('./Utils');
+import Utils from './Utils';
 
-module.exports = TupleDictionary;
+export default TupleDictionary;
 
 /**
  * @class TupleDictionary

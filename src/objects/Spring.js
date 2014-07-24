@@ -1,7 +1,7 @@
-var vec2 = require('../math/vec2');
-var Utils = require('../utils/Utils');
+import vec2 from '../math/vec2';
+import Utils from '../utils/Utils';
 
-module.exports = Spring;
+export default Spring;
 
 /**
  * A spring, connecting two bodies. The Spring explicitly adds force and angularForce to the bodies and does therefore not put load on the constraint solver.

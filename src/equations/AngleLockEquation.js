@@ -1,7 +1,7 @@
-var Equation = require("./Equation"),
-    vec2 = require('../math/vec2');
+import Equation from "./Equation";
+import vec2 from '../math/vec2';
 
-module.exports = AngleLockEquation;
+export default AngleLockEquation;
 
 /**
  * Locks the relative angle between two bodies. The constraint tries to keep the dot product between two vectors, local in each body, to zero. The local angle in body i is a parameter.

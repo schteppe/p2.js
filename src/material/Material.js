@@ -1,4 +1,4 @@
-module.exports = Material;
+export default Material;
 
 /**
  * Defines a physics material.

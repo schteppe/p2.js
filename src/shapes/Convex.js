@@ -1,9 +1,11 @@
-var Shape = require('./Shape')
-,   vec2 = require('../math/vec2')
-,   polyk = require('../math/polyk')
-,   decomp = require('poly-decomp');
+import Shape from './Shape';
+import vec2 from '../math/vec2';
+import polyk from '../math/polyk';
+// import decomp from 'poly-decomp';
 
-module.exports = Convex;
+var decomp; // TODO;
+
+export default Convex;
 
 /**
  * Convex shape class.

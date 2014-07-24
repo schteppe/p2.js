@@ -1,7 +1,7 @@
-var vec2 = require('../math/vec2')
-,   Utils = require('../utils/Utils');
+import vec2 from '../math/vec2';
+import Utils from '../utils/Utils';
 
-module.exports = AABB;
+export default AABB;
 
 /**
  * Axis aligned bounding box class.

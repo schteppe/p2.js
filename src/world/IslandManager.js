@@ -1,9 +1,9 @@
-var vec2 = require('../math/vec2')
-,   Island = require('./Island')
-,   IslandNode = require('./IslandNode')
-,   Body = require('../objects/Body');
+import vec2 from '../math/vec2';
+import Island from './Island';
+import IslandNode from './IslandNode';
+import Body from '../objects/Body';
 
-module.exports = IslandManager;
+export default IslandManager;
 
 /**
  * Splits the system of bodies and equations into independent islands

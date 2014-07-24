@@ -1,9 +1,9 @@
-var vec2 = require('../math/vec2')
-,   Solver = require('./Solver')
-,   Utils = require('../utils/Utils')
-,   FrictionEquation = require('../equations/FrictionEquation');
+import vec2 from '../math/vec2';
+import Solver from './Solver';
+import Utils from '../utils/Utils';
+import FrictionEquation from '../equations/FrictionEquation';
 
-module.exports = GSSolver;
+export default GSSolver;
 
 /**
  * Iterative Gauss-Seidel constraint equation solver.

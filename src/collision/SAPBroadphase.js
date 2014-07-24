@@ -1,7 +1,7 @@
-var Utils = require('../utils/Utils')
-,   Broadphase = require('../collision/Broadphase');
+import Utils from '../utils/Utils';
+import Broadphase from '../collision/Broadphase';
 
-module.exports = SAPBroadphase;
+export default SAPBroadphase;
 
 /**
  * Sweep and prune broadphase along one axis.
