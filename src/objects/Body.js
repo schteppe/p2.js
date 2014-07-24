@@ -651,10 +651,11 @@ Body.prototype.toWorldFrame = function(out, localPoint){
  * @return {Boolean} True on success, else false.
  */
 Body.prototype.fromPolygon = function(path,options){
+    var i;
     options = options || {};
 
     // Remove all shapes
-    for(var i=this.shapes.length; i>=0; --i){
+    for(i=this.shapes.length; i>=0; --i){
         this.removeShape(this.shapes[i]);
     }
 
@@ -677,7 +678,7 @@ Body.prototype.fromPolygon = function(path,options){
 
     // Save this path for later
     this.concavePath = p.vertices.slice(0);
-    for(var i=0; i<this.concavePath.length; i++){
+    for(i=0; i<this.concavePath.length; i++){
         var v = [0,0];
         vec2.copy(v,this.concavePath[i]);
         this.concavePath[i] = v;
@@ -694,7 +695,7 @@ Body.prototype.fromPolygon = function(path,options){
     var cm = vec2.create();
 
     // Add convexes
-    for(var i=0; i!==convexes.length; i++){
+    for(i=0; i!==convexes.length; i++){
         // Create convex
         var c = new Convex(convexes[i].vertices);
 
@@ -733,12 +734,13 @@ Body.prototype.adjustCenterOfMass = function(){
     var offset_times_area = adjustCenterOfMass_tmp2,
         sum =               adjustCenterOfMass_tmp3,
         cm =                adjustCenterOfMass_tmp4,
-        totalArea =         0;
+        totalArea =         0,
+	i, s, offset;
     vec2.set(sum,0,0);
 
-    for(var i=0; i!==this.shapes.length; i++){
-        var s = this.shapes[i],
-            offset = this.shapeOffsets[i];
+    for(i=0; i!==this.shapes.length; i++){
+        s = this.shapes[i];
+        offset = this.shapeOffsets[i];
         vec2.scale(offset_times_area,offset,s.area);
         vec2.add(sum,sum,offset_times_area);
         totalArea += s.area;
@@ -747,9 +749,9 @@ Body.prototype.adjustCenterOfMass = function(){
     vec2.scale(cm,sum,1/totalArea);
 
     // Now move all shapes
-    for(var i=0; i!==this.shapes.length; i++){
-        var s = this.shapes[i],
-            offset = this.shapeOffsets[i];
+    for(i=0; i!==this.shapes.length; i++){
+        s = this.shapes[i];
+        offset = this.shapeOffsets[i];
 
         // Offset may be undefined. Fix that.
         if(!offset){
@@ -763,7 +765,7 @@ Body.prototype.adjustCenterOfMass = function(){
     vec2.add(this.position,this.position,cm);
 
     // And concave path
-    for(var i=0; this.concavePath && i<this.concavePath.length; i++){
+    for(i=0; this.concavePath && i<this.concavePath.length; i++){
         vec2.sub(this.concavePath[i], this.concavePath[i], cm);
     }
 

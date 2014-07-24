@@ -592,7 +592,8 @@ World.prototype.internalStep = function(dt){
         scale = vec2.scale,
         add = vec2.add,
         rotate = vec2.rotate,
-        islandManager = this.islandManager;
+        islandManager = this.islandManager,
+        i, j, b, s, c, fi;
 
     this.overlapKeeper.tick();
 
@@ -613,9 +614,9 @@ World.prototype.internalStep = function(dt){
 
     // Add gravity to bodies
     if(this.applyGravity){
-        for(var i=0; i!==Nbodies; i++){
-            var b = bodies[i],
-                fi = b.force;
+        for(i=0; i!==Nbodies; i++){
+            b = bodies[i];
+            fi = b.force;
             if(b.type !== Body.DYNAMIC || b.sleepState === Body.SLEEPING){
                 continue;
             }
@@ -626,15 +627,15 @@ World.prototype.internalStep = function(dt){
 
     // Add spring forces
     if(this.applySpringForces){
-        for(var i=0; i!==Nsprings; i++){
-            var s = springs[i];
+        for(i=0; i!==Nsprings; i++){
+            s = springs[i];
             s.applyForce();
         }
     }
 
     if(this.applyDamping){
-        for(var i=0; i!==Nbodies; i++){
-            var b = bodies[i];
+        for(i=0; i!==Nbodies; i++){
+            b = bodies[i];
             if(b.type === Body.DYNAMIC){
                 b.applyDamping(dt);
             }
@@ -646,8 +647,8 @@ World.prototype.internalStep = function(dt){
 
     // Remove ignored collision pairs
     var ignoredPairs = this.disabledBodyCollisionPairs;
-    for(var i=ignoredPairs.length-2; i>=0; i-=2){
-        for(var j=result.length-2; j>=0; j-=2){
+    for(i=ignoredPairs.length-2; i>=0; i-=2){
+        for(j=result.length-2; j>=0; j-=2){
             if( (ignoredPairs[i]   === result[j] && ignoredPairs[i+1] === result[j+1]) ||
                 (ignoredPairs[i+1] === result[j] && ignoredPairs[i]   === result[j+1])){
                 result.splice(j,2);
@@ -658,9 +659,9 @@ World.prototype.internalStep = function(dt){
     // Remove constrained pairs with collideConnected == false
     var Nconstraints = constraints.length;
     for(i=0; i!==Nconstraints; i++){
-        var c = constraints[i];
+        c = constraints[i];
         if(!c.collideConnected){
-            for(var j=result.length-2; j>=0; j-=2){
+            for(j=result.length-2; j>=0; j-=2){
                 if( (c.bodyA === result[j] && c.bodyB === result[j+1]) ||
                     (c.bodyB === result[j] && c.bodyA === result[j+1])){
                     result.splice(j,2);
@@ -675,21 +676,27 @@ World.prototype.internalStep = function(dt){
 
     // Narrowphase
     np.reset(this);
-    for(var i=0, Nresults=result.length; i!==Nresults; i+=2){
-        var bi = result[i],
-            bj = result[i+1];
+    var Nresults, Nshapesi, Nshapesj,
+        k, l,
+        bi, bj,
+        si, xi, ai,
+        sj, xj, aj;
+
+    for(i=0, Nresults=result.length; i!==Nresults; i+=2){
+        bi = result[i];
+        bj = result[i+1];
 
         // Loop over all shapes of body i
-        for(var k=0, Nshapesi=bi.shapes.length; k!==Nshapesi; k++){
-            var si = bi.shapes[k],
-                xi = bi.shapeOffsets[k],
-                ai = bi.shapeAngles[k];
+        for(k=0, Nshapesi=bi.shapes.length; k!==Nshapesi; k++){
+            si = bi.shapes[k];
+            xi = bi.shapeOffsets[k];
+            ai = bi.shapeAngles[k];
 
             // All shapes of body j
-            for(var l=0, Nshapesj=bj.shapes.length; l!==Nshapesj; l++){
-                var sj = bj.shapes[l],
-                    xj = bj.shapeOffsets[l],
-                    aj = bj.shapeAngles[l];
+            for(l=0, Nshapesj=bj.shapes.length; l!==Nshapesj; l++){
+                sj = bj.shapes[l];
+                xj = bj.shapeOffsets[l];
+                aj = bj.shapeAngles[l];
 
                 var cm = this.defaultContactMaterial;
                 if(si.material && sj.material){
@@ -705,7 +712,7 @@ World.prototype.internalStep = function(dt){
     }
 
     // Wake up bodies
-    for(var i=0; i!==Nbodies; i++){
+    for(i=0; i!==Nbodies; i++){
         var body = bodies[i];
         if(body._wakeUpAfterNarrowphase){
             body.wakeUp();
@@ -713,13 +720,14 @@ World.prototype.internalStep = function(dt){
         }
     }
 
+    var e, data;
     // Emit end overlap events
     if(this.has('endContact')){
         this.overlapKeeper.getEndOverlaps(endOverlaps);
-        var e = this.endContactEvent;
-        var l = endOverlaps.length;
+        e = this.endContactEvent;
+        l = endOverlaps.length;
         while(l--){
-            var data = endOverlaps[l];
+            data = endOverlaps[l];
             e.shapeA = data.shapeA;
             e.shapeB = data.shapeB;
             e.bodyA = data.bodyA;
@@ -750,7 +758,7 @@ World.prototype.internalStep = function(dt){
             }
             islandManager.split(this);
 
-            for(var i=0; i!==islandManager.islands.length; i++){
+            for(i=0; i!==islandManager.islands.length; i++){
                 var island = islandManager.islands[i];
                 if(island.equations.length){
                     solver.solveIsland(dt,island);
@@ -777,7 +785,7 @@ World.prototype.internalStep = function(dt){
     }
 
     // Step forward
-    for(var i=0; i!==Nbodies; i++){
+    for(i=0; i!==Nbodies; i++){
         var body = bodies[i];
 
         if(body.sleepState !== Body.SLEEPING && body.type !== Body.STATIC){
@@ -786,7 +794,7 @@ World.prototype.internalStep = function(dt){
     }
 
     // Reset force
-    for(var i=0; i!==Nbodies; i++){
+    for(i=0; i!==Nbodies; i++){
         bodies[i].setZeroForce();
     }
 
@@ -798,7 +806,7 @@ World.prototype.internalStep = function(dt){
     // Emit impact event
     if(this.emitImpactEvent && this.has('impact')){
         var ev = this.impactEvent;
-        for(var i=0; i!==np.contactEquations.length; i++){
+        for(i=0; i!==np.contactEquations.length; i++){
             var eq = np.contactEquations[i];
             if(eq.firstImpact){
                 ev.bodyA = eq.bodyA;
@@ -824,7 +832,7 @@ World.prototype.internalStep = function(dt){
         }
 
         // Sleep islands
-        for(var i=0; i<this.islandManager.islands.length; i++){
+        for(i=0; i<this.islandManager.islands.length; i++){
             var island = this.islandManager.islands[i];
             if(island.wantsToSleep()){
                 island.sleep();
@@ -836,7 +844,7 @@ World.prototype.internalStep = function(dt){
 
     // Remove bodies that are scheduled for removal
     if(this.bodiesToBeRemoved.length){
-        for(var i=0; i!==this.bodiesToBeRemoved.length; i++){
+        for(i=0; i!==this.bodiesToBeRemoved.length; i++){
             this.removeBody(this.bodiesToBeRemoved[i]);
         }
         this.bodiesToBeRemoved.length = 0;
@@ -930,7 +938,8 @@ World.prototype.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,cm,glen){
     np.contactSkinSize = cm.contactSkinSize;
 
     var resolver = np[si.type | sj.type],
-        numContacts = 0;
+        numContacts = 0,
+	i;
     if (resolver) {
         var sensor = si.sensor || sj.sensor;
         var numFrictionBefore = np.frictionEquations.length;
@@ -983,7 +992,7 @@ World.prototype.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,cm,glen){
                 e.contactEquations.length = 0;
 
                 if(typeof(numContacts)==="number"){
-                    for(var i=np.contactEquations.length-numContacts; i<np.contactEquations.length; i++){
+                    for(i=np.contactEquations.length-numContacts; i<np.contactEquations.length; i++){
                         e.contactEquations.push(np.contactEquations[i]);
                     }
                 }
@@ -993,7 +1002,7 @@ World.prototype.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,cm,glen){
 
             // divide the max friction force by the number of contacts
             if(typeof(numContacts)==="number" && numFrictionEquations > 1){ // Why divide by 1?
-                for(var i=np.frictionEquations.length-numFrictionEquations; i<np.frictionEquations.length; i++){
+                for(i=np.frictionEquations.length-numFrictionEquations; i<np.frictionEquations.length; i++){
                     var f = np.frictionEquations[i];
                     f.setSlipForce(f.getSlipForce() / numFrictionEquations);
                 }
@@ -1146,6 +1155,7 @@ function contactMaterialToJSON(cm){
  * @method clear
  */
 World.prototype.clear = function(){
+    var i;
 
     this.time = 0;
     this.fixedStepTime = 0;
@@ -1157,25 +1167,25 @@ World.prototype.clear = function(){
 
     // Remove all constraints
     var cs = this.constraints;
-    for(var i=cs.length-1; i>=0; i--){
+    for(i=cs.length-1; i>=0; i--){
         this.removeConstraint(cs[i]);
     }
 
     // Remove all bodies
     var bodies = this.bodies;
-    for(var i=bodies.length-1; i>=0; i--){
+    for(i=bodies.length-1; i>=0; i--){
         this.removeBody(bodies[i]);
     }
 
     // Remove all springs
     var springs = this.springs;
-    for(var i=springs.length-1; i>=0; i--){
+    for(i=springs.length-1; i>=0; i--){
         this.removeSpring(springs[i]);
     }
 
     // Remove all contact materials
     var cms = this.contactMaterials;
-    for(var i=cms.length-1; i>=0; i--){
+    for(i=cms.length-1; i>=0; i--){
         this.removeContactMaterial(cms[i]);
     }
 
@@ -1258,11 +1268,13 @@ World.prototype.hitTest = function(worldPoint,bodies,precision){
 World.prototype.setGlobalEquationParameters = function(parameters){
     parameters = parameters || {};
 
+    var i, c, j, eq;
+
     // Set for all constraints
-    for(var i=0; i !== this.constraints.length; i++){
-        var c = this.constraints[i];
-        for(var j=0; j !== c.equations.length; j++){
-            var eq = c.equations[j];
+    for(i=0; i !== this.constraints.length; i++){
+        c = this.constraints[i];
+        for(j=0; j !== c.equations.length; j++){
+            eq = c.equations[j];
             if(typeof(parameters.stiffness) !== "undefined"){
                 eq.stiffness = parameters.stiffness;
             }
@@ -1274,8 +1286,8 @@ World.prototype.setGlobalEquationParameters = function(parameters){
     }
 
     // Set for all contact materials
-    for(var i=0; i !== this.contactMaterials.length; i++){
-        var c = this.contactMaterials[i];
+    for(i=0; i !== this.contactMaterials.length; i++){
+        c = this.contactMaterials[i];
         if(typeof(parameters.stiffness) !== "undefined"){
             c.stiffness = parameters.stiffness;
             c.frictionStiffness = parameters.stiffness;
@@ -1287,7 +1299,7 @@ World.prototype.setGlobalEquationParameters = function(parameters){
     }
 
     // Set for default contact material
-    var c = this.defaultContactMaterial;
+    c = this.defaultContactMaterial;
     if(typeof(parameters.stiffness) !== "undefined"){
         c.stiffness = parameters.stiffness;
         c.frictionStiffness = parameters.stiffness;

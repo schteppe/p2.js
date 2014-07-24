@@ -115,8 +115,9 @@ export default PolyK;
         if(n<3) return [];
         var tgs = [];
         var avl = [];
-        for(var i=0; i<n; i++) avl.push(i);
-        var i = 0;
+	var i;
+        for(i=0; i<n; i++) avl.push(i);
+        i = 0;
 
         var al = n;
         while(al > 3)

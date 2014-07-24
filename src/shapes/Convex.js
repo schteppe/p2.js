@@ -36,8 +36,10 @@ function Convex(vertices, axes){
      */
     this.axes = [];
 
+    var i;
+
     // Copy the verts
-    for(var i=0; i<vertices.length; i++){
+    for(i=0; i<vertices.length; i++){
         var v = vec2.create();
         vec2.copy(v,vertices[i]);
         this.vertices.push(v);
@@ -45,14 +47,14 @@ function Convex(vertices, axes){
 
     if(axes){
         // Copy the axes
-        for(var i=0; i < axes.length; i++){
+        for(i=0; i < axes.length; i++){
             var axis = vec2.create();
             vec2.copy(axis, axes[i]);
             this.axes.push(axis);
         }
     } else {
         // Construct axes from the vertex data
-        for(var i = 0; i < vertices.length; i++){
+        for(i = 0; i < vertices.length; i++){
             // Get the world edge
             var worldPoint0 = vertices[i];
             var worldPoint1 = vertices[(i+1) % vertices.length];
@@ -165,12 +167,11 @@ Convex.prototype.projectOntoWorldAxis = function(localAxis, shapeOffset, shapeAn
  * @method updateTriangles
  */
 Convex.prototype.updateTriangles = function(){
-
     this.triangles.length = 0;
 
     // Rewrite on polyk notation, array of numbers
-    var polykVerts = [];
-    for(var i=0; i<this.vertices.length; i++){
+    var polykVerts = [], i;
+    for(i=0; i<this.vertices.length; i++){
         var v = this.vertices[i];
         polykVerts.push(v[0],v[1]);
     }
@@ -179,7 +180,7 @@ Convex.prototype.updateTriangles = function(){
     var triangles = polyk.Triangulate(polykVerts);
 
     // Loop over all triangles, add their inertia contributions to I
-    for(var i=0; i<triangles.length; i+=3){
+    for(i=0; i<triangles.length; i+=3){
         var id1 = triangles[i],
             id2 = triangles[i+1],
             id3 = triangles[i+2];
