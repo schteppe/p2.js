@@ -70,6 +70,12 @@ function Shape(type){
     this.collisionGroup = 1;
 
     /**
+     * Whether to produce contact forces when in contact with other bodies. Note that contacts will be generated, but they will be disabled. That means that this shape will move through other body shapes, but it will still trigger contact events, etc.
+     * @property {Boolean} collisionResponse
+     */
+    this.collisionResponse = true;
+
+    /**
      * Collision mask of this shape. See .collisionGroup.
      * @property collisionMask
      * @type {Number}

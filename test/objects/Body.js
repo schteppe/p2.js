@@ -168,3 +168,29 @@ exports.wakeUp = function(test){
     test.done();
 };
 
+exports.collisionResponse = function(test){
+    var bodyA = new Body({ mass: 1, position: [1, 0] });
+    bodyA.addShape(new Circle(1));
+
+    var bodyB = new Body({ mass: 1, position: [-1, 0] });
+    bodyB.addShape(new Circle(1));
+
+    var world = new World();
+    world.addBody(bodyA);
+    world.addBody(bodyB);
+
+    world.step(1 / 60);
+    test.ok(world.narrowphase.contactEquations[0].enabled);
+
+    bodyA.collisionResponse = false;
+    world.step(1 / 60);
+    test.ok(!world.narrowphase.contactEquations[0].enabled);
+
+    bodyA.collisionResponse = true;
+    bodyA.shapes[0].collisionResponse = false;
+    world.step(1 / 60);
+    test.ok(!world.narrowphase.contactEquations[0].enabled);
+
+    test.done();
+};
+
