@@ -11,8 +11,7 @@ module.exports = function(grunt) {
                 dest : 'build/p2.js',
                 options:{
                     bundleOptions : {
-                        standalone : "p2",
-                        insertGlobals: true
+                        standalone : "p2"
                     }
                 }
             }
@@ -80,8 +79,17 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-concat');
 
-    grunt.registerTask('default', ['test','jshint','browserify','concat','uglify','addLicense']);
+    grunt.registerTask('default', ['test','jshint','browserify','concat','uglify','addLicense','requireJsFix']);
     grunt.registerTask('test', ['nodeunit']);
+
+    // Not sure what flag Browserify needs to do this. Fixing it manually for now.
+    grunt.registerTask('requireJsFix','Modifies the browserify bundle so it works with RequireJS',function(){
+        ['build/p2.js', 'build/p2.min.js'].forEach(function (path){
+            var text = fs.readFileSync(path).toString();
+            text = text.replace('define.amd', 'false'); // This makes the bundle skip using define() from RequireJS
+            fs.writeFileSync(path, text);
+        });
+    });
 
     grunt.registerTask('addLicense','Adds the LICENSE to the top of the built files',function(){
         var text = fs.readFileSync("LICENSE").toString();
