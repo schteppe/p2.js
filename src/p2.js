@@ -2,6 +2,7 @@
 module.exports = {
     AABB :                          require('./collision/AABB'),
     AngleLockEquation :             require('./equations/AngleLockEquation'),
+    Attachment :                    require('./objects/Attachment'),
     Body :                          require('./objects/Body'),
     Broadphase :                    require('./collision/Broadphase'),
     Capsule :                       require('./shapes/Capsule'),

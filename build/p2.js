@@ -881,7 +881,7 @@ AABB.prototype.overlaps = function(aabb){
            ((l2[1] <= u1[1] && u1[1] <= u2[1]) || (l1[1] <= u2[1] && u2[1] <= u1[1]));
 };
 
-},{"../math/vec2":33,"../utils/Utils":49}],8:[function(_dereq_,module,exports){
+},{"../math/vec2":34,"../utils/Utils":51}],8:[function(_dereq_,module,exports){
 var vec2 = _dereq_('../math/vec2');
 var Body = _dereq_('../objects/Body');
 
@@ -1043,7 +1043,7 @@ Broadphase.canCollide = function(bodyA, bodyB){
 Broadphase.NAIVE = 1;
 Broadphase.SAP = 2;
 
-},{"../math/vec2":33,"../objects/Body":34}],9:[function(_dereq_,module,exports){
+},{"../math/vec2":34,"../objects/Body":36}],9:[function(_dereq_,module,exports){
 var Circle = _dereq_('../shapes/Circle')
 ,   Plane = _dereq_('../shapes/Plane')
 ,   Particle = _dereq_('../shapes/Particle')
@@ -1162,7 +1162,7 @@ GridBroadphase.prototype.getCollisionPairs = function(world){
     return result;
 };
 
-},{"../collision/Broadphase":8,"../math/vec2":33,"../shapes/Circle":37,"../shapes/Particle":41,"../shapes/Plane":42,"../utils/Utils":49}],10:[function(_dereq_,module,exports){
+},{"../collision/Broadphase":8,"../math/vec2":34,"../shapes/Circle":39,"../shapes/Particle":43,"../shapes/Plane":44,"../utils/Utils":51}],10:[function(_dereq_,module,exports){
 var Circle = _dereq_('../shapes/Circle'),
     Plane = _dereq_('../shapes/Plane'),
     Shape = _dereq_('../shapes/Shape'),
@@ -1211,7 +1211,7 @@ NaiveBroadphase.prototype.getCollisionPairs = function(world){
     return result;
 };
 
-},{"../collision/Broadphase":8,"../math/vec2":33,"../shapes/Circle":37,"../shapes/Particle":41,"../shapes/Plane":42,"../shapes/Shape":44}],11:[function(_dereq_,module,exports){
+},{"../collision/Broadphase":8,"../math/vec2":34,"../shapes/Circle":39,"../shapes/Particle":43,"../shapes/Plane":44,"../shapes/Shape":46}],11:[function(_dereq_,module,exports){
 var vec2 = _dereq_('../math/vec2')
 ,   sub = vec2.sub
 ,   add = vec2.add
@@ -3586,7 +3586,7 @@ Narrowphase.prototype.convexHeightfield = function( convexBody,convexShape,conve
 
     return numContacts;
 };
-},{"../equations/ContactEquation":20,"../equations/Equation":21,"../equations/FrictionEquation":22,"../math/vec2":33,"../objects/Body":34,"../shapes/Circle":37,"../shapes/Convex":38,"../shapes/Rectangle":43,"../shapes/Shape":44,"../utils/TupleDictionary":48,"../utils/Utils":49}],12:[function(_dereq_,module,exports){
+},{"../equations/ContactEquation":20,"../equations/Equation":21,"../equations/FrictionEquation":22,"../math/vec2":34,"../objects/Body":36,"../shapes/Circle":39,"../shapes/Convex":40,"../shapes/Rectangle":45,"../shapes/Shape":46,"../utils/TupleDictionary":50,"../utils/Utils":51}],12:[function(_dereq_,module,exports){
 var Utils = _dereq_('../utils/Utils')
 ,   Broadphase = _dereq_('../collision/Broadphase');
 
@@ -3724,7 +3724,7 @@ SAPBroadphase.prototype.getCollisionPairs = function(world){
 };
 
 
-},{"../collision/Broadphase":8,"../utils/Utils":49}],13:[function(_dereq_,module,exports){
+},{"../collision/Broadphase":8,"../utils/Utils":51}],13:[function(_dereq_,module,exports){
 module.exports = Constraint;
 
 var Utils = _dereq_('../utils/Utils');
@@ -3861,7 +3861,7 @@ Constraint.prototype.setRelaxation = function(relaxation){
     }
 };
 
-},{"../utils/Utils":49}],14:[function(_dereq_,module,exports){
+},{"../utils/Utils":51}],14:[function(_dereq_,module,exports){
 var Constraint = _dereq_('./Constraint')
 ,   Equation = _dereq_('../equations/Equation')
 ,   vec2 = _dereq_('../math/vec2')
@@ -4127,7 +4127,7 @@ DistanceConstraint.prototype.getMaxForce = function(f){
     return normal.maxForce;
 };
 
-},{"../equations/Equation":21,"../math/vec2":33,"../utils/Utils":49,"./Constraint":13}],15:[function(_dereq_,module,exports){
+},{"../equations/Equation":21,"../math/vec2":34,"../utils/Utils":51,"./Constraint":13}],15:[function(_dereq_,module,exports){
 var Constraint = _dereq_('./Constraint')
 ,   Equation = _dereq_('../equations/Equation')
 ,   AngleLockEquation = _dereq_('../equations/AngleLockEquation')
@@ -4208,7 +4208,7 @@ GearConstraint.prototype.setMaxTorque = function(torque){
 GearConstraint.prototype.getMaxTorque = function(torque){
     return this.equations[0].maxForce;
 };
-},{"../equations/AngleLockEquation":19,"../equations/Equation":21,"../math/vec2":33,"./Constraint":13}],16:[function(_dereq_,module,exports){
+},{"../equations/AngleLockEquation":19,"../equations/Equation":21,"../math/vec2":34,"./Constraint":13}],16:[function(_dereq_,module,exports){
 var Constraint = _dereq_('./Constraint')
 ,   vec2 = _dereq_('../math/vec2')
 ,   Equation = _dereq_('../equations/Equation');
@@ -4379,7 +4379,7 @@ LockConstraint.prototype.update = function(){
     rot.G[5] =  vec2.crossLength(r,t);
 };
 
-},{"../equations/Equation":21,"../math/vec2":33,"./Constraint":13}],17:[function(_dereq_,module,exports){
+},{"../equations/Equation":21,"../math/vec2":34,"./Constraint":13}],17:[function(_dereq_,module,exports){
 var Constraint = _dereq_('./Constraint')
 ,   ContactEquation = _dereq_('../equations/ContactEquation')
 ,   Equation = _dereq_('../equations/Equation')
@@ -4732,7 +4732,7 @@ PrismaticConstraint.prototype.setLimits = function (lower, upper) {
 };
 
 
-},{"../equations/ContactEquation":20,"../equations/Equation":21,"../equations/RotationalLockEquation":23,"../math/vec2":33,"./Constraint":13}],18:[function(_dereq_,module,exports){
+},{"../equations/ContactEquation":20,"../equations/Equation":21,"../equations/RotationalLockEquation":23,"../math/vec2":34,"./Constraint":13}],18:[function(_dereq_,module,exports){
 var Constraint = _dereq_('./Constraint')
 ,   Equation = _dereq_('../equations/Equation')
 ,   RotationalVelocityEquation = _dereq_('../equations/RotationalVelocityEquation')
@@ -5058,7 +5058,7 @@ RevoluteConstraint.prototype.getMotorSpeed = function(){
     return this.motorEquation.relativeVelocity;
 };
 
-},{"../equations/Equation":21,"../equations/RotationalLockEquation":23,"../equations/RotationalVelocityEquation":24,"../math/vec2":33,"./Constraint":13}],19:[function(_dereq_,module,exports){
+},{"../equations/Equation":21,"../equations/RotationalLockEquation":23,"../equations/RotationalVelocityEquation":24,"../math/vec2":34,"./Constraint":13}],19:[function(_dereq_,module,exports){
 var Equation = _dereq_("./Equation"),
     vec2 = _dereq_('../math/vec2');
 
@@ -5120,7 +5120,7 @@ AngleLockEquation.prototype.setMaxTorque = function(torque){
     this.minForce = -torque;
 };
 
-},{"../math/vec2":33,"./Equation":21}],20:[function(_dereq_,module,exports){
+},{"../math/vec2":34,"./Equation":21}],20:[function(_dereq_,module,exports){
 var Equation = _dereq_("./Equation"),
     vec2 = _dereq_('../math/vec2');
 
@@ -5236,7 +5236,7 @@ ContactEquation.prototype.computeB = function(a,b,h){
     return B;
 };
 
-},{"../math/vec2":33,"./Equation":21}],21:[function(_dereq_,module,exports){
+},{"../math/vec2":34,"./Equation":21}],21:[function(_dereq_,module,exports){
 module.exports = Equation;
 
 var vec2 = _dereq_('../math/vec2'),
@@ -5555,7 +5555,7 @@ Equation.prototype.computeInvC = function(eps){
     return 1.0 / (this.computeGiMGt() + eps);
 };
 
-},{"../math/vec2":33,"../objects/Body":34,"../utils/Utils":49}],22:[function(_dereq_,module,exports){
+},{"../math/vec2":34,"../objects/Body":36,"../utils/Utils":51}],22:[function(_dereq_,module,exports){
 var vec2 = _dereq_('../math/vec2')
 ,   Equation = _dereq_('./Equation')
 ,   Utils = _dereq_('../utils/Utils');
@@ -5674,7 +5674,7 @@ FrictionEquation.prototype.computeB = function(a,b,h){
     return B;
 };
 
-},{"../math/vec2":33,"../utils/Utils":49,"./Equation":21}],23:[function(_dereq_,module,exports){
+},{"../math/vec2":34,"../utils/Utils":51,"./Equation":21}],23:[function(_dereq_,module,exports){
 var Equation = _dereq_("./Equation"),
     vec2 = _dereq_('../math/vec2');
 
@@ -5717,7 +5717,7 @@ RotationalLockEquation.prototype.computeGq = function(){
     return vec2.dot(worldVectorA,worldVectorB);
 };
 
-},{"../math/vec2":33,"./Equation":21}],24:[function(_dereq_,module,exports){
+},{"../math/vec2":34,"./Equation":21}],24:[function(_dereq_,module,exports){
 var Equation = _dereq_("./Equation"),
     vec2 = _dereq_('../math/vec2');
 
@@ -5751,7 +5751,7 @@ RotationalVelocityEquation.prototype.computeB = function(a,b,h){
     return B;
 };
 
-},{"../math/vec2":33,"./Equation":21}],25:[function(_dereq_,module,exports){
+},{"../math/vec2":34,"./Equation":21}],25:[function(_dereq_,module,exports){
 /**
  * Base class for objects that dispatches events.
  * @class EventEmitter
@@ -5857,93 +5857,47 @@ EventEmitter.prototype = {
 },{}],26:[function(_dereq_,module,exports){
 var vec2 = _dereq_('../math/vec2');
 var Utils = _dereq_('../utils/Utils');
+var Attachment = _dereq_('../objects/Attachment');
 
-module.exports = Force;
-
-/**
- * A force, applied to zero or more bodies. A Force explicitly adds force and angularForce to the bodies and does therefore not put load on the constraint solver.
- *
- * @class Force
- * @constructor
- * @param {Object} [options]
- * @param {number} [options.damping=1]      A number >= 0. Default: 1
- */
-function Force(options){
-    options = Utils.defaults(options,{
-        damping: 1,
-    });
-
-    /**
-     * Damping of the force.
-     * @property damping
-     * @type {number}
-     */
-    this.damping = options.damping;
-}
+module.exports = Attraction;
 
 /**
- * Apply the force to the connected bodies.
- * @method applyForce
- */
-Force.prototype.applyForce = function(){
-    // To be implemented by subclasses
-};
-
-},{"../math/vec2":33,"../utils/Utils":49}],27:[function(_dereq_,module,exports){
-var vec2 = _dereq_('../math/vec2');
-var Spring = _dereq_('./Spring');
-var Utils = _dereq_('../utils/Utils');
-
-module.exports = LinearSpring;
-
-/**
- * A spring, connecting two bodies.
+ * A force, connecting two bodies.
  *
- * The Spring explicitly adds force and angularForce to the bodies.
+ * The Attraction explicitly adds force and angularForce to the bodies.
  *
- * @class LinearSpring
- * @extends Spring
+ * @class Attraction
  * @constructor
  * @param {Body} bodyA
  * @param {Body} bodyB
  * @param {Object} [options]
- * @param {number} [options.restLength]   A number > 0. Default is the current distance between the world anchor points.
- * @param {number} [options.stiffness=100]  Spring constant (see Hookes Law). A number >= 0.
- * @param {number} [options.damping=1]      A number >= 0. Default: 1
- * @param {Array}  [options.worldAnchorA]   Where to hook the spring to body A, in world coordinates. Overrides the option "localAnchorA" if given.
+ * @param {number} [options.constant=100]  Force constant. A number >= 0.
+ * @param {number} [options.damping=1]     A number >= 0. Default: 1
+ * @param {Array}  [options.worldAnchorA]  Where to hook the spring to body A, in world coordinates. Overrides the option "localAnchorA" if given.
  * @param {Array}  [options.worldAnchorB]
  * @param {Array}  [options.localAnchorA]   Where to hook the spring to body A, in local body coordinates. Defaults to the body center.
  * @param {Array}  [options.localAnchorB]
  */
-function LinearSpring(bodyA,bodyB,options){
+function Attraction(bodyA,bodyB,options){
     options = options || {};
 
-    Spring.call(this, bodyA, bodyB, options);
+    /**
+     * Attachment for bodyA.
+     */
+    this.attachmentA = new Attachment(bodyA, {
+        worldAnchor: options.worldAnchorA,
+        localAnchor: options.localAnchorA
+    });
 
     /**
-     * Anchor for bodyA in local bodyA coordinates.
-     * @property localAnchorA
-     * @type {Array}
+     * Attachment for bodyA.
      */
-    this.localAnchorA = vec2.fromValues(0,0);
+    this.attachmentB = new Attachment(bodyB, {
+        worldAnchor: options.worldAnchorB,
+        localAnchor: options.localAnchorB
+    });
 
-    /**
-     * Anchor for bodyB in local bodyB coordinates.
-     * @property localAnchorB
-     * @type {Array}
-     */
-    this.localAnchorB = vec2.fromValues(0,0);
-
-    if(options.localAnchorA){ vec2.copy(this.localAnchorA, options.localAnchorA); }
-    if(options.localAnchorB){ vec2.copy(this.localAnchorB, options.localAnchorB); }
-    if(options.worldAnchorA){ this.setWorldAnchorA(options.worldAnchorA); }
-    if(options.worldAnchorB){ this.setWorldAnchorB(options.worldAnchorB); }
-
-    var worldAnchorA = vec2.create();
-    var worldAnchorB = vec2.create();
-    this.getWorldAnchorA(worldAnchorA);
-    this.getWorldAnchorB(worldAnchorB);
-    var worldDistance = vec2.distance(worldAnchorA, worldAnchorB);
+    var worldDistance = Attachment.distance(this.attachmentA, this.attachmentB);
 
     /**
      * Rest length of the spring.
@@ -5952,15 +5906,14 @@ function LinearSpring(bodyA,bodyB,options){
      */
     this.restLength = typeof(options.restLength) === "number" ? options.restLength : worldDistance;
 }
-LinearSpring.prototype = new Spring();
 
 /**
  * Set the anchor point on body A, using world coordinates.
  * @method setWorldAnchorA
  * @param {Array} worldAnchorA
  */
-LinearSpring.prototype.setWorldAnchorA = function(worldAnchorA){
-    this.bodyA.toLocalFrame(this.localAnchorA, worldAnchorA);
+Attraction.prototype.setWorldAnchorA = function(worldAnchorA){
+    this.attachmentA.setWorldAnchor(worldAnchorA);
 };
 
 /**
@@ -5968,8 +5921,8 @@ LinearSpring.prototype.setWorldAnchorA = function(worldAnchorA){
  * @method setWorldAnchorB
  * @param {Array} worldAnchorB
  */
-LinearSpring.prototype.setWorldAnchorB = function(worldAnchorB){
-    this.bodyB.toLocalFrame(this.localAnchorB, worldAnchorB);
+Attraction.prototype.setWorldAnchorB = function(worldAnchorB){
+    this.attachmentB.setWorldAnchor(worldAnchorB);
 };
 
 /**
@@ -5977,8 +5930,8 @@ LinearSpring.prototype.setWorldAnchorB = function(worldAnchorB){
  * @method getWorldAnchorA
  * @param {Array} result The vector to store the result in.
  */
-LinearSpring.prototype.getWorldAnchorA = function(result){
-    this.bodyA.toWorldFrame(result, this.localAnchorA);
+Attraction.prototype.getWorldAnchorA = function(result){
+    this.attachmentA.getWorldAnchor(result);
 };
 
 /**
@@ -5986,8 +5939,8 @@ LinearSpring.prototype.getWorldAnchorA = function(result){
  * @method getWorldAnchorB
  * @param {Array} result The vector to store the result in.
  */
-LinearSpring.prototype.getWorldAnchorB = function(result){
-    this.bodyB.toWorldFrame(result, this.localAnchorB);
+Attraction.prototype.getWorldAnchorB = function(result){
+    this.attachmentB.getWorldAnchor(result);
 };
 
 var applyForce_r =              vec2.create(),
@@ -6004,7 +5957,7 @@ var applyForce_r =              vec2.create(),
  * Apply the spring force to the connected bodies.
  * @method applyForce
  */
-LinearSpring.prototype.applyForce = function(){
+Attraction.prototype.applyForce = function(){
     var k = this.stiffness,
         d = this.damping,
         l = this.restLength,
@@ -6058,7 +6011,202 @@ LinearSpring.prototype.applyForce = function(){
     bodyB.angularForce += rj_x_f;
 };
 
-},{"../math/vec2":33,"../utils/Utils":49,"./Spring":29}],28:[function(_dereq_,module,exports){
+},{"../math/vec2":34,"../objects/Attachment":35,"../utils/Utils":51}],27:[function(_dereq_,module,exports){
+var vec2 = _dereq_('../math/vec2');
+var Utils = _dereq_('../utils/Utils');
+
+module.exports = Force;
+
+/**
+ * A force, applied to zero or more bodies. A Force explicitly adds force and angularForce to the bodies and does therefore not put load on the constraint solver.
+ *
+ * @class Force
+ * @constructor
+ * @param {Array} [attachments]             All attachments from this force to other bodies.
+ * @param {Object} [options]
+ * @param {number} [options.damping=1]      A number >= 0. Default: 1
+ */
+function Force(attachments, options){
+    options = Utils.defaults(options,{
+        damping: 1,
+    });
+
+    /**
+     * Collection of all attachments
+     * @property attachments
+     * @type {Array}
+     */
+    this.attachments = attachments || [];
+    if (!(this.attachments instanceof Array)) {
+        this.attachments = [ attachments ];
+    }
+
+    /**
+     * Damping of the force.
+     * @property damping
+     * @type {number}
+     */
+    this.damping = options.damping;
+}
+
+/**
+ * Apply the force to the connected bodies.
+ * @method applyForce
+ */
+Force.prototype.applyForce = function(){
+    // To be implemented by subclasses
+};
+
+},{"../math/vec2":34,"../utils/Utils":51}],28:[function(_dereq_,module,exports){
+var vec2 = _dereq_('../math/vec2');
+var Spring = _dereq_('./Spring');
+var Utils = _dereq_('../utils/Utils');
+var Attachment = _dereq_('../objects/Attachment');
+
+module.exports = LinearSpring;
+
+/**
+ * A spring, connecting two bodies.
+ *
+ * The Spring explicitly adds force and angularForce to the bodies.
+ *
+ * @class LinearSpring
+ * @extends Spring
+ * @constructor
+ * @param {Body} bodyA
+ * @param {Body} bodyB
+ * @param {Object} [options]
+ * @param {number} [options.restLength]   A number > 0. Default is the current distance between the world anchor points.
+ * @param {number} [options.stiffness=100]  Spring constant (see Hookes Law). A number >= 0.
+ * @param {number} [options.damping=1]      A number >= 0. Default: 1
+ * @param {Array}  [options.worldAnchorA]   Where to hook the spring to body A, in world coordinates. Overrides the option "localAnchorA" if given.
+ * @param {Array}  [options.worldAnchorB]
+ * @param {Array}  [options.localAnchorA]   Where to hook the spring to body A, in local body coordinates. Defaults to the body center.
+ * @param {Array}  [options.localAnchorB]
+ */
+function LinearSpring(bodyA,bodyB,options){
+    options = options || {};
+
+    Spring.call(this, bodyA, bodyB, options);
+
+    var worldDistance = Attachment.distance(this.attachments[0], this.attachments[1]);
+
+    /**
+     * Rest length of the spring.
+     * @property restLength
+     * @type {number}
+     */
+    this.restLength = typeof(options.restLength) === "number" ? options.restLength : worldDistance;
+}
+LinearSpring.prototype = new Spring();
+
+/**
+ * Set the anchor point on body A, using world coordinates.
+ * @method setWorldAnchorA
+ * @param {Array} worldAnchorA
+ */
+LinearSpring.prototype.setWorldAnchorA = function(worldAnchorA){
+    this.attachments[0].setWorldAnchor(worldAnchorA);
+};
+
+/**
+ * Set the anchor point on body B, using world coordinates.
+ * @method setWorldAnchorB
+ * @param {Array} worldAnchorB
+ */
+LinearSpring.prototype.setWorldAnchorB = function(worldAnchorB){
+    this.attachments[1].setWorldAnchor(worldAnchorB);
+};
+
+/**
+ * Get the anchor point on body A, in world coordinates.
+ * @method getWorldAnchorA
+ * @param {Array} result The vector to store the result in.
+ */
+LinearSpring.prototype.getWorldAnchorA = function(result){
+    this.attachments[0].getWorldAnchor(result);
+};
+
+/**
+ * Get the anchor point on body B, in world coordinates.
+ * @method getWorldAnchorB
+ * @param {Array} result The vector to store the result in.
+ */
+LinearSpring.prototype.getWorldAnchorB = function(result){
+    this.attachments[1].getWorldAnchor(result);
+};
+
+var applyForce_r =              vec2.create(),
+    applyForce_r_unit =         vec2.create(),
+    applyForce_u =              vec2.create(),
+    applyForce_f =              vec2.create(),
+    applyForce_worldAnchorA =   vec2.create(),
+    applyForce_worldAnchorB =   vec2.create(),
+    applyForce_ri =             vec2.create(),
+    applyForce_rj =             vec2.create(),
+    applyForce_tmp =            vec2.create();
+
+var c = 10;
+
+/**
+ * Apply the spring force to the connected bodies.
+ * @method applyForce
+ */
+LinearSpring.prototype.applyForce = function(){
+    var k = this.stiffness,
+        d = this.damping,
+        l = this.restLength,
+        bodyA = this.attachments[0].body,
+        bodyB = this.attachments[1].body,
+        r = applyForce_r,
+        r_unit = applyForce_r_unit,
+        u = applyForce_u,
+        f = applyForce_f,
+        tmp = applyForce_tmp;
+
+    var worldAnchorA = applyForce_worldAnchorA,
+        worldAnchorB = applyForce_worldAnchorB,
+        ri = applyForce_ri,
+        rj = applyForce_rj;
+
+    // Get world anchors
+    this.getWorldAnchorA(worldAnchorA);
+    this.getWorldAnchorB(worldAnchorB);
+
+    // Get offset points
+    vec2.sub(ri, worldAnchorA, bodyA.position);
+    vec2.sub(rj, worldAnchorB, bodyB.position);
+
+    // Compute distance vector between world anchor points
+    vec2.sub(r, worldAnchorB, worldAnchorA);
+    var rlen = vec2.len(r);
+    vec2.normalize(r_unit,r);
+
+    //console.log(rlen)
+    //console.log("A",vec2.str(worldAnchorA),"B",vec2.str(worldAnchorB))
+
+    // Compute relative velocity of the anchor points, u
+    vec2.sub(u, bodyB.velocity, bodyA.velocity);
+    vec2.crossZV(tmp, bodyB.angularVelocity, rj);
+    vec2.add(u, u, tmp);
+    vec2.crossZV(tmp, bodyA.angularVelocity, ri);
+    vec2.sub(u, u, tmp);
+
+    // F = - k * ( x - L ) - D * ( u )
+    vec2.scale(f, r_unit, -k*(rlen-l) - d*vec2.dot(u,r_unit));
+
+    // Add forces to bodies
+    vec2.sub( bodyA.force, bodyA.force, f);
+    vec2.add( bodyB.force, bodyB.force, f);
+
+    // Angular force
+    var ri_x_f = vec2.crossLength(ri, f);
+    var rj_x_f = vec2.crossLength(rj, f);
+    bodyA.angularForce -= ri_x_f;
+    bodyB.angularForce += rj_x_f;
+};
+
+},{"../math/vec2":34,"../objects/Attachment":35,"../utils/Utils":51,"./Spring":30}],29:[function(_dereq_,module,exports){
 var vec2 = _dereq_('../math/vec2');
 var Spring = _dereq_('./Spring');
 
@@ -6101,8 +6249,8 @@ RotationalSpring.prototype.applyForce = function(){
     var k = this.stiffness,
         d = this.damping,
         l = this.restAngle,
-        bodyA = this.bodyA,
-        bodyB = this.bodyB,
+        bodyA = this.attachments[0].body,
+        bodyB = this.attachments[1].body,
         x = bodyB.angle - bodyA.angle,
         u = bodyB.angularVelocity - bodyA.angularVelocity;
 
@@ -6112,10 +6260,11 @@ RotationalSpring.prototype.applyForce = function(){
     bodyB.angularForce += torque;
 };
 
-},{"../math/vec2":33,"./Spring":29}],29:[function(_dereq_,module,exports){
+},{"../math/vec2":34,"./Spring":30}],30:[function(_dereq_,module,exports){
 var vec2 = _dereq_('../math/vec2');
 var Utils = _dereq_('../utils/Utils');
 var Force = _dereq_('./Force');
+var Attachment = _dereq_('../objects/Attachment');
 
 module.exports = Spring;
 
@@ -6139,7 +6288,37 @@ function Spring(bodyA, bodyB, options){
         stiffness: 100,
     });
 
-    Force.call(this, options);
+    /**
+     * First connected body.
+     * @property bodyA
+     * @type {Body}
+     */
+    this.bodyA = bodyA;
+ 
+    /**
+     * Second connected body.
+     * @property bodyB
+     * @type {Body}
+     */
+    this.bodyB = bodyB;
+
+    /**
+     * Attachment for bodyA.
+     */
+    var attachmentA = new Attachment(bodyA, {
+        worldAnchor: options.worldAnchorA,
+        localAnchor: options.localAnchorA
+    });
+
+    /**
+     * Attachment for bodyA.
+     */
+    var attachmentB = new Attachment(bodyB, {
+        worldAnchor: options.worldAnchorB,
+        localAnchor: options.localAnchorB
+    });
+
+    Force.call(this, [ attachmentA, attachmentB ], options);
 
     /**
      * Stiffness of the spring.
@@ -6154,21 +6333,8 @@ function Spring(bodyA, bodyB, options){
      * @type {number}
      */
     this.damping = options.damping;
-
-    /**
-     * First connected body.
-     * @property bodyA
-     * @type {Body}
-     */
-    this.bodyA = bodyA;
-
-    /**
-     * Second connected body.
-     * @property bodyB
-     * @type {Body}
-     */
-    this.bodyB = bodyB;
 }
+Spring.prototype = new Force();
 
 /**
  * Apply the spring force to the connected bodies.
@@ -6178,7 +6344,7 @@ Spring.prototype.applyForce = function(){
     // To be implemented by subclasses
 };
 
-},{"../math/vec2":33,"../utils/Utils":49,"./Force":26}],30:[function(_dereq_,module,exports){
+},{"../math/vec2":34,"../objects/Attachment":35,"../utils/Utils":51,"./Force":27}],31:[function(_dereq_,module,exports){
 var Material = _dereq_('./Material');
 var Equation = _dereq_('../equations/Equation');
 
@@ -6286,7 +6452,7 @@ function ContactMaterial(materialA, materialB, options){
 
 ContactMaterial.idCounter = 0;
 
-},{"../equations/Equation":21,"./Material":31}],31:[function(_dereq_,module,exports){
+},{"../equations/Equation":21,"./Material":32}],32:[function(_dereq_,module,exports){
 module.exports = Material;
 
 /**
@@ -6307,7 +6473,7 @@ function Material(id){
 
 Material.idCounter = 0;
 
-},{}],32:[function(_dereq_,module,exports){
+},{}],33:[function(_dereq_,module,exports){
 
     /*
         PolyK library
@@ -6786,7 +6952,7 @@ Material.idCounter = 0;
 
 module.exports = PolyK;
 
-},{}],33:[function(_dereq_,module,exports){
+},{}],34:[function(_dereq_,module,exports){
 /* Copyright (c) 2013, Brandon Jones, Colin MacKenzie IV. All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -7249,7 +7415,65 @@ vec2.str = function (a) {
     return 'vec2(' + a[0] + ', ' + a[1] + ')';
 };
 
-},{"../utils/Utils":49}],34:[function(_dereq_,module,exports){
+},{"../utils/Utils":51}],35:[function(_dereq_,module,exports){
+var vec2 = _dereq_('../math/vec2')
+,   body = _dereq_('./Body');
+
+module.exports = Attachment;
+
+/**
+ * Represents an single attachment to a Body. 
+ *
+ * @class Attachment
+ * @constructor
+ * @param {Body}   [body]                  Which body the attachment refers to.
+ * @param {Object} [options]
+ * @param {Array}  [options.localAnchor]   Where to hook the attachemnt to the body, in local body coordinates. Defaults to the body center.
+ * @param {Array}  [options.worldAnchor]   Where to hook the attachment to the body, in world coordinates. Overrides the option "localAnchor" if given.
+ */
+function Attachment(body, options){
+    options = options || {};
+
+    /**
+     * Anchor for body in local body coordinates.
+     * @property localAnchor
+     * @type {Array}
+     */
+    this.localAnchor = vec2.fromValues(0,0);
+
+    this.body = body;
+
+    if(options.localAnchor){ vec2.copy(this.localAnchor, options.localAnchor); }
+    if(options.worldAnchor){ this.setWorldAnchor(options.worldAnchor); }
+}
+
+/**
+ * Set the anchor point on body, using world coordinates.
+ * @method setWorldAnchor
+ * @param {Array} worldAnchor
+ */
+Attachment.prototype.setWorldAnchor = function(worldAnchor){
+    this.body.toLocalFrame(this.localAnchor, worldAnchor);
+};
+
+/**
+ * Get the anchor point on body, in world coordinates.
+ * @method getWorldAnchor
+ * @param {Array} result The vector to store the result in.
+ */
+Attachment.prototype.getWorldAnchor = function(result){
+    this.body.toWorldFrame(result, this.localAnchor);
+    return result;
+};
+
+Attachment.distance = function(attachmentA, attachmentB){
+    var vA = attachmentA.getWorldAnchor(vec2.create());
+    var vB = attachmentB.getWorldAnchor(vec2.create());
+    return vec2.distance(vA, vB);
+};
+
+
+},{"../math/vec2":34,"./Body":36}],36:[function(_dereq_,module,exports){
 var vec2 = _dereq_('../math/vec2')
 ,   decomp = _dereq_('poly-decomp')
 ,   Convex = _dereq_('../shapes/Convex')
@@ -8223,11 +8447,13 @@ Body.SLEEPY = 1;
 Body.SLEEPING = 2;
 
 
-},{"../collision/AABB":7,"../events/EventEmitter":25,"../math/vec2":33,"../shapes/Convex":38,"poly-decomp":5}],35:[function(_dereq_,module,exports){
+},{"../collision/AABB":7,"../events/EventEmitter":25,"../math/vec2":34,"../shapes/Convex":40,"poly-decomp":5}],37:[function(_dereq_,module,exports){
 // Export p2 classes
 module.exports = {
     AABB :                          _dereq_('./collision/AABB'),
     AngleLockEquation :             _dereq_('./equations/AngleLockEquation'),
+    Attachment :                    _dereq_('./objects/Attachment'),
+    Attraction :                    _dereq_('./forces/Attraction'),
     Body :                          _dereq_('./objects/Body'),
     Broadphase :                    _dereq_('./collision/Broadphase'),
     Capsule :                       _dereq_('./shapes/Capsule'),
@@ -8268,7 +8494,7 @@ module.exports = {
     version :                       _dereq_('../package.json').version,
 };
 
-},{"../package.json":6,"./collision/AABB":7,"./collision/Broadphase":8,"./collision/GridBroadphase":9,"./collision/NaiveBroadphase":10,"./collision/Narrowphase":11,"./collision/SAPBroadphase":12,"./constraints/Constraint":13,"./constraints/DistanceConstraint":14,"./constraints/GearConstraint":15,"./constraints/LockConstraint":16,"./constraints/PrismaticConstraint":17,"./constraints/RevoluteConstraint":18,"./equations/AngleLockEquation":19,"./equations/ContactEquation":20,"./equations/Equation":21,"./equations/FrictionEquation":22,"./equations/RotationalVelocityEquation":24,"./events/EventEmitter":25,"./forces/Force":26,"./forces/LinearSpring":27,"./forces/RotationalSpring":28,"./forces/Spring":29,"./material/ContactMaterial":30,"./material/Material":31,"./math/vec2":33,"./objects/Body":34,"./shapes/Capsule":36,"./shapes/Circle":37,"./shapes/Convex":38,"./shapes/Heightfield":39,"./shapes/Line":40,"./shapes/Particle":41,"./shapes/Plane":42,"./shapes/Rectangle":43,"./shapes/Shape":44,"./solver/GSSolver":45,"./solver/Solver":46,"./utils/Utils":49,"./world/World":53}],36:[function(_dereq_,module,exports){
+},{"../package.json":6,"./collision/AABB":7,"./collision/Broadphase":8,"./collision/GridBroadphase":9,"./collision/NaiveBroadphase":10,"./collision/Narrowphase":11,"./collision/SAPBroadphase":12,"./constraints/Constraint":13,"./constraints/DistanceConstraint":14,"./constraints/GearConstraint":15,"./constraints/LockConstraint":16,"./constraints/PrismaticConstraint":17,"./constraints/RevoluteConstraint":18,"./equations/AngleLockEquation":19,"./equations/ContactEquation":20,"./equations/Equation":21,"./equations/FrictionEquation":22,"./equations/RotationalVelocityEquation":24,"./events/EventEmitter":25,"./forces/Attraction":26,"./forces/Force":27,"./forces/LinearSpring":28,"./forces/RotationalSpring":29,"./forces/Spring":30,"./material/ContactMaterial":31,"./material/Material":32,"./math/vec2":34,"./objects/Attachment":35,"./objects/Body":36,"./shapes/Capsule":38,"./shapes/Circle":39,"./shapes/Convex":40,"./shapes/Heightfield":41,"./shapes/Line":42,"./shapes/Particle":43,"./shapes/Plane":44,"./shapes/Rectangle":45,"./shapes/Shape":46,"./solver/GSSolver":47,"./solver/Solver":48,"./utils/Utils":51,"./world/World":55}],38:[function(_dereq_,module,exports){
 var Shape = _dereq_('./Shape')
 ,   vec2 = _dereq_('../math/vec2');
 
@@ -8362,7 +8588,7 @@ Capsule.prototype.computeAABB = function(out, position, angle){
     vec2.add(out.upperBound, out.upperBound, position);
 };
 
-},{"../math/vec2":33,"./Shape":44}],37:[function(_dereq_,module,exports){
+},{"../math/vec2":34,"./Shape":46}],39:[function(_dereq_,module,exports){
 var Shape = _dereq_('./Shape')
 ,    vec2 = _dereq_('../math/vec2');
 
@@ -8435,7 +8661,7 @@ Circle.prototype.computeAABB = function(out, position, angle){
     }
 };
 
-},{"../math/vec2":33,"./Shape":44}],38:[function(_dereq_,module,exports){
+},{"../math/vec2":34,"./Shape":46}],40:[function(_dereq_,module,exports){
 var Shape = _dereq_('./Shape')
 ,   vec2 = _dereq_('../math/vec2')
 ,   polyk = _dereq_('../math/polyk')
@@ -8762,7 +8988,7 @@ Convex.prototype.computeAABB = function(out, position, angle){
     out.setFromPoints(this.vertices, position, angle, 0);
 };
 
-},{"../math/polyk":32,"../math/vec2":33,"./Shape":44,"poly-decomp":5}],39:[function(_dereq_,module,exports){
+},{"../math/polyk":33,"../math/vec2":34,"./Shape":46,"poly-decomp":5}],41:[function(_dereq_,module,exports){
 var Shape = _dereq_('./Shape')
 ,    vec2 = _dereq_('../math/vec2')
 ,    Utils = _dereq_('../utils/Utils');
@@ -8882,7 +9108,7 @@ Heightfield.prototype.computeAABB = function(out, position, angle){
     out.lowerBound[1] = -Number.MAX_VALUE; // Infinity
 };
 
-},{"../math/vec2":33,"../utils/Utils":49,"./Shape":44}],40:[function(_dereq_,module,exports){
+},{"../math/vec2":34,"../utils/Utils":51,"./Shape":46}],42:[function(_dereq_,module,exports){
 var Shape = _dereq_('./Shape')
 ,   vec2 = _dereq_('../math/vec2');
 
@@ -8931,7 +9157,7 @@ Line.prototype.computeAABB = function(out, position, angle){
 };
 
 
-},{"../math/vec2":33,"./Shape":44}],41:[function(_dereq_,module,exports){
+},{"../math/vec2":34,"./Shape":46}],43:[function(_dereq_,module,exports){
 var Shape = _dereq_('./Shape')
 ,   vec2 = _dereq_('../math/vec2');
 
@@ -8966,7 +9192,7 @@ Particle.prototype.computeAABB = function(out, position, angle){
     vec2.copy(out.upperBound, position);
 };
 
-},{"../math/vec2":33,"./Shape":44}],42:[function(_dereq_,module,exports){
+},{"../math/vec2":34,"./Shape":46}],44:[function(_dereq_,module,exports){
 var Shape =  _dereq_('./Shape')
 ,    vec2 =  _dereq_('../math/vec2')
 ,    Utils = _dereq_('../utils/Utils');
@@ -9044,7 +9270,7 @@ Plane.prototype.updateArea = function(){
 };
 
 
-},{"../math/vec2":33,"../utils/Utils":49,"./Shape":44}],43:[function(_dereq_,module,exports){
+},{"../math/vec2":34,"../utils/Utils":51,"./Shape":46}],45:[function(_dereq_,module,exports){
 var vec2 = _dereq_('../math/vec2')
 ,   Shape = _dereq_('./Shape')
 ,   Convex = _dereq_('./Convex');
@@ -9129,7 +9355,7 @@ Rectangle.prototype.updateArea = function(){
 };
 
 
-},{"../math/vec2":33,"./Convex":38,"./Shape":44}],44:[function(_dereq_,module,exports){
+},{"../math/vec2":34,"./Convex":40,"./Shape":46}],46:[function(_dereq_,module,exports){
 module.exports = Shape;
 
 /**
@@ -9328,7 +9554,7 @@ Shape.prototype.computeAABB = function(out, position, angle){
     // To be implemented in each subclass
 };
 
-},{}],45:[function(_dereq_,module,exports){
+},{}],47:[function(_dereq_,module,exports){
 var vec2 = _dereq_('../math/vec2')
 ,   Solver = _dereq_('./Solver')
 ,   Utils = _dereq_('../utils/Utils')
@@ -9572,7 +9798,7 @@ GSSolver.iterateEquation = function(j,eq,eps,Bs,invCs,lambda,useZeroRHS,dt,iter)
     return deltalambda;
 };
 
-},{"../equations/FrictionEquation":22,"../math/vec2":33,"../utils/Utils":49,"./Solver":46}],46:[function(_dereq_,module,exports){
+},{"../equations/FrictionEquation":22,"../math/vec2":34,"../utils/Utils":51,"./Solver":48}],48:[function(_dereq_,module,exports){
 var Utils = _dereq_('../utils/Utils')
 ,   EventEmitter = _dereq_('../events/EventEmitter');
 
@@ -9706,7 +9932,7 @@ Solver.prototype.removeAllEquations = function(){
 Solver.GS = 1;
 Solver.ISLAND = 2;
 
-},{"../events/EventEmitter":25,"../utils/Utils":49}],47:[function(_dereq_,module,exports){
+},{"../events/EventEmitter":25,"../utils/Utils":51}],49:[function(_dereq_,module,exports){
 var TupleDictionary = _dereq_('./TupleDictionary');
 var Utils = _dereq_('./Utils');
 
@@ -9922,7 +10148,7 @@ OverlapKeeperRecord.prototype.set = function(bodyA, shapeA, bodyB, shapeB){
     OverlapKeeperRecord.call(this, bodyA, shapeA, bodyB, shapeB);
 };
 
-},{"./TupleDictionary":48,"./Utils":49}],48:[function(_dereq_,module,exports){
+},{"./TupleDictionary":50,"./Utils":51}],50:[function(_dereq_,module,exports){
 var Utils = _dereq_('./Utils');
 
 module.exports = TupleDictionary;
@@ -10044,7 +10270,7 @@ TupleDictionary.prototype.copy = function(dict) {
     }
 };
 
-},{"./Utils":49}],49:[function(_dereq_,module,exports){
+},{"./Utils":51}],51:[function(_dereq_,module,exports){
 /* global P2_ARRAY_TYPE */
 
 module.exports = Utils;
@@ -10139,7 +10365,7 @@ Utils.defaults = function(options, defaults){
     return options;
 };
 
-},{}],50:[function(_dereq_,module,exports){
+},{}],52:[function(_dereq_,module,exports){
 var Body = _dereq_('../objects/Body');
 
 module.exports = Island;
@@ -10226,7 +10452,7 @@ Island.prototype.sleep = function(){
     return true;
 };
 
-},{"../objects/Body":34}],51:[function(_dereq_,module,exports){
+},{"../objects/Body":36}],53:[function(_dereq_,module,exports){
 var vec2 = _dereq_('../math/vec2')
 ,   Island = _dereq_('./Island')
 ,   IslandNode = _dereq_('./IslandNode')
@@ -10413,7 +10639,7 @@ IslandManager.prototype.split = function(world){
     return islands;
 };
 
-},{"../math/vec2":33,"../objects/Body":34,"./Island":50,"./IslandNode":52}],52:[function(_dereq_,module,exports){
+},{"../math/vec2":34,"../objects/Body":36,"./Island":52,"./IslandNode":54}],54:[function(_dereq_,module,exports){
 module.exports = IslandNode;
 
 /**
@@ -10461,7 +10687,7 @@ IslandNode.prototype.reset = function(){
     this.body = null;
 };
 
-},{}],53:[function(_dereq_,module,exports){
+},{}],55:[function(_dereq_,module,exports){
 /* global performance */
 /*jshint -W020 */
 
@@ -11821,6 +12047,6 @@ World.prototype.setGlobalRelaxation = function(relaxation){
     });
 };
 
-},{"../../package.json":6,"../collision/Broadphase":8,"../collision/NaiveBroadphase":10,"../collision/Narrowphase":11,"../collision/SAPBroadphase":12,"../constraints/Constraint":13,"../constraints/DistanceConstraint":14,"../constraints/GearConstraint":15,"../constraints/LockConstraint":16,"../constraints/PrismaticConstraint":17,"../constraints/RevoluteConstraint":18,"../events/EventEmitter":25,"../forces/LinearSpring":27,"../forces/RotationalSpring":28,"../material/ContactMaterial":30,"../material/Material":31,"../math/vec2":33,"../objects/Body":34,"../shapes/Capsule":36,"../shapes/Circle":37,"../shapes/Convex":38,"../shapes/Line":40,"../shapes/Particle":41,"../shapes/Plane":42,"../shapes/Rectangle":43,"../shapes/Shape":44,"../solver/GSSolver":45,"../solver/Solver":46,"../utils/OverlapKeeper":47,"../utils/Utils":49,"./IslandManager":51}]},{},[35])
-(35)
+},{"../../package.json":6,"../collision/Broadphase":8,"../collision/NaiveBroadphase":10,"../collision/Narrowphase":11,"../collision/SAPBroadphase":12,"../constraints/Constraint":13,"../constraints/DistanceConstraint":14,"../constraints/GearConstraint":15,"../constraints/LockConstraint":16,"../constraints/PrismaticConstraint":17,"../constraints/RevoluteConstraint":18,"../events/EventEmitter":25,"../forces/LinearSpring":28,"../forces/RotationalSpring":29,"../material/ContactMaterial":31,"../material/Material":32,"../math/vec2":34,"../objects/Body":36,"../shapes/Capsule":38,"../shapes/Circle":39,"../shapes/Convex":40,"../shapes/Line":42,"../shapes/Particle":43,"../shapes/Plane":44,"../shapes/Rectangle":45,"../shapes/Shape":46,"../solver/GSSolver":47,"../solver/Solver":48,"../utils/OverlapKeeper":49,"../utils/Utils":51,"./IslandManager":53}]},{},[37])
+(37)
 });
