@@ -13,3 +13,5 @@ node_modules/*
 *.sublime-workspace
 
 .idea/
+build/
+test/
