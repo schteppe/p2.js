@@ -860,6 +860,9 @@ Body.prototype.sleepTick = function(time, dontSleep, dt){
         this.idleTime += dt;
         this.sleepState = Body.SLEEPY;
     }
+    if(Number.isNaN(this.idleTime)){
+        this.idleTime=this.sleepTimeLimit+0.1;
+    }
     if(this.idleTime > this.sleepTimeLimit){
         if(!dontSleep){
             this.sleep();
