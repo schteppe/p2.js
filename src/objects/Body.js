@@ -371,6 +371,12 @@ function Body(options){
     this.collisionResponse = true;
 
     /**
+     * How long the body has been sleeping.
+     * @property {Number} idleTime
+     */
+    this.idleTime = 0;
+
+    /**
      * The last time when the body went to SLEEPY state.
      * @property {Number} timeLastSleepy
      * @private
