@@ -5871,7 +5871,7 @@ module.exports = Attraction;
  * @param {Body} bodyA
  * @param {Body} bodyB
  * @param {Object} [options]
- * @param {number} [options.constant=100]  Force constant. A number >= 0.
+ * @param {number} [options.constant=100]  Force constant. A number.
  * @param {number} [options.damping=1]     A number >= 0. Default: 1
  * @param {Array}  [options.worldAnchorA]  Where to hook the spring to body A, in world coordinates. Overrides the option "localAnchorA" if given.
  * @param {Array}  [options.worldAnchorB]
