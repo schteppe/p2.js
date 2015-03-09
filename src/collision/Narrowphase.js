@@ -260,9 +260,6 @@ Narrowphase.prototype.createFrictionFromContact = function(c){
 
 // Take the average N latest contact point on the plane.
 Narrowphase.prototype.createFrictionFromAverage = function(numContacts){
-    if(!numContacts){
-        throw new Error("numContacts == 0!");
-    }
     var c = this.contactEquations[this.contactEquations.length - 1];
     var eq = this.createFrictionEquation(c.bodyA, c.bodyB, c.shapeA, c.shapeB);
     var bodyA = c.bodyA;
