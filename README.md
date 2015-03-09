@@ -5,7 +5,13 @@ p2.js
 
 [Demos](#demos) | [Examples](#examples) | [Documentation](http://schteppe.github.io/p2.js/docs/) | [Download](https://raw.github.com/schteppe/p2.js/master/build/p2.js) | [CDN](http://cdnjs.com/libraries/p2.js)
 
+### Featured projects using p2.js
+* [Google I/O 2015 Experiment](http://www.chromeexperiments.com/detail/io-2015-experiment) by Instrument
+* [PixiLights, a Christmas Experiment](http://christmasexperiments.com/experiments/11) by Mat Groves
+
 ### Demos
+These demos use the p2 Demo framework, which provides rendering and interactivity. Use mouse/touch to throw or create objects. Use the right menu (or console!) to tweak parameters. Or just check the source to see how to programmatically build the current scene using p2.
+
 * [Car](http://schteppe.github.io/p2.js/demos/car.html)
 * [Circle container](http://schteppe.github.io/p2.js/demos/circles.html)
 * [Collision tests](http://schteppe.github.io/p2.js/demos/collisions.html)
