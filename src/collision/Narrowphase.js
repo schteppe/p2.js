@@ -1,22 +1,23 @@
-var vec2 = require('../math/vec2')
-,   sub = vec2.sub
-,   add = vec2.add
-,   dot = vec2.dot
-,   Utils = require('../utils/Utils')
-,   TupleDictionary = require('../utils/TupleDictionary')
-,   Equation = require('../equations/Equation')
-,   ContactEquation = require('../equations/ContactEquation')
-,   FrictionEquation = require('../equations/FrictionEquation')
-,   Circle = require('../shapes/Circle')
-,   Convex = require('../shapes/Convex')
-,   Shape = require('../shapes/Shape')
-,   Body = require('../objects/Body')
-,   Rectangle = require('../shapes/Rectangle');
+import vec2 from '../math/vec2';
+import Utils from '../utils/Utils';
+import TupleDictionary from '../utils/TupleDictionary';
+import Equation from '../equations/Equation';
+import ContactEquation from '../equations/ContactEquation';
+import FrictionEquation from '../equations/FrictionEquation';
+import Circle from '../shapes/Circle';
+import Convex from '../shapes/Convex';
+import Shape from '../shapes/Shape';
+import Body from '../objects/Body';
+import Rectangle from '../shapes/Rectangle';
 
-module.exports = Narrowphase;
+export default Narrowphase;
 
 // Temp things
 var yAxis = vec2.fromValues(0,1);
+
+var sub = vec2.sub
+,   add = vec2.add
+,   dot = vec2.dot;
 
 var tmp1 = vec2.fromValues(0,0)
 ,   tmp2 = vec2.fromValues(0,0)
@@ -535,7 +536,7 @@ Narrowphase.prototype.capsuleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTe
 
     if(this.enableFrictionReduction){
         // Temporarily turn off friction
-        var enableFrictionBefore = this.enableFriction;
+        enableFrictionBefore = this.enableFriction;
         this.enableFriction = false;
     }
 
@@ -963,10 +964,11 @@ Narrowphase.prototype.circleConvex = function(
     // 2. 1. Get point on circle that is closest to the edge (scale normal with -radius)
     // 2. 2. Check if point is inside.
 
-    var verts = convexShape.vertices;
+    var verts = convexShape.vertices,
+        i;
 
     // Check all edges first
-    for(var i=0; i!==verts.length+1; i++){
+    for(i=0; i!==verts.length+1; i++){
         var v0 = verts[i%verts.length],
             v1 = verts[(i+1)%verts.length];
 
@@ -1029,7 +1031,7 @@ Narrowphase.prototype.circleConvex = function(
 
     // Check all vertices
     if(circleRadius > 0){
-        for(var i=0; i<verts.length; i++){
+        for(i=0; i<verts.length; i++){
             var localVertex = verts[i];
             vec2.rotate(worldVertex, localVertex, convexAngle);
             add(worldVertex, worldVertex, convexOffset);
@@ -1913,19 +1915,20 @@ Narrowphase.findSeparatingAxis = function(c1,offset1,angle1,c2,offset2,angle2,se
         worldPoint1 = fsa_tmp3,
         normal = fsa_tmp4,
         span1 = fsa_tmp5,
-        span2 = fsa_tmp6;
+        span2 = fsa_tmp6,
+	i, j, a, b, c, angle, swapped, dist;
 
     if(c1 instanceof Rectangle && c2 instanceof Rectangle){
 
-        for(var j=0; j!==2; j++){
-            var c = c1,
-                angle = angle1;
+        for(j=0; j!==2; j++){
+            c = c1;
+            angle = angle1;
             if(j===1){
                 c = c2;
                 angle = angle2;
             }
 
-            for(var i=0; i!==2; i++){
+            for(i=0; i!==2; i++){
 
                 // Get the world edge
                 if(i === 0){
@@ -1942,9 +1945,9 @@ Narrowphase.findSeparatingAxis = function(c1,offset1,angle1,c2,offset2,angle2,se
                 Narrowphase.projectConvexOntoAxis(c2,offset2,angle2,normal,span2);
 
                 // Order by span position
-                var a=span1,
-                    b=span2,
-                    swapped = false;
+                a=span1;
+                b=span2;
+                swapped = false;
                 if(span1[0] > span2[0]){
                     b=span1;
                     a=span2;
@@ -1952,7 +1955,7 @@ Narrowphase.findSeparatingAxis = function(c1,offset1,angle1,c2,offset2,angle2,se
                 }
 
                 // Get separating distance
-                var dist = b[0] - a[1];
+                dist = b[0] - a[1];
                 overlap = (dist <= 0);
 
                 if(maxDist===null || dist > maxDist){
@@ -1965,15 +1968,15 @@ Narrowphase.findSeparatingAxis = function(c1,offset1,angle1,c2,offset2,angle2,se
 
     } else {
 
-        for(var j=0; j!==2; j++){
-            var c = c1,
-                angle = angle1;
+        for(j=0; j!==2; j++){
+            c = c1;
+            angle = angle1;
             if(j===1){
                 c = c2;
                 angle = angle2;
             }
 
-            for(var i=0; i!==c.vertices.length; i++){
+            for(i=0; i!==c.vertices.length; i++){
                 // Get the world edge
                 vec2.rotate(worldPoint0, c.vertices[i], angle);
                 vec2.rotate(worldPoint1, c.vertices[(i+1)%c.vertices.length], angle);
@@ -1989,9 +1992,9 @@ Narrowphase.findSeparatingAxis = function(c1,offset1,angle1,c2,offset2,angle2,se
                 Narrowphase.projectConvexOntoAxis(c2,offset2,angle2,normal,span2);
 
                 // Order by span position
-                var a=span1,
-                    b=span2,
-                    swapped = false;
+                a=span1;
+                b=span2;
+                swapped = false;
                 if(span1[0] > span2[0]){
                     b=span1;
                     a=span2;
@@ -1999,7 +2002,7 @@ Narrowphase.findSeparatingAxis = function(c1,offset1,angle1,c2,offset2,angle2,se
                 }
 
                 // Get separating distance
-                var dist = b[0] - a[1];
+                dist = b[0] - a[1];
                 overlap = (dist <= 0);
 
                 if(maxDist===null || dist > maxDist){
@@ -2151,8 +2154,9 @@ Narrowphase.prototype.circleHeightfield = function( circleBody,circleShape,circl
 
     // Get max and min
     var max = data[idxA],
-        min = data[idxB];
-    for(var i=idxA; i<idxB; i++){
+        min = data[idxB],
+        i;
+    for(i=idxA; i<idxB; i++){
         if(data[i] < min){
             min = data[i];
         }
@@ -2180,7 +2184,7 @@ Narrowphase.prototype.circleHeightfield = function( circleBody,circleShape,circl
     var found = false;
 
     // Check all edges first
-    for(var i=idxA; i<idxB; i++){
+    for(i=idxA; i<idxB; i++){
 
         // Get points
         vec2.set(v0,     i*w, data[i]  );
@@ -2239,7 +2243,7 @@ Narrowphase.prototype.circleHeightfield = function( circleBody,circleShape,circl
     // Check all vertices
     found = false;
     if(radius > 0){
-        for(var i=idxA; i<=idxB; i++){
+        for(i=idxA; i<=idxB; i++){
 
             // Get point
             vec2.set(v0, i*w, data[i]);
@@ -2324,8 +2328,9 @@ Narrowphase.prototype.convexHeightfield = function( convexBody,convexShape,conve
 
     // Get max and min
     var max = data[idxA],
-        min = data[idxB];
-    for(var i=idxA; i<idxB; i++){
+        min = data[idxB],
+	i;
+    for(i=idxA; i<idxB; i++){
         if(data[i] < min){
             min = data[i];
         }
@@ -2343,7 +2348,7 @@ Narrowphase.prototype.convexHeightfield = function( convexBody,convexShape,conve
 
     // Loop over all edges
     // TODO: If possible, construct a convex from several data points (need o check if the points make a convex shape)
-    for(var i=idxA; i<idxB; i++){
+    for(i=idxA; i<idxB; i++){
 
         // Get points
         vec2.set(v0,     i*w, data[i]  );

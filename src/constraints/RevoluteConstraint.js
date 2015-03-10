@@ -1,10 +1,10 @@
-var Constraint = require('./Constraint')
-,   Equation = require('../equations/Equation')
-,   RotationalVelocityEquation = require('../equations/RotationalVelocityEquation')
-,   RotationalLockEquation = require('../equations/RotationalLockEquation')
-,   vec2 = require('../math/vec2');
+import Constraint from './Constraint';
+import Equation from '../equations/Equation';
+import RotationalVelocityEquation from '../equations/RotationalVelocityEquation';
+import RotationalLockEquation from '../equations/RotationalLockEquation';
+import vec2 from '../math/vec2';
 
-module.exports = RevoluteConstraint;
+export default RevoluteConstraint;
 
 var worldPivotA = vec2.create(),
     worldPivotB = vec2.create(),

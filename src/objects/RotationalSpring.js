@@ -1,7 +1,7 @@
-var vec2 = require('../math/vec2');
-var Spring = require('./Spring');
+import vec2 from '../math/vec2';
+import Spring from './Spring';
 
-module.exports = RotationalSpring;
+export default RotationalSpring;
 
 /**
  * A rotational spring, connecting two bodies rotation. This spring explicitly adds angularForce (torque) to the bodies.

@@ -1,8 +1,8 @@
-var vec2 = require('../math/vec2')
-,   Equation = require('./Equation')
-,   Utils = require('../utils/Utils');
+import vec2 from '../math/vec2';
+import Equation from './Equation';
+import Utils from '../utils/Utils';
 
-module.exports = FrictionEquation;
+export default FrictionEquation;
 
 /**
  * Constrains the slipping in a contact along a tangent

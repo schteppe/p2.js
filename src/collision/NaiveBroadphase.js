@@ -1,11 +1,11 @@
-var Circle = require('../shapes/Circle'),
-    Plane = require('../shapes/Plane'),
-    Shape = require('../shapes/Shape'),
-    Particle = require('../shapes/Particle'),
-    Broadphase = require('../collision/Broadphase'),
-    vec2 = require('../math/vec2');
+import Circle from '../shapes/Circle';
+import Plane from '../shapes/Plane';
+import Shape from '../shapes/Shape';
+import Particle from '../shapes/Particle';
+import Broadphase from '../collision/Broadphase';
+import vec2 from '../math/vec2';
 
-module.exports = NaiveBroadphase;
+export default NaiveBroadphase;
 
 /**
  * Naive broadphase implementation. Does N^2 tests.

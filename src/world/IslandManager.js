@@ -1,9 +1,9 @@
-var vec2 = require('../math/vec2')
-,   Island = require('./Island')
-,   IslandNode = require('./IslandNode')
-,   Body = require('../objects/Body');
+import vec2 from '../math/vec2';
+import Island from './Island';
+import IslandNode from './IslandNode';
+import Body from '../objects/Body';
 
-module.exports = IslandManager;
+export default IslandManager;
 
 /**
  * Splits the system of bodies and equations into independent islands
@@ -128,15 +128,17 @@ IslandManager.prototype.bfs = function(root,bds,eqs){
 IslandManager.prototype.split = function(world){
     var bodies = world.bodies,
         nodes = this.nodes,
-        equations = this.equations;
+        equations = this.equations,
+        i, j, k, eq, ni, nj;
 
     // Move old nodes to the node pool
     while(nodes.length){
         this._nodePool.push(nodes.pop());
     }
 
+
     // Create needed nodes, reuse if possible
-    for(var i=0; i!==bodies.length; i++){
+    for(i=0; i!==bodies.length; i++){
         if(this._nodePool.length){
             var node = this._nodePool.pop();
             node.reset();
@@ -148,12 +150,12 @@ IslandManager.prototype.split = function(world){
     }
 
     // Add connectivity data. Each equation connects 2 bodies.
-    for(var k=0; k!==equations.length; k++){
-        var eq=equations[k],
-            i=bodies.indexOf(eq.bodyA),
-            j=bodies.indexOf(eq.bodyB),
-            ni=nodes[i],
-            nj=nodes[j];
+    for(k=0; k!==equations.length; k++){
+        eq=equations[k];
+        i=bodies.indexOf(eq.bodyA);
+        j=bodies.indexOf(eq.bodyB);
+        ni=nodes[i];
+        nj=nodes[j];
         ni.neighbors.push(nj);
         nj.neighbors.push(ni);
         ni.equations.push(eq);

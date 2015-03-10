@@ -1,11 +1,11 @@
-var Circle = require('../shapes/Circle')
-,   Plane = require('../shapes/Plane')
-,   Particle = require('../shapes/Particle')
-,   Broadphase = require('../collision/Broadphase')
-,   vec2 = require('../math/vec2')
-,   Utils = require('../utils/Utils');
+import Circle from '../shapes/Circle';
+import Plane from '../shapes/Plane';
+import Particle from '../shapes/Particle';
+import Broadphase from '../collision/Broadphase';
+import vec2 from '../math/vec2';
+import Utils from '../utils/Utils';
 
-module.exports = GridBroadphase;
+export default GridBroadphase;
 
 /**
  * Broadphase that uses axis-aligned bins.
@@ -62,11 +62,12 @@ GridBroadphase.prototype.getCollisionPairs = function(world){
         xmin = this.xmin,
         ymin = this.ymin,
         xmax = this.xmax,
-        ymax = this.ymax;
+        ymax = this.ymax,
+        i, j, k;
 
     // Todo: make garbage free
     var bins=[], Nbins=nx*ny;
-    for(var i=0; i<Nbins; i++){
+    for(i=0; i<Nbins; i++){
         bins.push([]);
     }
 
@@ -74,7 +75,7 @@ GridBroadphase.prototype.getCollisionPairs = function(world){
     var ymult = ny / (ymax-ymin);
 
     // Put all bodies into bins
-    for(var i=0; i!==Ncolliding; i++){
+    for(i=0; i!==Ncolliding; i++){
         var bi = bodies[i];
         var aabb = bi.aabb;
         var lowerX = Math.max(aabb.lowerBound[0], xmin);
@@ -87,8 +88,8 @@ GridBroadphase.prototype.getCollisionPairs = function(world){
         var yi2 = Math.floor(ymult * (upperY - ymin));
 
         // Put in bin
-        for(var j=xi1; j<=xi2; j++){
-            for(var k=yi1; k<=yi2; k++){
+        for(j=xi1; j<=xi2; j++){
+            for(k=yi1; k<=yi2; k++){
                 var xi = j;
                 var yi = k;
                 var idx = xi*(ny-1) + yi;
@@ -100,12 +101,12 @@ GridBroadphase.prototype.getCollisionPairs = function(world){
     }
 
     // Check each bin
-    for(var i=0; i!==Nbins; i++){
-        var bin = bins[i];
-
-        for(var j=0, NbodiesInBin=bin.length; j!==NbodiesInBin; j++){
+    for(i=0; i!==Nbins; i++){
+        var bin = bins[i],
+            NbodiesInBin;
+        for(j=0, NbodiesInBin=bin.length; j!==NbodiesInBin; j++){
             var bi = bin[j];
-            for(var k=0; k!==j; k++){
+            for(k=0; k!==j; k++){
                 var bj = bin[k];
                 if(Broadphase.canCollide(bi,bj) && this.boundingVolumeCheck(bi,bj)){
                     result.push(bi,bj);

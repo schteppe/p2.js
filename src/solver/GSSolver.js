@@ -1,9 +1,9 @@
-var vec2 = require('../math/vec2')
-,   Solver = require('./Solver')
-,   Utils = require('../utils/Utils')
-,   FrictionEquation = require('../equations/FrictionEquation');
+import vec2 from '../math/vec2';
+import Solver from './Solver';
+import Utils from '../utils/Utils';
+import FrictionEquation from '../equations/FrictionEquation';
 
-module.exports = GSSolver;
+export default GSSolver;
 
 /**
  * Iterative Gauss-Seidel constraint equation solver.
@@ -89,12 +89,13 @@ GSSolver.prototype.solve = function(h, world){
         add = vec2.add,
         set = vec2.set,
         useZeroRHS = this.useZeroRHS,
-        lambda = this.lambda;
+        lambda = this.lambda,
+        i;
 
     this.usedIterations = 0;
 
     if(Neq){
-        for(var i=0; i!==Nbodies; i++){
+        for(i=0; i!==Nbodies; i++){
             var b = bodies[i];
 
             // Update solve mass
@@ -111,10 +112,12 @@ GSSolver.prototype.solve = function(h, world){
     setArrayZero(lambda);
     var invCs = this.invCs,
         Bs = this.Bs,
-        lambda = this.lambda;
+	c;
 
-    for(var i=0; i!==equations.length; i++){
-        var c = equations[i];
+    lambda = this.lambda;
+
+    for(i=0; i!==equations.length; i++){
+        c = equations[i];
         if(c.timeStep !== h || c.needsUpdate){
             c.timeStep = h;
             c.update();
@@ -123,7 +126,7 @@ GSSolver.prototype.solve = function(h, world){
         invCs[i] =  c.computeInvC(c.epsilon);
     }
 
-    var q, B, c, deltalambdaTot,i,j;
+    var q, B, deltalambdaTot,j;
 
     if(Neq !== 0){
 

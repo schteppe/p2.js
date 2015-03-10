@@ -1,6 +1,6 @@
 /* global P2_ARRAY_TYPE */
 
-module.exports = Utils;
+export default Utils;
 
 /**
  * Misc utility functions

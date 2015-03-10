@@ -1,7 +1,7 @@
-var TupleDictionary = require('./TupleDictionary');
-var Utils = require('./Utils');
+import TupleDictionary from './TupleDictionary';
+import Utils from './Utils';
 
-module.exports = OverlapKeeper;
+export default OverlapKeeper;
 
 /**
  * Keeps track of overlaps in the current state and the last step state.

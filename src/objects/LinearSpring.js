@@ -1,8 +1,8 @@
-var vec2 = require('../math/vec2');
-var Spring = require('./Spring');
-var Utils = require('../utils/Utils');
+import vec2 from '../math/vec2';
+import Spring from './Spring';
+import Utils from '../utils/Utils';
 
-module.exports = LinearSpring;
+export default LinearSpring;
 
 /**
  * A spring, connecting two bodies.

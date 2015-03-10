@@ -1,4 +1,4 @@
-module.exports = Shape;
+export default Shape;
 
 /**
  * Base class for shapes.

@@ -1,7 +1,7 @@
-var Shape = require('./Shape')
-,   vec2 = require('../math/vec2');
+import Shape from './Shape';
+import vec2 from '../math/vec2';
 
-module.exports = Line;
+export default Line;
 
 /**
  * Line shape class. The line shape is along the x direction, and stretches from [-length/2, 0] to [length/2,0].

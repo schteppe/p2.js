@@ -1,8 +1,8 @@
-var Constraint = require('./Constraint')
-,   vec2 = require('../math/vec2')
-,   Equation = require('../equations/Equation');
+import Constraint from './Constraint';
+import vec2 from '../math/vec2';
+import Equation from '../equations/Equation';
 
-module.exports = LockConstraint;
+export default LockConstraint;
 
 /**
  * Locks the relative position between two bodies.

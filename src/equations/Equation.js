@@ -1,8 +1,8 @@
-module.exports = Equation;
+export default Equation;
 
-var vec2 = require('../math/vec2'),
-    Utils = require('../utils/Utils'),
-    Body = require('../objects/Body');
+import vec2 from '../math/vec2';
+import Utils from '../utils/Utils';
+import Body from '../objects/Body';
 
 /**
  * Base class for constraint equations.

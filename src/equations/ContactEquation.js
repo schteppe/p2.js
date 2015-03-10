@@ -1,7 +1,7 @@
-var Equation = require("./Equation"),
-    vec2 = require('../math/vec2');
+import Equation from "./Equation";
+import vec2 from '../math/vec2';
 
-module.exports = ContactEquation;
+export default ContactEquation;
 
 /**
  * Non-penetration constraint equation. Tries to make the contactPointA and contactPointB vectors coincide, while keeping the applied force repulsive.

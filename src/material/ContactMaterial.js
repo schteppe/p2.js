@@ -1,7 +1,7 @@
-var Material = require('./Material');
-var Equation = require('../equations/Equation');
+import Material from './Material';
+import Equation from '../equations/Equation';
 
-module.exports = ContactMaterial;
+export default ContactMaterial;
 
 /**
  * Defines what happens when two materials meet, such as what friction coefficient to use. You can also set other things such as restitution, surface velocity and constraint parameters.

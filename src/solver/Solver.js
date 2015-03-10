@@ -1,7 +1,7 @@
-var Utils = require('../utils/Utils')
-,   EventEmitter = require('../events/EventEmitter');
+import Utils from '../utils/Utils';
+import EventEmitter from '../events/EventEmitter';
 
-module.exports = Solver;
+export default Solver;
 
 /**
  * Base class for constraint solvers.

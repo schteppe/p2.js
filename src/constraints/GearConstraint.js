@@ -1,9 +1,9 @@
-var Constraint = require('./Constraint')
-,   Equation = require('../equations/Equation')
-,   AngleLockEquation = require('../equations/AngleLockEquation')
-,   vec2 = require('../math/vec2');
+import Constraint from './Constraint';
+import Equation from '../equations/Equation';
+import AngleLockEquation from '../equations/AngleLockEquation';
+import vec2 from '../math/vec2';
 
-module.exports = GearConstraint;
+export default GearConstraint;
 
 /**
  * Connects two bodies at given offset points, letting them rotate relative to each other around this point.
