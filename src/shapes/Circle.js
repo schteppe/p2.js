@@ -27,6 +27,7 @@ function Circle(radius){
     Shape.call(this,Shape.CIRCLE);
 }
 Circle.prototype = new Shape();
+Circle.prototype.constructor = Circle;
 
 /**
  * @method computeMomentOfInertia

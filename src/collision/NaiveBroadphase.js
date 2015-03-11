@@ -18,6 +18,7 @@ function NaiveBroadphase(){
     Broadphase.call(this, Broadphase.NAIVE);
 }
 NaiveBroadphase.prototype = new Broadphase();
+NaiveBroadphase.prototype.constructor = NaiveBroadphase;
 
 /**
  * Get the colliding pairs

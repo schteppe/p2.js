@@ -33,6 +33,7 @@ function Capsule(length, radius){
     Shape.call(this,Shape.CAPSULE);
 }
 Capsule.prototype = new Shape();
+Capsule.prototype.constructor = Capsule;
 
 /**
  * Compute the mass moment of inertia of the Capsule.

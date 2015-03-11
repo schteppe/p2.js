@@ -39,6 +39,7 @@ function Rectangle(width, height){
     this.type = Shape.RECTANGLE;
 }
 Rectangle.prototype = new Convex([]);
+Rectangle.prototype.constructor = Rectangle;
 
 /**
  * Compute moment of inertia

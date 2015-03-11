@@ -101,6 +101,7 @@ function Convex(vertices, axes){
     }
 }
 Convex.prototype = new Shape();
+Convex.prototype.constructor = Convex;
 
 var tmpVec1 = vec2.create();
 var tmpVec2 = vec2.create();

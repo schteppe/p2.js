@@ -32,6 +32,7 @@ function Solver(options,type){
     this.equationSortFunction = options.equationSortFunction || false;
 }
 Solver.prototype = new EventEmitter();
+Solver.prototype.constructor = Solver;
 
 /**
  * Method to be implemented in each subclass

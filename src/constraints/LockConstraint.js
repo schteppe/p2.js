@@ -109,6 +109,7 @@ function LockConstraint(bodyA, bodyB, options){
     this.setMaxForce(maxForce);
 }
 LockConstraint.prototype = new Constraint();
+LockConstraint.prototype.constructor = LockConstraint;
 
 /**
  * Set the maximum force to be applied.

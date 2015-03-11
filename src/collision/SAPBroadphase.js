@@ -41,6 +41,7 @@ function SAPBroadphase(){
     };
 }
 SAPBroadphase.prototype = new Broadphase();
+SAPBroadphase.prototype.constructor = SAPBroadphase;
 
 /**
  * Change the world

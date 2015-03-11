@@ -52,6 +52,7 @@ function GearConstraint(bodyA, bodyB, options){
     }
 }
 GearConstraint.prototype = new Constraint();
+GearConstraint.prototype.constructor = GearConstraint;
 
 GearConstraint.prototype.update = function(){
     var eq = this.equations[0];

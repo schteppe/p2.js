@@ -172,6 +172,7 @@ function DistanceConstraint(bodyA,bodyB,options){
     this.position = 0;
 }
 DistanceConstraint.prototype = new Constraint();
+DistanceConstraint.prototype.constructor = DistanceConstraint;
 
 /**
  * Update the constraint equations. Should be done if any of the bodies changed position, before solving.
