@@ -1,4 +1,4 @@
-var LinearSpring = require(__dirname + '/../../src/objects/LinearSpring');
+var LinearSpring = require(__dirname + '/../../src/forces/LinearSpring');
 var Body = require(__dirname + '/../../src/objects/Body');
 var vec2 = require(__dirname + '/../../src/math/vec2');
 

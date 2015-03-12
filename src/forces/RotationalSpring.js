@@ -40,8 +40,8 @@ RotationalSpring.prototype.applyForce = function(){
     var k = this.stiffness,
         d = this.damping,
         l = this.restAngle,
-        bodyA = this.bodyA,
-        bodyB = this.bodyB,
+        bodyA = this.attachments[0].body,
+        bodyB = this.attachments[1].body,
         x = bodyB.angle - bodyA.angle,
         u = bodyB.angularVelocity - bodyA.angularVelocity;
 

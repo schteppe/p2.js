@@ -1,5 +1,7 @@
 var vec2 = require('../math/vec2');
 var Utils = require('../utils/Utils');
+var Force = require('./Force');
+var Attachment = require('../objects/Attachment');
 
 module.exports = Spring;
 
@@ -21,8 +23,39 @@ module.exports = Spring;
 function Spring(bodyA, bodyB, options){
     options = Utils.defaults(options,{
         stiffness: 100,
-        damping: 1,
     });
+
+    /**
+     * First connected body.
+     * @property bodyA
+     * @type {Body}
+     */
+    this.bodyA = bodyA;
+ 
+    /**
+     * Second connected body.
+     * @property bodyB
+     * @type {Body}
+     */
+    this.bodyB = bodyB;
+
+    /**
+     * Attachment for bodyA.
+     */
+    var attachmentA = new Attachment(bodyA, {
+        worldAnchor: options.worldAnchorA,
+        localAnchor: options.localAnchorA
+    });
+
+    /**
+     * Attachment for bodyA.
+     */
+    var attachmentB = new Attachment(bodyB, {
+        worldAnchor: options.worldAnchorB,
+        localAnchor: options.localAnchorB
+    });
+
+    Force.call(this, [ attachmentA, attachmentB ], options);
 
     /**
      * Stiffness of the spring.
@@ -37,21 +70,8 @@ function Spring(bodyA, bodyB, options){
      * @type {number}
      */
     this.damping = options.damping;
-
-    /**
-     * First connected body.
-     * @property bodyA
-     * @type {Body}
-     */
-    this.bodyA = bodyA;
-
-    /**
-     * Second connected body.
-     * @property bodyB
-     * @type {Body}
-     */
-    this.bodyB = bodyB;
 }
+Spring.prototype = new Force();
 
 /**
  * Apply the spring force to the connected bodies.

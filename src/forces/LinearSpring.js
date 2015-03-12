@@ -1,6 +1,7 @@
 var vec2 = require('../math/vec2');
 var Spring = require('./Spring');
 var Utils = require('../utils/Utils');
+var Attachment = require('../objects/Attachment');
 
 module.exports = LinearSpring;
 
@@ -28,30 +29,7 @@ function LinearSpring(bodyA,bodyB,options){
 
     Spring.call(this, bodyA, bodyB, options);
 
-    /**
-     * Anchor for bodyA in local bodyA coordinates.
-     * @property localAnchorA
-     * @type {Array}
-     */
-    this.localAnchorA = vec2.fromValues(0,0);
-
-    /**
-     * Anchor for bodyB in local bodyB coordinates.
-     * @property localAnchorB
-     * @type {Array}
-     */
-    this.localAnchorB = vec2.fromValues(0,0);
-
-    if(options.localAnchorA){ vec2.copy(this.localAnchorA, options.localAnchorA); }
-    if(options.localAnchorB){ vec2.copy(this.localAnchorB, options.localAnchorB); }
-    if(options.worldAnchorA){ this.setWorldAnchorA(options.worldAnchorA); }
-    if(options.worldAnchorB){ this.setWorldAnchorB(options.worldAnchorB); }
-
-    var worldAnchorA = vec2.create();
-    var worldAnchorB = vec2.create();
-    this.getWorldAnchorA(worldAnchorA);
-    this.getWorldAnchorB(worldAnchorB);
-    var worldDistance = vec2.distance(worldAnchorA, worldAnchorB);
+    var worldDistance = Attachment.distance(this.attachments[0], this.attachments[1]);
 
     /**
      * Rest length of the spring.
@@ -68,7 +46,7 @@ LinearSpring.prototype = new Spring();
  * @param {Array} worldAnchorA
  */
 LinearSpring.prototype.setWorldAnchorA = function(worldAnchorA){
-    this.bodyA.toLocalFrame(this.localAnchorA, worldAnchorA);
+    this.attachments[0].setWorldAnchor(worldAnchorA);
 };
 
 /**
@@ -77,7 +55,7 @@ LinearSpring.prototype.setWorldAnchorA = function(worldAnchorA){
  * @param {Array} worldAnchorB
  */
 LinearSpring.prototype.setWorldAnchorB = function(worldAnchorB){
-    this.bodyB.toLocalFrame(this.localAnchorB, worldAnchorB);
+    this.attachments[1].setWorldAnchor(worldAnchorB);
 };
 
 /**
@@ -86,7 +64,7 @@ LinearSpring.prototype.setWorldAnchorB = function(worldAnchorB){
  * @param {Array} result The vector to store the result in.
  */
 LinearSpring.prototype.getWorldAnchorA = function(result){
-    this.bodyA.toWorldFrame(result, this.localAnchorA);
+    this.attachments[0].getWorldAnchor(result);
 };
 
 /**
@@ -95,7 +73,7 @@ LinearSpring.prototype.getWorldAnchorA = function(result){
  * @param {Array} result The vector to store the result in.
  */
 LinearSpring.prototype.getWorldAnchorB = function(result){
-    this.bodyB.toWorldFrame(result, this.localAnchorB);
+    this.attachments[1].getWorldAnchor(result);
 };
 
 var applyForce_r =              vec2.create(),
@@ -108,6 +86,8 @@ var applyForce_r =              vec2.create(),
     applyForce_rj =             vec2.create(),
     applyForce_tmp =            vec2.create();
 
+var c = 10;
+
 /**
  * Apply the spring force to the connected bodies.
  * @method applyForce
@@ -116,8 +96,8 @@ LinearSpring.prototype.applyForce = function(){
     var k = this.stiffness,
         d = this.damping,
         l = this.restLength,
-        bodyA = this.bodyA,
-        bodyB = this.bodyB,
+        bodyA = this.attachments[0].body,
+        bodyB = this.attachments[1].body,
         r = applyForce_r,
         r_unit = applyForce_r_unit,
         u = applyForce_u,

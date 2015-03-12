@@ -1,4 +1,4 @@
-var RotationalSpring = require(__dirname + '/../../src/objects/RotationalSpring');
+var RotationalSpring = require(__dirname + '/../../src/forces/RotationalSpring');
 var Body = require(__dirname + '/../../src/objects/Body');
 var vec2 = require(__dirname + '/../../src/math/vec2');
 

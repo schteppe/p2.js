@@ -15,7 +15,7 @@ var  GSSolver = require('../solver/GSSolver')
 ,    EventEmitter = require('../events/EventEmitter')
 ,    Body = require('../objects/Body')
 ,    Shape = require('../shapes/Shape')
-,    LinearSpring = require('../objects/LinearSpring')
+,    LinearSpring = require('../forces/LinearSpring')
 ,    Material = require('../material/Material')
 ,    ContactMaterial = require('../material/ContactMaterial')
 ,    DistanceConstraint = require('../constraints/DistanceConstraint')
@@ -31,7 +31,7 @@ var  GSSolver = require('../solver/GSSolver')
 ,    Utils = require('../utils/Utils')
 ,    OverlapKeeper = require('../utils/OverlapKeeper')
 ,    IslandManager = require('./IslandManager')
-,    RotationalSpring = require('../objects/RotationalSpring');
+,    RotationalSpring = require('../forces/RotationalSpring');
 
 module.exports = World;
 
@@ -73,12 +73,12 @@ function World(options){
     options = options || {};
 
     /**
-     * All springs in the world. To add a spring to the world, use {{#crossLink "World/addSpring:method"}}{{/crossLink}}.
+     * All forces in the world. To add a force to the world, use {{#crossLink "World/addForce:method"}}{{/crossLink}}.
      *
-     * @property springs
+     * @property force
      * @type {Array}
      */
-    this.springs = [];
+    this.forces = [];
 
     /**
      * All bodies in the world. To add a body to the world, use {{#crossLink "World/addBody:method"}}{{/crossLink}}.
@@ -195,11 +195,11 @@ function World(options){
     this.lastTimeStep = 1/60;
 
     /**
-     * Enable to automatically apply spring forces each step.
-     * @property applySpringForces
+     * Enable to automatically apply forces each step.
+     * @property applyForces
      * @type {Boolean}
      */
-    this.applySpringForces = true;
+    this.applyForces = true;
 
     /**
      * Enable to automatically apply body damping each step.
@@ -297,7 +297,18 @@ function World(options){
     };
 
     /**
+     * Fired when a force is added to the world.
+     * @event addForce
+     * @param {Force} force
+     */
+    this.addForceEvent = {
+        type : "addForce",
+        force : null,
+    };
+
+    /**
      * Fired when a spring is added to the world.
+     * (Deprecated, use {{#crossLink "World/addForceEvent:field"}}{{/crossLink}})
      * @event addSpring
      * @param {Spring} spring
      */
@@ -577,8 +588,8 @@ World.prototype.internalStep = function(dt){
 
     var that = this,
         doProfiling = this.doProfiling,
-        Nsprings = this.springs.length,
-        springs = this.springs,
+        Nforces = this.forces.length,
+        forces = this.forces,
         bodies = this.bodies,
         g = this.gravity,
         solver = this.solver,
@@ -625,11 +636,11 @@ World.prototype.internalStep = function(dt){
         }
     }
 
-    // Add spring forces
-    if(this.applySpringForces){
-        for(var i=0; i!==Nsprings; i++){
-            var s = springs[i];
-            s.applyForce();
+    // Add forces
+    if(this.applyForces){
+        for(var i=0; i!==Nforces; i++){
+            var f = forces[i];
+            f.applyForce();
         }
     }
 
@@ -1006,28 +1017,52 @@ World.prototype.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,cm,glen){
 };
 
 /**
+ * Add a force to the simulation
+ *
+ * @method addForce
+ * @param {Force} f
+ */
+World.prototype.addForce = function(f){
+    this.forces.push(f);
+    this.addForceEvent.force = f;
+    this.emit(this.addForceEvent);
+};
+
+/**
  * Add a spring to the simulation
+ * (Deprecated, use {{#crossLink "World/addForce:method"}}{{/crossLink}})
  *
  * @method addSpring
  * @param {Spring} s
  */
 World.prototype.addSpring = function(s){
-    this.springs.push(s);
+    this.addForce(s);
     this.addSpringEvent.spring = s;
     this.emit(this.addSpringEvent);
 };
 
 /**
+ * Remove a force
+ *
+ * @method removeForce
+ * @param {Force} f
+ */
+World.prototype.removeForce = function(s){
+    var idx = this.forces.indexOf(s);
+    if(idx!==-1){
+        Utils.splice(this.forces,idx,1);
+    }
+};
+
+/**
  * Remove a spring
+ * (Deprecated, use {{#crossLink "World/removeForce:method"}}{{/crossLink}})
  *
  * @method removeSpring
  * @param {Spring} s
  */
 World.prototype.removeSpring = function(s){
-    var idx = this.springs.indexOf(s);
-    if(idx!==-1){
-        Utils.splice(this.springs,idx,1);
-    }
+    this.removeForce(s);
 };
 
 /**
@@ -1143,7 +1178,7 @@ function contactMaterialToJSON(cm){
 }
 
 /**
- * Resets the World, removes all bodies, constraints and springs.
+ * Resets the World, removes all bodies, constraints and forces.
  *
  * @method clear
  */
@@ -1169,10 +1204,10 @@ World.prototype.clear = function(){
         this.removeBody(bodies[i]);
     }
 
-    // Remove all springs
-    var springs = this.springs;
-    for(var i=springs.length-1; i>=0; i--){
-        this.removeSpring(springs[i]);
+    // Remove all forces
+    var forces = this.forces;
+    for(var i=forces.length-1; i>=0; i--){
+        this.removeForce(forces[i]);
     }
 
     // Remove all contact materials
