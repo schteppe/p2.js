@@ -152,6 +152,7 @@ function RevoluteConstraint(bodyA, bodyB, options){
     this.lowerLimitEquation.maxForce = 0;
 }
 RevoluteConstraint.prototype = new Constraint();
+RevoluteConstraint.prototype.constructor = RevoluteConstraint;
 
 /**
  * Set the constraint angle limits.

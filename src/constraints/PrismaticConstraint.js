@@ -195,6 +195,7 @@ function PrismaticConstraint(bodyA, bodyB, options){
 }
 
 PrismaticConstraint.prototype = new Constraint();
+PrismaticConstraint.prototype.constructor = PrismaticConstraint;
 
 var worldAxisA = vec2.create(),
     worldAnchorA = vec2.create(),

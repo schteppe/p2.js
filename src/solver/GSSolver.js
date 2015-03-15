@@ -60,6 +60,7 @@ function GSSolver(options){
     this.usedIterations = 0;
 }
 GSSolver.prototype = new Solver();
+GSSolver.prototype.constructor = GSSolver;
 
 function setArrayZero(array){
     var l = array.length;

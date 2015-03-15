@@ -31,6 +31,7 @@ function RotationalSpring(bodyA, bodyB, options){
     this.restAngle = typeof(options.restAngle) === "number" ? options.restAngle : bodyB.angle - bodyA.angle;
 }
 RotationalSpring.prototype = new Spring();
+RotationalSpring.prototype.constructor = RotationalSpring;
 
 /**
  * Apply the spring force to the connected bodies.

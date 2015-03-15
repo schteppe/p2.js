@@ -80,6 +80,7 @@ function Heightfield(data, options){
     Shape.call(this,Shape.HEIGHTFIELD);
 }
 Heightfield.prototype = new Shape();
+Heightfield.prototype.constructor = Heightfield;
 
 /**
  * @method computeMomentOfInertia

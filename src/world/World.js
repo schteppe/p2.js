@@ -396,6 +396,7 @@ function World(options){
     this.overlapKeeper = new OverlapKeeper();
 }
 World.prototype = new Object(EventEmitter.prototype);
+World.prototype.constructor = World;
 
 /**
  * Never deactivate bodies.

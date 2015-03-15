@@ -44,6 +44,7 @@ function GridBroadphase(options){
     this.binsizeY = (this.ymax-this.ymin) / this.ny;
 }
 GridBroadphase.prototype = new Broadphase();
+GridBroadphase.prototype.constructor = GridBroadphase;
 
 /**
  * Get collision pairs.

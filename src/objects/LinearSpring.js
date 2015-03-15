@@ -61,6 +61,7 @@ function LinearSpring(bodyA,bodyB,options){
     this.restLength = typeof(options.restLength) === "number" ? options.restLength : worldDistance;
 }
 LinearSpring.prototype = new Spring();
+LinearSpring.prototype.constructor = LinearSpring;
 
 /**
  * Set the anchor point on body A, using world coordinates.

@@ -14,6 +14,7 @@ function Plane(){
     Shape.call(this,Shape.PLANE);
 }
 Plane.prototype = new Shape();
+Plane.prototype.constructor = Plane;
 
 /**
  * Compute moment of inertia

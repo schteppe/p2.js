@@ -390,6 +390,7 @@ function Body(options){
     this.updateMassProperties();
 }
 Body.prototype = new EventEmitter();
+Body.prototype.constructor = Body;
 
 Body._idCounter = 0;
 
