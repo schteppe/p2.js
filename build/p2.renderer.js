@@ -16083,10 +16083,8 @@ p2.Renderer = Renderer;
  * @constructor
  * @param {object} scenes One or more scene definitions. See setScene.
  */
-function Renderer(scenes, options){
+function Renderer(scenes){
     p2.EventEmitter.call(this);
-
-    options = options || {};
 
     // Expose globally
     window.app = this;
@@ -16190,13 +16188,6 @@ function Renderer(scenes, options){
 
     this.setUpKeyboard();
     this.setupGUI();
-
-    if(typeof(options.hideGUI) === 'undefined'){
-        options.hideGUI = 'auto';
-    }
-    if((options.hideGUI === 'auto' && window.innerWidth < 600) || options.hideGUI === true){
-        this.gui.close();
-    }
 
     this.printConsoleMessage();
 
@@ -16954,14 +16945,14 @@ var Renderer = p2.Renderer;
  * @class WebGLRenderer
  * @constructor
  * @extends Renderer
- * @param {World}   scenes
+ * @param {World}   world                       The world to render.
  * @param {Object}  [options]
- * @param {Number}  [options.lineWidth=0.01]
- * @param {Number}  [options.scrollFactor=0.1]
- * @param {Number}  [options.width]               Num pixels in horizontal direction
- * @param {Number}  [options.height]              Num pixels in vertical direction
+ * @param {Number}  options.lineWidth
+ * @param {Number}  options.scrollFactor
+ * @param {Number}  options.width               Num pixels in horizontal direction
+ * @param {Number}  options.height              Num pixels in vertical direction
  */
-function WebGLRenderer(scenes, options){
+function WebGLRenderer(world,options){
     options = options || {};
 
     var that = this;
@@ -16991,7 +16982,7 @@ function WebGLRenderer(scenes, options){
     this.springSprites = [];
     this.debugPolygons = false;
 
-    Renderer.call(this,scenes,options);
+    Renderer.call(this,world);
 
     for(var key in settings){
         this.settings[key] = settings[key];
