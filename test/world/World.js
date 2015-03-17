@@ -1,6 +1,9 @@
 var World = require(__dirname + '/../../src/world/World')
 ,   Body = require(__dirname + '/../../src/objects/Body')
 ,   Circle = require(__dirname + '/../../src/shapes/Circle')
+,   Plane = require(__dirname + '/../../src/shapes/Plane')
+,   Ray = require(__dirname + '/../../src/collision/Ray')
+,   RaycastResult = require(__dirname + '/../../src/collision/RaycastResult')
 ,   Convex = require(__dirname + '/../../src/shapes/Convex');
 
 exports.construct = function(test){
@@ -12,6 +15,20 @@ exports.construct = function(test){
     world = new World(options);
     test.equal(world.gravity[0], options.gravity[0]);
     test.equal(world.gravity[1], options.gravity[1]);
+    test.done();
+};
+
+exports.raycastClosest = function(test){
+    var world = new World();
+    var shape = new Plane();
+    var body = new Body();
+    body.addShape(shape, [0,0], Math.PI / 2);
+    world.addBody(body);
+    var result = new RaycastResult();
+    world.raycastClosest([-1,1],[1,1],{},result);
+    test.ok(result.hasHit);
+    test.equal(result.hitPointWorld[0], 0);
+    test.equal(result.hitPointWorld[1], 1);
     test.done();
 };
 

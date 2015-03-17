@@ -27,6 +27,8 @@ module.exports = {
     Plane :                         require('./shapes/Plane'),
     RevoluteConstraint :            require('./constraints/RevoluteConstraint'),
     PrismaticConstraint :           require('./constraints/PrismaticConstraint'),
+    Ray :                           require('./collision/Ray'),
+    RaycastResult :                 require('./collision/RaycastResult'),
     Rectangle :                     require('./shapes/Rectangle'),
     RotationalVelocityEquation :    require('./equations/RotationalVelocityEquation'),
     SAPBroadphase :                 require('./collision/SAPBroadphase'),

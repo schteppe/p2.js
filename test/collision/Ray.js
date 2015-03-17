@@ -33,9 +33,8 @@ module.exports = {
 
         // test rotating the body first
         result.reset();
-        body.angle = -Math.PI / 2;
         r.intersectBody(body, result);
-        test.equals(result.hasHit, false);
+        test.equals(result.hasHit, true);
 
         // test miss
         result.reset();
