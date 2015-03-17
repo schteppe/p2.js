@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>p2.js Canvas mousejoint example</title>
+    <title>p2.js Canvas raycast example</title>
     <meta charset="utf-8">
     <script src="../../build/p2.js"></script>
   </head>
@@ -16,6 +16,7 @@
 
       var start = [0,0];
       var end = [0,0];
+      var result = new p2.RaycastResult();
 
       init();
       animate();
@@ -161,15 +162,8 @@
         end[0] = 5;
         end[1] = Math.sin(world.time);
 
-        var result = new p2.RaycastResult();
+        result.reset();
         world.raycastClosest(start, end, {}, result);
-
-        // Draw hit point
-        if(result.hasHit){
-          ctx.beginPath();
-          ctx.arc(result.hitPointWorld[0],result.hitPointWorld[1],0.1,0,2*Math.PI);
-          ctx.stroke();
-        }
 
         // Draw line
         ctx.beginPath();
@@ -177,14 +171,25 @@
         ctx.lineTo(end[0], end[1]);
         ctx.stroke();
 
-        // Draw hit normal
-        ctx.beginPath();
-        ctx.moveTo(result.hitPointWorld[0], result.hitPointWorld[1]);
-        ctx.lineTo(
-          result.hitPointWorld[0] + result.hitNormalWorld[0],
-          result.hitPointWorld[1] + result.hitNormalWorld[1]
-        );
-        ctx.stroke();
+        result.reset();
+        world.raycastAll(start, end, {}, function(result){
+
+          // Draw hit point
+          if(result.hasHit){
+            ctx.beginPath();
+            ctx.arc(result.hitPointWorld[0],result.hitPointWorld[1],0.1,0,2*Math.PI);
+            ctx.stroke();
+          }
+
+          // Draw hit normal
+          ctx.beginPath();
+          ctx.moveTo(result.hitPointWorld[0], result.hitPointWorld[1]);
+          ctx.lineTo(
+            result.hitPointWorld[0] + result.hitNormalWorld[0],
+            result.hitPointWorld[1] + result.hitNormalWorld[1]
+          );
+          ctx.stroke();
+        });
       }
 
       function render(){

@@ -290,7 +290,7 @@ Ray.prototype.intersectRectangle = function(shape, angle, position, body){
         var tmaxOld = tmax;
         tmax = Math.min(tmax, Math.max(tx1, tx2));
         if(tmax !== tmaxOld){
-            vec2.set(worldNormalMax, 0, tx1 > tx2 ? 1 : -1);
+            vec2.set(worldNormalMax, tx1 < tx2 ? 1 : -1, 0);
         }
     }
 
@@ -307,7 +307,7 @@ Ray.prototype.intersectRectangle = function(shape, angle, position, body){
         var tmaxOld = tmax;
         tmax = Math.min(tmax, Math.max(ty1, ty2));
         if(tmax !== tmaxOld){
-            vec2.set(worldNormalMax, 0, ty1 > ty2 ? 1 : -1);
+            vec2.set(worldNormalMax, 0, ty1 < ty2 ? 1 : -1);
         }
     }
 
