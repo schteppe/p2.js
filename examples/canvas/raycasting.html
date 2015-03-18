@@ -17,7 +17,7 @@
       var start = [0,0];
       var end = [0,0];
       var result = new p2.RaycastResult();
-
+      var raycastOptions = {};
       init();
       animate();
 
@@ -30,6 +30,7 @@
 
         ctx = canvas.getContext("2d");
         ctx.lineWidth = 0.05;
+        ctx.fillStyle = 'white';
 
         // Init p2.js
         world = new p2.World({
@@ -47,7 +48,7 @@
         world.addBody(boxBody);
 
         // Add a circle
-        circleShape = new p2.Circle(1);
+        circleShape = new p2.Circle(0.5);
         circleBody = new p2.Body({
           mass:1,
           position:[0,-1],
@@ -55,6 +56,16 @@
         });
         circleBody.addShape(circleShape);
         world.addBody(circleBody);
+
+        // Add a capsule
+        capsuleShape = new p2.Capsule(1,0.5);
+        capsuleBody = new p2.Body({
+          mass:1,
+          position:[-1.5,0],
+          angularVelocity:1
+        });
+        capsuleBody.addShape(capsuleShape);
+        world.addBody(capsuleBody);
 
         // Add a plane
         planeShape = new p2.Plane();
@@ -156,6 +167,49 @@
         ctx.restore();
       }
 
+      function drawCapsule(){
+        var x = capsuleBody.position[0],
+            y = capsuleBody.position[1];
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(capsuleBody.angle);
+        var radius = capsuleShape.radius;
+        var len = capsuleShape.length;
+        //ctx.arc(0,0,capsuleShape.radius, 0, 2*Math.PI);
+
+        // Draw circles at ends
+        ctx.beginPath();
+        var c = Math.cos(capsuleBody.angle);
+        var s = Math.sin(capsuleBody.angle);
+        // ctx.drawCircle(-len/2*c + x, -len/2*s + y, radius);
+        // ctx.drawCircle( len/2*c + x,  len/2*s + y, radius);
+        ctx.arc(-len/2, 0, capsuleShape.radius, 0, 2*Math.PI);
+        ctx.arc( len/2, 0, capsuleShape.radius, -Math.PI, Math.PI);
+        ctx.fill();
+        ctx.stroke();
+
+        // Draw rectangle
+        ctx.beginPath();
+        ctx.moveTo(-len/2, -radius);
+        ctx.lineTo( len/2, -radius);
+        ctx.lineTo( len/2, radius);
+        ctx.lineTo(-len/2, radius);
+        ctx.fill();
+
+        // Draw lines in between
+        ctx.beginPath();
+        ctx.moveTo(-len/2, -radius);
+        ctx.lineTo( len/2, -radius);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.lineTo( len/2, radius);
+        ctx.lineTo(-len/2, radius);
+        ctx.stroke();
+
+        ctx.restore();
+      }
+
       function drawRays(){
         start[0] = -3;
         start[1] = Math.sin(world.time) * 4;
@@ -163,7 +217,7 @@
         end[1] = Math.sin(world.time);
 
         result.reset();
-        world.raycastClosest(start, end, {}, result);
+        world.raycastClosest(start, end, raycastOptions, result);
 
         // Draw line
         ctx.beginPath();
@@ -205,6 +259,7 @@
         drawbox();
         drawPlane();
         drawCircle();
+        drawCapsule();
         drawRays();
 
         // Restore transform
