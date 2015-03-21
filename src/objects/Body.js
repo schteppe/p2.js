@@ -989,6 +989,7 @@ Body.prototype.integrateToTimeOfImpact = function(dt){
     vec2.add(end, end, directionRadius);
 
     vec2.sub(startToEnd, end, this.position);
+    var startToEndAngle = this.angularVelocity * dt;
     var len = vec2.length(startToEnd);
 
     var timeOfImpact = 1;
@@ -1010,6 +1011,7 @@ Body.prototype.integrateToTimeOfImpact = function(dt){
         return false;
     }
 
+    var rememberAngle = this.angle;
     vec2.copy(rememberPosition, this.position);
 
     // Got a start and end point. Approximate time of impact using binary search
@@ -1026,9 +1028,11 @@ Body.prototype.integrateToTimeOfImpact = function(dt){
         // Move the body to that point
         vec2.scale(integrate_velodt, startToEnd, timeOfImpact);
         vec2.add(this.position, rememberPosition, integrate_velodt);
+        this.angle = rememberAngle + startToEndAngle * timeOfImpact;
+        this.updateAABB();
 
         // check overlap
-        var overlaps = this.world.narrowphase.bodiesOverlap(this, hit);
+        var overlaps = this.aabb.overlaps(hit.aabb) && this.world.narrowphase.bodiesOverlap(this, hit);
 
         if (overlaps) {
             // change min to search upper interval
@@ -1042,12 +1046,13 @@ Body.prototype.integrateToTimeOfImpact = function(dt){
     timeOfImpact = tmid;
 
     vec2.copy(this.position, rememberPosition);
+    this.angle = rememberAngle;
 
     // move to TOI
     vec2.scale(integrate_velodt, startToEnd, timeOfImpact);
     vec2.add(this.position, this.position, integrate_velodt);
     if(!this.fixedRotation){
-        this.angle += this.angularVelocity * dt * timeOfImpact;
+        this.angle += startToEndAngle * timeOfImpact;
     }
 
     return true;
