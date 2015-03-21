@@ -784,7 +784,7 @@ World.prototype.internalStep = function(dt){
         var body = bodies[i];
 
         if(body.sleepState !== Body.SLEEPING && body.type !== Body.STATIC){
-            World.integrateBody(body,dt);
+            body.integrate(dt);
         }
     }
 
@@ -846,42 +846,6 @@ World.prototype.internalStep = function(dt){
     }
 
     this.emit(this.postStepEvent);
-};
-
-var ib_fhMinv = vec2.create();
-var ib_velodt = vec2.create();
-
-/**
- * Move a body forward in time.
- * @static
- * @method integrateBody
- * @param  {Body} body
- * @param  {Number} dt
- * @todo Move to Body.prototype?
- */
-World.integrateBody = function(body,dt){
-    var minv = body.invMass,
-        f = body.force,
-        pos = body.position,
-        velo = body.velocity;
-
-    // Save old position
-    vec2.copy(body.previousPosition, body.position);
-    body.previousAngle = body.angle;
-
-    // Angular step
-    if(!body.fixedRotation){
-        body.angularVelocity += body.angularForce * body.invInertia * dt;
-        body.angle += body.angularVelocity * dt;
-    }
-
-    // Linear step
-    vec2.scale(ib_fhMinv,f,dt*minv);
-    vec2.add(velo,ib_fhMinv,velo);
-    vec2.scale(ib_velodt,velo,dt);
-    vec2.add(pos,pos,ib_velodt);
-
-    body.aabbNeedsUpdate = true;
 };
 
 /**

@@ -897,6 +897,7 @@ Body.prototype.getVelocityFromPosition = function(store, timeStep){
     vec2.scale(store, store, 1/timeStep);
     return store;
 };
+
 Body.prototype.getAngularVelocityFromPosition = function(timeStep){
     return (this.angle - this.previousAngle) / timeStep;
 };
@@ -909,6 +910,39 @@ Body.prototype.getAngularVelocityFromPosition = function(timeStep){
  */
 Body.prototype.overlaps = function(body){
     return this.world.overlapKeeper.bodiesAreOverlapping(this, body);
+};
+
+var integrate_fhMinv = vec2.create();
+var integrate_velodt = vec2.create();
+
+/**
+ * Move the body forward in time given its current velocity.
+ * @method integrate
+ * @param  {Number} dt
+ */
+Body.prototype.integrate = function(dt){
+    var minv = this.invMass,
+        f = this.force,
+        pos = this.position,
+        velo = this.velocity;
+
+    // Save old position
+    vec2.copy(this.previousPosition, this.position);
+    this.previousAngle = this.angle;
+
+    // Angular step
+    if(!this.fixedRotation){
+        this.angularVelocity += this.angularForce * this.invInertia * dt;
+        this.angle += this.angularVelocity * dt;
+    }
+
+    // Linear step
+    vec2.scale(integrate_fhMinv, f, dt * minv);
+    vec2.add(velo, integrate_fhMinv, velo);
+    vec2.scale(integrate_velodt, velo, dt);
+    vec2.add(pos, pos, integrate_velodt);
+
+    this.aabbNeedsUpdate = true;
 };
 
 /**
