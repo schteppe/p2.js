@@ -383,7 +383,8 @@ function Body(options){
      */
     this.timeLastSleepy = 0;
 
-    this.ccdThreshold = options.ccdThreshold !== undefined ? options.ccdThreshold : -1;
+    this.ccdSpeedThreshold = options.ccdSpeedThreshold !== undefined ? options.ccdSpeedThreshold : -1;
+    this.ccdIterations = 10;
 
     this.concavePath = null;
 
@@ -940,7 +941,7 @@ Body.prototype.integrate = function(dt){
     vec2.add(velo, integrate_fhMinv, velo);
 
     // CCD
-    if(!(this.ccdThreshold >= 0 && vec2.squaredLength(velo) > Math.pow(this.ccdThreshold, 2) && this.integrateToTimeOfImpact(dt))){
+    if(!this.integrateToTimeOfImpact(dt)){
 
         // Regular position update
         vec2.scale(integrate_velodt, velo, dt);
@@ -957,7 +958,13 @@ var directionRadius = vec2.create();
 var direction = vec2.create();
 var end = vec2.create();
 var startToEnd = vec2.create();
+var rememberPosition = vec2.create();
 Body.prototype.integrateToTimeOfImpact = function(dt){
+
+    if(this.ccdSpeedThreshold < 0 || vec2.squaredLength(this.velocity) < Math.pow(this.ccdSpeedThreshold, 2)){
+        return false;
+    }
+
     vec2.normalize(direction, this.velocity);
 
     vec2.copy(directionRadius, direction);
@@ -972,13 +979,13 @@ Body.prototype.integrateToTimeOfImpact = function(dt){
 
     var timeOfImpact = 1;
 
-    var hit = false;
+    var hit;
     var that = this;
     this.world.raycastAll(this.position, end, {}, function (result) {
         if(result.body === that){
             return;
         }
-        hit = true;
+        hit = result.body;
         vec2.copy(end, result.hitPointWorld);
         vec2.sub(startToEnd, result.hitPointWorld, that.position);
         timeOfImpact = vec2.length(startToEnd) / len;
@@ -989,7 +996,38 @@ Body.prototype.integrateToTimeOfImpact = function(dt){
         return false;
     }
 
+    vec2.copy(rememberPosition, this.position);
+
     // Got a start and end point. Approximate time of impact using binary search
+    var iter = 0;
+    var tmin = 0;
+    var tmid = 0;
+    var tmax = timeOfImpact;
+    while (tmax >= tmin && iter < this.ccdIterations) {
+        iter++;
+
+        // calculate the midpoint
+        tmid = (tmax - tmin) / 2;
+
+        // Move the body to that point
+        vec2.scale(integrate_velodt, startToEnd, timeOfImpact);
+        vec2.add(this.position, rememberPosition, integrate_velodt);
+
+        // check overlap
+        var overlaps = this.world.narrowphase.bodiesOverlap(this, hit);
+
+        if (overlaps) {
+            // change min to search upper interval
+            tmin = tmid;
+        } else {
+            // change max to search lower interval
+            tmax = tmid;
+        }
+    }
+
+    timeOfImpact = tmid;
+
+    vec2.copy(this.position, rememberPosition);
 
     // move to TOI
     vec2.scale(integrate_velodt, startToEnd, timeOfImpact);

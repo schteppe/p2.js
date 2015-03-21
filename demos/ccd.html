@@ -23,7 +23,8 @@
             this.setWorld(world);
 
             // Set stiffness of all contacts and constraints
-            world.setGlobalStiffness(1e8);
+            world.setGlobalStiffness(1e18);
+            world.defaultContactMaterial.restitution = 0.1;
 
             for(var i=0; i<2; i++){
                 var y = (i - 0.5) * 1.5;
@@ -34,7 +35,7 @@
                     mass: 1,
                     position: [-11, y],
                     velocity: [100,0],
-                    ccdThreshold: i === 0 ? 0 : -1
+                    ccdSpeedThreshold: i === 0 ? 0 : -1
                 });
                 p.addShape(shape);
                 world.addBody(p);

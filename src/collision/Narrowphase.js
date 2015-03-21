@@ -153,6 +153,54 @@ function Narrowphase(){
     this.contactSkinSize = 0.01;
 }
 
+var bodiesOverlap_shapePositionA = vec2.create();
+var bodiesOverlap_shapePositionB = vec2.create();
+
+/**
+ * @method bodiesOverlap
+ * @param  {Body} bodyA
+ * @param  {Body} bodyB
+ * @return {Boolean}
+ */
+Narrowphase.prototype.bodiesOverlap = function(bodyA, bodyB){
+    var shapePositionA = bodiesOverlap_shapePositionA;
+    var shapePositionB = bodiesOverlap_shapePositionB;
+
+    // Loop over all shapes of bodyA
+    for(var k=0, Nshapesi=bodyA.shapes.length; k!==Nshapesi; k++){
+        var shapeA = bodyA.shapes[k],
+            positionA = bodyA.shapeOffsets[k],
+            angleA = bodyA.shapeAngles[k];
+
+        bodyA.toWorldFrame(shapePositionA, positionA);
+
+        // All shapes of body j
+        for(var l=0, Nshapesj=bodyB.shapes.length; l!==Nshapesj; l++){
+            var shapeB = bodyB.shapes[l],
+                positionB = bodyB.shapeOffsets[l],
+                angleB = bodyB.shapeAngles[l];
+
+            bodyB.toWorldFrame(shapePositionB, positionB);
+
+            if(this[shapeA.type | shapeB.type](
+                bodyA,
+                shapeA,
+                shapePositionA,
+                shapeA.angle + bodyA.angle,
+                bodyB,
+                shapeB,
+                shapePositionB,
+                shapeB.angle + bodyB.angle,
+                true
+            )){
+                return true;
+            }
+        }
+    }
+
+    return false;
+};
+
 /**
  * Check if the bodies were in contact since the last reset().
  * @method collidedLastStep
