@@ -11,7 +11,7 @@
     <canvas width="600" height="400" id="myCanvas"></canvas>
 
     <script>
-      var canvas, ctx, w, h, world, boxBody, planeBody, mouseConstraint, mouseBody;
+      var canvas, ctx, w, h, world, boxBody, planeBody;
       var scaleX = 50, scaleY = -50;
 
       var start = [0,0];
@@ -75,59 +75,6 @@
         });
         planeBody.addShape(planeShape);
         world.addBody(planeBody);
-
-        // Create a body for the cursor
-        mouseBody = new p2.Body();
-        world.addBody(mouseBody);
-
-        canvas.addEventListener('mousedown', function(event){
-
-          // Convert the canvas coordinate to physics coordinates
-          var position = getPhysicsCoord(event);
-
-          // Check if the cursor is inside the box
-          var hitBodies = world.hitTest(position, [boxBody]);
-
-          if(hitBodies.length){
-
-            // Move the mouse body to the cursor position
-            mouseBody.position[0] = position[0];
-            mouseBody.position[1] = position[1];
-
-            // Create a RevoluteConstraint.
-            // This constraint lets the bodies rotate around a common point
-            mouseConstraint = new p2.RevoluteConstraint(mouseBody, boxBody, {
-              worldPivot: position,
-              collideConnected:false
-            });
-            world.addConstraint(mouseConstraint);
-          }
-        });
-
-        // Sync the mouse body to be at the cursor position
-        canvas.addEventListener('mousemove', function(event){
-          var position = getPhysicsCoord(event);
-          mouseBody.position[0] = position[0];
-          mouseBody.position[1] = position[1];
-        });
-
-        // Remove the mouse constraint on mouse up
-        canvas.addEventListener('mouseup', function(event){
-          world.removeConstraint(mouseConstraint);
-          mouseConstraint = null;
-        });
-      }
-
-      // Convert a canvas coordiante to physics coordinate
-      function getPhysicsCoord(mouseEvent){
-          var rect = canvas.getBoundingClientRect();
-          var x = mouseEvent.clientX - rect.left;
-          var y = mouseEvent.clientY - rect.top;
-
-          x = (x - w / 2) / scaleX;
-          y = (y - h / 2) / scaleY;
-
-          return [x, y];
       }
 
       function drawbox(){
