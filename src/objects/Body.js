@@ -968,7 +968,6 @@ Body.prototype.integrate = function(dt){
     this.aabbNeedsUpdate = true;
 };
 
-var directionRadius = vec2.create();
 var direction = vec2.create();
 var end = vec2.create();
 var startToEnd = vec2.create();
@@ -981,12 +980,8 @@ Body.prototype.integrateToTimeOfImpact = function(dt){
 
     vec2.normalize(direction, this.velocity);
 
-    vec2.copy(directionRadius, direction);
-    vec2.scale(directionRadius, directionRadius, this.boundingRadius);
-
     vec2.scale(end, this.velocity, dt);
     vec2.add(end, end, this.position);
-    vec2.add(end, end, directionRadius);
 
     vec2.sub(startToEnd, end, this.position);
     var startToEndAngle = this.angularVelocity * dt;
