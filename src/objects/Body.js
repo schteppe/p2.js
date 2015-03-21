@@ -383,6 +383,8 @@ function Body(options){
      */
     this.timeLastSleepy = 0;
 
+    this.ccdThreshold = options.ccdThreshold !== undefined ? options.ccdThreshold : -1;
+
     this.concavePath = null;
 
     this._wakeUpAfterNarrowphase = false;
@@ -930,19 +932,73 @@ Body.prototype.integrate = function(dt){
     vec2.copy(this.previousPosition, this.position);
     this.previousAngle = this.angle;
 
-    // Angular step
+    // Velocity update
     if(!this.fixedRotation){
         this.angularVelocity += this.angularForce * this.invInertia * dt;
-        this.angle += this.angularVelocity * dt;
     }
-
-    // Linear step
     vec2.scale(integrate_fhMinv, f, dt * minv);
     vec2.add(velo, integrate_fhMinv, velo);
-    vec2.scale(integrate_velodt, velo, dt);
-    vec2.add(pos, pos, integrate_velodt);
+
+    // CCD
+    if(!(this.ccdThreshold >= 0 && vec2.squaredLength(velo) > Math.pow(this.ccdThreshold, 2) && this.integrateToTimeOfImpact(dt))){
+
+        // Regular position update
+        vec2.scale(integrate_velodt, velo, dt);
+        vec2.add(pos, pos, integrate_velodt);
+        if(!this.fixedRotation){
+            this.angle += this.angularVelocity * dt;
+        }
+    }
 
     this.aabbNeedsUpdate = true;
+};
+
+var directionRadius = vec2.create();
+var direction = vec2.create();
+var end = vec2.create();
+var startToEnd = vec2.create();
+Body.prototype.integrateToTimeOfImpact = function(dt){
+    vec2.normalize(direction, this.velocity);
+
+    vec2.copy(directionRadius, direction);
+    vec2.scale(directionRadius, directionRadius, this.boundingRadius);
+
+    vec2.scale(end, this.velocity, dt);
+    vec2.add(end, end, this.position);
+    vec2.add(end, end, directionRadius);
+
+    vec2.sub(startToEnd, end, this.position);
+    var len = vec2.length(startToEnd);
+
+    var timeOfImpact = 1;
+
+    var hit = false;
+    var that = this;
+    this.world.raycastAll(this.position, end, {}, function (result) {
+        if(result.body === that){
+            return;
+        }
+        hit = true;
+        vec2.copy(end, result.hitPointWorld);
+        vec2.sub(startToEnd, result.hitPointWorld, that.position);
+        timeOfImpact = vec2.length(startToEnd) / len;
+        result.abort();
+    });
+
+    if(!hit){
+        return false;
+    }
+
+    // Got a start and end point. Approximate time of impact using binary search
+
+    // move to TOI
+    vec2.scale(integrate_velodt, startToEnd, timeOfImpact);
+    vec2.add(this.position, this.position, integrate_velodt);
+    if(!this.fixedRotation){
+        this.angle += this.angularVelocity * dt * timeOfImpact;
+    }
+
+    return true;
 };
 
 /**
