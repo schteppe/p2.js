@@ -22,8 +22,11 @@ module.exports = Body;
  * @param {Array}               [options.force]
  * @param {Number}              [options.angularForce=0]
  * @param {Number}              [options.fixedRotation=false]
+ * @param {Number}              [options.ccdSpeedThreshold=-1]
+ * @param {Number}              [options.ccdIterations=10]
  *
  * @example
+ *
  *     // Create a typical dynamic body
  *     var body = new Body({
  *         mass: 1,
@@ -383,8 +386,19 @@ function Body(options){
      */
     this.timeLastSleepy = 0;
 
+    /**
+     * If the body speed exceeds this threshold, CCD (continuous collision detection) will be enabled. Set it to a negative number to disable CCD completely for this body.
+     * @property {number} ccdSpeedThreshold
+     * @default -1
+     */
     this.ccdSpeedThreshold = options.ccdSpeedThreshold !== undefined ? options.ccdSpeedThreshold : -1;
-    this.ccdIterations = 10;
+
+    /**
+     * The number of iterations that should be used when searching for the time of impact during CCD. A larger number will assure that there's a small penetration on CCD collision, but a small number will give more performance.
+     * @property {number} ccdIterations
+     * @default 10
+     */
+    this.ccdIterations = options.ccdIterations !== undefined ? options.ccdIterations : 10;
 
     this.concavePath = null;
 
