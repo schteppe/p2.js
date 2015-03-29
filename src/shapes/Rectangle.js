@@ -28,11 +28,16 @@ function Rectangle(width, height){
      */
     this.height = height || 1;
 
-    var verts = [   vec2.fromValues(-width/2, -height/2),
-                    vec2.fromValues( width/2, -height/2),
-                    vec2.fromValues( width/2,  height/2),
-                    vec2.fromValues(-width/2,  height/2)];
-    var axes = [vec2.fromValues(1, 0), vec2.fromValues(0, 1)];
+    var verts = [
+        vec2.fromValues(-width/2, -height/2),
+        vec2.fromValues( width/2, -height/2),
+        vec2.fromValues( width/2,  height/2),
+        vec2.fromValues(-width/2,  height/2)
+    ];
+    var axes = [
+        vec2.fromValues(1, 0),
+        vec2.fromValues(0, 1)
+    ];
 
     Convex.call(this, verts, axes);
 
