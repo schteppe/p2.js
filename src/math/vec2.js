@@ -137,6 +137,28 @@ vec2.toGlobalFrame = function(out, localPoint, framePosition, frameAngle){
 };
 
 /**
+ * Transform a vector to local frame.
+ * @method vectorToLocalFrame
+ * @param  {Array} out
+ * @param  {Array} worldVector
+ * @param  {Number} frameAngle
+ */
+vec2.vectorToLocalFrame = function(out, worldVector, frameAngle){
+    vec2.rotate(out, worldVector, -frameAngle);
+};
+
+/**
+ * Transform a point position to global frame.
+ * @method toGlobalFrame
+ * @param  {Array} out
+ * @param  {Array} localVector
+ * @param  {Number} frameAngle
+ */
+vec2.vectorToGlobalFrame = function(out, localVector, frameAngle){
+    vec2.rotate(out, localVector, frameAngle);
+};
+
+/**
  * Compute centroid of a triangle spanned by vectors a,b,c. See http://easycalculation.com/analytical/learn-centroid.php
  * @method centroid
  * @static
