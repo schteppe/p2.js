@@ -645,10 +645,57 @@ Body.prototype.applyForce = function(force,worldPoint){
 };
 
 /**
+ * Apply impulse to a point relative to the body. This could for example be a point on the Body surface. An impulse is a force added to a body during a short period of time (impulse = force * time). Impulses will be added to Body.velocity and Body.angularVelocity.
+ * @method applyImpulse
+ * @param  {Array} impulse The impulse vector to add, oriented in world space.
+ * @param  {Array} [relativePoint] A point relative to the body in world space. If not given, it is set to zero and all of the impulse will be excerted on the center of mass.
+ */
+var Body_applyImpulse_velo = vec2.create();
+Body.prototype.applyImpulse = function(impulseVector, relativePoint){
+    if(this.type !== Body.DYNAMIC){
+        return;
+    }
+
+    // Compute produced central impulse velocity
+    var velo = Body_applyImpulse_velo;
+    vec2.scale(velo, impulseVector, this.invMass);
+
+    // Add linear impulse
+    vec2.add(this.velocity, velo, this.velocity);
+
+    if(relativePoint){
+        // Compute produced rotational impulse velocity
+        var rotVelo = vec2.crossLength(relativePoint, impulseVector);
+        rotVelo *= this.invInertia;
+
+        // Add rotational Impulse
+        this.angularVelocity += rotVelo;
+    }
+};
+
+/**
+ * Apply impulse to a point relative to the body. This could for example be a point on the Body surface. An impulse is a force added to a body during a short period of time (impulse = force * time). Impulses will be added to Body.velocity and Body.angularVelocity.
+ * @method applyImpulseLocal
+ * @param  {Array} impulse The impulse vector to add, oriented in world space.
+ * @param  {Array} [relativePoint] A point relative to the body in world space. If not given, it is set to zero and all of the impulse will be excerted on the center of mass.
+ */
+var Body_applyImpulse_impulseWorld = vec2.create();
+var Body_applyImpulse_pointWorld = vec2.create();
+var Body_applyImpulse_pointLocal = vec2.create();
+Body.prototype.applyImpulseLocal = function(localImpulse, localPoint){
+    localPoint = localPoint || Body_applyImpulse_pointLocal;
+    var worldImpulse = Body_applyImpulse_impulseWorld;
+    var worldPoint = Body_applyImpulse_pointWorld;
+    this.vectorToWorldFrame(worldImpulse, localImpulse);
+    this.vectorToWorldFrame(worldPoint, localPoint);
+    this.applyImpulse(worldImpulse, worldPoint);
+};
+
+/**
  * Transform a world point to local body frame.
  * @method toLocalFrame
  * @param  {Array} out          The vector to store the result in
- * @param  {Array} worldPoint   The input world vector
+ * @param  {Array} worldPoint   The input world point
  */
 Body.prototype.toLocalFrame = function(out, worldPoint){
     vec2.toLocalFrame(out, worldPoint, this.position, this.angle);
@@ -658,10 +705,30 @@ Body.prototype.toLocalFrame = function(out, worldPoint){
  * Transform a local point to world frame.
  * @method toWorldFrame
  * @param  {Array} out          The vector to store the result in
- * @param  {Array} localPoint   The input local vector
+ * @param  {Array} localPoint   The input local point
  */
 Body.prototype.toWorldFrame = function(out, localPoint){
     vec2.toGlobalFrame(out, localPoint, this.position, this.angle);
+};
+
+/**
+ * Transform a world point to local body frame.
+ * @method vectorToLocalFrame
+ * @param  {Array} out          The vector to store the result in
+ * @param  {Array} worldVector  The input world vector
+ */
+Body.prototype.vectorToLocalFrame = function(out, worldVector){
+    vec2.vectorToLocalFrame(out, worldVector, this.angle);
+};
+
+/**
+ * Transform a local point to world frame.
+ * @method vectorToWorldFrame
+ * @param  {Array} out          The vector to store the result in
+ * @param  {Array} localVector  The input local vector
+ */
+Body.prototype.vectorToWorldFrame = function(out, localVector){
+    vec2.vectorToGlobalFrame(out, localVector, this.angle);
 };
 
 /**
