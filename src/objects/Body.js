@@ -13,17 +13,23 @@ module.exports = Body;
  * @class Body
  * @constructor
  * @extends EventEmitter
- * @param {Object}              [options]
- * @param {Number}              [options.mass=0]    A number >= 0. If zero, the .type will be set to Body.STATIC.
- * @param {Array}               [options.position]
- * @param {Array}               [options.velocity]
- * @param {Number}              [options.angle=0]
- * @param {Number}              [options.angularVelocity=0]
- * @param {Array}               [options.force]
- * @param {Number}              [options.angularForce=0]
- * @param {Number}              [options.fixedRotation=false]
- * @param {Number}              [options.ccdSpeedThreshold=-1]
- * @param {Number}              [options.ccdIterations=10]
+ * @param {Array} [options.force]
+ * @param {Array} [options.position]
+ * @param {Array} [options.velocity]
+ * @param {Boolean} [options.allowSleep]
+ * @param {Boolean} [options.collisionResponse]
+ * @param {Number} [options.angle=0]
+ * @param {Number} [options.angularForce=0]
+ * @param {Number} [options.angularVelocity=0]
+ * @param {Number} [options.ccdIterations=10]
+ * @param {Number} [options.ccdSpeedThreshold=-1]
+ * @param {Number} [options.fixedRotation=false]
+ * @param {Number} [options.gravityScale]
+ * @param {Number} [options.id]
+ * @param {Number} [options.mass=0] A number >= 0. If zero, the .type will be set to Body.STATIC.
+ * @param {Number} [options.sleepSpeedLimit]
+ * @param {Number} [options.sleepTimeLimit]
+ * @param {Object} [options]
  *
  * @example
  *
@@ -52,7 +58,7 @@ function Body(options){
      * @property id
      * @type {Number}
      */
-    this.id = ++Body._idCounter;
+    this.id = options.id || ++Body._idCounter;
 
     /**
      * The world that this body is added to. This property is set to NULL if the body is not added to any world.
@@ -134,14 +140,14 @@ function Body(options){
     }
 
     /**
-     * The interpolated position of the body.
+     * The interpolated position of the body. Use this for rendering.
      * @property interpolatedPosition
      * @type {Array}
      */
     this.interpolatedPosition = vec2.fromValues(0,0);
 
     /**
-     * The interpolated angle of the body.
+     * The interpolated angle of the body. Use this for rendering.
      * @property interpolatedAngle
      * @type {Number}
      */
@@ -162,7 +168,7 @@ function Body(options){
     this.previousAngle = 0;
 
     /**
-     * The velocity of the body
+     * The current velocity of the body.
      * @property velocity
      * @type {Array}
      */
@@ -329,7 +335,7 @@ function Body(options){
      * @type {Boolean}
      * @default true
      */
-    this.allowSleep = true;
+    this.allowSleep = options.allowSleep !== undefined ? options.allowSleep : true;
 
     this.wantsToSleep = false;
 
@@ -350,7 +356,7 @@ function Body(options){
      * @type {Number}
      * @default 0.2
      */
-    this.sleepSpeedLimit = 0.2;
+    this.sleepSpeedLimit = options.sleepSpeedLimit !== undefined ? options.sleepSpeedLimit : 0.2;
 
     /**
      * If the body has been sleepy for this sleepTimeLimit seconds, it is considered sleeping.
@@ -358,20 +364,20 @@ function Body(options){
      * @type {Number}
      * @default 1
      */
-    this.sleepTimeLimit = 1;
+    this.sleepTimeLimit = options.sleepTimeLimit !== undefined ? options.sleepTimeLimit : 1;
 
     /**
      * Gravity scaling factor. If you want the body to ignore gravity, set this to zero. If you want to reverse gravity, set it to -1.
      * @property {Number} gravityScale
      * @default 1
      */
-    this.gravityScale = 1;
+    this.gravityScale = options.gravityScale !== undefined ? options.gravityScale : 1;
 
     /**
      * Whether to produce contact forces when in contact with other bodies. Note that contacts will be generated, but they will be disabled. That means that this body will move through other bodies, but it will still trigger contact events, etc.
      * @property {Boolean} collisionResponse
      */
-    this.collisionResponse = true;
+    this.collisionResponse = options.collisionResponse !== undefined ? options.collisionResponse : true;
 
     /**
      * How long the body has been sleeping.
@@ -411,6 +417,9 @@ Body.prototype.constructor = Body;
 
 Body._idCounter = 0;
 
+/**
+ * @private
+ */
 Body.prototype.updateSolveMassProperties = function(){
     if(this.sleepState === Body.SLEEPING || this.type === Body.KINEMATIC){
         this.invMassSolve = 0;
@@ -958,21 +967,6 @@ Body.prototype.sleepTick = function(time, dontSleep, dt){
             this.wantsToSleep = true;
         }
     }
-
-    /*
-    if(sleepState===Body.AWAKE && speedSquared < speedLimitSquared){
-        this.sleepState = Body.SLEEPY; // Sleepy
-        this.timeLastSleepy = time;
-        this.emit(Body.sleepyEvent);
-    } else if(sleepState===Body.SLEEPY && speedSquared >= speedLimitSquared){
-        this.wakeUp(); // Wake up
-    } else if(sleepState===Body.SLEEPY && (time - this.timeLastSleepy ) > this.sleepTimeLimit){
-        this.wantsToSleep = true;
-        if(!dontSleep){
-            this.sleep();
-        }
-    }
-    */
 };
 
 Body.prototype.getVelocityFromPosition = function(store, timeStep){
