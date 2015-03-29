@@ -130,6 +130,24 @@ function Body(options){
     this.fixedRotation = !!options.fixedRotation;
 
     /**
+     * Set to true if you want to fix the body movement along the X axis. The body will still be able to move along Y.
+     * @property {Boolean} fixedX
+     */
+    this.fixedX = !!options.fixedX;
+
+    /**
+     * Set to true if you want to fix the body movement along the Y axis. The body will still be able to move along X.
+     * @property {Boolean} fixedY
+     */
+    this.fixedY = !!options.fixedY;
+
+    /**
+     * @private
+     * @property {array} massMultiplier
+     */
+    this.massMultiplier = vec2.create();
+
+    /**
      * The position of the body
      * @property position
      * @type {Array}
@@ -419,6 +437,7 @@ Body._idCounter = 0;
 
 /**
  * @private
+ * @method updateSolveMassProperties
  */
 Body.prototype.updateSolveMassProperties = function(){
     if(this.sleepState === Body.SLEEPING || this.type === Body.KINEMATIC){
@@ -626,7 +645,13 @@ Body.prototype.updateMassProperties = function(){
         }
 
         // Inverse mass properties are easy
-        this.invMass = 1/this.mass;// > 0 ? 1/this.mass : 0;
+        this.invMass = 1 / this.mass;
+
+        vec2.set(
+            this.massMultiplier,
+            this.fixedX ? 0 : 1,
+            this.fixedY ? 0 : 1
+        );
     }
 };
 
@@ -668,6 +693,7 @@ Body.prototype.applyImpulse = function(impulseVector, relativePoint){
     // Compute produced central impulse velocity
     var velo = Body_applyImpulse_velo;
     vec2.scale(velo, impulseVector, this.invMass);
+    vec2.multiply(velo, this.massMultiplier, velo);
 
     // Add linear impulse
     vec2.add(this.velocity, velo, this.velocity);
@@ -1013,6 +1039,7 @@ Body.prototype.integrate = function(dt){
         this.angularVelocity += this.angularForce * this.invInertia * dt;
     }
     vec2.scale(integrate_fhMinv, f, dt * minv);
+    vec2.multiply(integrate_fhMinv, this.massMultiplier, integrate_fhMinv);
     vec2.add(velo, integrate_fhMinv, velo);
 
     // CCD

@@ -25,16 +25,18 @@
 
             boxBody = new p2.Body({
                 mass: 1,
-                position: [-1,2],
-                fixedRotation: true
+                position: [-0.3,2],
+                fixedRotation: true,
+                fixedX: true
             });
             boxBody.addShape(new p2.Rectangle(1,1));
             world.addBody(boxBody);
 
             boxBody = new p2.Body({
                 mass: 1,
-                position: [-0.3,0],
-                fixedRotation: true
+                position: [0.3,0],
+                fixedRotation: true,
+                fixedY: true
             });
             boxBody.addShape(new p2.Rectangle(1,1));
             world.addBody(boxBody);
