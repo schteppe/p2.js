@@ -6,6 +6,11 @@
     <script src="../../build/p2.js"></script>
   </head>
   <body>
+    <p>
+      <span style="color:red">Any</span>
+      <span style="color:green">All</span>
+      <span style="color:blue">Closest</span>
+    </p>
 
     <!-- The canvas, where we draw stuff -->
     <canvas width="600" height="400" id="myCanvas"></canvas>
@@ -42,7 +47,8 @@
         boxBody = new p2.Body({
           mass:1,
           position:[0,2],
-          angularVelocity:1
+          angularVelocity:1,
+          angularDamping: 0
         });
         boxBody.addShape(boxShape);
         world.addBody(boxBody);
@@ -157,40 +163,67 @@
         ctx.restore();
       }
 
-      function drawRays(){
-        start[0] = -3;
-        start[1] = Math.sin(world.time) * 4;
-        end[0] = 5;
-        end[1] = Math.sin(world.time);
+      function drawRayResult(result){
 
-        result.reset();
-        world.raycastClosest(start, end, raycastOptions, result);
+        // Draw hit point
+        if(result.hasHit){
+          ctx.beginPath();
+          ctx.arc(result.hitPointWorld[0],result.hitPointWorld[1],0.1,0,2*Math.PI);
+          ctx.stroke();
+        }
 
+        // Draw hit normal
+        ctx.beginPath();
+        ctx.moveTo(result.hitPointWorld[0], result.hitPointWorld[1]);
+        ctx.lineTo(
+          result.hitPointWorld[0] + result.hitNormalWorld[0],
+          result.hitPointWorld[1] + result.hitNormalWorld[1]
+        );
+        ctx.stroke();
+      };
+
+      function drawRay(start, end){
         // Draw line
         ctx.beginPath();
         ctx.moveTo(start[0], start[1]);
         ctx.lineTo(end[0], end[1]);
         ctx.stroke();
+      }
 
+      function drawRays(){
+
+        start[0] = -3;
+        start[1] = Math.sin(world.time) * 4;
+        end[0] = 5;
+        end[1] = Math.sin(world.time);
+
+        // Closest
+        ctx.strokeStyle = 'blue';
+        drawRay(start, end);
         result.reset();
-        world.raycastAll(start, end, {}, function(result){
+        world.raycastClosest(start, end, raycastOptions, result);
+        drawRayResult(result);
 
-          // Draw hit point
-          if(result.hasHit){
-            ctx.beginPath();
-            ctx.arc(result.hitPointWorld[0],result.hitPointWorld[1],0.1,0,2*Math.PI);
-            ctx.stroke();
-          }
+        start[1] += 0.5;
+        end[1] += 0.5;
 
-          // Draw hit normal
-          ctx.beginPath();
-          ctx.moveTo(result.hitPointWorld[0], result.hitPointWorld[1]);
-          ctx.lineTo(
-            result.hitPointWorld[0] + result.hitNormalWorld[0],
-            result.hitPointWorld[1] + result.hitNormalWorld[1]
-          );
-          ctx.stroke();
-        });
+        // All
+        ctx.strokeStyle = 'green';
+        drawRay(start, end);
+        result.reset();
+        world.raycastAll(start, end, {}, drawRayResult);
+
+        start[1] += 0.5;
+        end[1] += 0.5;
+
+        // Any
+        ctx.strokeStyle = 'red';
+        drawRay(start, end);
+        result.reset();
+        world.raycastAny(start, end, raycastOptions, result);
+        drawRayResult(result);
+
+        ctx.strokeStyle = 'black';
       }
 
       function render(){
@@ -206,7 +239,7 @@
         drawbox();
         drawPlane();
         drawCircle();
-        drawCapsule();
+        //drawCapsule();
         drawRays();
 
         // Restore transform

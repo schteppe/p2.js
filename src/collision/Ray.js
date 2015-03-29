@@ -135,14 +135,8 @@ var intersectBody_worldPosition = vec2.create();
  * @method intersectBody
  * @private
  * @param {Body} body
- * @param {RaycastResult} [result] Deprecated - set the result property of the Ray instead.
  */
-Ray.prototype.intersectBody = function (body, result) {
-
-    if(result){
-        this.result = result;
-        this._updateDirection();
-    }
+Ray.prototype.intersectBody = function (body) {
     var checkCollisionResponse = this.checkCollisionResponse;
 
     if(checkCollisionResponse && !body.collisionResponse){
@@ -184,14 +178,8 @@ Ray.prototype.intersectBody = function (body, result) {
 /**
  * @method intersectBodies
  * @param {Array} bodies An array of Body objects.
- * @param {RaycastResult} [result] Deprecated
  */
-Ray.prototype.intersectBodies = function (bodies, result) {
-    if(result){
-        this.result = result;
-        this._updateDirection();
-    }
-
+Ray.prototype.intersectBodies = function (bodies) {
     for ( var i = 0, l = bodies.length; !this.result._shouldStop && i < l; i ++ ) {
         this.intersectBody(bodies[i]);
     }
@@ -204,8 +192,8 @@ Ray.prototype.intersectBodies = function (bodies, result) {
  */
 Ray.prototype._updateDirection = function(){
     var d = this._direction;
-    vec2.sub(d, this.to, this.from); // this.to.vsub(this.from, this._direction);
-    vec2.normalize(d, d); // this._direction.normalize();
+    vec2.sub(d, this.to, this.from);
+    vec2.normalize(d, d);
 };
 
 /**
@@ -424,34 +412,40 @@ Ray.prototype.intersectCircle = function(shape, angle, position, body){
 
     } else if(delta === 0){
         // single intersection point
-        vec2.lerp(intersectionPoint, from, to, delta); // from.lerp(to, delta, intersectionPoint);
+        vec2.lerp(intersectionPoint, from, to, delta);
 
-        vec2.sub(normal, intersectionPoint, position); // intersectionPoint.vsub(position, normal);
-        vec2.normalize(normal,normal); //normal.normalize();
+        vec2.sub(normal, intersectionPoint, position);
+        vec2.normalize(normal,normal);
 
         this.reportIntersection(normal, intersectionPoint, shape, body, -1);
 
     } else {
-        var d1 = (- b - Math.sqrt(delta)) / (2 * a);
-        var d2 = (- b + Math.sqrt(delta)) / (2 * a);
+        var sqrtDelta = Math.sqrt(delta);
+        var inv2a = 1 / (2 * a);
+        var d1 = (- b - sqrtDelta) * inv2a;
+        var d2 = (- b + sqrtDelta) * inv2a;
 
-        vec2.lerp(intersectionPoint, from, to, d1); // from.lerp(to, d1, intersectionPoint);
+        if(d1 >= 0 && d1 <= 1){
+            vec2.lerp(intersectionPoint, from, to, d1);
 
-        vec2.sub(normal, intersectionPoint, position); // intersectionPoint.vsub(position, normal);
-        vec2.normalize(normal,normal); //normal.normalize();
+            vec2.sub(normal, intersectionPoint, position);
+            vec2.normalize(normal,normal);
 
-        this.reportIntersection(normal, intersectionPoint, shape, body, -1);
+            this.reportIntersection(normal, intersectionPoint, shape, body, -1);
 
-        if(this.result._shouldStop){
-            return;
+            if(this.result._shouldStop){
+                return;
+            }
         }
 
-        vec2.lerp(intersectionPoint, from, to, d2); // from.lerp(to, d2, intersectionPoint);
+        if(d2 >= 0 && d2 <= 1){
+            vec2.lerp(intersectionPoint, from, to, d2);
 
-        vec2.sub(normal, intersectionPoint, position); // intersectionPoint.vsub(position, normal);
-        vec2.normalize(normal,normal); //normal.normalize();
+            vec2.sub(normal, intersectionPoint, position);
+            vec2.normalize(normal,normal);
 
-        this.reportIntersection(normal, intersectionPoint, shape, body, -1);
+            this.reportIntersection(normal, intersectionPoint, shape, body, -1);
+        }
     }
 };
 Ray.prototype[Shape.CIRCLE] = Ray.prototype.intersectCircle;
