@@ -33,6 +33,8 @@ YUI.add("yuidoc-meta", function(Y) {
         "Particle",
         "Plane",
         "PrismaticConstraint",
+        "Ray",
+        "RaycastResult",
         "Rectangle",
         "RevoluteConstraint",
         "RotationalLockEquation",

@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
-    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <link rel="icon" href="../assets/favicon.ico">
     <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
 </head>
 <body class="yui3-skin-sam">
@@ -14,12 +14,10 @@
 <div id="doc">
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
-            
-                <h1><img src="../assets/css/logo.png" title="p2.js"></h1>
-            
+                <h1><img src="../assets/css/logo.png" title="p2.js" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.6.0</em>
+            <em>API Docs for: 0.6.1</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -27,170 +25,115 @@
         <div class="yui3-u-1-4">
             <div id="docs-sidebar" class="sidebar apidocs">
                 <div id="api-list">
-    <h2 class="off-left">APIs</h2>
-    <div id="api-tabview" class="tabview">
-        <ul class="tabs">
-            <li><a href="#api-classes">Classes</a></li>
-            <li><a href="#api-modules">Modules</a></li>
-        </ul>
-
-        <div id="api-tabview-filter">
-            <input type="search" id="api-filter" placeholder="Type to filter APIs">
-        </div>
-
-        <div id="api-tabview-panel">
-            <ul id="api-classes" class="apis classes">
-            
-                <li><a href="../classes/AABB.html">AABB</a></li>
-            
-                <li><a href="../classes/AngleLockEquation.html">AngleLockEquation</a></li>
-            
-                <li><a href="../classes/Body.html">Body</a></li>
-            
-                <li><a href="../classes/Broadphase.html">Broadphase</a></li>
-            
-                <li><a href="../classes/Capsule.html">Capsule</a></li>
-            
-                <li><a href="../classes/Circle.html">Circle</a></li>
-            
-                <li><a href="../classes/Constraint.html">Constraint</a></li>
-            
-                <li><a href="../classes/ContactEquation.html">ContactEquation</a></li>
-            
-                <li><a href="../classes/ContactMaterial.html">ContactMaterial</a></li>
-            
-                <li><a href="../classes/Convex.html">Convex</a></li>
-            
-                <li><a href="../classes/DistanceConstraint.html">DistanceConstraint</a></li>
-            
-                <li><a href="../classes/Equation.html">Equation</a></li>
-            
-                <li><a href="../classes/EventEmitter.html">EventEmitter</a></li>
-            
-                <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
-            
-                <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
-            
-                <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
-            
-                <li><a href="../classes/GSSolver.html">GSSolver</a></li>
-            
-                <li><a href="../classes/Heightfield.html">Heightfield</a></li>
-            
-                <li><a href="../classes/Island.html">Island</a></li>
-            
-                <li><a href="../classes/IslandManager.html">IslandManager</a></li>
-            
-                <li><a href="../classes/IslandNode.html">IslandNode</a></li>
-            
-                <li><a href="../classes/Line.html">Line</a></li>
-            
-                <li><a href="../classes/LinearSpring.html">LinearSpring</a></li>
-            
-                <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
-            
-                <li><a href="../classes/Material.html">Material</a></li>
-            
-                <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
-            
-                <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
-            
-                <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
-            
-                <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
-            
-                <li><a href="../classes/Particle.html">Particle</a></li>
-            
-                <li><a href="../classes/Plane.html">Plane</a></li>
-            
-                <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
-            
-                <li><a href="../classes/Rectangle.html">Rectangle</a></li>
-            
-                <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
-            
-                <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
-            
-                <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
-            
-                <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
-            
-                <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
-            
-                <li><a href="../classes/Shape.html">Shape</a></li>
-            
-                <li><a href="../classes/Solver.html">Solver</a></li>
-            
-                <li><a href="../classes/Spring.html">Spring</a></li>
-            
-                <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
-            
-                <li><a href="../classes/Utils.html">Utils</a></li>
-            
-                <li><a href="../classes/vec2.html">vec2</a></li>
-            
-                <li><a href="../classes/World.html">World</a></li>
-            
-            </ul>
-
-            <ul id="api-modules" class="apis modules">
-            
-            </ul>
-        </div>
-    </div>
-</div>
-
+                    <h2 class="off-left">APIs</h2>
+                    <div id="api-tabview" class="tabview">
+                        <ul class="tabs">
+                            <li><a href="#api-classes">Classes</a></li>
+                            <li><a href="#api-modules">Modules</a></li>
+                        </ul>
+                
+                        <div id="api-tabview-filter">
+                            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+                        </div>
+                
+                        <div id="api-tabview-panel">
+                            <ul id="api-classes" class="apis classes">
+                                <li><a href="../classes/AABB.html">AABB</a></li>
+                                <li><a href="../classes/AngleLockEquation.html">AngleLockEquation</a></li>
+                                <li><a href="../classes/Body.html">Body</a></li>
+                                <li><a href="../classes/Broadphase.html">Broadphase</a></li>
+                                <li><a href="../classes/Capsule.html">Capsule</a></li>
+                                <li><a href="../classes/Circle.html">Circle</a></li>
+                                <li><a href="../classes/Constraint.html">Constraint</a></li>
+                                <li><a href="../classes/ContactEquation.html">ContactEquation</a></li>
+                                <li><a href="../classes/ContactMaterial.html">ContactMaterial</a></li>
+                                <li><a href="../classes/Convex.html">Convex</a></li>
+                                <li><a href="../classes/DistanceConstraint.html">DistanceConstraint</a></li>
+                                <li><a href="../classes/Equation.html">Equation</a></li>
+                                <li><a href="../classes/EventEmitter.html">EventEmitter</a></li>
+                                <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
+                                <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
+                                <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
+                                <li><a href="../classes/GSSolver.html">GSSolver</a></li>
+                                <li><a href="../classes/Heightfield.html">Heightfield</a></li>
+                                <li><a href="../classes/Island.html">Island</a></li>
+                                <li><a href="../classes/IslandManager.html">IslandManager</a></li>
+                                <li><a href="../classes/IslandNode.html">IslandNode</a></li>
+                                <li><a href="../classes/Line.html">Line</a></li>
+                                <li><a href="../classes/LinearSpring.html">LinearSpring</a></li>
+                                <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
+                                <li><a href="../classes/Material.html">Material</a></li>
+                                <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
+                                <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
+                                <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
+                                <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
+                                <li><a href="../classes/Particle.html">Particle</a></li>
+                                <li><a href="../classes/Plane.html">Plane</a></li>
+                                <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
+                                <li><a href="../classes/Ray.html">Ray</a></li>
+                                <li><a href="../classes/RaycastResult.html">RaycastResult</a></li>
+                                <li><a href="../classes/Rectangle.html">Rectangle</a></li>
+                                <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
+                                <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
+                                <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
+                                <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
+                                <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
+                                <li><a href="../classes/Shape.html">Shape</a></li>
+                                <li><a href="../classes/Solver.html">Solver</a></li>
+                                <li><a href="../classes/Spring.html">Spring</a></li>
+                                <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
+                                <li><a href="../classes/Utils.html">Utils</a></li>
+                                <li><a href="../classes/vec2.html">vec2</a></li>
+                                <li><a href="../classes/World.html">World</a></li>
+                            </ul>
+                
+                            <ul id="api-modules" class="apis modules">
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="yui3-u-3-4">
                 <div id="api-options">
-        Show:
-        <label for="api-show-inherited">
-            <input type="checkbox" id="api-show-inherited" checked>
-            Inherited
-        </label>
-
-        <label for="api-show-protected">
-            <input type="checkbox" id="api-show-protected">
-            Protected
-        </label>
-
-        <label for="api-show-private">
-            <input type="checkbox" id="api-show-private">
-            Private
-        </label>
-        <label for="api-show-deprecated">
-            <input type="checkbox" id="api-show-deprecated">
-            Deprecated
-        </label>
-
-    </div>
-
-
+                    Show:
+                    <label for="api-show-inherited">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
+            
+                    <label for="api-show-protected">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
+            
+                    <label for="api-show-private">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
+            
+                </div>
+            
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>RotationalVelocityEquation Class</h1>
+<h1>RotationalVelocityEquation Class</h1>
 <div class="box meta">
-    
 
-    
         <div class="extends">
             Extends <a href="../classes/Equation.html" class="crosslink">Equation</a>
         </div>
-    
 
-    
         <div class="foundat">
             Defined in: <a href="../files/src_equations_RotationalVelocityEquation.js.html#l6"><code>src&#x2F;equations&#x2F;RotationalVelocityEquation.js:6</code></a>
         </div>
-    
 
-    
 
-    
 </div>
-
 
 
 <div class="box intro">
@@ -198,361 +141,217 @@
 
 </div>
 
-
     <div class="constructor">
         <h2>Constructor</h2>
         <div id="method_RotationalVelocityEquation" class="method item">
-    <h3 class="name"><code>RotationalVelocityEquation</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>bodyA</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>bodyB</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
+            <h3 class="name"><code>RotationalVelocityEquation</code></h3>
+        
+                <div class="args">
+                    <span class="paren">(</span><ul class="args-list inline commas">
+                        <li class="arg">
+                                <code>bodyA</code>
+                        </li>
+                        <li class="arg">
+                                <code>bodyB</code>
+                        </li>
+                    </ul><span class="paren">)</span>
+                </div>
+        
+        
+        
+        
+        
+        
+        
+        
+            <div class="meta">
+                        <p>
+                        Defined in
+                <a href="../files/src_equations_RotationalVelocityEquation.js.html#l6"><code>src&#x2F;equations&#x2F;RotationalVelocityEquation.js:6</code></a>
+                </p>
+        
+        
+        
+            </div>
+        
+            <div class="description">
+                
+            </div>
+        
+                <div class="params">
+                    <h4>Parameters:</h4>
+        
+                    <ul class="params-list">
+                        <li class="param">
+                                <code class="param-name">bodyA</code>
+                                <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+        
+        
+                            <div class="param-description">
+                                 
+                            </div>
+        
+                        </li>
+                        <li class="param">
+                                <code class="param-name">bodyB</code>
+                                <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+        
+        
+                            <div class="param-description">
+                                 
+                            </div>
+        
+                        </li>
+                    </ul>
+                </div>
+        
+        
+        
         </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_equations_RotationalVelocityEquation.js.html#l6"><code>src&#x2F;equations&#x2F;RotationalVelocityEquation.js:6</code></a>
-        
-        </p>
-
-
-        
-
-        
     </div>
-
-    <div class="description">
-        
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">bodyA</code>
-                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">bodyB</code>
-                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
-</div>
-
-    </div>
-
 
 <div id="classdocs" class="tabview">
     <ul class="api-class-tabs">
         <li class="api-class-tab index"><a href="#index">Index</a></li>
 
-        
             <li class="api-class-tab methods"><a href="#methods">Methods</a></li>
-        
-        
             <li class="api-class-tab properties"><a href="#properties">Properties</a></li>
-        
-        
-        
     </ul>
 
     <div>
         <div id="index" class="api-class-tabpanel index">
             <h2 class="off-left">Item Index</h2>
 
-            
                 <div class="index-section methods">
                     <h3>Methods</h3>
 
                     <ul class="index-list methods extends">
-                        
                             <li class="index-item method inherited">
                                 <a href="#method_addToWlambda">addToWlambda</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item method inherited">
                                 <a href="#method_computeB">computeB</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item method inherited">
                                 <a href="#method_computeGiMf">computeGiMf</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item method inherited">
                                 <a href="#method_computeGiMGt">computeGiMGt</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item method inherited">
                                 <a href="#method_computeGq">computeGq</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item method inherited">
                                 <a href="#method_computeGW">computeGW</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item method inherited">
                                 <a href="#method_computeGWlambda">computeGWlambda</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item method inherited">
                                 <a href="#method_computeInvC">computeInvC</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item method inherited">
                                 <a href="#method_gmult">gmult</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item method inherited">
                                 <a href="#method_update">update</a>
 
-                                
-                                
                             </li>
-                        
                     </ul>
                 </div>
-            
 
-            
                 <div class="index-section properties">
                     <h3>Properties</h3>
 
                     <ul class="index-list properties extends">
-                        
                             <li class="index-item property inherited">
                                 <a href="#property_bodyA">bodyA</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item property inherited">
                                 <a href="#property_bodyB">bodyB</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item property inherited">
                                 <a href="#property_enabled">enabled</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item property inherited">
                                 <a href="#property_G">G</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item property inherited">
                                 <a href="#property_maxForce">maxForce</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item property inherited">
                                 <a href="#property_minForce">minForce</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item property inherited">
                                 <a href="#property_multiplier">multiplier</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item property inherited">
                                 <a href="#property_needsUpdate">needsUpdate</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item property inherited">
                                 <a href="#property_relativeVelocity">relativeVelocity</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item property inherited">
                                 <a href="#property_relaxation">relaxation</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item property inherited">
                                 <a href="#property_stiffness">stiffness</a>
 
-                                
-                                
                             </li>
-                        
                     </ul>
                 </div>
-            
 
-            
 
-            
         </div>
 
-        
             <div id="methods" class="api-class-tabpanel">
                 <h2 class="off-left">Methods</h2>
 
-                
-                    <div id="method_addToWlambda" class="method item inherited">
+<div id="method_addToWlambda" class="method item inherited">
     <h3 class="name"><code>addToWlambda</code></h3>
 
-    
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
-            
                 <li class="arg">
-                    
                         <code>deltalambda</code>
-                    
                 </li>
-            
             </ul><span class="paren">)</span>
         </div>
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
     <div class="meta">
-        
-            
                 <p>Inherited from
                 <a href="../classes/Equation.html#method_addToWlambda">Equation</a>:
-            
-        
-        
         <a href="../files/src_equations_Equation.js.html#l268"><code>src&#x2F;equations&#x2F;Equation.js:268</code></a>
-        
         </p>
 
 
-        
 
-        
     </div>
 
     <div class="description">
@@ -560,78 +359,49 @@
 
     </div>
 
-    
         <div class="params">
             <h4>Parameters:</h4>
 
             <ul class="params-list">
-            
                 <li class="param">
-                    
                         <code class="param-name">deltalambda</code>
                         <span class="type">Number</span>
-                    
 
-                    
 
                     <div class="param-description">
                         
                     </div>
 
-                    
                 </li>
-            
             </ul>
         </div>
-    
 
-    
 
-    
+
 </div>
-
-                
-                    <div id="method_computeB" class="method item inherited">
+<div id="method_computeB" class="method item inherited">
     <h3 class="name"><code>computeB</code></h3>
 
-    
         <span class="paren">()</span>
-    
 
-    
         <span class="returns-inline">
             <span class="type">Number</span>
         </span>
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
     <div class="meta">
-        
-            
                 <p>Inherited from
                 <a href="../classes/Equation.html#method_computeB">Equation</a>:
-            
-        
-        
         <a href="../files/src_equations_Equation.js.html#l150"><code>src&#x2F;equations&#x2F;Equation.js:150</code></a>
-        
         </p>
 
 
-        
 
-        
     </div>
 
     <div class="description">
@@ -639,67 +409,40 @@
 
     </div>
 
-    
 
-    
         <div class="returns">
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                
-                    
                         <span class="type">Number</span>:
-                    
-                
             </div>
         </div>
-    
 
-    
+
 </div>
-
-                
-                    <div id="method_computeGiMf" class="method item inherited">
+<div id="method_computeGiMf" class="method item inherited">
     <h3 class="name"><code>computeGiMf</code></h3>
 
-    
         <span class="paren">()</span>
-    
 
-    
         <span class="returns-inline">
             <span class="type">Number</span>
         </span>
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
     <div class="meta">
-        
-            
                 <p>Inherited from
                 <a href="../classes/Equation.html#method_computeGiMf">Equation</a>:
-            
-        
-        
         <a href="../files/src_equations_Equation.js.html#l213"><code>src&#x2F;equations&#x2F;Equation.js:213</code></a>
-        
         </p>
 
 
-        
 
-        
     </div>
 
     <div class="description">
@@ -707,67 +450,40 @@
 
     </div>
 
-    
 
-    
         <div class="returns">
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                
-                    
                         <span class="type">Number</span>:
-                    
-                
             </div>
         </div>
-    
 
-    
+
 </div>
-
-                
-                    <div id="method_computeGiMGt" class="method item inherited">
+<div id="method_computeGiMGt" class="method item inherited">
     <h3 class="name"><code>computeGiMGt</code></h3>
 
-    
         <span class="paren">()</span>
-    
 
-    
         <span class="returns-inline">
             <span class="type">Number</span>
         </span>
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
     <div class="meta">
-        
-            
                 <p>Inherited from
                 <a href="../classes/Equation.html#method_computeGiMGt">Equation</a>:
-            
-        
-        
         <a href="../files/src_equations_Equation.js.html#l239"><code>src&#x2F;equations&#x2F;Equation.js:239</code></a>
-        
         </p>
 
 
-        
 
-        
     </div>
 
     <div class="description">
@@ -775,67 +491,40 @@
 
     </div>
 
-    
 
-    
         <div class="returns">
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                
-                    
                         <span class="type">Number</span>:
-                    
-                
             </div>
         </div>
-    
 
-    
+
 </div>
-
-                
-                    <div id="method_computeGq" class="method item inherited">
+<div id="method_computeGq" class="method item inherited">
     <h3 class="name"><code>computeGq</code></h3>
 
-    
         <span class="paren">()</span>
-    
 
-    
         <span class="returns-inline">
             <span class="type">Number</span>
         </span>
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
     <div class="meta">
-        
-            
                 <p>Inherited from
                 <a href="../classes/Equation.html#method_computeGq">Equation</a>:
-            
-        
-        
         <a href="../files/src_equations_Equation.js.html#l162"><code>src&#x2F;equations&#x2F;Equation.js:162</code></a>
-        
         </p>
 
 
-        
 
-        
     </div>
 
     <div class="description">
@@ -843,67 +532,40 @@
 
     </div>
 
-    
 
-    
         <div class="returns">
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                
-                    
                         <span class="type">Number</span>:
-                    
-                
             </div>
         </div>
-    
 
-    
+
 </div>
-
-                
-                    <div id="method_computeGW" class="method item inherited">
+<div id="method_computeGW" class="method item inherited">
     <h3 class="name"><code>computeGW</code></h3>
 
-    
         <span class="paren">()</span>
-    
 
-    
         <span class="returns-inline">
             <span class="type">Number</span>
         </span>
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
     <div class="meta">
-        
-            
                 <p>Inherited from
                 <a href="../classes/Equation.html#method_computeGW">Equation</a>:
-            
-        
-        
         <a href="../files/src_equations_Equation.js.html#l181"><code>src&#x2F;equations&#x2F;Equation.js:181</code></a>
-        
         </p>
 
 
-        
 
-        
     </div>
 
     <div class="description">
@@ -911,67 +573,40 @@
 
     </div>
 
-    
 
-    
         <div class="returns">
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                
-                    
                         <span class="type">Number</span>:
-                    
-                
             </div>
         </div>
-    
 
-    
+
 </div>
-
-                
-                    <div id="method_computeGWlambda" class="method item inherited">
+<div id="method_computeGWlambda" class="method item inherited">
     <h3 class="name"><code>computeGWlambda</code></h3>
 
-    
         <span class="paren">()</span>
-    
 
-    
         <span class="returns-inline">
             <span class="type">Number</span>
         </span>
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
     <div class="meta">
-        
-            
                 <p>Inherited from
                 <a href="../classes/Equation.html#method_computeGWlambda">Equation</a>:
-            
-        
-        
         <a href="../files/src_equations_Equation.js.html#l197"><code>src&#x2F;equations&#x2F;Equation.js:197</code></a>
-        
         </p>
 
 
-        
 
-        
     </div>
 
     <div class="description">
@@ -979,77 +614,46 @@
 
     </div>
 
-    
 
-    
         <div class="returns">
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                
-                    
                         <span class="type">Number</span>:
-                    
-                
             </div>
         </div>
-    
 
-    
+
 </div>
-
-                
-                    <div id="method_computeInvC" class="method item inherited">
+<div id="method_computeInvC" class="method item inherited">
     <h3 class="name"><code>computeInvC</code></h3>
 
-    
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
-            
                 <li class="arg">
-                    
                         <code>eps</code>
-                    
                 </li>
-            
             </ul><span class="paren">)</span>
         </div>
-    
 
-    
         <span class="returns-inline">
             <span class="type">Number</span>
         </span>
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
     <div class="meta">
-        
-            
                 <p>Inherited from
                 <a href="../classes/Equation.html#method_computeInvC">Equation</a>:
-            
-        
-        
         <a href="../files/src_equations_Equation.js.html#l309"><code>src&#x2F;equations&#x2F;Equation.js:309</code></a>
-        
         </p>
 
 
-        
 
-        
     </div>
 
     <div class="description">
@@ -1057,90 +661,56 @@
 
     </div>
 
-    
         <div class="params">
             <h4>Parameters:</h4>
 
             <ul class="params-list">
-            
                 <li class="param">
-                    
                         <code class="param-name">eps</code>
                         <span class="type">Number</span>
-                    
 
-                    
 
                     <div class="param-description">
                         
                     </div>
 
-                    
                 </li>
-            
             </ul>
         </div>
-    
 
-    
         <div class="returns">
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                
-                    
                         <span class="type">Number</span>:
-                    
-                
             </div>
         </div>
-    
 
-    
+
 </div>
-
-                
-                    <div id="method_gmult" class="method item inherited">
+<div id="method_gmult" class="method item inherited">
     <h3 class="name"><code>gmult</code></h3>
 
-    
         <span class="paren">()</span>
-    
 
-    
         <span class="returns-inline">
             <span class="type">Number</span>
         </span>
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
     <div class="meta">
-        
-            
                 <p>Inherited from
                 <a href="../classes/Equation.html#method_gmult">Equation</a>:
-            
-        
-        
         <a href="../files/src_equations_Equation.js.html#l136"><code>src&#x2F;equations&#x2F;Equation.js:136</code></a>
-        
         </p>
 
 
-        
 
-        
     </div>
 
     <div class="description">
@@ -1148,63 +718,37 @@
 
     </div>
 
-    
 
-    
         <div class="returns">
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                
-                    
                         <span class="type">Number</span>:
-                    
-                
             </div>
         </div>
-    
 
-    
+
 </div>
-
-                
-                    <div id="method_update" class="method item inherited">
+<div id="method_update" class="method item inherited">
     <h3 class="name"><code>update</code></h3>
 
-    
         <span class="paren">()</span>
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
     <div class="meta">
-        
-            
                 <p>Inherited from
                 <a href="../classes/Equation.html#method_update">Equation</a>:
-            
-        
-        
         <a href="../files/src_equations_Equation.js.html#l120"><code>src&#x2F;equations&#x2F;Equation.js:120</code></a>
-        
         </p>
 
 
-        
 
-        
     </div>
 
     <div class="description">
@@ -1212,493 +756,295 @@
 
     </div>
 
-    
 
-    
 
-    
+
 </div>
-
-                
             </div>
-        
 
-        
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
-                
                     <div id="property_bodyA" class="property item inherited">
-    <h3 class="name"><code>bodyA</code></h3>
-    <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/Equation.html#property_bodyA">Equation</a>:
-            
-        
-        
-        <a href="../files/src_equations_Equation.js.html#l32"><code>src&#x2F;equations&#x2F;Equation.js:32</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>First body participating in the constraint</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
+                        <h3 class="name"><code>bodyA</code></h3>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Equation.html#property_bodyA">Equation</a>:
+                            <a href="../files/src_equations_Equation.js.html#l32"><code>src&#x2F;equations&#x2F;Equation.js:32</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>First body participating in the constraint</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_bodyB" class="property item inherited">
-    <h3 class="name"><code>bodyB</code></h3>
-    <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/Equation.html#property_bodyB">Equation</a>:
-            
-        
-        
-        <a href="../files/src_equations_Equation.js.html#l39"><code>src&#x2F;equations&#x2F;Equation.js:39</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Second body participating in the constraint</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
+                        <h3 class="name"><code>bodyB</code></h3>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Equation.html#property_bodyB">Equation</a>:
+                            <a href="../files/src_equations_Equation.js.html#l39"><code>src&#x2F;equations&#x2F;Equation.js:39</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Second body participating in the constraint</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_enabled" class="property item inherited">
-    <h3 class="name"><code>enabled</code></h3>
-    <span class="type">Boolean</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/Equation.html#property_enabled">Equation</a>:
-            
-        
-        
-        <a href="../files/src_equations_Equation.js.html#l96"><code>src&#x2F;equations&#x2F;Equation.js:96</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Whether this equation is enabled or not. If true, it will be added to the solver.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
+                        <h3 class="name"><code>enabled</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Equation.html#property_enabled">Equation</a>:
+                            <a href="../files/src_equations_Equation.js.html#l96"><code>src&#x2F;equations&#x2F;Equation.js:96</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Whether this equation is enabled or not. If true, it will be added to the solver.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_G" class="property item inherited">
-    <h3 class="name"><code>G</code></h3>
-    <span class="type">Array</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/Equation.html#property_G">Equation</a>:
-            
-        
-        
-        <a href="../files/src_equations_Equation.js.html#l60"><code>src&#x2F;equations&#x2F;Equation.js:60</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>The Jacobian entry of this equation. 6 numbers, 3 per body (x,y,angle).</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
+                        <h3 class="name"><code>G</code></h3>
+                        <span class="type">Array</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Equation.html#property_G">Equation</a>:
+                            <a href="../files/src_equations_Equation.js.html#l60"><code>src&#x2F;equations&#x2F;Equation.js:60</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The Jacobian entry of this equation. 6 numbers, 3 per body (x,y,angle).</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_maxForce" class="property item inherited">
-    <h3 class="name"><code>maxForce</code></h3>
-    <span class="type">Number</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/Equation.html#property_maxForce">Equation</a>:
-            
-        
-        
-        <a href="../files/src_equations_Equation.js.html#l25"><code>src&#x2F;equations&#x2F;Equation.js:25</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Max force to apply when solving.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
+                        <h3 class="name"><code>maxForce</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Equation.html#property_maxForce">Equation</a>:
+                            <a href="../files/src_equations_Equation.js.html#l25"><code>src&#x2F;equations&#x2F;Equation.js:25</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Max force to apply when solving.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_minForce" class="property item inherited">
-    <h3 class="name"><code>minForce</code></h3>
-    <span class="type">Number</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/Equation.html#property_minForce">Equation</a>:
-            
-        
-        
-        <a href="../files/src_equations_Equation.js.html#l18"><code>src&#x2F;equations&#x2F;Equation.js:18</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Minimum force to apply when solving.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
+                        <h3 class="name"><code>minForce</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Equation.html#property_minForce">Equation</a>:
+                            <a href="../files/src_equations_Equation.js.html#l18"><code>src&#x2F;equations&#x2F;Equation.js:18</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Minimum force to apply when solving.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_multiplier" class="property item inherited">
-    <h3 class="name"><code>multiplier</code></h3>
-    <span class="type">Number</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/Equation.html#property_multiplier">Equation</a>:
-            
-        
-        
-        <a href="../files/src_equations_Equation.js.html#l83"><code>src&#x2F;equations&#x2F;Equation.js:83</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>The resulting constraint multiplier from the last solve. This is mostly equivalent to the force produced by the constraint.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
+                        <h3 class="name"><code>multiplier</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Equation.html#property_multiplier">Equation</a>:
+                            <a href="../files/src_equations_Equation.js.html#l83"><code>src&#x2F;equations&#x2F;Equation.js:83</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The resulting constraint multiplier from the last solve. This is mostly equivalent to the force produced by the constraint.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_needsUpdate" class="property item inherited">
-    <h3 class="name"><code>needsUpdate</code></h3>
-    <span class="type">Boolean</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/Equation.html#property_needsUpdate">Equation</a>:
-            
-        
-        
-        <a href="../files/src_equations_Equation.js.html#l77"><code>src&#x2F;equations&#x2F;Equation.js:77</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Indicates if stiffness or relaxation was changed.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
+                        <h3 class="name"><code>needsUpdate</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Equation.html#property_needsUpdate">Equation</a>:
+                            <a href="../files/src_equations_Equation.js.html#l77"><code>src&#x2F;equations&#x2F;Equation.js:77</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Indicates if stiffness or relaxation was changed.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_relativeVelocity" class="property item inherited">
-    <h3 class="name"><code>relativeVelocity</code></h3>
-    <span class="type">Number</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/Equation.html#property_relativeVelocity">Equation</a>:
-            
-        
-        
-        <a href="../files/src_equations_Equation.js.html#l90"><code>src&#x2F;equations&#x2F;Equation.js:90</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Relative velocity.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
+                        <h3 class="name"><code>relativeVelocity</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Equation.html#property_relativeVelocity">Equation</a>:
+                            <a href="../files/src_equations_Equation.js.html#l90"><code>src&#x2F;equations&#x2F;Equation.js:90</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Relative velocity.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_relaxation" class="property item inherited">
-    <h3 class="name"><code>relaxation</code></h3>
-    <span class="type">Number</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/Equation.html#property_relaxation">Equation</a>:
-            
-        
-        
-        <a href="../files/src_equations_Equation.js.html#l53"><code>src&#x2F;equations&#x2F;Equation.js:53</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>The number of time steps needed to stabilize the constraint equation. Typically between 3 and 5 time steps.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
+                        <h3 class="name"><code>relaxation</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Equation.html#property_relaxation">Equation</a>:
+                            <a href="../files/src_equations_Equation.js.html#l53"><code>src&#x2F;equations&#x2F;Equation.js:53</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The number of time steps needed to stabilize the constraint equation. Typically between 3 and 5 time steps.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_stiffness" class="property item inherited">
-    <h3 class="name"><code>stiffness</code></h3>
-    <span class="type">Number</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/Equation.html#property_stiffness">Equation</a>:
-            
-        
-        
-        <a href="../files/src_equations_Equation.js.html#l46"><code>src&#x2F;equations&#x2F;Equation.js:46</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>The stiffness of this equation. Typically chosen to a large number (~1e7), but can be chosen somewhat freely to get a stable simulation.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
+                        <h3 class="name"><code>stiffness</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Equation.html#property_stiffness">Equation</a>:
+                            <a href="../files/src_equations_Equation.js.html#l46"><code>src&#x2F;equations&#x2F;Equation.js:46</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The stiffness of this equation. Typically chosen to a large number (~1e7), but can be chosen somewhat freely to get a stable simulation.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
             </div>
-        
 
-        
 
-        
     </div>
 </div>
-
                     </div>
                 </div>
             </div>

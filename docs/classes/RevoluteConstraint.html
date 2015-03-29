@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
-    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <link rel="icon" href="../assets/favicon.ico">
     <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
 </head>
 <body class="yui3-skin-sam">
@@ -14,12 +14,10 @@
 <div id="doc">
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
-            
-                <h1><img src="../assets/css/logo.png" title="p2.js"></h1>
-            
+                <h1><img src="../assets/css/logo.png" title="p2.js" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.6.0</em>
+            <em>API Docs for: 0.6.1</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -27,170 +25,115 @@
         <div class="yui3-u-1-4">
             <div id="docs-sidebar" class="sidebar apidocs">
                 <div id="api-list">
-    <h2 class="off-left">APIs</h2>
-    <div id="api-tabview" class="tabview">
-        <ul class="tabs">
-            <li><a href="#api-classes">Classes</a></li>
-            <li><a href="#api-modules">Modules</a></li>
-        </ul>
-
-        <div id="api-tabview-filter">
-            <input type="search" id="api-filter" placeholder="Type to filter APIs">
-        </div>
-
-        <div id="api-tabview-panel">
-            <ul id="api-classes" class="apis classes">
-            
-                <li><a href="../classes/AABB.html">AABB</a></li>
-            
-                <li><a href="../classes/AngleLockEquation.html">AngleLockEquation</a></li>
-            
-                <li><a href="../classes/Body.html">Body</a></li>
-            
-                <li><a href="../classes/Broadphase.html">Broadphase</a></li>
-            
-                <li><a href="../classes/Capsule.html">Capsule</a></li>
-            
-                <li><a href="../classes/Circle.html">Circle</a></li>
-            
-                <li><a href="../classes/Constraint.html">Constraint</a></li>
-            
-                <li><a href="../classes/ContactEquation.html">ContactEquation</a></li>
-            
-                <li><a href="../classes/ContactMaterial.html">ContactMaterial</a></li>
-            
-                <li><a href="../classes/Convex.html">Convex</a></li>
-            
-                <li><a href="../classes/DistanceConstraint.html">DistanceConstraint</a></li>
-            
-                <li><a href="../classes/Equation.html">Equation</a></li>
-            
-                <li><a href="../classes/EventEmitter.html">EventEmitter</a></li>
-            
-                <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
-            
-                <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
-            
-                <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
-            
-                <li><a href="../classes/GSSolver.html">GSSolver</a></li>
-            
-                <li><a href="../classes/Heightfield.html">Heightfield</a></li>
-            
-                <li><a href="../classes/Island.html">Island</a></li>
-            
-                <li><a href="../classes/IslandManager.html">IslandManager</a></li>
-            
-                <li><a href="../classes/IslandNode.html">IslandNode</a></li>
-            
-                <li><a href="../classes/Line.html">Line</a></li>
-            
-                <li><a href="../classes/LinearSpring.html">LinearSpring</a></li>
-            
-                <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
-            
-                <li><a href="../classes/Material.html">Material</a></li>
-            
-                <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
-            
-                <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
-            
-                <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
-            
-                <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
-            
-                <li><a href="../classes/Particle.html">Particle</a></li>
-            
-                <li><a href="../classes/Plane.html">Plane</a></li>
-            
-                <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
-            
-                <li><a href="../classes/Rectangle.html">Rectangle</a></li>
-            
-                <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
-            
-                <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
-            
-                <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
-            
-                <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
-            
-                <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
-            
-                <li><a href="../classes/Shape.html">Shape</a></li>
-            
-                <li><a href="../classes/Solver.html">Solver</a></li>
-            
-                <li><a href="../classes/Spring.html">Spring</a></li>
-            
-                <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
-            
-                <li><a href="../classes/Utils.html">Utils</a></li>
-            
-                <li><a href="../classes/vec2.html">vec2</a></li>
-            
-                <li><a href="../classes/World.html">World</a></li>
-            
-            </ul>
-
-            <ul id="api-modules" class="apis modules">
-            
-            </ul>
-        </div>
-    </div>
-</div>
-
+                    <h2 class="off-left">APIs</h2>
+                    <div id="api-tabview" class="tabview">
+                        <ul class="tabs">
+                            <li><a href="#api-classes">Classes</a></li>
+                            <li><a href="#api-modules">Modules</a></li>
+                        </ul>
+                
+                        <div id="api-tabview-filter">
+                            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+                        </div>
+                
+                        <div id="api-tabview-panel">
+                            <ul id="api-classes" class="apis classes">
+                                <li><a href="../classes/AABB.html">AABB</a></li>
+                                <li><a href="../classes/AngleLockEquation.html">AngleLockEquation</a></li>
+                                <li><a href="../classes/Body.html">Body</a></li>
+                                <li><a href="../classes/Broadphase.html">Broadphase</a></li>
+                                <li><a href="../classes/Capsule.html">Capsule</a></li>
+                                <li><a href="../classes/Circle.html">Circle</a></li>
+                                <li><a href="../classes/Constraint.html">Constraint</a></li>
+                                <li><a href="../classes/ContactEquation.html">ContactEquation</a></li>
+                                <li><a href="../classes/ContactMaterial.html">ContactMaterial</a></li>
+                                <li><a href="../classes/Convex.html">Convex</a></li>
+                                <li><a href="../classes/DistanceConstraint.html">DistanceConstraint</a></li>
+                                <li><a href="../classes/Equation.html">Equation</a></li>
+                                <li><a href="../classes/EventEmitter.html">EventEmitter</a></li>
+                                <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
+                                <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
+                                <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
+                                <li><a href="../classes/GSSolver.html">GSSolver</a></li>
+                                <li><a href="../classes/Heightfield.html">Heightfield</a></li>
+                                <li><a href="../classes/Island.html">Island</a></li>
+                                <li><a href="../classes/IslandManager.html">IslandManager</a></li>
+                                <li><a href="../classes/IslandNode.html">IslandNode</a></li>
+                                <li><a href="../classes/Line.html">Line</a></li>
+                                <li><a href="../classes/LinearSpring.html">LinearSpring</a></li>
+                                <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
+                                <li><a href="../classes/Material.html">Material</a></li>
+                                <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
+                                <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
+                                <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
+                                <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
+                                <li><a href="../classes/Particle.html">Particle</a></li>
+                                <li><a href="../classes/Plane.html">Plane</a></li>
+                                <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
+                                <li><a href="../classes/Ray.html">Ray</a></li>
+                                <li><a href="../classes/RaycastResult.html">RaycastResult</a></li>
+                                <li><a href="../classes/Rectangle.html">Rectangle</a></li>
+                                <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
+                                <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
+                                <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
+                                <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
+                                <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
+                                <li><a href="../classes/Shape.html">Shape</a></li>
+                                <li><a href="../classes/Solver.html">Solver</a></li>
+                                <li><a href="../classes/Spring.html">Spring</a></li>
+                                <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
+                                <li><a href="../classes/Utils.html">Utils</a></li>
+                                <li><a href="../classes/vec2.html">vec2</a></li>
+                                <li><a href="../classes/World.html">World</a></li>
+                            </ul>
+                
+                            <ul id="api-modules" class="apis modules">
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="yui3-u-3-4">
                 <div id="api-options">
-        Show:
-        <label for="api-show-inherited">
-            <input type="checkbox" id="api-show-inherited" checked>
-            Inherited
-        </label>
-
-        <label for="api-show-protected">
-            <input type="checkbox" id="api-show-protected">
-            Protected
-        </label>
-
-        <label for="api-show-private">
-            <input type="checkbox" id="api-show-private">
-            Private
-        </label>
-        <label for="api-show-deprecated">
-            <input type="checkbox" id="api-show-deprecated">
-            Deprecated
-        </label>
-
-    </div>
-
-
+                    Show:
+                    <label for="api-show-inherited">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
+            
+                    <label for="api-show-protected">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
+            
+                    <label for="api-show-private">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
+            
+                </div>
+            
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>RevoluteConstraint Class</h1>
+<h1>RevoluteConstraint Class</h1>
 <div class="box meta">
-    
 
-    
         <div class="extends">
             Extends <a href="../classes/Constraint.html" class="crosslink">Constraint</a>
         </div>
-    
 
-    
         <div class="foundat">
             Defined in: <a href="../files/src_constraints_RevoluteConstraint.js.html#l15"><code>src&#x2F;constraints&#x2F;RevoluteConstraint.js:15</code></a>
         </div>
-    
 
-    
 
-    
 </div>
-
 
 
 <div class="box intro">
@@ -198,461 +141,296 @@
 
 </div>
 
-
     <div class="constructor">
         <h2>Constructor</h2>
         <div id="method_RevoluteConstraint" class="method item">
-    <h3 class="name"><code>RevoluteConstraint</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>bodyA</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>bodyB</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code class="optional">[options]</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
+            <h3 class="name"><code>RevoluteConstraint</code></h3>
         
-            
-                
-                <p>
-                
-                Defined in
-                
-            
+                <div class="args">
+                    <span class="paren">(</span><ul class="args-list inline commas">
+                        <li class="arg">
+                                <code>bodyA</code>
+                        </li>
+                        <li class="arg">
+                                <code>bodyB</code>
+                        </li>
+                        <li class="arg">
+                                <code class="optional">[options]</code>
+                        </li>
+                    </ul><span class="paren">)</span>
+                </div>
         
         
-        <a href="../files/src_constraints_RevoluteConstraint.js.html#l15"><code>src&#x2F;constraints&#x2F;RevoluteConstraint.js:15</code></a>
         
-        </p>
-
-
         
-
         
-    </div>
-
-    <div class="description">
         
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">bodyA</code>
-                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">bodyB</code>
-                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name optional">[options]</code>
-                        <span class="type">Object</span>
-                        <span class="flag optional" title="This parameter is optional.">optional</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                        <ul class="params-list">
-                            
-                            <li class="param">
-                                
-                                    <code class="param-name optional">[worldPivot]</code>
-                                    <span class="type">Array</span>
-                                    <span class="flag optional" title="This parameter is optional.">optional</span>
-                                
-
-                                <div class="param-description">
-                                    <p>A pivot point given in world coordinates. If specified, localPivotA and localPivotB are automatically computed from this value.</p>
-
-                                </div>
-
-                                
-                            </li>
-                            
-                            <li class="param">
-                                
-                                    <code class="param-name optional">[localPivotA]</code>
-                                    <span class="type">Array</span>
-                                    <span class="flag optional" title="This parameter is optional.">optional</span>
-                                
-
-                                <div class="param-description">
-                                    <p>The point relative to the center of mass of bodyA which bodyA is constrained to.</p>
-
-                                </div>
-
-                                
-                            </li>
-                            
-                            <li class="param">
-                                
-                                    <code class="param-name optional">[localPivotB]</code>
-                                    <span class="type">Array</span>
-                                    <span class="flag optional" title="This parameter is optional.">optional</span>
-                                
-
-                                <div class="param-description">
-                                    <p>See localPivotA.</p>
-
-                                </div>
-
-                                
-                            </li>
-                            
-                            <li class="param">
-                                
-                                    <code class="param-name optional">[maxForce]</code>
-                                    <span class="type">Number</span>
-                                    <span class="flag optional" title="This parameter is optional.">optional</span>
-                                
-
-                                <div class="param-description">
-                                    <p>The maximum force that should be applied to constrain the bodies.</p>
-
-                                </div>
-
-                                
-                            </li>
-                            
-                        </ul>
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
-        <div class="example">
-            <h4>Example:</h4>
-
-            <div class="example-content">
-                <pre class="code prettyprint"><code>// This will create a revolute constraint between two bodies with pivot point in between them.
-var bodyA = new Body({ mass: 1, position: [-1, 0] });
-var bodyB = new Body({ mass: 1, position: [1, 0] });
-var constraint = new RevoluteConstraint(bodyA, bodyB, {
-    worldPivot: [0, 0]
-});
-world.addConstraint(constraint);
-
-// Using body-local pivot points, the constraint could have been constructed like this:
-var constraint = new RevoluteConstraint(bodyA, bodyB, {
-    localPivotA: [1, 0],
-    localPivotB: [-1, 0]
-});</code></pre>
-
+        
+        
+            <div class="meta">
+                        <p>
+                        Defined in
+                <a href="../files/src_constraints_RevoluteConstraint.js.html#l15"><code>src&#x2F;constraints&#x2F;RevoluteConstraint.js:15</code></a>
+                </p>
+        
+        
+        
             </div>
+        
+            <div class="description">
+                
+            </div>
+        
+                <div class="params">
+                    <h4>Parameters:</h4>
+        
+                    <ul class="params-list">
+                        <li class="param">
+                                <code class="param-name">bodyA</code>
+                                <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+        
+        
+                            <div class="param-description">
+                                 
+                            </div>
+        
+                        </li>
+                        <li class="param">
+                                <code class="param-name">bodyB</code>
+                                <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+        
+        
+                            <div class="param-description">
+                                 
+                            </div>
+        
+                        </li>
+                        <li class="param">
+                                <code class="param-name optional">[options]</code>
+                                <span class="type">Object</span>
+                                <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+        
+                            <div class="param-description">
+                                 
+                            </div>
+        
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name optional">[worldPivot]</code>
+                                            <span class="type">Array</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>A pivot point given in world coordinates. If specified, localPivotA and localPivotB are automatically computed from this value.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[localPivotA]</code>
+                                            <span class="type">Array</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>The point relative to the center of mass of bodyA which bodyA is constrained to.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[localPivotB]</code>
+                                            <span class="type">Array</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>See localPivotA.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[maxForce]</code>
+                                            <span class="type">Number</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>The maximum force that should be applied to constrain the bodies.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                </ul>
+                        </li>
+                    </ul>
+                </div>
+        
+        
+        
+                <div class="example">
+                    <h4>Example:</h4>
+        
+                    <div class="example-content">
+                        <pre class="code prettyprint"><code>// This will create a revolute constraint between two bodies with pivot point in between them.
+        var bodyA = new Body({ mass: 1, position: [-1, 0] });
+        var bodyB = new Body({ mass: 1, position: [1, 0] });
+        var constraint = new RevoluteConstraint(bodyA, bodyB, {
+            worldPivot: [0, 0]
+        });
+        world.addConstraint(constraint);
+        
+        // Using body-local pivot points, the constraint could have been constructed like this:
+        var constraint = new RevoluteConstraint(bodyA, bodyB, {
+            localPivotA: [1, 0],
+            localPivotB: [-1, 0]
+        });
+        </code></pre>
+                    </div>
+                </div>
         </div>
-    
-</div>
-
     </div>
-
 
 <div id="classdocs" class="tabview">
     <ul class="api-class-tabs">
         <li class="api-class-tab index"><a href="#index">Index</a></li>
 
-        
             <li class="api-class-tab methods"><a href="#methods">Methods</a></li>
-        
-        
             <li class="api-class-tab properties"><a href="#properties">Properties</a></li>
-        
-        
-        
     </ul>
 
     <div>
         <div id="index" class="api-class-tabpanel index">
             <h2 class="off-left">Item Index</h2>
 
-            
                 <div class="index-section methods">
                     <h3>Methods</h3>
 
                     <ul class="index-list methods extends">
-                        
                             <li class="index-item method">
                                 <a href="#method_disableMotor">disableMotor</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item method">
                                 <a href="#method_enableMotor">enableMotor</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item method">
                                 <a href="#method_getMotorSpeed">getMotorSpeed</a>
 
-                                
-                                
                             </li>
-                        
-                            <li class="index-item method">
+                            <li class="index-item method deprecated">
                                 <a href="#method_motorIsEnabled">motorIsEnabled</a>
 
-                                
-                                
+                                    <span class="flag deprecated">deprecated</span>
                             </li>
-                        
                             <li class="index-item method">
                                 <a href="#method_setLimits">setLimits</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item method">
                                 <a href="#method_setMotorSpeed">setMotorSpeed</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item method inherited">
                                 <a href="#method_setRelaxation">setRelaxation</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item method inherited">
                                 <a href="#method_setStiffness">setStiffness</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item method inherited">
                                 <a href="#method_update">update</a>
 
-                                
-                                
                             </li>
-                        
                     </ul>
                 </div>
-            
 
-            
                 <div class="index-section properties">
                     <h3>Properties</h3>
 
                     <ul class="index-list properties extends">
-                        
                             <li class="index-item property">
                                 <a href="#property_angle">angle</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item property inherited">
                                 <a href="#property_bodyA">bodyA</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item property inherited">
                                 <a href="#property_bodyB">bodyB</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item property inherited">
                                 <a href="#property_collideConnected">collideConnected</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item property inherited">
                                 <a href="#property_equations">equations</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item property">
                                 <a href="#property_lowerLimit">lowerLimit</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item property">
                                 <a href="#property_lowerLimitEnabled">lowerLimitEnabled</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item property">
                                 <a href="#property_motorEnabled">motorEnabled</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item property">
                                 <a href="#property_pivotA">pivotA</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item property">
                                 <a href="#property_pivotB">pivotB</a>
 
-                                
-                                
                             </li>
-                        
+                            <li class="index-item property inherited">
+                                <a href="#property_type">type</a>
+
+                            </li>
                             <li class="index-item property">
                                 <a href="#property_upperLimit">upperLimit</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item property">
                                 <a href="#property_upperLimitEnabled">upperLimitEnabled</a>
 
-                                
-                                
                             </li>
-                        
                     </ul>
                 </div>
-            
 
-            
 
-            
         </div>
 
-        
             <div id="methods" class="api-class-tabpanel">
                 <h2 class="off-left">Methods</h2>
 
-                
-                    <div id="method_disableMotor" class="method item">
+<div id="method_disableMotor" class="method item">
     <h3 class="name"><code>disableMotor</code></h3>
 
-    
         <span class="paren">()</span>
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
     <div class="meta">
-        
-            
-                
                 <p>
-                
                 Defined in
-                
-            
-        
-        
-        <a href="../files/src_constraints_RevoluteConstraint.js.html#l278"><code>src&#x2F;constraints&#x2F;RevoluteConstraint.js:278</code></a>
-        
+        <a href="../files/src_constraints_RevoluteConstraint.js.html#l279"><code>src&#x2F;constraints&#x2F;RevoluteConstraint.js:279</code></a>
         </p>
 
 
-        
 
-        
     </div>
 
     <div class="description">
@@ -660,54 +438,30 @@ var constraint = new RevoluteConstraint(bodyA, bodyB, {
 
     </div>
 
-    
 
-    
 
-    
+
 </div>
-
-                
-                    <div id="method_enableMotor" class="method item">
+<div id="method_enableMotor" class="method item">
     <h3 class="name"><code>enableMotor</code></h3>
 
-    
         <span class="paren">()</span>
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
     <div class="meta">
-        
-            
-                
                 <p>
-                
                 Defined in
-                
-            
-        
-        
-        <a href="../files/src_constraints_RevoluteConstraint.js.html#l266"><code>src&#x2F;constraints&#x2F;RevoluteConstraint.js:266</code></a>
-        
+        <a href="../files/src_constraints_RevoluteConstraint.js.html#l267"><code>src&#x2F;constraints&#x2F;RevoluteConstraint.js:267</code></a>
         </p>
 
 
-        
 
-        
     </div>
 
     <div class="description">
@@ -715,58 +469,33 @@ var constraint = new RevoluteConstraint(bodyA, bodyB, {
 
     </div>
 
-    
 
-    
 
-    
+
 </div>
-
-                
-                    <div id="method_getMotorSpeed" class="method item">
+<div id="method_getMotorSpeed" class="method item">
     <h3 class="name"><code>getMotorSpeed</code></h3>
 
-    
         <span class="paren">()</span>
-    
 
-    
         <span class="returns-inline">
             <span class="type">Number</span>
         </span>
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
     <div class="meta">
-        
-            
-                
                 <p>
-                
                 Defined in
-                
-            
-        
-        
-        <a href="../files/src_constraints_RevoluteConstraint.js.html#l313"><code>src&#x2F;constraints&#x2F;RevoluteConstraint.js:313</code></a>
-        
+        <a href="../files/src_constraints_RevoluteConstraint.js.html#l315"><code>src&#x2F;constraints&#x2F;RevoluteConstraint.js:315</code></a>
         </p>
 
 
-        
 
-        
     </div>
 
     <div class="description">
@@ -774,72 +503,44 @@ var constraint = new RevoluteConstraint(bodyA, bodyB, {
 
     </div>
 
-    
 
-    
         <div class="returns">
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                
-                    
                         <span class="type">Number</span>:
-                    
                     <p>The current speed, or false if the motor is not enabled.</p>
 
-                
             </div>
         </div>
-    
 
-    
+
 </div>
-
-                
-                    <div id="method_motorIsEnabled" class="method item">
+<div id="method_motorIsEnabled" class="method item deprecated">
     <h3 class="name"><code>motorIsEnabled</code></h3>
 
-    
         <span class="paren">()</span>
-    
 
-    
         <span class="returns-inline">
             <span class="type">Boolean</span>
         </span>
-    
 
-    
+        <span class="flag deprecated" title="use property motorEnabled instead.">deprecated</span>
 
-    
 
-    
 
-    
 
-    
 
-    
 
     <div class="meta">
-        
-            
-                
                 <p>
-                
                 Defined in
-                
-            
-        
-        
-        <a href="../files/src_constraints_RevoluteConstraint.js.html#l291"><code>src&#x2F;constraints&#x2F;RevoluteConstraint.js:291</code></a>
-        
+        <a href="../files/src_constraints_RevoluteConstraint.js.html#l292"><code>src&#x2F;constraints&#x2F;RevoluteConstraint.js:292</code></a>
         </p>
 
 
-        
+            <p>Deprecated: use property motorEnabled instead.</p>
 
-        
     </div>
 
     <div class="description">
@@ -847,82 +548,46 @@ var constraint = new RevoluteConstraint(bodyA, bodyB, {
 
     </div>
 
-    
 
-    
         <div class="returns">
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                
-                    
                         <span class="type">Boolean</span>:
-                    
-                
             </div>
         </div>
-    
 
-    
+
 </div>
-
-                
-                    <div id="method_setLimits" class="method item">
+<div id="method_setLimits" class="method item">
     <h3 class="name"><code>setLimits</code></h3>
 
-    
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
-            
                 <li class="arg">
-                    
                         <code>lower</code>
-                    
                 </li>
-            
                 <li class="arg">
-                    
                         <code>upper</code>
-                    
                 </li>
-            
             </ul><span class="paren">)</span>
         </div>
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
     <div class="meta">
-        
-            
-                
                 <p>
-                
                 Defined in
-                
-            
-        
-        
-        <a href="../files/src_constraints_RevoluteConstraint.js.html#l156"><code>src&#x2F;constraints&#x2F;RevoluteConstraint.js:156</code></a>
-        
+        <a href="../files/src_constraints_RevoluteConstraint.js.html#l157"><code>src&#x2F;constraints&#x2F;RevoluteConstraint.js:157</code></a>
         </p>
 
 
-        
 
-        
     </div>
 
     <div class="description">
@@ -930,104 +595,64 @@ var constraint = new RevoluteConstraint(bodyA, bodyB, {
 
     </div>
 
-    
         <div class="params">
             <h4>Parameters:</h4>
 
             <ul class="params-list">
-            
                 <li class="param">
-                    
                         <code class="param-name">lower</code>
                         <span class="type">Number</span>
-                    
 
-                    
 
                     <div class="param-description">
                         <p>Lower angle limit.</p>
 
                     </div>
 
-                    
                 </li>
-            
                 <li class="param">
-                    
                         <code class="param-name">upper</code>
                         <span class="type">Number</span>
-                    
 
-                    
 
                     <div class="param-description">
                         <p>Upper angle limit.</p>
 
                     </div>
 
-                    
                 </li>
-            
             </ul>
         </div>
-    
 
-    
 
-    
+
 </div>
-
-                
-                    <div id="method_setMotorSpeed" class="method item">
+<div id="method_setMotorSpeed" class="method item">
     <h3 class="name"><code>setMotorSpeed</code></h3>
 
-    
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
-            
                 <li class="arg">
-                    
                         <code>speed</code>
-                    
                 </li>
-            
             </ul><span class="paren">)</span>
         </div>
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
     <div class="meta">
-        
-            
-                
                 <p>
-                
                 Defined in
-                
-            
-        
-        
-        <a href="../files/src_constraints_RevoluteConstraint.js.html#l300"><code>src&#x2F;constraints&#x2F;RevoluteConstraint.js:300</code></a>
-        
+        <a href="../files/src_constraints_RevoluteConstraint.js.html#l302"><code>src&#x2F;constraints&#x2F;RevoluteConstraint.js:302</code></a>
         </p>
 
 
-        
 
-        
     </div>
 
     <div class="description">
@@ -1035,84 +660,52 @@ var constraint = new RevoluteConstraint(bodyA, bodyB, {
 
     </div>
 
-    
         <div class="params">
             <h4>Parameters:</h4>
 
             <ul class="params-list">
-            
                 <li class="param">
-                    
                         <code class="param-name">speed</code>
                         <span class="type">Number</span>
-                    
 
-                    
 
                     <div class="param-description">
                          
                     </div>
 
-                    
                 </li>
-            
             </ul>
         </div>
-    
 
-    
 
-    
+
 </div>
-
-                
-                    <div id="method_setRelaxation" class="method item inherited">
+<div id="method_setRelaxation" class="method item inherited">
     <h3 class="name"><code>setRelaxation</code></h3>
 
-    
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
-            
                 <li class="arg">
-                    
                         <code>relaxation</code>
-                    
                 </li>
-            
             </ul><span class="paren">)</span>
         </div>
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
     <div class="meta">
-        
-            
                 <p>Inherited from
                 <a href="../classes/Constraint.html#method_setRelaxation">Constraint</a>:
-            
-        
-        
-        <a href="../files/src_constraints_Constraint.js.html#l94"><code>src&#x2F;constraints&#x2F;Constraint.js:94</code></a>
-        
+        <a href="../files/src_constraints_Constraint.js.html#l123"><code>src&#x2F;constraints&#x2F;Constraint.js:123</code></a>
         </p>
 
 
-        
 
-        
     </div>
 
     <div class="description">
@@ -1120,84 +713,52 @@ var constraint = new RevoluteConstraint(bodyA, bodyB, {
 
     </div>
 
-    
         <div class="params">
             <h4>Parameters:</h4>
 
             <ul class="params-list">
-            
                 <li class="param">
-                    
                         <code class="param-name">relaxation</code>
                         <span class="type">Number</span>
-                    
 
-                    
 
                     <div class="param-description">
                         
                     </div>
 
-                    
                 </li>
-            
             </ul>
         </div>
-    
 
-    
 
-    
+
 </div>
-
-                
-                    <div id="method_setStiffness" class="method item inherited">
+<div id="method_setStiffness" class="method item inherited">
     <h3 class="name"><code>setStiffness</code></h3>
 
-    
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
-            
                 <li class="arg">
-                    
                         <code>stiffness</code>
-                    
                 </li>
-            
             </ul><span class="paren">)</span>
         </div>
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
     <div class="meta">
-        
-            
                 <p>Inherited from
                 <a href="../classes/Constraint.html#method_setStiffness">Constraint</a>:
-            
-        
-        
-        <a href="../files/src_constraints_Constraint.js.html#l80"><code>src&#x2F;constraints&#x2F;Constraint.js:80</code></a>
-        
+        <a href="../files/src_constraints_Constraint.js.html#l109"><code>src&#x2F;constraints&#x2F;Constraint.js:109</code></a>
         </p>
 
 
-        
 
-        
     </div>
 
     <div class="description">
@@ -1205,74 +766,46 @@ var constraint = new RevoluteConstraint(bodyA, bodyB, {
 
     </div>
 
-    
         <div class="params">
             <h4>Parameters:</h4>
 
             <ul class="params-list">
-            
                 <li class="param">
-                    
                         <code class="param-name">stiffness</code>
                         <span class="type">Number</span>
-                    
 
-                    
 
                     <div class="param-description">
                         
                     </div>
 
-                    
                 </li>
-            
             </ul>
         </div>
-    
 
-    
 
-    
+
 </div>
-
-                
-                    <div id="method_update" class="method item inherited">
+<div id="method_update" class="method item inherited">
     <h3 class="name"><code>update</code></h3>
 
-    
         <span class="paren">()</span>
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
     <div class="meta">
-        
-            
                 <p>Inherited from
                 <a href="../classes/Constraint.html#method_update">Constraint</a>:
-            
-        
-        
-        <a href="../files/src_constraints_Constraint.js.html#l66"><code>src&#x2F;constraints&#x2F;Constraint.js:66</code></a>
-        
+        <a href="../files/src_constraints_Constraint.js.html#l71"><code>src&#x2F;constraints&#x2F;Constraint.js:71</code></a>
         </p>
 
 
-        
 
-        
     </div>
 
     <div class="description">
@@ -1280,559 +813,344 @@ var constraint = new RevoluteConstraint(bodyA, bodyB, {
 
     </div>
 
-    
 
-    
 
-    
+
 </div>
-
-                
             </div>
-        
 
-        
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
-                
                     <div id="property_angle" class="property item">
-    <h3 class="name"><code>angle</code></h3>
-    <span class="type">Number</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_constraints_RevoluteConstraint.js.html#l113"><code>src&#x2F;constraints&#x2F;RevoluteConstraint.js:113</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>The constraint position.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
+                        <h3 class="name"><code>angle</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_constraints_RevoluteConstraint.js.html#l113"><code>src&#x2F;constraints&#x2F;RevoluteConstraint.js:113</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The constraint position.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_bodyA" class="property item inherited">
-    <h3 class="name"><code>bodyA</code></h3>
-    <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/Constraint.html#property_bodyA">Constraint</a>:
-            
-        
-        
-        <a href="../files/src_constraints_Constraint.js.html#l33"><code>src&#x2F;constraints&#x2F;Constraint.js:33</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>First body participating in the constraint.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
+                        <h3 class="name"><code>bodyA</code></h3>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Constraint.html#property_bodyA">Constraint</a>:
+                            <a href="../files/src_constraints_Constraint.js.html#l38"><code>src&#x2F;constraints&#x2F;Constraint.js:38</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>First body participating in the constraint.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_bodyB" class="property item inherited">
-    <h3 class="name"><code>bodyB</code></h3>
-    <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/Constraint.html#property_bodyB">Constraint</a>:
-            
-        
-        
-        <a href="../files/src_constraints_Constraint.js.html#l40"><code>src&#x2F;constraints&#x2F;Constraint.js:40</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Second body participating in the constraint.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
+                        <h3 class="name"><code>bodyB</code></h3>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Constraint.html#property_bodyB">Constraint</a>:
+                            <a href="../files/src_constraints_Constraint.js.html#l45"><code>src&#x2F;constraints&#x2F;Constraint.js:45</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Second body participating in the constraint.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_collideConnected" class="property item inherited">
-    <h3 class="name"><code>collideConnected</code></h3>
-    <span class="type">Boolean</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/Constraint.html#property_collideConnected">Constraint</a>:
-            
-        
-        
-        <a href="../files/src_constraints_Constraint.js.html#l47"><code>src&#x2F;constraints&#x2F;Constraint.js:47</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Set to true if you want the connected bodies to collide.</p>
-
-    </div>
-
-    
-        <p><strong>Default:</strong> true</p>
-    
-
-    
-
-    
-</div>
-
-                
+                        <h3 class="name"><code>collideConnected</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Constraint.html#property_collideConnected">Constraint</a>:
+                            <a href="../files/src_constraints_Constraint.js.html#l52"><code>src&#x2F;constraints&#x2F;Constraint.js:52</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Set to true if you want the connected bodies to collide.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> true</p>
+                    
+                    
+                    </div>
                     <div id="property_equations" class="property item inherited">
-    <h3 class="name"><code>equations</code></h3>
-    <span class="type">Array</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/Constraint.html#property_equations">Constraint</a>:
-            
-        
-        
-        <a href="../files/src_constraints_Constraint.js.html#l25"><code>src&#x2F;constraints&#x2F;Constraint.js:25</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Equations to be solved in this constraint</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
+                        <h3 class="name"><code>equations</code></h3>
+                        <span class="type">Array</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Constraint.html#property_equations">Constraint</a>:
+                            <a href="../files/src_constraints_Constraint.js.html#l30"><code>src&#x2F;constraints&#x2F;Constraint.js:30</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Equations to be solved in this constraint</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_lowerLimit" class="property item">
-    <h3 class="name"><code>lowerLimit</code></h3>
-    <span class="type">Boolean</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_constraints_RevoluteConstraint.js.html#l135"><code>src&#x2F;constraints&#x2F;RevoluteConstraint.js:135</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>The lower limit on the constraint angle.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
+                        <h3 class="name"><code>lowerLimit</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_constraints_RevoluteConstraint.js.html#l135"><code>src&#x2F;constraints&#x2F;RevoluteConstraint.js:135</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The lower limit on the constraint angle.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_lowerLimitEnabled" class="property item">
-    <h3 class="name"><code>lowerLimitEnabled</code></h3>
-    <span class="type">Boolean</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_constraints_RevoluteConstraint.js.html#l121"><code>src&#x2F;constraints&#x2F;RevoluteConstraint.js:121</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Set to true to enable lower limit</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
+                        <h3 class="name"><code>lowerLimitEnabled</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_constraints_RevoluteConstraint.js.html#l121"><code>src&#x2F;constraints&#x2F;RevoluteConstraint.js:121</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Set to true to enable lower limit</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_motorEnabled" class="property item">
-    <h3 class="name"><code>motorEnabled</code></h3>
-    <span class="type">Boolean</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_constraints_RevoluteConstraint.js.html#l106"><code>src&#x2F;constraints&#x2F;RevoluteConstraint.js:106</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Indicates whether the motor is enabled. Use .enableMotor() to enable the constraint motor.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
+                        <h3 class="name"><code>motorEnabled</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_constraints_RevoluteConstraint.js.html#l106"><code>src&#x2F;constraints&#x2F;RevoluteConstraint.js:106</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Indicates whether the motor is enabled. Use .enableMotor() to enable the constraint motor.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_pivotA" class="property item">
-    <h3 class="name"><code>pivotA</code></h3>
-    <span class="type">Array</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_constraints_RevoluteConstraint.js.html#l50"><code>src&#x2F;constraints&#x2F;RevoluteConstraint.js:50</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
+                        <h3 class="name"><code>pivotA</code></h3>
+                        <span class="type">Array</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_constraints_RevoluteConstraint.js.html#l50"><code>src&#x2F;constraints&#x2F;RevoluteConstraint.js:50</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_pivotB" class="property item">
-    <h3 class="name"><code>pivotB</code></h3>
-    <span class="type">Array</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_constraints_RevoluteConstraint.js.html#l55"><code>src&#x2F;constraints&#x2F;RevoluteConstraint.js:55</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
+                        <h3 class="name"><code>pivotB</code></h3>
+                        <span class="type">Array</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_constraints_RevoluteConstraint.js.html#l55"><code>src&#x2F;constraints&#x2F;RevoluteConstraint.js:55</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_type" class="property item inherited">
+                        <h3 class="name"><code>type</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Constraint.html#property_type">Constraint</a>:
+                            <a href="../files/src_constraints_Constraint.js.html#l19"><code>src&#x2F;constraints&#x2F;Constraint.js:19</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The type of constraint. May be one of Constraint.DISTANCE, Constraint.GEAR, Constraint.LOCK, Constraint.PRISMATIC or Constraint.REVOLUTE.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_upperLimit" class="property item">
-    <h3 class="name"><code>upperLimit</code></h3>
-    <span class="type">Boolean</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_constraints_RevoluteConstraint.js.html#l142"><code>src&#x2F;constraints&#x2F;RevoluteConstraint.js:142</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>The upper limit on the constraint angle.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
+                        <h3 class="name"><code>upperLimit</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_constraints_RevoluteConstraint.js.html#l142"><code>src&#x2F;constraints&#x2F;RevoluteConstraint.js:142</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The upper limit on the constraint angle.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_upperLimitEnabled" class="property item">
-    <h3 class="name"><code>upperLimitEnabled</code></h3>
-    <span class="type">Boolean</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_constraints_RevoluteConstraint.js.html#l128"><code>src&#x2F;constraints&#x2F;RevoluteConstraint.js:128</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Set to true to enable upper limit</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
+                        <h3 class="name"><code>upperLimitEnabled</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_constraints_RevoluteConstraint.js.html#l128"><code>src&#x2F;constraints&#x2F;RevoluteConstraint.js:128</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Set to true to enable upper limit</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
             </div>
-        
 
-        
 
-        
     </div>
 </div>
-
                     </div>
                 </div>
             </div>

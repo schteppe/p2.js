@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
-    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <link rel="icon" href="../assets/favicon.ico">
     <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
 </head>
 <body class="yui3-skin-sam">
@@ -14,12 +14,10 @@
 <div id="doc">
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
-            
-                <h1><img src="../assets/css/logo.png" title="p2.js"></h1>
-            
+                <h1><img src="../assets/css/logo.png" title="p2.js" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.6.0</em>
+            <em>API Docs for: 0.6.1</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -27,170 +25,115 @@
         <div class="yui3-u-1-4">
             <div id="docs-sidebar" class="sidebar apidocs">
                 <div id="api-list">
-    <h2 class="off-left">APIs</h2>
-    <div id="api-tabview" class="tabview">
-        <ul class="tabs">
-            <li><a href="#api-classes">Classes</a></li>
-            <li><a href="#api-modules">Modules</a></li>
-        </ul>
-
-        <div id="api-tabview-filter">
-            <input type="search" id="api-filter" placeholder="Type to filter APIs">
-        </div>
-
-        <div id="api-tabview-panel">
-            <ul id="api-classes" class="apis classes">
-            
-                <li><a href="../classes/AABB.html">AABB</a></li>
-            
-                <li><a href="../classes/AngleLockEquation.html">AngleLockEquation</a></li>
-            
-                <li><a href="../classes/Body.html">Body</a></li>
-            
-                <li><a href="../classes/Broadphase.html">Broadphase</a></li>
-            
-                <li><a href="../classes/Capsule.html">Capsule</a></li>
-            
-                <li><a href="../classes/Circle.html">Circle</a></li>
-            
-                <li><a href="../classes/Constraint.html">Constraint</a></li>
-            
-                <li><a href="../classes/ContactEquation.html">ContactEquation</a></li>
-            
-                <li><a href="../classes/ContactMaterial.html">ContactMaterial</a></li>
-            
-                <li><a href="../classes/Convex.html">Convex</a></li>
-            
-                <li><a href="../classes/DistanceConstraint.html">DistanceConstraint</a></li>
-            
-                <li><a href="../classes/Equation.html">Equation</a></li>
-            
-                <li><a href="../classes/EventEmitter.html">EventEmitter</a></li>
-            
-                <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
-            
-                <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
-            
-                <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
-            
-                <li><a href="../classes/GSSolver.html">GSSolver</a></li>
-            
-                <li><a href="../classes/Heightfield.html">Heightfield</a></li>
-            
-                <li><a href="../classes/Island.html">Island</a></li>
-            
-                <li><a href="../classes/IslandManager.html">IslandManager</a></li>
-            
-                <li><a href="../classes/IslandNode.html">IslandNode</a></li>
-            
-                <li><a href="../classes/Line.html">Line</a></li>
-            
-                <li><a href="../classes/LinearSpring.html">LinearSpring</a></li>
-            
-                <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
-            
-                <li><a href="../classes/Material.html">Material</a></li>
-            
-                <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
-            
-                <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
-            
-                <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
-            
-                <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
-            
-                <li><a href="../classes/Particle.html">Particle</a></li>
-            
-                <li><a href="../classes/Plane.html">Plane</a></li>
-            
-                <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
-            
-                <li><a href="../classes/Rectangle.html">Rectangle</a></li>
-            
-                <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
-            
-                <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
-            
-                <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
-            
-                <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
-            
-                <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
-            
-                <li><a href="../classes/Shape.html">Shape</a></li>
-            
-                <li><a href="../classes/Solver.html">Solver</a></li>
-            
-                <li><a href="../classes/Spring.html">Spring</a></li>
-            
-                <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
-            
-                <li><a href="../classes/Utils.html">Utils</a></li>
-            
-                <li><a href="../classes/vec2.html">vec2</a></li>
-            
-                <li><a href="../classes/World.html">World</a></li>
-            
-            </ul>
-
-            <ul id="api-modules" class="apis modules">
-            
-            </ul>
-        </div>
-    </div>
-</div>
-
+                    <h2 class="off-left">APIs</h2>
+                    <div id="api-tabview" class="tabview">
+                        <ul class="tabs">
+                            <li><a href="#api-classes">Classes</a></li>
+                            <li><a href="#api-modules">Modules</a></li>
+                        </ul>
+                
+                        <div id="api-tabview-filter">
+                            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+                        </div>
+                
+                        <div id="api-tabview-panel">
+                            <ul id="api-classes" class="apis classes">
+                                <li><a href="../classes/AABB.html">AABB</a></li>
+                                <li><a href="../classes/AngleLockEquation.html">AngleLockEquation</a></li>
+                                <li><a href="../classes/Body.html">Body</a></li>
+                                <li><a href="../classes/Broadphase.html">Broadphase</a></li>
+                                <li><a href="../classes/Capsule.html">Capsule</a></li>
+                                <li><a href="../classes/Circle.html">Circle</a></li>
+                                <li><a href="../classes/Constraint.html">Constraint</a></li>
+                                <li><a href="../classes/ContactEquation.html">ContactEquation</a></li>
+                                <li><a href="../classes/ContactMaterial.html">ContactMaterial</a></li>
+                                <li><a href="../classes/Convex.html">Convex</a></li>
+                                <li><a href="../classes/DistanceConstraint.html">DistanceConstraint</a></li>
+                                <li><a href="../classes/Equation.html">Equation</a></li>
+                                <li><a href="../classes/EventEmitter.html">EventEmitter</a></li>
+                                <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
+                                <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
+                                <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
+                                <li><a href="../classes/GSSolver.html">GSSolver</a></li>
+                                <li><a href="../classes/Heightfield.html">Heightfield</a></li>
+                                <li><a href="../classes/Island.html">Island</a></li>
+                                <li><a href="../classes/IslandManager.html">IslandManager</a></li>
+                                <li><a href="../classes/IslandNode.html">IslandNode</a></li>
+                                <li><a href="../classes/Line.html">Line</a></li>
+                                <li><a href="../classes/LinearSpring.html">LinearSpring</a></li>
+                                <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
+                                <li><a href="../classes/Material.html">Material</a></li>
+                                <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
+                                <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
+                                <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
+                                <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
+                                <li><a href="../classes/Particle.html">Particle</a></li>
+                                <li><a href="../classes/Plane.html">Plane</a></li>
+                                <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
+                                <li><a href="../classes/Ray.html">Ray</a></li>
+                                <li><a href="../classes/RaycastResult.html">RaycastResult</a></li>
+                                <li><a href="../classes/Rectangle.html">Rectangle</a></li>
+                                <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
+                                <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
+                                <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
+                                <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
+                                <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
+                                <li><a href="../classes/Shape.html">Shape</a></li>
+                                <li><a href="../classes/Solver.html">Solver</a></li>
+                                <li><a href="../classes/Spring.html">Spring</a></li>
+                                <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
+                                <li><a href="../classes/Utils.html">Utils</a></li>
+                                <li><a href="../classes/vec2.html">vec2</a></li>
+                                <li><a href="../classes/World.html">World</a></li>
+                            </ul>
+                
+                            <ul id="api-modules" class="apis modules">
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="yui3-u-3-4">
                 <div id="api-options">
-        Show:
-        <label for="api-show-inherited">
-            <input type="checkbox" id="api-show-inherited" checked>
-            Inherited
-        </label>
-
-        <label for="api-show-protected">
-            <input type="checkbox" id="api-show-protected">
-            Protected
-        </label>
-
-        <label for="api-show-private">
-            <input type="checkbox" id="api-show-private">
-            Private
-        </label>
-        <label for="api-show-deprecated">
-            <input type="checkbox" id="api-show-deprecated">
-            Deprecated
-        </label>
-
-    </div>
-
-
+                    Show:
+                    <label for="api-show-inherited">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
+            
+                    <label for="api-show-protected">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
+            
+                    <label for="api-show-private">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
+            
+                </div>
+            
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>Capsule Class</h1>
+<h1>Capsule Class</h1>
 <div class="box meta">
-    
 
-    
         <div class="extends">
             Extends <a href="../classes/Shape.html" class="crosslink">Shape</a>
         </div>
-    
 
-    
         <div class="foundat">
             Defined in: <a href="../files/src_shapes_Capsule.js.html#l6"><code>src&#x2F;shapes&#x2F;Capsule.js:6</code></a>
         </div>
-    
 
-    
 
-    
 </div>
-
 
 
 <div class="box intro">
@@ -198,457 +141,297 @@
 
 </div>
 
-
     <div class="constructor">
         <h2>Constructor</h2>
         <div id="method_Capsule" class="method item">
-    <h3 class="name"><code>Capsule</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code class="optional">[length]</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code class="optional">[radius]</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
+            <h3 class="name"><code>Capsule</code></h3>
         
-            
+                <div class="args">
+                    <span class="paren">(</span><ul class="args-list inline commas">
+                        <li class="arg">
+                                <code class="optional">[length=1]</code>
+                        </li>
+                        <li class="arg">
+                                <code class="optional">[radius=1]</code>
+                        </li>
+                    </ul><span class="paren">)</span>
+                </div>
+        
+        
+        
+        
+        
+        
+        
+        
+            <div class="meta">
+                        <p>
+                        Defined in
+                <a href="../files/src_shapes_Capsule.js.html#l6"><code>src&#x2F;shapes&#x2F;Capsule.js:6</code></a>
+                </p>
+        
+        
+        
+            </div>
+        
+            <div class="description">
                 
-                <p>
-                
-                Defined in
-                
-            
+            </div>
+        
+                <div class="params">
+                    <h4>Parameters:</h4>
+        
+                    <ul class="params-list">
+                        <li class="param">
+                                <code class="param-name optional">[length=1]</code>
+                                <span class="type">Number</span>
+                                <span class="flag optional" title="This parameter is optional.">optional</span>
         
         
-        <a href="../files/src_shapes_Capsule.js.html#l6"><code>src&#x2F;shapes&#x2F;Capsule.js:6</code></a>
+                            <div class="param-description">
+                                <p>The distance between the end points</p>
         
-        </p>
-
-
+                            </div>
         
-
+                        </li>
+                        <li class="param">
+                                <code class="param-name optional">[radius=1]</code>
+                                <span class="type">Number</span>
+                                <span class="flag optional" title="This parameter is optional.">optional</span>
         
-    </div>
-
-    <div class="description">
         
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name optional">[length]</code>
-                        <span class="type">Number</span>
-                        <span class="flag optional" title="This parameter is optional.">optional</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>The distance between the end points</p>
-
+                            <div class="param-description">
+                                <p>Radius of the capsule</p>
+        
+                            </div>
+        
+                        </li>
+                    </ul>
+                </div>
+        
+        
+        
+                <div class="example">
+                    <h4>Example:</h4>
+        
+                    <div class="example-content">
+                        <pre class="code prettyprint"><code>var radius = 1;
+        var length = 2;
+        var capsuleShape = new Capsule(length, radius);
+        body.addShape(capsuleShape);
+        </code></pre>
                     </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name optional">[radius]</code>
-                        <span class="type">Number</span>
-                        <span class="flag optional" title="This parameter is optional.">optional</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>Radius of the capsule</p>
-
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
+                </div>
         </div>
-    
-
-    
-
-    
-</div>
-
     </div>
-
 
 <div id="classdocs" class="tabview">
     <ul class="api-class-tabs">
         <li class="api-class-tab index"><a href="#index">Index</a></li>
 
-        
             <li class="api-class-tab methods"><a href="#methods">Methods</a></li>
-        
-        
             <li class="api-class-tab properties"><a href="#properties">Properties</a></li>
-        
-        
-        
     </ul>
 
     <div>
         <div id="index" class="api-class-tabpanel index">
             <h2 class="off-left">Item Index</h2>
 
-            
                 <div class="index-section methods">
                     <h3>Methods</h3>
 
                     <ul class="index-list methods extends">
-                        
                             <li class="index-item method inherited">
                                 <a href="#method_computeAABB">computeAABB</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item method inherited">
                                 <a href="#method_computeMomentOfInertia">computeMomentOfInertia</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item method">
                                 <a href="#method_conputeMomentOfInertia">conputeMomentOfInertia</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item method inherited">
                                 <a href="#method_updateArea">updateArea</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item method inherited">
                                 <a href="#method_updateBoundingRadius">updateBoundingRadius</a>
 
-                                
-                                
                             </li>
-                        
                     </ul>
                 </div>
-            
 
-            
                 <div class="index-section properties">
                     <h3>Properties</h3>
 
                     <ul class="index-list properties extends">
-                        
                             <li class="index-item property inherited">
                                 <a href="#property_area">area</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item property inherited">
                                 <a href="#property_boundingRadius">boundingRadius</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item property inherited">
                                 <a href="#property_collisionGroup">collisionGroup</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item property inherited">
                                 <a href="#property_collisionMask">collisionMask</a>
 
-                                
-                                
                             </li>
-                        
+                            <li class="index-item property inherited">
+                                <a href="#property_collisionResponse">collisionResponse</a>
+
+                            </li>
                             <li class="index-item property inherited">
                                 <a href="#property_id">id</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item property">
                                 <a href="#property_length">length</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item property inherited">
                                 <a href="#property_material">material</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item property">
                                 <a href="#property_radius">radius</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item property inherited">
                                 <a href="#property_sensor">sensor</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item property inherited">
                                 <a href="#property_type">type</a>
 
-                                
-                                
                             </li>
-                        
                     </ul>
                 </div>
-            
 
-            
 
-            
         </div>
 
-        
             <div id="methods" class="api-class-tabpanel">
                 <h2 class="off-left">Methods</h2>
 
-                
-                    <div id="method_computeAABB" class="method item">
+<div id="method_computeAABB" class="method item">
     <h3 class="name"><code>computeAABB</code></h3>
 
-    
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
-            
                 <li class="arg">
-                    
                         <code>out</code>
-                    
                 </li>
-            
                 <li class="arg">
-                    
                         <code>position</code>
-                    
                 </li>
-            
                 <li class="arg">
-                    
                         <code>angle</code>
-                    
                 </li>
-            
             </ul><span class="paren">)</span>
         </div>
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
     <div class="meta">
-        
             <p>Inherited from
             <a href="../classes/Shape.html#method_computeAABB">
                 Shape
             </a>
-            
             but overwritten in
-            
-        
-        
-        <a href="../files/src_shapes_Capsule.js.html#l63"><code>src&#x2F;shapes&#x2F;Capsule.js:63</code></a>
-        
+        <a href="../files/src_shapes_Capsule.js.html#l69"><code>src&#x2F;shapes&#x2F;Capsule.js:69</code></a>
         </p>
 
 
-        
 
-        
     </div>
 
     <div class="description">
         
     </div>
 
-    
         <div class="params">
             <h4>Parameters:</h4>
 
             <ul class="params-list">
-            
                 <li class="param">
-                    
                         <code class="param-name">out</code>
                         <span class="type"><a href="../classes/AABB.html" class="crosslink">AABB</a></span>
-                    
 
-                    
 
                     <div class="param-description">
                         <p>The resulting AABB.</p>
 
                     </div>
 
-                    
                 </li>
-            
                 <li class="param">
-                    
                         <code class="param-name">position</code>
                         <span class="type">Array</span>
-                    
 
-                    
 
                     <div class="param-description">
                          
                     </div>
 
-                    
                 </li>
-            
                 <li class="param">
-                    
                         <code class="param-name">angle</code>
                         <span class="type">Number</span>
-                    
 
-                    
 
                     <div class="param-description">
                          
                     </div>
 
-                    
                 </li>
-            
             </ul>
         </div>
-    
 
-    
 
-    
+
 </div>
-
-                
-                    <div id="method_computeMomentOfInertia" class="method item inherited">
+<div id="method_computeMomentOfInertia" class="method item inherited">
     <h3 class="name"><code>computeMomentOfInertia</code></h3>
 
-    
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
-            
                 <li class="arg">
-                    
                         <code>mass</code>
-                    
                 </li>
-            
             </ul><span class="paren">)</span>
         </div>
-    
 
-    
         <span class="returns-inline">
             <span class="type">Number</span>
         </span>
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
     <div class="meta">
-        
-            
                 <p>Inherited from
                 <a href="../classes/Shape.html#method_computeMomentOfInertia">Shape</a>:
-            
-        
-        
-        <a href="../files/src_shapes_Shape.js.html#l155"><code>src&#x2F;shapes&#x2F;Shape.js:155</code></a>
-        
+        <a href="../files/src_shapes_Shape.js.html#l161"><code>src&#x2F;shapes&#x2F;Shape.js:161</code></a>
         </p>
 
 
-        
 
-        
     </div>
 
     <div class="description">
@@ -656,105 +439,64 @@
 
     </div>
 
-    
         <div class="params">
             <h4>Parameters:</h4>
 
             <ul class="params-list">
-            
                 <li class="param">
-                    
                         <code class="param-name">mass</code>
                         <span class="type">Number</span>
-                    
 
-                    
 
                     <div class="param-description">
                          
                     </div>
 
-                    
                 </li>
-            
             </ul>
         </div>
-    
 
-    
         <div class="returns">
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                
-                    
                         <span class="type">Number</span>:
-                    
                     <p>If the inertia is infinity or if the object simply isn&#39;t possible to rotate, return 0.</p>
 
-                
             </div>
         </div>
-    
 
-    
+
 </div>
-
-                
-                    <div id="method_conputeMomentOfInertia" class="method item">
+<div id="method_conputeMomentOfInertia" class="method item">
     <h3 class="name"><code>conputeMomentOfInertia</code></h3>
 
-    
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
-            
                 <li class="arg">
-                    
                         <code>mass</code>
-                    
                 </li>
-            
             </ul><span class="paren">)</span>
         </div>
-    
 
-    
         <span class="returns-inline">
             <span class="type">Number</span>
         </span>
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
     <div class="meta">
-        
-            
-                
                 <p>
-                
                 Defined in
-                
-            
-        
-        
-        <a href="../files/src_shapes_Capsule.js.html#l32"><code>src&#x2F;shapes&#x2F;Capsule.js:32</code></a>
-        
+        <a href="../files/src_shapes_Capsule.js.html#l38"><code>src&#x2F;shapes&#x2F;Capsule.js:38</code></a>
         </p>
 
 
-        
 
-        
     </div>
 
     <div class="description">
@@ -762,639 +504,422 @@
 
     </div>
 
-    
         <div class="params">
             <h4>Parameters:</h4>
 
             <ul class="params-list">
-            
                 <li class="param">
-                    
                         <code class="param-name">mass</code>
                         <span class="type">Number</span>
-                    
 
-                    
 
                     <div class="param-description">
                          
                     </div>
 
-                    
                 </li>
-            
             </ul>
         </div>
-    
 
-    
         <div class="returns">
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                
-                    
                         <span class="type">Number</span>:
-                    
-                
             </div>
         </div>
-    
 
-    
+
 </div>
-
-                
-                    <div id="method_updateArea" class="method item">
+<div id="method_updateArea" class="method item">
     <h3 class="name"><code>updateArea</code></h3>
 
-    
         <span class="paren">()</span>
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
     <div class="meta">
-        
             <p>Inherited from
             <a href="../classes/Shape.html#method_updateArea">
                 Shape
             </a>
-            
             but overwritten in
-            
-        
-        
-        <a href="../files/src_shapes_Capsule.js.html#l54"><code>src&#x2F;shapes&#x2F;Capsule.js:54</code></a>
-        
+        <a href="../files/src_shapes_Capsule.js.html#l60"><code>src&#x2F;shapes&#x2F;Capsule.js:60</code></a>
         </p>
 
 
-        
 
-        
     </div>
 
     <div class="description">
         
     </div>
 
-    
 
-    
 
-    
+
 </div>
-
-                
-                    <div id="method_updateBoundingRadius" class="method item">
+<div id="method_updateBoundingRadius" class="method item">
     <h3 class="name"><code>updateBoundingRadius</code></h3>
 
-    
         <span class="paren">()</span>
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
     <div class="meta">
-        
             <p>Inherited from
             <a href="../classes/Shape.html#method_updateBoundingRadius">
                 Shape
             </a>
-            
             but overwritten in
-            
-        
-        
-        <a href="../files/src_shapes_Capsule.js.html#l47"><code>src&#x2F;shapes&#x2F;Capsule.js:47</code></a>
-        
+        <a href="../files/src_shapes_Capsule.js.html#l53"><code>src&#x2F;shapes&#x2F;Capsule.js:53</code></a>
         </p>
 
 
-        
 
-        
     </div>
 
     <div class="description">
         
     </div>
 
-    
 
-    
 
-    
+
 </div>
-
-                
             </div>
-        
 
-        
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
-                
                     <div id="property_area" class="property item inherited">
-    <h3 class="name"><code>area</code></h3>
-    <span class="type">Number</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/Shape.html#property_area">Shape</a>:
-            
-        
-        
-        <a href="../files/src_shapes_Shape.js.html#l89"><code>src&#x2F;shapes&#x2F;Shape.js:89</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Area of this shape.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
+                        <h3 class="name"><code>area</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Shape.html#property_area">Shape</a>:
+                            <a href="../files/src_shapes_Shape.js.html#l95"><code>src&#x2F;shapes&#x2F;Shape.js:95</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Area of this shape.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_boundingRadius" class="property item inherited">
-    <h3 class="name"><code>boundingRadius</code></h3>
-    <span class="type">Number</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/Shape.html#property_boundingRadius">Shape</a>:
-            
-        
-        
-        <a href="../files/src_shapes_Shape.js.html#l34"><code>src&#x2F;shapes&#x2F;Shape.js:34</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Bounding circle radius of this shape</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
+                        <h3 class="name"><code>boundingRadius</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Shape.html#property_boundingRadius">Shape</a>:
+                            <a href="../files/src_shapes_Shape.js.html#l34"><code>src&#x2F;shapes&#x2F;Shape.js:34</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Bounding circle radius of this shape</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_collisionGroup" class="property item inherited">
-    <h3 class="name"><code>collisionGroup</code></h3>
-    <span class="type">Number</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/Shape.html#property_collisionGroup">Shape</a>:
-            
-        
-        
-        <a href="../files/src_shapes_Shape.js.html#l41"><code>src&#x2F;shapes&#x2F;Shape.js:41</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Collision group that this shape belongs to (bit mask). See <a href="http://www.aurelienribon.com/blog/2011/07/box2d-tutorial-collision-filtering/">this tutorial</a>.</p>
-
-    </div>
-
-    
-
-    
-        <div class="example">
-            <h4>Example:</h4>
-
-            <div class="example-content">
-                <pre class="code prettyprint"><code>// Setup bits for each available group
-var PLAYER = Math.pow(2,0),
-    ENEMY =  Math.pow(2,1),
-    GROUND = Math.pow(2,2)
-
-// Put shapes into their groups
-player1Shape.collisionGroup = PLAYER;
-player2Shape.collisionGroup = PLAYER;
-enemyShape  .collisionGroup = ENEMY;
-groundShape .collisionGroup = GROUND;
-
-// Assign groups that each shape collide with.
-// Note that the players can collide with ground and enemies, but not with other players.
-player1Shape.collisionMask = ENEMY | GROUND;
-player2Shape.collisionMask = ENEMY | GROUND;
-enemyShape  .collisionMask = PLAYER | GROUND;
-groundShape .collisionMask = PLAYER | ENEMY;</code></pre>
-<pre class="code prettyprint"><code>// How collision check is done
-if(shapeA.collisionGroup &amp; shapeB.collisionMask)!=0 &amp;&amp; (shapeB.collisionGroup &amp; shapeA.collisionMask)!=0){
-    // The shapes will collide
-}</code></pre>
-
-            </div>
-        </div>
-    
-
-    
-</div>
-
-                
+                        <h3 class="name"><code>collisionGroup</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Shape.html#property_collisionGroup">Shape</a>:
+                            <a href="../files/src_shapes_Shape.js.html#l41"><code>src&#x2F;shapes&#x2F;Shape.js:41</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Collision group that this shape belongs to (bit mask). See <a href="http://www.aurelienribon.com/blog/2011/07/box2d-tutorial-collision-filtering/">this tutorial</a>.</p>
+                    
+                        </div>
+                    
+                    
+                            <div class="example">
+                                <h4>Example:</h4>
+                    
+                                <div class="example-content">
+                                    <pre class="code prettyprint"><code>// Setup bits for each available group
+                    var PLAYER = Math.pow(2,0),
+                        ENEMY =  Math.pow(2,1),
+                        GROUND = Math.pow(2,2)
+                    
+                    // Put shapes into their groups
+                    player1Shape.collisionGroup = PLAYER;
+                    player2Shape.collisionGroup = PLAYER;
+                    enemyShape  .collisionGroup = ENEMY;
+                    groundShape .collisionGroup = GROUND;
+                    
+                    // Assign groups that each shape collide with.
+                    // Note that the players can collide with ground and enemies, but not with other players.
+                    player1Shape.collisionMask = ENEMY | GROUND;
+                    player2Shape.collisionMask = ENEMY | GROUND;
+                    enemyShape  .collisionMask = PLAYER | GROUND;
+                    groundShape .collisionMask = PLAYER | ENEMY;
+                    </code></pre><pre class="code prettyprint"><code>// How collision check is done
+                    if(shapeA.collisionGroup &amp; shapeB.collisionMask)!=0 &amp;&amp; (shapeB.collisionGroup &amp; shapeA.collisionMask)!=0){
+                        // The shapes will collide
+                    }
+                    </code></pre>
+                                </div>
+                            </div>
+                    
+                    </div>
                     <div id="property_collisionMask" class="property item inherited">
-    <h3 class="name"><code>collisionMask</code></h3>
-    <span class="type">Number</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/Shape.html#property_collisionMask">Shape</a>:
-            
-        
-        
-        <a href="../files/src_shapes_Shape.js.html#l72"><code>src&#x2F;shapes&#x2F;Shape.js:72</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Collision mask of this shape. See .collisionGroup.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
+                        <h3 class="name"><code>collisionMask</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Shape.html#property_collisionMask">Shape</a>:
+                            <a href="../files/src_shapes_Shape.js.html#l78"><code>src&#x2F;shapes&#x2F;Shape.js:78</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Collision mask of this shape. See .collisionGroup.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_collisionResponse" class="property item inherited">
+                        <h3 class="name"><code>collisionResponse</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Shape.html#property_collisionResponse">Shape</a>:
+                            <a href="../files/src_shapes_Shape.js.html#l72"><code>src&#x2F;shapes&#x2F;Shape.js:72</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Whether to produce contact forces when in contact with other bodies. Note that contacts will be generated, but they will be disabled. That means that this shape will move through other body shapes, but it will still trigger contact events, etc.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_id" class="property item inherited">
-    <h3 class="name"><code>id</code></h3>
-    <span class="type">Number</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/Shape.html#property_id">Shape</a>:
-            
-        
-        
-        <a href="../files/src_shapes_Shape.js.html#l27"><code>src&#x2F;shapes&#x2F;Shape.js:27</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Shape object identifier.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
+                        <h3 class="name"><code>id</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Shape.html#property_id">Shape</a>:
+                            <a href="../files/src_shapes_Shape.js.html#l27"><code>src&#x2F;shapes&#x2F;Shape.js:27</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Shape object identifier.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_length" class="property item">
-    <h3 class="name"><code>length</code></h3>
-    <span class="type">Number</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_shapes_Capsule.js.html#l16"><code>src&#x2F;shapes&#x2F;Capsule.js:16</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>The distance between the end points.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
+                        <h3 class="name"><code>length</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_shapes_Capsule.js.html#l21"><code>src&#x2F;shapes&#x2F;Capsule.js:21</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The distance between the end points.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_material" class="property item inherited">
-    <h3 class="name"><code>material</code></h3>
-    <span class="type"><a href="../classes/Material.html" class="crosslink">Material</a></span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/Shape.html#property_material">Shape</a>:
-            
-        
-        
-        <a href="../files/src_shapes_Shape.js.html#l82"><code>src&#x2F;shapes&#x2F;Shape.js:82</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Material to use in collisions for this Shape. If this is set to null, the world will use default material properties instead.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
+                        <h3 class="name"><code>material</code></h3>
+                        <span class="type"><a href="../classes/Material.html" class="crosslink">Material</a></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Shape.html#property_material">Shape</a>:
+                            <a href="../files/src_shapes_Shape.js.html#l88"><code>src&#x2F;shapes&#x2F;Shape.js:88</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Material to use in collisions for this Shape. If this is set to null, the world will use default material properties instead.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_radius" class="property item">
-    <h3 class="name"><code>radius</code></h3>
-    <span class="type">Number</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_shapes_Capsule.js.html#l22"><code>src&#x2F;shapes&#x2F;Capsule.js:22</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>The radius of the capsule.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
+                        <h3 class="name"><code>radius</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_shapes_Capsule.js.html#l27"><code>src&#x2F;shapes&#x2F;Capsule.js:27</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The radius of the capsule.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_sensor" class="property item inherited">
-    <h3 class="name"><code>sensor</code></h3>
-    <span class="type">Boolean</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/Shape.html#property_sensor">Shape</a>:
-            
-        
-        
-        <a href="../files/src_shapes_Shape.js.html#l96"><code>src&#x2F;shapes&#x2F;Shape.js:96</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Set to true if you want this shape to be a sensor. A sensor does not generate contacts, but it still reports contact events. This is good if you want to know if a shape is overlapping another shape, without them generating contacts.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
+                        <h3 class="name"><code>sensor</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Shape.html#property_sensor">Shape</a>:
+                            <a href="../files/src_shapes_Shape.js.html#l102"><code>src&#x2F;shapes&#x2F;Shape.js:102</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Set to true if you want this shape to be a sensor. A sensor does not generate contacts, but it still reports contact events. This is good if you want to know if a shape is overlapping another shape, without them generating contacts.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_type" class="property item inherited">
-    <h3 class="name"><code>type</code></h3>
-    <span class="type">Number</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/Shape.html#property_type">Shape</a>:
-            
-        
-        
-        <a href="../files/src_shapes_Shape.js.html#l11"><code>src&#x2F;shapes&#x2F;Shape.js:11</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>The type of the shape. One of:</p>
-<ul>
-<li><a href="../classes/Shape.html#property_CIRCLE" class="crosslink">Shape.CIRCLE</a></li>
-<li><a href="../classes/Shape.html#property_PARTICLE" class="crosslink">Shape.PARTICLE</a></li>
-<li><a href="../classes/Shape.html#property_PLANE" class="crosslink">Shape.PLANE</a></li>
-<li><a href="../classes/Shape.html#property_CONVEX" class="crosslink">Shape.CONVEX</a></li>
-<li><a href="../classes/Shape.html#property_LINE" class="crosslink">Shape.LINE</a></li>
-<li><a href="../classes/Shape.html#property_RECTANGLE" class="crosslink">Shape.RECTANGLE</a></li>
-<li><a href="../classes/Shape.html#property_CAPSULE" class="crosslink">Shape.CAPSULE</a></li>
-<li><a href="../classes/Shape.html#property_HEIGHTFIELD" class="crosslink">Shape.HEIGHTFIELD</a></li>
-</ul>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
+                        <h3 class="name"><code>type</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Shape.html#property_type">Shape</a>:
+                            <a href="../files/src_shapes_Shape.js.html#l11"><code>src&#x2F;shapes&#x2F;Shape.js:11</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The type of the shape. One of:</p>
+                    <ul>
+                    <li><a href="../classes/Shape.html#property_CIRCLE" class="crosslink">Shape.CIRCLE</a></li>
+                    <li><a href="../classes/Shape.html#property_PARTICLE" class="crosslink">Shape.PARTICLE</a></li>
+                    <li><a href="../classes/Shape.html#property_PLANE" class="crosslink">Shape.PLANE</a></li>
+                    <li><a href="../classes/Shape.html#property_CONVEX" class="crosslink">Shape.CONVEX</a></li>
+                    <li><a href="../classes/Shape.html#property_LINE" class="crosslink">Shape.LINE</a></li>
+                    <li><a href="../classes/Shape.html#property_RECTANGLE" class="crosslink">Shape.RECTANGLE</a></li>
+                    <li><a href="../classes/Shape.html#property_CAPSULE" class="crosslink">Shape.CAPSULE</a></li>
+                    <li><a href="../classes/Shape.html#property_HEIGHTFIELD" class="crosslink">Shape.HEIGHTFIELD</a></li>
+                    </ul>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
             </div>
-        
 
-        
 
-        
     </div>
 </div>
-
                     </div>
                 </div>
             </div>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>GearConstraint - p2.js</title>
+    <title>RaycastResult - p2.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -121,15 +121,12 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1>GearConstraint Class</h1>
+<h1>RaycastResult Class</h1>
 <div class="box meta">
 
-        <div class="extends">
-            Extends <a href="../classes/Constraint.html" class="crosslink">Constraint</a>
-        </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_constraints_GearConstraint.js.html#l8"><code>src&#x2F;constraints&#x2F;GearConstraint.js:8</code></a>
+            Defined in: <a href="../files/src_collision_RaycastResult.js.html#l5"><code>src&#x2F;collision&#x2F;RaycastResult.js:5</code></a>
         </div>
 
 
@@ -137,28 +134,16 @@
 
 
 <div class="box intro">
-    <p>Connects two bodies at given offset points, letting them rotate relative to each other around this point.</p>
+    <p>Storage for Ray casting data.</p>
 
 </div>
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_GearConstraint" class="method item">
-            <h3 class="name"><code>GearConstraint</code></h3>
+        <div id="method_RaycastResult" class="method item">
+            <h3 class="name"><code>RaycastResult</code></h3>
         
-                <div class="args">
-                    <span class="paren">(</span><ul class="args-list inline commas">
-                        <li class="arg">
-                                <code>bodyA</code>
-                        </li>
-                        <li class="arg">
-                                <code>bodyB</code>
-                        </li>
-                        <li class="arg">
-                                <code class="optional">[options]</code>
-                        </li>
-                    </ul><span class="paren">)</span>
-                </div>
+                <span class="paren">()</span>
         
         
         
@@ -170,7 +155,7 @@
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/src_constraints_GearConstraint.js.html#l8"><code>src&#x2F;constraints&#x2F;GearConstraint.js:8</code></a>
+                <a href="../files/src_collision_RaycastResult.js.html#l5"><code>src&#x2F;collision&#x2F;RaycastResult.js:5</code></a>
                 </p>
         
         
@@ -181,78 +166,6 @@
                 
             </div>
         
-                <div class="params">
-                    <h4>Parameters:</h4>
-        
-                    <ul class="params-list">
-                        <li class="param">
-                                <code class="param-name">bodyA</code>
-                                <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
-        
-        
-                            <div class="param-description">
-                                 
-                            </div>
-        
-                        </li>
-                        <li class="param">
-                                <code class="param-name">bodyB</code>
-                                <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
-        
-        
-                            <div class="param-description">
-                                 
-                            </div>
-        
-                        </li>
-                        <li class="param">
-                                <code class="param-name optional">[options]</code>
-                                <span class="type">Object</span>
-                                <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-        
-                            <div class="param-description">
-                                 
-                            </div>
-        
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name optional">[angle=0]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>Relative angle between the bodies. Will be set to the current angle between the bodies (the gear ratio is accounted for).</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[ratio=1]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>Gear ratio.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[maxTorque]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>Maximum torque to apply.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                </ul>
-                        </li>
-                    </ul>
-                </div>
         
         
         
@@ -274,25 +187,17 @@
                 <div class="index-section methods">
                     <h3>Methods</h3>
 
-                    <ul class="index-list methods extends">
+                    <ul class="index-list methods">
                             <li class="index-item method">
-                                <a href="#method_getMaxTorque">getMaxTorque</a>
+                                <a href="#method_abort">abort</a>
 
                             </li>
                             <li class="index-item method">
-                                <a href="#method_setMaxTorque">setMaxTorque</a>
+                                <a href="#method_reset">reset</a>
 
                             </li>
-                            <li class="index-item method inherited">
-                                <a href="#method_setRelaxation">setRelaxation</a>
-
-                            </li>
-                            <li class="index-item method inherited">
-                                <a href="#method_setStiffness">setStiffness</a>
-
-                            </li>
-                            <li class="index-item method inherited">
-                                <a href="#method_update">update</a>
+                            <li class="index-item method">
+                                <a href="#method_set">set</a>
 
                             </li>
                     </ul>
@@ -301,33 +206,45 @@
                 <div class="index-section properties">
                     <h3>Properties</h3>
 
-                    <ul class="index-list properties extends">
-                            <li class="index-item property">
-                                <a href="#property_angle">angle</a>
-
-                            </li>
-                            <li class="index-item property inherited">
-                                <a href="#property_bodyA">bodyA</a>
-
-                            </li>
-                            <li class="index-item property inherited">
-                                <a href="#property_bodyB">bodyB</a>
-
-                            </li>
-                            <li class="index-item property inherited">
-                                <a href="#property_collideConnected">collideConnected</a>
-
-                            </li>
-                            <li class="index-item property inherited">
-                                <a href="#property_equations">equations</a>
+                    <ul class="index-list properties">
+                            <li class="index-item property private">
+                                <a href="#property__shouldStop">_shouldStop</a>
 
                             </li>
                             <li class="index-item property">
-                                <a href="#property_ratio">ratio</a>
+                                <a href="#property_body">body</a>
 
                             </li>
-                            <li class="index-item property inherited">
-                                <a href="#property_type">type</a>
+                            <li class="index-item property">
+                                <a href="#property_distance">distance</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_hasHit">hasHit</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_hitFaceIndex">hitFaceIndex</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_hitNormalWorld">hitNormalWorld</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_hitPointWorld">hitPointWorld</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_rayFromWorld">rayFromWorld</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_rayToWorld">rayToWorld</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_shape">shape</a>
 
                             </li>
                     </ul>
@@ -339,57 +256,10 @@
             <div id="methods" class="api-class-tabpanel">
                 <h2 class="off-left">Methods</h2>
 
-<div id="method_getMaxTorque" class="method item">
-    <h3 class="name"><code>getMaxTorque</code></h3>
+<div id="method_abort" class="method item">
+    <h3 class="name"><code>abort</code></h3>
 
         <span class="paren">()</span>
-
-        <span class="returns-inline">
-            <span class="type">Number</span>
-        </span>
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_constraints_GearConstraint.js.html#l74"><code>src&#x2F;constraints&#x2F;GearConstraint.js:74</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Get the max torque for the constraint.</p>
-
-    </div>
-
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                        <span class="type">Number</span>:
-            </div>
-        </div>
-
-
-</div>
-<div id="method_setMaxTorque" class="method item">
-    <h3 class="name"><code>setMaxTorque</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>torque</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
 
 
 
@@ -401,7 +271,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_constraints_GearConstraint.js.html#l65"><code>src&#x2F;constraints&#x2F;GearConstraint.js:65</code></a>
+        <a href="../files/src_collision_RaycastResult.js.html#l89"><code>src&#x2F;collision&#x2F;RaycastResult.js:89</code></a>
         </p>
 
 
@@ -409,138 +279,15 @@
     </div>
 
     <div class="description">
-        <p>Set the max torque for the constraint.</p>
-
+        
     </div>
 
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">torque</code>
-                        <span class="type">Number</span>
-
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                </li>
-            </ul>
-        </div>
 
 
 
 </div>
-<div id="method_setRelaxation" class="method item inherited">
-    <h3 class="name"><code>setRelaxation</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>relaxation</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>Inherited from
-                <a href="../classes/Constraint.html#method_setRelaxation">Constraint</a>:
-        <a href="../files/src_constraints_Constraint.js.html#l123"><code>src&#x2F;constraints&#x2F;Constraint.js:123</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Set relaxation for this constraint.</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">relaxation</code>
-                        <span class="type">Number</span>
-
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
-<div id="method_setStiffness" class="method item inherited">
-    <h3 class="name"><code>setStiffness</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>stiffness</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>Inherited from
-                <a href="../classes/Constraint.html#method_setStiffness">Constraint</a>:
-        <a href="../files/src_constraints_Constraint.js.html#l109"><code>src&#x2F;constraints&#x2F;Constraint.js:109</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Set stiffness for this constraint.</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">stiffness</code>
-                        <span class="type">Number</span>
-
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
-<div id="method_update" class="method item inherited">
-    <h3 class="name"><code>update</code></h3>
+<div id="method_reset" class="method item">
+    <h3 class="name"><code>reset</code></h3>
 
         <span class="paren">()</span>
 
@@ -552,9 +299,9 @@
 
 
     <div class="meta">
-                <p>Inherited from
-                <a href="../classes/Constraint.html#method_update">Constraint</a>:
-        <a href="../files/src_constraints_Constraint.js.html#l71"><code>src&#x2F;constraints&#x2F;Constraint.js:71</code></a>
+                <p>
+                Defined in
+        <a href="../files/src_collision_RaycastResult.js.html#l72"><code>src&#x2F;collision&#x2F;RaycastResult.js:72</code></a>
         </p>
 
 
@@ -562,10 +309,140 @@
     </div>
 
     <div class="description">
-        <p>Updates the internal constraint parameters before solve.</p>
+        <p>Reset all result data.</p>
 
     </div>
 
+
+
+
+</div>
+<div id="method_set" class="method item">
+    <h3 class="name"><code>set</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>rayFromWorld</code>
+                </li>
+                <li class="arg">
+                        <code>rayToWorld</code>
+                </li>
+                <li class="arg">
+                        <code>hitNormalWorld</code>
+                </li>
+                <li class="arg">
+                        <code>hitPointWorld</code>
+                </li>
+                <li class="arg">
+                        <code>shape</code>
+                </li>
+                <li class="arg">
+                        <code>body</code>
+                </li>
+                <li class="arg">
+                        <code>distance</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_collision_RaycastResult.js.html#l96"><code>src&#x2F;collision&#x2F;RaycastResult.js:96</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">rayFromWorld</code>
+                        <span class="type">Array</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">rayToWorld</code>
+                        <span class="type">Array</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">hitNormalWorld</code>
+                        <span class="type">Array</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">hitPointWorld</code>
+                        <span class="type">Array</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">shape</code>
+                        <span class="type"><a href="../classes/Shape.html" class="crosslink">Shape</a></span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">body</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">distance</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+            </ul>
+        </div>
 
 
 
@@ -575,8 +452,60 @@
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
-                    <div id="property_angle" class="property item">
-                        <h3 class="name"><code>angle</code></h3>
+                    <div id="property__shouldStop" class="property item private">
+                        <h3 class="name"><code>_shouldStop</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                            <span class="flag private">private</span>
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_collision_RaycastResult.js.html#l63"><code>src&#x2F;collision&#x2F;RaycastResult.js:63</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>If the ray should stop traversing the bodies.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> false</p>
+                    
+                    
+                    </div>
+                    <div id="property_body" class="property item">
+                        <h3 class="name"><code>body</code></h3>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_collision_RaycastResult.js.html#l43"><code>src&#x2F;collision&#x2F;RaycastResult.js:43</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The hit body, or null.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_distance" class="property item">
+                        <h3 class="name"><code>distance</code></h3>
                         <span class="type">Number</span>
                     
                     
@@ -586,72 +515,23 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_constraints_GearConstraint.js.html#l34"><code>src&#x2F;constraints&#x2F;GearConstraint.js:34</code></a>
+                            <a href="../files/src_collision_RaycastResult.js.html#l56"><code>src&#x2F;collision&#x2F;RaycastResult.js:56</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The relative angle</p>
+                            <p>Distance to the hit. Will be set to -1 if there was no hit.</p>
                     
                         </div>
                     
+                            <p><strong>Default:</strong> -1</p>
                     
                     
                     </div>
-                    <div id="property_bodyA" class="property item inherited">
-                        <h3 class="name"><code>bodyA</code></h3>
-                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Constraint.html#property_bodyA">Constraint</a>:
-                            <a href="../files/src_constraints_Constraint.js.html#l38"><code>src&#x2F;constraints&#x2F;Constraint.js:38</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>First body participating in the constraint.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_bodyB" class="property item inherited">
-                        <h3 class="name"><code>bodyB</code></h3>
-                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Constraint.html#property_bodyB">Constraint</a>:
-                            <a href="../files/src_constraints_Constraint.js.html#l45"><code>src&#x2F;constraints&#x2F;Constraint.js:45</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Second body participating in the constraint.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_collideConnected" class="property item inherited">
-                        <h3 class="name"><code>collideConnected</code></h3>
+                    <div id="property_hasHit" class="property item">
+                        <h3 class="name"><code>hasHit</code></h3>
                         <span class="type">Boolean</span>
                     
                     
@@ -659,50 +539,23 @@
                     
                     
                         <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Constraint.html#property_collideConnected">Constraint</a>:
-                            <a href="../files/src_constraints_Constraint.js.html#l52"><code>src&#x2F;constraints&#x2F;Constraint.js:52</code></a>
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_collision_RaycastResult.js.html#l32"><code>src&#x2F;collision&#x2F;RaycastResult.js:32</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Set to true if you want the connected bodies to collide.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> true</p>
-                    
-                    
-                    </div>
-                    <div id="property_equations" class="property item inherited">
-                        <h3 class="name"><code>equations</code></h3>
-                        <span class="type">Array</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Constraint.html#property_equations">Constraint</a>:
-                            <a href="../files/src_constraints_Constraint.js.html#l30"><code>src&#x2F;constraints&#x2F;Constraint.js:30</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Equations to be solved in this constraint</p>
-                    
+                            
                         </div>
                     
                     
                     
                     </div>
-                    <div id="property_ratio" class="property item">
-                        <h3 class="name"><code>ratio</code></h3>
+                    <div id="property_hitFaceIndex" class="property item">
+                        <h3 class="name"><code>hitFaceIndex</code></h3>
                         <span class="type">Number</span>
                     
                     
@@ -712,39 +565,136 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_constraints_GearConstraint.js.html#l27"><code>src&#x2F;constraints&#x2F;GearConstraint.js:27</code></a>
+                            <a href="../files/src_collision_RaycastResult.js.html#l49"><code>src&#x2F;collision&#x2F;RaycastResult.js:49</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The gear ratio.</p>
+                            <p>The index of the hit triangle, if the hit shape was a trimesh.</p>
                     
                         </div>
                     
+                            <p><strong>Default:</strong> -1</p>
                     
                     
                     </div>
-                    <div id="property_type" class="property item inherited">
-                        <h3 class="name"><code>type</code></h3>
-                        <span class="type">Number</span>
+                    <div id="property_hitNormalWorld" class="property item">
+                        <h3 class="name"><code>hitNormalWorld</code></h3>
+                        <span class="type">Array</span>
                     
                     
                     
                     
                     
                         <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Constraint.html#property_type">Constraint</a>:
-                            <a href="../files/src_constraints_Constraint.js.html#l19"><code>src&#x2F;constraints&#x2F;Constraint.js:19</code></a>
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_collision_RaycastResult.js.html#l22"><code>src&#x2F;collision&#x2F;RaycastResult.js:22</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The type of constraint. May be one of Constraint.DISTANCE, Constraint.GEAR, Constraint.LOCK, Constraint.PRISMATIC or Constraint.REVOLUTE.</p>
+                            
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_hitPointWorld" class="property item">
+                        <h3 class="name"><code>hitPointWorld</code></h3>
+                        <span class="type">Array</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_collision_RaycastResult.js.html#l27"><code>src&#x2F;collision&#x2F;RaycastResult.js:27</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_rayFromWorld" class="property item">
+                        <h3 class="name"><code>rayFromWorld</code></h3>
+                        <span class="type">Array</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_collision_RaycastResult.js.html#l12"><code>src&#x2F;collision&#x2F;RaycastResult.js:12</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_rayToWorld" class="property item">
+                        <h3 class="name"><code>rayToWorld</code></h3>
+                        <span class="type">Array</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_collision_RaycastResult.js.html#l17"><code>src&#x2F;collision&#x2F;RaycastResult.js:17</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_shape" class="property item">
+                        <h3 class="name"><code>shape</code></h3>
+                        <span class="type"><a href="../classes/Shape.html" class="crosslink">Shape</a></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_collision_RaycastResult.js.html#l37"><code>src&#x2F;collision&#x2F;RaycastResult.js:37</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The hit shape, or null.</p>
                     
                         </div>
                     

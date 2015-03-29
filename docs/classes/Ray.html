@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Convex - p2.js</title>
+    <title>Ray - p2.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -121,15 +121,12 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1>Convex Class</h1>
+<h1>Ray Class</h1>
 <div class="box meta">
 
-        <div class="extends">
-            Extends <a href="../classes/Shape.html" class="crosslink">Shape</a>
-        </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_shapes_Convex.js.html#l8"><code>src&#x2F;shapes&#x2F;Convex.js:8</code></a>
+            Defined in: <a href="../files/src_collision_Ray.js.html#l8"><code>src&#x2F;collision&#x2F;Ray.js:8</code></a>
         </div>
 
 
@@ -137,25 +134,16 @@
 
 
 <div class="box intro">
-    <p>Convex shape class.</p>
+    <p>A line with a start and end point that is used to intersect shapes.</p>
 
 </div>
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_Convex" class="method item">
-            <h3 class="name"><code>Convex</code></h3>
+        <div id="method_Ray" class="method item">
+            <h3 class="name"><code>Ray</code></h3>
         
-                <div class="args">
-                    <span class="paren">(</span><ul class="args-list inline commas">
-                        <li class="arg">
-                                <code>vertices</code>
-                        </li>
-                        <li class="arg">
-                                <code class="optional">[axes]</code>
-                        </li>
-                    </ul><span class="paren">)</span>
-                </div>
+                <span class="paren">()</span>
         
         
         
@@ -167,7 +155,7 @@
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/src_shapes_Convex.js.html#l8"><code>src&#x2F;shapes&#x2F;Convex.js:8</code></a>
+                <a href="../files/src_collision_Ray.js.html#l8"><code>src&#x2F;collision&#x2F;Ray.js:8</code></a>
                 </p>
         
         
@@ -178,49 +166,9 @@
                 
             </div>
         
-                <div class="params">
-                    <h4>Parameters:</h4>
-        
-                    <ul class="params-list">
-                        <li class="param">
-                                <code class="param-name">vertices</code>
-                                <span class="type">Array</span>
-        
-        
-                            <div class="param-description">
-                                <p>An array of vertices that span this shape. Vertices are given in counter-clockwise (CCW) direction.</p>
-        
-                            </div>
-        
-                        </li>
-                        <li class="param">
-                                <code class="param-name optional">[axes]</code>
-                                <span class="type">Array</span>
-                                <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-        
-                            <div class="param-description">
-                                <p>An array of unit length vectors, representing the symmetry axes in the convex.</p>
-        
-                            </div>
-        
-                        </li>
-                    </ul>
-                </div>
         
         
         
-                <div class="example">
-                    <h4>Example:</h4>
-        
-                    <div class="example-content">
-                        <pre class="code prettyprint"><code>// Create a box
-        var vertices = [[-1,-1], [1,-1], [1,1], [-1,1]];
-        var convexShape = new Convex(vertices);
-        body.addShape(convexShape);
-        </code></pre>
-                    </div>
-                </div>
         </div>
     </div>
 
@@ -239,39 +187,41 @@
                 <div class="index-section methods">
                     <h3>Methods</h3>
 
-                    <ul class="index-list methods extends">
-                            <li class="index-item method inherited">
-                                <a href="#method_computeAABB">computeAABB</a>
-
-                            </li>
-                            <li class="index-item method inherited">
-                                <a href="#method_computeMomentOfInertia">computeMomentOfInertia</a>
+                    <ul class="index-list methods">
+                            <li class="index-item method private">
+                                <a href="#method__updateDirection">_updateDirection</a>
 
                             </li>
                             <li class="index-item method">
-                                <a href="#method_projectOntoAxis">projectOntoAxis</a>
-
-                                    <span class="flag static">static</span>
-                            </li>
-                            <li class="index-item method">
-                                <a href="#method_triangleArea">triangleArea</a>
-
-                                    <span class="flag static">static</span>
-                            </li>
-                            <li class="index-item method inherited">
-                                <a href="#method_updateArea">updateArea</a>
-
-                            </li>
-                            <li class="index-item method inherited">
-                                <a href="#method_updateBoundingRadius">updateBoundingRadius</a>
+                                <a href="#method_getAABB">getAABB</a>
 
                             </li>
                             <li class="index-item method">
-                                <a href="#method_updateCenterOfMass">updateCenterOfMass</a>
+                                <a href="#method_intersectBodies">intersectBodies</a>
+
+                            </li>
+                            <li class="index-item method private">
+                                <a href="#method_intersectBody">intersectBody</a>
+
+                            </li>
+                            <li class="index-item method private">
+                                <a href="#method_intersectPlane">intersectPlane</a>
+
+                            </li>
+                            <li class="index-item method private">
+                                <a href="#method_intersectRectangle">intersectRectangle</a>
+
+                            </li>
+                            <li class="index-item method private">
+                                <a href="#method_intersectShape">intersectShape</a>
 
                             </li>
                             <li class="index-item method">
-                                <a href="#method_updateTriangles">updateTriangles</a>
+                                <a href="#method_intersectWorld">intersectWorld</a>
+
+                            </li>
+                            <li class="index-item method private">
+                                <a href="#method_reportIntersection">reportIntersection</a>
 
                             </li>
                     </ul>
@@ -280,57 +230,53 @@
                 <div class="index-section properties">
                     <h3>Properties</h3>
 
-                    <ul class="index-list properties extends">
-                            <li class="index-item property inherited">
-                                <a href="#property_area">area</a>
+                    <ul class="index-list properties">
+                            <li class="index-item property private">
+                                <a href="#property__direction">_direction</a>
 
                             </li>
                             <li class="index-item property">
-                                <a href="#property_axes">axes</a>
-
-                            </li>
-                            <li class="index-item property inherited">
-                                <a href="#property_boundingRadius">boundingRadius</a>
+                                <a href="#property_callback">callback</a>
 
                             </li>
                             <li class="index-item property">
-                                <a href="#property_centerOfMass">centerOfMass</a>
+                                <a href="#property_checkCollisionResponse">checkCollisionResponse</a>
 
                             </li>
-                            <li class="index-item property inherited">
+                            <li class="index-item property">
                                 <a href="#property_collisionGroup">collisionGroup</a>
 
                             </li>
-                            <li class="index-item property inherited">
+                            <li class="index-item property">
                                 <a href="#property_collisionMask">collisionMask</a>
 
                             </li>
-                            <li class="index-item property inherited">
-                                <a href="#property_collisionResponse">collisionResponse</a>
-
-                            </li>
-                            <li class="index-item property inherited">
-                                <a href="#property_id">id</a>
-
-                            </li>
-                            <li class="index-item property inherited">
-                                <a href="#property_material">material</a>
-
-                            </li>
-                            <li class="index-item property inherited">
-                                <a href="#property_sensor">sensor</a>
+                            <li class="index-item property">
+                                <a href="#property_from">from</a>
 
                             </li>
                             <li class="index-item property">
-                                <a href="#property_triangles">triangles</a>
-
-                            </li>
-                            <li class="index-item property inherited">
-                                <a href="#property_type">type</a>
+                                <a href="#property_hasHit">hasHit</a>
 
                             </li>
                             <li class="index-item property">
-                                <a href="#property_vertices">vertices</a>
+                                <a href="#property_mode">mode</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_precision">precision</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_result">result</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_skipBackfaces">skipBackfaces</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_to">to</a>
 
                             </li>
                     </ul>
@@ -342,19 +288,45 @@
             <div id="methods" class="api-class-tabpanel">
                 <h2 class="off-left">Methods</h2>
 
-<div id="method_computeAABB" class="method item">
-    <h3 class="name"><code>computeAABB</code></h3>
+<div id="method__updateDirection" class="method item private">
+    <h3 class="name"><code>_updateDirection</code></h3>
+
+        <span class="paren">()</span>
+
+
+
+        <span class="flag private">private</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_collision_Ray.js.html#l200"><code>src&#x2F;collision&#x2F;Ray.js:200</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Updates the _direction vector.</p>
+
+    </div>
+
+
+
+
+</div>
+<div id="method_getAABB" class="method item">
+    <h3 class="name"><code>getAABB</code></h3>
 
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
                 <li class="arg">
-                        <code>out</code>
-                </li>
-                <li class="arg">
-                        <code>position</code>
-                </li>
-                <li class="arg">
-                        <code>angle</code>
+                        <code>aabb</code>
                 </li>
             </ul><span class="paren">)</span>
         </div>
@@ -367,12 +339,65 @@
 
 
     <div class="meta">
-            <p>Inherited from
-            <a href="../classes/Shape.html#method_computeAABB">
-                Shape
-            </a>
-            but overwritten in
-        <a href="../files/src_shapes_Convex.js.html#l318"><code>src&#x2F;shapes&#x2F;Convex.js:318</code></a>
+                <p>
+                Defined in
+        <a href="../files/src_collision_Ray.js.html#l459"><code>src&#x2F;collision&#x2F;Ray.js:459</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Get the AABB of the ray.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">aabb</code>
+                        <span class="type"><a href="../classes/AABB.html" class="crosslink">AABB</a></span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_intersectBodies" class="method item">
+    <h3 class="name"><code>intersectBodies</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>bodies</code>
+                </li>
+                <li class="arg">
+                        <code class="optional">[result]</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_collision_Ray.js.html#l184"><code>src&#x2F;collision&#x2F;Ray.js:184</code></a>
         </p>
 
 
@@ -388,8 +413,162 @@
 
             <ul class="params-list">
                 <li class="param">
-                        <code class="param-name">out</code>
-                        <span class="type"><a href="../classes/AABB.html" class="crosslink">AABB</a></span>
+                        <code class="param-name">bodies</code>
+                        <span class="type">Array</span>
+
+
+                    <div class="param-description">
+                        <p>An array of Body objects.</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name optional">[result]</code>
+                        <span class="type"><a href="../classes/RaycastResult.html" class="crosslink">RaycastResult</a></span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                        <p>Deprecated</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_intersectBody" class="method item private">
+    <h3 class="name"><code>intersectBody</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>body</code>
+                </li>
+                <li class="arg">
+                        <code class="optional">[result]</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+        <span class="flag private">private</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_collision_Ray.js.html#l133"><code>src&#x2F;collision&#x2F;Ray.js:133</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Shoot a ray at a body, get back information about the hit.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">body</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name optional">[result]</code>
+                        <span class="type"><a href="../classes/RaycastResult.html" class="crosslink">RaycastResult</a></span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                        <p>Deprecated - set the result property of the Ray instead.</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_intersectPlane" class="method item private">
+    <h3 class="name"><code>intersectPlane</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>shape</code>
+                </li>
+                <li class="arg">
+                        <code>angle</code>
+                </li>
+                <li class="arg">
+                        <code>position</code>
+                </li>
+                <li class="arg">
+                        <code>body</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+        <span class="flag private">private</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_collision_Ray.js.html#l352"><code>src&#x2F;collision&#x2F;Ray.js:352</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">shape</code>
+                        <span class="type"><a href="../classes/Shape.html" class="crosslink">Shape</a></span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">angle</code>
+                        <span class="type">Number</span>
 
 
                     <div class="param-description">
@@ -408,6 +587,78 @@
 
                 </li>
                 <li class="param">
+                        <code class="param-name">body</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_intersectRectangle" class="method item private">
+    <h3 class="name"><code>intersectRectangle</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>shape</code>
+                </li>
+                <li class="arg">
+                        <code>angle</code>
+                </li>
+                <li class="arg">
+                        <code>position</code>
+                </li>
+                <li class="arg">
+                        <code>body</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+        <span class="flag private">private</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_collision_Ray.js.html#l253"><code>src&#x2F;collision&#x2F;Ray.js:253</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">shape</code>
+                        <span class="type"><a href="../classes/Shape.html" class="crosslink">Shape</a></span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
                         <code class="param-name">angle</code>
                         <span class="type">Number</span>
 
@@ -417,40 +668,64 @@
                     </div>
 
                 </li>
+                <li class="param">
+                        <code class="param-name">position</code>
+                        <span class="type">Array</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">body</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
             </ul>
         </div>
 
 
 
 </div>
-<div id="method_computeMomentOfInertia" class="method item">
-    <h3 class="name"><code>computeMomentOfInertia</code></h3>
+<div id="method_intersectShape" class="method item private">
+    <h3 class="name"><code>intersectShape</code></h3>
 
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
                 <li class="arg">
-                        <code>mass</code>
+                        <code>shape</code>
+                </li>
+                <li class="arg">
+                        <code>angle</code>
+                </li>
+                <li class="arg">
+                        <code>position</code>
+                </li>
+                <li class="arg">
+                        <code>body</code>
                 </li>
             </ul><span class="paren">)</span>
         </div>
 
-        <span class="returns-inline">
-            <span class="type">Number</span>
-        </span>
 
 
+        <span class="flag private">private</span>
 
 
 
 
 
     <div class="meta">
-            <p>Inherited from
-            <a href="../classes/Shape.html#method_computeMomentOfInertia">
-                Shape
-            </a>
-            but overwritten in
-        <a href="../files/src_shapes_Convex.js.html#l243"><code>src&#x2F;shapes&#x2F;Convex.js:243</code></a>
+                <p>
+                Defined in
+        <a href="../files/src_collision_Ray.js.html#l211"><code>src&#x2F;collision&#x2F;Ray.js:211</code></a>
         </p>
 
 
@@ -458,8 +733,7 @@
     </div>
 
     <div class="description">
-        <p>Compute the mass moment of inertia of the Convex.</p>
-
+        
     </div>
 
         <div class="params">
@@ -467,7 +741,17 @@
 
             <ul class="params-list">
                 <li class="param">
-                        <code class="param-name">mass</code>
+                        <code class="param-name">shape</code>
+                        <span class="type"><a href="../classes/Shape.html" class="crosslink">Shape</a></span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">angle</code>
                         <span class="type">Number</span>
 
 
@@ -476,65 +760,8 @@
                     </div>
 
                 </li>
-            </ul>
-        </div>
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                        <span class="type">Number</span>:
-            </div>
-        </div>
-
-
-</div>
-<div id="method_projectOntoAxis" class="method item">
-    <h3 class="name"><code>projectOntoAxis</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>offset</code>
-                </li>
-                <li class="arg">
-                        <code>localAxis</code>
-                </li>
-                <li class="arg">
-                        <code>result</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-
-
-        <span class="flag static">static</span>
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_shapes_Convex.js.html#l109"><code>src&#x2F;shapes&#x2F;Convex.js:109</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Project a Convex onto a world-oriented axis</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
                 <li class="param">
-                        <code class="param-name">offset</code>
+                        <code class="param-name">position</code>
                         <span class="type">Array</span>
 
 
@@ -544,18 +771,8 @@
 
                 </li>
                 <li class="param">
-                        <code class="param-name">localAxis</code>
-                        <span class="type">Array</span>
-
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">result</code>
-                        <span class="type">Array</span>
+                        <code class="param-name">body</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
 
 
                     <div class="param-description">
@@ -569,38 +786,34 @@
 
 
 </div>
-<div id="method_triangleArea" class="method item">
-    <h3 class="name"><code>triangleArea</code></h3>
+<div id="method_intersectWorld" class="method item">
+    <h3 class="name"><code>intersectWorld</code></h3>
 
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
                 <li class="arg">
-                        <code>a</code>
+                        <code>world</code>
                 </li>
                 <li class="arg">
-                        <code>b</code>
-                </li>
-                <li class="arg">
-                        <code>c</code>
+                        <code>options</code>
                 </li>
             </ul><span class="paren">)</span>
         </div>
 
         <span class="returns-inline">
-            <span class="type">Number</span>
+            <span class="type">Boolean</span>
         </span>
 
 
 
 
-        <span class="flag static">static</span>
 
 
 
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_shapes_Convex.js.html#l283"><code>src&#x2F;shapes&#x2F;Convex.js:283</code></a>
+        <a href="../files/src_collision_Ray.js.html#l95"><code>src&#x2F;collision&#x2F;Ray.js:95</code></a>
         </p>
 
 
@@ -608,7 +821,7 @@
     </div>
 
     <div class="description">
-        <p>Get the area of the triangle spanned by the three points a, b, c. The area is positive if the points are given in counter-clockwise order, otherwise negative.</p>
+        <p>Do itersection against all bodies in the given World.</p>
 
     </div>
 
@@ -617,8 +830,8 @@
 
             <ul class="params-list">
                 <li class="param">
-                        <code class="param-name">a</code>
-                        <span class="type">Array</span>
+                        <code class="param-name">world</code>
+                        <span class="type"><a href="../classes/World.html" class="crosslink">World</a></span>
 
 
                     <div class="param-description">
@@ -627,18 +840,8 @@
 
                 </li>
                 <li class="param">
-                        <code class="param-name">b</code>
-                        <span class="type">Array</span>
-
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">c</code>
-                        <span class="type">Array</span>
+                        <code class="param-name">options</code>
+                        <span class="type">Object</span>
 
 
                     <div class="param-description">
@@ -653,87 +856,40 @@
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                        <span class="type">Number</span>:
+                        <span class="type">Boolean</span>:
+                    <p>True if the ray hit anything, otherwise false.</p>
+
             </div>
         </div>
 
 
 </div>
-<div id="method_updateArea" class="method item">
-    <h3 class="name"><code>updateArea</code></h3>
+<div id="method_reportIntersection" class="method item private">
+    <h3 class="name"><code>reportIntersection</code></h3>
 
-        <span class="paren">()</span>
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>normal</code>
+                </li>
+                <li class="arg">
+                        <code>hitPointWorld</code>
+                </li>
+                <li class="arg">
+                        <code>shape</code>
+                </li>
+                <li class="arg">
+                        <code>body</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
 
-
-
-
-
-
-
-
-    <div class="meta">
-            <p>Inherited from
-            <a href="../classes/Shape.html#method_updateArea">
-                Shape
-            </a>
-            but overwritten in
-        <a href="../files/src_shapes_Convex.js.html#l296"><code>src&#x2F;shapes&#x2F;Convex.js:296</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Update the .area</p>
-
-    </div>
+        <span class="returns-inline">
+            <span class="type">Boolean</span>
+        </span>
 
 
-
-
-</div>
-<div id="method_updateBoundingRadius" class="method item">
-    <h3 class="name"><code>updateBoundingRadius</code></h3>
-
-        <span class="paren">()</span>
-
-
-
-
-
-
-
-
-    <div class="meta">
-            <p>Inherited from
-            <a href="../classes/Shape.html#method_updateBoundingRadius">
-                Shape
-            </a>
-            but overwritten in
-        <a href="../files/src_shapes_Convex.js.html#l265"><code>src&#x2F;shapes&#x2F;Convex.js:265</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Updates the .boundingRadius property</p>
-
-    </div>
-
-
-
-
-</div>
-<div id="method_updateCenterOfMass" class="method item">
-    <h3 class="name"><code>updateCenterOfMass</code></h3>
-
-        <span class="paren">()</span>
-
-
-
+        <span class="flag private">private</span>
 
 
 
@@ -742,7 +898,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_shapes_Convex.js.html#l201"><code>src&#x2F;shapes&#x2F;Convex.js:201</code></a>
+        <a href="../files/src_collision_Ray.js.html#l473"><code>src&#x2F;collision&#x2F;Ray.js:473</code></a>
         </p>
 
 
@@ -750,42 +906,65 @@
     </div>
 
     <div class="description">
-        <p>Update the .centerOfMass property.</p>
-
+        
     </div>
 
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">normal</code>
+                        <span class="type">Array</span>
 
 
+                    <div class="param-description">
+                         
+                    </div>
 
-</div>
-<div id="method_updateTriangles" class="method item">
-    <h3 class="name"><code>updateTriangles</code></h3>
-
-        <span class="paren">()</span>
-
-
-
-
+                </li>
+                <li class="param">
+                        <code class="param-name">hitPointWorld</code>
+                        <span class="type">Array</span>
 
 
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">shape</code>
+                        <span class="type"><a href="../classes/Shape.html" class="crosslink">Shape</a></span>
 
 
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_shapes_Convex.js.html#l162"><code>src&#x2F;shapes&#x2F;Convex.js:162</code></a>
-        </p>
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">body</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
 
 
+                    <div class="param-description">
+                         
+                    </div>
 
-    </div>
+                </li>
+            </ul>
+        </div>
 
-    <div class="description">
-        <p>Update the .triangles property</p>
+        <div class="returns">
+            <h4>Returns:</h4>
 
-    </div>
+            <div class="returns-description">
+                        <span class="type">Boolean</span>:
+                    <p>True if the intersections should continue</p>
 
-
+            </div>
+        </div>
 
 
 </div>
@@ -794,34 +973,34 @@
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
-                    <div id="property_area" class="property item inherited">
-                        <h3 class="name"><code>area</code></h3>
-                        <span class="type">Number</span>
+                    <div id="property__direction" class="property item private">
+                        <h3 class="name"><code>_direction</code></h3>
+                        <span class="type">Array</span>
                     
                     
+                            <span class="flag private">private</span>
                     
                     
                     
                         <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Shape.html#property_area">Shape</a>:
-                            <a href="../files/src_shapes_Shape.js.html#l95"><code>src&#x2F;shapes&#x2F;Shape.js:95</code></a>
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_collision_Ray.js.html#l26"><code>src&#x2F;collision&#x2F;Ray.js:26</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Area of this shape.</p>
-                    
+                            
                         </div>
                     
                     
                     
                     </div>
-                    <div id="property_axes" class="property item">
-                        <h3 class="name"><code>axes</code></h3>
-                        <span class="type">Array</span>
+                    <div id="property_callback" class="property item">
+                        <h3 class="name"><code>callback</code></h3>
+                        <span class="type">Function</span>
                     
                     
                     
@@ -830,51 +1009,23 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_shapes_Convex.js.html#l30"><code>src&#x2F;shapes&#x2F;Convex.js:30</code></a>
+                            <a href="../files/src_collision_Ray.js.html#l80"><code>src&#x2F;collision&#x2F;Ray.js:80</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Axes defined in the local frame.</p>
+                            <p>Current, user-provided result callback. Will be used if mode is Ray.ALL.</p>
                     
                         </div>
                     
                     
                     
                     </div>
-                    <div id="property_boundingRadius" class="property item">
-                        <h3 class="name"><code>boundingRadius</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                <p>Inherited from
-                                <a href="../classes/Shape.html#property_boundingRadius">
-                                    Shape
-                                </a>
-                                but overwritten in
-                            <a href="../files/src_shapes_Convex.js.html#l88"><code>src&#x2F;shapes&#x2F;Convex.js:88</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The bounding radius of the convex</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_centerOfMass" class="property item">
-                        <h3 class="name"><code>centerOfMass</code></h3>
-                        <span class="type">Array</span>
+                    <div id="property_checkCollisionResponse" class="property item">
+                        <h3 class="name"><code>checkCollisionResponse</code></h3>
+                        <span class="type">Boolean</span>
                     
                     
                     
@@ -883,21 +1034,21 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_shapes_Convex.js.html#l69"><code>src&#x2F;shapes&#x2F;Convex.js:69</code></a>
+                            <a href="../files/src_collision_Ray.js.html#l38"><code>src&#x2F;collision&#x2F;Ray.js:38</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The center of mass of the Convex</p>
+                            <p>Set to true if you want the Ray to take .collisionResponse flags into account on bodies and shapes.</p>
                     
                         </div>
                     
                     
                     
                     </div>
-                    <div id="property_collisionGroup" class="property item inherited">
+                    <div id="property_collisionGroup" class="property item">
                         <h3 class="name"><code>collisionGroup</code></h3>
                         <span class="type">Number</span>
                     
@@ -906,51 +1057,23 @@
                     
                     
                         <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Shape.html#property_collisionGroup">Shape</a>:
-                            <a href="../files/src_shapes_Shape.js.html#l41"><code>src&#x2F;shapes&#x2F;Shape.js:41</code></a>
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_collision_Ray.js.html#l56"><code>src&#x2F;collision&#x2F;Ray.js:56</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Collision group that this shape belongs to (bit mask). See <a href="http://www.aurelienribon.com/blog/2011/07/box2d-tutorial-collision-filtering/">this tutorial</a>.</p>
-                    
+                            
                         </div>
                     
+                            <p><strong>Default:</strong> -1</p>
                     
-                            <div class="example">
-                                <h4>Example:</h4>
-                    
-                                <div class="example-content">
-                                    <pre class="code prettyprint"><code>// Setup bits for each available group
-                    var PLAYER = Math.pow(2,0),
-                        ENEMY =  Math.pow(2,1),
-                        GROUND = Math.pow(2,2)
-                    
-                    // Put shapes into their groups
-                    player1Shape.collisionGroup = PLAYER;
-                    player2Shape.collisionGroup = PLAYER;
-                    enemyShape  .collisionGroup = ENEMY;
-                    groundShape .collisionGroup = GROUND;
-                    
-                    // Assign groups that each shape collide with.
-                    // Note that the players can collide with ground and enemies, but not with other players.
-                    player1Shape.collisionMask = ENEMY | GROUND;
-                    player2Shape.collisionMask = ENEMY | GROUND;
-                    enemyShape  .collisionMask = PLAYER | GROUND;
-                    groundShape .collisionMask = PLAYER | ENEMY;
-                    </code></pre><pre class="code prettyprint"><code>// How collision check is done
-                    if(shapeA.collisionGroup &amp; shapeB.collisionMask)!=0 &amp;&amp; (shapeB.collisionGroup &amp; shapeA.collisionMask)!=0){
-                        // The shapes will collide
-                    }
-                    </code></pre>
-                                </div>
-                            </div>
                     
                     </div>
-                    <div id="property_collisionMask" class="property item inherited">
+                    <div id="property_collisionMask" class="property item">
                         <h3 class="name"><code>collisionMask</code></h3>
                         <span class="type">Number</span>
                     
@@ -959,124 +1082,24 @@
                     
                     
                         <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Shape.html#property_collisionMask">Shape</a>:
-                            <a href="../files/src_shapes_Shape.js.html#l78"><code>src&#x2F;shapes&#x2F;Shape.js:78</code></a>
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_collision_Ray.js.html#l50"><code>src&#x2F;collision&#x2F;Ray.js:50</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Collision mask of this shape. See .collisionGroup.</p>
-                    
+                            
                         </div>
                     
+                            <p><strong>Default:</strong> -1</p>
                     
                     
                     </div>
-                    <div id="property_collisionResponse" class="property item inherited">
-                        <h3 class="name"><code>collisionResponse</code></h3>
-                        <span class="type">Boolean</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Shape.html#property_collisionResponse">Shape</a>:
-                            <a href="../files/src_shapes_Shape.js.html#l72"><code>src&#x2F;shapes&#x2F;Shape.js:72</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Whether to produce contact forces when in contact with other bodies. Note that contacts will be generated, but they will be disabled. That means that this shape will move through other body shapes, but it will still trigger contact events, etc.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_id" class="property item inherited">
-                        <h3 class="name"><code>id</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Shape.html#property_id">Shape</a>:
-                            <a href="../files/src_shapes_Shape.js.html#l27"><code>src&#x2F;shapes&#x2F;Shape.js:27</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Shape object identifier.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_material" class="property item inherited">
-                        <h3 class="name"><code>material</code></h3>
-                        <span class="type"><a href="../classes/Material.html" class="crosslink">Material</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Shape.html#property_material">Shape</a>:
-                            <a href="../files/src_shapes_Shape.js.html#l88"><code>src&#x2F;shapes&#x2F;Shape.js:88</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Material to use in collisions for this Shape. If this is set to null, the world will use default material properties instead.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_sensor" class="property item inherited">
-                        <h3 class="name"><code>sensor</code></h3>
-                        <span class="type">Boolean</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Shape.html#property_sensor">Shape</a>:
-                            <a href="../files/src_shapes_Shape.js.html#l102"><code>src&#x2F;shapes&#x2F;Shape.js:102</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Set to true if you want this shape to be a sensor. A sensor does not generate contacts, but it still reports contact events. This is good if you want to know if a shape is overlapping another shape, without them generating contacts.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_triangles" class="property item">
-                        <h3 class="name"><code>triangles</code></h3>
+                    <div id="property_from" class="property item">
+                        <h3 class="name"><code>from</code></h3>
                         <span class="type">Array</span>
                     
                     
@@ -1086,22 +1109,46 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_shapes_Convex.js.html#l76"><code>src&#x2F;shapes&#x2F;Convex.js:76</code></a>
+                            <a href="../files/src_collision_Ray.js.html#l16"><code>src&#x2F;collision&#x2F;Ray.js:16</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Triangulated version of this convex. The structure is Array of 3-Arrays, and each subarray contains 3 integers, referencing the vertices.</p>
+                            
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_hasHit" class="property item">
+                        <h3 class="name"><code>hasHit</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_collision_Ray.js.html#l74"><code>src&#x2F;collision&#x2F;Ray.js:74</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Will be set to true during intersectWorld() if the ray hit anything.</p>
                     
                         </div>
                     
                     
                     
                     </div>
-                    <div id="property_type" class="property item inherited">
-                        <h3 class="name"><code>type</code></h3>
+                    <div id="property_mode" class="property item">
+                        <h3 class="name"><code>mode</code></h3>
                         <span class="type">Number</span>
                     
                     
@@ -1109,34 +1156,99 @@
                     
                     
                         <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Shape.html#property_type">Shape</a>:
-                            <a href="../files/src_shapes_Shape.js.html#l11"><code>src&#x2F;shapes&#x2F;Shape.js:11</code></a>
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_collision_Ray.js.html#l62"><code>src&#x2F;collision&#x2F;Ray.js:62</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The type of the shape. One of:</p>
-                    <ul>
-                    <li><a href="../classes/Shape.html#property_CIRCLE" class="crosslink">Shape.CIRCLE</a></li>
-                    <li><a href="../classes/Shape.html#property_PARTICLE" class="crosslink">Shape.PARTICLE</a></li>
-                    <li><a href="../classes/Shape.html#property_PLANE" class="crosslink">Shape.PLANE</a></li>
-                    <li><a href="../classes/Shape.html#property_CONVEX" class="crosslink">Shape.CONVEX</a></li>
-                    <li><a href="../classes/Shape.html#property_LINE" class="crosslink">Shape.LINE</a></li>
-                    <li><a href="../classes/Shape.html#property_RECTANGLE" class="crosslink">Shape.RECTANGLE</a></li>
-                    <li><a href="../classes/Shape.html#property_CAPSULE" class="crosslink">Shape.CAPSULE</a></li>
-                    <li><a href="../classes/Shape.html#property_HEIGHTFIELD" class="crosslink">Shape.HEIGHTFIELD</a></li>
-                    </ul>
+                            <p>The intersection mode. Should be Ray.ANY, Ray.ALL or Ray.CLOSEST.</p>
                     
                         </div>
                     
                     
                     
                     </div>
-                    <div id="property_vertices" class="property item">
-                        <h3 class="name"><code>vertices</code></h3>
+                    <div id="property_precision" class="property item">
+                        <h3 class="name"><code>precision</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_collision_Ray.js.html#l32"><code>src&#x2F;collision&#x2F;Ray.js:32</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The precision of the ray. Used when checking parallelity etc.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_result" class="property item">
+                        <h3 class="name"><code>result</code></h3>
+                        <span class="type"><a href="../classes/RaycastResult.html" class="crosslink">RaycastResult</a></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_collision_Ray.js.html#l68"><code>src&#x2F;collision&#x2F;Ray.js:68</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Current result object.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_skipBackfaces" class="property item">
+                        <h3 class="name"><code>skipBackfaces</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_collision_Ray.js.html#l44"><code>src&#x2F;collision&#x2F;Ray.js:44</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>If set to true, the ray skips any hits with normal.dot(rayDirection) &lt; 0.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_to" class="property item">
+                        <h3 class="name"><code>to</code></h3>
                         <span class="type">Array</span>
                     
                     
@@ -1146,15 +1258,14 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_shapes_Convex.js.html#l23"><code>src&#x2F;shapes&#x2F;Convex.js:23</code></a>
+                            <a href="../files/src_collision_Ray.js.html#l21"><code>src&#x2F;collision&#x2F;Ray.js:21</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Vertices defined in the local frame.</p>
-                    
+                            
                         </div>
                     
                     

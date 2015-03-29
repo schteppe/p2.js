@@ -2,7 +2,7 @@
     "project": {
         "name": "p2.js",
         "description": "A JavaScript 2D physics engine.",
-        "version": "0.6.0"
+        "version": "0.6.1"
     },
     "files": {
         "src/collision/AABB.js": {
@@ -46,6 +46,24 @@
             "modules": {},
             "classes": {
                 "Narrowphase": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/collision/Ray.js": {
+            "name": "src/collision/Ray.js",
+            "modules": {},
+            "classes": {
+                "Ray": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/collision/RaycastResult.js": {
+            "name": "src/collision/RaycastResult.js",
+            "modules": {},
+            "classes": {
+                "RaycastResult": 1
             },
             "fors": {},
             "namespaces": {}
@@ -543,6 +561,32 @@
             "description": "Narrowphase. Creates contacts and friction given shapes and transforms.",
             "is_constructor": 1
         },
+        "Ray": {
+            "name": "Ray",
+            "shortname": "Ray",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/collision/Ray.js",
+            "line": 8,
+            "description": "A line with a start and end point that is used to intersect shapes.",
+            "is_constructor": 1
+        },
+        "RaycastResult": {
+            "name": "RaycastResult",
+            "shortname": "RaycastResult",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/collision/RaycastResult.js",
+            "line": 5,
+            "description": "Storage for Ray casting data.",
+            "is_constructor": 1
+        },
         "SAPBroadphase": {
             "name": "SAPBroadphase",
             "shortname": "SAPBroadphase",
@@ -640,14 +684,14 @@
                             "optional": true
                         },
                         {
-                            "name": "localAnchorA",
-                            "description": "The anchor point for bodyA, defined locally in bodyA frame. Defaults to [0,0].",
+                            "name": "localAnchorA] The anchor point for bodyA, defined locally in bodyA frame. Defaults to [0,0",
+                            "description": ".",
                             "type": "Array",
                             "optional": true
                         },
                         {
-                            "name": "localAnchorB",
-                            "description": "The anchor point for bodyB, defined locally in bodyB frame. Defaults to [0,0].",
+                            "name": "localAnchorB] The anchor point for bodyB, defined locally in bodyB frame. Defaults to [0,0",
+                            "description": ".",
                             "type": "Array",
                             "optional": true
                         },
@@ -1321,12 +1365,26 @@
                             "type": "Number",
                             "optional": true,
                             "optdefault": "false"
+                        },
+                        {
+                            "name": "ccdSpeedThreshold",
+                            "description": "",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "-1"
+                        },
+                        {
+                            "name": "ccdIterations",
+                            "description": "",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "10"
                         }
                     ]
                 }
             ],
             "example": [
-                "\n    // Create a typical dynamic body\n    var body = new Body({\n        mass: 1,\n        position: [0, 0],\n        angle: 0,\n        velocity: [0, 0],\n        angularVelocity: 0\n    });\n\n    // Add a circular shape to the body\n    body.addShape(new Circle(1));\n\n    // Add the body to the world\n    world.addBody(body);"
+                "\n\n    // Create a typical dynamic body\n    var body = new Body({\n        mass: 1,\n        position: [0, 0],\n        angle: 0,\n        velocity: [0, 0],\n        angularVelocity: 0\n    });\n\n    // Add a circular shape to the body\n    body.addShape(new Circle(1));\n\n    // Add the body to the world\n    world.addBody(body);"
             ]
         },
         "LinearSpring": {
@@ -1550,14 +1608,19 @@
                     "name": "length",
                     "description": "The distance between the end points",
                     "type": "Number",
-                    "optional": true
+                    "optional": true,
+                    "optdefault": "1"
                 },
                 {
                     "name": "radius",
                     "description": "Radius of the capsule",
                     "type": "Number",
-                    "optional": true
+                    "optional": true,
+                    "optdefault": "1"
                 }
+            ],
+            "example": [
+                "\n    var radius = 1;\n    var length = 2;\n    var capsuleShape = new Capsule(length, radius);\n    body.addShape(capsuleShape);"
             ]
         },
         "Circle": {
@@ -1581,6 +1644,9 @@
                     "optional": true,
                     "optdefault": "1"
                 }
+            ],
+            "example": [
+                "\n    var radius = 1;\n    var circleShape = new Circle(radius);\n    body.addShape(circleShape);"
             ]
         },
         "Convex": {
@@ -1604,9 +1670,13 @@
                 },
                 {
                     "name": "axes",
-                    "description": "An array of unit length vectors",
-                    "type": "Array"
+                    "description": "An array of unit length vectors, representing the symmetry axes in the convex.",
+                    "type": "Array",
+                    "optional": true
                 }
+            ],
+            "example": [
+                "\n    // Create a box\n    var vertices = [[-1,-1], [1,-1], [1,1], [-1,1]];\n    var convexShape = new Convex(vertices);\n    body.addShape(convexShape);"
             ]
         },
         "Heightfield": {
@@ -1678,7 +1748,9 @@
                 {
                     "name": "length",
                     "description": "The total length of the line",
-                    "type": "Number"
+                    "type": "Number",
+                    "optional": true,
+                    "optdefault": "1"
                 }
             ],
             "extends": "Shape",
@@ -1728,12 +1800,16 @@
                 {
                     "name": "width",
                     "description": "Width",
-                    "type": "Number"
+                    "type": "Number",
+                    "optional": true,
+                    "optdefault": "1"
                 },
                 {
                     "name": "height",
                     "description": "Height",
-                    "type": "Number"
+                    "type": "Number",
+                    "optional": true,
+                    "optdefault": "1"
                 }
             ],
             "extends": "Convex"
@@ -1947,7 +2023,7 @@
             "plugin_for": [],
             "extension_for": [],
             "file": "src/world/World.js",
-            "line": 51,
+            "line": 52,
             "description": "The dynamics world, where all bodies and constraints lives.",
             "is_constructor": 1,
             "params": [
@@ -1964,8 +2040,8 @@
                             "optional": true
                         },
                         {
-                            "name": "gravity",
-                            "description": "Defaults to [0,-9.78]",
+                            "name": "gravity]           Defaults to [0,-9.78",
+                            "description": "",
                             "type": "Array",
                             "optional": true
                         },
@@ -2213,7 +2289,7 @@
         },
         {
             "file": "src/collision/Broadphase.js",
-            "line": 103,
+            "line": 97,
             "description": "Check whether the bounding radius of two bodies overlap.",
             "itemtype": "method",
             "name": "boundingRadiusCheck",
@@ -2237,7 +2313,7 @@
         },
         {
             "file": "src/collision/Broadphase.js",
-            "line": 126,
+            "line": 120,
             "description": "Check whether two bodies are allowed to collide at all.",
             "itemtype": "method",
             "name": "canCollide",
@@ -2261,7 +2337,7 @@
         },
         {
             "file": "src/collision/GridBroadphase.js",
-            "line": 48,
+            "line": 49,
             "description": "Get collision pairs.",
             "itemtype": "method",
             "name": "getCollisionPairs",
@@ -2280,7 +2356,7 @@
         },
         {
             "file": "src/collision/NaiveBroadphase.js",
-            "line": 22,
+            "line": 23,
             "description": "Get the colliding pairs",
             "itemtype": "method",
             "name": "getCollisionPairs",
@@ -2289,6 +2365,35 @@
                     "name": "world",
                     "description": "",
                     "type": "World"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Array"
+            },
+            "class": "NaiveBroadphase"
+        },
+        {
+            "file": "src/collision/NaiveBroadphase.js",
+            "line": 50,
+            "description": "Returns all the bodies within an AABB.",
+            "itemtype": "method",
+            "name": "aabbQuery",
+            "params": [
+                {
+                    "name": "world",
+                    "description": "",
+                    "type": "World"
+                },
+                {
+                    "name": "aabb",
+                    "description": "",
+                    "type": "AABB"
+                },
+                {
+                    "name": "result",
+                    "description": "An array to store resulting bodies in.",
+                    "type": "Array"
                 }
             ],
             "return": {
@@ -2325,6 +2430,15 @@
         {
             "file": "src/collision/Narrowphase.js",
             "line": 67,
+            "description": "Whether to make equations enabled in upcoming contacts.",
+            "itemtype": "property",
+            "name": "enabledEquations",
+            "type": "{Boolean}",
+            "class": "Narrowphase"
+        },
+        {
+            "file": "src/collision/Narrowphase.js",
+            "line": 74,
             "description": "The friction slip force to use when creating friction equations.",
             "itemtype": "property",
             "name": "slipForce",
@@ -2333,7 +2447,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 74,
+            "line": 81,
             "description": "The friction value to use in the upcoming friction equations.",
             "itemtype": "property",
             "name": "frictionCoefficient",
@@ -2342,7 +2456,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 81,
+            "line": 88,
             "description": "Will be the .relativeVelocity in each produced FrictionEquation.",
             "itemtype": "property",
             "name": "surfaceVelocity",
@@ -2351,7 +2465,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 91,
+            "line": 98,
             "description": "The restitution value to use in the next contact equations.",
             "itemtype": "property",
             "name": "restitution",
@@ -2360,7 +2474,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 98,
+            "line": 105,
             "description": "The stiffness value to use in the next contact equations.",
             "itemtype": "property",
             "name": "stiffness",
@@ -2369,7 +2483,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 104,
+            "line": 111,
             "description": "The stiffness value to use in the next contact equations.",
             "itemtype": "property",
             "name": "stiffness",
@@ -2378,7 +2492,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 110,
+            "line": 117,
             "description": "The stiffness value to use in the next friction equations.",
             "itemtype": "property",
             "name": "frictionStiffness",
@@ -2387,7 +2501,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 117,
+            "line": 124,
             "description": "The relaxation value to use in the next friction equations.",
             "itemtype": "property",
             "name": "frictionRelaxation",
@@ -2396,7 +2510,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 124,
+            "line": 131,
             "description": "Enable reduction of friction equations. If disabled, a box on a plane will generate 2 contact equations and 2 friction equations. If enabled, there will be only one friction equation. Same kind of simplifications are made  for all collision types.",
             "itemtype": "property",
             "name": "enableFrictionReduction",
@@ -2408,7 +2522,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 133,
+            "line": 140,
             "description": "Keeps track of the colliding bodies last step.",
             "access": "private",
             "tagname": "",
@@ -2419,17 +2533,40 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 141,
+            "line": 148,
             "description": "Contact skin size value to use in the next contact equations.",
             "itemtype": "property",
-            "name": "collidingBodiesLastStep",
+            "name": "contactSkinSize",
             "type": "Number",
             "default": "0.01",
             "class": "Narrowphase"
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 149,
+            "line": 159,
+            "itemtype": "method",
+            "name": "bodiesOverlap",
+            "params": [
+                {
+                    "name": "bodyA",
+                    "description": "",
+                    "type": "Body"
+                },
+                {
+                    "name": "bodyB",
+                    "description": "",
+                    "type": "Body"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Boolean"
+            },
+            "class": "Narrowphase"
+        },
+        {
+            "file": "src/collision/Narrowphase.js",
+            "line": 204,
             "description": "Check if the bodies were in contact since the last reset().",
             "itemtype": "method",
             "name": "collidedLastStep",
@@ -2453,7 +2590,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 162,
+            "line": 217,
             "description": "Throws away the old equations and gets ready to create new",
             "itemtype": "method",
             "name": "reset",
@@ -2461,7 +2598,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 191,
+            "line": 246,
             "description": "Creates a ContactEquation, either by reusing an existing object or creating a new one.",
             "itemtype": "method",
             "name": "createContactEquation",
@@ -2485,7 +2622,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 215,
+            "line": 270,
             "description": "Creates a FrictionEquation, either by reusing an existing object or creating a new one.",
             "itemtype": "method",
             "name": "createFrictionEquation",
@@ -2509,7 +2646,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 239,
+            "line": 294,
             "description": "Creates a FrictionEquation given the data in the ContactEquation. Uses same offset vectors ri and rj, but the tangent vector will be constructed from the collision normal.",
             "itemtype": "method",
             "name": "createFrictionFromContact",
@@ -2528,7 +2665,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 288,
+            "line": 340,
             "description": "Convex/line narrowphase",
             "itemtype": "method",
             "name": "convexLine",
@@ -2586,7 +2723,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 322,
+            "line": 374,
             "description": "Line/rectangle narrowphase",
             "itemtype": "method",
             "name": "lineRectangle",
@@ -2644,7 +2781,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 366,
+            "line": 418,
             "description": "Convex/capsule narrowphase",
             "itemtype": "method",
             "name": "convexCapsule",
@@ -2694,7 +2831,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 417,
+            "line": 469,
             "description": "Capsule/line narrowphase",
             "itemtype": "method",
             "name": "lineCapsule",
@@ -2747,7 +2884,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 454,
+            "line": 506,
             "description": "Capsule/capsule narrowphase",
             "itemtype": "method",
             "name": "capsuleCapsule",
@@ -2797,7 +2934,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 559,
+            "line": 611,
             "description": "Line/line narrowphase",
             "itemtype": "method",
             "name": "lineLine",
@@ -2850,7 +2987,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 592,
+            "line": 644,
             "description": "Plane/line Narrowphase",
             "itemtype": "method",
             "name": "planeLine",
@@ -2900,7 +3037,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 714,
+            "line": 766,
             "description": "Circle/line Narrowphase",
             "itemtype": "method",
             "name": "circleLine",
@@ -2965,7 +3102,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 884,
+            "line": 936,
             "description": "Circle/capsule Narrowphase",
             "itemtype": "method",
             "name": "circleCapsule",
@@ -3015,7 +3152,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 901,
+            "line": 953,
             "description": "Circle/convex Narrowphase.",
             "itemtype": "method",
             "name": "circleConvex",
@@ -3075,7 +3212,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 1112,
+            "line": 1164,
             "description": "Particle/convex Narrowphase",
             "itemtype": "method",
             "name": "particleConvex",
@@ -3135,7 +3272,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 1242,
+            "line": 1294,
             "description": "Circle/circle Narrowphase",
             "itemtype": "method",
             "name": "circleCircle",
@@ -3202,7 +3339,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 1307,
+            "line": 1359,
             "description": "Plane/Convex Narrowphase",
             "itemtype": "method",
             "name": "planeConvex",
@@ -3257,7 +3394,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 1392,
+            "line": 1444,
             "description": "Narrowphase for particle vs plane",
             "itemtype": "method",
             "name": "particlePlane",
@@ -3312,7 +3449,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 1455,
+            "line": 1507,
             "description": "Circle/Particle Narrowphase",
             "itemtype": "method",
             "name": "circleParticle",
@@ -3367,7 +3504,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 1516,
+            "line": 1568,
             "itemtype": "method",
             "name": "planeCapsule",
             "params": [
@@ -3421,7 +3558,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 1586,
+            "line": 1638,
             "description": "Creates ContactEquations and FrictionEquations for a collision.",
             "itemtype": "method",
             "name": "circlePlane",
@@ -3466,7 +3603,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 1656,
+            "line": 1708,
             "description": "Convex/convex Narrowphase.See <a href=\"http://www.altdevblogaday.com/2011/05/13/contact-generation-between-3d-convex-meshes/\">this article</a> for more info.",
             "itemtype": "method",
             "name": "convexConvex",
@@ -3516,7 +3653,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 1838,
+            "line": 1890,
             "description": "Project a Convex onto a world-oriented axis",
             "itemtype": "method",
             "name": "projectConvexOntoAxis",
@@ -3552,7 +3689,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 1890,
+            "line": 1942,
             "description": "Find a separating axis between the shapes, that maximizes the separating distance between them.",
             "itemtype": "method",
             "name": "findSeparatingAxis",
@@ -3602,7 +3739,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 2060,
+            "line": 2112,
             "description": "Get the edge that has a normal closest to an axis.",
             "itemtype": "method",
             "name": "getClosestEdge",
@@ -3637,7 +3774,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 2110,
+            "line": 2162,
             "itemtype": "method",
             "name": "circleHeightfield",
             "params": [
@@ -3681,7 +3818,7 @@
         },
         {
             "file": "src/collision/Narrowphase.js",
-            "line": 2287,
+            "line": 2341,
             "itemtype": "method",
             "name": "circleHeightfield",
             "params": [
@@ -3724,6 +3861,482 @@
             "class": "Narrowphase"
         },
         {
+            "file": "src/collision/Ray.js",
+            "line": 16,
+            "itemtype": "property",
+            "name": "from",
+            "type": "Array",
+            "class": "Ray"
+        },
+        {
+            "file": "src/collision/Ray.js",
+            "line": 21,
+            "itemtype": "property",
+            "name": "to",
+            "type": "Array",
+            "class": "Ray"
+        },
+        {
+            "file": "src/collision/Ray.js",
+            "line": 26,
+            "access": "private",
+            "tagname": "",
+            "itemtype": "property",
+            "name": "_direction",
+            "type": "Array",
+            "class": "Ray"
+        },
+        {
+            "file": "src/collision/Ray.js",
+            "line": 32,
+            "description": "The precision of the ray. Used when checking parallelity etc.",
+            "itemtype": "property",
+            "name": "precision",
+            "type": "Number",
+            "class": "Ray"
+        },
+        {
+            "file": "src/collision/Ray.js",
+            "line": 38,
+            "description": "Set to true if you want the Ray to take .collisionResponse flags into account on bodies and shapes.",
+            "itemtype": "property",
+            "name": "checkCollisionResponse",
+            "type": "Boolean",
+            "class": "Ray"
+        },
+        {
+            "file": "src/collision/Ray.js",
+            "line": 44,
+            "description": "If set to true, the ray skips any hits with normal.dot(rayDirection) < 0.",
+            "itemtype": "property",
+            "name": "skipBackfaces",
+            "type": "Boolean",
+            "class": "Ray"
+        },
+        {
+            "file": "src/collision/Ray.js",
+            "line": 50,
+            "itemtype": "property",
+            "name": "collisionMask",
+            "type": "Number",
+            "default": "-1",
+            "class": "Ray"
+        },
+        {
+            "file": "src/collision/Ray.js",
+            "line": 56,
+            "itemtype": "property",
+            "name": "collisionGroup",
+            "type": "Number",
+            "default": "-1",
+            "class": "Ray"
+        },
+        {
+            "file": "src/collision/Ray.js",
+            "line": 62,
+            "description": "The intersection mode. Should be Ray.ANY, Ray.ALL or Ray.CLOSEST.",
+            "itemtype": "property",
+            "name": "mode",
+            "type": "Number",
+            "class": "Ray"
+        },
+        {
+            "file": "src/collision/Ray.js",
+            "line": 68,
+            "description": "Current result object.",
+            "itemtype": "property",
+            "name": "result",
+            "type": "RaycastResult",
+            "class": "Ray"
+        },
+        {
+            "file": "src/collision/Ray.js",
+            "line": 74,
+            "description": "Will be set to true during intersectWorld() if the ray hit anything.",
+            "itemtype": "property",
+            "name": "hasHit",
+            "type": "Boolean",
+            "class": "Ray"
+        },
+        {
+            "file": "src/collision/Ray.js",
+            "line": 80,
+            "description": "Current, user-provided result callback. Will be used if mode is Ray.ALL.",
+            "itemtype": "property",
+            "name": "callback",
+            "type": "Function",
+            "class": "Ray"
+        },
+        {
+            "file": "src/collision/Ray.js",
+            "line": 95,
+            "description": "Do itersection against all bodies in the given World.",
+            "itemtype": "method",
+            "name": "intersectWorld",
+            "params": [
+                {
+                    "name": "world",
+                    "description": "",
+                    "type": "World"
+                },
+                {
+                    "name": "options",
+                    "description": "",
+                    "type": "Object"
+                }
+            ],
+            "return": {
+                "description": "True if the ray hit anything, otherwise false.",
+                "type": "Boolean"
+            },
+            "class": "Ray"
+        },
+        {
+            "file": "src/collision/Ray.js",
+            "line": 133,
+            "description": "Shoot a ray at a body, get back information about the hit.",
+            "itemtype": "method",
+            "name": "intersectBody",
+            "access": "private",
+            "tagname": "",
+            "params": [
+                {
+                    "name": "body",
+                    "description": "",
+                    "type": "Body"
+                },
+                {
+                    "name": "result",
+                    "description": "Deprecated - set the result property of the Ray instead.",
+                    "type": "RaycastResult",
+                    "optional": true
+                }
+            ],
+            "class": "Ray"
+        },
+        {
+            "file": "src/collision/Ray.js",
+            "line": 184,
+            "itemtype": "method",
+            "name": "intersectBodies",
+            "params": [
+                {
+                    "name": "bodies",
+                    "description": "An array of Body objects.",
+                    "type": "Array"
+                },
+                {
+                    "name": "result",
+                    "description": "Deprecated",
+                    "type": "RaycastResult",
+                    "optional": true
+                }
+            ],
+            "class": "Ray"
+        },
+        {
+            "file": "src/collision/Ray.js",
+            "line": 200,
+            "description": "Updates the _direction vector.",
+            "access": "private",
+            "tagname": "",
+            "itemtype": "method",
+            "name": "_updateDirection",
+            "class": "Ray"
+        },
+        {
+            "file": "src/collision/Ray.js",
+            "line": 211,
+            "itemtype": "method",
+            "name": "intersectShape",
+            "access": "private",
+            "tagname": "",
+            "params": [
+                {
+                    "name": "shape",
+                    "description": "",
+                    "type": "Shape"
+                },
+                {
+                    "name": "angle",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "position",
+                    "description": "",
+                    "type": "Array"
+                },
+                {
+                    "name": "body",
+                    "description": "",
+                    "type": "Body"
+                }
+            ],
+            "class": "Ray"
+        },
+        {
+            "file": "src/collision/Ray.js",
+            "line": 253,
+            "itemtype": "method",
+            "name": "intersectRectangle",
+            "access": "private",
+            "tagname": "",
+            "params": [
+                {
+                    "name": "shape",
+                    "description": "",
+                    "type": "Shape"
+                },
+                {
+                    "name": "angle",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "position",
+                    "description": "",
+                    "type": "Array"
+                },
+                {
+                    "name": "body",
+                    "description": "",
+                    "type": "Body"
+                }
+            ],
+            "class": "Ray"
+        },
+        {
+            "file": "src/collision/Ray.js",
+            "line": 352,
+            "itemtype": "method",
+            "name": "intersectPlane",
+            "access": "private",
+            "tagname": "",
+            "params": [
+                {
+                    "name": "shape",
+                    "description": "",
+                    "type": "Shape"
+                },
+                {
+                    "name": "angle",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "position",
+                    "description": "",
+                    "type": "Array"
+                },
+                {
+                    "name": "body",
+                    "description": "",
+                    "type": "Body"
+                }
+            ],
+            "class": "Ray"
+        },
+        {
+            "file": "src/collision/Ray.js",
+            "line": 459,
+            "description": "Get the AABB of the ray.",
+            "itemtype": "method",
+            "name": "getAABB",
+            "params": [
+                {
+                    "name": "aabb",
+                    "description": "",
+                    "type": "AABB"
+                }
+            ],
+            "class": "Ray"
+        },
+        {
+            "file": "src/collision/Ray.js",
+            "line": 473,
+            "itemtype": "method",
+            "name": "reportIntersection",
+            "access": "private",
+            "tagname": "",
+            "params": [
+                {
+                    "name": "normal",
+                    "description": "",
+                    "type": "Array"
+                },
+                {
+                    "name": "hitPointWorld",
+                    "description": "",
+                    "type": "Array"
+                },
+                {
+                    "name": "shape",
+                    "description": "",
+                    "type": "Shape"
+                },
+                {
+                    "name": "body",
+                    "description": "",
+                    "type": "Body"
+                }
+            ],
+            "return": {
+                "description": "True if the intersections should continue",
+                "type": "Boolean"
+            },
+            "class": "Ray"
+        },
+        {
+            "file": "src/collision/RaycastResult.js",
+            "line": 12,
+            "itemtype": "property",
+            "name": "rayFromWorld",
+            "type": "Array",
+            "class": "RaycastResult"
+        },
+        {
+            "file": "src/collision/RaycastResult.js",
+            "line": 17,
+            "itemtype": "property",
+            "name": "rayToWorld",
+            "type": "Array",
+            "class": "RaycastResult"
+        },
+        {
+            "file": "src/collision/RaycastResult.js",
+            "line": 22,
+            "itemtype": "property",
+            "name": "hitNormalWorld",
+            "type": "Array",
+            "class": "RaycastResult"
+        },
+        {
+            "file": "src/collision/RaycastResult.js",
+            "line": 27,
+            "itemtype": "property",
+            "name": "hitPointWorld",
+            "type": "Array",
+            "class": "RaycastResult"
+        },
+        {
+            "file": "src/collision/RaycastResult.js",
+            "line": 32,
+            "itemtype": "property",
+            "name": "hasHit",
+            "type": "Boolean",
+            "class": "RaycastResult"
+        },
+        {
+            "file": "src/collision/RaycastResult.js",
+            "line": 37,
+            "description": "The hit shape, or null.",
+            "itemtype": "property",
+            "name": "shape",
+            "type": "Shape",
+            "class": "RaycastResult"
+        },
+        {
+            "file": "src/collision/RaycastResult.js",
+            "line": 43,
+            "description": "The hit body, or null.",
+            "itemtype": "property",
+            "name": "body",
+            "type": "Body",
+            "class": "RaycastResult"
+        },
+        {
+            "file": "src/collision/RaycastResult.js",
+            "line": 49,
+            "description": "The index of the hit triangle, if the hit shape was a trimesh.",
+            "itemtype": "property",
+            "name": "hitFaceIndex",
+            "type": "Number",
+            "default": "-1",
+            "class": "RaycastResult"
+        },
+        {
+            "file": "src/collision/RaycastResult.js",
+            "line": 56,
+            "description": "Distance to the hit. Will be set to -1 if there was no hit.",
+            "itemtype": "property",
+            "name": "distance",
+            "type": "Number",
+            "default": "-1",
+            "class": "RaycastResult"
+        },
+        {
+            "file": "src/collision/RaycastResult.js",
+            "line": 63,
+            "description": "If the ray should stop traversing the bodies.",
+            "access": "private",
+            "tagname": "",
+            "itemtype": "property",
+            "name": "_shouldStop",
+            "type": "Boolean",
+            "default": "false",
+            "class": "RaycastResult"
+        },
+        {
+            "file": "src/collision/RaycastResult.js",
+            "line": 72,
+            "description": "Reset all result data.",
+            "itemtype": "method",
+            "name": "reset",
+            "class": "RaycastResult"
+        },
+        {
+            "file": "src/collision/RaycastResult.js",
+            "line": 89,
+            "itemtype": "method",
+            "name": "abort",
+            "class": "RaycastResult"
+        },
+        {
+            "file": "src/collision/RaycastResult.js",
+            "line": 96,
+            "itemtype": "method",
+            "name": "set",
+            "params": [
+                {
+                    "name": "rayFromWorld",
+                    "description": "",
+                    "type": "Array"
+                },
+                {
+                    "name": "rayToWorld",
+                    "description": "",
+                    "type": "Array"
+                },
+                {
+                    "name": "hitNormalWorld",
+                    "description": "",
+                    "type": "Array"
+                },
+                {
+                    "name": "hitPointWorld",
+                    "description": "",
+                    "type": "Array"
+                },
+                {
+                    "name": "shape",
+                    "description": "",
+                    "type": "Shape"
+                },
+                {
+                    "name": "body",
+                    "description": "",
+                    "type": "Body"
+                },
+                {
+                    "name": "distance",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "class": "RaycastResult"
+        },
+        {
             "file": "src/collision/SAPBroadphase.js",
             "line": 16,
             "description": "List of bodies currently in the broadphase.",
@@ -3735,16 +4348,7 @@
         {
             "file": "src/collision/SAPBroadphase.js",
             "line": 23,
-            "description": "The world to search in.",
-            "itemtype": "property",
-            "name": "world",
-            "type": "{World}",
-            "class": "SAPBroadphase"
-        },
-        {
-            "file": "src/collision/SAPBroadphase.js",
-            "line": 30,
-            "description": "The axis to sort along.",
+            "description": "The axis to sort along. 0 means x-axis and 1 y-axis. If your bodies are more spread out over the X axis, set axisIndex to 0, and you will gain some performance.",
             "itemtype": "property",
             "name": "axisIndex",
             "type": "{Number}",
@@ -3752,7 +4356,7 @@
         },
         {
             "file": "src/collision/SAPBroadphase.js",
-            "line": 53,
+            "line": 46,
             "description": "Change the world",
             "itemtype": "method",
             "name": "setWorld",
@@ -3767,7 +4371,7 @@
         },
         {
             "file": "src/collision/SAPBroadphase.js",
-            "line": 76,
+            "line": 69,
             "description": "Sorts bodies along an axis.",
             "itemtype": "method",
             "name": "sortAxisList",
@@ -3791,7 +4395,7 @@
         },
         {
             "file": "src/collision/SAPBroadphase.js",
-            "line": 98,
+            "line": 99,
             "description": "Get the colliding pairs",
             "itemtype": "method",
             "name": "getCollisionPairs",
@@ -3809,8 +4413,46 @@
             "class": "SAPBroadphase"
         },
         {
+            "file": "src/collision/SAPBroadphase.js",
+            "line": 146,
+            "description": "Returns all the bodies within an AABB.",
+            "itemtype": "method",
+            "name": "aabbQuery",
+            "params": [
+                {
+                    "name": "world",
+                    "description": "",
+                    "type": "World"
+                },
+                {
+                    "name": "aabb",
+                    "description": "",
+                    "type": "AABB"
+                },
+                {
+                    "name": "result",
+                    "description": "An array to store resulting bodies in.",
+                    "type": "Array"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Array"
+            },
+            "class": "SAPBroadphase"
+        },
+        {
             "file": "src/constraints/Constraint.js",
-            "line": 25,
+            "line": 19,
+            "description": "The type of constraint. May be one of Constraint.DISTANCE, Constraint.GEAR, Constraint.LOCK, Constraint.PRISMATIC or Constraint.REVOLUTE.",
+            "itemtype": "property",
+            "name": "type",
+            "type": "Number",
+            "class": "Constraint"
+        },
+        {
+            "file": "src/constraints/Constraint.js",
+            "line": 30,
             "description": "Equations to be solved in this constraint",
             "itemtype": "property",
             "name": "equations",
@@ -3819,7 +4461,7 @@
         },
         {
             "file": "src/constraints/Constraint.js",
-            "line": 33,
+            "line": 38,
             "description": "First body participating in the constraint.",
             "itemtype": "property",
             "name": "bodyA",
@@ -3828,7 +4470,7 @@
         },
         {
             "file": "src/constraints/Constraint.js",
-            "line": 40,
+            "line": 45,
             "description": "Second body participating in the constraint.",
             "itemtype": "property",
             "name": "bodyB",
@@ -3837,7 +4479,7 @@
         },
         {
             "file": "src/constraints/Constraint.js",
-            "line": 47,
+            "line": 52,
             "description": "Set to true if you want the connected bodies to collide.",
             "itemtype": "property",
             "name": "collideConnected",
@@ -3847,7 +4489,7 @@
         },
         {
             "file": "src/constraints/Constraint.js",
-            "line": 66,
+            "line": 71,
             "description": "Updates the internal constraint parameters before solve.",
             "itemtype": "method",
             "name": "update",
@@ -3855,7 +4497,52 @@
         },
         {
             "file": "src/constraints/Constraint.js",
-            "line": 80,
+            "line": 79,
+            "static": 1,
+            "itemtype": "property",
+            "name": "DISTANCE",
+            "type": "Number",
+            "class": "Constraint"
+        },
+        {
+            "file": "src/constraints/Constraint.js",
+            "line": 85,
+            "static": 1,
+            "itemtype": "property",
+            "name": "GEAR",
+            "type": "Number",
+            "class": "Constraint"
+        },
+        {
+            "file": "src/constraints/Constraint.js",
+            "line": 91,
+            "static": 1,
+            "itemtype": "property",
+            "name": "LOCK",
+            "type": "Number",
+            "class": "Constraint"
+        },
+        {
+            "file": "src/constraints/Constraint.js",
+            "line": 97,
+            "static": 1,
+            "itemtype": "property",
+            "name": "PRISMATIC",
+            "type": "Number",
+            "class": "Constraint"
+        },
+        {
+            "file": "src/constraints/Constraint.js",
+            "line": 103,
+            "static": 1,
+            "itemtype": "property",
+            "name": "REVOLUTE",
+            "type": "Number",
+            "class": "Constraint"
+        },
+        {
+            "file": "src/constraints/Constraint.js",
+            "line": 109,
             "description": "Set stiffness for this constraint.",
             "itemtype": "method",
             "name": "setStiffness",
@@ -3870,7 +4557,7 @@
         },
         {
             "file": "src/constraints/Constraint.js",
-            "line": 94,
+            "line": 123,
             "description": "Set relaxation for this constraint.",
             "itemtype": "method",
             "name": "setRelaxation",
@@ -3966,7 +4653,7 @@
         },
         {
             "file": "src/constraints/DistanceConstraint.js",
-            "line": 176,
+            "line": 177,
             "description": "Update the constraint equations. Should be done if any of the bodies changed position, before solving.",
             "itemtype": "method",
             "name": "update",
@@ -3974,7 +4661,7 @@
         },
         {
             "file": "src/constraints/DistanceConstraint.js",
-            "line": 245,
+            "line": 246,
             "description": "Set the max force to be used",
             "itemtype": "method",
             "name": "setMaxForce",
@@ -3989,7 +4676,7 @@
         },
         {
             "file": "src/constraints/DistanceConstraint.js",
-            "line": 256,
+            "line": 257,
             "description": "Get the max force",
             "itemtype": "method",
             "name": "getMaxForce",
@@ -4019,7 +4706,7 @@
         },
         {
             "file": "src/constraints/GearConstraint.js",
-            "line": 64,
+            "line": 65,
             "description": "Set the max torque for the constraint.",
             "itemtype": "method",
             "name": "setMaxTorque",
@@ -4034,7 +4721,7 @@
         },
         {
             "file": "src/constraints/GearConstraint.js",
-            "line": 73,
+            "line": 74,
             "description": "Get the max torque for the constraint.",
             "itemtype": "method",
             "name": "getMaxTorque",
@@ -4064,7 +4751,7 @@
         },
         {
             "file": "src/constraints/LockConstraint.js",
-            "line": 113,
+            "line": 114,
             "description": "Set the maximum force to be applied.",
             "itemtype": "method",
             "name": "setMaxForce",
@@ -4079,7 +4766,7 @@
         },
         {
             "file": "src/constraints/LockConstraint.js",
-            "line": 126,
+            "line": 127,
             "description": "Get the max force.",
             "itemtype": "method",
             "name": "getMaxForce",
@@ -4124,7 +4811,7 @@
         },
         {
             "file": "src/constraints/PrismaticConstraint.js",
-            "line": 123,
+            "line": 124,
             "description": "Set to true to enable lower limit.",
             "itemtype": "property",
             "name": "lowerLimitEnabled",
@@ -4133,7 +4820,7 @@
         },
         {
             "file": "src/constraints/PrismaticConstraint.js",
-            "line": 130,
+            "line": 131,
             "description": "Set to true to enable upper limit.",
             "itemtype": "property",
             "name": "upperLimitEnabled",
@@ -4142,7 +4829,7 @@
         },
         {
             "file": "src/constraints/PrismaticConstraint.js",
-            "line": 137,
+            "line": 138,
             "description": "Lower constraint limit. The constraint position is forced to be larger than this value.",
             "itemtype": "property",
             "name": "lowerLimit",
@@ -4151,7 +4838,7 @@
         },
         {
             "file": "src/constraints/PrismaticConstraint.js",
-            "line": 144,
+            "line": 145,
             "description": "Upper constraint limit. The constraint position is forced to be smaller than this value.",
             "itemtype": "property",
             "name": "upperLimit",
@@ -4160,7 +4847,7 @@
         },
         {
             "file": "src/constraints/PrismaticConstraint.js",
-            "line": 159,
+            "line": 160,
             "description": "Equation used for the motor.",
             "itemtype": "property",
             "name": "motorEquation",
@@ -4169,7 +4856,7 @@
         },
         {
             "file": "src/constraints/PrismaticConstraint.js",
-            "line": 166,
+            "line": 167,
             "description": "The current motor state. Enable or disable the motor using .enableMotor",
             "itemtype": "property",
             "name": "motorEnabled",
@@ -4178,7 +4865,7 @@
         },
         {
             "file": "src/constraints/PrismaticConstraint.js",
-            "line": 173,
+            "line": 174,
             "description": "Set the target speed for the motor.",
             "itemtype": "property",
             "name": "motorSpeed",
@@ -4187,7 +4874,7 @@
         },
         {
             "file": "src/constraints/PrismaticConstraint.js",
-            "line": 205,
+            "line": 207,
             "description": "Update the constraint equations. Should be done if any of the bodies changed position, before solving.",
             "itemtype": "method",
             "name": "update",
@@ -4195,7 +4882,7 @@
         },
         {
             "file": "src/constraints/PrismaticConstraint.js",
-            "line": 302,
+            "line": 304,
             "description": "Enable the motor",
             "itemtype": "method",
             "name": "enableMotor",
@@ -4203,7 +4890,7 @@
         },
         {
             "file": "src/constraints/PrismaticConstraint.js",
-            "line": 314,
+            "line": 316,
             "description": "Disable the rotational motor",
             "itemtype": "method",
             "name": "disableMotor",
@@ -4211,7 +4898,7 @@
         },
         {
             "file": "src/constraints/PrismaticConstraint.js",
-            "line": 327,
+            "line": 329,
             "description": "Set the constraint limits.",
             "itemtype": "method",
             "name": "setLimits",
@@ -4303,7 +4990,7 @@
         },
         {
             "file": "src/constraints/RevoluteConstraint.js",
-            "line": 156,
+            "line": 157,
             "description": "Set the constraint angle limits.",
             "itemtype": "method",
             "name": "setLimits",
@@ -4323,7 +5010,7 @@
         },
         {
             "file": "src/constraints/RevoluteConstraint.js",
-            "line": 266,
+            "line": 267,
             "description": "Enable the rotational motor",
             "itemtype": "method",
             "name": "enableMotor",
@@ -4331,7 +5018,7 @@
         },
         {
             "file": "src/constraints/RevoluteConstraint.js",
-            "line": 278,
+            "line": 279,
             "description": "Disable the rotational motor",
             "itemtype": "method",
             "name": "disableMotor",
@@ -4339,10 +5026,12 @@
         },
         {
             "file": "src/constraints/RevoluteConstraint.js",
-            "line": 291,
+            "line": 292,
             "description": "Check if the motor is enabled.",
             "itemtype": "method",
             "name": "motorIsEnabled",
+            "deprecated": true,
+            "deprecationMessage": "use property motorEnabled instead.",
             "return": {
                 "description": "",
                 "type": "Boolean"
@@ -4351,7 +5040,7 @@
         },
         {
             "file": "src/constraints/RevoluteConstraint.js",
-            "line": 300,
+            "line": 302,
             "description": "Set the speed of the rotational constraint motor",
             "itemtype": "method",
             "name": "setMotorSpeed",
@@ -4366,7 +5055,7 @@
         },
         {
             "file": "src/constraints/RevoluteConstraint.js",
-            "line": 313,
+            "line": 315,
             "description": "Get the speed of the rotational constraint motor",
             "itemtype": "method",
             "name": "getMotorSpeed",
@@ -5786,7 +6475,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 47,
+            "line": 50,
             "description": "The body identifyer",
             "itemtype": "property",
             "name": "id",
@@ -5795,7 +6484,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 54,
+            "line": 57,
             "description": "The world that this body is added to. This property is set to NULL if the body is not added to any world.",
             "itemtype": "property",
             "name": "world",
@@ -5804,7 +6493,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 61,
+            "line": 64,
             "description": "The shapes of the body. The local transform of the shape in .shapes[i] is\ndefined by .shapeOffsets[i] and .shapeAngles[i].",
             "itemtype": "property",
             "name": "shapes",
@@ -5813,7 +6502,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 70,
+            "line": 73,
             "description": "The local shape offsets, relative to the body center of mass. This is an\narray of Array.",
             "itemtype": "property",
             "name": "shapeOffsets",
@@ -5822,7 +6511,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 78,
+            "line": 81,
             "description": "The body-local shape angle transforms. This is an array of numbers (angles).",
             "itemtype": "property",
             "name": "shapeAngles",
@@ -5831,7 +6520,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 85,
+            "line": 88,
             "description": "The mass of the body.",
             "itemtype": "property",
             "name": "mass",
@@ -5840,7 +6529,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 92,
+            "line": 95,
             "description": "The inverse mass of the body.",
             "itemtype": "property",
             "name": "invMass",
@@ -5849,7 +6538,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 99,
+            "line": 102,
             "description": "The inertia of the body around the Z axis.",
             "itemtype": "property",
             "name": "inertia",
@@ -5858,7 +6547,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 106,
+            "line": 109,
             "description": "The inverse inertia of the body.",
             "itemtype": "property",
             "name": "invInertia",
@@ -5867,7 +6556,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 116,
+            "line": 119,
             "description": "Set to true if you want to fix the rotation of the body.",
             "itemtype": "property",
             "name": "fixedRotation",
@@ -5876,7 +6565,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 123,
+            "line": 126,
             "description": "The position of the body",
             "itemtype": "property",
             "name": "position",
@@ -5885,7 +6574,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 133,
+            "line": 136,
             "description": "The interpolated position of the body.",
             "itemtype": "property",
             "name": "interpolatedPosition",
@@ -5894,7 +6583,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 140,
+            "line": 143,
             "description": "The interpolated angle of the body.",
             "itemtype": "property",
             "name": "interpolatedAngle",
@@ -5903,7 +6592,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 147,
+            "line": 150,
             "description": "The previous position of the body.",
             "itemtype": "property",
             "name": "previousPosition",
@@ -5912,7 +6601,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 154,
+            "line": 157,
             "description": "The previous angle of the body.",
             "itemtype": "property",
             "name": "previousAngle",
@@ -5921,7 +6610,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 161,
+            "line": 164,
             "description": "The velocity of the body",
             "itemtype": "property",
             "name": "velocity",
@@ -5930,7 +6619,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 171,
+            "line": 174,
             "description": "Constraint velocity that was added to the body during the last step.",
             "itemtype": "property",
             "name": "vlambda",
@@ -5939,7 +6628,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 178,
+            "line": 181,
             "description": "Angular constraint velocity that was added to the body during last step.",
             "itemtype": "property",
             "name": "wlambda",
@@ -5948,7 +6637,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 185,
+            "line": 188,
             "description": "The angle of the body, in radians.",
             "itemtype": "property",
             "name": "angle",
@@ -5960,7 +6649,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 202,
+            "line": 205,
             "description": "The angular velocity of the body, in radians per second.",
             "itemtype": "property",
             "name": "angularVelocity",
@@ -5969,7 +6658,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 209,
+            "line": 212,
             "description": "The force acting on the body. Since the body force (and {{#crossLink \"Body/angularForce:property\"}}{{/crossLink}}) will be zeroed after each step, so you need to set the force before each step.",
             "itemtype": "property",
             "name": "force",
@@ -5982,7 +6671,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 233,
+            "line": 236,
             "description": "The angular force acting on the body. See {{#crossLink \"Body/force:property\"}}{{/crossLink}}.",
             "itemtype": "property",
             "name": "angularForce",
@@ -5991,7 +6680,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 240,
+            "line": 243,
             "description": "The linear damping acting on the body in the velocity direction. Should be a value between 0 and 1.",
             "itemtype": "property",
             "name": "damping",
@@ -6001,7 +6690,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 248,
+            "line": 251,
             "description": "The angular force acting on the body. Should be a value between 0 and 1.",
             "itemtype": "property",
             "name": "angularDamping",
@@ -6011,7 +6700,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 256,
+            "line": 259,
             "description": "The type of motion this body has. Should be one of: {{#crossLink \"Body/STATIC:property\"}}Body.STATIC{{/crossLink}}, {{#crossLink \"Body/DYNAMIC:property\"}}Body.DYNAMIC{{/crossLink}} and {{#crossLink \"Body/KINEMATIC:property\"}}Body.KINEMATIC{{/crossLink}}.\n\n* Static bodies do not move, and they do not respond to forces or collision.\n* Dynamic bodies body can move and respond to collisions and forces.\n* Kinematic bodies only moves according to its .velocity, and does not respond to collisions or force.",
             "itemtype": "property",
             "name": "type",
@@ -6025,7 +6714,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 295,
+            "line": 298,
             "description": "Bounding circle radius.",
             "itemtype": "property",
             "name": "boundingRadius",
@@ -6034,7 +6723,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 302,
+            "line": 305,
             "description": "Bounding box of this body.",
             "itemtype": "property",
             "name": "aabb",
@@ -6043,7 +6732,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 309,
+            "line": 312,
             "description": "Indicates if the AABB needs update. Update it with {{#crossLink \"Body/updateAABB:method\"}}.updateAABB(){{/crossLink}}.",
             "itemtype": "property",
             "name": "aabbNeedsUpdate",
@@ -6058,7 +6747,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 323,
+            "line": 326,
             "description": "If true, the body will automatically fall to sleep. Note that you need to enable sleeping in the {{#crossLink \"World\"}}{{/crossLink}} before anything will happen.",
             "itemtype": "property",
             "name": "allowSleep",
@@ -6068,7 +6757,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 333,
+            "line": 336,
             "description": "One of {{#crossLink \"Body/AWAKE:property\"}}Body.AWAKE{{/crossLink}}, {{#crossLink \"Body/SLEEPY:property\"}}Body.SLEEPY{{/crossLink}} and {{#crossLink \"Body/SLEEPING:property\"}}Body.SLEEPING{{/crossLink}}.\n\nThe body is initially Body.AWAKE. If its velocity norm is below .sleepSpeedLimit, the sleepState will become Body.SLEEPY. If the body continues to be Body.SLEEPY for .sleepTimeLimit seconds, it will fall asleep (Body.SLEEPY).",
             "itemtype": "property",
             "name": "sleepState",
@@ -6078,7 +6767,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 344,
+            "line": 347,
             "description": "If the speed (the norm of the velocity) is smaller than this value, the body is considered sleepy.",
             "itemtype": "property",
             "name": "sleepSpeedLimit",
@@ -6088,7 +6777,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 352,
+            "line": 355,
             "description": "If the body has been sleepy for this sleepTimeLimit seconds, it is considered sleeping.",
             "itemtype": "property",
             "name": "sleepTimeLimit",
@@ -6098,7 +6787,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 360,
+            "line": 363,
             "description": "Gravity scaling factor. If you want the body to ignore gravity, set this to zero. If you want to reverse gravity, set it to -1.",
             "itemtype": "property",
             "name": "gravityScale",
@@ -6108,7 +6797,25 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 367,
+            "line": 370,
+            "description": "Whether to produce contact forces when in contact with other bodies. Note that contacts will be generated, but they will be disabled. That means that this body will move through other bodies, but it will still trigger contact events, etc.",
+            "itemtype": "property",
+            "name": "collisionResponse",
+            "type": "Boolean",
+            "class": "Body"
+        },
+        {
+            "file": "src/objects/Body.js",
+            "line": 376,
+            "description": "How long the body has been sleeping.",
+            "itemtype": "property",
+            "name": "idleTime",
+            "type": "Number",
+            "class": "Body"
+        },
+        {
+            "file": "src/objects/Body.js",
+            "line": 382,
             "description": "The last time when the body went to SLEEPY state.",
             "itemtype": "property",
             "name": "timeLastSleepy",
@@ -6119,7 +6826,27 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 398,
+            "line": 389,
+            "description": "If the body speed exceeds this threshold, CCD (continuous collision detection) will be enabled. Set it to a negative number to disable CCD completely for this body.",
+            "itemtype": "property",
+            "name": "ccdSpeedThreshold",
+            "type": "Number",
+            "default": "-1",
+            "class": "Body"
+        },
+        {
+            "file": "src/objects/Body.js",
+            "line": 396,
+            "description": "The number of iterations that should be used when searching for the time of impact during CCD. A larger number will assure that there's a small penetration on CCD collision, but a small number will give more performance.",
+            "itemtype": "property",
+            "name": "ccdIterations",
+            "type": "Number",
+            "default": "10",
+            "class": "Body"
+        },
+        {
+            "file": "src/objects/Body.js",
+            "line": 424,
             "description": "Set the total density of the body",
             "itemtype": "method",
             "name": "setDensity",
@@ -6127,7 +6854,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 408,
+            "line": 434,
             "description": "Get the total area of all shapes in the body",
             "itemtype": "method",
             "name": "getArea",
@@ -6139,7 +6866,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 421,
+            "line": 447,
             "description": "Get the AABB from the body. The AABB is updated if necessary.",
             "itemtype": "method",
             "name": "getAABB",
@@ -6147,7 +6874,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 435,
+            "line": 461,
             "description": "Updates the AABB of the Body",
             "itemtype": "method",
             "name": "updateAABB",
@@ -6155,7 +6882,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 468,
+            "line": 494,
             "description": "Update the bounding radius of the body. Should be done if any of the shapes\nare changed.",
             "itemtype": "method",
             "name": "updateBoundingRadius",
@@ -6163,7 +6890,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 491,
+            "line": 517,
             "description": "Add a shape to the body. You can pass a local transform when adding a shape,\nso that the shape gets an offset and angle relative to the body center of mass.\nWill automatically update the mass properties and bounding radius.",
             "itemtype": "method",
             "name": "addShape",
@@ -6193,7 +6920,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 533,
+            "line": 559,
             "description": "Remove a shape",
             "itemtype": "method",
             "name": "removeShape",
@@ -6212,7 +6939,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 553,
+            "line": 579,
             "description": "Updates .inertia, .invMass, .invInertia for this Body. Should be called when\nchanging the structure or mass of the Body.",
             "itemtype": "method",
             "name": "updateMassProperties",
@@ -6223,7 +6950,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 600,
+            "line": 626,
             "description": "Apply force to a world point. This could for example be a point on the RigidBody surface. Applying force this way will add to Body.force and Body.angularForce.",
             "itemtype": "method",
             "name": "applyForce",
@@ -6243,7 +6970,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 621,
+            "line": 647,
             "description": "Transform a world point to local body frame.",
             "itemtype": "method",
             "name": "toLocalFrame",
@@ -6263,7 +6990,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 631,
+            "line": 657,
             "description": "Transform a local point to world frame.",
             "itemtype": "method",
             "name": "toWorldFrame",
@@ -6283,7 +7010,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 641,
+            "line": 667,
             "description": "Reads a polygon shape path, and assembles convex shapes from that and puts them at proper offset points.",
             "itemtype": "method",
             "name": "fromPolygon",
@@ -6331,7 +7058,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 726,
+            "line": 752,
             "description": "Moves the shape offsets so their center of mass becomes the body center of mass.",
             "itemtype": "method",
             "name": "adjustCenterOfMass",
@@ -6339,7 +7066,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 772,
+            "line": 798,
             "description": "Sets the force on the body to zero.",
             "itemtype": "method",
             "name": "setZeroForce",
@@ -6347,7 +7074,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 795,
+            "line": 821,
             "description": "Apply damping, see <a href=\"http://code.google.com/p/bullet/issues/detail?id=74\">this</a> for details.",
             "itemtype": "method",
             "name": "applyDamping",
@@ -6362,7 +7089,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 816,
+            "line": 834,
             "description": "Wake the body up. Normally you should not need this, as the body is automatically awoken at events such as collisions.\nSets the sleepState to {{#crossLink \"Body/AWAKE:property\"}}Body.AWAKE{{/crossLink}} and emits the wakeUp event if the body wasn't awake before.",
             "itemtype": "method",
             "name": "wakeUp",
@@ -6370,7 +7097,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 830,
+            "line": 848,
             "description": "Force body sleep",
             "itemtype": "method",
             "name": "sleep",
@@ -6378,7 +7105,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 843,
+            "line": 861,
             "description": "Called every timestep to update internal sleep timer and change sleep state if needed.",
             "itemtype": "method",
             "name": "sleepTick",
@@ -6403,7 +7130,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 903,
+            "line": 922,
             "description": "Check if the body is overlapping another body. Note that this method only works if the body was added to a World and if at least one step was taken.",
             "itemtype": "method",
             "name": "overlaps",
@@ -6422,28 +7149,43 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 913,
+            "line": 935,
+            "description": "Move the body forward in time given its current velocity.",
+            "itemtype": "method",
+            "name": "integrate",
+            "params": [
+                {
+                    "name": "dt",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "class": "Body"
+        },
+        {
+            "file": "src/objects/Body.js",
+            "line": 1056,
             "itemtype": "event",
             "name": "sleepy",
             "class": "Body"
         },
         {
             "file": "src/objects/Body.js",
-            "line": 920,
+            "line": 1063,
             "itemtype": "event",
             "name": "sleep",
             "class": "Body"
         },
         {
             "file": "src/objects/Body.js",
-            "line": 927,
+            "line": 1070,
             "itemtype": "event",
             "name": "wakeup",
             "class": "Body"
         },
         {
             "file": "src/objects/Body.js",
-            "line": 934,
+            "line": 1077,
             "description": "Dynamic body.",
             "itemtype": "property",
             "name": "DYNAMIC",
@@ -6453,7 +7195,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 942,
+            "line": 1085,
             "description": "Static body.",
             "itemtype": "property",
             "name": "STATIC",
@@ -6463,7 +7205,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 950,
+            "line": 1093,
             "description": "Kinematic body.",
             "itemtype": "property",
             "name": "KINEMATIC",
@@ -6473,7 +7215,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 958,
+            "line": 1101,
             "itemtype": "property",
             "name": "AWAKE",
             "type": "{Number}",
@@ -6482,7 +7224,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 965,
+            "line": 1108,
             "itemtype": "property",
             "name": "SLEEPY",
             "type": "{Number}",
@@ -6491,7 +7233,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 972,
+            "line": 1115,
             "itemtype": "property",
             "name": "SLEEPING",
             "type": "{Number}",
@@ -6527,7 +7269,7 @@
         },
         {
             "file": "src/objects/LinearSpring.js",
-            "line": 65,
+            "line": 66,
             "description": "Set the anchor point on body A, using world coordinates.",
             "itemtype": "method",
             "name": "setWorldAnchorA",
@@ -6542,7 +7284,7 @@
         },
         {
             "file": "src/objects/LinearSpring.js",
-            "line": 74,
+            "line": 75,
             "description": "Set the anchor point on body B, using world coordinates.",
             "itemtype": "method",
             "name": "setWorldAnchorB",
@@ -6557,7 +7299,7 @@
         },
         {
             "file": "src/objects/LinearSpring.js",
-            "line": 83,
+            "line": 84,
             "description": "Get the anchor point on body A, in world coordinates.",
             "itemtype": "method",
             "name": "getWorldAnchorA",
@@ -6572,7 +7314,7 @@
         },
         {
             "file": "src/objects/LinearSpring.js",
-            "line": 92,
+            "line": 93,
             "description": "Get the anchor point on body B, in world coordinates.",
             "itemtype": "method",
             "name": "getWorldAnchorB",
@@ -6587,7 +7329,7 @@
         },
         {
             "file": "src/objects/LinearSpring.js",
-            "line": 111,
+            "line": 112,
             "description": "Apply the spring force to the connected bodies.",
             "itemtype": "method",
             "name": "applyForce",
@@ -6604,7 +7346,7 @@
         },
         {
             "file": "src/objects/RotationalSpring.js",
-            "line": 35,
+            "line": 36,
             "description": "Apply the spring force to the connected bodies.",
             "itemtype": "method",
             "name": "applyForce",
@@ -6656,7 +7398,7 @@
         },
         {
             "file": "src/shapes/Capsule.js",
-            "line": 16,
+            "line": 21,
             "description": "The distance between the end points.",
             "itemtype": "property",
             "name": "length",
@@ -6665,7 +7407,7 @@
         },
         {
             "file": "src/shapes/Capsule.js",
-            "line": 22,
+            "line": 27,
             "description": "The radius of the capsule.",
             "itemtype": "property",
             "name": "radius",
@@ -6674,7 +7416,7 @@
         },
         {
             "file": "src/shapes/Capsule.js",
-            "line": 32,
+            "line": 38,
             "description": "Compute the mass moment of inertia of the Capsule.",
             "itemtype": "method",
             "name": "conputeMomentOfInertia",
@@ -6696,21 +7438,21 @@
         },
         {
             "file": "src/shapes/Capsule.js",
-            "line": 47,
+            "line": 53,
             "itemtype": "method",
             "name": "updateBoundingRadius",
             "class": "Capsule"
         },
         {
             "file": "src/shapes/Capsule.js",
-            "line": 54,
+            "line": 60,
             "itemtype": "method",
             "name": "updateArea",
             "class": "Capsule"
         },
         {
             "file": "src/shapes/Capsule.js",
-            "line": 63,
+            "line": 69,
             "itemtype": "method",
             "name": "computeAABB",
             "params": [
@@ -6734,7 +7476,7 @@
         },
         {
             "file": "src/shapes/Circle.js",
-            "line": 15,
+            "line": 20,
             "description": "The radius of the circle.",
             "itemtype": "property",
             "name": "radius",
@@ -6743,7 +7485,7 @@
         },
         {
             "file": "src/shapes/Circle.js",
-            "line": 26,
+            "line": 32,
             "itemtype": "method",
             "name": "computeMomentOfInertia",
             "params": [
@@ -6761,7 +7503,7 @@
         },
         {
             "file": "src/shapes/Circle.js",
-            "line": 36,
+            "line": 42,
             "itemtype": "method",
             "name": "updateBoundingRadius",
             "return": {
@@ -6772,7 +7514,7 @@
         },
         {
             "file": "src/shapes/Circle.js",
-            "line": 44,
+            "line": 50,
             "itemtype": "method",
             "name": "updateArea",
             "return": {
@@ -6783,7 +7525,7 @@
         },
         {
             "file": "src/shapes/Circle.js",
-            "line": 52,
+            "line": 58,
             "itemtype": "method",
             "name": "computeAABB",
             "params": [
@@ -6807,7 +7549,7 @@
         },
         {
             "file": "src/shapes/Convex.js",
-            "line": 18,
+            "line": 23,
             "description": "Vertices defined in the local frame.",
             "itemtype": "property",
             "name": "vertices",
@@ -6816,7 +7558,7 @@
         },
         {
             "file": "src/shapes/Convex.js",
-            "line": 25,
+            "line": 30,
             "description": "Axes defined in the local frame.",
             "itemtype": "property",
             "name": "axes",
@@ -6825,7 +7567,7 @@
         },
         {
             "file": "src/shapes/Convex.js",
-            "line": 64,
+            "line": 69,
             "description": "The center of mass of the Convex",
             "itemtype": "property",
             "name": "centerOfMass",
@@ -6834,7 +7576,7 @@
         },
         {
             "file": "src/shapes/Convex.js",
-            "line": 71,
+            "line": 76,
             "description": "Triangulated version of this convex. The structure is Array of 3-Arrays, and each subarray contains 3 integers, referencing the vertices.",
             "itemtype": "property",
             "name": "triangles",
@@ -6843,7 +7585,7 @@
         },
         {
             "file": "src/shapes/Convex.js",
-            "line": 83,
+            "line": 88,
             "description": "The bounding radius of the convex",
             "itemtype": "property",
             "name": "boundingRadius",
@@ -6852,7 +7594,7 @@
         },
         {
             "file": "src/shapes/Convex.js",
-            "line": 103,
+            "line": 109,
             "description": "Project a Convex onto a world-oriented axis",
             "itemtype": "method",
             "name": "projectOntoAxis",
@@ -6878,7 +7620,7 @@
         },
         {
             "file": "src/shapes/Convex.js",
-            "line": 156,
+            "line": 162,
             "description": "Update the .triangles property",
             "itemtype": "method",
             "name": "updateTriangles",
@@ -6886,7 +7628,7 @@
         },
         {
             "file": "src/shapes/Convex.js",
-            "line": 195,
+            "line": 201,
             "description": "Update the .centerOfMass property.",
             "itemtype": "method",
             "name": "updateCenterOfMass",
@@ -6894,7 +7636,7 @@
         },
         {
             "file": "src/shapes/Convex.js",
-            "line": 237,
+            "line": 243,
             "description": "Compute the mass moment of inertia of the Convex.",
             "itemtype": "method",
             "name": "computeMomentOfInertia",
@@ -6916,7 +7658,7 @@
         },
         {
             "file": "src/shapes/Convex.js",
-            "line": 259,
+            "line": 265,
             "description": "Updates the .boundingRadius property",
             "itemtype": "method",
             "name": "updateBoundingRadius",
@@ -6924,7 +7666,7 @@
         },
         {
             "file": "src/shapes/Convex.js",
-            "line": 277,
+            "line": 283,
             "description": "Get the area of the triangle spanned by the three points a, b, c. The area is positive if the points are given in counter-clockwise order, otherwise negative.",
             "static": 1,
             "itemtype": "method",
@@ -6954,7 +7696,7 @@
         },
         {
             "file": "src/shapes/Convex.js",
-            "line": 290,
+            "line": 296,
             "description": "Update the .area",
             "itemtype": "method",
             "name": "updateArea",
@@ -6962,7 +7704,7 @@
         },
         {
             "file": "src/shapes/Convex.js",
-            "line": 312,
+            "line": 318,
             "itemtype": "method",
             "name": "computeAABB",
             "params": [
@@ -7022,7 +7764,7 @@
         },
         {
             "file": "src/shapes/Heightfield.js",
-            "line": 84,
+            "line": 85,
             "itemtype": "method",
             "name": "computeMomentOfInertia",
             "params": [
@@ -7040,7 +7782,7 @@
         },
         {
             "file": "src/shapes/Heightfield.js",
-            "line": 106,
+            "line": 107,
             "itemtype": "method",
             "name": "computeAABB",
             "params": [
@@ -7073,7 +7815,7 @@
         },
         {
             "file": "src/shapes/Line.js",
-            "line": 35,
+            "line": 37,
             "itemtype": "method",
             "name": "computeAABB",
             "params": [
@@ -7097,7 +7839,7 @@
         },
         {
             "file": "src/shapes/Particle.js",
-            "line": 24,
+            "line": 26,
             "itemtype": "method",
             "name": "computeAABB",
             "params": [
@@ -7121,7 +7863,7 @@
         },
         {
             "file": "src/shapes/Plane.js",
-            "line": 18,
+            "line": 19,
             "description": "Compute moment of inertia",
             "itemtype": "method",
             "name": "computeMomentOfInertia",
@@ -7129,7 +7871,7 @@
         },
         {
             "file": "src/shapes/Plane.js",
-            "line": 26,
+            "line": 27,
             "description": "Update the bounding radius",
             "itemtype": "method",
             "name": "updateBoundingRadius",
@@ -7137,7 +7879,7 @@
         },
         {
             "file": "src/shapes/Plane.js",
-            "line": 34,
+            "line": 35,
             "itemtype": "method",
             "name": "computeAABB",
             "params": [
@@ -7179,7 +7921,7 @@
         },
         {
             "file": "src/shapes/Rectangle.js",
-            "line": 43,
+            "line": 44,
             "description": "Compute moment of inertia",
             "itemtype": "method",
             "name": "computeMomentOfInertia",
@@ -7198,7 +7940,7 @@
         },
         {
             "file": "src/shapes/Rectangle.js",
-            "line": 55,
+            "line": 56,
             "description": "Update the bounding radius",
             "itemtype": "method",
             "name": "updateBoundingRadius",
@@ -7206,7 +7948,7 @@
         },
         {
             "file": "src/shapes/Rectangle.js",
-            "line": 70,
+            "line": 71,
             "itemtype": "method",
             "name": "computeAABB",
             "params": [
@@ -7271,6 +8013,15 @@
         {
             "file": "src/shapes/Shape.js",
             "line": 72,
+            "description": "Whether to produce contact forces when in contact with other bodies. Note that contacts will be generated, but they will be disabled. That means that this shape will move through other body shapes, but it will still trigger contact events, etc.",
+            "itemtype": "property",
+            "name": "collisionResponse",
+            "type": "Boolean",
+            "class": "Shape"
+        },
+        {
+            "file": "src/shapes/Shape.js",
+            "line": 78,
             "description": "Collision mask of this shape. See .collisionGroup.",
             "itemtype": "property",
             "name": "collisionMask",
@@ -7279,7 +8030,7 @@
         },
         {
             "file": "src/shapes/Shape.js",
-            "line": 82,
+            "line": 88,
             "description": "Material to use in collisions for this Shape. If this is set to null, the world will use default material properties instead.",
             "itemtype": "property",
             "name": "material",
@@ -7288,7 +8039,7 @@
         },
         {
             "file": "src/shapes/Shape.js",
-            "line": 89,
+            "line": 95,
             "description": "Area of this shape.",
             "itemtype": "property",
             "name": "area",
@@ -7297,7 +8048,7 @@
         },
         {
             "file": "src/shapes/Shape.js",
-            "line": 96,
+            "line": 102,
             "description": "Set to true if you want this shape to be a sensor. A sensor does not generate contacts, but it still reports contact events. This is good if you want to know if a shape is overlapping another shape, without them generating contacts.",
             "itemtype": "property",
             "name": "sensor",
@@ -7306,7 +8057,7 @@
         },
         {
             "file": "src/shapes/Shape.js",
-            "line": 107,
+            "line": 113,
             "static": 1,
             "itemtype": "property",
             "name": "CIRCLE",
@@ -7315,7 +8066,7 @@
         },
         {
             "file": "src/shapes/Shape.js",
-            "line": 113,
+            "line": 119,
             "static": 1,
             "itemtype": "property",
             "name": "PARTICLE",
@@ -7324,7 +8075,7 @@
         },
         {
             "file": "src/shapes/Shape.js",
-            "line": 119,
+            "line": 125,
             "static": 1,
             "itemtype": "property",
             "name": "PLANE",
@@ -7333,7 +8084,7 @@
         },
         {
             "file": "src/shapes/Shape.js",
-            "line": 125,
+            "line": 131,
             "static": 1,
             "itemtype": "property",
             "name": "CONVEX",
@@ -7342,7 +8093,7 @@
         },
         {
             "file": "src/shapes/Shape.js",
-            "line": 131,
+            "line": 137,
             "static": 1,
             "itemtype": "property",
             "name": "LINE",
@@ -7351,7 +8102,7 @@
         },
         {
             "file": "src/shapes/Shape.js",
-            "line": 137,
+            "line": 143,
             "static": 1,
             "itemtype": "property",
             "name": "RECTANGLE",
@@ -7360,7 +8111,7 @@
         },
         {
             "file": "src/shapes/Shape.js",
-            "line": 143,
+            "line": 149,
             "static": 1,
             "itemtype": "property",
             "name": "CAPSULE",
@@ -7369,7 +8120,7 @@
         },
         {
             "file": "src/shapes/Shape.js",
-            "line": 149,
+            "line": 155,
             "static": 1,
             "itemtype": "property",
             "name": "HEIGHTFIELD",
@@ -7378,7 +8129,7 @@
         },
         {
             "file": "src/shapes/Shape.js",
-            "line": 155,
+            "line": 161,
             "description": "Should return the moment of inertia around the Z axis of the body given the total mass. See <a href=\"http://en.wikipedia.org/wiki/List_of_moments_of_inertia\">Wikipedia's list of moments of inertia</a>.",
             "itemtype": "method",
             "name": "computeMomentOfInertia",
@@ -7397,7 +8148,7 @@
         },
         {
             "file": "src/shapes/Shape.js",
-            "line": 165,
+            "line": 171,
             "description": "Returns the bounding circle radius of this shape.",
             "itemtype": "method",
             "name": "updateBoundingRadius",
@@ -7409,7 +8160,7 @@
         },
         {
             "file": "src/shapes/Shape.js",
-            "line": 174,
+            "line": 180,
             "description": "Update the .area property of the shape.",
             "itemtype": "method",
             "name": "updateArea",
@@ -7417,7 +8168,7 @@
         },
         {
             "file": "src/shapes/Shape.js",
-            "line": 182,
+            "line": 188,
             "description": "Compute the world axis-aligned bounding box (AABB) of this shape.",
             "itemtype": "method",
             "name": "computeAABB",
@@ -7487,7 +8238,7 @@
         },
         {
             "file": "src/solver/GSSolver.js",
-            "line": 71,
+            "line": 72,
             "description": "Solve the system of equations",
             "itemtype": "method",
             "name": "solve",
@@ -7525,7 +8276,7 @@
         },
         {
             "file": "src/solver/Solver.js",
-            "line": 36,
+            "line": 37,
             "description": "Method to be implemented in each subclass",
             "itemtype": "method",
             "name": "solve",
@@ -7545,7 +8296,7 @@
         },
         {
             "file": "src/solver/Solver.js",
-            "line": 48,
+            "line": 49,
             "description": "Solves all constraints in an island.",
             "itemtype": "method",
             "name": "solveIsland",
@@ -7565,7 +8316,7 @@
         },
         {
             "file": "src/solver/Solver.js",
-            "line": 71,
+            "line": 72,
             "description": "Sort all equations using the .equationSortFunction. Should be called by subclasses before solving.",
             "itemtype": "method",
             "name": "sortEquations",
@@ -7573,7 +8324,7 @@
         },
         {
             "file": "src/solver/Solver.js",
-            "line": 81,
+            "line": 82,
             "description": "Add an equation to be solved.",
             "itemtype": "method",
             "name": "addEquation",
@@ -7588,7 +8339,7 @@
         },
         {
             "file": "src/solver/Solver.js",
-            "line": 93,
+            "line": 94,
             "description": "Add equations. Same as .addEquation, but this time the argument is an array of Equations",
             "itemtype": "method",
             "name": "addEquations",
@@ -7603,7 +8354,7 @@
         },
         {
             "file": "src/solver/Solver.js",
-            "line": 109,
+            "line": 110,
             "description": "Remove an equation.",
             "itemtype": "method",
             "name": "removeEquation",
@@ -7618,7 +8369,7 @@
         },
         {
             "file": "src/solver/Solver.js",
-            "line": 122,
+            "line": 123,
             "description": "Remove all currently added equations.",
             "itemtype": "method",
             "name": "removeAllEquations",
@@ -8215,7 +8966,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 75,
+            "line": 76,
             "description": "All springs in the world. To add a spring to the world, use {{#crossLink \"World/addSpring:method\"}}{{/crossLink}}.",
             "itemtype": "property",
             "name": "springs",
@@ -8224,7 +8975,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 83,
+            "line": 84,
             "description": "All bodies in the world. To add a body to the world, use {{#crossLink \"World/addBody:method\"}}{{/crossLink}}.",
             "itemtype": "property",
             "name": "bodies",
@@ -8233,7 +8984,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 89,
+            "line": 90,
             "description": "Disabled body collision pairs. See {{#crossLink \"World/disableBodyCollision:method\"}}.",
             "access": "private",
             "tagname": "",
@@ -8244,7 +8995,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 96,
+            "line": 97,
             "description": "The solver used to satisfy constraints and contacts. Default is {{#crossLink \"GSSolver\"}}{{/crossLink}}.",
             "itemtype": "property",
             "name": "solver",
@@ -8253,7 +9004,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 102,
+            "line": 103,
             "description": "The narrowphase to use to generate contacts.",
             "itemtype": "property",
             "name": "narrowphase",
@@ -8262,7 +9013,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 110,
+            "line": 111,
             "description": "The island manager of this world.",
             "itemtype": "property",
             "name": "islandManager",
@@ -8271,7 +9022,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 116,
+            "line": 117,
             "description": "Gravity in the world. This is applied on all bodies in the beginning of each step().",
             "itemtype": "property",
             "name": "gravity",
@@ -8280,7 +9031,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 127,
+            "line": 128,
             "description": "Gravity to use when approximating the friction max force (mu*mass*gravity).",
             "itemtype": "property",
             "name": "frictionGravity",
@@ -8289,7 +9040,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 133,
+            "line": 134,
             "description": "Set to true if you want .frictionGravity to be automatically set to the length of .gravity.",
             "itemtype": "property",
             "name": "useWorldGravityAsFrictionGravity",
@@ -8298,7 +9049,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 139,
+            "line": 140,
             "description": "If the length of .gravity is zero, and .useWorldGravityAsFrictionGravity=true, then switch to using .frictionGravity for friction instead. This fallback is useful for gravityless games.",
             "itemtype": "property",
             "name": "useFrictionGravityOnZeroGravity",
@@ -8307,7 +9058,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 145,
+            "line": 146,
             "description": "Whether to do timing measurements during the step() or not.",
             "itemtype": "property",
             "name": "doPofiling",
@@ -8316,7 +9067,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 153,
+            "line": 154,
             "description": "How many millisecconds the last step() took. This is updated each step if .doProfiling is set to true.",
             "itemtype": "property",
             "name": "lastStepTime",
@@ -8325,7 +9076,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 161,
+            "line": 162,
             "description": "The broadphase algorithm to use.",
             "itemtype": "property",
             "name": "broadphase",
@@ -8334,7 +9085,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 170,
+            "line": 171,
             "description": "User-added constraints.",
             "itemtype": "property",
             "name": "constraints",
@@ -8343,7 +9094,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 178,
+            "line": 179,
             "description": "Dummy default material in the world, used in .defaultContactMaterial",
             "itemtype": "property",
             "name": "defaultMaterial",
@@ -8352,7 +9103,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 184,
+            "line": 185,
             "description": "The default contact material to use, if no contact material was set for the colliding materials.",
             "itemtype": "property",
             "name": "defaultContactMaterial",
@@ -8361,7 +9112,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 190,
+            "line": 191,
             "description": "For keeping track of what time step size we used last step",
             "itemtype": "property",
             "name": "lastTimeStep",
@@ -8370,7 +9121,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 197,
+            "line": 198,
             "description": "Enable to automatically apply spring forces each step.",
             "itemtype": "property",
             "name": "applySpringForces",
@@ -8379,7 +9130,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 204,
+            "line": 205,
             "description": "Enable to automatically apply body damping each step.",
             "itemtype": "property",
             "name": "applyDamping",
@@ -8388,7 +9139,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 211,
+            "line": 212,
             "description": "Enable to automatically apply gravity each step.",
             "itemtype": "property",
             "name": "applyGravity",
@@ -8397,7 +9148,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 218,
+            "line": 219,
             "description": "Enable/disable constraint solving in each step.",
             "itemtype": "property",
             "name": "solveConstraints",
@@ -8406,7 +9157,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 225,
+            "line": 226,
             "description": "The ContactMaterials added to the World.",
             "itemtype": "property",
             "name": "contactMaterials",
@@ -8415,7 +9166,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 232,
+            "line": 233,
             "description": "World time.",
             "itemtype": "property",
             "name": "time",
@@ -8424,7 +9175,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 239,
+            "line": 240,
             "description": "Is true during the step().",
             "itemtype": "property",
             "name": "stepping",
@@ -8433,7 +9184,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 245,
+            "line": 246,
             "description": "Bodies that are scheduled to be removed at the end of the step.",
             "itemtype": "property",
             "name": "bodiesToBeRemoved",
@@ -8444,7 +9195,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 254,
+            "line": 255,
             "description": "Whether to enable island splitting. Island splitting can be an advantage for many things, including solver performance. See {{#crossLink \"IslandManager\"}}{{/crossLink}}.",
             "itemtype": "property",
             "name": "islandSplit",
@@ -8453,7 +9204,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 260,
+            "line": 261,
             "description": "Set to true if you want to the world to emit the \"impact\" event. Turning this off could improve performance.",
             "itemtype": "property",
             "name": "emitImpactEvent",
@@ -8462,7 +9213,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 271,
+            "line": 272,
             "description": "Fired after the step().",
             "itemtype": "event",
             "name": "postStep",
@@ -8470,7 +9221,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 279,
+            "line": 280,
             "description": "Fired when a body is added to the world.",
             "itemtype": "event",
             "name": "addBody",
@@ -8485,7 +9236,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 289,
+            "line": 290,
             "description": "Fired when a body is removed from the world.",
             "itemtype": "event",
             "name": "removeBody",
@@ -8500,7 +9251,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 299,
+            "line": 300,
             "description": "Fired when a spring is added to the world.",
             "itemtype": "event",
             "name": "addSpring",
@@ -8515,7 +9266,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 309,
+            "line": 310,
             "description": "Fired when a first contact is created between two bodies. This event is fired after the step has been done.",
             "itemtype": "event",
             "name": "impact",
@@ -8535,7 +9286,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 324,
+            "line": 325,
             "description": "Fired after the Broadphase has collected collision pairs in the world.\nInside the event handler, you can modify the pairs array as you like, to\nprevent collisions between objects that you don't want.",
             "itemtype": "event",
             "name": "postBroadphase",
@@ -8550,7 +9301,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 336,
+            "line": 337,
             "description": "How to deactivate bodies during simulation. Possible modes are: {{#crossLink \"World/NO_SLEEPING:property\"}}World.NO_SLEEPING{{/crossLink}}, {{#crossLink \"World/BODY_SLEEPING:property\"}}World.BODY_SLEEPING{{/crossLink}} and {{#crossLink \"World/ISLAND_SLEEPING:property\"}}World.ISLAND_SLEEPING{{/crossLink}}.\nIf sleeping is enabled, you might need to {{#crossLink \"Body/wakeUp:method\"}}wake up{{/crossLink}} the bodies if they fall asleep when they shouldn't. If you want to enable sleeping in the world, but want to disable it for a particular body, see {{#crossLink \"Body/allowSleep:property\"}}Body.allowSleep{{/crossLink}}.",
             "itemtype": "property",
             "name": "sleepMode",
@@ -8560,7 +9311,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 345,
+            "line": 346,
             "description": "Fired when two shapes starts start to overlap. Fired in the narrowphase, during step.",
             "itemtype": "event",
             "name": "beginContact",
@@ -8595,7 +9346,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 363,
+            "line": 364,
             "description": "Fired when two shapes stop overlapping, after the narrowphase (during step).",
             "itemtype": "event",
             "name": "endContact",
@@ -8630,7 +9381,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 380,
+            "line": 381,
             "description": "Fired just before equations are added to the solver to be solved. Can be used to control what equations goes into the solver.",
             "itemtype": "event",
             "name": "preSolve",
@@ -8650,7 +9401,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 400,
+            "line": 402,
             "description": "Never deactivate bodies.",
             "static": 1,
             "itemtype": "property",
@@ -8660,7 +9411,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 407,
+            "line": 409,
             "description": "Deactivate individual bodies if they are sleepy.",
             "static": 1,
             "itemtype": "property",
@@ -8670,7 +9421,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 414,
+            "line": 416,
             "description": "Deactivates bodies that are in contact, if all of them are sleepy. Note that you must enable {{#crossLink \"World/islandSplit:property\"}}.islandSplit{{/crossLink}} for this to work.",
             "static": 1,
             "itemtype": "property",
@@ -8680,7 +9431,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 421,
+            "line": 423,
             "description": "Add a constraint to the simulation.",
             "itemtype": "method",
             "name": "addConstraint",
@@ -8695,7 +9446,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 431,
+            "line": 433,
             "description": "Add a ContactMaterial to the simulation.",
             "itemtype": "method",
             "name": "addContactMaterial",
@@ -8710,7 +9461,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 440,
+            "line": 442,
             "description": "Removes a contact material",
             "itemtype": "method",
             "name": "removeContactMaterial",
@@ -8725,7 +9476,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 453,
+            "line": 455,
             "description": "Get a contact material given two materials",
             "itemtype": "method",
             "name": "getContactMaterial",
@@ -8752,7 +9503,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 473,
+            "line": 475,
             "description": "Removes a constraint",
             "itemtype": "method",
             "name": "removeConstraint",
@@ -8767,7 +9518,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 498,
+            "line": 500,
             "description": "Step the physics world forward in time.\n\nThere are two modes. The simple mode is fixed timestepping without interpolation. In this case you only use the first argument. The second case uses interpolation. In that you also provide the time since the function was last used, as well as the maximum fixed timesteps to take.",
             "itemtype": "method",
             "name": "step",
@@ -8802,7 +9553,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 569,
+            "line": 571,
             "description": "Make a fixed step.",
             "itemtype": "method",
             "name": "internalStep",
@@ -8819,31 +9570,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 854,
-            "description": "Move a body forward in time.",
-            "static": 1,
-            "itemtype": "method",
-            "name": "integrateBody",
-            "params": [
-                {
-                    "name": "body",
-                    "description": "",
-                    "type": "Body"
-                },
-                {
-                    "name": "dt",
-                    "description": "",
-                    "type": "Number"
-                }
-            ],
-            "todo": [
-                "Move to Body.prototype?"
-            ],
-            "class": "World"
-        },
-        {
-            "file": "src/world/World.js",
-            "line": 887,
+            "line": 851,
             "description": "Runs narrowphase for the shape pair i and j.",
             "itemtype": "method",
             "name": "runNarrowphase",
@@ -8903,7 +9630,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 1009,
+            "line": 974,
             "description": "Add a spring to the simulation",
             "itemtype": "method",
             "name": "addSpring",
@@ -8918,7 +9645,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 1021,
+            "line": 986,
             "description": "Remove a spring",
             "itemtype": "method",
             "name": "removeSpring",
@@ -8933,7 +9660,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 1034,
+            "line": 999,
             "description": "Add a body to the simulation",
             "itemtype": "method",
             "name": "addBody",
@@ -8954,7 +9681,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 1055,
+            "line": 1020,
             "description": "Remove a body from the simulation. If this method is called during step(), the body removal is scheduled to after the step.",
             "itemtype": "method",
             "name": "removeBody",
@@ -8969,7 +9696,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 1076,
+            "line": 1041,
             "description": "Get a body by its id.",
             "itemtype": "method",
             "name": "getBodyById",
@@ -8981,7 +9708,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 1092,
+            "line": 1057,
             "description": "Disable collision between two bodies",
             "itemtype": "method",
             "name": "disableCollision",
@@ -9001,7 +9728,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 1102,
+            "line": 1067,
             "description": "Enable collisions between the given two bodies",
             "itemtype": "method",
             "name": "enableCollision",
@@ -9021,7 +9748,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 1146,
+            "line": 1111,
             "description": "Resets the World, removes all bodies, constraints and springs.",
             "itemtype": "method",
             "name": "clear",
@@ -9029,7 +9756,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 1188,
+            "line": 1153,
             "description": "Get a copy of this World instance",
             "itemtype": "method",
             "name": "clone",
@@ -9041,7 +9768,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 1203,
+            "line": 1168,
             "description": "Test if a world point overlaps bodies",
             "itemtype": "method",
             "name": "hitTest",
@@ -9070,7 +9797,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 1254,
+            "line": 1219,
             "description": "Sets the Equation parameters for all constraints and contact materials.",
             "itemtype": "method",
             "name": "setGlobalEquationParameters",
@@ -9100,7 +9827,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 1304,
+            "line": 1269,
             "description": "Set the stiffness for all equations and contact materials.",
             "itemtype": "method",
             "name": "setGlobalStiffness",
@@ -9115,7 +9842,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 1315,
+            "line": 1280,
             "description": "Set the relaxation for all equations and contact materials.",
             "itemtype": "method",
             "name": "setGlobalRelaxation",
@@ -9126,6 +9853,198 @@
                     "type": "Number"
                 }
             ],
+            "class": "World"
+        },
+        {
+            "file": "src/world/World.js",
+            "line": 1293,
+            "description": "Ray cast against all bodies. The provided callback will be executed for each hit with a RaycastResult as single argument.",
+            "itemtype": "method",
+            "name": "raycastAll",
+            "params": [
+                {
+                    "name": "from",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "to",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "options",
+                    "description": "",
+                    "type": "Object",
+                    "props": [
+                        {
+                            "name": "collisionMask",
+                            "description": "",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "-1"
+                        },
+                        {
+                            "name": "collisionGroup",
+                            "description": "",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "-1"
+                        },
+                        {
+                            "name": "skipBackfaces",
+                            "description": "",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "false"
+                        },
+                        {
+                            "name": "checkCollisionResponse",
+                            "description": "",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "true"
+                        }
+                    ]
+                },
+                {
+                    "name": "callback",
+                    "description": "",
+                    "type": "Function"
+                }
+            ],
+            "return": {
+                "description": "True if any body was hit.",
+                "type": "Boolean"
+            },
+            "class": "World"
+        },
+        {
+            "file": "src/world/World.js",
+            "line": 1314,
+            "description": "Ray cast, and stop at the first result. Note that the order is random - but the method is fast.",
+            "itemtype": "method",
+            "name": "raycastAny",
+            "params": [
+                {
+                    "name": "from",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "to",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "options",
+                    "description": "",
+                    "type": "Object",
+                    "props": [
+                        {
+                            "name": "collisionMask",
+                            "description": "",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "-1"
+                        },
+                        {
+                            "name": "collisionGroup",
+                            "description": "",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "-1"
+                        },
+                        {
+                            "name": "skipBackfaces",
+                            "description": "",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "false"
+                        },
+                        {
+                            "name": "checkCollisionResponse",
+                            "description": "",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "true"
+                        }
+                    ]
+                },
+                {
+                    "name": "result",
+                    "description": "",
+                    "type": "RaycastResult"
+                }
+            ],
+            "return": {
+                "description": "True if any body was hit.",
+                "type": "Boolean"
+            },
+            "class": "World"
+        },
+        {
+            "file": "src/world/World.js",
+            "line": 1335,
+            "description": "Ray cast, and return information of the closest hit.",
+            "itemtype": "method",
+            "name": "raycastClosest",
+            "params": [
+                {
+                    "name": "from",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "to",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "options",
+                    "description": "",
+                    "type": "Object",
+                    "props": [
+                        {
+                            "name": "collisionMask",
+                            "description": "",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "-1"
+                        },
+                        {
+                            "name": "collisionGroup",
+                            "description": "",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "-1"
+                        },
+                        {
+                            "name": "skipBackfaces",
+                            "description": "",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "false"
+                        },
+                        {
+                            "name": "checkCollisionResponse",
+                            "description": "",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "true"
+                        }
+                    ]
+                },
+                {
+                    "name": "result",
+                    "description": "",
+                    "type": "RaycastResult"
+                }
+            ],
+            "return": {
+                "description": "True if any body was hit.",
+                "type": "Boolean"
+            },
             "class": "World"
         }
     ],
