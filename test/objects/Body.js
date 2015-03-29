@@ -56,6 +56,56 @@ exports.applyForce = function(test){
     test.done();
 };
 
+exports.applyImpulse = {
+    withPoint: function(test){
+        var bodyA = new Body({ mass: 1, position: [2,3] });
+        bodyA.addShape(new Circle(1));
+        bodyA.applyImpulse([-1,0],[0,1]);
+        test.ok(bodyA.angularVelocity !== 0);
+        test.ok(bodyA.velocity[0] !== 0);
+        test.equal(bodyA.velocity[1], 0);
+        test.done();
+    },
+    withoutPoint: function(test){
+        var bodyA = new Body({ mass: 1, position: [2,3] });
+        bodyA.addShape(new Circle(1));
+        bodyA.applyImpulse([-1,0]);
+        test.equal(bodyA.angularVelocity, 0);
+        test.ok(bodyA.velocity[0] !== 0);
+        test.equal(bodyA.velocity[1], 0);
+        test.done();
+    }
+};
+
+exports.applyImpulseLocal = {
+    withPoint: function(test){
+        var bodyA = new Body({
+            mass: 1,
+            position: [2,3],
+            angle: Math.PI // rotated 180 degrees
+        });
+        bodyA.addShape(new Circle(1));
+        bodyA.applyImpulseLocal([-1,0],[0,1]);
+        test.ok(bodyA.angularVelocity > 0);
+        test.ok(bodyA.velocity[0] > 0);
+        test.ok(Math.abs(bodyA.velocity[1]) < 0.001);
+        test.done();
+    },
+    withoutPoint: function(test){
+        var bodyA = new Body({
+            mass: 1,
+            position: [2,3],
+            angle: Math.PI // rotated 180 degrees
+        });
+        bodyA.addShape(new Circle(1));
+        bodyA.applyImpulseLocal([-1,0]);
+        test.equal(bodyA.angularVelocity, 0);
+        test.ok(bodyA.velocity[0] > 0);
+        test.ok(Math.abs(bodyA.velocity[1]) < 0.001);
+        test.done();
+    }
+};
+
 exports.fromPolygon = function(test){
     var b = new Body();
     test.ok(b.fromPolygon( [[-1, 1],
