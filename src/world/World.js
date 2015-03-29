@@ -236,6 +236,7 @@ function World(options){
      * @type {Number}
      */
     this.time = 0.0;
+    this.accumulator = 0;
 
     /**
      * Is true during the step().
@@ -527,42 +528,22 @@ World.prototype.step = function(dt,timeSinceLastCalled,maxSubSteps){
 
     } else {
 
-        // Compute the number of fixed steps we should have taken since the last step
-        var internalSteps = Math.floor( (this.time+timeSinceLastCalled) / dt) - Math.floor(this.time / dt);
-        internalSteps = Math.min(internalSteps,maxSubSteps);
-
-        // Do some fixed steps to catch up
-        var t0 = performance.now();
-        for(var i=0; i!==internalSteps; i++){
+        this.accumulator += timeSinceLastCalled;
+        var substeps = 0;
+        while (this.accumulator >= dt && substeps < maxSubSteps) {
+            // Do fixed steps to catch up
             this.internalStep(dt);
-            if(performance.now() - t0 > dt*1000){
-                // We are slower than real-time. Better bail out.
-                break;
-            }
+            this.accumulator -= dt;
+            substeps++;
         }
 
-        // Increment internal clock
-        this.time += timeSinceLastCalled;
-
-        // Compute "Left over" time step
-        var h = this.time % dt;
-        var h_div_dt = h/dt;
-
+        var t = (this.accumulator % dt) / dt;
         for(var j=0; j!==this.bodies.length; j++){
             var b = this.bodies[j];
-            if(b.type !== Body.STATIC && b.sleepState !== Body.SLEEPING){
-                // Interpolate
-                vec2.sub(interpvelo, b.position, b.previousPosition);
-                vec2.scale(interpvelo, interpvelo, h_div_dt);
-                vec2.add(b.interpolatedPosition, b.position, interpvelo);
-
-                b.interpolatedAngle = b.angle + (b.angle - b.previousAngle) * h_div_dt;
-            } else {
-                // For static bodies, just copy. Who else will do it?
-                vec2.copy(b.interpolatedPosition, b.position);
-                b.interpolatedAngle = b.angle;
-            }
+            vec2.lerp(b.interpolatedPosition, b.previousPosition, b.position, t);
+            b.interpolatedAngle = b.previousAngle + t * (b.angle - b.previousAngle);
         }
+        this.time += timeSinceLastCalled;
     }
 };
 
@@ -783,9 +764,9 @@ World.prototype.internalStep = function(dt){
     for(var i=0; i!==Nbodies; i++){
         var body = bodies[i];
 
-        if(body.sleepState !== Body.SLEEPING && body.type !== Body.STATIC){
-            body.integrate(dt);
-        }
+        // if(body.sleepState !== Body.SLEEPING && body.type !== Body.STATIC){
+        body.integrate(dt);
+        // }
     }
 
     // Reset force
