@@ -338,6 +338,8 @@ WebGLRenderer.prototype.zoom = function(x, y, zoomOut, actualScaleX, actualScale
 WebGLRenderer.prototype.centerCamera = function(x, y){
     this.stage.position.x = this.renderer.width / 2 - this.stage.scale.x * x;
     this.stage.position.y = this.renderer.height / 2 - this.stage.scale.y * y;
+
+    this.stage.updateTransform();
 };
 
 /**
@@ -716,6 +718,10 @@ WebGLRenderer.prototype.render = function(){
     } else if(!this.aabbGraphics.cleared){
         this.aabbGraphics.clear();
         this.aabbGraphics.cleared = true;
+    }
+
+    if(this.followBody){
+        app.centerCamera(this.followBody.interpolatedPosition[0], this.followBody.interpolatedPosition[1]);
     }
 
     this.renderer.render(this.container);

@@ -67,7 +67,7 @@ function Renderer(scenes, options){
     this.nullBody = new p2.Body();
     this.pickPrecision = 5;
 
-    this.useInterpolatedPositions = false;
+    this.useInterpolatedPositions = true;
 
     this.drawPoints = [];
     this.drawPointsChangeEvent = { type : "drawPointsChange" };
@@ -266,7 +266,7 @@ Renderer.prototype.setupGUI = function() {
         that.paused = p;
     });
     worldFolder.add(settings, 'manualStep [s]');
-    worldFolder.add(settings, 'fps', 60, 60*10).step(60).onChange(function(freq){
+    worldFolder.add(settings, 'fps', 10, 60*10).step(60).onChange(function(freq){
         that.timeStep = 1 / freq;
     });
     worldFolder.add(settings, 'maxSubSteps', 0, 10).step(1);

@@ -118,8 +118,8 @@
             world.on("postStep",function(evt){
                 wheelBody1.angularForce += torque;
                 wheelBody2.angularForce += torque;
-                app.centerCamera(chassisBody.position[0], chassisBody.position[1]);
             });
+            app.followBody = chassisBody; // Make camera follow
 
             // Change the current engine torque with the left/right keys
             this.on("keydown",function(evt){
