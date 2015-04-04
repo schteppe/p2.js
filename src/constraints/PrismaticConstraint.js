@@ -7,7 +7,7 @@ var Constraint = require('./Constraint')
 module.exports = PrismaticConstraint;
 
 /**
- * Constraint that only allows bodies to move along a line, relative to each other. See <a href="http://www.iforce2d.net/b2dtut/joints-prismatic">this tutorial</a>.
+ * Constraint that only allows bodies to move along a line, relative to each other. See <a href="http://www.iforce2d.net/b2dtut/joints-prismatic">this tutorial</a>. Also called "slider constraint".
  *
  * @class PrismaticConstraint
  * @constructor

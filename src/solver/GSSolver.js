@@ -20,7 +20,7 @@ function GSSolver(options){
     options = options || {};
 
     /**
-     * The number of iterations to do when solving. More gives better results, but is more expensive.
+     * The max number of iterations to do when solving. More gives better results, but is more expensive.
      * @property iterations
      * @type {Number}
      */
