@@ -11,7 +11,7 @@ exports.computeAABB = function(test){
 };
 
 exports.computeMomentOfInertia = function(test){
-    // STUB
+    test.equal((new Plane()).computeMomentOfInertia(), 0);
     test.done();
 };
 

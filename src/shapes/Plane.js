@@ -39,36 +39,44 @@ Plane.prototype.updateBoundingRadius = function(){
  * @param  {Number} angle
  */
 Plane.prototype.computeAABB = function(out, position, angle){
-    var a = 0,
-        set = vec2.set;
-    if(typeof(angle) === "number"){
-        a = angle % (2*Math.PI);
-    }
+    var a = angle % (2 * Math.PI);
+    var set = vec2.set;
+    var max = Number.MAX_VALUE;
+    var lowerBound = out.lowerBound;
+    var upperBound = out.upperBound;
 
     if(a === 0){
         // y goes from -inf to 0
-        set(out.lowerBound, -Number.MAX_VALUE, -Number.MAX_VALUE);
-        set(out.upperBound,  Number.MAX_VALUE,  0);
+        set(lowerBound, -max, -max);
+        set(upperBound,  max,  0);
+
     } else if(a === Math.PI / 2){
+
         // x goes from 0 to inf
-        set(out.lowerBound, 0, -Number.MAX_VALUE);
-        set(out.upperBound,      Number.MAX_VALUE,  Number.MAX_VALUE);
+        set(lowerBound, 0, -max);
+        set(upperBound,      max,  max);
+
     } else if(a === Math.PI){
+
         // y goes from 0 to inf
-        set(out.lowerBound, -Number.MAX_VALUE, 0);
-        set(out.upperBound,  Number.MAX_VALUE, Number.MAX_VALUE);
+        set(lowerBound, -max, 0);
+        set(upperBound,  max, max);
+
     } else if(a === 3*Math.PI/2){
+
         // x goes from -inf to 0
-        set(out.lowerBound, -Number.MAX_VALUE,     -Number.MAX_VALUE);
-        set(out.upperBound,  0,  Number.MAX_VALUE);
+        set(lowerBound, -max,     -max);
+        set(upperBound,  0,  max);
+
     } else {
+
         // Set max bounds
-        set(out.lowerBound, -Number.MAX_VALUE, -Number.MAX_VALUE);
-        set(out.upperBound,  Number.MAX_VALUE,  Number.MAX_VALUE);
+        set(lowerBound, -max, -max);
+        set(upperBound,  max,  max);
     }
 
-    vec2.add(out.lowerBound, out.lowerBound, position);
-    vec2.add(out.upperBound, out.upperBound, position);
+    vec2.add(lowerBound, lowerBound, position);
+    vec2.add(upperBound, upperBound, position);
 };
 
 Plane.prototype.updateArea = function(){
