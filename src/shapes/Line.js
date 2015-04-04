@@ -16,6 +16,7 @@ function Line(length){
      * Length of this line
      * @property length
      * @type {Number}
+     * @default 1
      */
     this.length = length || 1;
 
