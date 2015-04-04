@@ -148,10 +148,7 @@
 
         // Thrust: add some force in the ship direction
         if(keyUp){
-          var magnitude = 2,
-              angle = shipBody.angle + Math.PI / 2;
-          shipBody.force[0] += magnitude*Math.cos(angle);
-          shipBody.force[1] += magnitude*Math.sin(angle);
+          shipBody.applyForceLocal([0,2]);
         }
 
         // Shoot
