@@ -135,12 +135,14 @@ function World(options){
     /**
      * Set to true if you want .frictionGravity to be automatically set to the length of .gravity.
      * @property {Boolean} useWorldGravityAsFrictionGravity
+     * @default true
      */
     this.useWorldGravityAsFrictionGravity = true;
 
     /**
      * If the length of .gravity is zero, and .useWorldGravityAsFrictionGravity=true, then switch to using .frictionGravity for friction instead. This fallback is useful for gravityless games.
      * @property {Boolean} useFrictionGravityOnZeroGravity
+     * @default true
      */
     this.useFrictionGravityOnZeroGravity = true;
 
@@ -149,6 +151,7 @@ function World(options){
      *
      * @property doPofiling
      * @type {Boolean}
+     * @default false
      */
     this.doProfiling = options.doProfiling || false;
 
@@ -200,6 +203,7 @@ function World(options){
      * Enable to automatically apply spring forces each step.
      * @property applySpringForces
      * @type {Boolean}
+     * @default true
      */
     this.applySpringForces = true;
 
@@ -207,6 +211,7 @@ function World(options){
      * Enable to automatically apply body damping each step.
      * @property applyDamping
      * @type {Boolean}
+     * @default true
      */
     this.applyDamping = true;
 
@@ -214,6 +219,7 @@ function World(options){
      * Enable to automatically apply gravity each step.
      * @property applyGravity
      * @type {Boolean}
+     * @default true
      */
     this.applyGravity = true;
 
@@ -221,6 +227,7 @@ function World(options){
      * Enable/disable constraint solving in each step.
      * @property solveConstraints
      * @type {Boolean}
+     * @default true
      */
     this.solveConstraints = true;
 
@@ -240,7 +247,7 @@ function World(options){
     this.accumulator = 0;
 
     /**
-     * Is true during the step().
+     * Is true during step().
      * @property {Boolean} stepping
      */
     this.stepping = false;
@@ -255,15 +262,17 @@ function World(options){
     this.fixedStepTime = 0.0;
 
     /**
-     * Whether to enable island splitting. Island splitting can be an advantage for many things, including solver performance. See {{#crossLink "IslandManager"}}{{/crossLink}}.
+     * Whether to enable island splitting. Island splitting can be an advantage for both precision and performance. See {{#crossLink "IslandManager"}}{{/crossLink}}.
      * @property {Boolean} islandSplit
+     * @default true
      */
-    this.islandSplit = typeof(options.islandSplit)!=="undefined" ? !!options.islandSplit : false;
+    this.islandSplit = typeof(options.islandSplit)!=="undefined" ? !!options.islandSplit : true;
 
     /**
      * Set to true if you want to the world to emit the "impact" event. Turning this off could improve performance.
      * @property emitImpactEvent
      * @type {Boolean}
+     * @default true
      */
     this.emitImpactEvent = true;
 
@@ -396,6 +405,9 @@ function World(options){
     this.overlappingShapesLastState = { keys:[] };
     this.overlappingShapesCurrentState = { keys:[] };
 
+    /**
+     * @property {OverlapKeeper} overlapKeeper
+     */
     this.overlapKeeper = new OverlapKeeper();
 }
 World.prototype = new Object(EventEmitter.prototype);

@@ -30,8 +30,9 @@ function GSSolver(options){
      * The error tolerance, per constraint. If the total error is below this limit, the solver will stop iterating. Set to zero for as good solution as possible, but to something larger than zero to make computations faster.
      * @property tolerance
      * @type {Number}
+     * @default 1e-7
      */
-    this.tolerance = options.tolerance || 1e-10;
+    this.tolerance = options.tolerance || 1e-7;
 
     this.arrayStep = 30;
     this.lambda = new Utils.ARRAY_TYPE(this.arrayStep);
