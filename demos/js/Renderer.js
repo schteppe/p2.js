@@ -211,6 +211,7 @@ Object.defineProperty(Renderer.prototype, 'paused', {
         return this.settings['paused [p]'];
     },
     set: function(value) {
+        this.resetCallTime = true;
         this.settings['paused [p]'] = value;
         this.updateGUI();
     }
@@ -266,7 +267,7 @@ Renderer.prototype.setupGUI = function() {
         that.paused = p;
     });
     worldFolder.add(settings, 'manualStep [s]');
-    worldFolder.add(settings, 'fps', 10, 60*10).step(60).onChange(function(freq){
+    worldFolder.add(settings, 'fps', 10, 60*10).step(10).onChange(function(freq){
         that.timeStep = 1 / freq;
     });
     worldFolder.add(settings, 'maxSubSteps', 0, 10).step(1);
@@ -532,7 +533,11 @@ Renderer.prototype.startRenderingLoop = function(){
     function update(){
         if(!demo.paused){
             var now = Date.now() / 1000,
-                timeSinceLastCall = now-lastCallTime;
+                timeSinceLastCall = now - lastCallTime;
+            if(demo.resetCallTime){
+                timeSinceLastCall = 0;
+                demo.resetCallTime = false;
+            }
             lastCallTime = now;
             demo.world.step(demo.timeStep, timeSinceLastCall, demo.settings.maxSubSteps);
         }

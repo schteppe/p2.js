@@ -590,7 +590,7 @@ WebGLRenderer.prototype.drawPath = function(g,path,color,fillColor,lineWidth,isS
 };
 
 WebGLRenderer.prototype.updateSpriteTransform = function(sprite,body){
-    if(this.useInterpolatedPositions){
+    if(this.useInterpolatedPositions && !this.paused){
         sprite.position.x = body.interpolatedPosition[0];
         sprite.position.y = body.interpolatedPosition[1];
         sprite.rotation = body.interpolatedAngle;
@@ -634,7 +634,7 @@ WebGLRenderer.prototype.render = function(){
             bA = s.bodyA,
             bB = s.bodyB;
 
-        if(this.useInterpolatedPositions){
+        if(this.useInterpolatedPositions && !this.paused){
             p2.vec2.toGlobalFrame(worldAnchorA, s.localAnchorA, bA.interpolatedPosition, bA.interpolatedAngle);
             p2.vec2.toGlobalFrame(worldAnchorB, s.localAnchorB, bB.interpolatedPosition, bB.interpolatedAngle);
         } else {
