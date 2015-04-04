@@ -183,17 +183,21 @@ exports.overlaps = function(test){
 };
 
 exports.removeShape = function(test){
-    // STUB
+    var body = new Body();
+    body.addShape(new Circle(1));
+    test.ok(body.removeShape(body.shapes[0]));
+    test.ok(!body.removeShape(new Circle(1)));
+    test.equal(body.shapes.length, 0);
     test.done();
 };
 
 exports.setDensity = function(test){
-    // STUB
-    test.done();
-};
-
-exports.setDensity = function(test){
-    // STUB
+    var body = new Body({ mass: 1 });
+    body.addShape(new Circle(1));
+    var inertiaBefore = body.inertia;
+    body.setDensity(10);
+    test.equal(body.mass, body.getArea() * 10);
+    test.ok(inertiaBefore !== body.inertia);
     test.done();
 };
 
@@ -254,7 +258,14 @@ exports.updateAABB = function(test){
 };
 
 exports.updateBoundingRadius = function(test){
-    // STUB
+    var body = new Body({ mass: 1 });
+    var shape = new Circle(1);
+    body.addShape(shape);
+    test.equal(body.boundingRadius, 1);
+    shape.radius = 2;
+    shape.updateBoundingRadius();
+    body.updateBoundingRadius();
+    test.equal(body.boundingRadius, 2);
     test.done();
 };
 
