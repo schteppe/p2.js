@@ -452,6 +452,7 @@ Body.prototype.updateSolveMassProperties = function(){
 /**
  * Set the total density of the body
  * @method setDensity
+ * @param {number} density
  */
 Body.prototype.setDensity = function(density) {
     var totalArea = this.getArea();
@@ -475,6 +476,7 @@ Body.prototype.getArea = function() {
 /**
  * Get the AABB from the body. The AABB is updated if necessary.
  * @method getAABB
+ * @return {AABB} The AABB instance (this.aabb)
  */
 Body.prototype.getAABB = function(){
     if(this.aabbNeedsUpdate){
@@ -487,7 +489,7 @@ var shapeAABB = new AABB(),
     tmp = vec2.create();
 
 /**
- * Updates the AABB of the Body
+ * Updates the AABB of the Body, and set .aabbNeedsUpdate = false.
  * @method updateAABB
  */
 Body.prototype.updateAABB = function() {
@@ -520,8 +522,7 @@ Body.prototype.updateAABB = function() {
 };
 
 /**
- * Update the bounding radius of the body. Should be done if any of the shapes
- * are changed.
+ * Update the bounding radius of the body (this.boundingRadius). Should be done if any of the shape dimensions or positions are changed.
  * @method updateBoundingRadius
  */
 Body.prototype.updateBoundingRadius = function(){
@@ -575,9 +576,9 @@ Body.prototype.addShape = function(shape,offset,angle){
         offset = vec2.fromValues(0,0);
     }
 
-    this.shapes      .push(shape);
+    this.shapes.push(shape);
     this.shapeOffsets.push(offset);
-    this.shapeAngles .push(angle);
+    this.shapeAngles.push(angle);
     this.updateMassProperties();
     this.updateBoundingRadius();
 
@@ -587,8 +588,8 @@ Body.prototype.addShape = function(shape,offset,angle){
 /**
  * Remove a shape
  * @method removeShape
- * @param  {Shape}  shape
- * @return {Boolean}       True if the shape was found and removed, else false.
+ * @param  {Shape} shape
+ * @return {Boolean} True if the shape was found and removed, else false.
  */
 Body.prototype.removeShape = function(shape){
     var idx = this.shapes.indexOf(shape);
@@ -658,24 +659,42 @@ Body.prototype.updateMassProperties = function(){
 var Body_applyForce_r = vec2.create();
 
 /**
- * Apply force to a world point. This could for example be a point on the RigidBody surface. Applying force this way will add to Body.force and Body.angularForce.
+ * Apply force to a point relative to the center of mass of the body. This could for example be a point on the RigidBody surface. Applying force this way will add to Body.force and Body.angularForce. If relativePoint is zero, the force will be applied directly on the center of mass, and the torque produced will be zero.
  * @method applyForce
  * @param {Array} force The force to add.
- * @param {Array} worldPoint A world point to apply the force on.
+ * @param {Array} [relativePoint] A world point to apply the force on.
  */
-Body.prototype.applyForce = function(force,worldPoint){
-    // Compute point position relative to the body center
-    var r = Body_applyForce_r;
-    vec2.sub(r,worldPoint,this.position);
+Body.prototype.applyForce = function(force, relativePoint){
 
     // Add linear force
-    vec2.add(this.force,this.force,force);
+    vec2.add(this.force, this.force, force);
 
-    // Compute produced rotational force
-    var rotForce = vec2.crossLength(r,force);
+    if(relativePoint){
 
-    // Add rotational force
-    this.angularForce += rotForce;
+        // Compute produced rotational force
+        var rotForce = vec2.crossLength(relativePoint,force);
+
+        // Add rotational force
+        this.angularForce += rotForce;
+    }
+};
+
+/**
+ * Apply force to a body-local point.
+ * @method applyForceLocal
+ * @param  {Array} localForce The force vector to add, oriented in local body space.
+ * @param  {Array} localPoint A point relative to the body in world space. If not given, it is set to zero and all of the impulse will be excerted on the center of mass.
+ */
+var Body_applyForce_forceWorld = vec2.create();
+var Body_applyForce_pointWorld = vec2.create();
+var Body_applyForce_pointLocal = vec2.create();
+Body.prototype.applyForceLocal = function(localForce, localPoint){
+    localPoint = localPoint || Body_applyForce_pointLocal;
+    var worldForce = Body_applyForce_forceWorld;
+    var worldPoint = Body_applyForce_pointWorld;
+    this.vectorToWorldFrame(worldForce, localForce);
+    this.vectorToWorldFrame(worldPoint, localPoint);
+    this.applyForce(worldForce, worldPoint);
 };
 
 /**
@@ -993,17 +1012,6 @@ Body.prototype.sleepTick = function(time, dontSleep, dt){
             this.wantsToSleep = true;
         }
     }
-};
-
-Body.prototype.getVelocityFromPosition = function(store, timeStep){
-    store = store || vec2.create();
-    vec2.sub(store, this.position, this.previousPosition);
-    vec2.scale(store, store, 1/timeStep);
-    return store;
-};
-
-Body.prototype.getAngularVelocityFromPosition = function(timeStep){
-    return (this.angle - this.previousAngle) / timeStep;
 };
 
 /**

@@ -51,9 +51,59 @@ exports.applyDamping = function(test){
     test.done();
 };
 
-exports.applyForce = function(test){
-    // STUB
-    test.done();
+exports.applyForce = {
+    withPoint: function(test){
+        var body = new Body({ mass: 1, position: [2,3] });
+        var force = [0,1];
+        var point = [1,0];
+
+        body.applyForce(force, point);
+        test.equal(body.force[0], 0);
+        test.equal(body.force[1], 1);
+        test.equal(body.angularForce, 1); // [1,0,0] cross [0,1,0] is [0,0,1]
+
+        test.done();
+    },
+    withoutPoint: function(test){
+        var body = new Body({ mass: 1, position: [2,3] });
+        var force = [0,1];
+
+        body.applyForce(force);
+        test.equal(body.force[0], 0);
+        test.equal(body.force[1], 1);
+        test.equal(body.angularForce, 0);
+
+        test.done();
+    },
+};
+
+exports.applyForceLocal = {
+    withPoint: function(test){
+        var bodyA = new Body({
+            mass: 1,
+            position: [2,3],
+            angle: Math.PI // rotated 180 degrees
+        });
+        bodyA.addShape(new Circle(1));
+        bodyA.applyForceLocal([-1,0],[0,1]);
+        test.ok(bodyA.angularForce > 0);
+        test.ok(bodyA.force[0] > 0);
+        test.ok(Math.abs(bodyA.force[1]) < 0.001);
+        test.done();
+    },
+    withoutPoint: function(test){
+        var bodyA = new Body({
+            mass: 1,
+            position: [2,3],
+            angle: Math.PI // rotated 180 degrees
+        });
+        bodyA.addShape(new Circle(1));
+        bodyA.applyForceLocal([-1,0]);
+        test.equal(bodyA.angularForce, 0);
+        test.ok(bodyA.force[0] > 0);
+        test.ok(Math.abs(bodyA.force[1]) < 0.001);
+        test.done();
+    }
 };
 
 exports.applyImpulse = {
