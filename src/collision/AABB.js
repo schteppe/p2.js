@@ -37,9 +37,12 @@ function AABB(options){
 var tmp = vec2.create();
 
 /**
- * Set the AABB bounds from a set of points.
+ * Set the AABB bounds from a set of points, transformed by the given position and angle.
  * @method setFromPoints
  * @param {Array} points An array of vec2's.
+ * @param {Array} position
+ * @param {number} angle
+ * @param {number} skinSize Some margin to be added to the AABB.
  */
 AABB.prototype.setFromPoints = function(points, position, angle, skinSize){
     var l = this.lowerBound,

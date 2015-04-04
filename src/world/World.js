@@ -54,19 +54,20 @@ if(!performance.now){
  *
  * @class World
  * @constructor
- * @param {Object}          [options]
- * @param {Solver}          [options.solver]            Defaults to GSSolver.
- * @param {Array}           [options.gravity]           Defaults to [0,-9.78]
- * @param {Broadphase}      [options.broadphase]        Defaults to NaiveBroadphase
- * @param {Boolean}         [options.islandSplit=false]
- * @param {Boolean}         [options.doProfiling=false]
+ * @param {Object} [options]
+ * @param {Solver} [options.solver] Defaults to GSSolver.
+ * @param {Array} [options.gravity] Defaults to y=-9.78.
+ * @param {Broadphase} [options.broadphase] Defaults to NaiveBroadphase
+ * @param {Boolean} [options.islandSplit=false]
+ * @param {Boolean} [options.doProfiling=false]
  * @extends EventEmitter
  *
  * @example
  *     var world = new World({
- *         gravity: [0, -9.81],
+ *         gravity: [0, -10],
  *         broadphase: new SAPBroadphase()
  *     });
+ *     world.addBody(new Body());
  */
 function World(options){
     EventEmitter.apply(this);
@@ -425,10 +426,13 @@ World.ISLAND_SLEEPING = 4;
  * Add a constraint to the simulation.
  *
  * @method addConstraint
- * @param {Constraint} c
+ * @param {Constraint} constraint
+ * @example
+ *     var constraint = new LockConstraint(bodyA, bodyB);
+ *     world.addConstraint(constraint);
  */
-World.prototype.addConstraint = function(c){
-    this.constraints.push(c);
+World.prototype.addConstraint = function(constraint){
+    this.constraints.push(constraint);
 };
 
 /**
@@ -477,10 +481,10 @@ World.prototype.getContactMaterial = function(materialA,materialB){
  * Removes a constraint
  *
  * @method removeConstraint
- * @param {Constraint} c
+ * @param {Constraint} constraint
  */
-World.prototype.removeConstraint = function(c){
-    var idx = this.constraints.indexOf(c);
+World.prototype.removeConstraint = function(constraint){
+    var idx = this.constraints.indexOf(constraint);
     if(idx!==-1){
         Utils.splice(this.constraints,idx,1);
     }
@@ -509,9 +513,39 @@ var step_r = vec2.create(),
  * @param {Number} [maxSubSteps=10]         Maximum number of fixed steps to take per function call.
  *
  * @example
- *     // fixed timestepping without interpolation
+ *     // Simple fixed timestepping without interpolation
+ *     var fixedTimeStep = 1 / 60;
  *     var world = new World();
- *     world.step(0.01);
+ *     var body = new Body({ mass: 1 });
+ *     world.addBody(body);
+ *
+ *     function animate(){
+ *         requestAnimationFrame(animate);
+ *         world.step(fixedTimeStep);
+ *         renderBody(body.position, body.angle);
+ *     }
+ *
+ *     // Start animation loop
+ *     requestAnimationFrame(animate);
+ *
+ * @example
+ *     // Fixed timestepping with interpolation
+ *     var maxSubSteps = 10;
+ *     var lastTimeSeconds;
+ *
+ *     function animate(t){
+ *         requestAnimationFrame(animate);
+ *         timeSeconds = t / 1000;
+ *         lastTimeSeconds = lastTimeSeconds || timeSeconds;
+ *
+ *         deltaTime = timeSeconds - lastTimeSeconds;
+ *         world.step(fixedTimeStep, deltaTime, maxSubSteps);
+ *
+ *         renderBody(body.interpolatedPosition, body.interpolatedAngle);
+ *     }
+ *
+ *     // Start animation loop
+ *     requestAnimationFrame(animate);
  *
  * @see http://bulletphysics.org/mediawiki-1.5.8/index.php/Stepping_The_World
  */
@@ -819,12 +853,11 @@ World.prototype.internalStep = function(dt){
     this.stepping = false;
 
     // Remove bodies that are scheduled for removal
-    if(this.bodiesToBeRemoved.length){
-        for(var i=0; i!==this.bodiesToBeRemoved.length; i++){
-            this.removeBody(this.bodiesToBeRemoved[i]);
-        }
-        this.bodiesToBeRemoved.length = 0;
+    var bodiesToBeRemoved = this.bodiesToBeRemoved;
+    for(var i=0; i!==bodiesToBeRemoved.length; i++){
+        this.removeBody(bodiesToBeRemoved[i]);
     }
+    bodiesToBeRemoved.length = 0;
 
     this.emit(this.postStepEvent);
 };
@@ -956,11 +989,11 @@ World.prototype.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,cm,glen){
  * Add a spring to the simulation
  *
  * @method addSpring
- * @param {Spring} s
+ * @param {Spring} spring
  */
-World.prototype.addSpring = function(s){
-    this.springs.push(s);
-    this.addSpringEvent.spring = s;
+World.prototype.addSpring = function(spring){
+    this.springs.push(spring);
+    this.addSpringEvent.spring = spring;
     this.emit(this.addSpringEvent);
 };
 
@@ -968,10 +1001,10 @@ World.prototype.addSpring = function(s){
  * Remove a spring
  *
  * @method removeSpring
- * @param {Spring} s
+ * @param {Spring} spring
  */
-World.prototype.removeSpring = function(s){
-    var idx = this.springs.indexOf(s);
+World.prototype.removeSpring = function(spring){
+    var idx = this.springs.indexOf(spring);
     if(idx!==-1){
         Utils.splice(this.springs,idx,1);
     }
@@ -1022,7 +1055,8 @@ World.prototype.removeBody = function(body){
 /**
  * Get a body by its id.
  * @method getBodyById
- * @return {Body|Boolean} The body, or false if it was not found.
+ * @param {number} id
+ * @return {Body} The body, or false if it was not found.
  */
 World.prototype.getBodyById = function(id){
     var bodies = this.bodies;
@@ -1283,6 +1317,19 @@ var tmpRay = new Ray();
  * @param  {boolean} [options.checkCollisionResponse=true]
  * @param  {Function} callback
  * @return {boolean} True if any body was hit.
+ *
+ * @example
+ *     // Print all ray hit points between x=-10 and x=10
+ *     world.raycastAll([-10, 0], [10, 0], {}, function(result){
+ *         console.log('Hit point:', result.hitPointWorld);
+ *     });
+ *
+ * @example
+ *     // Stop the raycast if the distance is less than 1
+ *     world.raycastAll(from, to, options, function(result){
+ *         if(result.distance < 1)
+ *             result.abort();
+ *     });
  */
 World.prototype.raycastAll = function(from, to, options, callback){
     options.mode = Ray.ALL;
@@ -1304,6 +1351,14 @@ World.prototype.raycastAll = function(from, to, options, callback){
  * @param  {boolean} [options.checkCollisionResponse=true]
  * @param  {RaycastResult} result
  * @return {boolean} True if any body was hit.
+ *
+ * @example
+ *     var result = new RaycastResult();
+ *     var didHit = world.raycastAny([-10, 0], [10, 0], {}, result);
+ *     if(didHit){
+ *         console.log('Hit point:', result.hitPointWorld);
+ *         console.log('Hit body:', result.body);
+ *     }
  */
 World.prototype.raycastAny = function(from, to, options, result){
     options.mode = Ray.ANY;
@@ -1325,6 +1380,13 @@ World.prototype.raycastAny = function(from, to, options, result){
  * @param  {boolean} [options.checkCollisionResponse=true]
  * @param  {RaycastResult} result
  * @return {boolean} True if any body was hit.
+ *
+ * @example
+ *     var result = new RaycastResult();
+ *     var didHit = world.raycastClosest([-10, 0], [10, 0], {}, result);
+ *     if(didHit){
+ *         console.log('Closest body:', result.body);
+ *     }
  */
 World.prototype.raycastClosest = function(from, to, options, result){
     options.mode = Ray.CLOSEST;

@@ -3,33 +3,38 @@ var vec2 = require('../math/vec2');
 module.exports = RaycastResult;
 
 /**
- * Storage for Ray casting data.
+ * Storage for Ray casting result data.
  * @class RaycastResult
  * @constructor
  */
 function RaycastResult(){
 
 	/**
+	 * The ray start point in world space.
 	 * @property {array} rayFromWorld
 	 */
 	this.rayFromWorld = vec2.create();
 
 	/**
+	 * Ray end point in world space.
 	 * @property {array} rayToWorld
 	 */
 	this.rayToWorld = vec2.create();
 
 	/**
+	 * The normal of the hit, oriented in world space.
 	 * @property {array} hitNormalWorld
 	 */
 	this.hitNormalWorld = vec2.create();
 
 	/**
+	 * The hit point in world space.
 	 * @property {array} hitPointWorld
 	 */
 	this.hitPointWorld = vec2.create();
 
 	/**
+	 * Indicates whether the ray hit something.
 	 * @property {boolean} hasHit
 	 */
 	this.hasHit = false;
@@ -47,7 +52,7 @@ function RaycastResult(){
 	this.body = null;
 
 	/**
-	 * The index of the hit triangle, if the hit shape was a trimesh.
+	 * The index of the hit triangle, if the hit shape was indexable.
 	 * @property {number} hitFaceIndex
 	 * @default -1
 	 */
@@ -70,7 +75,7 @@ function RaycastResult(){
 }
 
 /**
- * Reset all result data.
+ * Reset all result data. Must be done before re-using the result object.
  * @method reset
  */
 RaycastResult.prototype.reset = function () {
@@ -87,6 +92,7 @@ RaycastResult.prototype.reset = function () {
 };
 
 /**
+ * Can be called while iterating over hits to stop searching for hit points.
  * @method abort
  */
 RaycastResult.prototype.abort = function(){

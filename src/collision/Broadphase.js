@@ -28,7 +28,7 @@ function Broadphase(type){
     this.world = null;
 
     /**
-     * The bounding volume type to use in the broadphase algorithms.
+     * The bounding volume type to use in the broadphase algorithms. Should be set to Broadphase.AABB or Broadphase.BOUNDING_CIRCLE.
      * @property {Number} boundingVolumeType
      */
     this.boundingVolumeType = Broadphase.AABB;
@@ -49,7 +49,7 @@ Broadphase.AABB = 1;
 Broadphase.BOUNDING_CIRCLE = 2;
 
 /**
- * Set the world that we are searching for collision pairs in
+ * Set the world that we are searching for collision pairs in.
  * @method setWorld
  * @param  {World} world
  */
