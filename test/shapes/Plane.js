@@ -1,4 +1,5 @@
 var Plane = require(__dirname + '/../../src/shapes/Plane');
+var AABB = require(__dirname + '/../../src/collision/AABB');
 
 exports.construct = function(test){
     var plane = new Plane();
@@ -6,7 +7,9 @@ exports.construct = function(test){
 };
 
 exports.computeAABB = function(test){
-    // STUB
+	var plane = new Plane();
+	var aabb = new AABB();
+    plane.computeAABB(aabb, [0,0], 0);
     test.done();
 };
 
@@ -16,7 +19,9 @@ exports.computeMomentOfInertia = function(test){
 };
 
 exports.updateBoundingRadius = function(test){
-    // STUB
+	var plane = new Plane();
+    plane.updateBoundingRadius();
+    test.ok(plane.boundingRadius > 0);
     test.done();
 };
 
