@@ -34,7 +34,7 @@
         h = canvas.height;
 
         ctx = canvas.getContext("2d");
-        ctx.lineWidth = 0.05;
+        ctx.lineWidth = 0.02;
         ctx.fillStyle = 'white';
 
         // Init p2.js
@@ -68,7 +68,8 @@
         capsuleBody = new p2.Body({
           mass:1,
           position:[-1.5,0],
-          angularVelocity:1
+          angularVelocity:1,
+          angularDamping: 0
         });
         capsuleBody.addShape(capsuleShape);
         world.addBody(capsuleBody);
@@ -239,7 +240,7 @@
         drawbox();
         drawPlane();
         drawCircle();
-        //drawCapsule();
+        // drawCapsule();
         drawRays();
 
         // Restore transform
