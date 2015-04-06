@@ -3,6 +3,8 @@ var vec2 = require('../math/vec2')
 ,   add = vec2.add
 ,   dot = vec2.dot
 ,   Utils = require('../utils/Utils')
+,   ContactEquationPool = require('../utils/ContactEquationPool')
+,   FrictionEquationPool = require('../utils/FrictionEquationPool')
 ,   TupleDictionary = require('../utils/TupleDictionary')
 ,   Equation = require('../equations/Equation')
 ,   ContactEquation = require('../equations/ContactEquation')
@@ -91,9 +93,24 @@ function Narrowphase(){
      */
     this.surfaceVelocity = 0;
 
-    this.reuseObjects = true;
-    this.reusableContactEquations = [];
-    this.reusableFrictionEquations = [];
+    /**
+     * Keeps track of the allocated ContactEquations.
+     * @property {ContactEquationPool} contactEquationPool
+     *
+     * @example
+     *
+     *     // Allocate a few equations before starting the simulation.
+     *     // This way, no contact objects need to be created on the fly in the game loop.
+     *     world.narrowphase.contactEquationPool.resize(1024);
+     *     world.narrowphase.contactFrictionPool.resize(1024);
+     */
+    this.contactEquationPool = new ContactEquationPool({ size: 32 });
+
+    /**
+     * Keeps track of the allocated ContactEquations.
+     * @property {FrictionEquationPool} frictionEquationPool
+     */
+    this.frictionEquationPool = new FrictionEquationPool({ size: 64 });
 
     /**
      * The restitution value to use in the next contact equations.
@@ -230,13 +247,13 @@ Narrowphase.prototype.reset = function(){
         this.collidingBodiesLastStep.set(id1, id2, true);
     }
 
-    if(this.reuseObjects){
-        var ce = this.contactEquations,
-            fe = this.frictionEquations,
-            rfe = this.reusableFrictionEquations,
-            rce = this.reusableContactEquations;
-        Utils.appendArray(rce,ce);
-        Utils.appendArray(rfe,fe);
+    var ce = this.contactEquations,
+        fe = this.frictionEquations;
+    for(var i=0; i<ce.length; i++){
+        this.contactEquationPool.release(ce[i]);
+    }
+    for(var i=0; i<fe.length; i++){
+        this.frictionEquationPool.release(fe[i]);
     }
 
     // Reset
@@ -251,7 +268,7 @@ Narrowphase.prototype.reset = function(){
  * @return {ContactEquation}
  */
 Narrowphase.prototype.createContactEquation = function(bodyA, bodyB, shapeA, shapeB){
-    var c = this.reusableContactEquations.length ? this.reusableContactEquations.pop() : new ContactEquation(bodyA,bodyB);
+    var c = this.contactEquationPool.get();
     c.bodyA = bodyA;
     c.bodyB = bodyB;
     c.shapeA = shapeA;
@@ -275,7 +292,7 @@ Narrowphase.prototype.createContactEquation = function(bodyA, bodyB, shapeA, sha
  * @return {FrictionEquation}
  */
 Narrowphase.prototype.createFrictionEquation = function(bodyA, bodyB, shapeA, shapeB){
-    var c = this.reusableFrictionEquations.length ? this.reusableFrictionEquations.pop() : new FrictionEquation(bodyA,bodyB);
+    var c = this.frictionEquationPool.get();
     c.bodyA = bodyA;
     c.bodyB = bodyB;
     c.shapeA = shapeA;
