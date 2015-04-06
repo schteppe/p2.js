@@ -14,7 +14,7 @@ FrictionEquationPool.prototype.constructor = FrictionEquationPool;
 
 /**
  * @method create
- * @return {ContactEquation}
+ * @return {FrictionEquation}
  */
 FrictionEquationPool.prototype.create = function () {
 	return new FrictionEquation();
@@ -22,7 +22,7 @@ FrictionEquationPool.prototype.create = function () {
 
 /**
  * @method destroy
- * @param {ContactEquation} equation
+ * @param {FrictionEquation} equation
  * @return {FrictionEquationPool}
  */
 FrictionEquationPool.prototype.destroy = function (equation) {
