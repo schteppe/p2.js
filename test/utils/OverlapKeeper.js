@@ -18,19 +18,19 @@ exports.tick = function(test){
     var keeper = new OverlapKeeper();
     keeper.setOverlapping(bodyA, shapeA, bodyB, shapeB);
 
-    test.equal(keeper.recordPool.length, 0);
+    test.equal(keeper.recordPool.objects.length, 0);
 
     keeper.tick();
 
-    test.equal(keeper.recordPool.length, 0);
+    test.equal(keeper.recordPool.objects.length, 0);
 
     keeper.tick();
 
-    test.equal(keeper.recordPool.length, 1);
+    test.equal(keeper.recordPool.objects.length, 1);
 
     keeper.setOverlapping(bodyA, shapeA, bodyB, shapeB);
 
-    test.equal(keeper.recordPool.length, 0);
+    test.equal(keeper.recordPool.objects.length, 0);
 
     test.done();
 };

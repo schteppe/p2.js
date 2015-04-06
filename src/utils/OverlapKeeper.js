@@ -1,4 +1,6 @@
 var TupleDictionary = require('./TupleDictionary');
+var OverlapKeeperRecord = require('./OverlapKeeperRecord');
+var OverlapKeeperRecordPool = require('./OverlapKeeperRecordPool');
 var Utils = require('./Utils');
 
 module.exports = OverlapKeeper;
@@ -11,7 +13,7 @@ module.exports = OverlapKeeper;
 function OverlapKeeper() {
     this.overlappingShapesLastState = new TupleDictionary();
     this.overlappingShapesCurrentState = new TupleDictionary();
-    this.recordPool = [];
+    this.recordPool = new OverlapKeeperRecordPool();
     this.tmpDict = new TupleDictionary();
     this.tmpArray1 = [];
 }
@@ -32,7 +34,7 @@ OverlapKeeper.prototype.tick = function() {
         var currentObject = current.getByKey(key);
         if(lastObject){
             // The record is only used in the "last" dict, and will be removed. We might as well pool it.
-            this.recordPool.push(lastObject);
+            this.recordPool.release(lastObject);
         }
     }
 
@@ -59,15 +61,8 @@ OverlapKeeper.prototype.setOverlapping = function(bodyA, shapeA, bodyB, shapeB) 
 
     // Store current contact state
     if(!current.get(shapeA.id, shapeB.id)){
-
-        var data;
-        if(this.recordPool.length){
-            data = this.recordPool.pop();
-            data.set(bodyA, shapeA, bodyB, shapeB);
-        } else {
-            data = new OverlapKeeperRecord(bodyA, shapeA, bodyB, shapeB);
-        }
-
+        var data = this.recordPool.get();
+        data.set(bodyA, shapeA, bodyB, shapeB);
         current.set(shapeA.id, shapeB.id, data);
     }
 };
@@ -171,44 +166,4 @@ OverlapKeeper.prototype.getBodyDiff = function(overlaps, result){
     accumulator.reset();
 
     return result;
-};
-
-/**
- * Overlap data container for the OverlapKeeper
- * @class OverlapKeeperRecord
- * @constructor
- * @param {Body} bodyA
- * @param {Shape} shapeA
- * @param {Body} bodyB
- * @param {Shape} shapeB
- */
-function OverlapKeeperRecord(bodyA, shapeA, bodyB, shapeB){
-    /**
-     * @property {Shape} shapeA
-     */
-    this.shapeA = shapeA;
-    /**
-     * @property {Shape} shapeB
-     */
-    this.shapeB = shapeB;
-    /**
-     * @property {Body} bodyA
-     */
-    this.bodyA = bodyA;
-    /**
-     * @property {Body} bodyB
-     */
-    this.bodyB = bodyB;
-}
-
-/**
- * Set the data for the record
- * @method set
- * @param {Body} bodyA
- * @param {Shape} shapeA
- * @param {Body} bodyB
- * @param {Shape} shapeB
- */
-OverlapKeeperRecord.prototype.set = function(bodyA, shapeA, bodyB, shapeB){
-    OverlapKeeperRecord.call(this, bodyA, shapeA, bodyB, shapeB);
 };
