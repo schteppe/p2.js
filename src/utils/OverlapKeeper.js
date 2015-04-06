@@ -30,7 +30,7 @@ OverlapKeeper.prototype.tick = function() {
         var key = last.keys[l];
         var lastObject = last.getByKey(key);
         var currentObject = current.getByKey(key);
-        if(lastObject && !currentObject){
+        if(lastObject){
             // The record is only used in the "last" dict, and will be removed. We might as well pool it.
             this.recordPool.push(lastObject);
         }
