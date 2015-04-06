@@ -17,9 +17,17 @@ module.exports = IslandManager;
  */
 function IslandManager(options){
 
-    // Pooling of node objects saves some GC load
-    this._nodePool = new IslandNodePool({ size: 16 });
-    this._islandPool = new IslandPool({ size: 8 });
+    /**
+     * @property nodePool
+     * @type {IslandNodePool}
+     */
+    this.nodePool = new IslandNodePool({ size: 16 });
+
+    /**
+     * @property islandPool
+     * @type {IslandPool}
+     */
+    this.islandPool = new IslandPool({ size: 8 });
 
     /**
      * The equations to split. Manually fill this array before running .split().
@@ -134,16 +142,16 @@ IslandManager.prototype.split = function(world){
 
     // Move old nodes to the node pool
     while(nodes.length){
-        this._nodePool.release(nodes.pop());
+        this.nodePool.release(nodes.pop());
     }
 
     // Create needed nodes, reuse if possible
     for(var i=0; i!==bodies.length; i++){
-        var node = this._nodePool.get();
+        var node = this.nodePool.get();
         node.body = bodies[i];
         nodes.push(node);
-        // if(this._nodePool.length){
-        //     var node = this._nodePool.pop();
+        // if(this.nodePool.length){
+        //     var node = this.nodePool.pop();
         //     node.reset();
         //     node.body = bodies[i];
         //     nodes.push(node);
@@ -168,7 +176,7 @@ IslandManager.prototype.split = function(world){
     // Move old islands to the island pool
     var islands = this.islands;
     for(var i=0; i<islands.length; i++){
-        this._islandPool.release(islands[i]);
+        this.islandPool.release(islands[i]);
     }
     islands.length = 0;
 
@@ -177,7 +185,7 @@ IslandManager.prototype.split = function(world){
     while((child = IslandManager.getUnvisitedNode(nodes))){
 
         // Create new island
-        var island = this._islandPool.get();
+        var island = this.islandPool.get();
 
         // Get all equations and bodies in this island
         this.bfs(child, island.bodies, island.equations);

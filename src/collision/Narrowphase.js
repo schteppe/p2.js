@@ -102,7 +102,7 @@ function Narrowphase(){
      *     // Allocate a few equations before starting the simulation.
      *     // This way, no contact objects need to be created on the fly in the game loop.
      *     world.narrowphase.contactEquationPool.resize(1024);
-     *     world.narrowphase.contactFrictionPool.resize(1024);
+     *     world.narrowphase.frictionEquationPool.resize(1024);
      */
     this.contactEquationPool = new ContactEquationPool({ size: 32 });
 
