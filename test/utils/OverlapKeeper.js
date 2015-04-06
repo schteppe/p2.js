@@ -16,6 +16,7 @@ exports.tick = function(test){
     var shapeB = new Circle(1);
 
     var keeper = new OverlapKeeper();
+    keeper.recordPool.resize(0);
     keeper.setOverlapping(bodyA, shapeA, bodyB, shapeB);
 
     test.equal(keeper.recordPool.objects.length, 0);
