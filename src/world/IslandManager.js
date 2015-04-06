@@ -1,6 +1,8 @@
 var vec2 = require('../math/vec2')
 ,   Island = require('./Island')
 ,   IslandNode = require('./IslandNode')
+,   IslandNodePool = require('./../utils/IslandNodePool')
+,   IslandPool = require('./../utils/IslandPool')
 ,   Body = require('../objects/Body');
 
 module.exports = IslandManager;
@@ -16,8 +18,8 @@ module.exports = IslandManager;
 function IslandManager(options){
 
     // Pooling of node objects saves some GC load
-    this._nodePool = [];
-    this._islandPool = [];
+    this._nodePool = new IslandNodePool({ size: 16 });
+    this._islandPool = new IslandPool({ size: 8 });
 
     /**
      * The equations to split. Manually fill this array before running .split().
@@ -132,19 +134,22 @@ IslandManager.prototype.split = function(world){
 
     // Move old nodes to the node pool
     while(nodes.length){
-        this._nodePool.push(nodes.pop());
+        this._nodePool.release(nodes.pop());
     }
 
     // Create needed nodes, reuse if possible
     for(var i=0; i!==bodies.length; i++){
-        if(this._nodePool.length){
-            var node = this._nodePool.pop();
-            node.reset();
-            node.body = bodies[i];
-            nodes.push(node);
-        } else {
-            nodes.push(new IslandNode(bodies[i]));
-        }
+        var node = this._nodePool.get();
+        node.body = bodies[i];
+        nodes.push(node);
+        // if(this._nodePool.length){
+        //     var node = this._nodePool.pop();
+        //     node.reset();
+        //     node.body = bodies[i];
+        //     nodes.push(node);
+        // } else {
+        //     nodes.push(new IslandNode(bodies[i]));
+        // }
     }
 
     // Add connectivity data. Each equation connects 2 bodies.
@@ -162,18 +167,17 @@ IslandManager.prototype.split = function(world){
 
     // Move old islands to the island pool
     var islands = this.islands;
-    while(islands.length){
-        var island = islands.pop();
-        island.reset();
-        this._islandPool.push(island);
+    for(var i=0; i<islands.length; i++){
+        this._islandPool.release(islands[i]);
     }
+    islands.length = 0;
 
     // Get islands
     var child;
     while((child = IslandManager.getUnvisitedNode(nodes))){
 
         // Create new island
-        var island = this._islandPool.length ? this._islandPool.pop() : new Island();
+        var island = this._islandPool.get();
 
         // Get all equations and bodies in this island
         this.bfs(child, island.bodies, island.equations);
