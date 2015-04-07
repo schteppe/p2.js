@@ -11,8 +11,7 @@ module.exports = function(grunt) {
                 dest : 'build/p2.js',
                 options:{
                     bundleOptions : {
-                        standalone : "p2",
-                        insertGlobals: true
+                        standalone : "p2"
                     }
                 }
             }
