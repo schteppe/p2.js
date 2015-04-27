@@ -8,8 +8,7 @@ p2.js
 ### Featured projects using p2.js
 * [Google I/O 2015 Experiment](http://www.chromeexperiments.com/detail/io-2015-experiment) by Instrument
 * [PixiLights, a Christmas Experiment](http://christmasexperiments.com/experiments/11) by Mat Groves
-
-[More...](https://github.com/schteppe/p2.js/wiki/Projects-using-p2.js)
+* [More...](https://github.com/schteppe/p2.js/wiki/Projects-using-p2.js)
 
 ### Demos
 These demos use the p2 Demo framework, which provides rendering and interactivity. Use mouse/touch to throw or create objects. Use the right menu (or console!) to tweak parameters. Or just check the source to see how to programmatically build the current scene using p2.
