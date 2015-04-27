@@ -390,6 +390,75 @@ Ray.prototype.intersectPlane = function(shape, angle, position, body){
 };
 Ray.prototype[Shape.PLANE] = Ray.prototype.intersectPlane;
 
+// Returns 1 if the lines intersect, otherwise 0.
+function getLineSegmentsIntersection (out, p0, p1, p2, p3) {
+
+    var s1_x, s1_y, s2_x, s2_y;
+    s1_x = p1[0] - p0[0];
+    s1_y = p1[1] - p0[1];
+    s2_x = p3[0] - p2[0];
+    s2_y = p3[1] - p2[1];
+
+    var s, t;
+    s = (-s1_y * (p0[0] - p2[0]) + s1_x * (p0[1] - p2[1])) / (-s2_x * s1_y + s1_x * s2_y);
+    t = ( s2_x * (p0[1] - p2[1]) - s2_y * (p0[0] - p2[0])) / (-s2_x * s1_y + s1_x * s2_y);
+    if (s >= 0 && s <= 1 && t >= 0 && t <= 1) { // Collision detected
+        var intX = p0[0] + (t * s1_x);
+        var intY = p0[1] + (t * s1_y);
+        out[0] = intX;
+        out[1] = intY;
+        return true;
+    }
+    return false; // No collision
+}
+
+var intersectConvex_rayStart = vec2.create();
+var intersectConvex_rayEnd = vec2.create();
+var intersectConvex_direction = vec2.create();
+var intersectConvex_p0 = vec2.create();
+var intersectConvex_p1 = vec2.create();
+var intersectConvex_intersection = vec2.create();
+var intersectConvex_normal = vec2.create();
+
+/**
+ * @method intersectConvex
+ * @private
+ * @param  {Shape} shape
+ * @param  {number} angle
+ * @param  {array} position
+ * @param  {Body} body
+ */
+Ray.prototype.intersectConvex = function(shape, angle, position, body){
+    var from = this.from;
+    var to = this.to;
+    var direction = intersectConvex_direction;
+    var rayStart = intersectConvex_rayStart;
+    var rayEnd = intersectConvex_rayEnd;
+    var p0 = intersectConvex_p0;
+    var p1 = intersectConvex_p1;
+    var intersection = intersectConvex_intersection;
+    var normal = intersectConvex_normal;
+
+    // Transform the ray direction and start to local shape space
+    vec2.rotate(direction, this._direction, -angle);
+    body.toLocalFrame(rayStart, this.from);
+    body.toLocalFrame(rayEnd, this.to);
+
+    for (var i = 0; i < shape.vertices.length; i++) {
+        var q1 = shape.vertices[i];
+        var q2 = shape.vertices[(i+1)%shape.vertices.length];
+        if(getLineSegmentsIntersection(intersection, rayStart, rayEnd, q1, q2)){
+            // Convert the intersection point to world
+            body.toWorldFrame(intersection, intersection);
+            vec2.sub(normal, shape.vertices[(i+1)%shape.vertices.length], shape.vertices[i]);
+            vec2.rotate(normal, normal, -Math.PI / 2 + angle);
+            vec2.normalize(normal, normal);
+            this.reportIntersection(normal, intersection, shape, body, i);
+        }
+    }
+};
+Ray.prototype[Shape.CONVEX] = Ray.prototype.intersectConvex;
+
 var Ray_intersectSphere_intersectionPoint = vec2.create();
 var Ray_intersectSphere_normal = vec2.create();
 Ray.prototype.intersectCircle = function(shape, angle, position, body){

@@ -82,6 +82,24 @@
         });
         planeBody.addShape(planeShape);
         world.addBody(planeBody);
+
+        // Add a convex
+        var vertices = [];
+        var size = 1;
+        for(var i=0, N=5; i<N; i++){
+            var a = 2*Math.PI / N * i;
+            var vertex = [size*0.5*Math.cos(a), size*0.5*Math.sin(a)]; // Note: vertices are added counter-clockwise
+            vertices.push(vertex);
+        }
+        convexShape = new p2.Convex(vertices);
+        convexBody = new p2.Body({
+          mass: 1,
+          position: [1,0],
+          angle: Math.PI / 3,
+          angularVelocity: 1
+        });
+        convexBody.addShape(convexShape);
+        world.addBody(convexBody);
       }
 
       function drawbox(){
@@ -117,6 +135,21 @@
         ctx.translate(x, y);
         ctx.rotate(circleBody.angle);
         ctx.arc(0,0,circleShape.radius,0,2*Math.PI);
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      function drawConvex(){
+        ctx.beginPath();
+        var x = convexBody.position[0],
+            y = convexBody.position[1];
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(convexBody.angle);
+        ctx.moveTo(convexShape.vertices[0][0], convexShape.vertices[0][1]);
+        for (var i = 1; i < convexShape.vertices.length+1; i++) {
+          ctx.lineTo(convexShape.vertices[i%convexShape.vertices.length][0], convexShape.vertices[i%convexShape.vertices.length][1]);
+        }
         ctx.stroke();
         ctx.restore();
       }
@@ -241,6 +274,7 @@
         drawPlane();
         drawCircle();
         // drawCapsule();
+        drawConvex();
         drawRays();
 
         // Restore transform
