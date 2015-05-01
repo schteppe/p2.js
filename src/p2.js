@@ -1,5 +1,5 @@
 // Export p2 classes
-module.exports = {
+var p2 = module.exports = {
     AABB :                          require('./collision/AABB'),
     AngleLockEquation :             require('./equations/AngleLockEquation'),
     Body :                          require('./objects/Body'),
