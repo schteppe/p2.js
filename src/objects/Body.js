@@ -1153,6 +1153,19 @@ Body.prototype.integrateToTimeOfImpact = function(dt){
 };
 
 /**
+ * Get velocity of a point in the body.
+ * @method getVelocityAtPoint
+ * @param  {Array} result A vector to store the result in
+ * @param  {Array} relativePoint A world oriented vector, indicating the position of the point to get the velocity from
+ * @return {Array} The result vector
+ */
+Body.prototype.getVelocityAtPoint = function(result, relativePoint){
+    vec2.crossVZ(result, relativePoint, this.angularVelocity);
+    vec2.add(result, result, this.velocity);
+    return result;
+};
+
+/**
  * @event sleepy
  */
 Body.sleepyEvent = {

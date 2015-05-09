@@ -38,6 +38,7 @@ var p2 = module.exports = {
     Shape :                         require('./shapes/Shape'),
     Solver :                        require('./solver/Solver'),
     Spring :                        require('./objects/Spring'),
+    TopDownVehicle :                require('./objects/TopDownVehicle'),
     LinearSpring :                  require('./objects/LinearSpring'),
     RotationalSpring :              require('./objects/RotationalSpring'),
     Utils :                         require('./utils/Utils'),
