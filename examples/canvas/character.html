@@ -13,7 +13,7 @@
     <p>Use arrow keys to control character</p>
 
     <script>
-      var canvas, ctx, w, h, zoom=50, jumpSpeed=6, walkSpeed=2,
+      var canvas, ctx, w, h, zoom=50, jumpSpeed=6, walkSpeed=2, timeStep=1/60, maxSubSteps=10,
           world, characterBody, planeBody, platforms=[], boxes=[];
 
       var buttons = {
@@ -160,25 +160,35 @@
         ctx.restore();
       }
 
+      world.on('postStep', function(){
+        for(var i=0; i<platforms.length; i++){
+          platforms[i].velocity[0] = 2*Math.sin(world.time);
+        }
+      });
+
+      var lastTime;
+
       // Animation loop
       function animate(t){
-        t = t || 0;
         requestAnimationFrame(animate);
 
-        for(var i=0; i<platforms.length; i++){
-          platforms[i].velocity[0] = Math.sin(t*0.001);
-        }
+        var dt = t !== undefined && lastTime !== undefined ? t / 1000 - lastTime : 0;
 
         // Apply button response
-        if(buttons.right) characterBody.velocity[0] =  walkSpeed;
-        else if(buttons.left)  characterBody.velocity[0] = -walkSpeed;
-        else characterBody.velocity[0] = 0;
+        if(buttons.right)
+          characterBody.velocity[0] =  walkSpeed;
+        else if(buttons.left)
+          characterBody.velocity[0] = -walkSpeed;
+        else
+          characterBody.velocity[0] = 0;
 
         // Move physics bodies forward in time
-        world.step(1/60);
+        world.step(timeStep, dt, maxSubSteps);
 
         // Render scene
         render();
+
+        lastTime = t / 1000;
       }
 
       var yAxis = p2.vec2.fromValues(0,1);

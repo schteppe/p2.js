@@ -579,6 +579,7 @@ World.prototype.step = function(dt,timeSinceLastCalled,maxSubSteps){
         while (this.accumulator >= dt && substeps < maxSubSteps) {
             // Do fixed steps to catch up
             this.internalStep(dt);
+            this.time += dt;
             this.accumulator -= dt;
             substeps++;
         }
@@ -589,7 +590,6 @@ World.prototype.step = function(dt,timeSinceLastCalled,maxSubSteps){
             vec2.lerp(b.interpolatedPosition, b.previousPosition, b.position, t);
             b.interpolatedAngle = b.previousAngle + t * (b.angle - b.previousAngle);
         }
-        this.time += timeSinceLastCalled;
     }
 };
 
