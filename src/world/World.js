@@ -58,7 +58,7 @@ if(!performance.now){
  * @param {Solver} [options.solver] Defaults to GSSolver.
  * @param {Array} [options.gravity] Defaults to y=-9.78.
  * @param {Broadphase} [options.broadphase] Defaults to NaiveBroadphase
- * @param {Boolean} [options.islandSplit=false]
+ * @param {Boolean} [options.islandSplit=true]
  * @param {Boolean} [options.doProfiling=false]
  * @extends EventEmitter
  *
