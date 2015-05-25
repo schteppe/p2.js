@@ -1083,7 +1083,7 @@ World.prototype.getBodyById = function(id){
 
 /**
  * Disable collision between two bodies
- * @method disableCollision
+ * @method disableBodyCollision
  * @param {Body} bodyA
  * @param {Body} bodyB
  */
@@ -1093,7 +1093,7 @@ World.prototype.disableBodyCollision = function(bodyA,bodyB){
 
 /**
  * Enable collisions between the given two bodies
- * @method enableCollision
+ * @method enableBodyCollision
  * @param {Body} bodyA
  * @param {Body} bodyB
  */
