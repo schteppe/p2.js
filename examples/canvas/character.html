@@ -108,6 +108,41 @@
         world.addContactMaterial(groundCharacterCM);
         world.addContactMaterial(boxCharacterCM);
         world.addContactMaterial(boxGroundCM);
+
+
+        // Allow pass through platforms from below
+        var passThroughBody;
+
+        world.on('beginContact', function (evt){
+          if(evt.bodyA !== characterBody && evt.bodyB !== characterBody) return;
+          var otherBody = evt.bodyA === characterBody ? evt.bodyB : evt.bodyA;
+          if(platforms.indexOf(otherBody) !== -1 && otherBody.position[1] > characterBody.position[1]){
+            passThroughBody = otherBody;
+          }
+        });
+
+        // Disable any equations between the current passthrough body and the character
+        world.on('preSolve', function (evt){
+          for(var i=0; i<evt.contactEquations.length; i++){
+            var eq = evt.contactEquations[i];
+            if((eq.bodyA === characterBody && eq.bodyB === passThroughBody) || eq.bodyB === characterBody && eq.bodyA === passThroughBody){
+              eq.enabled = false;
+            }
+          }
+          for(var i=0; i<evt.frictionEquations.length; i++){
+            var eq = evt.frictionEquations[i];
+            if((eq.bodyA === characterBody && eq.bodyB === passThroughBody) || eq.bodyB === characterBody && eq.bodyA === passThroughBody){
+              eq.enabled = false;
+            }
+          }
+        });
+
+        world.on('endContact', function (evt){
+          if((evt.bodyA === characterBody && evt.bodyB === passThroughBody) || evt.bodyB === characterBody && evt.bodyA === passThroughBody){
+            passThroughBody = undefined;
+          }
+        });
+
       }
 
       function drawBox(body){
