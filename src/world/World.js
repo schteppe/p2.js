@@ -379,7 +379,6 @@ function World(options){
      * @param {Shape} shapeB
      * @param {Body}  bodyA
      * @param {Body}  bodyB
-     * @param {Array} contactEquations
      */
     this.endContactEvent = {
         type:"endContact",
