@@ -3,7 +3,6 @@
 
 var  GSSolver = require('../solver/GSSolver')
 ,    Solver = require('../solver/Solver')
-,    NaiveBroadphase = require('../collision/NaiveBroadphase')
 ,    Ray = require('../collision/Ray')
 ,    vec2 = require('../math/vec2')
 ,    Circle = require('../shapes/Circle')
