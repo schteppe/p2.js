@@ -3,7 +3,6 @@
 
 var  GSSolver = require('../solver/GSSolver')
 ,    Solver = require('../solver/Solver')
-,    NaiveBroadphase = require('../collision/NaiveBroadphase')
 ,    Ray = require('../collision/Ray')
 ,    vec2 = require('../math/vec2')
 ,    Circle = require('../shapes/Circle')
@@ -57,7 +56,7 @@ if(!performance.now){
  * @param {Object} [options]
  * @param {Solver} [options.solver] Defaults to GSSolver.
  * @param {Array} [options.gravity] Defaults to y=-9.78.
- * @param {Broadphase} [options.broadphase] Defaults to NaiveBroadphase
+ * @param {Broadphase} [options.broadphase] Defaults to SAPBroadphase
  * @param {Boolean} [options.islandSplit=true]
  * @param {Boolean} [options.doProfiling=false]
  * @extends EventEmitter
