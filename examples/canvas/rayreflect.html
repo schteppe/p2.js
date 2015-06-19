@@ -170,12 +170,6 @@
         ctx.stroke();
       };
 
-      function reflect(out, vector, normal){
-        var dot = vector[0]*normal[0] + vector[1]*normal[1];
-        out[0] = vector[0] - 2 * normal[0] * dot;
-        out[1] = vector[1] - 2 * normal[1] * dot;
-      };
-
       function drawRays(){
 
         for (var i = 0; i < 10; i++) {
@@ -200,7 +194,7 @@
             p2.vec2.copy(start, result.hitPointWorld);
 
             // reflect the direction
-            reflect(direction, direction, result.hitNormalWorld);
+            p2.vec2.reflect(direction, direction, result.hitNormalWorld);
 
             // move out a bit
             start[0] += direction[0] * 0.001;

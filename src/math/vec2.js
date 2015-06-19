@@ -482,10 +482,33 @@ vec2.str = function (a) {
     return 'vec2(' + a[0] + ', ' + a[1] + ')';
 };
 
+/**
+ * Linearly interpolate/mix two vectors.
+ * @static
+ * @method lerp
+ * @param {Array} out
+ * @param {Array} a First vector
+ * @param {Array} b Second vector
+ * @param {number} t Lerp factor
+ */
 vec2.lerp = function (out, a, b, t) {
     var ax = a[0],
         ay = a[1];
     out[0] = ax + t * (b[0] - ax);
     out[1] = ay + t * (b[1] - ay);
     return out;
+};
+
+/**
+ * Reflect a vector along a normal.
+ * @static
+ * @method reflect
+ * @param {Array} out
+ * @param {Array} vector
+ * @param {Array} normal
+ */
+vec2.reflect = function(out, vector, normal){
+    var dot = vector[0] * normal[0] + vector[1] * normal[1];
+    out[0] = vector[0] - 2 * normal[0] * dot;
+    out[1] = vector[1] - 2 * normal[1] * dot;
 };
