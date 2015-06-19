@@ -160,6 +160,7 @@ Ray.prototype.intersectBody = function (body) {
         vec2.copy(worldPosition, body.shapeOffsets[i]);
         vec2.rotate(worldPosition, worldPosition, body.angle);
         vec2.add(worldPosition, worldPosition, body.position);
+
         var worldAngle = body.shapeAngles[i] + body.angle;
 
         this.intersectShape(
@@ -207,10 +208,9 @@ Ray.prototype._updateDirection = function(){
 Ray.prototype.intersectShape = function(shape, angle, position, body){
     var from = this.from;
 
-
-    // Checking boundingSphere
+    // Checking radius
     var distance = distanceFromIntersection(from, this._direction, position);
-    if ( distance > shape.boundingSphereRadius ) {
+    if (distance > shape.boundingRadius) {
         return;
     }
 
@@ -230,106 +230,98 @@ var c = vec2.create();
 var d = vec2.create();
 
 var tmpRaycastResult = new RaycastResult();
-var intersectRectangle_direction = vec2.create();
-var intersectRectangle_rayStart = vec2.create();
-var intersectRectangle_worldNormalMin = vec2.create();
-var intersectRectangle_worldNormalMax = vec2.create();
-var intersectRectangle_hitPointWorld = vec2.create();
-var intersectRectangle_boxMin = vec2.create();
-var intersectRectangle_boxMax = vec2.create();
 
-/**
- * @method intersectRectangle
- * @private
- * @param  {Shape} shape
- * @param  {number} angle
- * @param  {array} position
- * @param  {Body} body
- */
-Ray.prototype.intersectRectangle = function(shape, angle, position, body){
-    var tmin = -Number.MAX_VALUE;
-    var tmax = Number.MAX_VALUE;
+// var intersectRectangle_direction = vec2.create();
+// var intersectRectangle_rayStart = vec2.create();
+// var intersectRectangle_worldNormalMin = vec2.create();
+// var intersectRectangle_worldNormalMax = vec2.create();
+// var intersectRectangle_hitPointWorld = vec2.create();
+// var intersectRectangle_boxMin = vec2.create();
+// var intersectRectangle_boxMax = vec2.create();
+// Ray.prototype.intersectRectangle = function(shape, angle, position, body){
 
-    var direction = intersectRectangle_direction;
-    var rayStart = intersectRectangle_rayStart;
-    var worldNormalMin = intersectRectangle_worldNormalMin;
-    var worldNormalMax = intersectRectangle_worldNormalMax;
-    var hitPointWorld = intersectRectangle_hitPointWorld;
-    var boxMin = intersectRectangle_boxMin;
-    var boxMax = intersectRectangle_boxMax;
+//     var tmin = -Number.MAX_VALUE;
+//     var tmax = Number.MAX_VALUE;
 
-    vec2.set(boxMin, -shape.width * 0.5, -shape.height * 0.5);
-    vec2.set(boxMax, shape.width * 0.5, shape.height * 0.5);
+//     var direction = intersectRectangle_direction;
+//     var rayStart = intersectRectangle_rayStart;
+//     var worldNormalMin = intersectRectangle_worldNormalMin;
+//     var worldNormalMax = intersectRectangle_worldNormalMax;
+//     var hitPointWorld = intersectRectangle_hitPointWorld;
+//     var boxMin = intersectRectangle_boxMin;
+//     var boxMax = intersectRectangle_boxMax;
 
-    // Transform the ray direction and start to local space
-    vec2.rotate(direction, this._direction, -angle);
-    body.toLocalFrame(rayStart, this.from);
+//     vec2.set(boxMin, -shape.width * 0.5, -shape.height * 0.5);
+//     vec2.set(boxMax, shape.width * 0.5, shape.height * 0.5);
 
-    if (direction[0] !== 0) {
-        var tx1 = (boxMin[0] - rayStart[0]) / direction[0];
-        var tx2 = (boxMax[0] - rayStart[0]) / direction[0];
+//     // Transform the ray direction and start to local space
+//     vec2.rotate(direction, this._direction, -angle);
+//     body.toLocalFrame(rayStart, this.from);
 
-        var tminOld = tmin;
-        tmin = Math.max(tmin, Math.min(tx1, tx2));
-        if(tmin !== tminOld){
-            vec2.set(worldNormalMin, tx1 > tx2 ? 1 : -1, 0);
-        }
+//     if (direction[0] !== 0) {
+//         var tx1 = (boxMin[0] - rayStart[0]) / direction[0];
+//         var tx2 = (boxMax[0] - rayStart[0]) / direction[0];
 
-        var tmaxOld = tmax;
-        tmax = Math.min(tmax, Math.max(tx1, tx2));
-        if(tmax !== tmaxOld){
-            vec2.set(worldNormalMax, tx1 < tx2 ? 1 : -1, 0);
-        }
-    }
+//         var tminOld = tmin;
+//         tmin = Math.max(tmin, Math.min(tx1, tx2));
+//         if(tmin !== tminOld){
+//             vec2.set(worldNormalMin, tx1 > tx2 ? 1 : -1, 0);
+//         }
 
-    if (direction[1] !== 0) {
-        var ty1 = (boxMin[1] - rayStart[1]) / direction[1];
-        var ty2 = (boxMax[1] - rayStart[1]) / direction[1];
+//         var tmaxOld = tmax;
+//         tmax = Math.min(tmax, Math.max(tx1, tx2));
+//         if(tmax !== tmaxOld){
+//             vec2.set(worldNormalMax, tx1 < tx2 ? 1 : -1, 0);
+//         }
+//     }
 
-        var tminOld = tmin;
-        tmin = Math.max(tmin, Math.min(ty1, ty2));
-        if(tmin !== tminOld){
-            vec2.set(worldNormalMin, 0, ty1 > ty2 ? 1 : -1);
-        }
+//     if (direction[1] !== 0) {
+//         var ty1 = (boxMin[1] - rayStart[1]) / direction[1];
+//         var ty2 = (boxMax[1] - rayStart[1]) / direction[1];
 
-        var tmaxOld = tmax;
-        tmax = Math.min(tmax, Math.max(ty1, ty2));
-        if(tmax !== tmaxOld){
-            vec2.set(worldNormalMax, 0, ty1 < ty2 ? 1 : -1);
-        }
-    }
+//         var tminOld = tmin;
+//         tmin = Math.max(tmin, Math.min(ty1, ty2));
+//         if(tmin !== tminOld){
+//             vec2.set(worldNormalMin, 0, ty1 > ty2 ? 1 : -1);
+//         }
 
-    if(tmax >= tmin){
-        // Hit point
-        vec2.set(
-            hitPointWorld,
-            rayStart[0] + direction[0] * tmin,
-            rayStart[1] + direction[1] * tmin
-        );
+//         var tmaxOld = tmax;
+//         tmax = Math.min(tmax, Math.max(ty1, ty2));
+//         if(tmax !== tmaxOld){
+//             vec2.set(worldNormalMax, 0, ty1 < ty2 ? 1 : -1);
+//         }
+//     }
 
-        vec2.rotate(worldNormalMin, worldNormalMin, angle);
+//     if(tmax >= tmin){
+//         // Hit point
+//         vec2.set(
+//             hitPointWorld,
+//             rayStart[0] + direction[0] * tmin,
+//             rayStart[1] + direction[1] * tmin
+//         );
 
-        body.toWorldFrame(hitPointWorld, hitPointWorld);
+//         vec2.rotate(worldNormalMin, worldNormalMin, angle);
 
-        this.reportIntersection(worldNormalMin, hitPointWorld, shape, body, -1);
-        if(this._shouldStop){
-            return;
-        }
+//         body.toWorldFrame(hitPointWorld, hitPointWorld);
 
-        vec2.rotate(worldNormalMax, worldNormalMax, angle);
+//         this.reportIntersection(worldNormalMin, hitPointWorld, shape, body, -1);
+//         if(this._shouldStop){
+//             return;
+//         }
 
-        // Hit point
-        vec2.set(
-            hitPointWorld,
-            rayStart[0] + direction[0] * tmax,
-            rayStart[1] + direction[1] * tmax
-        );
-        body.toWorldFrame(hitPointWorld, hitPointWorld);
+//         vec2.rotate(worldNormalMax, worldNormalMax, angle);
 
-        this.reportIntersection(worldNormalMax, hitPointWorld, shape, body, -1);
-    }
-};
-Ray.prototype[Shape.RECTANGLE] = Ray.prototype.intersectRectangle;
+//         // Hit point
+//         vec2.set(
+//             hitPointWorld,
+//             rayStart[0] + direction[0] * tmax,
+//             rayStart[1] + direction[1] * tmax
+//         );
+//         body.toWorldFrame(hitPointWorld, hitPointWorld);
+
+//         this.reportIntersection(worldNormalMax, hitPointWorld, shape, body, -1);
+//     }
+// };
 
 var intersectPlane_planePointToFrom = vec2.create();
 var intersectPlane_dir_scaled_with_t = vec2.create();
@@ -439,18 +431,17 @@ Ray.prototype.intersectConvex = function(shape, angle, position, body){
     var intersection = intersectConvex_intersection;
     var normal = intersectConvex_normal;
 
-    // Transform the ray direction and start to local shape space
-    vec2.rotate(direction, this._direction, -angle);
-    body.toLocalFrame(rayStart, this.from);
-    body.toLocalFrame(rayEnd, this.to);
+    // Transform to local shape space
+    vec2.toLocalFrame(rayStart, this.from, position, angle);
+    vec2.toLocalFrame(rayEnd, this.to, position, angle);
 
     for (var i = 0; i < shape.vertices.length; i++) {
         var q1 = shape.vertices[i];
         var q2 = shape.vertices[(i+1)%shape.vertices.length];
         if(getLineSegmentsIntersection(intersection, rayStart, rayEnd, q1, q2)){
             // Convert the intersection point to world
-            body.toWorldFrame(intersection, intersection);
-            vec2.sub(normal, shape.vertices[(i+1)%shape.vertices.length], shape.vertices[i]);
+            vec2.toGlobalFrame(intersection, intersection, position, angle);
+            vec2.sub(normal, q2, q1);
             vec2.rotate(normal, normal, -Math.PI / 2 + angle);
             vec2.normalize(normal, normal);
             this.reportIntersection(normal, intersection, shape, body, i);
@@ -458,6 +449,7 @@ Ray.prototype.intersectConvex = function(shape, angle, position, body){
     }
 };
 Ray.prototype[Shape.CONVEX] = Ray.prototype.intersectConvex;
+Ray.prototype[Shape.RECTANGLE] = Ray.prototype.intersectConvex;
 
 var Ray_intersectSphere_intersectionPoint = vec2.create();
 var Ray_intersectSphere_normal = vec2.create();
