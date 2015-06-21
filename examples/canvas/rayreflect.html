@@ -9,6 +9,9 @@
 
     <!-- The canvas, where we draw stuff -->
     <canvas width="600" height="400" id="myCanvas"></canvas>
+    <input type="checkbox" id="reflect"> Reflect
+
+
 
     <script>
       var canvas, ctx, w, h, world, boxBody, planeBody;
@@ -17,10 +20,19 @@
       var start = [0,0];
       var end = [0,0];
       var direction = [0,0];
+      var reflect = false;
       var result = new p2.RaycastResult();
       var raycastOptions = {};
+
+      document.getElementById("reflect").addEventListener('change', function(evt){
+        reflect = document.getElementById("reflect").checked;
+      });
+
+
       init();
       animate();
+
+
 
       function init(){
 
@@ -43,10 +55,10 @@
         boxBody = new p2.Body({
           mass:1,
           position:[0,2],
-          angularVelocity:1,
+          angularVelocity:0,
           angularDamping: 0
         });
-        boxBody.addShape(boxShape, [1,0], 0);
+        boxBody.addShape(boxShape, [0,0], 0);
         world.addBody(boxBody);
 
         // Add a circle
@@ -65,13 +77,13 @@
           position: [3,0],
           angle: Math.PI / 3
         });
-        planeBody.addShape(planeShape);
+        planeBody.addShape(planeShape, [-1,0], Math.PI / 16);
         world.addBody(planeBody);
 
         // Add a convex
         var vertices = [];
-        var size = 1;
-        for(var i=0, N=5; i<N; i++){
+        var size = 2;
+        for(var i=0, N=3; i<N; i++){
             var a = 2*Math.PI / N * i;
             var vertex = [size*0.5*Math.cos(a), size*0.5*Math.sin(a)]; // Note: vertices are added counter-clockwise
             vertices.push(vertex);
@@ -108,6 +120,10 @@
         ctx.save();
         ctx.translate(x, y);
         ctx.rotate(planeBody.angle);
+
+        ctx.translate(planeBody.shapeOffsets[0][0], planeBody.shapeOffsets[0][1]);
+        ctx.rotate(planeBody.shapeAngles[0]);
+
         ctx.moveTo(-100, 0);
         ctx.lineTo(100, 0);
         ctx.stroke();
@@ -170,12 +186,56 @@
         ctx.stroke();
       };
 
-      function drawRays(){
+      var vec2 = p2.vec2;
+      var airIndex = 1;
+      var shapeIndex = 1.5;
+      function refract(out, direction, normal, airIndex, shapeIndex){
+        var dot = p2.vec2.dot(normal, direction);
+        var tangent = p2.vec2.fromValues(normal[0], normal[1]);
+        p2.vec2.rotate(tangent, tangent, -Math.PI / 2);
 
-        for (var i = 0; i < 10; i++) {
+        var outAngle;
+        var side = p2.vec2.dot(tangent, direction);
+        if(dot < 0){
+          // Into the material
+          dot = p2.vec2.dot(normal, direction);
+          inAngle = Math.acos(dot);
+          p2.vec2.scale(normal, normal, -1);
+          var a = airIndex / shapeIndex * Math.sin(inAngle);
+
+          if(a <= 1){
+            outAngle = Math.asin(a);
+
+            // Construct new refracted direction - just rotate the negative normal
+            p2.vec2.rotate(out, normal, outAngle * (side < 0 ? -1 : 1));
+          } else {
+            p2.vec2.reflect(out, direction, normal);
+          }
+
+        } else {
+
+          // Out of the material - flip the indices
+          dot = p2.vec2.dot(normal, direction);
+          inAngle = Math.acos(dot);
+
+          var a = shapeIndex / airIndex * Math.sin(inAngle);
+          if(a <= 1){
+            outAngle = Math.asin(a);
+
+            // Construct new refracted direction - just rotate the negative normal
+            p2.vec2.rotate(out, normal, outAngle * (side < 0 ? 1 : -1));
+          } else {
+            p2.vec2.reflect(out, direction, normal);
+          }
+        }
+      }
+
+      function drawRays(){
+        var N = 10;
+        for (var i = 0; i < N; i++) {
           start[0] = -3;
-          start[1] = 0;//Math.sin(world.time) * 4;
-          var angle = .5 * Math.sin(world.time * 1 - 1)-0.005 * i + 0.2;
+          start[1] = 0;
+          var angle = .5 * Math.sin(world.time * 1 - 1)-0.005 * (i/N)*10 + 0.1;
           direction[0] = Math.cos(angle);
           direction[1] = Math.sin(angle);
 
@@ -185,16 +245,20 @@
           // Closest
           ctx.strokeStyle = 'blue';
 
-          var hits=0;
+          var hits = 0;
           while(world.raycastClosest(start, end, raycastOptions, result) && hits++ < 10){
             drawRay(start, result.hitPointWorld);
-            //drawRayResult(result);
 
             // move start to the hit point
             p2.vec2.copy(start, result.hitPointWorld);
 
-            // reflect the direction
-            p2.vec2.reflect(direction, direction, result.hitNormalWorld);
+            result.getDirection(direction);
+            if(reflect){
+              // reflect the direction
+              p2.vec2.reflect(direction, direction, result.hitNormalWorld);
+            } else {
+              refract(direction, direction, result.hitNormalWorld, airIndex, shapeIndex);
+            }
 
             // move out a bit
             start[0] += direction[0] * 0.001;
