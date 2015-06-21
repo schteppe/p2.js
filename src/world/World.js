@@ -1,6 +1,3 @@
-/* global performance */
-/*jshint -W020 */
-
 var  GSSolver = require('../solver/GSSolver')
 ,    Solver = require('../solver/Solver')
 ,    Ray = require('../collision/Ray')
@@ -35,22 +32,8 @@ var  GSSolver = require('../solver/GSSolver')
 
 module.exports = World;
 
-// Shim for performance.now
-if(typeof performance === 'undefined'){
-    performance = {};
-}
-if(!performance.now){
-    var nowOffset = Date.now();
-    if (performance.timing && performance.timing.navigationStart){
-        nowOffset = performance.timing.navigationStart;
-    }
-    performance.now = function(){
-        return Date.now() - nowOffset;
-    };
-}
-
 /**
- * The dynamics world, where all bodies and constraints lives.
+ * The dynamics world, where all bodies and constraints live.
  *
  * @class World
  * @constructor
@@ -59,7 +42,6 @@ if(!performance.now){
  * @param {Array} [options.gravity] Defaults to y=-9.78.
  * @param {Broadphase} [options.broadphase] Defaults to SAPBroadphase
  * @param {Boolean} [options.islandSplit=true]
- * @param {Boolean} [options.doProfiling=false]
  * @extends EventEmitter
  *
  * @example
@@ -145,23 +127,6 @@ function World(options){
      * @default true
      */
     this.useFrictionGravityOnZeroGravity = true;
-
-    /**
-     * Whether to do timing measurements during the step() or not.
-     *
-     * @property doPofiling
-     * @type {Boolean}
-     * @default false
-     */
-    this.doProfiling = options.doProfiling || false;
-
-    /**
-     * How many millisecconds the last step() took. This is updated each step if .doProfiling is set to true.
-     *
-     * @property lastStepTime
-     * @type {Number}
-     */
-    this.lastStepTime = 0.0;
 
     /**
      * The broadphase algorithm to use.
@@ -602,7 +567,6 @@ World.prototype.internalStep = function(dt){
     this.stepping = true;
 
     var that = this,
-        doProfiling = this.doProfiling,
         Nsprings = this.springs.length,
         springs = this.springs,
         bodies = this.bodies,
@@ -624,10 +588,6 @@ World.prototype.internalStep = function(dt){
     this.overlapKeeper.tick();
 
     this.lastTimeStep = dt;
-
-    if(doProfiling){
-        t0 = performance.now();
-    }
 
     // Update approximate friction gravity.
     if(this.useWorldGravityAsFrictionGravity){
@@ -816,11 +776,6 @@ World.prototype.internalStep = function(dt){
     // Reset force
     for(var i=0; i!==Nbodies; i++){
         bodies[i].setZeroForce();
-    }
-
-    if(doProfiling){
-        t1 = performance.now();
-        that.lastStepTime = t1-t0;
     }
 
     // Emit impact event
@@ -1015,7 +970,7 @@ World.prototype.addSpring = function(spring){
  */
 World.prototype.removeSpring = function(spring){
     var idx = this.springs.indexOf(spring);
-    if(idx!==-1){
+    if(idx !== -1){
         Utils.splice(this.springs,idx,1);
     }
 };
