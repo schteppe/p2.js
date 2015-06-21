@@ -17,6 +17,12 @@
         var PENDULUM_LENGTH = 10;
 
         var targetPosition = 0;
+        var targetPositionInterval = setInterval(changeTargetPos, 8000);
+        function changeTargetPos(){
+            targetPosition = targetPosition===0 ? 10 : 0;
+        }
+        changeTargetPos();
+
         var posAvg = 0;
 
         var angleController = new PIDController();
@@ -103,7 +109,7 @@
                 wheelJoint.setMotorSpeed(targetAngularVelocity);
             });
 
-            app.frame(0,5,16,16);
+            app.frame(3,5,16,16);
         });
 
         /*
