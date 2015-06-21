@@ -259,8 +259,6 @@ function World(options){
      */
     this.bodiesToBeRemoved = [];
 
-    this.fixedStepTime = 0.0;
-
     /**
      * Whether to enable island splitting. Island splitting can be an advantage for both precision and performance. See {{#crossLink "IslandManager"}}{{/crossLink}}.
      * @property {Boolean} islandSplit
@@ -285,7 +283,7 @@ function World(options){
      * @event postStep
      */
     this.postStepEvent = {
-        type : "postStep",
+        type : "postStep"
     };
 
     /**
@@ -315,7 +313,7 @@ function World(options){
      */
     this.addSpringEvent = {
         type : "addSpring",
-        spring : null,
+        spring : null
     };
 
     /**
@@ -330,7 +328,7 @@ function World(options){
         bodyB : null,
         shapeA : null,
         shapeB : null,
-        contactEquation : null,
+        contactEquation : null
     };
 
     /**
@@ -341,8 +339,8 @@ function World(options){
      * @param {Array} pairs An array of collision pairs. If this array is [body1,body2,body3,body4], then the body pairs 1,2 and 3,4 would advance to narrowphase.
      */
     this.postBroadphaseEvent = {
-        type:"postBroadphase",
-        pairs:null,
+        type: "postBroadphase",
+        pairs: null
     };
 
     /**
@@ -364,12 +362,12 @@ function World(options){
      * @param {Array} contactEquations
      */
     this.beginContactEvent = {
-        type:"beginContact",
-        shapeA : null,
-        shapeB : null,
-        bodyA : null,
-        bodyB : null,
-        contactEquations : [],
+        type: "beginContact",
+        shapeA: null,
+        shapeB: null,
+        bodyA: null,
+        bodyB: null,
+        contactEquations: []
     };
 
     /**
@@ -381,11 +379,11 @@ function World(options){
      * @param {Body}  bodyB
      */
     this.endContactEvent = {
-        type:"endContact",
-        shapeA : null,
-        shapeB : null,
-        bodyA : null,
-        bodyB : null,
+        type: "endContact",
+        shapeA: null,
+        shapeB: null,
+        bodyA: null,
+        bodyB: null
     };
 
     /**
@@ -395,9 +393,9 @@ function World(options){
      * @param {Array} frictionEquations An array of friction equations to be solved.
      */
     this.preSolveEvent = {
-        type:"preSolve",
-        contactEquations:null,
-        frictionEquations:null,
+        type: "preSolve",
+        contactEquations: null,
+        frictionEquations: null
     };
 
     // For keeping track of overlapping shapes
@@ -755,6 +753,7 @@ World.prototype.internalStep = function(dt){
             e.bodyB = data.bodyB;
             this.emit(e);
         }
+        endOverlaps.length = 0;
     }
 
     var preSolveEvent = this.preSolveEvent;
@@ -1114,7 +1113,6 @@ World.prototype.enableBodyCollision = function(bodyA,bodyB){
 World.prototype.clear = function(){
 
     this.time = 0;
-    this.fixedStepTime = 0;
 
     // Remove all solver equations
     if(this.solver && this.solver.equations.length){
@@ -1159,6 +1157,7 @@ var hitTest_tmp1 = vec2.create(),
  * @param  {Array}  bodies      A list of objects to check for intersection
  * @param  {Number} precision   Used for matching against particles and lines. Adds some margin to these infinitesimal objects.
  * @return {Array}              Array of bodies that overlap the point
+ * @todo Should use an api similar to the raycast functions
  */
 World.prototype.hitTest = function(worldPoint,bodies,precision){
     precision = precision || 0;
