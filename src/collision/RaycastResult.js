@@ -92,6 +92,14 @@ RaycastResult.prototype.reset = function () {
 };
 
 /**
+ * @method getDirection
+ */
+RaycastResult.prototype.getDirection = function (out) {
+	vec2.sub(out, this.rayToWorld, this.rayFromWorld);
+	vec2.normalize(out, out);
+};
+
+/**
  * Can be called while iterating over hits to stop searching for hit points.
  * @method abort
  */

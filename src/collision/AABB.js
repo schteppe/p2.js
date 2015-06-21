@@ -151,3 +151,37 @@ AABB.prototype.overlaps = function(aabb){
     return ((l2[0] <= u1[0] && u1[0] <= u2[0]) || (l1[0] <= u2[0] && u2[0] <= u1[0])) &&
            ((l2[1] <= u1[1] && u1[1] <= u2[1]) || (l1[1] <= u2[1] && u2[1] <= u1[1]));
 };
+
+AABB.prototype.overlapsRay = function(ray){
+
+    var dirfrac = [];
+    var t = 0;
+
+    // ray.direction is unit direction vector of ray
+    dirfrac[0] = 1 / ray._direction[0];
+    dirfrac[1] = 1 / ray._direction[1];
+
+    // this.lowerBound is the corner of AABB with minimal coordinates - left bottom, rt is maximal corner
+    var t1 = (this.lowerBound[0] - ray.from[0]) * dirfrac[0];
+    var t2 = (this.upperBound[0] - ray.from[0]) * dirfrac[0];
+    var t3 = (this.lowerBound[1] - ray.from[1]) * dirfrac[1];
+    var t4 = (this.upperBound[1] - ray.from[1]) * dirfrac[1];
+
+    var tmin = Math.max(Math.max(Math.min(t1, t2), Math.min(t3, t4)));
+    var tmax = Math.min(Math.min(Math.max(t1, t2), Math.max(t3, t4)));
+
+    // if tmax < 0, ray (line) is intersecting AABB, but whole AABB is behing us
+    if (tmax < 0){
+        t = tmax;
+        return false;
+    }
+
+    // if tmin > tmax, ray doesn't intersect AABB
+    if (tmin > tmax){
+        t = tmax;
+        return false;
+    }
+
+    t = tmin;
+    return true;
+};

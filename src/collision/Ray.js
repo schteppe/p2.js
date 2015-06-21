@@ -120,6 +120,7 @@ Ray.prototype.intersectWorld = function (world, options) {
     this.getAABB(tmpAABB);
     tmpArray.length = 0;
     world.broadphase.aabbQuery(world, tmpAABB, tmpArray);
+
     this.intersectBodies(tmpArray);
 
     return this.hasHit;
@@ -157,8 +158,7 @@ Ray.prototype.intersectBody = function (body) {
         }
 
         // Get world angle and position of the shape
-        vec2.copy(worldPosition, body.shapeOffsets[i]);
-        vec2.rotate(worldPosition, worldPosition, body.angle);
+        vec2.rotate(worldPosition, body.shapeOffsets[i], body.angle);
         vec2.add(worldPosition, worldPosition, body.position);
 
         var worldAngle = body.shapeAngles[i] + body.angle;
@@ -182,7 +182,10 @@ Ray.prototype.intersectBody = function (body) {
  */
 Ray.prototype.intersectBodies = function (bodies) {
     for ( var i = 0, l = bodies.length; !this.result._shouldStop && i < l; i ++ ) {
-        this.intersectBody(bodies[i]);
+        var aabb = bodies[i].getAABB();
+        if(aabb.overlapsRay(this)){
+            this.intersectBody(bodies[i]);
+        }
     }
 };
 
@@ -209,8 +212,8 @@ Ray.prototype.intersectShape = function(shape, angle, position, body){
     var from = this.from;
 
     // Checking radius
-    var distance = distanceFromIntersection(from, this._direction, position);
-    if (distance > shape.boundingRadius) {
+    var distance = distanceFromIntersectionSquared(from, this._direction, position);
+    if (distance > shape.boundingRadius * shape.boundingRadius) {
         return;
     }
 
@@ -435,7 +438,7 @@ Ray.prototype.intersectConvex = function(shape, angle, position, body){
     vec2.toLocalFrame(rayStart, this.from, position, angle);
     vec2.toLocalFrame(rayEnd, this.to, position, angle);
 
-    for (var i = 0; i < shape.vertices.length; i++) {
+    for (var i = 0; i < shape.vertices.length && !this.result._shouldStop; i++) {
         var q1 = shape.vertices[i];
         var q2 = shape.vertices[(i+1)%shape.vertices.length];
         if(getLineSegmentsIntersection(intersection, rayStart, rayEnd, q1, q2)){
@@ -602,17 +605,17 @@ Ray.prototype.reportIntersection = function(normal, hitPointWorld, shape, body, 
 
 var v0 = vec2.create(),
     intersect = vec2.create();
-function distanceFromIntersection(from, direction, position) {
+function distanceFromIntersectionSquared(from, direction, position) {
 
     // v0 is vector from from to position
-    vec2.sub(v0, position, from); // position.vsub(from,v0);
-    var dot = vec2.dot(v0, direction); // v0.dot(direction);
+    vec2.sub(v0, position, from);
+    var dot = vec2.dot(v0, direction);
 
-    // intersect = direction*dot + from
-    vec2.scale(intersect, direction, dot); //direction.mult(dot,intersect);
-    vec2.add(intersect, intersect, from); // intersect.vadd(from, intersect);
+    // intersect = direction * dot + from
+    vec2.scale(intersect, direction, dot);
+    vec2.add(intersect, intersect, from);
 
-    var distance = vec2.distance(position, intersect); // position.distanceTo(intersect);
+    var distance = vec2.squaredDistance(position, intersect);
 
     return distance;
 }

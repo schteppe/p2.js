@@ -35,6 +35,7 @@ var  GSSolver = require('../solver/GSSolver')
 
 module.exports = World;
 
+// Shim for performance.now
 if(typeof performance === 'undefined'){
     performance = {};
 }
