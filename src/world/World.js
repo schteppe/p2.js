@@ -1106,34 +1106,6 @@ World.prototype.enableBodyCollision = function(bodyA,bodyB){
     }
 };
 
-
-function v2a(v){
-    if(!v){
-        return v;
-    }
-    return [v[0],v[1]];
-}
-
-function extend(a,b){
-    for(var key in b){
-        a[key] = b[key];
-    }
-}
-
-function contactMaterialToJSON(cm){
-    return {
-        id : cm.id,
-        materialA :             cm.materialA.id,
-        materialB :             cm.materialB.id,
-        friction :              cm.friction,
-        restitution :           cm.restitution,
-        stiffness :             cm.stiffness,
-        relaxation :            cm.relaxation,
-        frictionStiffness :     cm.frictionStiffness,
-        frictionRelaxation :    cm.frictionRelaxation,
-    };
-}
-
 /**
  * Resets the World, removes all bodies, constraints and springs.
  *
@@ -1174,17 +1146,6 @@ World.prototype.clear = function(){
     }
 
     World.apply(this);
-};
-
-/**
- * Get a copy of this World instance
- * @method clone
- * @return {World}
- */
-World.prototype.clone = function(){
-    var world = new World();
-    world.fromJSON(this.toJSON());
-    return world;
 };
 
 var hitTest_tmp1 = vec2.create(),
