@@ -402,7 +402,6 @@ var intersectLine_unit_y = vec2.fromValues(0,1);
 Ray.prototype.intersectLine = function(shape, angle, position, body){
     var from = this.from;
     var to = this.to;
-    var direction = this._direction;
 
     var hitPointWorld = intersectLine_hitPointWorld;
     var worldNormal = intersectLine_worldNormal;
@@ -423,6 +422,114 @@ Ray.prototype.intersectLine = function(shape, angle, position, body){
     }
 };
 Ray.prototype[Shape.LINE] = Ray.prototype.intersectLine;
+
+var intersectCapsule_hitPointWorld = vec2.create();
+var intersectCapsule_worldNormal = vec2.create();
+var intersectCapsule_l0 = vec2.create();
+var intersectCapsule_l1 = vec2.create();
+var intersectCapsule_unit_y = vec2.fromValues(0,1);
+
+/**
+ * @method intersectCapsule
+ * @private
+ * @param  {Capsule} shape
+ * @param  {number} angle
+ * @param  {array} position
+ * @param  {Body} body
+ */
+Ray.prototype.intersectCapsule = function(shape, angle, position, body){
+    var from = this.from;
+    var to = this.to;
+    var direction = this._direction;
+
+    var hitPointWorld = intersectCapsule_hitPointWorld;
+    var worldNormal = intersectCapsule_worldNormal;
+    var l0 = intersectCapsule_l0;
+    var l1 = intersectCapsule_l1;
+
+    // The sides
+    var halfLen = shape.length / 2;
+    for(var i=0; i<2; i++){
+
+        // get start and end of the line
+        var y = shape.radius * (i*2-1);
+        vec2.set(l0, -halfLen, y);
+        vec2.set(l1, halfLen, y);
+        vec2.toGlobalFrame(l0, l0, position, angle);
+        vec2.toGlobalFrame(l1, l1, position, angle);
+
+        if(getLineSegmentsIntersection(hitPointWorld, l0, l1, from, to)){
+            vec2.rotate(worldNormal, intersectCapsule_unit_y, angle);
+            this.reportIntersection(worldNormal, hitPointWorld, shape, body, -1);
+            if(this.result._shouldStop){
+                return;
+            }
+        }
+    }
+
+    // Circles
+    var diagonalLengthSquared = Math.pow(shape.radius, 2) + Math.pow(halfLen, 2);
+    for(var i=0; i<2; i++){
+        vec2.set(l0, halfLen * (i*2-1), 0);
+        vec2.toGlobalFrame(l0, l0, position, angle);
+
+        var a = Math.pow(to[0] - from[0], 2) + Math.pow(to[1] - from[1], 2);
+        var b = 2 * ((to[0] - from[0]) * (from[0] - l0[0]) + (to[1] - from[1]) * (from[1] - l0[1]));
+        var c = Math.pow(from[0] - l0[0], 2) + Math.pow(from[1] - l0[1], 2) - Math.pow(shape.radius, 2);
+        var delta = Math.pow(b, 2) - 4 * a * c;
+
+        if(delta < 0){
+            // No intersection
+            continue;
+
+        } else if(delta === 0){
+            // single intersection point
+            vec2.lerp(hitPointWorld, from, to, delta);
+
+            if(vec2.squaredDistance(hitPointWorld, position) > diagonalLengthSquared){
+                vec2.sub(normal, hitPointWorld, l0);
+                vec2.normalize(normal,normal);
+                this.reportIntersection(normal, hitPointWorld, shape, body, -1);
+                if(this.result._shouldStop){
+                    return;
+                }
+            }
+
+        } else {
+            var sqrtDelta = Math.sqrt(delta);
+            var inv2a = 1 / (2 * a);
+            var d1 = (- b - sqrtDelta) * inv2a;
+            var d2 = (- b + sqrtDelta) * inv2a;
+
+            if(d1 >= 0 && d1 <= 1){
+                vec2.lerp(hitPointWorld, from, to, d1);
+
+                if(vec2.squaredDistance(hitPointWorld, position) > diagonalLengthSquared){
+                    vec2.sub(normal, hitPointWorld, l0);
+                    vec2.normalize(normal,normal);
+                    this.reportIntersection(normal, hitPointWorld, shape, body, -1);
+                    if(this.result._shouldStop){
+                        return;
+                    }
+                }
+            }
+
+            if(d2 >= 0 && d2 <= 1){
+                vec2.lerp(hitPointWorld, from, to, d2);
+
+                if(vec2.squaredDistance(hitPointWorld, position) > diagonalLengthSquared){
+                    vec2.sub(normal, hitPointWorld, l0);
+                    vec2.normalize(normal,normal);
+                    this.reportIntersection(normal, hitPointWorld, shape, body, -1);
+                    if(this.result._shouldStop){
+                        return;
+                    }
+                }
+            }
+        }
+    }
+};
+Ray.prototype[Shape.CAPSULE] = Ray.prototype.intersectCapsule;
 
 // Returns 1 if the lines intersect, otherwise 0.
 function getLineSegmentsIntersection (out, p0, p1, p2, p3) {
@@ -502,8 +609,7 @@ Ray.prototype.intersectCircle = function(shape, angle, position, body){
 
     var a = Math.pow(to[0] - from[0], 2) + Math.pow(to[1] - from[1], 2);
     var b = 2 * ((to[0] - from[0]) * (from[0] - position[0]) + (to[1] - from[1]) * (from[1] - position[1]));
-    var c = Math.pow(from[0] - position[0], 2) + Math.pow(from[1] - position[1], 2) - Math.pow(r, 2);
-
+    var c = Math.pow(from[0] - position[0], 2) + Math.pow(from[1] - position[1], 2) - Math.pow(shape.radius, 2);
     var delta = Math.pow(b, 2) - 4 * a * c;
 
     var intersectionPoint = Ray_intersectSphere_intersectionPoint;

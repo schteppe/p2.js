@@ -66,6 +66,17 @@
         circleBody.addShape(circleShape,[0.5,0]);
         world.addBody(circleBody);
 
+        // Add a capsule
+        capsuleShape = new p2.Capsule(1,0.5);
+        capsuleBody = new p2.Body({
+          mass:1,
+          position:[-1.5,0],
+          angularVelocity:1,
+          angularDamping: 0
+        });
+        capsuleBody.addShape(capsuleShape);
+        world.addBody(capsuleBody);
+
         // Add a plane
         planeShape = new p2.Plane();
         planeBody = new p2.Body({
@@ -78,7 +89,7 @@
         // Add a line
         lineShape = new p2.Line(2);
         lineBody = new p2.Body({
-          position: [3,2],
+          position: [2,0],
           angle: Math.PI / 3
         });
         lineBody.addShape(lineShape, [0,0], Math.PI / 16);
@@ -162,6 +173,47 @@
         ctx.rotate(circleBody.shapeAngles[0]);
         ctx.arc(0,0,circleShape.radius,0,2*Math.PI);
         ctx.stroke();
+        ctx.restore();
+      }
+
+      function drawCapsule(){
+        var x = capsuleBody.position[0],
+            y = capsuleBody.position[1];
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(capsuleBody.angle);
+        ctx.translate(capsuleBody.shapeOffsets[0][0], capsuleBody.shapeOffsets[0][1]);
+        ctx.rotate(capsuleBody.shapeAngles[0]);
+
+        var radius = capsuleShape.radius;
+        var len = capsuleShape.length;
+
+        // Draw circles at ends
+        ctx.beginPath();
+        ctx.arc(-len/2, 0, capsuleShape.radius, 0, 2*Math.PI);
+        ctx.arc( len/2, 0, capsuleShape.radius, -Math.PI, Math.PI);
+        ctx.fill();
+        ctx.stroke();
+
+        // Draw rectangle
+        ctx.beginPath();
+        ctx.moveTo(-len/2, -radius);
+        ctx.lineTo( len/2, -radius);
+        ctx.lineTo( len/2, radius);
+        ctx.lineTo(-len/2, radius);
+        ctx.fill();
+
+        // Draw lines in between
+        ctx.beginPath();
+        ctx.moveTo(-len/2, -radius);
+        ctx.lineTo( len/2, -radius);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.lineTo( len/2, radius);
+        ctx.lineTo(-len/2, radius);
+        ctx.stroke();
+
         ctx.restore();
       }
 
@@ -311,6 +363,7 @@
         drawCircle();
         drawConvex();
         drawLine();
+        drawCapsule();
         drawRays();
 
         // Restore transform
