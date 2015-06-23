@@ -385,6 +385,45 @@ Ray.prototype.intersectPlane = function(shape, angle, position, body){
 };
 Ray.prototype[Shape.PLANE] = Ray.prototype.intersectPlane;
 
+var intersectLine_hitPointWorld = vec2.create();
+var intersectLine_worldNormal = vec2.create();
+var intersectLine_l0 = vec2.create();
+var intersectLine_l1 = vec2.create();
+var intersectLine_unit_y = vec2.fromValues(0,1);
+
+/**
+ * @method intersectLine
+ * @private
+ * @param  {Line} shape
+ * @param  {number} angle
+ * @param  {array} position
+ * @param  {Body} body
+ */
+Ray.prototype.intersectLine = function(shape, angle, position, body){
+    var from = this.from;
+    var to = this.to;
+    var direction = this._direction;
+
+    var hitPointWorld = intersectLine_hitPointWorld;
+    var worldNormal = intersectLine_worldNormal;
+    var l0 = intersectLine_l0;
+    var l1 = intersectLine_l1;
+
+    vec2.rotate(worldNormal, intersectLine_unit_y, angle);
+
+    //get start and end of the line
+    var halfLen = shape.length / 2;
+    vec2.set(l0, -halfLen, 0);
+    vec2.set(l1, halfLen, 0);
+    vec2.toGlobalFrame(l0, l0, position, angle);
+    vec2.toGlobalFrame(l1, l1, position, angle);
+
+    if(getLineSegmentsIntersection(hitPointWorld, l0, l1, from, to)){
+        this.reportIntersection(worldNormal, hitPointWorld, shape, body, -1);
+    }
+};
+Ray.prototype[Shape.LINE] = Ray.prototype.intersectLine;
+
 // Returns 1 if the lines intersect, otherwise 0.
 function getLineSegmentsIntersection (out, p0, p1, p2, p3) {
 

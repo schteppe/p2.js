@@ -11,10 +11,8 @@
     <canvas width="600" height="400" id="myCanvas"></canvas>
     <input type="checkbox" id="reflect"> Reflect
 
-
-
     <script>
-      var canvas, ctx, w, h, world, boxBody, planeBody;
+      var canvas, ctx, w, h, world, boxBody, planeBody, planeShape, lineBody, lineShape;
       var scaleX = 50, scaleY = -50;
 
       var start = [0,0];
@@ -28,11 +26,8 @@
         reflect = document.getElementById("reflect").checked;
       });
 
-
       init();
       animate();
-
-
 
       function init(){
 
@@ -80,6 +75,15 @@
         planeBody.addShape(planeShape, [-1,0], Math.PI / 16);
         world.addBody(planeBody);
 
+        // Add a line
+        lineShape = new p2.Line(2);
+        lineBody = new p2.Body({
+          position: [3,2],
+          angle: Math.PI / 3
+        });
+        lineBody.addShape(lineShape, [0,0], Math.PI / 16);
+        world.addBody(lineBody);
+
         // Add a convex
         var vertices = [];
         var size = 2;
@@ -126,6 +130,23 @@
 
         ctx.moveTo(-100, 0);
         ctx.lineTo(100, 0);
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      function drawLine(){
+        ctx.beginPath();
+        var x = lineBody.position[0],
+            y = lineBody.position[1];
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(lineBody.angle);
+
+        ctx.translate(lineBody.shapeOffsets[0][0], lineBody.shapeOffsets[0][1]);
+        ctx.rotate(lineBody.shapeAngles[0]);
+
+        ctx.moveTo(-lineShape.length/2, 0);
+        ctx.lineTo(lineShape.length/2, 0);
         ctx.stroke();
         ctx.restore();
       }
@@ -289,6 +310,7 @@
         drawPlane();
         drawCircle();
         drawConvex();
+        drawLine();
         drawRays();
 
         // Restore transform
