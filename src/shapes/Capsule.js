@@ -30,6 +30,14 @@ function Capsule(length, radius){
      */
     this.radius = radius || 1;
 
+    // Because Capsule uses the same collision codepath as
+    // Line we construct points used by the line narrowphase
+    var halfLength = this.length / 2;
+    this.points = [
+        vec2.fromValues(-halfLength, 0),
+        vec2.fromValues( halfLength, 0)
+    ];
+
     Shape.call(this,Shape.CAPSULE);
 }
 Capsule.prototype = new Shape();
