@@ -10,7 +10,7 @@ module.exports = Line;
  * @extends Shape
  * @constructor
  */
-function Line(length){
+function Line(length) {
 
     /**
      * Length of this line
@@ -20,20 +20,45 @@ function Line(length){
      */
     this.length = length || 1;
 
-    Shape.call(this,Shape.LINE);
+    var halfLength = this.length / 2;
+    this.points = [
+        vec2.fromValues(-halfLength, 0),
+        vec2.fromValues( halfLength, 0)
+    ];
+
+    Shape.call(this, Shape.LINE);
 }
 Line.prototype = new Shape();
 Line.prototype.constructor = Line;
 
-Line.prototype.computeMomentOfInertia = function(mass){
+/**
+ * Constructs a line segment between two points
+ * @method fromPoints
+ * @param  {Number} x1 The x coordinate of the first point
+ * @param  {Number} y1 The y coordinate of the first point
+ * @param  {Number} x2 The x coordinate of the second point
+ * @param  {Number} y2 The y coordinate of the second point
+ */
+Line.fromPoints = function(x1, y1, x2, y2) {
+    var line = new Line();
+
+    vec2.set(line.points[0], x1, y1);
+    vec2.set(line.points[1], x2, y2);
+
+    var dx = x2 - x1;
+    var dy = y2 - y1;
+    line.length = Math.sqrt(dx*dx + dy*dy);
+
+    return line;
+};
+
+Line.prototype.computeMomentOfInertia = function(mass) {
     return mass * Math.pow(this.length,2) / 12;
 };
 
-Line.prototype.updateBoundingRadius = function(){
+Line.prototype.updateBoundingRadius = function() {
     this.boundingRadius = this.length/2;
 };
-
-var points = [vec2.create(),vec2.create()];
 
 /**
  * @method computeAABB
@@ -41,10 +66,6 @@ var points = [vec2.create(),vec2.create()];
  * @param  {Array}  position
  * @param  {Number} angle
  */
-Line.prototype.computeAABB = function(out, position, angle){
-    var l2 = this.length / 2;
-    vec2.set(points[0], -l2,  0);
-    vec2.set(points[1],  l2,  0);
-    out.setFromPoints(points,position,angle,0);
+Line.prototype.computeAABB = function(out, position, angle) {
+    out.setFromPoints(this.points, position, angle, 0);
 };
-

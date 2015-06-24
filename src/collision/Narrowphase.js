@@ -191,7 +191,7 @@ Narrowphase.prototype.bodiesOverlap = function(bodyA, bodyB){
 
         bodyA.toWorldFrame(shapePositionA, positionA);
 
-        // All shapes of body j
+        // All shapes of bodyB
         for(var l=0, Nshapesj=bodyB.shapes.length; l!==Nshapesj; l++){
             var shapeB = bodyB.shapes[l],
                 positionB = bodyB.shapeOffsets[l],
@@ -685,13 +685,8 @@ Narrowphase.prototype.planeLine = function(planeBody, planeShape, planeOffset, p
         verts = tmpArray,
         numContacts = 0;
 
-    // Get start and end points
-    vec2.set(worldVertex0, -lineShape.length/2, 0);
-    vec2.set(worldVertex1,  lineShape.length/2, 0);
-
-    // Not sure why we have to use worldVertex*1 here, but it won't work otherwise. Tired.
-    vec2.rotate(worldVertex01, worldVertex0, lineAngle);
-    vec2.rotate(worldVertex11, worldVertex1, lineAngle);
+    vec2.rotate(worldVertex01, lineShape.points[0], lineAngle);
+    vec2.rotate(worldVertex11, lineShape.points[1], lineAngle);
 
     add(worldVertex01, worldVertex01, lineOffset);
     add(worldVertex11, worldVertex11, lineOffset);
@@ -829,13 +824,8 @@ Narrowphase.prototype.circleLine = function(
 
         verts = tmpArray;
 
-    // Get start and end points
-    vec2.set(worldVertex0, -lineShape.length/2, 0);
-    vec2.set(worldVertex1,  lineShape.length/2, 0);
-
-    // Not sure why we have to use worldVertex*1 here, but it won't work otherwise. Tired.
-    vec2.rotate(worldVertex01, worldVertex0, lineAngle);
-    vec2.rotate(worldVertex11, worldVertex1, lineAngle);
+    vec2.rotate(worldVertex01, lineShape.points[0], lineAngle);
+    vec2.rotate(worldVertex11, lineShape.points[1], lineAngle);
 
     add(worldVertex01, worldVertex01, lineOffset);
     add(worldVertex11, worldVertex11, lineOffset);
