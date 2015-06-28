@@ -112,6 +112,22 @@
         });
         convexBody.addShape(convexShape);
         world.addBody(convexBody);
+
+        // Heightfield
+        // var data = [];
+        // var numDataPoints = 200;
+        // for(var i=0; i<numDataPoints; i++){
+        //   data.push(0.1*Math.sin(i / numDataPoints * Math.PI * 8));
+        // }
+        // var heightfieldShape = new p2.Heightfield(data,{
+        //     elementWidth: 5 / numDataPoints
+        // });
+        // var heightfield = new p2.Body({
+        //     position:[2,-2],
+        //     angle: Math.PI / 2
+        // });
+        // heightfield.addShape(heightfieldShape);
+        // world.addBody(heightfield);
       }
 
       function drawbox(){
@@ -321,6 +337,7 @@
           var hits = 0;
           while(world.raycastClosest(start, end, raycastOptions, result) && hits++ < 10){
             drawRay(start, result.hitPointWorld);
+            //drawRayResult(result);
 
             // move start to the hit point
             p2.vec2.copy(start, result.hitPointWorld);
