@@ -104,6 +104,13 @@ Heightfield.prototype.updateArea = function(){
     this.area = area;
 };
 
+var points = [
+    vec2.create(),
+    vec2.create(),
+    vec2.create(),
+    vec2.create()
+];
+
 /**
  * @method computeAABB
  * @param  {AABB}   out      The resulting AABB.
@@ -111,9 +118,33 @@ Heightfield.prototype.updateArea = function(){
  * @param  {Number} angle
  */
 Heightfield.prototype.computeAABB = function(out, position, angle){
-    // Use the max data rectangle
-    out.upperBound[0] = this.elementWidth * this.data.length + position[0];
-    out.upperBound[1] = this.maxValue + position[1];
-    out.lowerBound[0] = position[0];
-    out.lowerBound[1] = -Number.MAX_VALUE; // Infinity
+    vec2.set(points[0], 0, this.maxValue);
+    vec2.set(points[1], this.elementWidth * this.data.length, this.maxValue);
+    vec2.set(points[2], this.elementWidth * this.data.length, this.minValue);
+    vec2.set(points[3], 0, this.minValue);
+    out.setFromPoints(points, position, angle);
 };
+
+/**
+ * Get a line segment in the heightfield
+ * @param  {array} start Where to store the resulting start point
+ * @param  {array} end Where to store the resulting end point
+ * @param  {number} i
+ */
+Heightfield.prototype.getLineSegment = function(start, end, i){
+    var data = this.data;
+    var width = this.elementWidth;
+    vec2.set(start, i * width, data[i]);
+    vec2.set(end, (i + 1) * width, data[i + 1]);
+};
+
+Heightfield.prototype.getSegmentIndex = function(position){
+    return Math.floor(position[0] / this.elementWidth);
+};
+
+Heightfield.prototype.getClampedSegmentIndex = function(position){
+    var i = this.getSegmentIndex(position);
+    i = Math.min(this.data.length, Math.max(i, 0)); // clamp
+    return i;
+};
+

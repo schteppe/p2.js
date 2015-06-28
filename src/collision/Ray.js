@@ -460,6 +460,7 @@ Ray.prototype.intersectCapsule = function(shape, angle, position, body){
 
         if(getLineSegmentsIntersection(hitPointWorld, l0, l1, from, to)){
             vec2.rotate(worldNormal, intersectCapsule_unit_y, angle);
+            vec2.scale(worldNormal, worldNormal, (i*2-1));
             this.reportIntersection(worldNormal, hitPointWorld, shape, body, -1);
             if(this.result._shouldStop){
                 return;
@@ -530,6 +531,65 @@ Ray.prototype.intersectCapsule = function(shape, angle, position, body){
     }
 };
 Ray.prototype[Shape.CAPSULE] = Ray.prototype.intersectCapsule;
+
+var intersectHeightfield_hitPointWorld = vec2.create();
+var intersectHeightfield_worldNormal = vec2.create();
+var intersectHeightfield_l0 = vec2.create();
+var intersectHeightfield_l1 = vec2.create();
+var intersectHeightfield_localFrom = vec2.create();
+var intersectHeightfield_localTo = vec2.create();
+var intersectHeightfield_unit_y = vec2.fromValues(0,1);
+
+/**
+ * @method intersectHeightfield
+ * @private
+ * @param  {Heightfield} shape
+ * @param  {number} angle
+ * @param  {array} position
+ * @param  {Body} body
+ */
+Ray.prototype.intersectHeightfield = function(shape, angle, position, body){
+    var from = this.from;
+    var to = this.to;
+    var direction = this._direction;
+
+    var hitPointWorld = intersectHeightfield_hitPointWorld;
+    var worldNormal = intersectHeightfield_worldNormal;
+    var l0 = intersectHeightfield_l0;
+    var l1 = intersectHeightfield_l1;
+    var localFrom = intersectHeightfield_localFrom;
+    var localTo = intersectHeightfield_localTo;
+
+    // get local ray start and end
+    vec2.toLocalFrame(localFrom, from, position, angle);
+    vec2.toLocalFrame(localTo, to, position, angle);
+
+    // Get the segment range
+    var i0 = shape.getClampedSegmentIndex(localFrom);
+    var i1 = shape.getClampedSegmentIndex(localTo);
+    if(i0 > i1){
+        var tmp = i0;
+        i0 = i1;
+        i1 = tmp;
+    }
+
+    // The segments
+    for(var i=0; i<shape.data.length - 1; i++){
+        shape.getLineSegment(l0, l1, i);
+
+        if(getLineSegmentsIntersection(hitPointWorld, l0, l1, localFrom, localTo)){
+            vec2.toGlobalFrame(hitPointWorld, hitPointWorld, position, angle);
+            vec2.sub(worldNormal, l1, l0);
+            vec2.rotate(worldNormal, worldNormal, angle + Math.PI / 2);
+            vec2.normalize(worldNormal, worldNormal);
+            this.reportIntersection(worldNormal, hitPointWorld, shape, body, -1);
+            if(this.result._shouldStop){
+                return;
+            }
+        }
+    }
+};
+Ray.prototype[Shape.HEIGHTFIELD] = Ray.prototype.intersectHeightfield;
 
 // Returns 1 if the lines intersect, otherwise 0.
 function getLineSegmentsIntersection (out, p0, p1, p2, p3) {
