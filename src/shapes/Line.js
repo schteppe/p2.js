@@ -48,3 +48,37 @@ Line.prototype.computeAABB = function(out, position, angle){
     out.setFromPoints(points,position,angle,0);
 };
 
+var raycast_hitPoint = vec2.create();
+var raycast_normal = vec2.create();
+var raycast_l0 = vec2.create();
+var raycast_l1 = vec2.create();
+var raycast_unit_y = vec2.fromValues(0,1);
+
+/**
+ * @method raycast
+ * @param  {RaycastResult} result
+ * @param  {Ray} ray
+ * @param  {number} angle
+ * @param  {array} position
+ */
+Line.prototype.raycast = function(result, ray, position, angle){
+    var from = ray.from;
+    var to = ray.to;
+
+    var l0 = raycast_l0;
+    var l1 = raycast_l1;
+
+    // get start and end of the line
+    var halfLen = this.length / 2;
+    vec2.set(l0, -halfLen, 0);
+    vec2.set(l1, halfLen, 0);
+    vec2.toGlobalFrame(l0, l0, position, angle);
+    vec2.toGlobalFrame(l1, l1, position, angle);
+
+    var fraction = vec2.getLineSegmentsIntersectionFraction(l0, l1, from, to);
+    if(fraction >= 0){
+        var normal = raycast_normal;
+        vec2.rotate(normal, raycast_unit_y, angle); // todo: this should depend on which side the ray comes from
+        ray.reportIntersection(result, fraction, normal, -1);
+    }
+};

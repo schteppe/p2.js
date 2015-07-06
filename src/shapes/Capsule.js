@@ -91,3 +91,109 @@ Capsule.prototype.computeAABB = function(out, position, angle){
     vec2.add(out.lowerBound, out.lowerBound, position);
     vec2.add(out.upperBound, out.upperBound, position);
 };
+
+var intersectCapsule_hitPointWorld = vec2.create();
+var intersectCapsule_normal = vec2.create();
+var intersectCapsule_l0 = vec2.create();
+var intersectCapsule_l1 = vec2.create();
+var intersectCapsule_unit_y = vec2.fromValues(0,1);
+
+/**
+ * @method raycast
+ * @param  {RaycastResult} result
+ * @param  {Ray} ray
+ * @param  {array} position
+ * @param  {number} angle
+ */
+Capsule.prototype.raycast = function(result, ray, position, angle){
+    var from = ray.from;
+    var to = ray.to;
+    var direction = ray.direction;
+
+    var hitPointWorld = intersectCapsule_hitPointWorld;
+    var normal = intersectCapsule_normal;
+    var l0 = intersectCapsule_l0;
+    var l1 = intersectCapsule_l1;
+
+    // The sides
+    var halfLen = this.length / 2;
+    for(var i=0; i<2; i++){
+
+        // get start and end of the line
+        var y = this.radius * (i*2-1);
+        vec2.set(l0, -halfLen, y);
+        vec2.set(l1, halfLen, y);
+        vec2.toGlobalFrame(l0, l0, position, angle);
+        vec2.toGlobalFrame(l1, l1, position, angle);
+
+        var delta = vec2.getLineSegmentsIntersectionFraction(from, to, l0, l1);
+        if(delta >= 0){
+            vec2.rotate(normal, intersectCapsule_unit_y, angle);
+            vec2.scale(normal, normal, (i*2-1));
+            ray.reportIntersection(result, delta, normal, -1);
+            if(result.shouldStop(ray)){
+                return;
+            }
+        }
+    }
+
+    // Circles
+    var diagonalLengthSquared = Math.pow(this.radius, 2) + Math.pow(halfLen, 2);
+    for(var i=0; i<2; i++){
+        vec2.set(l0, halfLen * (i*2-1), 0);
+        vec2.toGlobalFrame(l0, l0, position, angle);
+
+        var a = Math.pow(to[0] - from[0], 2) + Math.pow(to[1] - from[1], 2);
+        var b = 2 * ((to[0] - from[0]) * (from[0] - l0[0]) + (to[1] - from[1]) * (from[1] - l0[1]));
+        var c = Math.pow(from[0] - l0[0], 2) + Math.pow(from[1] - l0[1], 2) - Math.pow(this.radius, 2);
+        var delta = Math.pow(b, 2) - 4 * a * c;
+
+        if(delta < 0){
+            // No intersection
+            continue;
+
+        } else if(delta === 0){
+            // single intersection point
+            vec2.lerp(hitPointWorld, from, to, delta);
+
+            if(vec2.squaredDistance(hitPointWorld, position) > diagonalLengthSquared){
+                vec2.sub(normal, hitPointWorld, l0);
+                vec2.normalize(normal,normal);
+                ray.reportIntersection(result, delta, normal, -1);
+                if(result.shouldStop(ray)){
+                    return;
+                }
+            }
+
+        } else {
+            var sqrtDelta = Math.sqrt(delta);
+            var inv2a = 1 / (2 * a);
+            var d1 = (- b - sqrtDelta) * inv2a;
+            var d2 = (- b + sqrtDelta) * inv2a;
+
+            if(d1 >= 0 && d1 <= 1){
+                vec2.lerp(hitPointWorld, from, to, d1);
+                if(vec2.squaredDistance(hitPointWorld, position) > diagonalLengthSquared){
+                    vec2.sub(normal, hitPointWorld, l0);
+                    vec2.normalize(normal,normal);
+                    ray.reportIntersection(result, d1, normal, -1);
+                    if(result.shouldStop(ray)){
+                        return;
+                    }
+                }
+            }
+
+            if(d2 >= 0 && d2 <= 1){
+                vec2.lerp(hitPointWorld, from, to, d2);
+                if(vec2.squaredDistance(hitPointWorld, position) > diagonalLengthSquared){
+                    vec2.sub(normal, hitPointWorld, l0);
+                    vec2.normalize(normal,normal);
+                    ray.reportIntersection(result, d2, normal, -1);
+                    if(result.shouldStop(ray)){
+                        return;
+                    }
+                }
+            }
+        }
+    }
+};

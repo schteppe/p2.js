@@ -22,6 +22,19 @@
       var start = [0,0];
       var end = [0,0];
       var result = new p2.RaycastResult();
+      var hitPoint = p2.vec2.create();
+      var rayClosest = new p2.Ray({
+        mode: p2.Ray.CLOSEST
+      });
+      var rayAll = new p2.Ray({
+        mode: p2.Ray.ALL,
+        callback: function(result){
+          drawRayResult(result, rayAll);
+        }
+      });
+      var rayAny = new p2.Ray({
+        mode: p2.Ray.ANY
+      });
       var raycastOptions = {};
       init();
       animate();
@@ -197,21 +210,23 @@
         ctx.restore();
       }
 
-      function drawRayResult(result){
+      function drawRayResult(result, ray){
+
+        result.getHitPoint(hitPoint, ray);
 
         // Draw hit point
-        if(result.hasHit){
+        if(result.hasHit()){
           ctx.beginPath();
-          ctx.arc(result.hitPointWorld[0],result.hitPointWorld[1],0.1,0,2*Math.PI);
+          ctx.arc(hitPoint[0],hitPoint[1],0.1,0,2*Math.PI);
           ctx.stroke();
         }
 
         // Draw hit normal
         ctx.beginPath();
-        ctx.moveTo(result.hitPointWorld[0], result.hitPointWorld[1]);
+        ctx.moveTo(hitPoint[0], hitPoint[1]);
         ctx.lineTo(
-          result.hitPointWorld[0] + result.hitNormalWorld[0],
-          result.hitPointWorld[1] + result.hitNormalWorld[1]
+          hitPoint[0] + result.normal[0],
+          hitPoint[1] + result.normal[1]
         );
         ctx.stroke();
       };
@@ -232,30 +247,39 @@
         end[1] = Math.sin(world.time);
 
         // Closest
+        p2.vec2.copy(rayClosest.from, start);
+        p2.vec2.copy(rayClosest.to, end);
+        rayClosest.update();
         ctx.strokeStyle = 'blue';
         drawRay(start, end);
         result.reset();
-        world.raycastClosest(start, end, raycastOptions, result);
-        drawRayResult(result);
+        world.raycast(result, rayClosest);
+        drawRayResult(result, rayClosest);
 
         start[1] += 0.5;
         end[1] += 0.5;
 
         // All
+        p2.vec2.copy(rayAll.from, start);
+        p2.vec2.copy(rayAll.to, end);
+        rayAll.update();
         ctx.strokeStyle = 'green';
         drawRay(start, end);
         result.reset();
-        world.raycastAll(start, end, {}, drawRayResult);
+        world.raycast(result, rayAll); // drawRayResult
 
         start[1] += 0.5;
         end[1] += 0.5;
 
         // Any
+        p2.vec2.copy(rayAny.from, start);
+        p2.vec2.copy(rayAny.to, end);
+        rayAny.update();
         ctx.strokeStyle = 'red';
         drawRay(start, end);
         result.reset();
-        world.raycastAny(start, end, raycastOptions, result);
-        drawRayResult(result);
+        world.raycast(result, rayAny);
+        drawRayResult(result, rayAny);
 
         ctx.strokeStyle = 'black';
       }
@@ -273,7 +297,7 @@
         drawbox();
         drawPlane();
         drawCircle();
-        // drawCapsule();
+        drawCapsule();
         drawConvex();
         drawRays();
 

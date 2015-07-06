@@ -2,6 +2,7 @@ var vec2 = require('../math/vec2')
 ,   decomp = require('poly-decomp')
 ,   Convex = require('../shapes/Convex')
 ,   RaycastResult = require('../collision/RaycastResult')
+,   Ray = require('../collision/Ray')
 ,   AABB = require('../collision/AABB')
 ,   EventEmitter = require('../events/EventEmitter');
 
@@ -1065,7 +1066,10 @@ Body.prototype.integrate = function(dt){
     this.aabbNeedsUpdate = true;
 };
 
-var raycastOptions = { result: new RaycastResult() };
+var result = new RaycastResult();
+var ray = new Ray({
+    mode: Ray.ALL
+});
 var direction = vec2.create();
 var end = vec2.create();
 var startToEnd = vec2.create();
@@ -1089,17 +1093,21 @@ Body.prototype.integrateToTimeOfImpact = function(dt){
 
     var hit;
     var that = this;
-    raycastOptions.result.reset();
-    this.world.raycastAll(this.position, end, raycastOptions, function (result) {
+    result.reset();
+    ray.callback = function (result) {
         if(result.body === that){
             return;
         }
         hit = result.body;
-        vec2.copy(end, result.hitPointWorld);
-        vec2.sub(startToEnd, result.hitPointWorld, that.position);
+        result.getHitPoint(end, ray);
+        vec2.sub(startToEnd, end, that.position);
         timeOfImpact = vec2.length(startToEnd) / len;
-        result.abort();
-    });
+        result.stop();
+    };
+    vec2.copy(ray.from, this.position);
+    vec2.copy(ray.to, end);
+    ray.update();
+    this.world.raycast(result, ray);
 
     if(!hit){
         return false;

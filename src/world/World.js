@@ -23,6 +23,7 @@ var  GSSolver = require('../solver/GSSolver')
 ,    GearConstraint = require('../constraints/GearConstraint')
 ,    pkg = require('../../package.json')
 ,    Broadphase = require('../collision/Broadphase')
+,    AABB = require('../collision/AABB')
 ,    SAPBroadphase = require('../collision/SAPBroadphase')
 ,    Narrowphase = require('../collision/Narrowphase')
 ,    Utils = require('../utils/Utils')
@@ -1112,7 +1113,7 @@ var hitTest_tmp1 = vec2.create(),
  * @param  {Array}  bodies      A list of objects to check for intersection
  * @param  {Number} precision   Used for matching against particles and lines. Adds some margin to these infinitesimal objects.
  * @return {Array}              Array of bodies that overlap the point
- * @todo Should use an api similar to the raycast functions
+ * @todo Should use an api similar to the raycast function
  */
 World.prototype.hitTest = function(worldPoint,bodies,precision){
     precision = precision || 0;
@@ -1163,6 +1164,7 @@ World.prototype.hitTest = function(worldPoint,bodies,precision){
  * @param {object} [parameters]
  * @param {Number} [parameters.relaxation]
  * @param {Number} [parameters.stiffness]
+ * @deprecated To be removed. Use setGlobalStiffness and setGlobalRelaxation instead.
  */
 World.prototype.setGlobalEquationParameters = function(parameters){
     parameters = parameters || {};
@@ -1229,95 +1231,59 @@ World.prototype.setGlobalRelaxation = function(relaxation){
     });
 };
 
-var tmpRay = new Ray();
+var tmpAABB = new AABB();
+var tmpArray = [];
 
 /**
- * Ray cast against all bodies. The provided callback will be executed for each hit with a RaycastResult as single argument.
- * @method raycastAll
- * @param  {Vec3} from
- * @param  {Vec3} to
- * @param  {Object} options
- * @param  {number} [options.collisionMask=-1]
- * @param  {number} [options.collisionGroup=-1]
- * @param  {boolean} [options.skipBackfaces=false]
- * @param  {boolean} [options.checkCollisionResponse=true]
- * @param  {Function} callback
- * @return {boolean} True if any body was hit.
- *
- * @example
- *     // Print all ray hit points between x=-10 and x=10
- *     world.raycastAll([-10, 0], [10, 0], {}, function(result){
- *         console.log('Hit point:', result.hitPointWorld);
- *     });
- *
- * @example
- *     // Stop the raycast if the distance is less than 1
- *     world.raycastAll(from, to, options, function(result){
- *         if(result.distance < 1)
- *             result.abort();
- *     });
- */
-World.prototype.raycastAll = function(from, to, options, callback){
-    options.mode = Ray.ALL;
-    options.from = from;
-    options.to = to;
-    options.callback = callback;
-    return tmpRay.intersectWorld(this, options);
-};
-
-/**
- * Ray cast, and stop at the first result. Note that the order is random - but the method is fast.
- * @method raycastAny
- * @param  {Vec3} from
- * @param  {Vec3} to
- * @param  {Object} options
- * @param  {number} [options.collisionMask=-1]
- * @param  {number} [options.collisionGroup=-1]
- * @param  {boolean} [options.skipBackfaces=false]
- * @param  {boolean} [options.checkCollisionResponse=true]
+ * Ray cast against all bodies in the world.
+ * @method raycast
  * @param  {RaycastResult} result
+ * @param  {Ray} ray
  * @return {boolean} True if any body was hit.
  *
  * @example
+ *     var ray = new Ray({
+ *         mode: Ray.CLOSEST, // or ANY
+ *         from: [0, 0],
+ *         to: [10, 0],
+ *     });
  *     var result = new RaycastResult();
- *     var didHit = world.raycastAny([-10, 0], [10, 0], {}, result);
- *     if(didHit){
- *         console.log('Hit point:', result.hitPointWorld);
- *         console.log('Hit body:', result.body);
- *     }
+ *     world.raycast(result, ray);
+ *
+ *     // Get the hit point
+ *     var hitPoint = vec2.create();
+ *     result.getHitPoint(hitPoint, ray);
+ *     console.log('Hit point: ', hitPoint[0], hitPoint[1], ' at distance ' + result.getHitDistance(ray));
+ *
+ * @example
+ *     var ray = new Ray({
+ *         mode: Ray.ALL,
+ *         from: [0, 0],
+ *         to: [10, 0],
+ *         callback: function(result){
+ *
+ *             // Print some info about the hit
+ *             console.log('Hit body and shape: ', result.body, result.shape);
+ *
+ *             // Get the hit point
+ *             var hitPoint = vec2.create();
+ *             result.getHitPoint(hitPoint, ray);
+ *             console.log('Hit point: ', hitPoint[0], hitPoint[1], ' at distance ' + result.getHitDistance(ray));
+ *
+ *             // If you are happy with the hits you got this far, you can stop the traversal here:
+ *             result.stop();
+ *         }
+ *     });
+ *     var result = new RaycastResult();
+ *     world.raycast(result, ray);
  */
-World.prototype.raycastAny = function(from, to, options, result){
-    options.mode = Ray.ANY;
-    options.from = from;
-    options.to = to;
-    options.result = result;
-    return tmpRay.intersectWorld(this, options);
-};
+World.prototype.raycast = function(result, ray){
 
-/**
- * Ray cast, and return information of the closest hit.
- * @method raycastClosest
- * @param  {Vec3} from
- * @param  {Vec3} to
- * @param  {Object} options
- * @param  {number} [options.collisionMask=-1]
- * @param  {number} [options.collisionGroup=-1]
- * @param  {boolean} [options.skipBackfaces=false]
- * @param  {boolean} [options.checkCollisionResponse=true]
- * @param  {RaycastResult} result
- * @return {boolean} True if any body was hit.
- *
- * @example
- *     var result = new RaycastResult();
- *     var didHit = world.raycastClosest([-10, 0], [10, 0], {}, result);
- *     if(didHit){
- *         console.log('Closest body:', result.body);
- *     }
- */
-World.prototype.raycastClosest = function(from, to, options, result){
-    options.mode = Ray.CLOSEST;
-    options.from = from;
-    options.to = to;
-    options.result = result;
-    return tmpRay.intersectWorld(this, options);
+    // Get all bodies within the ray AABB
+    ray.getAABB(tmpAABB);
+    this.broadphase.aabbQuery(this, tmpAABB, tmpArray);
+    ray.intersectBodies(result, tmpArray);
+    tmpArray.length = 0;
+
+    return result.hasHit();
 };

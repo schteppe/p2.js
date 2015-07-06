@@ -1,4 +1,6 @@
 var Capsule = require(__dirname + '/../../src/shapes/Capsule');
+var Ray = require(__dirname + '/../../src/collision/Ray');
+var RaycastResult = require(__dirname + '/../../src/collision/RaycastResult');
 
 exports.construct = function(test){
     var capsule = new Capsule(2,3);
@@ -12,8 +14,22 @@ exports.computeAABB = function(test){
     test.done();
 };
 
-exports.conputeMomentOfInertia = function(test){
+exports.computeMomentOfInertia = function(test){
     // STUB
+    test.done();
+};
+
+exports.raycast = function(test){
+    var ray = new Ray({
+        mode: Ray.CLOSEST,
+        from: [0,0],
+        to: [10,0]
+    });
+
+    var capsule = new Capsule(1,0.5);
+    var result = new RaycastResult();
+    capsule.raycast(result, ray, [1,0], Math.PI / 2);
+
     test.done();
 };
 

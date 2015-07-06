@@ -18,17 +18,27 @@ exports.construct = function(test){
     test.done();
 };
 
-exports.raycastClosest = function(test){
+exports.raycast = function(test){
     var world = new World();
     var shape = new Plane();
     var body = new Body();
     body.addShape(shape, [0,0], Math.PI / 2);
     world.addBody(body);
     var result = new RaycastResult();
-    world.raycastClosest([-1,1],[1,1],{},result);
-    test.ok(result.hasHit);
-    test.equal(result.hitPointWorld[0], 0);
-    test.equal(result.hitPointWorld[1], 1);
+    var ray = new Ray({
+        from: [0, -10],
+        to: [0, 10]
+    });
+    world.raycast(result, ray);
+    test.ok(result.hasHit());
+
+    var hitPointWorld = [1,1];
+    result.getHitPoint(hitPointWorld, ray);
+    test.equal(hitPointWorld[0], 0);
+    test.equal(hitPointWorld[1], 0);
+
+    test.equal(result.getHitDistance(ray), 10);
+
     test.done();
 };
 

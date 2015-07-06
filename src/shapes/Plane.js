@@ -83,3 +83,51 @@ Plane.prototype.updateArea = function(){
     this.area = Number.MAX_VALUE;
 };
 
+var intersectPlane_planePointToFrom = vec2.create();
+var intersectPlane_dir_scaled_with_t = vec2.create();
+var intersectPlane_hitPoint = vec2.create();
+var intersectPlane_normal = vec2.create();
+var intersectPlane_len = vec2.create();
+
+/**
+ * @method raycast
+ * @param  {RayResult} result
+ * @param  {Ray} ray
+ * @param  {array} position
+ * @param  {number} angle
+ */
+Plane.prototype.raycast = function(result, ray, position, angle){
+    var from = ray.from;
+    var to = ray.to;
+    var direction = ray.direction;
+    var planePointToFrom = intersectPlane_planePointToFrom;
+    var dir_scaled_with_t = intersectPlane_dir_scaled_with_t;
+    var hitPoint = intersectPlane_hitPoint;
+    var normal = intersectPlane_normal;
+    var len = intersectPlane_len;
+
+    // Get plane normal
+    vec2.set(normal, 0, 1);
+    vec2.rotate(normal, normal, angle);
+
+    vec2.sub(len, from, position);
+    var planeToFrom = vec2.dot(len, normal);
+    vec2.sub(len, to, position);
+    var planeToTo = vec2.dot(len, normal);
+
+    if(planeToFrom * planeToTo > 0){
+        // "from" and "to" are on the same side of the plane... bail out
+        return;
+    }
+
+    if(vec2.squaredDistance(from, to) < planeToFrom * planeToFrom){
+        return;
+    }
+
+    var n_dot_dir = vec2.dot(normal, direction);
+
+    vec2.sub(planePointToFrom, from, position);
+    var t = -vec2.dot(normal, planePointToFrom) / n_dot_dir / ray.length;
+
+    ray.reportIntersection(result, t, normal, -1);
+};

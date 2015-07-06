@@ -2,6 +2,8 @@ var Convex = require(__dirname + '/../../src/shapes/Convex')
 ,   vec2 =   require(__dirname + '/../../src/math/vec2')
 ,   AABB =   require(__dirname + '/../../src/collision/AABB')
 ,   Shape =   require(__dirname + '/../../src/shapes/Shape')
+,   Ray =   require(__dirname + '/../../src/collision/Ray')
+,   RaycastResult =   require(__dirname + '/../../src/collision/RaycastResult');
 
 exports.construct = function(test){
     new Convex([]);
@@ -132,3 +134,23 @@ exports.updateTriangles = function(test){
     test.done();
 };
 
+exports.raycast = function(test){
+    var ray = new Ray({
+        mode: Ray.CLOSEST,
+        from: [0,0],
+        to: [10,0]
+    });
+
+    var w = 1,
+        h = 1;
+    var shape = new Convex([
+        [-w/2,-h/2],
+        [ w/2,-h/2],
+        [ w/2, h/2],
+        [-w/2, h/2],
+    ]);
+    var result = new RaycastResult();
+    shape.raycast(result, ray, [1,0], Math.PI / 2);
+
+    test.done();
+};

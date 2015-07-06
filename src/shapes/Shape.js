@@ -164,18 +164,14 @@ Shape.HEIGHTFIELD = 128;
  * @param  {Number} mass
  * @return {Number} If the inertia is infinity or if the object simply isn't possible to rotate, return 0.
  */
-Shape.prototype.computeMomentOfInertia = function(mass){
-    throw new Error("Shape.computeMomentOfInertia is not implemented in this Shape...");
-};
+Shape.prototype.computeMomentOfInertia = function(mass){};
 
 /**
  * Returns the bounding circle radius of this shape.
  * @method updateBoundingRadius
  * @return {Number}
  */
-Shape.prototype.updateBoundingRadius = function(){
-    throw new Error("Shape.updateBoundingRadius is not implemented in this Shape...");
-};
+Shape.prototype.updateBoundingRadius = function(){};
 
 /**
  * Update the .area property of the shape.
@@ -193,5 +189,16 @@ Shape.prototype.updateArea = function(){
  * @param  {Number} angle
  */
 Shape.prototype.computeAABB = function(out, position, angle){
+    // To be implemented in each subclass
+};
+
+/**
+ * @method raycast
+ * @param  {RayResult} result
+ * @param  {Ray} ray
+ * @param  {array} position
+ * @param  {number} angle
+ */
+Shape.prototype.raycast = function(result, ray, position, angle){
     // To be implemented in each subclass
 };

@@ -20,7 +20,10 @@
       var direction = [0,0];
       var reflect = false;
       var result = new p2.RaycastResult();
-      var raycastOptions = {};
+      var hitPoint = p2.vec2.create();
+      var ray = new p2.Ray({
+        mode: p2.Ray.CLOSEST
+      });
 
       document.getElementById("reflect").addEventListener('change', function(evt){
         reflect = document.getElementById("reflect").checked;
@@ -114,20 +117,20 @@
         world.addBody(convexBody);
 
         // Heightfield
-        // var data = [];
-        // var numDataPoints = 200;
-        // for(var i=0; i<numDataPoints; i++){
-        //   data.push(0.1*Math.sin(i / numDataPoints * Math.PI * 8));
-        // }
-        // var heightfieldShape = new p2.Heightfield(data,{
-        //     elementWidth: 5 / numDataPoints
-        // });
-        // var heightfield = new p2.Body({
-        //     position:[2,-2],
-        //     angle: Math.PI / 2
-        // });
-        // heightfield.addShape(heightfieldShape);
-        // world.addBody(heightfield);
+        var data = [];
+        var numDataPoints = 200;
+        for(var i=0; i<numDataPoints; i++){
+          data.push(0.1*Math.sin(i / numDataPoints * Math.PI * 8));
+        }
+        var heightfieldShape = new p2.Heightfield(data,{
+            elementWidth: 5 / numDataPoints
+        });
+        var heightfield = new p2.Body({
+            position:[2,-2],
+            angle: Math.PI / 2
+        });
+        heightfield.addShape(heightfieldShape);
+        world.addBody(heightfield);
       }
 
       function drawbox(){
@@ -269,8 +272,8 @@
         ctx.beginPath();
         ctx.moveTo(result.hitPointWorld[0], result.hitPointWorld[1]);
         ctx.lineTo(
-          result.hitPointWorld[0] + result.hitNormalWorld[0],
-          result.hitPointWorld[1] + result.hitNormalWorld[1]
+          result.hitPointWorld[0] + result.normal[0],
+          result.hitPointWorld[1] + result.normal[1]
         );
         ctx.stroke();
       };
@@ -322,44 +325,49 @@
       function drawRays(){
         var N = 10;
         for (var i = 0; i < N; i++) {
-          start[0] = -3;
-          start[1] = 0;
-          var angle = .5 * Math.sin(world.time * 1 - 1)-0.005 * (i/N)*10 + 0.1;
-          direction[0] = Math.cos(angle);
-          direction[1] = Math.sin(angle);
 
-          end[0] = start[0] + direction[0] * 100;
-          end[1] = start[1] + direction[1] * 100;
+          ray.from[0] = -3;
+          ray.from[1] = 0;
+          var angle = .5 * Math.sin(world.time * 1 - 1)-0.005 * (i/N)*10 + 0.1;
+          ray.direction[0] = Math.cos(angle);
+          ray.direction[1] = Math.sin(angle);
+
+          ray.to[0] = ray.from[0] + ray.direction[0] * 100;
+          ray.to[1] = ray.from[1] + ray.direction[1] * 100;
+
+          ray.update();
 
           // Closest
           ctx.strokeStyle = 'blue';
 
           var hits = 0;
-          while(world.raycastClosest(start, end, raycastOptions, result) && hits++ < 10){
-            drawRay(start, result.hitPointWorld);
+          while(world.raycast(result, ray) && hits++ < 10){
+            result.getHitPoint(hitPoint, ray);
+            drawRay(ray.from, hitPoint);
             //drawRayResult(result);
 
             // move start to the hit point
-            p2.vec2.copy(start, result.hitPointWorld);
+            p2.vec2.copy(ray.from, hitPoint);
 
-            result.getDirection(direction);
+            ray.update();
+
             if(reflect){
               // reflect the direction
-              p2.vec2.reflect(direction, direction, result.hitNormalWorld);
+              p2.vec2.reflect(ray.direction, ray.direction, result.normal);
             } else {
-              refract(direction, direction, result.hitNormalWorld, airIndex, shapeIndex);
+              refract(ray.direction, ray.direction, result.normal, airIndex, shapeIndex);
             }
 
             // move out a bit
-            start[0] += direction[0] * 0.001;
-            start[1] += direction[1] * 0.001;
+            ray.from[0] += ray.direction[0] * 0.001;
+            ray.from[1] += ray.direction[1] * 0.001;
 
-            end[0] = start[0] + direction[0] * 100;
-            end[1] = start[1] + direction[1] * 100;
+            ray.to[0] = ray.from[0] + ray.direction[0] * 100;
+            ray.to[1] = ray.from[1] + ray.direction[1] * 100;
 
             result.reset();
           }
-          drawRay(start, end);
+          drawRay(ray.from, ray.to);
         }
 
         ctx.strokeStyle = 'black';

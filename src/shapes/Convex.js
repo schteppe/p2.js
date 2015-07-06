@@ -324,3 +324,40 @@ Convex.prototype.updateArea = function(){
 Convex.prototype.computeAABB = function(out, position, angle){
     out.setFromPoints(this.vertices, position, angle, 0);
 };
+
+var intersectConvex_rayStart = vec2.create();
+var intersectConvex_rayEnd = vec2.create();
+var intersectConvex_normal = vec2.create();
+
+/**
+ * @method raycast
+ * @param  {RaycastResult} result
+ * @param  {Ray} ray
+ * @param  {array} position
+ * @param  {number} angle
+ */
+Convex.prototype.raycast = function(result, ray, position, angle){
+    var rayStart = intersectConvex_rayStart;
+    var rayEnd = intersectConvex_rayEnd;
+    var normal = intersectConvex_normal;
+    var vertices = this.vertices;
+
+    // Transform to local shape space
+    vec2.toLocalFrame(rayStart, ray.from, position, angle);
+    vec2.toLocalFrame(rayEnd, ray.to, position, angle);
+
+    var n = vertices.length;
+
+    for (var i = 0; i < n && !result.shouldStop(ray); i++) {
+        var q1 = vertices[i];
+        var q2 = vertices[(i+1) % n];
+        var delta = vec2.getLineSegmentsIntersectionFraction(rayStart, rayEnd, q1, q2);
+
+        if(delta >= 0){
+            vec2.sub(normal, q2, q1);
+            vec2.rotate(normal, normal, -Math.PI / 2 + angle);
+            vec2.normalize(normal, normal);
+            ray.reportIntersection(result, delta, normal, i);
+        }
+    }
+};
