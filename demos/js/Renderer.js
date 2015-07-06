@@ -885,10 +885,8 @@ Renderer.zoomOutEvent = {
 };
 
 Renderer.prototype.setEquationParameters = function(){
-    this.world.setGlobalEquationParameters({
-        stiffness: this.settings.stiffness,
-        relaxation: this.settings.relaxation
-    });
+    this.world.setGlobalStiffness(this.settings.stiffness);
+    this.world.setGlobalRelaxation(this.settings.relaxation);
 };
 
 })(p2);
