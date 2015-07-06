@@ -152,36 +152,50 @@ AABB.prototype.overlaps = function(aabb){
            ((l2[1] <= u1[1] && u1[1] <= u2[1]) || (l1[1] <= u2[1] && u2[1] <= u1[1]));
 };
 
-AABB.prototype.overlapsRay = function(ray){
+/**
+ * @method containsPoint
+ * @param  {Array} point
+ * @return {boolean}
+ */
+AABB.prototype.containsPoint = function(point){
+    var l = this.lowerBound,
+        u = this.upperBound;
+    return l[0] <= point[0] && point[0] <= u[0] && l[1] <= point[1] && point[1] <= u[1];
+};
 
-    var dirfrac = [];
+/**
+ * Check if the AABB is hit by a ray.
+ * @method overlapsRay
+ * @param  {Ray} ray
+ * @return {number} -1 if no hit, a number between 0 and 1 if hit.
+ */
+AABB.prototype.overlapsRay = function(ray){
     var t = 0;
 
     // ray.direction is unit direction vector of ray
-    dirfrac[0] = 1 / ray._direction[0];
-    dirfrac[1] = 1 / ray._direction[1];
+    var dirFracX = 1 / ray.direction[0];
+    var dirFracY = 1 / ray.direction[1];
 
     // this.lowerBound is the corner of AABB with minimal coordinates - left bottom, rt is maximal corner
-    var t1 = (this.lowerBound[0] - ray.from[0]) * dirfrac[0];
-    var t2 = (this.upperBound[0] - ray.from[0]) * dirfrac[0];
-    var t3 = (this.lowerBound[1] - ray.from[1]) * dirfrac[1];
-    var t4 = (this.upperBound[1] - ray.from[1]) * dirfrac[1];
+    var t1 = (this.lowerBound[0] - ray.from[0]) * dirFracX;
+    var t2 = (this.upperBound[0] - ray.from[0]) * dirFracX;
+    var t3 = (this.lowerBound[1] - ray.from[1]) * dirFracY;
+    var t4 = (this.upperBound[1] - ray.from[1]) * dirFracY;
 
     var tmin = Math.max(Math.max(Math.min(t1, t2), Math.min(t3, t4)));
     var tmax = Math.min(Math.min(Math.max(t1, t2), Math.max(t3, t4)));
 
     // if tmax < 0, ray (line) is intersecting AABB, but whole AABB is behing us
     if (tmax < 0){
-        t = tmax;
-        return false;
+        //t = tmax;
+        return -1;
     }
 
     // if tmin > tmax, ray doesn't intersect AABB
     if (tmin > tmax){
-        t = tmax;
-        return false;
+        //t = tmax;
+        return -1;
     }
 
-    t = tmin;
-    return true;
+    return tmin;
 };
