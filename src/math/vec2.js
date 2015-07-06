@@ -512,3 +512,50 @@ vec2.reflect = function(out, vector, normal){
     out[0] = vector[0] - 2 * normal[0] * dot;
     out[1] = vector[1] - 2 * normal[1] * dot;
 };
+
+/**
+ * Get the intersection point between two line segments.
+ * @static
+ * @method getLineSegmentsIntersection
+ * @param  {Array} out
+ * @param  {Array} p0
+ * @param  {Array} p1
+ * @param  {Array} p2
+ * @param  {Array} p3
+ * @return {boolean} True if there was an intersection, otherwise false.
+ */
+vec2.getLineSegmentsIntersection = function(out, p0, p1, p2, p3) {
+    var t = vec2.getLineSegmentsIntersectionFraction(p0, p1, p2, p3);
+    if(t < 0){
+        return false;
+    } else {
+        out[0] = p0[0] + (t * (p1[0] - p0[0]));
+        out[1] = p0[1] + (t * (p1[1] - p0[1]));
+        return true;
+    }
+};
+
+/**
+ * Get the intersection fraction between two line segments. If successful, the intersection is at p0 + t * (p1 - p0)
+ * @static
+ * @method getLineSegmentsIntersectionFraction
+ * @param  {Array} p0
+ * @param  {Array} p1
+ * @param  {Array} p2
+ * @param  {Array} p3
+ * @return {number} A number between 0 and 1 if there was an intersection, otherwise -1.
+ */
+vec2.getLineSegmentsIntersectionFraction = function(p0, p1, p2, p3) {
+    var s1_x = p1[0] - p0[0];
+    var s1_y = p1[1] - p0[1];
+    var s2_x = p3[0] - p2[0];
+    var s2_y = p3[1] - p2[1];
+
+    var s, t;
+    s = (-s1_y * (p0[0] - p2[0]) + s1_x * (p0[1] - p2[1])) / (-s2_x * s1_y + s1_x * s2_y);
+    t = ( s2_x * (p0[1] - p2[1]) - s2_y * (p0[0] - p2[0])) / (-s2_x * s1_y + s1_x * s2_y);
+    if (s >= 0 && s <= 1 && t >= 0 && t <= 1) { // Collision detected
+        return t;
+    }
+    return -1; // No collision
+};
