@@ -1169,7 +1169,7 @@ Body.prototype.integrateToTimeOfImpact = function(dt){
  */
 Body.prototype.getVelocityAtPoint = function(result, relativePoint){
     vec2.crossVZ(result, relativePoint, this.angularVelocity);
-    vec2.add(result, result, this.velocity);
+    vec2.subtract(result, this.velocity, result);
     return result;
 };
 

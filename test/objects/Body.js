@@ -279,6 +279,24 @@ exports.wakeUp = function(test){
     test.done();
 };
 
+exports.getVelocityAtPoint = function(test){
+    var body = new Body({
+        mass: 1,
+        velocity: [1,0]
+    });
+    var velocity = [0,0];
+    body.getVelocityAtPoint(velocity, [0,0]);
+    test.deepEqual(velocity, [1,0]);
+
+    body.velocity[0] = 0;
+    body.angularVelocity = 1;
+    body.getVelocityAtPoint(velocity, [1,0]);
+    test.ok(Math.abs(velocity[0]) < 0.001);
+    test.equal(velocity[1], 1); // r x w = 1 x 1 = 1
+
+    test.done();
+};
+
 exports.collisionResponse = function(test){
     var bodyA = new Body({ mass: 1, position: [1, 0] });
     bodyA.addShape(new Circle(1));
