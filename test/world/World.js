@@ -149,6 +149,20 @@ exports.runNarrowphase = function(test){
     test.done();
 };
 
+exports.setGlobalStiffness = function(test){
+    var world = new World();
+    world.setGlobalStiffness(123);
+    test.equal(world.defaultContactMaterial.stiffness, 123);
+    test.done();
+};
+
+exports.setGlobalRelaxation = function(test){
+    var world = new World();
+    world.setGlobalRelaxation(123);
+    test.equal(world.defaultContactMaterial.relaxation, 123);
+    test.done();
+};
+
 exports.step = function(test){
     // STUB
     test.done();

@@ -1159,65 +1159,33 @@ World.prototype.hitTest = function(worldPoint,bodies,precision){
 };
 
 /**
- * Sets the Equation parameters for all constraints and contact materials.
- * @method setGlobalEquationParameters
- * @param {object} [parameters]
- * @param {Number} [parameters.relaxation]
- * @param {Number} [parameters.stiffness]
- * @deprecated To be removed. Use setGlobalStiffness and setGlobalRelaxation instead.
- */
-World.prototype.setGlobalEquationParameters = function(parameters){
-    parameters = parameters || {};
-
-    // Set for all constraints
-    for(var i=0; i !== this.constraints.length; i++){
-        var c = this.constraints[i];
-        for(var j=0; j !== c.equations.length; j++){
-            var eq = c.equations[j];
-            if(typeof(parameters.stiffness) !== "undefined"){
-                eq.stiffness = parameters.stiffness;
-            }
-            if(typeof(parameters.relaxation) !== "undefined"){
-                eq.relaxation = parameters.relaxation;
-            }
-            eq.needsUpdate = true;
-        }
-    }
-
-    // Set for all contact materials
-    for(var i=0; i !== this.contactMaterials.length; i++){
-        var c = this.contactMaterials[i];
-        if(typeof(parameters.stiffness) !== "undefined"){
-            c.stiffness = parameters.stiffness;
-            c.frictionStiffness = parameters.stiffness;
-        }
-        if(typeof(parameters.relaxation) !== "undefined"){
-            c.relaxation = parameters.relaxation;
-            c.frictionRelaxation = parameters.relaxation;
-        }
-    }
-
-    // Set for default contact material
-    var c = this.defaultContactMaterial;
-    if(typeof(parameters.stiffness) !== "undefined"){
-        c.stiffness = parameters.stiffness;
-        c.frictionStiffness = parameters.stiffness;
-    }
-    if(typeof(parameters.relaxation) !== "undefined"){
-        c.relaxation = parameters.relaxation;
-        c.frictionRelaxation = parameters.relaxation;
-    }
-};
-
-/**
  * Set the stiffness for all equations and contact materials.
  * @method setGlobalStiffness
  * @param {Number} stiffness
  */
 World.prototype.setGlobalStiffness = function(stiffness){
-    this.setGlobalEquationParameters({
-        stiffness: stiffness
-    });
+
+    // Set for all constraints
+    var constraints = this.constraints;
+    for(var i=0; i !== constraints.length; i++){
+        var c = constraints[i];
+        for(var j=0; j !== c.equations.length; j++){
+            var eq = c.equations[j];
+            eq.stiffness = stiffness;
+            eq.needsUpdate = true;
+        }
+    }
+
+    // Set for all contact materials
+    var contactMaterials = this.contactMaterials;
+    for(var i=0; i !== contactMaterials.length; i++){
+        var c = contactMaterials[i];
+        c.stiffness = c.frictionStiffness = stiffness;
+    }
+
+    // Set for default contact material
+    var c = this.defaultContactMaterial;
+    c.stiffness = c.frictionStiffness = stiffness;
 };
 
 /**
@@ -1226,9 +1194,26 @@ World.prototype.setGlobalStiffness = function(stiffness){
  * @param {Number} relaxation
  */
 World.prototype.setGlobalRelaxation = function(relaxation){
-    this.setGlobalEquationParameters({
-        relaxation: relaxation
-    });
+
+    // Set for all constraints
+    for(var i=0; i !== this.constraints.length; i++){
+        var c = this.constraints[i];
+        for(var j=0; j !== c.equations.length; j++){
+            var eq = c.equations[j];
+            eq.relaxation = relaxation;
+            eq.needsUpdate = true;
+        }
+    }
+
+    // Set for all contact materials
+    for(var i=0; i !== this.contactMaterials.length; i++){
+        var c = this.contactMaterials[i];
+        c.relaxation = c.frictionRelaxation = relaxation;
+    }
+
+    // Set for default contact material
+    var c = this.defaultContactMaterial;
+    c.relaxation = c.frictionRelaxation = relaxation;
 };
 
 var tmpAABB = new AABB();
