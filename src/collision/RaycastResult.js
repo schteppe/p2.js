@@ -66,6 +66,7 @@ RaycastResult.prototype.reset = function () {
 /**
  * Get the distance to the hit point.
  * @method getHitDistance
+ * @param {Ray} ray
  */
 RaycastResult.prototype.getHitDistance = function (ray) {
 	return vec2.distance(ray.from, ray.to) * this.fraction;
@@ -82,13 +83,15 @@ RaycastResult.prototype.hasHit = function () {
 /**
  * Get world hit point.
  * @method getHitPoint
+ * @param {array} out
+ * @param {Ray} ray
  */
 RaycastResult.prototype.getHitPoint = function (out, ray) {
 	vec2.lerp(out, ray.from, ray.to, this.fraction);
 };
 
 /**
- * Can be called while iterating over hits to stop searching for hit points. Only
+ * Can be called while iterating over hits to stop searching for hit points.
  * @method stop
  */
 RaycastResult.prototype.stop = function(){
@@ -96,8 +99,10 @@ RaycastResult.prototype.stop = function(){
 };
 
 /**
- * Can be called while iterating over hits to stop searching for hit points. Only
- * @method stop
+ * @method shouldStop
+ * @private
+ * @param {Ray} ray
+ * @return {boolean}
  */
 RaycastResult.prototype.shouldStop = function(ray){
 	return this.isStopped || (this.fraction !== -1 && ray.mode === Ray.ANY);
@@ -105,6 +110,7 @@ RaycastResult.prototype.shouldStop = function(ray){
 
 /**
  * @method set
+ * @private
  * @param {array} normal
  * @param {Shape} shape
  * @param {Body} body

@@ -9,6 +9,15 @@ var AABB = require('../collision/AABB');
  * A line with a start and end point that is used to intersect shapes.
  * @class Ray
  * @constructor
+ * @param {object} [options]
+ * @param {array} [options.from]
+ * @param {array} [options.to]
+ * @param {boolean} [options.checkCollisionResponse]
+ * @param {boolean} [options.skipBackfaces]
+ * @param {number} [options.collisionMask]
+ * @param {number} [options.collisionGroup]
+ * @param {number} [options.mode]
+ * @param {number} [options.callback]
  */
 function Ray(options){
     options = options || {};
@@ -50,7 +59,7 @@ function Ray(options){
     this.collisionGroup = options.collisionGroup !== undefined ? options.collisionGroup : -1;
 
     /**
-     * The intersection mode. Should be Ray.ANY, Ray.ALL or Ray.CLOSEST.
+     * The intersection mode. Should be {{#crossLink "Ray/ANY:property"}}Ray.ANY{{/crossLink}}, {{#crossLink "Ray/ALL:property"}}Ray.ALL{{/crossLink}} or {{#crossLink "Ray/CLOSEST:property"}}Ray.CLOSEST{{/crossLink}}.
      * @property {number} mode
      */
     this.mode = options.mode !== undefined ? options.mode : Ray.ANY;
