@@ -660,6 +660,7 @@ World.prototype.internalStep = function(dt){
     // postBroadphase event
     this.postBroadphaseEvent.pairs = result;
     this.emit(this.postBroadphaseEvent);
+    this.postBroadphaseEvent.pairs = null;
 
     // Narrowphase
     np.reset(this);
@@ -721,6 +722,7 @@ World.prototype.internalStep = function(dt){
     preSolveEvent.contactEquations = np.contactEquations;
     preSolveEvent.frictionEquations = np.frictionEquations;
     this.emit(preSolveEvent);
+    preSolveEvent.contactEquations = preSolveEvent.frictionEquations = null;
 
     // update constraint equations
     var Nconstraints = constraints.length;
@@ -728,7 +730,7 @@ World.prototype.internalStep = function(dt){
         constraints[i].update();
     }
 
-    if(np.contactEquations.length || np.frictionEquations.length || constraints.length){
+    if(np.contactEquations.length || np.frictionEquations.length || Nconstraints){
         if(this.islandSplit){
             // Split into islands
             islandManager.equations.length = 0;
@@ -961,6 +963,7 @@ World.prototype.addSpring = function(spring){
     this.springs.push(spring);
     this.addSpringEvent.spring = spring;
     this.emit(this.addSpringEvent);
+    this.addSpringEvent.spring = null;
 };
 
 /**
@@ -994,6 +997,7 @@ World.prototype.addBody = function(body){
         body.world = this;
         this.addBodyEvent.body = body;
         this.emit(this.addBodyEvent);
+        this.addBodyEvent.body = null;
     }
 };
 
@@ -1014,6 +1018,7 @@ World.prototype.removeBody = function(body){
             this.removeBodyEvent.body = body;
             body.resetConstraintVelocity();
             this.emit(this.removeBodyEvent);
+            this.removeBodyEvent.body = null;
         }
     }
 };
