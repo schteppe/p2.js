@@ -17,7 +17,6 @@ var p2 = module.exports = {
     FrictionEquation :              require('./equations/FrictionEquation'),
     FrictionEquationPool :          require('./utils/FrictionEquationPool'),
     GearConstraint :                require('./constraints/GearConstraint'),
-    GridBroadphase :                require('./collision/GridBroadphase'),
     GSSolver :                      require('./solver/GSSolver'),
     Heightfield :                   require('./shapes/Heightfield'),
     Line :                          require('./shapes/Line'),
