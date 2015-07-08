@@ -140,8 +140,8 @@
         ctx.save();
         ctx.translate(x, y);        // Translate to the center of the box
         ctx.rotate(boxBody.angle);  // Rotate to the box body frame
-        ctx.translate(boxBody.shapeOffsets[0][0], boxBody.shapeOffsets[0][1]);        // Translate to the center of the shape
-        ctx.rotate(boxBody.shapeAngles[0]);  // Rotate to the box shape frame
+        ctx.translate(boxShape.position[0], boxShape.position[1]);        // Translate to the center of the shape
+        ctx.rotate(boxShape.angle);  // Rotate to the box shape frame
         ctx.rect(-boxShape.width/2, -boxShape.height/2, boxShape.width, boxShape.height);
         ctx.stroke();
         ctx.restore();
@@ -155,8 +155,8 @@
         ctx.translate(x, y);
         ctx.rotate(planeBody.angle);
 
-        ctx.translate(planeBody.shapeOffsets[0][0], planeBody.shapeOffsets[0][1]);
-        ctx.rotate(planeBody.shapeAngles[0]);
+        ctx.translate(planeShape.position[0], planeShape.position[1]);
+        ctx.rotate(planeShape.angle);
 
         ctx.moveTo(-100, 0);
         ctx.lineTo(100, 0);
@@ -172,8 +172,8 @@
         ctx.translate(x, y);
         ctx.rotate(lineBody.angle);
 
-        ctx.translate(lineBody.shapeOffsets[0][0], lineBody.shapeOffsets[0][1]);
-        ctx.rotate(lineBody.shapeAngles[0]);
+        ctx.translate(lineShape.position[0], lineShape.position[1]);
+        ctx.rotate(lineShape.angle);
 
         ctx.moveTo(-lineShape.length/2, 0);
         ctx.lineTo(lineShape.length/2, 0);
@@ -188,8 +188,8 @@
         ctx.save();
         ctx.translate(x, y);
         ctx.rotate(circleBody.angle);
-        ctx.translate(circleBody.shapeOffsets[0][0], circleBody.shapeOffsets[0][1]);
-        ctx.rotate(circleBody.shapeAngles[0]);
+        ctx.translate(circleShape.position[0], circleShape.position[1]);
+        ctx.rotate(circleShape.angle);
         ctx.arc(0,0,circleShape.radius,0,2*Math.PI);
         ctx.stroke();
         ctx.restore();
@@ -201,8 +201,8 @@
         ctx.save();
         ctx.translate(x, y);
         ctx.rotate(capsuleBody.angle);
-        ctx.translate(capsuleBody.shapeOffsets[0][0], capsuleBody.shapeOffsets[0][1]);
-        ctx.rotate(capsuleBody.shapeAngles[0]);
+        ctx.translate(capsuleShape.position[0], capsuleShape.position[1]);
+        ctx.rotate(capsuleShape.angle);
 
         var radius = capsuleShape.radius;
         var len = capsuleShape.length;

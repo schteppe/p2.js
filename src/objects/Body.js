@@ -70,28 +70,12 @@ function Body(options){
     this.world = null;
 
     /**
-     * The shapes of the body. The local transform of the shape in .shapes[i] is
-     * defined by .shapeOffsets[i] and .shapeAngles[i].
+     * The shapes of the body.
      *
      * @property shapes
      * @type {Array}
      */
     this.shapes = [];
-
-    /**
-     * The local shape offsets, relative to the body center of mass. This is an
-     * array of Array.
-     * @property shapeOffsets
-     * @type {Array}
-     */
-    this.shapeOffsets = [];
-
-    /**
-     * The body-local shape angle transforms. This is an array of numbers (angles).
-     * @property shapeAngles
-     * @type {Array}
-     */
-    this.shapeAngles = [];
 
     /**
      * The mass of the body.
@@ -496,18 +480,16 @@ var shapeAABB = new AABB(),
  */
 Body.prototype.updateAABB = function() {
     var shapes = this.shapes,
-        shapeOffsets = this.shapeOffsets,
-        shapeAngles = this.shapeAngles,
         N = shapes.length,
         offset = tmp,
         bodyAngle = this.angle;
 
     for(var i=0; i!==N; i++){
         var shape = shapes[i],
-            angle = shapeAngles[i] + bodyAngle;
+            angle = shape.angle + bodyAngle;
 
         // Get shape world offset
-        vec2.rotate(offset, shapeOffsets[i], bodyAngle);
+        vec2.rotate(offset, shape.position, bodyAngle);
         vec2.add(offset, offset, this.position);
 
         // Get shape AABB
@@ -529,13 +511,12 @@ Body.prototype.updateAABB = function() {
  */
 Body.prototype.updateBoundingRadius = function(){
     var shapes = this.shapes,
-        shapeOffsets = this.shapeOffsets,
         N = shapes.length,
         radius = 0;
 
     for(var i=0; i!==N; i++){
         var shape = shapes[i],
-            offset = vec2.length(shapeOffsets[i]),
+            offset = vec2.length(shape.position),
             r = shape.boundingRadius;
         if(offset + r > radius){
             radius = offset + r;
@@ -568,19 +549,22 @@ Body.prototype.updateBoundingRadius = function(){
  *     // Add another shape to the body, positioned 1 unit length from the body center of mass along the local y-axis, and rotated 90 degrees CCW.
  *     body.addShape(shape,[0,1],Math.PI/2);
  */
-Body.prototype.addShape = function(shape,offset,angle){
-    angle = angle || 0.0;
+Body.prototype.addShape = function(shape, offset, angle){
+    if(shape.body){
+        throw new Error('A shape can only be added to one body.');
+    }
+    shape.body = this;
 
     // Copy the offset vector
     if(offset){
-        offset = vec2.fromValues(offset[0],offset[1]);
+        vec2.copy(shape.position, offset);
     } else {
-        offset = vec2.fromValues(0,0);
+        vec2.set(shape.position, 0, 0);
     }
 
+    shape.angle = angle || 0;
+
     this.shapes.push(shape);
-    this.shapeOffsets.push(offset);
-    this.shapeAngles.push(angle);
     this.updateMassProperties();
     this.updateBoundingRadius();
 
@@ -598,9 +582,8 @@ Body.prototype.removeShape = function(shape){
 
     if(idx !== -1){
         this.shapes.splice(idx,1);
-        this.shapeOffsets.splice(idx,1);
-        this.shapeAngles.splice(idx,1);
         this.aabbNeedsUpdate = true;
+        shape.body = null;
         return true;
     } else {
         return false;
@@ -635,7 +618,7 @@ Body.prototype.updateMassProperties = function(){
         if(!this.fixedRotation){
             for(var i=0; i<N; i++){
                 var shape = shapes[i],
-                    r2 = vec2.squaredLength(this.shapeOffsets[i]),
+                    r2 = vec2.squaredLength(shape.position),
                     Icm = shape.computeMomentOfInertia(m);
                 I += Icm + m*r2;
             }
@@ -884,10 +867,9 @@ Body.prototype.adjustCenterOfMass = function(){
     vec2.set(sum,0,0);
 
     for(var i=0; i!==this.shapes.length; i++){
-        var s = this.shapes[i],
-            offset = this.shapeOffsets[i];
-        vec2.scale(offset_times_area,offset,s.area);
-        vec2.add(sum,sum,offset_times_area);
+        var s = this.shapes[i];
+        vec2.scale(offset_times_area, s.position, s.area);
+        vec2.add(sum, sum, offset_times_area);
         totalArea += s.area;
     }
 
@@ -895,15 +877,8 @@ Body.prototype.adjustCenterOfMass = function(){
 
     // Now move all shapes
     for(var i=0; i!==this.shapes.length; i++){
-        var s = this.shapes[i],
-            offset = this.shapeOffsets[i];
-
-        // Offset may be undefined. Fix that.
-        if(!offset){
-            offset = this.shapeOffsets[i] = vec2.create();
-        }
-
-        vec2.sub(offset,offset,cm);
+        var s = this.shapes[i];
+        vec2.sub(s.position, s.position, cm);
     }
 
     // Move the body position too

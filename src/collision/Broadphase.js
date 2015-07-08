@@ -63,9 +63,7 @@ Broadphase.prototype.setWorld = function(world){
  * @param  {World} world The world to search in.
  * @return {Array} An array of the bodies, ordered in pairs. Example: A result of [a,b,c,d] means that the potential pairs are: (a,b), (c,d).
  */
-Broadphase.prototype.getCollisionPairs = function(world){
-    throw new Error("getCollisionPairs must be implemented in a subclass!");
-};
+Broadphase.prototype.getCollisionPairs = function(world){};
 
 var dist = vec2.create();
 
@@ -125,20 +123,22 @@ Broadphase.prototype.boundingVolumeCheck = function(bodyA, bodyB){
  * @return {Boolean}
  */
 Broadphase.canCollide = function(bodyA, bodyB){
+    var KINEMATIC = Body.KINEMATIC;
+    var STATIC = Body.STATIC;
 
     // Cannot collide static bodies
-    if(bodyA.type === Body.STATIC && bodyB.type === Body.STATIC){
+    if(bodyA.type === STATIC && bodyB.type === STATIC){
         return false;
     }
 
     // Cannot collide static vs kinematic bodies
-    if( (bodyA.type === Body.KINEMATIC && bodyB.type === Body.STATIC) ||
-        (bodyA.type === Body.STATIC    && bodyB.type === Body.KINEMATIC)){
+    if( (bodyA.type === KINEMATIC && bodyB.type === STATIC) ||
+        (bodyA.type === STATIC    && bodyB.type === KINEMATIC)){
         return false;
     }
 
     // Cannot collide kinematic vs kinematic
-    if(bodyA.type === Body.KINEMATIC && bodyB.type === Body.KINEMATIC){
+    if(bodyA.type === KINEMATIC && bodyB.type === KINEMATIC){
         return false;
     }
 
@@ -148,8 +148,8 @@ Broadphase.canCollide = function(bodyA, bodyB){
     }
 
     // Cannot collide if one is static and the other is sleeping
-    if( (bodyA.sleepState === Body.SLEEPING && bodyB.type === Body.STATIC) ||
-        (bodyB.sleepState === Body.SLEEPING && bodyA.type === Body.STATIC)){
+    if( (bodyA.sleepState === Body.SLEEPING && bodyB.type === STATIC) ||
+        (bodyB.sleepState === Body.SLEEPING && bodyA.type === STATIC)){
         return false;
     }
 

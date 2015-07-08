@@ -161,9 +161,9 @@ Ray.prototype.intersectBody = function (result, body) {
         }
 
         // Get world angle and position of the shape
-        vec2.rotate(worldPosition, body.shapeOffsets[i], body.angle);
+        vec2.rotate(worldPosition, shape.position, body.angle);
         vec2.add(worldPosition, worldPosition, body.position);
-        var worldAngle = body.shapeAngles[i] + body.angle;
+        var worldAngle = shape.angle + body.angle;
 
         this.intersectShape(
             result,

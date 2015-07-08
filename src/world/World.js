@@ -671,14 +671,14 @@ World.prototype.internalStep = function(dt){
         // Loop over all shapes of body i
         for(var k=0, Nshapesi=bi.shapes.length; k!==Nshapesi; k++){
             var si = bi.shapes[k],
-                xi = bi.shapeOffsets[k],
-                ai = bi.shapeAngles[k];
+                xi = si.position,
+                ai = si.angle;
 
             // All shapes of body j
             for(var l=0, Nshapesj=bj.shapes.length; l!==Nshapesj; l++){
                 var sj = bj.shapes[l],
-                    xj = bj.shapeOffsets[l],
-                    aj = bj.shapeAngles[l];
+                    xj = sj.position,
+                    aj = sj.angle;
 
                 var cm = this.defaultContactMaterial;
                 if(si.material && sj.material){
@@ -1139,15 +1139,14 @@ World.prototype.hitTest = function(worldPoint,bodies,precision){
     // Check bodies
     for(var i=0, N=bodies.length; i!==N; i++){
         var b = bodies[i];
+
         for(var j=0, NS=b.shapes.length; j!==NS; j++){
-            var s = b.shapes[j],
-                offset = b.shapeOffsets[j] || zero,
-                angle = b.shapeAngles[j] || 0.0;
+            var s = b.shapes[j];
 
             // Get shape world position + angle
-            vec2.rotate(x, offset, b.angle);
+            vec2.rotate(x, s.position, b.angle);
             vec2.add(x, x, b.position);
-            var a = angle + b.angle;
+            var a = s.angle + b.angle;
 
             if( (s instanceof Circle    && n.circleParticle  (b,s,x,a,     pb,ps,px,pa, true)) ||
                 (s instanceof Convex    && n.particleConvex  (pb,ps,px,pa, b,s,x,a,     true)) ||

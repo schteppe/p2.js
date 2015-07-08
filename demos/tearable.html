@@ -28,8 +28,7 @@
             // Create circle rope
             var N=10,  // Number of circles
                 r=0.1; // Radius of circle
-            var shape = new p2.Circle(r),
-                lastBody,
+            var lastBody,
                 constraints = [];
             for(var i=N-1; i>=0; i--){
                 var x = 0,
@@ -39,7 +38,7 @@
                     position: [x,y],
                     angularDamping:0.5,
                 });
-                p.addShape(shape);
+                p.addShape(new p2.Circle(r));
                 if(lastBody){
                     // Create a DistanceConstraint, it will constrain the
                     // current and the last body to have a fixed distance from each other

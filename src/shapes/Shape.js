@@ -1,5 +1,7 @@
 module.exports = Shape;
 
+var vec2 = require('../math/vec2');
+
 /**
  * Base class for shapes.
  * @class Shape
@@ -7,6 +9,24 @@ module.exports = Shape;
  * @param {Number} type
  */
 function Shape(type){
+
+    /**
+     * The body this shape is attached to.
+     * @property {Body} body
+     */
+    this.body = null;
+
+    /**
+     * Position of the shape.
+     * @property {Array} position
+     */
+    this.position = vec2.fromValues(0,0);
+
+    /**
+     * Angle of the shape.
+     * @property {number} angle
+     */
+    this.angle = 0;
 
     /**
      * The type of the shape. One of:
@@ -184,9 +204,9 @@ Shape.prototype.updateArea = function(){
 /**
  * Compute the world axis-aligned bounding box (AABB) of this shape.
  * @method computeAABB
- * @param  {AABB}   out      The resulting AABB.
- * @param  {Array}  position
- * @param  {Number} angle
+ * @param  {AABB} out The resulting AABB.
+ * @param  {Array} position World position of the shape.
+ * @param  {Number} angle World angle of the shape.
  */
 Shape.prototype.computeAABB = function(out, position, angle){
     // To be implemented in each subclass

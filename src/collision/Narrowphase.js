@@ -178,6 +178,7 @@ var bodiesOverlap_shapePositionB = vec2.create();
  * @param  {Body} bodyA
  * @param  {Body} bodyB
  * @return {Boolean}
+ * @todo test
  */
 Narrowphase.prototype.bodiesOverlap = function(bodyA, bodyB){
     var shapePositionA = bodiesOverlap_shapePositionA;
@@ -185,19 +186,15 @@ Narrowphase.prototype.bodiesOverlap = function(bodyA, bodyB){
 
     // Loop over all shapes of bodyA
     for(var k=0, Nshapesi=bodyA.shapes.length; k!==Nshapesi; k++){
-        var shapeA = bodyA.shapes[k],
-            positionA = bodyA.shapeOffsets[k],
-            angleA = bodyA.shapeAngles[k];
+        var shapeA = bodyA.shapes[k];
 
-        bodyA.toWorldFrame(shapePositionA, positionA);
+        bodyA.toWorldFrame(shapePositionA, shapeA.position);
 
         // All shapes of body j
         for(var l=0, Nshapesj=bodyB.shapes.length; l!==Nshapesj; l++){
-            var shapeB = bodyB.shapes[l],
-                positionB = bodyB.shapeOffsets[l],
-                angleB = bodyB.shapeAngles[l];
+            var shapeB = bodyB.shapes[l];
 
-            bodyB.toWorldFrame(shapePositionB, positionB);
+            bodyB.toWorldFrame(shapePositionB, shapeB.position);
 
             if(this[shapeA.type | shapeB.type](
                 bodyA,

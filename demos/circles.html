@@ -48,7 +48,6 @@
             world.sleepMode = p2.World.BODY_SLEEPING;
 
             // Create circle bodies
-            var shape = new p2.Circle(r);
             for(var i=0; i<N; i++){
                 for(var j=M-1; j>=0; j--){
                     var x = (i-N/2)*r*d+(enablePositionNoise ? Math.random()*r : 0);
@@ -57,7 +56,7 @@
                         mass: 1,
                         position: [x, y],
                     });
-                    p.addShape(shape);
+                    p.addShape(new p2.Circle(r));
                     p.allowSleep = true;
                     p.sleepSpeedLimit = 1;  // Body will feel sleepy if speed<1 (speed is the norm of velocity)
                     p.sleepTimeLimit = 1;   // Body falls asleep after 1s of sleepiness
@@ -72,11 +71,10 @@
                 ymax = ( M/2 * r*d);
 
             // Create bottom plane
-            var planeShape = new p2.Plane();
             var plane = new p2.Body({
                 position : [0,ymin],
             });
-            plane.addShape(planeShape);
+            plane.addShape(new p2.Plane());
             world.addBody(plane);
 
             // Left plane
@@ -84,7 +82,7 @@
                 angle: -Math.PI/2,
                 position: [xmin, 0]
             });
-            planeLeft.addShape(planeShape);
+            planeLeft.addShape(new p2.Plane());
             world.addBody(planeLeft);
 
             // Right plane
@@ -92,7 +90,7 @@
                 angle: Math.PI/2,
                 position: [xmax, 0]
             });
-            planeRight.addShape(planeShape);
+            planeRight.addShape(new p2.Plane());
             world.addBody(planeRight);
 
             // Start demo

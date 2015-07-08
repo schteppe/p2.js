@@ -67,33 +67,33 @@
         planeShape.material = groundMaterial;
 
         // Add platforms
-        var platformPositions = [[2,0],[0,1],[-2,2]],
-            platformShape = new p2.Rectangle(1,0.3);
+        var platformPositions = [[2,0],[0,1],[-2,2]];
         for(var i=0; i<platformPositions.length; i++){
           var platformBody = new p2.Body({
             mass: 0, // Static
             position:platformPositions[i],
           });
           platformBody.type = p2.Body.KINEMATIC;
+          var platformShape = new p2.Rectangle(1,0.3)
+          platformShape.material = groundMaterial;
           platformBody.addShape(platformShape);
           world.addBody(platformBody);
           platforms.push(platformBody);
         }
-        platformShape.material = groundMaterial;
 
         // Add movable boxes
-        var boxPositions = [[2,1],[0,2],[-2,3]],
-            boxShape = new p2.Rectangle(0.8,0.8);
+        var boxPositions = [[2,1],[0,2],[-2,3]];
         for(var i=0; i<boxPositions.length; i++){
           var boxBody = new p2.Body({
             mass: 1,
             position:boxPositions[i],
           });
+          var boxShape = new p2.Rectangle(0.8,0.8);
+          boxShape.material = boxMaterial;
           boxBody.addShape(boxShape);
           world.addBody(boxBody);
           boxes.push(boxBody);
         }
-        boxShape.material = boxMaterial;
 
         // Init contactmaterials
         var groundCharacterCM = new p2.ContactMaterial(groundMaterial, characterMaterial,{

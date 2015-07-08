@@ -22,15 +22,15 @@
 
             this.setWorld(world);
 
-            var circleShape = new p2.Circle(0.5);
             var ballBody1 = new p2.Body({
                 position: [-2,1],
                 mass: 1
             });
 
             // Create a material for the circle shape
-            circleShape.material = new p2.Material();
-            ballBody1.addShape(circleShape);
+            var circleShape1 = new p2.Circle(0.5);
+            circleShape1.material = new p2.Material();
+            ballBody1.addShape(circleShape1);
 
             // Remove damping from the ball, so it does not lose energy
             ballBody1.damping = 0;
@@ -53,18 +53,20 @@
             // Create contact material between the two materials.
             // The ContactMaterial defines what happens when the two materials meet.
             // In this case, we use some restitution.
-            world.addContactMaterial(new p2.ContactMaterial(platformShape1.material, circleShape.material, {
+            world.addContactMaterial(new p2.ContactMaterial(platformShape1.material, circleShape1.material, {
                 restitution : 1.0,
                 stiffness : Number.MAX_VALUE // We need infinite stiffness to get exact restitution
             }));
 
 
             // Create another ball
+            var circleShape2 = new p2.Circle(0.5);
+            circleShape2.material = new p2.Material();
             var ballBody2 = new p2.Body({
                 position: [0,1],
                 mass:1
             });
-            ballBody2.addShape(circleShape);
+            ballBody2.addShape(circleShape2);
             ballBody2.damping = 0;
             ballBody2.angularDamping = 0;
             world.addBody(ballBody2);
@@ -79,17 +81,19 @@
 
             platformShape2.material = new p2.Material();
 
-            world.addContactMaterial(new p2.ContactMaterial(platformShape2.material, circleShape.material, {
+            world.addContactMaterial(new p2.ContactMaterial(platformShape2.material, circleShape2.material, {
                 restitution : 0.0, // This means no bounce!
             }));
 
 
             // New ball
+            var circleShape3 = new p2.Circle(0.5);
+            circleShape3.material = new p2.Material();
             var ballBody3 = new p2.Body({
                 position: [2,1],
                 mass:1
             });
-            ballBody3.addShape(circleShape);
+            ballBody3.addShape(circleShape3);
             ballBody3.damping = 0;
             ballBody3.angularDamping = 0;
             world.addBody(ballBody3);
@@ -104,7 +108,7 @@
             // Create material for the plane shape
             planeShape3.material = new p2.Material();
 
-            world.addContactMaterial(new p2.ContactMaterial(planeShape3.material, circleShape.material, {
+            world.addContactMaterial(new p2.ContactMaterial(planeShape3.material, circleShape3.material, {
                 restitution : 0.0,
                 stiffness : 200,    // This makes the contact soft!
                 relaxation:0.1

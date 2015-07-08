@@ -109,17 +109,7 @@
         shipShape.collisionMask = ASTEROID;
         world.addBody(shipBody);
 
-        // Create bullet shape
-        bulletShape = new p2.Circle(bulletRadius);
-        bulletShape.collisionGroup = BULLET;
-        bulletShape.collisionMask = ASTEROID;
-
         // Init asteroid shapes
-        for(var i=0; i<numAsteroidLevels; i++){
-          asteroidShapes[i] = new p2.Circle(asteroidRadius*(numAsteroidLevels-i)/numAsteroidLevels);
-          asteroidShapes[i].collisionGroup = ASTEROID;
-          asteroidShapes[i].collisionMask = BULLET | SHIP;
-        }
         addAsteroids();
 
         // Update the text boxes
@@ -157,6 +147,12 @@
           // Create a bullet body
           var bulletBody = new p2.Body({ mass:0.05, position:shipBody.position });
           turnOffDamping(bulletBody);
+
+          // Create bullet shape
+          bulletShape = new p2.Circle(bulletRadius);
+          bulletShape.collisionGroup = BULLET;
+          bulletShape.collisionMask = ASTEROID;
+
           bulletBody.addShape(bulletShape);
           bulletBodies.push(bulletBody);
           var magnitude = 2,
@@ -343,12 +339,19 @@
             angularVelocity : va,
           });
           turnOffDamping(asteroidBody);
-          asteroidBody.addShape(asteroidShapes[0]);
+          asteroidBody.addShape(createAsteroidShape(0));
           asteroids.push(asteroidBody);
           world.addBody(asteroidBody);
           asteroidBody.level = 1;
           addAsteroidVerts(asteroidBody);
         }
+      }
+
+      function createAsteroidShape(level){
+          var shape = new p2.Circle(asteroidRadius*(numAsteroidLevels-level)/numAsteroidLevels);
+          shape.collisionGroup = ASTEROID;
+          shape.collisionMask = BULLET | SHIP;
+          return shape;
       }
 
       // Adds random .verts to an asteroid body
@@ -466,14 +469,15 @@
             var angleDisturb = Math.PI/2 * Math.random();
             for(var i=0; i<4; i++){
               var angle = Math.PI/2*i+ angleDisturb;
-              var r = asteroidBody.shapes[0].radius - asteroidShapes[asteroidBody.level].radius;
+              var shape = createAsteroidShape(asteroidBody.level);
+              var r = asteroidBody.shapes[0].radius - shape.radius;
               var subAsteroidBody = new p2.Body({
                 mass : 10,
                 position:[x+r*Math.cos(angle),y+r*Math.sin(angle)],
                 velocity : [rand(),rand()],
               });
               turnOffDamping(subAsteroidBody);
-              subAsteroidBody.addShape(asteroidShapes[asteroidBody.level]);
+              subAsteroidBody.addShape(shape);
               subAsteroidBody.level = asteroidBody.level + 1;
               world.addBody(subAsteroidBody);
               addAsteroidVerts(subAsteroidBody);

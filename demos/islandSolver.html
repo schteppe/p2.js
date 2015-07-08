@@ -37,7 +37,6 @@
 
                 // Create circle ropes
                 for(var j=0; j<M; j++){
-                    var shape = new p2.Circle(r);
                     var lastBody;
                     for(var i=N; i>=0; i--){
                         var x = (j+0.5-M/2)*r*8;
@@ -46,7 +45,7 @@
                             mass: i==0 ? 0 : 1,
                             position: [x, y]
                         });
-                        p.addShape(shape);
+                        p.addShape(new p2.Circle(r));
                         if(lastBody){
                             // Connect the current body to the previous one
                             var dist = Math.abs(p.position[1]-lastBody.position[1]);

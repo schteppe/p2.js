@@ -773,10 +773,8 @@ WebGLRenderer.prototype.drawRenderable = function(obj, graphics, color, lineColo
         } else {
             for(var i=0; i<obj.shapes.length; i++){
                 var child = obj.shapes[i],
-                    offset = obj.shapeOffsets[i],
-                    angle = obj.shapeAngles[i];
-                offset = offset || zero;
-                angle = angle || 0;
+                    offset = child.position,
+                    angle = child.angle;
 
                 if(child instanceof p2.Circle){
                     this.drawCircle(graphics, offset[0], offset[1], angle, child.radius,color,lw,isSleeping);

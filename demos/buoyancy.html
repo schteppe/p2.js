@@ -68,13 +68,14 @@
             function applyAABBBuoyancyForces(body, planePosition, k, c){
                 for (var i = 0; i < body.shapes.length; i++) {
 
+                    var shape = body.shapes[i];
+
                     // Get shape world transform
-                    body.vectorToWorldFrame(shapePosition, body.shapeOffsets[i]);
+                    body.vectorToWorldFrame(shapePosition, shape.position);
                     p2.vec2.add(shapePosition, shapePosition, body.position);
-                    shapeAngle = body.shapeAngles[i] + body.angle;
+                    shapeAngle = shape.angle + body.angle;
 
                     // Get shape AABB
-                    var shape = body.shapes[i];
                     shape.computeAABB(aabb, shapePosition, shapeAngle);
 
                     var areaUnderWater;

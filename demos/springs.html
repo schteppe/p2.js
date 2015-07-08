@@ -35,7 +35,6 @@
             var vec2 = p2.vec2;
 
             // Create particle bodies
-            var particleShape = new p2.Particle();
             for(var i=0; i<N; i++){
                 bodies.push([]);
                 for(var j=0; j<M; j++){
@@ -43,7 +42,7 @@
                         mass: m,//j==M-1 ? 0 : m,
                         position : [(i-N/2)*l*1.05, (j-M/2)*l*1.05]
                     });
-                    p.addShape(particleShape);
+                    p.addShape(new p2.Particle());
                     bodies[i].push(p);
                     world.addBody(p);
                 }
@@ -123,7 +122,6 @@
 
 
             // Create connected boxes
-            var boxShape = new p2.Rectangle(radius,radius);
             var box1 = new p2.Body({
                 mass : 1,
                 position : [-3, (M/2)*l*1.05 + radius],
@@ -133,8 +131,8 @@
                 position : [-4, (M/2)*l*1.05 + radius],
                 angularVelocity : -2
             });
-            box1.addShape(boxShape);
-            box2.addShape(boxShape);
+            box1.addShape(new p2.Rectangle(radius,radius));
+            box2.addShape(new p2.Rectangle(radius,radius));
             world.addBody(box1);
             world.addBody(box2);
             var s = new p2.LinearSpring(box1, box2, {
