@@ -346,3 +346,13 @@ exports.reset = function(test){
     test.done();
 };
 
+
+exports.bodiesOverlap = function(test){
+    bodyA.addShape(new Circle(1));
+    bodyB.addShape(new Circle(1));
+    test.ok(narrowphase.bodiesOverlap(bodyA, bodyB));
+    bodyB.position[0] = 10;
+    test.ok(!narrowphase.bodiesOverlap(bodyA, bodyB));
+    test.done();
+};
+

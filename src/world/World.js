@@ -961,9 +961,10 @@ World.prototype.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,cm,glen){
  */
 World.prototype.addSpring = function(spring){
     this.springs.push(spring);
-    this.addSpringEvent.spring = spring;
-    this.emit(this.addSpringEvent);
-    this.addSpringEvent.spring = null;
+    var evt = this.addSpringEvent;
+    evt.spring = spring;
+    this.emit(evt);
+    evt.spring = null;
 };
 
 /**
@@ -995,9 +996,10 @@ World.prototype.addBody = function(body){
     if(this.bodies.indexOf(body) === -1){
         this.bodies.push(body);
         body.world = this;
-        this.addBodyEvent.body = body;
-        this.emit(this.addBodyEvent);
-        this.addBodyEvent.body = null;
+        var evt = this.addBodyEvent;
+        evt.body = body;
+        this.emit(evt);
+        evt.body = null;
     }
 };
 

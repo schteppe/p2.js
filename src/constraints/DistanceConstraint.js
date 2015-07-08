@@ -107,7 +107,7 @@ function DistanceConstraint(bodyA,bodyB,options){
     // g = (xi - xj).dot(n)
     // dg/dt = (vi - vj).dot(n) = G*W = [n 0 -n 0] * [vi wi vj wj]'
 
-    // ...and if we were to include offset points (TODO for now):
+    // ...and if we were to include offset points:
     // g =
     //      (xj + rj - xi - ri).dot(n) - distance
     //

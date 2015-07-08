@@ -178,7 +178,7 @@ var bodiesOverlap_shapePositionB = vec2.create();
  * @param  {Body} bodyA
  * @param  {Body} bodyB
  * @return {Boolean}
- * @todo test
+ * @todo shape world transforms are wrong
  */
 Narrowphase.prototype.bodiesOverlap = function(bodyA, bodyB){
     var shapePositionA = bodiesOverlap_shapePositionA;

@@ -39,7 +39,7 @@ function FrictionEquation(bodyA, bodyB, slipForce){
     this.t = vec2.create();
 
     /**
-     * A ContactEquation connected to this friction. The contact equations can be used to rescale the max force for the friction. If more than one contact equation is given, then the max force can be set to the average.
+     * ContactEquations connected to this friction equation. The contact equations can be used to rescale the max force for the friction. If more than one contact equation is given, then the max force can be set to the average.
      * @property contactEquations
      * @type {ContactEquation}
      */
