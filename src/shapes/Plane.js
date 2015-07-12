@@ -9,9 +9,12 @@ module.exports = Plane;
  * @class Plane
  * @extends Shape
  * @constructor
+ * @param {object} [options] (Note that this options object will be passed on to the {{#crossLink "Shape"}}{{/crossLink}} constructor.)
  */
-function Plane(){
-    Shape.call(this,Shape.PLANE);
+function Plane(options){
+    options = options || {};
+    options.type = Shape.PLANE;
+    Shape.call(this, options);
 }
 Plane.prototype = new Shape();
 Plane.prototype.constructor = Plane;

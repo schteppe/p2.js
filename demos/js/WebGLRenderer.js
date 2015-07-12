@@ -789,7 +789,7 @@ WebGLRenderer.prototype.drawRenderable = function(obj, graphics, color, lineColo
                 } else if(child instanceof p2.Line){
                     WebGLRenderer.drawLine(graphics, offset, angle, child.length, lineColor, lw);
 
-                } else if(child instanceof p2.Rectangle){
+                } else if(child instanceof p2.Box){
                     this.drawRectangle(graphics, offset[0], offset[1], angle, child.width, child.height, lineColor, color, lw, isSleeping);
 
                 } else if(child instanceof p2.Capsule){
@@ -808,11 +808,11 @@ WebGLRenderer.prototype.drawRenderable = function(obj, graphics, color, lineColo
 
                 } else if(child instanceof p2.Heightfield){
                     var path = [[0,-100]];
-                    for(var j=0; j!==child.data.length; j++){
-                        var v = child.data[j];
+                    for(var j=0; j!==child.heights.length; j++){
+                        var v = child.heights[j];
                         path.push([j*child.elementWidth, v]);
                     }
-                    path.push([child.data.length*child.elementWidth,-100]);
+                    path.push([child.heights.length*child.elementWidth,-100]);
                     this.drawPath(graphics, path, lineColor, color, lw, isSleeping);
 
                 }

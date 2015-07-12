@@ -3,7 +3,6 @@ var  GSSolver = require('../solver/GSSolver')
 ,    Ray = require('../collision/Ray')
 ,    vec2 = require('../math/vec2')
 ,    Circle = require('../shapes/Circle')
-,    Rectangle = require('../shapes/Rectangle')
 ,    Convex = require('../shapes/Convex')
 ,    Line = require('../shapes/Line')
 ,    Plane = require('../shapes/Plane')
@@ -1121,6 +1120,7 @@ var hitTest_tmp1 = vec2.create(),
  * @param  {Number} precision   Used for matching against particles and lines. Adds some margin to these infinitesimal objects.
  * @return {Array}              Array of bodies that overlap the point
  * @todo Should use an api similar to the raycast function
+ * @todo Should probably implement a .containsPoint method for all shapes. Would be more efficient
  */
 World.prototype.hitTest = function(worldPoint,bodies,precision){
     precision = precision || 0;

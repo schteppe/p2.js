@@ -8,29 +8,40 @@ module.exports = Capsule;
  * @class Capsule
  * @constructor
  * @extends Shape
- * @param {Number} [length=1] The distance between the end points
- * @param {Number} [radius=1] Radius of the capsule
+ * @param {object} [options] (Note that this options object will be passed on to the {{#crossLink "Shape"}}{{/crossLink}} constructor.)
+ * @param {Number} [options.length=1] The distance between the end points
+ * @param {Number} [options.radius=1] Radius of the capsule
  * @example
- *     var radius = 1;
- *     var length = 2;
- *     var capsuleShape = new Capsule(length, radius);
+ *     var capsuleShape = new Capsule({
+ *         length: 1,
+ *         radius: 2
+ *     });
  *     body.addShape(capsuleShape);
  */
-function Capsule(length, radius){
+function Capsule(options){
+    if(typeof(arguments[0]) === 'number' && typeof(arguments[1]) === 'number'){
+        options = {
+            length: arguments[0],
+            radius: arguments[1]
+        };
+        console.warn('The Capsule constructor signature has changed. Please use the following format: new Capsule({ radius: 1, length: 1 })');
+    }
+    options = options || {};
 
     /**
      * The distance between the end points.
      * @property {Number} length
      */
-    this.length = length || 1;
+    this.length = options.length || 1;
 
     /**
      * The radius of the capsule.
      * @property {Number} radius
      */
-    this.radius = radius || 1;
+    this.radius = options.radius || 1;
 
-    Shape.call(this,Shape.CAPSULE);
+    options.type = Shape.CAPSULE;
+    Shape.call(this, options);
 }
 Capsule.prototype = new Shape();
 Capsule.prototype.constructor = Capsule;

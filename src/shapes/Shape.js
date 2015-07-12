@@ -6,9 +6,17 @@ var vec2 = require('../math/vec2');
  * Base class for shapes.
  * @class Shape
  * @constructor
- * @param {Number} type
+ * @param {object} [options] (Note that this options object will be passed on to the {{#crossLink "Shape"}}{{/crossLink}} constructor.)
+ * @param {array} [options.position]
+ * @param {number} [options.angle=0]
+ * @param {number} [options.collisionGroup=1]
+ * @param {number} [options.collisionMask=1]
+ * @param {boolean} [options.sensor]
+ * @param {boolean} [options.collisionResponse]
+ * @param {object} [options.type]
  */
-function Shape(type){
+function Shape(options){
+    options = options || {};
 
     /**
      * The body this shape is attached to.
@@ -21,12 +29,15 @@ function Shape(type){
      * @property {Array} position
      */
     this.position = vec2.fromValues(0,0);
+    if(options.position){
+        vec2.copy(this.position, options.position);
+    }
 
     /**
      * Angle of the shape.
      * @property {number} angle
      */
-    this.angle = 0;
+    this.angle = options.angle || 0;
 
     /**
      * The type of the shape. One of:
@@ -36,13 +47,13 @@ function Shape(type){
      * * {{#crossLink "Shape/PLANE:property"}}Shape.PLANE{{/crossLink}}
      * * {{#crossLink "Shape/CONVEX:property"}}Shape.CONVEX{{/crossLink}}
      * * {{#crossLink "Shape/LINE:property"}}Shape.LINE{{/crossLink}}
-     * * {{#crossLink "Shape/RECTANGLE:property"}}Shape.RECTANGLE{{/crossLink}}
+     * * {{#crossLink "Shape/BOX:property"}}Shape.BOX{{/crossLink}}
      * * {{#crossLink "Shape/CAPSULE:property"}}Shape.CAPSULE{{/crossLink}}
      * * {{#crossLink "Shape/HEIGHTFIELD:property"}}Shape.HEIGHTFIELD{{/crossLink}}
      *
      * @property {number} type
      */
-    this.type = type;
+    this.type = options.type || 0;
 
     /**
      * Shape object identifier.
@@ -87,23 +98,20 @@ function Shape(type){
      *         // The shapes will collide
      *     }
      */
-    this.collisionGroup = 1;
+    this.collisionGroup = options.collisionGroup !== undefined ? options.collisionGroup : 1;
 
     /**
      * Whether to produce contact forces when in contact with other bodies. Note that contacts will be generated, but they will be disabled. That means that this shape will move through other body shapes, but it will still trigger contact events, etc.
      * @property {Boolean} collisionResponse
      */
-    this.collisionResponse = true;
+    this.collisionResponse = options.collisionResponse !== undefined ? options.collisionResponse : true;
 
     /**
      * Collision mask of this shape. See .collisionGroup.
      * @property collisionMask
      * @type {Number}
      */
-    this.collisionMask =  1;
-    if(type){
-        this.updateBoundingRadius();
-    }
+    this.collisionMask = options.collisionMask !== undefined ? options.collisionMask : 1;
 
     /**
      * Material to use in collisions for this Shape. If this is set to null, the world will use default material properties instead.
@@ -123,7 +131,11 @@ function Shape(type){
      * Set to true if you want this shape to be a sensor. A sensor does not generate contacts, but it still reports contact events. This is good if you want to know if a shape is overlapping another shape, without them generating contacts.
      * @property {Boolean} sensor
      */
-    this.sensor = false;
+    this.sensor = options.sensor !== undefined ? options.sensor : false;
+
+    if(this.type){
+        this.updateBoundingRadius();
+    }
 
     this.updateArea();
 }
@@ -162,9 +174,16 @@ Shape.LINE =        16;
 
 /**
  * @static
- * @property {Number} RECTANGLE
+ * @property {Number} BOX
  */
-Shape.RECTANGLE =   32;
+Shape.BOX =   32;
+
+Object.defineProperty(Shape, 'RECTANGLE', {
+    get: function() {
+        console.warn('Shape.RECTANGLE is deprecated, use Shape.BOX instead.');
+        return Shape.BOX;
+    }
+});
 
 /**
  * @static

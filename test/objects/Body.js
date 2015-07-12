@@ -84,7 +84,7 @@ exports.applyForceLocal = {
             position: [2,3],
             angle: Math.PI // rotated 180 degrees
         });
-        bodyA.addShape(new Circle(1));
+        bodyA.addShape(new Circle({ radius: 1 }));
         bodyA.applyForceLocal([-1,0],[0,1]);
         test.ok(bodyA.angularForce > 0);
         test.ok(bodyA.force[0] > 0);
@@ -97,7 +97,7 @@ exports.applyForceLocal = {
             position: [2,3],
             angle: Math.PI // rotated 180 degrees
         });
-        bodyA.addShape(new Circle(1));
+        bodyA.addShape(new Circle({ radius: 1 }));
         bodyA.applyForceLocal([-1,0]);
         test.equal(bodyA.angularForce, 0);
         test.ok(bodyA.force[0] > 0);
@@ -109,7 +109,7 @@ exports.applyForceLocal = {
 exports.applyImpulse = {
     withPoint: function(test){
         var bodyA = new Body({ mass: 1, position: [2,3] });
-        bodyA.addShape(new Circle(1));
+        bodyA.addShape(new Circle({ radius: 1 }));
         bodyA.applyImpulse([-1,0],[0,1]);
         test.ok(bodyA.angularVelocity !== 0);
         test.ok(bodyA.velocity[0] !== 0);
@@ -118,7 +118,7 @@ exports.applyImpulse = {
     },
     withoutPoint: function(test){
         var bodyA = new Body({ mass: 1, position: [2,3] });
-        bodyA.addShape(new Circle(1));
+        bodyA.addShape(new Circle({ radius: 1 }));
         bodyA.applyImpulse([-1,0]);
         test.equal(bodyA.angularVelocity, 0);
         test.ok(bodyA.velocity[0] !== 0);
@@ -134,7 +134,7 @@ exports.applyImpulseLocal = {
             position: [2,3],
             angle: Math.PI // rotated 180 degrees
         });
-        bodyA.addShape(new Circle(1));
+        bodyA.addShape(new Circle({ radius: 1 }));
         bodyA.applyImpulseLocal([-1,0],[0,1]);
         test.ok(bodyA.angularVelocity > 0);
         test.ok(bodyA.velocity[0] > 0);
@@ -147,7 +147,7 @@ exports.applyImpulseLocal = {
             position: [2,3],
             angle: Math.PI // rotated 180 degrees
         });
-        bodyA.addShape(new Circle(1));
+        bodyA.addShape(new Circle({ radius: 1 }));
         bodyA.applyImpulseLocal([-1,0]);
         test.equal(bodyA.angularVelocity, 0);
         test.ok(bodyA.velocity[0] > 0);
@@ -184,16 +184,16 @@ exports.overlaps = function(test){
 
 exports.removeShape = function(test){
     var body = new Body();
-    body.addShape(new Circle(1));
+    body.addShape(new Circle({ radius: 1 }));
     test.ok(body.removeShape(body.shapes[0]));
-    test.ok(!body.removeShape(new Circle(1)));
+    test.ok(!body.removeShape(new Circle({ radius: 1 })));
     test.equal(body.shapes.length, 0);
     test.done();
 };
 
 exports.setDensity = function(test){
     var body = new Body({ mass: 1 });
-    body.addShape(new Circle(1));
+    body.addShape(new Circle({ radius: 1 }));
     var inertiaBefore = body.inertia;
     body.setDensity(10);
     test.equal(body.mass, body.getArea() * 10);
@@ -234,7 +234,7 @@ exports.updateAABB = function(test){
     b.updateAABB();
 
     var b = new Body(),
-        s = new Circle(1);
+        s = new Circle({ radius: 1 });
     b.addShape(s);
     b.updateAABB();
 
@@ -244,7 +244,7 @@ exports.updateAABB = function(test){
     test.equal(b.aabb.upperBound[1],  1, 'Upper AABB bound should be 1');
 
     var b = new Body(),
-        s = new Circle(1),
+        s = new Circle({ radius: 1 }),
         offset = [-2,3];
     b.addShape(s,offset,Math.PI/2);
     b.updateAABB();
@@ -259,7 +259,7 @@ exports.updateAABB = function(test){
 
 exports.updateBoundingRadius = function(test){
     var body = new Body({ mass: 1 });
-    var shape = new Circle(1);
+    var shape = new Circle({ radius: 1 });
     body.addShape(shape);
     test.equal(body.boundingRadius, 1);
     shape.radius = 2;
@@ -299,10 +299,10 @@ exports.getVelocityAtPoint = function(test){
 
 exports.collisionResponse = function(test){
     var bodyA = new Body({ mass: 1, position: [1, 0] });
-    bodyA.addShape(new Circle(1));
+    bodyA.addShape(new Circle({ radius: 1 }));
 
     var bodyB = new Body({ mass: 1, position: [-1, 0] });
-    bodyB.addShape(new Circle(1));
+    bodyB.addShape(new Circle({ radius: 1 }));
 
     var world = new World();
     world.addBody(bodyA);

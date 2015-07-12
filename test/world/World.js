@@ -76,8 +76,8 @@ exports.disableBodyCollision = function(test){
     var bodyA = new Body({ mass:1 }),
         bodyB = new Body({ mass:1 }),
         world = new World();
-    bodyA.addShape(new Circle(1));
-    bodyB.addShape(new Circle(1));
+    bodyA.addShape(new Circle({ radius: 1 }));
+    bodyB.addShape(new Circle({ radius: 1 }));
     world.addBody(bodyA);
     world.addBody(bodyB);
     world.disableBodyCollision(bodyA,bodyB);
@@ -105,15 +105,15 @@ exports.hitTest = function(test){
     world.addBody(b);
     test.deepEqual(world.hitTest([0,0],[b]) , [], "Should miss bodies without shapes");
 
-    b.addShape(new Circle(1));
+    b.addShape(new Circle({ radius: 1 }));
     test.deepEqual(world.hitTest([0,0],[b]) , [b], "Should hit Circle");
     test.deepEqual(world.hitTest([1.1,0],[b]) , [], "Should miss Circle");
 
     b = new Body();
-    b.addShape(new Convex([ [-1,-1],
+    b.addShape(new Convex({ vertices: [ [-1,-1],
                             [ 1,-1],
                             [ 1, 1],
-                            [-1, 1]]));
+                            [-1, 1]] }));
     test.deepEqual(world.hitTest([0,0],  [b]) , [b],  "Should hit Convex");
     test.deepEqual(world.hitTest([1.1,0],[b]) , [], "Should miss Convex");
     test.done();
@@ -175,8 +175,8 @@ exports.events = {
             bodyB = new Body({ mass:1 });
         world.addBody(bodyA);
         world.addBody(bodyB);
-        var shapeA = new Circle(1),
-            shapeB = new Circle(1);
+        var shapeA = new Circle({ radius: 1 }),
+            shapeB = new Circle({ radius: 1 });
         bodyA.addShape(shapeA);
         bodyB.addShape(shapeB);
         var beginContactHits = 0,
@@ -225,9 +225,9 @@ exports.events = {
         world.addBody(bodyA);
         world.addBody(bodyB);
         world.addBody(bodyC);
-        var shapeA = new Circle(1),
-            shapeB = new Circle(1),
-            shapeC = new Circle(1);
+        var shapeA = new Circle({ radius: 1 }),
+            shapeB = new Circle({ radius: 1 }),
+            shapeC = new Circle({ radius: 1 });
         bodyA.addShape(shapeA);
         bodyB.addShape(shapeB);
         bodyC.addShape(shapeC);

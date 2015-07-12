@@ -4,7 +4,7 @@ var Ray = require(__dirname + '/../../src/collision/Ray');
 var RaycastResult = require(__dirname + '/../../src/collision/RaycastResult');
 
 exports.construct = function(test){
-    var circle = new Circle(2);
+    var circle = new Circle({ radius: 2 });
     test.equal(circle.radius, 2);
     test.done();
 };
@@ -13,7 +13,7 @@ exports.computeAABB = function(test){
     var aabb = new AABB(),
         offset = [2,3];
 
-    var c = new Circle(1);
+    var c = new Circle({ radius: 1 });
     c.computeAABB(aabb,offset,Math.PI / 2);
     test.equal(aabb.lowerBound[0],-1 + offset[0]);
     test.equal(aabb.lowerBound[1],-1 + offset[1]);
@@ -30,7 +30,7 @@ exports.raycast = function(test){
         to: [10,0]
     });
 
-    var shape = new Circle(0.5);
+    var shape = new Circle({ radius: 0.5 });
     var result = new RaycastResult();
     shape.raycast(result, ray, [0,0], 0);
     test.equal(result.normal[0], -1);

@@ -2,31 +2,40 @@ var vec2 = require('../math/vec2')
 ,   Shape = require('./Shape')
 ,   Convex = require('./Convex');
 
-module.exports = Rectangle;
+module.exports = Box;
 
 /**
- * Rectangle shape class.
- * @class Rectangle
+ * Box shape class.
+ * @class Box
  * @constructor
- * @param {Number} [width=1] Width
- * @param {Number} [height=1] Height
+ * @param {object} [options] (Note that this options object will be passed on to the {{#crossLink "Shape"}}{{/crossLink}} constructor.)
+ * @param {Number} [options.width=1] Total width of the box
+ * @param {Number} [options.height=1] Total height of the box
  * @extends Convex
  */
-function Rectangle(width, height){
+function Box(options){
+    if(typeof(arguments[0]) === 'number' && typeof(arguments[1]) === 'number'){
+        options = {
+            width: arguments[0],
+            height: arguments[1]
+        };
+        console.warn('The Rectangle has been renamed to Box and its constructor signature has changed. Please use the following format: new Box({ width: 1, height: 1, ... })');
+    }
+    options = options || {};
 
     /**
-     * Total width of the rectangle
+     * Total width of the box
      * @property width
      * @type {Number}
      */
-    this.width = width || 1;
+    var width = this.width = options.width || 1;
 
     /**
-     * Total height of the rectangle
+     * Total height of the box
      * @property height
      * @type {Number}
      */
-    this.height = height || 1;
+    var height = this.height = options.height || 1;
 
     var verts = [
         vec2.fromValues(-width/2, -height/2),
@@ -39,12 +48,13 @@ function Rectangle(width, height){
         vec2.fromValues(0, 1)
     ];
 
-    Convex.call(this, verts, axes);
-
-    this.type = Shape.RECTANGLE;
+    options.vertices = verts;
+    options.axes = axes;
+    options.type = Shape.BOX;
+    Convex.call(this, options);
 }
-Rectangle.prototype = new Convex([]);
-Rectangle.prototype.constructor = Rectangle;
+Box.prototype = new Convex();
+Box.prototype.constructor = Box;
 
 /**
  * Compute moment of inertia
@@ -52,7 +62,7 @@ Rectangle.prototype.constructor = Rectangle;
  * @param  {Number} mass
  * @return {Number}
  */
-Rectangle.prototype.computeMomentOfInertia = function(mass){
+Box.prototype.computeMomentOfInertia = function(mass){
     var w = this.width,
         h = this.height;
     return mass * (h*h + w*w) / 12;
@@ -62,7 +72,7 @@ Rectangle.prototype.computeMomentOfInertia = function(mass){
  * Update the bounding radius
  * @method updateBoundingRadius
  */
-Rectangle.prototype.updateBoundingRadius = function(){
+Box.prototype.updateBoundingRadius = function(){
     var w = this.width,
         h = this.height;
     this.boundingRadius = Math.sqrt(w*w + h*h) / 2;
@@ -79,11 +89,11 @@ var corner1 = vec2.create(),
  * @param  {Array}  position
  * @param  {Number} angle
  */
-Rectangle.prototype.computeAABB = function(out, position, angle){
+Box.prototype.computeAABB = function(out, position, angle){
     out.setFromPoints(this.vertices,position,angle,0);
 };
 
-Rectangle.prototype.updateArea = function(){
+Box.prototype.updateArea = function(){
     this.area = this.width * this.height;
 };
 

@@ -9,78 +9,100 @@ module.exports = Heightfield;
  * @class Heightfield
  * @extends Shape
  * @constructor
- * @param {Array} data An array of Y values that will be used to construct the terrain.
- * @param {object} options
+ * @param {object} [options] (Note that this options object will be passed on to the {{#crossLink "Shape"}}{{/crossLink}} constructor.)
+ * @param {array} [options.heights] An array of Y values that will be used to construct the terrain.
  * @param {Number} [options.minValue] Minimum value of the data points in the data array. Will be computed automatically if not given.
  * @param {Number} [options.maxValue] Maximum value.
  * @param {Number} [options.elementWidth=0.1] World spacing between the data points in X direction.
- * @todo Should be possible to use along all axes, not just y
  *
  * @example
  *     // Generate some height data (y-values).
- *     var data = [];
+ *     var heights = [];
  *     for(var i = 0; i < 1000; i++){
  *         var y = 0.5 * Math.cos(0.2 * i);
- *         data.push(y);
+ *         heights.push(y);
  *     }
  *
  *     // Create the heightfield shape
- *     var heightfieldShape = new Heightfield(data, {
+ *     var heightfieldShape = new Heightfield({
+ *         heights: heights,
  *         elementWidth: 1 // Distance between the data points in X direction
  *     });
  *     var heightfieldBody = new Body();
  *     heightfieldBody.addShape(heightfieldShape);
  *     world.addBody(heightfieldBody);
+ *
+ * @todo Should use a scale property with X and Y direction instead of just elementWidth
  */
-function Heightfield(data, options){
-    options = Utils.defaults(options, {
-        maxValue : null,
-        minValue : null,
-        elementWidth : 0.1
-    });
+function Heightfield(options){
+    if(Array.isArray(arguments[0])){
+        options = {
+            heights: arguments[0]
+        };
 
-    if(options.minValue === null || options.maxValue === null){
-        options.maxValue = data[0];
-        options.minValue = data[0];
-        for(var i=0; i !== data.length; i++){
-            var v = data[i];
-            if(v > options.maxValue){
-                options.maxValue = v;
-            }
-            if(v < options.minValue){
-                options.minValue = v;
+        if(typeof(arguments[1]) === 'object'){
+            for(var key in arguments[1]){
+                options[key] = arguments[1][key];
             }
         }
+
+        console.warn('The Heightfield constructor signature has changed. Please use the following format: new Heightfield({ heights: [...], ... })');
     }
+    options = options || {};
 
     /**
      * An array of numbers, or height values, that are spread out along the x axis.
-     * @property {array} data
+     * @property {array} heights
      */
-    this.data = data;
+    this.heights = options.heights ? options.heights.slice(0) : [];
 
     /**
-     * Max value of the data
+     * Max value of the heights
      * @property {number} maxValue
      */
-    this.maxValue = options.maxValue;
+    this.maxValue = options.maxValue || null;
 
     /**
-     * Max value of the data
+     * Max value of the heights
      * @property {number} minValue
      */
-    this.minValue = options.minValue;
+    this.minValue = options.minValue || null;
 
     /**
      * The width of each element
      * @property {number} elementWidth
      */
-    this.elementWidth = options.elementWidth;
+    this.elementWidth = options.elementWidth || 0.1;
 
-    Shape.call(this,Shape.HEIGHTFIELD);
+    if(options.maxValue === undefined || options.minValue === undefined){
+        this.updateMaxMinValues();
+    }
+
+    options.type = Shape.HEIGHTFIELD;
+    Shape.call(this, options);
 }
 Heightfield.prototype = new Shape();
 Heightfield.prototype.constructor = Heightfield;
+
+/**
+ * Update the .minValue and the .maxValue
+ */
+Heightfield.prototype.updateMaxMinValues = function(){
+    var data = this.heights;
+    var maxValue = data[0];
+    var minValue = data[0];
+    for(var i=0; i !== data.length; i++){
+        var v = data[i];
+        if(v > maxValue){
+            maxValue = v;
+        }
+        if(v < minValue){
+            minValue = v;
+        }
+    }
+    this.maxValue = maxValue;
+    this.minValue = minValue;
+};
 
 /**
  * @method computeMomentOfInertia
@@ -96,7 +118,7 @@ Heightfield.prototype.updateBoundingRadius = function(){
 };
 
 Heightfield.prototype.updateArea = function(){
-    var data = this.data,
+    var data = this.heights,
         area = 0;
     for(var i=0; i<data.length-1; i++){
         area += (data[i]+data[i+1]) / 2 * this.elementWidth;
@@ -119,8 +141,8 @@ var points = [
  */
 Heightfield.prototype.computeAABB = function(out, position, angle){
     vec2.set(points[0], 0, this.maxValue);
-    vec2.set(points[1], this.elementWidth * this.data.length, this.maxValue);
-    vec2.set(points[2], this.elementWidth * this.data.length, this.minValue);
+    vec2.set(points[1], this.elementWidth * this.heights.length, this.maxValue);
+    vec2.set(points[2], this.elementWidth * this.heights.length, this.minValue);
     vec2.set(points[3], 0, this.minValue);
     out.setFromPoints(points, position, angle);
 };
@@ -132,7 +154,7 @@ Heightfield.prototype.computeAABB = function(out, position, angle){
  * @param  {number} i
  */
 Heightfield.prototype.getLineSegment = function(start, end, i){
-    var data = this.data;
+    var data = this.heights;
     var width = this.elementWidth;
     vec2.set(start, i * width, data[i]);
     vec2.set(end, (i + 1) * width, data[i + 1]);
@@ -144,7 +166,7 @@ Heightfield.prototype.getSegmentIndex = function(position){
 
 Heightfield.prototype.getClampedSegmentIndex = function(position){
     var i = this.getSegmentIndex(position);
-    i = Math.min(this.data.length, Math.max(i, 0)); // clamp
+    i = Math.min(this.heights.length, Math.max(i, 0)); // clamp
     return i;
 };
 
@@ -211,7 +233,7 @@ Heightfield.prototype.raycast = function(result, ray, position, angle){
     }
 
     // The segments
-    for(var i=0; i<this.data.length - 1; i++){
+    for(var i=0; i<this.heights.length - 1; i++){
         this.getLineSegment(l0, l1, i);
         var t = vec2.getLineSegmentsIntersectionFraction(localFrom, localTo, l0, l1);
         if(t >= 0){

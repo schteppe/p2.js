@@ -3,7 +3,7 @@ var Line = require(__dirname + '/../../src/shapes/Line')
 ,   RaycastResult =   require(__dirname + '/../../src/collision/RaycastResult');
 
 exports.construct = function(test){
-    var line = new Line(2);
+    var line = new Line({ length: 2 });
     test.equal(line.length, 2);
 
     line = new Line();
@@ -24,7 +24,7 @@ exports.raycast = function(test){
         to: [10,0]
     });
 
-    var shape = new Line(1);
+    var shape = new Line({ length: 1 });
     var result = new RaycastResult();
     shape.raycast(result, ray, [1,0], Math.PI / 2);
 

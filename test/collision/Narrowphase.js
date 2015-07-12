@@ -2,7 +2,7 @@ var Narrowphase = require(__dirname + '/../../src/collision/Narrowphase')
 ,   Convex = require(__dirname + "/../../src/shapes/Convex")
 ,   Circle = require(__dirname + "/../../src/shapes/Circle")
 ,   Body = require(__dirname + "/../../src/objects/Body")
-,   Rectangle = require(__dirname + "/../../src/shapes/Rectangle")
+,   Box = require(__dirname + "/../../src/shapes/Box")
 ,   Capsule = require(__dirname + "/../../src/shapes/Capsule")
 ,   Plane = require(__dirname + "/../../src/shapes/Plane")
 ,   Particle = require(__dirname + "/../../src/shapes/Particle")
@@ -28,7 +28,7 @@ var rect,
 exports.setUp = function(callback){
 
     // Rect
-    rect = new Rectangle(1,1);
+    rect = new Box();
 
     // Circle
     var verts = [];
@@ -37,9 +37,9 @@ exports.setUp = function(callback){
         verts.push(vec2.fromValues( Math.cos(2*Math.PI / N * i),
                                     Math.sin(2*Math.PI / N * i) ));
     }
-    circle = new Circle(1);
-    convex = new Convex(verts);
-    capsule = new Capsule(1,1);
+    circle = new Circle({ radius: 1 });
+    convex = new Convex({ vertices: verts });
+    capsule = new Capsule({ length: 1, radius: 1 });
     plane = new Plane();
     particle = new Particle();
     line = new Line();
@@ -265,11 +265,11 @@ exports.lineLine = function(test){
     test.done();
 };
 
-exports.lineRectangle = function(test){
-    var result = narrowphase.lineRectangle(bodyA, line, position, angle, bodyB, rect, position, angle);
+exports.lineBox = function(test){
+    var result = narrowphase.lineBox(bodyA, line, position, angle, bodyB, rect, position, angle);
     test.equal(typeof result, 'number');
 
-    result = narrowphase.lineRectangle(bodyA, line, position, angle, bodyB, rect, position, angle, true);
+    result = narrowphase.lineBox(bodyA, line, position, angle, bodyB, rect, position, angle, true);
     test.equal(typeof result, 'boolean');
 
     test.done();
@@ -348,8 +348,8 @@ exports.reset = function(test){
 
 
 exports.bodiesOverlap = function(test){
-    bodyA.addShape(new Circle(1));
-    bodyB.addShape(new Circle(1));
+    bodyA.addShape(new Circle({ radius: 1 }));
+    bodyB.addShape(new Circle({ radius: 1 }));
     test.ok(narrowphase.bodiesOverlap(bodyA, bodyB));
     bodyB.position[0] = 10;
     test.ok(!narrowphase.bodiesOverlap(bodyA, bodyB));

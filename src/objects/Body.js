@@ -45,7 +45,7 @@ module.exports = Body;
  *     });
  *
  *     // Add a circular shape to the body
- *     body.addShape(new Circle(1));
+ *     body.addShape(new Circle({ radius: 1 }));
  *
  *     // Add the body to the world
  *     world.addBody(body);
@@ -538,7 +538,7 @@ Body.prototype.updateBoundingRadius = function(){
  *
  * @example
  *     var body = new Body(),
- *         shape = new Circle();
+ *         shape = new Circle({ radius: 1 });
  *
  *     // Add the shape to the body, positioned in the center
  *     body.addShape(shape);
@@ -826,7 +826,7 @@ Body.prototype.fromPolygon = function(path,options){
     // Add convexes
     for(var i=0; i!==convexes.length; i++){
         // Create convex
-        var c = new Convex(convexes[i].vertices);
+        var c = new Convex({ vertices: convexes[i].vertices });
 
         // Move all vertices so its center of mass is in the local center of the convex
         for(var j=0; j!==c.vertices.length; j++){

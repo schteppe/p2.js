@@ -6,13 +6,13 @@ var Convex = require(__dirname + '/../../src/shapes/Convex')
 ,   RaycastResult =   require(__dirname + '/../../src/collision/RaycastResult');
 
 exports.construct = function(test){
-    new Convex([]);
+    new Convex({ vertices: []});
 
     test.throws(function(){
-        var c = new Convex([[-1,-1],
+        var c = new Convex({ vertices: [[-1,-1],
                             [-1, 1],
                             [ 1, 1],
-                            [ 1,-1]]);
+                            [ 1,-1]] });
     },"Should throw exception on clockwise winding.");
 
     test.done();
@@ -21,12 +21,12 @@ exports.construct = function(test){
 exports.computeAABB = function(test){
     var w = 2,
         h = 1;
-    var c = new Convex([
+    var c = new Convex({ vertices: [
         [-w/2,-h/2],
         [ w/2,-h/2],
         [ w/2, h/2],
         [-w/2, h/2],
-    ]);
+    ]});
 
     var aabb = new AABB();
     c.computeAABB(aabb,[1,2],0);
@@ -42,12 +42,12 @@ exports.computeAABB = function(test){
 exports.computeMomentOfInertia = function(test){
     var w = 2,
         h = 1;
-    var c = new Convex([
+    var c = new Convex({ vertices: [
         [-w/2,-h/2],
         [ w/2,-h/2],
         [ w/2, h/2],
         [-w/2, h/2],
-    ]);
+    ]});
     var mass = 1;
     var I = c.computeMomentOfInertia(mass);
     var boxInertia = mass*(h*h+w*w)/12;
@@ -61,19 +61,19 @@ exports.triangleArea = function(test){
 };
 
 exports.updateArea = function(test){
-    var c = new Convex([[-1,-1],
+    var c = new Convex({ vertices: [[-1,-1],
                         [ 1,-1],
                         [ 1, 1],
-                        [-1, 1]]);
+                        [-1, 1]]});
     c.updateArea();
     test.equal(c.area, 4)
 
-    var c = new Convex([
+    var c = new Convex({ vertices: [
         [990, 0],
         [990, 10],
         [0, 10],
         [0, 0]
-    ]);
+    ]});
     test.equal(c.area,9900);
 
     test.done();
@@ -82,11 +82,11 @@ exports.updateArea = function(test){
 exports.updateBoundingRadius = function(test){
     var w = 2,
         h = 1;
-    var c = new Convex([
+    var c = new Convex({ vertices: [
         [-w/2,-h/2],
         [ w/2,-h/2],
         [ w/2, h/2],
-    ]);
+    ]});
 
     test.equal(c.boundingRadius, Math.sqrt(w*w/4+h*h/4));
 
@@ -96,10 +96,10 @@ exports.updateBoundingRadius = function(test){
 exports.updateCenterOfMass = function(test){
 
     // Test with box
-    var c = new Convex([[-1,-1],
+    var c = new Convex({ vertices: [[-1,-1],
                         [ 1,-1],
                         [ 1, 1],
-                        [-1, 1]]);
+                        [-1, 1]]});
     c.updateCenterOfMass();
     test.equal(c.centerOfMass[0],0);
     test.equal(c.centerOfMass[1],0);
@@ -123,11 +123,11 @@ exports.updateCenterOfMass = function(test){
 exports.updateTriangles = function(test){
     var w = 2,
         h = 1;
-    var c = new Convex([
+    var c = new Convex({ vertices: [
         [-w/2,-h/2],
         [ w/2,-h/2],
         [ w/2, h/2],
-    ]);
+    ]});
     c.updateTriangles();
     test.deepEqual([ [ 0, 1, 2 ] ],c.triangles);
 
@@ -143,12 +143,12 @@ exports.raycast = function(test){
 
     var w = 1,
         h = 1;
-    var shape = new Convex([
+    var shape = new Convex({ vertices: [
         [-w/2,-h/2],
         [ w/2,-h/2],
         [ w/2, h/2],
         [-w/2, h/2],
-    ]);
+    ]});
     var result = new RaycastResult();
     shape.raycast(result, ray, [1,0], Math.PI / 2);
 

@@ -31,7 +31,7 @@ var p2 = module.exports = {
     PrismaticConstraint :           require('./constraints/PrismaticConstraint'),
     Ray :                           require('./collision/Ray'),
     RaycastResult :                 require('./collision/RaycastResult'),
-    Rectangle :                     require('./shapes/Rectangle'),
+    Box :                           require('./shapes/Box'),
     RotationalVelocityEquation :    require('./equations/RotationalVelocityEquation'),
     SAPBroadphase :                 require('./collision/SAPBroadphase'),
     Shape :                         require('./shapes/Shape'),
@@ -45,3 +45,10 @@ var p2 = module.exports = {
     vec2 :                          require('./math/vec2'),
     version :                       require('../package.json').version,
 };
+
+Object.defineProperty(p2, 'Rectangle', {
+    get: function() {
+        console.warn('The Rectangle class has been renamed to Box.');
+        return this.Box;
+    }
+});

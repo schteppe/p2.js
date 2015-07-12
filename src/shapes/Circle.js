@@ -8,23 +8,31 @@ module.exports = Circle;
  * @class Circle
  * @extends Shape
  * @constructor
- * @param {number} [radius=1] The radius of this circle
+ * @param {options} [options] (Note that this options object will be passed on to the {{#crossLink "Shape"}}{{/crossLink}} constructor.)
+ * @param {number} [options.radius=1] The radius of this circle
  *
  * @example
- *     var radius = 1;
- *     var circleShape = new Circle(radius);
+ *     var circleShape = new Circle({ radius: 1 });
  *     body.addShape(circleShape);
  */
-function Circle(radius){
+function Circle(options){
+    if(typeof(arguments[0]) === 'number'){
+        options = {
+            radius: arguments[0]
+        };
+        console.warn('The Circle constructor signature has changed. Please use the following format: new Circle({ radius: 1 })');
+    }
+    options = options || {};
 
     /**
      * The radius of the circle.
      * @property radius
      * @type {number}
      */
-    this.radius = radius || 1;
+    this.radius = options.radius || 1;
 
-    Shape.call(this,Shape.CIRCLE);
+    options.type = Shape.CIRCLE;
+    Shape.call(this, options);
 }
 Circle.prototype = new Shape();
 Circle.prototype.constructor = Circle;

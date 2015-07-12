@@ -6,21 +6,29 @@ module.exports = Line;
 /**
  * Line shape class. The line shape is along the x direction, and stretches from [-length/2, 0] to [length/2,0].
  * @class Line
- * @param {Number} [length=1] The total length of the line
+ * @param {object} [options] (Note that this options object will be passed on to the {{#crossLink "Shape"}}{{/crossLink}} constructor.)
+ * @param {Number} [options.length=1] The total length of the line
  * @extends Shape
  * @constructor
  */
-function Line(length){
+function Line(options){
+    if(typeof(arguments[0]) === 'number'){
+        options = {
+            length: arguments[0]
+        };
+        console.warn('The Line constructor signature has changed. Please use the following format: new Line({ length: 1, ... })');
+    }
+    options = options || {};
 
     /**
      * Length of this line
-     * @property length
-     * @type {Number}
+     * @property {Number} length
      * @default 1
      */
-    this.length = length || 1;
+    this.length = options.length || 1;
 
-    Shape.call(this,Shape.LINE);
+    options.type = Shape.LINE;
+    Shape.call(this, options);
 }
 Line.prototype = new Shape();
 Line.prototype.constructor = Line;
