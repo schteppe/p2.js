@@ -35,8 +35,8 @@
                 position: [0,2],
                 angularVelocity: 0.5
             });
-            body.addShape(new p2.Circle(0.5), [0.5,0], 0);
-            body.addShape(new p2.Circle(0.5), [-0.5,0], 0);
+            body.addShape(new p2.Circle({ radius: 0.5 }), [0.5,0], 0);
+            body.addShape(new p2.Circle({ radius: 0.5 }), [-0.5,0], 0);
             world.addBody(body);
 
             body2 = new p2.Body({
@@ -44,10 +44,10 @@
                 position: [-3,2],
                 angularVelocity: 1
             });
-            body2.addShape(new p2.Rectangle(0.5, 2), [1,0], 0);
-            body2.addShape(new p2.Rectangle(0.5, 2), [0.5,0], 0);
-            body2.addShape(new p2.Rectangle(0.5, 2), [-0.5,0], 0);
-            body2.addShape(new p2.Rectangle(0.5, 2), [-1,0], 0);
+            body2.addShape(new p2.Box({ width: 0.5, height:  2 }), [1,0], 0);
+            body2.addShape(new p2.Box({ width: 0.5, height:  2 }), [0.5,0], 0);
+            body2.addShape(new p2.Box({ width: 0.5, height:  2 }), [-0.5,0], 0);
+            body2.addShape(new p2.Box({ width: 0.5, height:  2 }), [-1,0], 0);
             world.addBody(body2);
 
             // Add forces every step

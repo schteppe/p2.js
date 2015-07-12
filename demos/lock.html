@@ -30,13 +30,13 @@
                 mass: 5,
                 position: [-1, 1],
             });
-            bodyA.addShape(new p2.Circle(0.5));
+            bodyA.addShape(new p2.Circle({ radius: 0.5 }));
             world.addBody(bodyA);
             var bodyB = new p2.Body({
                 mass: 5,
                 position: [1, 1],
             });
-            bodyB.addShape(new p2.Circle(0.5));
+            bodyB.addShape(new p2.Circle({ radius: 0.5 }));
             world.addBody(bodyB);
 
             // Create constraint.
@@ -53,7 +53,7 @@
                     mass:1,
                     position:[i*0.5*r - N*0.5*r/2,3]
                 });
-                body.addShape(new p2.Rectangle(0.5,0.5));
+                body.addShape(new p2.Box({ width: 0.5, height: 0.5 }));
                 world.addBody(body);
                 if(lastBody){
                     // Connect current body to the last one

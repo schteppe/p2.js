@@ -28,7 +28,7 @@
                 angle: Math.PI/2,
                 angularVelocity : -5,
             });
-            bodyA.addShape(new p2.Circle(1));
+            bodyA.addShape(new p2.Circle({ radius: 1 }));
             world.addBody(bodyA);
 
             // Create second circle
@@ -36,7 +36,7 @@
                 mass: 1,
                 position: [2,0],
             });
-            bodyB.addShape(new p2.Circle(1));
+            bodyB.addShape(new p2.Circle({ radius: 1 }));
             world.addBody(bodyB);
 
             // Create a dummy body that we can hinge them to

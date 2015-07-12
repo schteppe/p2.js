@@ -27,13 +27,13 @@
                 mass: 1,
                 position: [-1,0],
             });
-            bodyA.addShape(new p2.Rectangle(1,1));
+            bodyA.addShape(new p2.Box({ width: 1, height: 1 }));
             world.addBody(bodyA);
             var bodyB = new p2.Body({
                 mass: 1,
                 position: [1,0],
             });
-            bodyB.addShape(new p2.Rectangle(1,1));
+            bodyB.addShape(new p2.Box({ width: 1, height: 1 }));
             world.addBody(bodyB);
 
             // Create PrismaticConstraint, aka "slider".

@@ -101,7 +101,7 @@
         });
 
         // Add ship physics
-        shipShape = new p2.Circle(shipSize);
+        shipShape = new p2.Circle({ radius: shipSize });
         shipBody = new p2.Body({ mass:1, position:[0,0],angularVelocity:1 });
         turnOffDamping(shipBody);
         shipBody.addShape(shipShape);
@@ -149,7 +149,7 @@
           turnOffDamping(bulletBody);
 
           // Create bullet shape
-          bulletShape = new p2.Circle(bulletRadius);
+          bulletShape = new p2.Circle({ radius: bulletRadius });
           bulletShape.collisionGroup = BULLET;
           bulletShape.collisionMask = ASTEROID;
 
@@ -348,7 +348,7 @@
       }
 
       function createAsteroidShape(level){
-          var shape = new p2.Circle(asteroidRadius*(numAsteroidLevels-level)/numAsteroidLevels);
+          var shape = new p2.Circle({ radius: asteroidRadius*(numAsteroidLevels-level)/numAsteroidLevels });
           shape.collisionGroup = ASTEROID;
           shape.collisionMask = BULLET | SHIP;
           return shape;

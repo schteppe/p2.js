@@ -27,13 +27,13 @@
                 mass: 1,
                 position: [-2, 1],
             });
-            bodyA.addShape(new p2.Circle(0.5));
+            bodyA.addShape(new p2.Circle({ radius: 0.5 }));
             world.addBody(bodyA);
             var bodyB = new p2.Body({
                 mass: 1,
                 position: [-0.5, 1],
             });
-            bodyB.addShape(new p2.Circle(0.5));
+            bodyB.addShape(new p2.Circle({ radius: 0.5 }));
             world.addBody(bodyB);
 
             // Create constraint.
@@ -51,13 +51,13 @@
                 mass: 1,
                 position: [1.5, 1],
             });
-            boxBodyA.addShape(new p2.Rectangle(0.5,0.5));
+            boxBodyA.addShape(new p2.Box({ width: 0.5, height: 0.5 }));
             world.addBody(boxBodyA);
             var boxBodyB = new p2.Body({
                 mass: 1,
                 position: [2, 1],
             });
-            boxBodyB.addShape(new p2.Rectangle(0.5,0.5));
+            boxBodyB.addShape(new p2.Box({ width: 0.5, height: 0.5 }));
             world.addBody(boxBodyB);
 
             // Create constraint.

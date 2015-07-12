@@ -37,15 +37,15 @@
 
             // Create chassis
             var chassisBody = new p2.Body({ mass : 1, position:[0,1] }),
-                chassisShape = new p2.Rectangle(1,0.5);
+                chassisShape = new p2.Box({ width: 1, height: 0.5 });
             chassisBody.addShape(chassisShape);
             world.addBody(chassisBody);
 
             // Create wheels
             var wheelBody1 = new p2.Body({ mass : 1, position:[chassisBody.position[0] - 0.5,0.7] }),
                 wheelBody2 = new p2.Body({ mass : 1, position:[chassisBody.position[0] + 0.5,0.7] }),
-                wheelShape1 = new p2.Circle(0.3),
-                wheelShape2 = new p2.Circle(0.3);
+                wheelShape1 = new p2.Circle({ radius: 0.3 }),
+                wheelShape2 = new p2.Circle({ radius: 0.3 });
             wheelBody1.addShape(wheelShape1);
             wheelBody2.addShape(wheelShape2);
             world.addBody(wheelBody1);

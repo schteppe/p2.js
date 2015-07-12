@@ -46,7 +46,7 @@
             boxMaterial = new p2.Material();
 
         // Add a character body
-        characterShape = new p2.Rectangle(0.5,1);
+        characterShape = new p2.Box({ width: 0.5, height: 1 });
         characterBody = new p2.Body({
           mass: 1,
           position:[0,3],
@@ -74,7 +74,7 @@
             position:platformPositions[i],
           });
           platformBody.type = p2.Body.KINEMATIC;
-          var platformShape = new p2.Rectangle(1,0.3)
+          var platformShape = new p2.Box({ width: 1, height: 0.3 });
           platformShape.material = groundMaterial;
           platformBody.addShape(platformShape);
           world.addBody(platformBody);
@@ -88,7 +88,7 @@
             mass: 1,
             position:boxPositions[i],
           });
-          var boxShape = new p2.Rectangle(0.8,0.8);
+          var boxShape = new p2.Box({ width: 0.8, height: 0.8 });
           boxShape.material = boxMaterial;
           boxBody.addShape(boxShape);
           world.addBody(boxBody);

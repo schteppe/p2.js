@@ -56,7 +56,7 @@
                         mass: 1,
                         position: [x, y],
                     });
-                    p.addShape(new p2.Circle(r));
+                    p.addShape(new p2.Circle({ radius: r }));
                     p.allowSleep = true;
                     p.sleepSpeedLimit = 1;  // Body will feel sleepy if speed<1 (speed is the norm of velocity)
                     p.sleepTimeLimit = 1;   // Body falls asleep after 1s of sleepiness

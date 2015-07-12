@@ -56,7 +56,7 @@
         });
 
         // Add a box
-        boxShape = new p2.Rectangle(2,1);
+        boxShape = new p2.Box({ width: 2, height: 1 });
         boxBody = new p2.Body({
           mass:1,
           position:[0,2],
@@ -67,7 +67,7 @@
         world.addBody(boxBody);
 
         // Add a circle
-        circleShape = new p2.Circle(0.5);
+        circleShape = new p2.Circle({ radius: 0.5 });
         circleBody = new p2.Body({
           mass:1,
           position:[0,-1],
@@ -77,7 +77,7 @@
         world.addBody(circleBody);
 
         // Add a capsule
-        capsuleShape = new p2.Capsule(1,0.5);
+        capsuleShape = new p2.Capsule({ length: 1, radius: 0.5 });
         capsuleBody = new p2.Body({
           mass:1,
           position:[-1.5,0],
@@ -104,7 +104,7 @@
             var vertex = [size*0.5*Math.cos(a), size*0.5*Math.sin(a)]; // Note: vertices are added counter-clockwise
             vertices.push(vertex);
         }
-        convexShape = new p2.Convex(vertices);
+        convexShape = new p2.Convex({ vertices: vertices });
         convexBody = new p2.Body({
           mass: 1,
           position: [1,0],

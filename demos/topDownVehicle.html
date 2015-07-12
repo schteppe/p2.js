@@ -25,7 +25,7 @@
             chassisBody = new p2.Body({
                 mass: 1
             });
-            var boxShape = new p2.Rectangle(0.5,1);
+            var boxShape = new p2.Box({ width: 0.5, height: 1 });
             chassisBody.addShape(boxShape);
             world.addBody(chassisBody);
 

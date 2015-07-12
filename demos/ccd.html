@@ -30,7 +30,7 @@
                 var y = (i - 0.5) * 1.5;
 
                 // Create circle bodies
-                var shape = new p2.Circle(0.5);
+                var shape = new p2.Circle({ radius: 0.5 });
                 var p = new p2.Body({
                     mass: 1,
                     position: [-11, y],
@@ -40,7 +40,7 @@
                 p.addShape(shape);
                 world.addBody(p);
 
-                var shape = new p2.Circle(0.5);
+                var shape = new p2.Circle({ radius: 0.5 });
                 var p = new p2.Body({
                     mass: 0,
                     position: [0, y],

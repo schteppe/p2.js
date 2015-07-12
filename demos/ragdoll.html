@@ -35,17 +35,17 @@
                 OTHER =     Math.pow(2,4),
                 bodyPartShapes = [];
 
-            var headShape = new p2.Circle(headRadius),
-                upperArmShapeLeft = new p2.Rectangle(upperArmLength,upperArmSize),
-                upperArmShapeRight = new p2.Rectangle(upperArmLength,upperArmSize),
-                lowerArmShapeLeft = new p2.Rectangle(lowerArmLength,lowerArmSize),
-                lowerArmShapeRight = new p2.Rectangle(lowerArmLength,lowerArmSize),
-                upperBodyShape = new p2.Rectangle(shouldersDistance,upperBodyLength),
-                pelvisShape = new p2.Rectangle(shouldersDistance,pelvisLength),
-                upperLegShapeLeft = new p2.Rectangle(upperLegSize,upperLegLength),
-                upperLegShapeRight = new p2.Rectangle(upperLegSize,upperLegLength),
-                lowerLegShapeLeft = new p2.Rectangle(lowerLegSize,lowerLegLength),
-                lowerLegShapeRight = new p2.Rectangle(lowerLegSize,lowerLegLength);
+            var headShape = new p2.Circle({ radius: headRadius }),
+                upperArmShapeLeft = new p2.Box({ width: upperArmLength, height: upperArmSize }),
+                upperArmShapeRight = new p2.Box({ width: upperArmLength, height: upperArmSize }),
+                lowerArmShapeLeft = new p2.Box({ width: lowerArmLength, height: lowerArmSize }),
+                lowerArmShapeRight = new p2.Box({ width: lowerArmLength, height: lowerArmSize }),
+                upperBodyShape = new p2.Box({ width: shouldersDistance, height: upperBodyLength }),
+                pelvisShape = new p2.Box({ width: shouldersDistance, height: pelvisLength }),
+                upperLegShapeLeft = new p2.Box({ width: upperLegSize, height: upperLegLength }),
+                upperLegShapeRight = new p2.Box({ width: upperLegSize, height: upperLegLength }),
+                lowerLegShapeLeft = new p2.Box({ width: lowerLegSize, height: lowerLegLength }),
+                lowerLegShapeRight = new p2.Box({ width: lowerLegSize, height: lowerLegLength });
 
             bodyPartShapes.push(
                 headShape,

@@ -28,7 +28,7 @@
             });
 
             // Create a material for the circle shape
-            var circleShape1 = new p2.Circle(0.5);
+            var circleShape1 = new p2.Circle({ radius: 0.5 });
             circleShape1.material = new p2.Material();
             ballBody1.addShape(circleShape1);
 
@@ -40,7 +40,7 @@
             world.addBody(ballBody1);
 
             // Create a platform that the ball can bounce on
-            var platformShape1 = new p2.Rectangle(1,1);
+            var platformShape1 = new p2.Box({ width: 1, height: 1 });
             var platformBody1 = new p2.Body({
                 position:[-2,-1],
             });
@@ -60,7 +60,7 @@
 
 
             // Create another ball
-            var circleShape2 = new p2.Circle(0.5);
+            var circleShape2 = new p2.Circle({ radius: 0.5 });
             circleShape2.material = new p2.Material();
             var ballBody2 = new p2.Body({
                 position: [0,1],
@@ -72,7 +72,7 @@
             world.addBody(ballBody2);
 
             // Create another platform
-            var platformShape2 = new p2.Rectangle(1,1);
+            var platformShape2 = new p2.Box({ width: 1, height: 1 });
             var platformBody2 = new p2.Body({
                 position:[0,-1],
             });
@@ -87,7 +87,7 @@
 
 
             // New ball
-            var circleShape3 = new p2.Circle(0.5);
+            var circleShape3 = new p2.Circle({ radius: 0.5 });
             circleShape3.material = new p2.Material();
             var ballBody3 = new p2.Body({
                 position: [2,1],
@@ -98,7 +98,7 @@
             ballBody3.angularDamping = 0;
             world.addBody(ballBody3);
 
-            var planeShape3 = new p2.Rectangle(1,1);
+            var planeShape3 = new p2.Box({ width: 1, height: 1 });
             var plane3 = new p2.Body({
                 position:[2,-1],
             });

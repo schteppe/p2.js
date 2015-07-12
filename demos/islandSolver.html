@@ -45,7 +45,7 @@
                             mass: i==0 ? 0 : 1,
                             position: [x, y]
                         });
-                        p.addShape(new p2.Circle(r));
+                        p.addShape(new p2.Circle({ radius: r }));
                         if(lastBody){
                             // Connect the current body to the previous one
                             var dist = Math.abs(p.position[1]-lastBody.position[1]);

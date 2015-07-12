@@ -49,14 +49,14 @@
                 mass: 1,
                 position: [0, 2 + 0.5 * PENDULUM_LENGTH]
             });
-            pendulumBody.addShape(new p2.Rectangle(1,PENDULUM_LENGTH));
+            pendulumBody.addShape(new p2.Box({ width: 1, height: PENDULUM_LENGTH }));
             world.addBody(pendulumBody);
 
             wheelBody = new p2.Body({
                 mass: 1,
                 position: [0,1]
             });
-            wheelBody.addShape(new p2.Circle(0.6));
+            wheelBody.addShape(new p2.Circle({ radius: 0.6 }));
             world.addBody(wheelBody);
 
             var wheelJoint = new p2.RevoluteConstraint(wheelBody, pendulumBody, {

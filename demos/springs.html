@@ -111,7 +111,7 @@
 
             // Create circle
             var radius = 1;
-            var circleShape = new p2.Circle(radius);
+            var circleShape = new p2.Circle({ radius: radius });
             var circle = new p2.Body({
                 mass : 1,
                 position : [0, (M/2)*l*1.05 + radius],
@@ -131,8 +131,8 @@
                 position : [-4, (M/2)*l*1.05 + radius],
                 angularVelocity : -2
             });
-            box1.addShape(new p2.Rectangle(radius,radius));
-            box2.addShape(new p2.Rectangle(radius,radius));
+            box1.addShape(new p2.Box({ width: radius, height: radius }));
+            box2.addShape(new p2.Box({ width: radius, height: radius }));
             world.addBody(box1);
             world.addBody(box2);
             var s = new p2.LinearSpring(box1, box2, {
@@ -145,7 +145,7 @@
 
 
             // Create capsule
-            var capsuleShape = new p2.Capsule(1,0.25);
+            var capsuleShape = new p2.Capsule({ length: 1, radius: 0.25 });
             var capsuleBody = new p2.Body({
                 mass: 1,
                 position : [4,1]
@@ -162,8 +162,8 @@
 
 
             // Create capsules connected with angular spring
-            var capsuleShapeA = new p2.Capsule(1, 0.2);
-            var capsuleShapeB = new p2.Capsule(1, 0.2);
+            var capsuleShapeA = new p2.Capsule({ length: 1, radius:  0.2 });
+            var capsuleShapeB = new p2.Capsule({ length: 1, radius:  0.2 });
             var capsuleBodyA = new p2.Body({
                 mass: 1,
                 position : [5,0]

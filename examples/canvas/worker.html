@@ -46,7 +46,7 @@
 						mass: 1,
 						position: [Math.random()-0.5, e.data.boxHeight * i + 0.5,Math.random()-0.5]
 					});
-					var boxShape = new p2.Rectangle(e.data.boxWidth, e.data.boxHeight);
+					var boxShape = new p2.Box({ width: e.data.boxWidth, height: e.data.boxHeight });
 					boxBody.addShape(boxShape);
 					world.addBody(boxBody);
 				}

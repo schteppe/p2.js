@@ -715,7 +715,7 @@ Renderer.prototype.handleMouseUp = function(physicsPosition){
         if(R > 0){
             // Create circle
             b = new p2.Body({ mass : 1, position : this.drawCircleCenter });
-            var circle = new p2.Circle(R);
+            var circle = new p2.Circle({ radius: R });
             b.addShape(circle);
             this.world.addBody(b);
         }
@@ -744,7 +744,7 @@ Renderer.prototype.handleMouseUp = function(physicsPosition){
                 mass : 1,
                 position : [this.drawRectStart[0] + width*0.5, this.drawRectStart[1] + height*0.5]
             });
-            var rectangleShape = new p2.Rectangle(width, height);
+            var rectangleShape = new p2.Box({ width: width, height:  height });
             b.addShape(rectangleShape);
             this.world.addBody(b);
         }

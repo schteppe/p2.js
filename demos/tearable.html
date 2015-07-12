@@ -38,7 +38,7 @@
                     position: [x,y],
                     angularDamping:0.5,
                 });
-                p.addShape(new p2.Circle(r));
+                p.addShape(new p2.Circle({ radius: r }));
                 if(lastBody){
                     // Create a DistanceConstraint, it will constrain the
                     // current and the last body to have a fixed distance from each other

@@ -32,7 +32,7 @@
                 circleBody.allowSleep = true;
                 circleBody.sleepSpeedLimit = 1; // Body will feel sleepy if speed<1 (speed is the norm of velocity)
                 circleBody.sleepTimeLimit =  1; // Body falls asleep after 1s of sleepiness
-                circleBody.addShape(new p2.Circle(radius));
+                circleBody.addShape(new p2.Circle({ radius: radius }));
                 circleBody.damping = 0.2;
                 world.addBody(circleBody);
             }

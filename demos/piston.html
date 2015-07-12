@@ -34,7 +34,7 @@
             world.addBody(dummyBody);
 
             // Create circle
-            var shape = new p2.Circle(R),
+            var shape = new p2.Circle({ radius: R }),
                 circleBody = new p2.Body({
                     mass: 1,
                     position: [0,0],
@@ -52,7 +52,7 @@
             world.addConstraint(c);
 
             // Create arm
-            var armShape =  new p2.Rectangle(L,0.1*L);
+            var armShape =  new p2.Box({ width: L, height: 0.1*L });
             var armBody = new p2.Body({
                 mass:1,
             });
@@ -68,7 +68,7 @@
             world.addConstraint(c2);
 
             // Piston
-            var pistonShape = new p2.Rectangle(1,1);
+            var pistonShape = new p2.Box({ width: 1, height: 1 });
             var pistonBody = new p2.Body({
                 mass: 1,
             });

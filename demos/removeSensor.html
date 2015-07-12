@@ -25,7 +25,7 @@
                 this.setWorld(world);
 
                 // Create circle sensor
-                var shape = new p2.Circle(0.4);
+                var shape = new p2.Circle({ radius: 0.4 });
                 shape.sensor = true;
                 var body = new p2.Body({
                     mass: 1,

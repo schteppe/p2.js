@@ -36,7 +36,7 @@
                 type: p2.Body.KINEMATIC,
                 position: [0, 0.5]
             });
-            var boxShape = new p2.Rectangle(2,0.5);
+            var boxShape = new p2.Box({ width: 2, height: 0.5 });
             kinematicBody.addShape(boxShape);
             world.addBody(kinematicBody);
 
@@ -46,7 +46,7 @@
                 mass: 1,
                 position: [0,2]
             });
-            boxBody.addShape(new p2.Rectangle(0.5,0.5));
+            boxBody.addShape(new p2.Box({ width: 0.5, height: 0.5 }));
             world.addBody(boxBody);
 
             // Create dynamic circle connected to the kinematic body
@@ -55,7 +55,7 @@
                 position: [0,-0.5],
                 velocity: [-1,0]
             });
-            circleBody.addShape(new p2.Circle(0.25));
+            circleBody.addShape(new p2.Circle({ radius: 0.25 }));
             world.addBody(circleBody);
 
             world.addConstraint(new p2.DistanceConstraint(kinematicBody, circleBody));

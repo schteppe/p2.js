@@ -29,7 +29,7 @@
                 fixedRotation: true,
                 fixedX: true
             });
-            boxBody.addShape(new p2.Rectangle(1,1));
+            boxBody.addShape(new p2.Box({ width: 1, height: 1 }));
             world.addBody(boxBody);
 
             boxBody = new p2.Body({
@@ -38,7 +38,7 @@
                 fixedRotation: true,
                 fixedY: true
             });
-            boxBody.addShape(new p2.Rectangle(1,1));
+            boxBody.addShape(new p2.Box({ width: 1, height: 1 }));
             world.addBody(boxBody);
 
             // Create ground
