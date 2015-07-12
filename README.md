@@ -13,7 +13,9 @@ p2.js
 ### Demos
 These demos use the p2 Demo framework, which provides rendering and interactivity. Use mouse/touch to throw or create objects. Use the right menu (or console!) to tweak parameters. Or just check the source to see how to programmatically build the current scene using p2.
 
+* [Buoyancy](http://schteppe.github.io/p2.js/demos/buoyancy.html)
 * [Car](http://schteppe.github.io/p2.js/demos/car.html)
+* [CCD](http://schteppe.github.io/p2.js/demos/ccd.html)
 * [Circle container](http://schteppe.github.io/p2.js/demos/circles.html)
 * [Collision tests](http://schteppe.github.io/p2.js/demos/collisions.html)
 * [Compound objects](http://schteppe.github.io/p2.js/demos/compound.html)
@@ -21,6 +23,7 @@ These demos use the p2 Demo framework, which provides rendering and interactivit
 * [Constraints](http://schteppe.github.io/p2.js/demos/constraints.html)
 * [DistanceConstraint](http://schteppe.github.io/p2.js/demos/distanceConstraint.html)
 * [Fixed rotation](http://schteppe.github.io/p2.js/demos/fixedRotation.html)
+* [Fixed XY](http://schteppe.github.io/p2.js/demos/fixedXY.html)
 * [Friction](http://schteppe.github.io/p2.js/demos/friction.html)
 * [Gear constraint](http://schteppe.github.io/p2.js/demos/gearConstraint.html)
 * [Heightfield](http://schteppe.github.io/p2.js/demos/heightfield.html)
@@ -33,10 +36,13 @@ These demos use the p2 Demo framework, which provides rendering and interactivit
 * [Sensor](http://schteppe.github.io/p2.js/demos/removeSensor.html)
 * [Restitution](http://schteppe.github.io/p2.js/demos/restitution.html)
 * [Sleep](http://schteppe.github.io/p2.js/demos/sleep.html)
+* [Segway](http://schteppe.github.io/p2.js/demos/segway.html)
+* [Sleep](http://schteppe.github.io/p2.js/demos/sleep.html)
 * [Springs](http://schteppe.github.io/p2.js/demos/springs.html)
 * [Surface velocity](http://schteppe.github.io/p2.js/demos/surfaceVelocity.html)
 * [Suspension](http://schteppe.github.io/p2.js/demos/suspension.html)
 * [Tearable constraints](http://schteppe.github.io/p2.js/demos/tearable.html)
+* [TopDownVehicle](http://schteppe.github.io/p2.js/demos/topDownVehicle.html)
 
 ### Examples
 Examples showing how to use p2.js with your favorite renderer.
