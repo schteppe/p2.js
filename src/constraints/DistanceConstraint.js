@@ -26,13 +26,16 @@ module.exports = DistanceConstraint;
  *     var bodyA = new Body({ mass: 1, position: [-1, 0] });
  *     var bodyB = new Body({ mass: 1, position: [1, 0] });
  *     var constraint = new DistanceConstraint(bodyA, bodyB);
+ *     world.addConstraint(constraint);
  *
  * @example
+ *     // Manually set the distance and anchors
  *     var constraint = new DistanceConstraint(bodyA, bodyB, {
  *         distance: 1,          // Distance to keep between the points
  *         localAnchorA: [1, 0], // Point on bodyA
  *         localAnchorB: [-1, 0] // Point on bodyB
  *     });
+ *     world.addConstraint(constraint);
  */
 function DistanceConstraint(bodyA,bodyB,options){
     options = Utils.defaults(options,{
@@ -104,7 +107,7 @@ function DistanceConstraint(bodyA,bodyB,options){
     // g = (xi - xj).dot(n)
     // dg/dt = (vi - vj).dot(n) = G*W = [n 0 -n 0] * [vi wi vj wj]'
 
-    // ...and if we were to include offset points (TODO for now):
+    // ...and if we were to include offset points:
     // g =
     //      (xj + rj - xi - ri).dot(n) - distance
     //
@@ -246,12 +249,12 @@ DistanceConstraint.prototype.update = function(){
 /**
  * Set the max force to be used
  * @method setMaxForce
- * @param {Number} f
+ * @param {Number} maxForce
  */
-DistanceConstraint.prototype.setMaxForce = function(f){
+DistanceConstraint.prototype.setMaxForce = function(maxForce){
     var normal = this.equations[0];
-    normal.minForce = -f;
-    normal.maxForce =  f;
+    normal.minForce = -maxForce;
+    normal.maxForce =  maxForce;
 };
 
 /**
@@ -259,7 +262,7 @@ DistanceConstraint.prototype.setMaxForce = function(f){
  * @method getMaxForce
  * @return {Number}
  */
-DistanceConstraint.prototype.getMaxForce = function(f){
+DistanceConstraint.prototype.getMaxForce = function(){
     var normal = this.equations[0];
     return normal.maxForce;
 };

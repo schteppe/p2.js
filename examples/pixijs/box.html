@@ -21,7 +21,7 @@
             world = new p2.World();
 
             // Add a box
-            boxShape = new p2.Rectangle(2,1);
+            boxShape = new p2.Box({ width: 2, height: 1 });
             boxBody = new p2.Body({
                 mass:1,
                 position:[0,2],

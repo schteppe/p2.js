@@ -1,13 +1,8 @@
-/* global performance */
-/*jshint -W020 */
-
 var  GSSolver = require('../solver/GSSolver')
 ,    Solver = require('../solver/Solver')
-,    NaiveBroadphase = require('../collision/NaiveBroadphase')
 ,    Ray = require('../collision/Ray')
 ,    vec2 = require('../math/vec2')
 ,    Circle = require('../shapes/Circle')
-,    Rectangle = require('../shapes/Rectangle')
 ,    Convex = require('../shapes/Convex')
 ,    Line = require('../shapes/Line')
 ,    Plane = require('../shapes/Plane')
@@ -27,6 +22,7 @@ var  GSSolver = require('../solver/GSSolver')
 ,    GearConstraint = require('../constraints/GearConstraint')
 ,    pkg = require('../../package.json')
 ,    Broadphase = require('../collision/Broadphase')
+,    AABB = require('../collision/AABB')
 ,    SAPBroadphase = require('../collision/SAPBroadphase')
 ,    Narrowphase = require('../collision/Narrowphase')
 ,    Utils = require('../utils/Utils')
@@ -36,37 +32,24 @@ var  GSSolver = require('../solver/GSSolver')
 
 module.exports = World;
 
-if(typeof performance === 'undefined'){
-    performance = {};
-}
-if(!performance.now){
-    var nowOffset = Date.now();
-    if (performance.timing && performance.timing.navigationStart){
-        nowOffset = performance.timing.navigationStart;
-    }
-    performance.now = function(){
-        return Date.now() - nowOffset;
-    };
-}
-
 /**
- * The dynamics world, where all bodies and constraints lives.
+ * The dynamics world, where all bodies and constraints live.
  *
  * @class World
  * @constructor
- * @param {Object}          [options]
- * @param {Solver}          [options.solver]            Defaults to GSSolver.
- * @param {Array}           [options.gravity]           Defaults to [0,-9.78]
- * @param {Broadphase}      [options.broadphase]        Defaults to NaiveBroadphase
- * @param {Boolean}         [options.islandSplit=false]
- * @param {Boolean}         [options.doProfiling=false]
+ * @param {Object} [options]
+ * @param {Solver} [options.solver] Defaults to GSSolver.
+ * @param {Array} [options.gravity] Defaults to y=-9.78.
+ * @param {Broadphase} [options.broadphase] Defaults to SAPBroadphase
+ * @param {Boolean} [options.islandSplit=true]
  * @extends EventEmitter
  *
  * @example
  *     var world = new World({
- *         gravity: [0, -9.81],
+ *         gravity: [0, -10],
  *         broadphase: new SAPBroadphase()
  *     });
+ *     world.addBody(new Body());
  */
 function World(options){
     EventEmitter.apply(this);
@@ -134,30 +117,16 @@ function World(options){
     /**
      * Set to true if you want .frictionGravity to be automatically set to the length of .gravity.
      * @property {Boolean} useWorldGravityAsFrictionGravity
+     * @default true
      */
     this.useWorldGravityAsFrictionGravity = true;
 
     /**
      * If the length of .gravity is zero, and .useWorldGravityAsFrictionGravity=true, then switch to using .frictionGravity for friction instead. This fallback is useful for gravityless games.
      * @property {Boolean} useFrictionGravityOnZeroGravity
+     * @default true
      */
     this.useFrictionGravityOnZeroGravity = true;
-
-    /**
-     * Whether to do timing measurements during the step() or not.
-     *
-     * @property doPofiling
-     * @type {Boolean}
-     */
-    this.doProfiling = options.doProfiling || false;
-
-    /**
-     * How many millisecconds the last step() took. This is updated each step if .doProfiling is set to true.
-     *
-     * @property lastStepTime
-     * @type {Number}
-     */
-    this.lastStepTime = 0.0;
 
     /**
      * The broadphase algorithm to use.
@@ -199,6 +168,7 @@ function World(options){
      * Enable to automatically apply spring forces each step.
      * @property applySpringForces
      * @type {Boolean}
+     * @default true
      */
     this.applySpringForces = true;
 
@@ -206,6 +176,7 @@ function World(options){
      * Enable to automatically apply body damping each step.
      * @property applyDamping
      * @type {Boolean}
+     * @default true
      */
     this.applyDamping = true;
 
@@ -213,6 +184,7 @@ function World(options){
      * Enable to automatically apply gravity each step.
      * @property applyGravity
      * @type {Boolean}
+     * @default true
      */
     this.applyGravity = true;
 
@@ -220,6 +192,7 @@ function World(options){
      * Enable/disable constraint solving in each step.
      * @property solveConstraints
      * @type {Boolean}
+     * @default true
      */
     this.solveConstraints = true;
 
@@ -236,9 +209,10 @@ function World(options){
      * @type {Number}
      */
     this.time = 0.0;
+    this.accumulator = 0;
 
     /**
-     * Is true during the step().
+     * Is true during step().
      * @property {Boolean} stepping
      */
     this.stepping = false;
@@ -250,18 +224,18 @@ function World(options){
      */
     this.bodiesToBeRemoved = [];
 
-    this.fixedStepTime = 0.0;
-
     /**
-     * Whether to enable island splitting. Island splitting can be an advantage for many things, including solver performance. See {{#crossLink "IslandManager"}}{{/crossLink}}.
+     * Whether to enable island splitting. Island splitting can be an advantage for both precision and performance. See {{#crossLink "IslandManager"}}{{/crossLink}}.
      * @property {Boolean} islandSplit
+     * @default true
      */
-    this.islandSplit = typeof(options.islandSplit)!=="undefined" ? !!options.islandSplit : false;
+    this.islandSplit = typeof(options.islandSplit)!=="undefined" ? !!options.islandSplit : true;
 
     /**
      * Set to true if you want to the world to emit the "impact" event. Turning this off could improve performance.
      * @property emitImpactEvent
      * @type {Boolean}
+     * @default true
      */
     this.emitImpactEvent = true;
 
@@ -274,7 +248,7 @@ function World(options){
      * @event postStep
      */
     this.postStepEvent = {
-        type : "postStep",
+        type : "postStep"
     };
 
     /**
@@ -304,7 +278,7 @@ function World(options){
      */
     this.addSpringEvent = {
         type : "addSpring",
-        spring : null,
+        spring : null
     };
 
     /**
@@ -319,7 +293,7 @@ function World(options){
         bodyB : null,
         shapeA : null,
         shapeB : null,
-        contactEquation : null,
+        contactEquation : null
     };
 
     /**
@@ -330,8 +304,8 @@ function World(options){
      * @param {Array} pairs An array of collision pairs. If this array is [body1,body2,body3,body4], then the body pairs 1,2 and 3,4 would advance to narrowphase.
      */
     this.postBroadphaseEvent = {
-        type:"postBroadphase",
-        pairs:null,
+        type: "postBroadphase",
+        pairs: null
     };
 
     /**
@@ -353,12 +327,12 @@ function World(options){
      * @param {Array} contactEquations
      */
     this.beginContactEvent = {
-        type:"beginContact",
-        shapeA : null,
-        shapeB : null,
-        bodyA : null,
-        bodyB : null,
-        contactEquations : [],
+        type: "beginContact",
+        shapeA: null,
+        shapeB: null,
+        bodyA: null,
+        bodyB: null,
+        contactEquations: []
     };
 
     /**
@@ -368,14 +342,13 @@ function World(options){
      * @param {Shape} shapeB
      * @param {Body}  bodyA
      * @param {Body}  bodyB
-     * @param {Array} contactEquations
      */
     this.endContactEvent = {
-        type:"endContact",
-        shapeA : null,
-        shapeB : null,
-        bodyA : null,
-        bodyB : null,
+        type: "endContact",
+        shapeA: null,
+        shapeB: null,
+        bodyA: null,
+        bodyB: null
     };
 
     /**
@@ -385,15 +358,18 @@ function World(options){
      * @param {Array} frictionEquations An array of friction equations to be solved.
      */
     this.preSolveEvent = {
-        type:"preSolve",
-        contactEquations:null,
-        frictionEquations:null,
+        type: "preSolve",
+        contactEquations: null,
+        frictionEquations: null
     };
 
     // For keeping track of overlapping shapes
     this.overlappingShapesLastState = { keys:[] };
     this.overlappingShapesCurrentState = { keys:[] };
 
+    /**
+     * @property {OverlapKeeper} overlapKeeper
+     */
     this.overlapKeeper = new OverlapKeeper();
 }
 World.prototype = new Object(EventEmitter.prototype);
@@ -424,10 +400,13 @@ World.ISLAND_SLEEPING = 4;
  * Add a constraint to the simulation.
  *
  * @method addConstraint
- * @param {Constraint} c
+ * @param {Constraint} constraint
+ * @example
+ *     var constraint = new LockConstraint(bodyA, bodyB);
+ *     world.addConstraint(constraint);
  */
-World.prototype.addConstraint = function(c){
-    this.constraints.push(c);
+World.prototype.addConstraint = function(constraint){
+    this.constraints.push(constraint);
 };
 
 /**
@@ -476,10 +455,10 @@ World.prototype.getContactMaterial = function(materialA,materialB){
  * Removes a constraint
  *
  * @method removeConstraint
- * @param {Constraint} c
+ * @param {Constraint} constraint
  */
-World.prototype.removeConstraint = function(c){
-    var idx = this.constraints.indexOf(c);
+World.prototype.removeConstraint = function(constraint){
+    var idx = this.constraints.indexOf(constraint);
     if(idx!==-1){
         Utils.splice(this.constraints,idx,1);
     }
@@ -508,9 +487,39 @@ var step_r = vec2.create(),
  * @param {Number} [maxSubSteps=10]         Maximum number of fixed steps to take per function call.
  *
  * @example
- *     // fixed timestepping without interpolation
+ *     // Simple fixed timestepping without interpolation
+ *     var fixedTimeStep = 1 / 60;
  *     var world = new World();
- *     world.step(0.01);
+ *     var body = new Body({ mass: 1 });
+ *     world.addBody(body);
+ *
+ *     function animate(){
+ *         requestAnimationFrame(animate);
+ *         world.step(fixedTimeStep);
+ *         renderBody(body.position, body.angle);
+ *     }
+ *
+ *     // Start animation loop
+ *     requestAnimationFrame(animate);
+ *
+ * @example
+ *     // Fixed timestepping with interpolation
+ *     var maxSubSteps = 10;
+ *     var lastTimeSeconds;
+ *
+ *     function animate(t){
+ *         requestAnimationFrame(animate);
+ *         timeSeconds = t / 1000;
+ *         lastTimeSeconds = lastTimeSeconds || timeSeconds;
+ *
+ *         deltaTime = timeSeconds - lastTimeSeconds;
+ *         world.step(fixedTimeStep, deltaTime, maxSubSteps);
+ *
+ *         renderBody(body.interpolatedPosition, body.interpolatedAngle);
+ *     }
+ *
+ *     // Start animation loop
+ *     requestAnimationFrame(animate);
  *
  * @see http://bulletphysics.org/mediawiki-1.5.8/index.php/Stepping_The_World
  */
@@ -527,41 +536,21 @@ World.prototype.step = function(dt,timeSinceLastCalled,maxSubSteps){
 
     } else {
 
-        // Compute the number of fixed steps we should have taken since the last step
-        var internalSteps = Math.floor( (this.time+timeSinceLastCalled) / dt) - Math.floor(this.time / dt);
-        internalSteps = Math.min(internalSteps,maxSubSteps);
-
-        // Do some fixed steps to catch up
-        var t0 = performance.now();
-        for(var i=0; i!==internalSteps; i++){
+        this.accumulator += timeSinceLastCalled;
+        var substeps = 0;
+        while (this.accumulator >= dt && substeps < maxSubSteps) {
+            // Do fixed steps to catch up
             this.internalStep(dt);
-            if(performance.now() - t0 > dt*1000){
-                // We are slower than real-time. Better bail out.
-                break;
-            }
+            this.time += dt;
+            this.accumulator -= dt;
+            substeps++;
         }
 
-        // Increment internal clock
-        this.time += timeSinceLastCalled;
-
-        // Compute "Left over" time step
-        var h = this.time % dt;
-        var h_div_dt = h/dt;
-
+        var t = (this.accumulator % dt) / dt;
         for(var j=0; j!==this.bodies.length; j++){
             var b = this.bodies[j];
-            if(b.type !== Body.STATIC && b.sleepState !== Body.SLEEPING){
-                // Interpolate
-                vec2.sub(interpvelo, b.position, b.previousPosition);
-                vec2.scale(interpvelo, interpvelo, h_div_dt);
-                vec2.add(b.interpolatedPosition, b.position, interpvelo);
-
-                b.interpolatedAngle = b.angle + (b.angle - b.previousAngle) * h_div_dt;
-            } else {
-                // For static bodies, just copy. Who else will do it?
-                vec2.copy(b.interpolatedPosition, b.position);
-                b.interpolatedAngle = b.angle;
-            }
+            vec2.lerp(b.interpolatedPosition, b.previousPosition, b.position, t);
+            b.interpolatedAngle = b.previousAngle + t * (b.angle - b.previousAngle);
         }
     }
 };
@@ -578,7 +567,6 @@ World.prototype.internalStep = function(dt){
     this.stepping = true;
 
     var that = this,
-        doProfiling = this.doProfiling,
         Nsprings = this.springs.length,
         springs = this.springs,
         bodies = this.bodies,
@@ -600,10 +588,6 @@ World.prototype.internalStep = function(dt){
     this.overlapKeeper.tick();
 
     this.lastTimeStep = dt;
-
-    if(doProfiling){
-        t0 = performance.now();
-    }
 
     // Update approximate friction gravity.
     if(this.useWorldGravityAsFrictionGravity){
@@ -675,6 +659,7 @@ World.prototype.internalStep = function(dt){
     // postBroadphase event
     this.postBroadphaseEvent.pairs = result;
     this.emit(this.postBroadphaseEvent);
+    this.postBroadphaseEvent.pairs = null;
 
     // Narrowphase
     np.reset(this);
@@ -685,14 +670,14 @@ World.prototype.internalStep = function(dt){
         // Loop over all shapes of body i
         for(var k=0, Nshapesi=bi.shapes.length; k!==Nshapesi; k++){
             var si = bi.shapes[k],
-                xi = bi.shapeOffsets[k],
-                ai = bi.shapeAngles[k];
+                xi = si.position,
+                ai = si.angle;
 
             // All shapes of body j
             for(var l=0, Nshapesj=bj.shapes.length; l!==Nshapesj; l++){
                 var sj = bj.shapes[l],
-                    xj = bj.shapeOffsets[l],
-                    aj = bj.shapeAngles[l];
+                    xj = sj.position,
+                    aj = sj.angle;
 
                 var cm = this.defaultContactMaterial;
                 if(si.material && sj.material){
@@ -729,12 +714,14 @@ World.prototype.internalStep = function(dt){
             e.bodyB = data.bodyB;
             this.emit(e);
         }
+        endOverlaps.length = 0;
     }
 
     var preSolveEvent = this.preSolveEvent;
     preSolveEvent.contactEquations = np.contactEquations;
     preSolveEvent.frictionEquations = np.frictionEquations;
     this.emit(preSolveEvent);
+    preSolveEvent.contactEquations = preSolveEvent.frictionEquations = null;
 
     // update constraint equations
     var Nconstraints = constraints.length;
@@ -742,7 +729,7 @@ World.prototype.internalStep = function(dt){
         constraints[i].update();
     }
 
-    if(np.contactEquations.length || np.frictionEquations.length || constraints.length){
+    if(np.contactEquations.length || np.frictionEquations.length || Nconstraints){
         if(this.islandSplit){
             // Split into islands
             islandManager.equations.length = 0;
@@ -783,19 +770,14 @@ World.prototype.internalStep = function(dt){
     for(var i=0; i!==Nbodies; i++){
         var body = bodies[i];
 
-        if(body.sleepState !== Body.SLEEPING && body.type !== Body.STATIC){
-            body.integrate(dt);
-        }
+        // if(body.sleepState !== Body.SLEEPING && body.type !== Body.STATIC){
+        body.integrate(dt);
+        // }
     }
 
     // Reset force
     for(var i=0; i!==Nbodies; i++){
         bodies[i].setZeroForce();
-    }
-
-    if(doProfiling){
-        t1 = performance.now();
-        that.lastStepTime = t1-t0;
     }
 
     // Emit impact event
@@ -838,12 +820,11 @@ World.prototype.internalStep = function(dt){
     this.stepping = false;
 
     // Remove bodies that are scheduled for removal
-    if(this.bodiesToBeRemoved.length){
-        for(var i=0; i!==this.bodiesToBeRemoved.length; i++){
-            this.removeBody(this.bodiesToBeRemoved[i]);
-        }
-        this.bodiesToBeRemoved.length = 0;
+    var bodiesToBeRemoved = this.bodiesToBeRemoved;
+    for(var i=0; i!==bodiesToBeRemoved.length; i++){
+        this.removeBody(bodiesToBeRemoved[i]);
     }
+    bodiesToBeRemoved.length = 0;
 
     this.emit(this.postStepEvent);
 };
@@ -975,23 +956,25 @@ World.prototype.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,cm,glen){
  * Add a spring to the simulation
  *
  * @method addSpring
- * @param {Spring} s
+ * @param {Spring} spring
  */
-World.prototype.addSpring = function(s){
-    this.springs.push(s);
-    this.addSpringEvent.spring = s;
-    this.emit(this.addSpringEvent);
+World.prototype.addSpring = function(spring){
+    this.springs.push(spring);
+    var evt = this.addSpringEvent;
+    evt.spring = spring;
+    this.emit(evt);
+    evt.spring = null;
 };
 
 /**
  * Remove a spring
  *
  * @method removeSpring
- * @param {Spring} s
+ * @param {Spring} spring
  */
-World.prototype.removeSpring = function(s){
-    var idx = this.springs.indexOf(s);
-    if(idx!==-1){
+World.prototype.removeSpring = function(spring){
+    var idx = this.springs.indexOf(spring);
+    if(idx !== -1){
         Utils.splice(this.springs,idx,1);
     }
 };
@@ -1012,8 +995,10 @@ World.prototype.addBody = function(body){
     if(this.bodies.indexOf(body) === -1){
         this.bodies.push(body);
         body.world = this;
-        this.addBodyEvent.body = body;
-        this.emit(this.addBodyEvent);
+        var evt = this.addBodyEvent;
+        evt.body = body;
+        this.emit(evt);
+        evt.body = null;
     }
 };
 
@@ -1034,6 +1019,7 @@ World.prototype.removeBody = function(body){
             this.removeBodyEvent.body = body;
             body.resetConstraintVelocity();
             this.emit(this.removeBodyEvent);
+            this.removeBodyEvent.body = null;
         }
     }
 };
@@ -1041,7 +1027,8 @@ World.prototype.removeBody = function(body){
 /**
  * Get a body by its id.
  * @method getBodyById
- * @return {Body|Boolean} The body, or false if it was not found.
+ * @param {number} id
+ * @return {Body} The body, or false if it was not found.
  */
 World.prototype.getBodyById = function(id){
     var bodies = this.bodies;
@@ -1056,7 +1043,7 @@ World.prototype.getBodyById = function(id){
 
 /**
  * Disable collision between two bodies
- * @method disableCollision
+ * @method disableBodyCollision
  * @param {Body} bodyA
  * @param {Body} bodyB
  */
@@ -1066,7 +1053,7 @@ World.prototype.disableBodyCollision = function(bodyA,bodyB){
 
 /**
  * Enable collisions between the given two bodies
- * @method enableCollision
+ * @method enableBodyCollision
  * @param {Body} bodyA
  * @param {Body} bodyB
  */
@@ -1080,34 +1067,6 @@ World.prototype.enableBodyCollision = function(bodyA,bodyB){
     }
 };
 
-
-function v2a(v){
-    if(!v){
-        return v;
-    }
-    return [v[0],v[1]];
-}
-
-function extend(a,b){
-    for(var key in b){
-        a[key] = b[key];
-    }
-}
-
-function contactMaterialToJSON(cm){
-    return {
-        id : cm.id,
-        materialA :             cm.materialA.id,
-        materialB :             cm.materialB.id,
-        friction :              cm.friction,
-        restitution :           cm.restitution,
-        stiffness :             cm.stiffness,
-        relaxation :            cm.relaxation,
-        frictionStiffness :     cm.frictionStiffness,
-        frictionRelaxation :    cm.frictionRelaxation,
-    };
-}
-
 /**
  * Resets the World, removes all bodies, constraints and springs.
  *
@@ -1116,7 +1075,6 @@ function contactMaterialToJSON(cm){
 World.prototype.clear = function(){
 
     this.time = 0;
-    this.fixedStepTime = 0;
 
     // Remove all solver equations
     if(this.solver && this.solver.equations.length){
@@ -1150,17 +1108,6 @@ World.prototype.clear = function(){
     World.apply(this);
 };
 
-/**
- * Get a copy of this World instance
- * @method clone
- * @return {World}
- */
-World.prototype.clone = function(){
-    var world = new World();
-    world.fromJSON(this.toJSON());
-    return world;
-};
-
 var hitTest_tmp1 = vec2.create(),
     hitTest_zero = vec2.fromValues(0,0),
     hitTest_tmp2 = vec2.fromValues(0,0);
@@ -1172,6 +1119,8 @@ var hitTest_tmp1 = vec2.create(),
  * @param  {Array}  bodies      A list of objects to check for intersection
  * @param  {Number} precision   Used for matching against particles and lines. Adds some margin to these infinitesimal objects.
  * @return {Array}              Array of bodies that overlap the point
+ * @todo Should use an api similar to the raycast function
+ * @todo Should probably implement a .containsPoint method for all shapes. Would be more efficient
  */
 World.prototype.hitTest = function(worldPoint,bodies,precision){
     precision = precision || 0;
@@ -1192,15 +1141,14 @@ World.prototype.hitTest = function(worldPoint,bodies,precision){
     // Check bodies
     for(var i=0, N=bodies.length; i!==N; i++){
         var b = bodies[i];
+
         for(var j=0, NS=b.shapes.length; j!==NS; j++){
-            var s = b.shapes[j],
-                offset = b.shapeOffsets[j] || zero,
-                angle = b.shapeAngles[j] || 0.0;
+            var s = b.shapes[j];
 
             // Get shape world position + angle
-            vec2.rotate(x, offset, b.angle);
+            vec2.rotate(x, s.position, b.angle);
             vec2.add(x, x, b.position);
-            var a = angle + b.angle;
+            var a = s.angle + b.angle;
 
             if( (s instanceof Circle    && n.circleParticle  (b,s,x,a,     pb,ps,px,pa, true)) ||
                 (s instanceof Convex    && n.particleConvex  (pb,ps,px,pa, b,s,x,a,     true)) ||
@@ -1217,64 +1165,33 @@ World.prototype.hitTest = function(worldPoint,bodies,precision){
 };
 
 /**
- * Sets the Equation parameters for all constraints and contact materials.
- * @method setGlobalEquationParameters
- * @param {object} [parameters]
- * @param {Number} [parameters.relaxation]
- * @param {Number} [parameters.stiffness]
- */
-World.prototype.setGlobalEquationParameters = function(parameters){
-    parameters = parameters || {};
-
-    // Set for all constraints
-    for(var i=0; i !== this.constraints.length; i++){
-        var c = this.constraints[i];
-        for(var j=0; j !== c.equations.length; j++){
-            var eq = c.equations[j];
-            if(typeof(parameters.stiffness) !== "undefined"){
-                eq.stiffness = parameters.stiffness;
-            }
-            if(typeof(parameters.relaxation) !== "undefined"){
-                eq.relaxation = parameters.relaxation;
-            }
-            eq.needsUpdate = true;
-        }
-    }
-
-    // Set for all contact materials
-    for(var i=0; i !== this.contactMaterials.length; i++){
-        var c = this.contactMaterials[i];
-        if(typeof(parameters.stiffness) !== "undefined"){
-            c.stiffness = parameters.stiffness;
-            c.frictionStiffness = parameters.stiffness;
-        }
-        if(typeof(parameters.relaxation) !== "undefined"){
-            c.relaxation = parameters.relaxation;
-            c.frictionRelaxation = parameters.relaxation;
-        }
-    }
-
-    // Set for default contact material
-    var c = this.defaultContactMaterial;
-    if(typeof(parameters.stiffness) !== "undefined"){
-        c.stiffness = parameters.stiffness;
-        c.frictionStiffness = parameters.stiffness;
-    }
-    if(typeof(parameters.relaxation) !== "undefined"){
-        c.relaxation = parameters.relaxation;
-        c.frictionRelaxation = parameters.relaxation;
-    }
-};
-
-/**
  * Set the stiffness for all equations and contact materials.
  * @method setGlobalStiffness
  * @param {Number} stiffness
  */
 World.prototype.setGlobalStiffness = function(stiffness){
-    this.setGlobalEquationParameters({
-        stiffness: stiffness
-    });
+
+    // Set for all constraints
+    var constraints = this.constraints;
+    for(var i=0; i !== constraints.length; i++){
+        var c = constraints[i];
+        for(var j=0; j !== c.equations.length; j++){
+            var eq = c.equations[j];
+            eq.stiffness = stiffness;
+            eq.needsUpdate = true;
+        }
+    }
+
+    // Set for all contact materials
+    var contactMaterials = this.contactMaterials;
+    for(var i=0; i !== contactMaterials.length; i++){
+        var c = contactMaterials[i];
+        c.stiffness = c.frictionStiffness = stiffness;
+    }
+
+    // Set for default contact material
+    var c = this.defaultContactMaterial;
+    c.stiffness = c.frictionStiffness = stiffness;
 };
 
 /**
@@ -1283,72 +1200,81 @@ World.prototype.setGlobalStiffness = function(stiffness){
  * @param {Number} relaxation
  */
 World.prototype.setGlobalRelaxation = function(relaxation){
-    this.setGlobalEquationParameters({
-        relaxation: relaxation
-    });
+
+    // Set for all constraints
+    for(var i=0; i !== this.constraints.length; i++){
+        var c = this.constraints[i];
+        for(var j=0; j !== c.equations.length; j++){
+            var eq = c.equations[j];
+            eq.relaxation = relaxation;
+            eq.needsUpdate = true;
+        }
+    }
+
+    // Set for all contact materials
+    for(var i=0; i !== this.contactMaterials.length; i++){
+        var c = this.contactMaterials[i];
+        c.relaxation = c.frictionRelaxation = relaxation;
+    }
+
+    // Set for default contact material
+    var c = this.defaultContactMaterial;
+    c.relaxation = c.frictionRelaxation = relaxation;
 };
 
-var tmpRay = new Ray();
+var tmpAABB = new AABB();
+var tmpArray = [];
 
 /**
- * Ray cast against all bodies. The provided callback will be executed for each hit with a RaycastResult as single argument.
- * @method raycastAll
- * @param  {Vec3} from
- * @param  {Vec3} to
- * @param  {Object} options
- * @param  {number} [options.collisionMask=-1]
- * @param  {number} [options.collisionGroup=-1]
- * @param  {boolean} [options.skipBackfaces=false]
- * @param  {boolean} [options.checkCollisionResponse=true]
- * @param  {Function} callback
- * @return {boolean} True if any body was hit.
- */
-World.prototype.raycastAll = function(from, to, options, callback){
-    options.mode = Ray.ALL;
-    options.from = from;
-    options.to = to;
-    options.callback = callback;
-    return tmpRay.intersectWorld(this, options);
-};
-
-/**
- * Ray cast, and stop at the first result. Note that the order is random - but the method is fast.
- * @method raycastAny
- * @param  {Vec3} from
- * @param  {Vec3} to
- * @param  {Object} options
- * @param  {number} [options.collisionMask=-1]
- * @param  {number} [options.collisionGroup=-1]
- * @param  {boolean} [options.skipBackfaces=false]
- * @param  {boolean} [options.checkCollisionResponse=true]
+ * Ray cast against all bodies in the world.
+ * @method raycast
  * @param  {RaycastResult} result
+ * @param  {Ray} ray
  * @return {boolean} True if any body was hit.
+ *
+ * @example
+ *     var ray = new Ray({
+ *         mode: Ray.CLOSEST, // or ANY
+ *         from: [0, 0],
+ *         to: [10, 0],
+ *     });
+ *     var result = new RaycastResult();
+ *     world.raycast(result, ray);
+ *
+ *     // Get the hit point
+ *     var hitPoint = vec2.create();
+ *     result.getHitPoint(hitPoint, ray);
+ *     console.log('Hit point: ', hitPoint[0], hitPoint[1], ' at distance ' + result.getHitDistance(ray));
+ *
+ * @example
+ *     var ray = new Ray({
+ *         mode: Ray.ALL,
+ *         from: [0, 0],
+ *         to: [10, 0],
+ *         callback: function(result){
+ *
+ *             // Print some info about the hit
+ *             console.log('Hit body and shape: ', result.body, result.shape);
+ *
+ *             // Get the hit point
+ *             var hitPoint = vec2.create();
+ *             result.getHitPoint(hitPoint, ray);
+ *             console.log('Hit point: ', hitPoint[0], hitPoint[1], ' at distance ' + result.getHitDistance(ray));
+ *
+ *             // If you are happy with the hits you got this far, you can stop the traversal here:
+ *             result.stop();
+ *         }
+ *     });
+ *     var result = new RaycastResult();
+ *     world.raycast(result, ray);
  */
-World.prototype.raycastAny = function(from, to, options, result){
-    options.mode = Ray.ANY;
-    options.from = from;
-    options.to = to;
-    options.result = result;
-    return tmpRay.intersectWorld(this, options);
-};
+World.prototype.raycast = function(result, ray){
 
-/**
- * Ray cast, and return information of the closest hit.
- * @method raycastClosest
- * @param  {Vec3} from
- * @param  {Vec3} to
- * @param  {Object} options
- * @param  {number} [options.collisionMask=-1]
- * @param  {number} [options.collisionGroup=-1]
- * @param  {boolean} [options.skipBackfaces=false]
- * @param  {boolean} [options.checkCollisionResponse=true]
- * @param  {RaycastResult} result
- * @return {boolean} True if any body was hit.
- */
-World.prototype.raycastClosest = function(from, to, options, result){
-    options.mode = Ray.CLOSEST;
-    options.from = from;
-    options.to = to;
-    options.result = result;
-    return tmpRay.intersectWorld(this, options);
+    // Get all bodies within the ray AABB
+    ray.getAABB(tmpAABB);
+    this.broadphase.aabbQuery(this, tmpAABB, tmpArray);
+    ray.intersectBodies(result, tmpArray);
+    tmpArray.length = 0;
+
+    return result.hasHit();
 };

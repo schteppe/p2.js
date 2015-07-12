@@ -34,21 +34,23 @@
             world.setGlobalStiffness(1e4);
 
             // Create all testable shapes
-            var particle = new p2.Particle();
-            var circle =   new p2.Circle(size/2);
-            var rectangle= new p2.Rectangle(size,size);
-            var line =     new p2.Line(size);
-            var capsule =  new p2.Capsule(size*2,size/4);
-            var plane = null;
+            var particle = function(){ return new p2.Particle(); };
+            var circle =   function(){ return new p2.Circle({ radius: size/2 }); };
+            var rectangle= function(){ return new p2.Box({ width: size, height: size }); };
+            var line =     function(){ return new p2.Line({ length: size }); };
+            var capsule =  function(){ return new p2.Capsule({ length: size*2, radius: size/4 }); };
+            var plane = function(){ return null; };
 
-            // Create a convex shape.
-            var vertices = [];
-            for(var i=0, N=5; i<N; i++){
-                var a = 2*Math.PI / N * i;
-                var vertex = [size*0.5*Math.cos(a), size*0.5*Math.sin(a)]; // Note: vertices are added counter-clockwise
-                vertices.push(vertex);
+            var convex = function(){
+                // Create a convex shape.
+                var vertices = [];
+                for(var i=0, N=5; i<N; i++){
+                    var a = 2*Math.PI / N * i;
+                    var vertex = [size*0.5*Math.cos(a), size*0.5*Math.sin(a)]; // Note: vertices are added counter-clockwise
+                    vertices.push(vertex);
+                }
+                return new p2.Convex({ vertices: vertices });
             }
-            var convex =   new p2.Convex(vertices);
 
             var opts = {
                 mass: 1,
@@ -73,28 +75,28 @@
                 numAdded++;
             }
 
-            add(circle,circle);
-            add(circle,plane);
-            add(circle,rectangle);
-            add(circle,convex);
-            add(circle,particle);
-            add(circle,line);
-            add(plane,rectangle);
-            add(plane,convex);
-            add(plane,particle);
-            add(plane,line);
-            add(rectangle,rectangle);
-            add(rectangle,convex);
-            add(rectangle,particle);
-            add(rectangle,line);
-            add(convex,convex);
-            add(convex,particle);
-            add(convex,line);
-            add(particle,line);
-            add(line,line);
-            add(capsule);
-            add(circle,capsule);
-            add(capsule,particle);
+            add(circle(), circle());
+            add(circle(), plane());
+            add(circle(), rectangle());
+            add(circle(), convex());
+            add(circle(), particle());
+            add(circle(), line());
+            add(plane(), rectangle());
+            add(plane(), convex());
+            add(plane(), particle());
+            add(plane(), line());
+            add(rectangle(), rectangle());
+            add(rectangle(), convex());
+            add(rectangle(), particle());
+            add(rectangle(), line());
+            add(convex(), convex());
+            add(convex(), particle());
+            add(convex(), line());
+            add(particle(), line());
+            add(line(), line());
+            add(capsule());
+            add(circle(), capsule());
+            add(capsule(), particle());
 
             for(var i=0; i<world.bodies.length; i++){
                 world.bodies[i].position[0] -= (numAdded-1)*dist / 2;

@@ -10,15 +10,24 @@ module.exports = Convex;
  * @class Convex
  * @constructor
  * @extends Shape
- * @param {Array} vertices An array of vertices that span this shape. Vertices are given in counter-clockwise (CCW) direction.
- * @param {Array} [axes] An array of unit length vectors, representing the symmetry axes in the convex.
+ * @param {object} [options] (Note that this options object will be passed on to the {{#crossLink "Shape"}}{{/crossLink}} constructor.)
+ * @param {Array} [options.vertices] An array of vertices that span this shape. Vertices are given in counter-clockwise (CCW) direction.
+ * @param {Array} [options.axes] An array of unit length vectors, representing the symmetry axes in the convex.
  * @example
  *     // Create a box
  *     var vertices = [[-1,-1], [1,-1], [1,1], [-1,1]];
- *     var convexShape = new Convex(vertices);
+ *     var convexShape = new Convex({ vertices: vertices });
  *     body.addShape(convexShape);
  */
-function Convex(vertices, axes){
+function Convex(options){
+    if(Array.isArray(arguments[0])){
+        options = {
+            vertices: arguments[0],
+            axes: arguments[1]
+        };
+        console.warn('The Convex constructor signature has changed. Please use the following format: new Convex({ vertices: [...], ... })');
+    }
+    options = options || {};
 
     /**
      * Vertices defined in the local frame.
@@ -27,6 +36,14 @@ function Convex(vertices, axes){
      */
     this.vertices = [];
 
+    // Copy the verts
+    var vertices = options.vertices !== undefined ? options.vertices : [];
+    for(var i=0; i < vertices.length; i++){
+        var v = vec2.create();
+        vec2.copy(v, vertices[i]);
+        this.vertices.push(v);
+    }
+
     /**
      * Axes defined in the local frame.
      * @property axes
@@ -34,26 +51,22 @@ function Convex(vertices, axes){
      */
     this.axes = [];
 
-    // Copy the verts
-    for(var i=0; i<vertices.length; i++){
-        var v = vec2.create();
-        vec2.copy(v,vertices[i]);
-        this.vertices.push(v);
-    }
+    if(options.axes){
 
-    if(axes){
         // Copy the axes
-        for(var i=0; i < axes.length; i++){
+        for(var i=0; i < options.axes.length; i++){
             var axis = vec2.create();
-            vec2.copy(axis, axes[i]);
+            vec2.copy(axis, options.axes[i]);
             this.axes.push(axis);
         }
+
     } else {
+
         // Construct axes from the vertex data
-        for(var i = 0; i < vertices.length; i++){
+        for(var i = 0; i < this.vertices.length; i++){
             // Get the world edge
-            var worldPoint0 = vertices[i];
-            var worldPoint1 = vertices[(i+1) % vertices.length];
+            var worldPoint0 = this.vertices[i];
+            var worldPoint1 = this.vertices[(i+1) % this.vertices.length];
 
             var normal = vec2.create();
             vec2.sub(normal, worldPoint1, worldPoint0);
@@ -64,6 +77,7 @@ function Convex(vertices, axes){
 
             this.axes.push(normal);
         }
+
     }
 
     /**
@@ -92,7 +106,8 @@ function Convex(vertices, axes){
      */
     this.boundingRadius = 0;
 
-    Shape.call(this, Shape.CONVEX);
+    options.type = Shape.CONVEX;
+    Shape.call(this, options);
 
     this.updateBoundingRadius();
     this.updateArea();
@@ -323,4 +338,41 @@ Convex.prototype.updateArea = function(){
  */
 Convex.prototype.computeAABB = function(out, position, angle){
     out.setFromPoints(this.vertices, position, angle, 0);
+};
+
+var intersectConvex_rayStart = vec2.create();
+var intersectConvex_rayEnd = vec2.create();
+var intersectConvex_normal = vec2.create();
+
+/**
+ * @method raycast
+ * @param  {RaycastResult} result
+ * @param  {Ray} ray
+ * @param  {array} position
+ * @param  {number} angle
+ */
+Convex.prototype.raycast = function(result, ray, position, angle){
+    var rayStart = intersectConvex_rayStart;
+    var rayEnd = intersectConvex_rayEnd;
+    var normal = intersectConvex_normal;
+    var vertices = this.vertices;
+
+    // Transform to local shape space
+    vec2.toLocalFrame(rayStart, ray.from, position, angle);
+    vec2.toLocalFrame(rayEnd, ray.to, position, angle);
+
+    var n = vertices.length;
+
+    for (var i = 0; i < n && !result.shouldStop(ray); i++) {
+        var q1 = vertices[i];
+        var q2 = vertices[(i+1) % n];
+        var delta = vec2.getLineSegmentsIntersectionFraction(rayStart, rayEnd, q1, q2);
+
+        if(delta >= 0){
+            vec2.sub(normal, q2, q1);
+            vec2.rotate(normal, normal, -Math.PI / 2 + angle);
+            vec2.normalize(normal, normal);
+            ray.reportIntersection(result, delta, normal, i);
+        }
+    }
 };

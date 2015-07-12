@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="p2.js" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.6.1</em>
+            <em>API Docs for: 0.7.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -41,6 +41,7 @@
                                 <li><a href="../classes/AABB.html">AABB</a></li>
                                 <li><a href="../classes/AngleLockEquation.html">AngleLockEquation</a></li>
                                 <li><a href="../classes/Body.html">Body</a></li>
+                                <li><a href="../classes/Box.html">Box</a></li>
                                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
                                 <li><a href="../classes/Capsule.html">Capsule</a></li>
                                 <li><a href="../classes/Circle.html">Circle</a></li>
@@ -53,7 +54,6 @@
                                 <li><a href="../classes/EventEmitter.html">EventEmitter</a></li>
                                 <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
                                 <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
-                                <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
                                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
                                 <li><a href="../classes/Heightfield.html">Heightfield</a></li>
                                 <li><a href="../classes/Island.html">Island</a></li>
@@ -65,6 +65,7 @@
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
                                 <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
+                                <li><a href="../classes/Object pooling utility..html">Object pooling utility.</a></li>
                                 <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
                                 <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
                                 <li><a href="../classes/Particle.html">Particle</a></li>
@@ -72,18 +73,20 @@
                                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
                                 <li><a href="../classes/Ray.html">Ray</a></li>
                                 <li><a href="../classes/RaycastResult.html">RaycastResult</a></li>
-                                <li><a href="../classes/Rectangle.html">Rectangle</a></li>
                                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
                                 <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
+                                <li><a href="../classes/.html"></a></li>
                                 <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
                                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
                                 <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
                                 <li><a href="../classes/Shape.html">Shape</a></li>
                                 <li><a href="../classes/Solver.html">Solver</a></li>
                                 <li><a href="../classes/Spring.html">Spring</a></li>
+                                <li><a href="../classes/TopDownVehicle.html">TopDownVehicle</a></li>
                                 <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
                                 <li><a href="../classes/Utils.html">Utils</a></li>
                                 <li><a href="../classes/vec2.html">vec2</a></li>
+                                <li><a href="../classes/WheelConstraint.html">WheelConstraint</a></li>
                                 <li><a href="../classes/World.html">World</a></li>
                             </ul>
                 
@@ -129,7 +132,7 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_objects_Body.js.html#l9"><code>src&#x2F;objects&#x2F;Body.js:9</code></a>
+            Defined in: <a href="../files/src_objects_Body.js.html#l11"><code>src&#x2F;objects&#x2F;Body.js:11</code></a>
         </div>
 
 
@@ -150,6 +153,54 @@ shapes that are used for collisions.</p>
                 <div class="args">
                     <span class="paren">(</span><ul class="args-list inline commas">
                         <li class="arg">
+                                <code class="optional">[options.force]</code>
+                        </li>
+                        <li class="arg">
+                                <code class="optional">[options.position]</code>
+                        </li>
+                        <li class="arg">
+                                <code class="optional">[options.velocity]</code>
+                        </li>
+                        <li class="arg">
+                                <code class="optional">[options.allowSleep]</code>
+                        </li>
+                        <li class="arg">
+                                <code class="optional">[options.collisionResponse]</code>
+                        </li>
+                        <li class="arg">
+                                <code class="optional">[options.angle=0]</code>
+                        </li>
+                        <li class="arg">
+                                <code class="optional">[options.angularForce=0]</code>
+                        </li>
+                        <li class="arg">
+                                <code class="optional">[options.angularVelocity=0]</code>
+                        </li>
+                        <li class="arg">
+                                <code class="optional">[options.ccdIterations=10]</code>
+                        </li>
+                        <li class="arg">
+                                <code class="optional">[options.ccdSpeedThreshold=-1]</code>
+                        </li>
+                        <li class="arg">
+                                <code class="optional">[options.fixedRotation=false]</code>
+                        </li>
+                        <li class="arg">
+                                <code class="optional">[options.gravityScale]</code>
+                        </li>
+                        <li class="arg">
+                                <code class="optional">[options.id]</code>
+                        </li>
+                        <li class="arg">
+                                <code class="optional">[options.mass=0]</code>
+                        </li>
+                        <li class="arg">
+                                <code class="optional">[options.sleepSpeedLimit]</code>
+                        </li>
+                        <li class="arg">
+                                <code class="optional">[options.sleepTimeLimit]</code>
+                        </li>
+                        <li class="arg">
                                 <code class="optional">[options]</code>
                         </li>
                     </ul><span class="paren">)</span>
@@ -165,7 +216,7 @@ shapes that are used for collisions.</p>
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/src_objects_Body.js.html#l9"><code>src&#x2F;objects&#x2F;Body.js:9</code></a>
+                <a href="../files/src_objects_Body.js.html#l11"><code>src&#x2F;objects&#x2F;Body.js:11</code></a>
                 </p>
         
         
@@ -181,6 +232,183 @@ shapes that are used for collisions.</p>
         
                     <ul class="params-list">
                         <li class="param">
+                                <code class="param-name optional">[options.force]</code>
+                                <span class="type">Array</span>
+                                <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+        
+                            <div class="param-description">
+                                 
+                            </div>
+        
+                        </li>
+                        <li class="param">
+                                <code class="param-name optional">[options.position]</code>
+                                <span class="type">Array</span>
+                                <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+        
+                            <div class="param-description">
+                                 
+                            </div>
+        
+                        </li>
+                        <li class="param">
+                                <code class="param-name optional">[options.velocity]</code>
+                                <span class="type">Array</span>
+                                <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+        
+                            <div class="param-description">
+                                 
+                            </div>
+        
+                        </li>
+                        <li class="param">
+                                <code class="param-name optional">[options.allowSleep]</code>
+                                <span class="type">Boolean</span>
+                                <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+        
+                            <div class="param-description">
+                                 
+                            </div>
+        
+                        </li>
+                        <li class="param">
+                                <code class="param-name optional">[options.collisionResponse]</code>
+                                <span class="type">Boolean</span>
+                                <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+        
+                            <div class="param-description">
+                                 
+                            </div>
+        
+                        </li>
+                        <li class="param">
+                                <code class="param-name optional">[options.angle=0]</code>
+                                <span class="type">Number</span>
+                                <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+        
+                            <div class="param-description">
+                                 
+                            </div>
+        
+                        </li>
+                        <li class="param">
+                                <code class="param-name optional">[options.angularForce=0]</code>
+                                <span class="type">Number</span>
+                                <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+        
+                            <div class="param-description">
+                                 
+                            </div>
+        
+                        </li>
+                        <li class="param">
+                                <code class="param-name optional">[options.angularVelocity=0]</code>
+                                <span class="type">Number</span>
+                                <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+        
+                            <div class="param-description">
+                                 
+                            </div>
+        
+                        </li>
+                        <li class="param">
+                                <code class="param-name optional">[options.ccdIterations=10]</code>
+                                <span class="type">Number</span>
+                                <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+        
+                            <div class="param-description">
+                                 
+                            </div>
+        
+                        </li>
+                        <li class="param">
+                                <code class="param-name optional">[options.ccdSpeedThreshold=-1]</code>
+                                <span class="type">Number</span>
+                                <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+        
+                            <div class="param-description">
+                                 
+                            </div>
+        
+                        </li>
+                        <li class="param">
+                                <code class="param-name optional">[options.fixedRotation=false]</code>
+                                <span class="type">Number</span>
+                                <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+        
+                            <div class="param-description">
+                                 
+                            </div>
+        
+                        </li>
+                        <li class="param">
+                                <code class="param-name optional">[options.gravityScale]</code>
+                                <span class="type">Number</span>
+                                <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+        
+                            <div class="param-description">
+                                 
+                            </div>
+        
+                        </li>
+                        <li class="param">
+                                <code class="param-name optional">[options.id]</code>
+                                <span class="type">Number</span>
+                                <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+        
+                            <div class="param-description">
+                                 
+                            </div>
+        
+                        </li>
+                        <li class="param">
+                                <code class="param-name optional">[options.mass=0]</code>
+                                <span class="type">Number</span>
+                                <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+        
+                            <div class="param-description">
+                                <p>A number &gt;= 0. If zero, the .type will be set to Body.STATIC.</p>
+        
+                            </div>
+        
+                        </li>
+                        <li class="param">
+                                <code class="param-name optional">[options.sleepSpeedLimit]</code>
+                                <span class="type">Number</span>
+                                <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+        
+                            <div class="param-description">
+                                 
+                            </div>
+        
+                        </li>
+                        <li class="param">
+                                <code class="param-name optional">[options.sleepTimeLimit]</code>
+                                <span class="type">Number</span>
+                                <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+        
+                            <div class="param-description">
+                                 
+                            </div>
+        
+                        </li>
+                        <li class="param">
                                 <code class="param-name optional">[options]</code>
                                 <span class="type">Object</span>
                                 <span class="flag optional" title="This parameter is optional.">optional</span>
@@ -190,109 +418,6 @@ shapes that are used for collisions.</p>
                                  
                             </div>
         
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name optional">[mass=0]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>A number &gt;= 0. If zero, the .type will be set to Body.STATIC.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[position]</code>
-                                            <span class="type">Array</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[velocity]</code>
-                                            <span class="type">Array</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[angle=0]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[angularVelocity=0]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[force]</code>
-                                            <span class="type">Array</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[angularForce=0]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[fixedRotation=false]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[ccdSpeedThreshold=-1]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[ccdIterations=10]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                </ul>
                         </li>
                     </ul>
                 </div>
@@ -313,7 +438,7 @@ shapes that are used for collisions.</p>
         });
         
         // Add a circular shape to the body
-        body.addShape(new Circle(1));
+        body.addShape(new Circle({ radius: 1 }));
         
         // Add the body to the world
         world.addBody(body);
@@ -356,6 +481,18 @@ shapes that are used for collisions.</p>
                                 <a href="#method_applyForce">applyForce</a>
 
                             </li>
+                            <li class="index-item method">
+                                <a href="#method_applyForceLocal">applyForceLocal</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_applyImpulse">applyImpulse</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_applyImpulseLocal">applyImpulseLocal</a>
+
+                            </li>
                             <li class="index-item method inherited">
                                 <a href="#method_emit">emit</a>
 
@@ -370,6 +507,10 @@ shapes that are used for collisions.</p>
                             </li>
                             <li class="index-item method">
                                 <a href="#method_getArea">getArea</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_getVelocityAtPoint">getVelocityAtPoint</a>
 
                             </li>
                             <li class="index-item method inherited">
@@ -430,6 +571,18 @@ shapes that are used for collisions.</p>
                             </li>
                             <li class="index-item method">
                                 <a href="#method_updateMassProperties">updateMassProperties</a>
+
+                            </li>
+                            <li class="index-item method private">
+                                <a href="#method_updateSolveMassProperties">updateSolveMassProperties</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_vectorToLocalFrame">vectorToLocalFrame</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_vectorToWorldFrame">vectorToWorldFrame</a>
 
                             </li>
                             <li class="index-item method">
@@ -506,6 +659,14 @@ shapes that are used for collisions.</p>
 
                             </li>
                             <li class="index-item property">
+                                <a href="#property_fixedX">fixedX</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_fixedY">fixedY</a>
+
+                            </li>
+                            <li class="index-item property">
                                 <a href="#property_force">force</a>
 
                             </li>
@@ -550,6 +711,10 @@ shapes that are used for collisions.</p>
                                 <a href="#property_mass">mass</a>
 
                             </li>
+                            <li class="index-item property private">
+                                <a href="#property_massMultiplier">massMultiplier</a>
+
+                            </li>
                             <li class="index-item property">
                                 <a href="#property_position">position</a>
 
@@ -560,14 +725,6 @@ shapes that are used for collisions.</p>
                             </li>
                             <li class="index-item property">
                                 <a href="#property_previousPosition">previousPosition</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_shapeAngles">shapeAngles</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_shapeOffsets">shapeOffsets</a>
 
                             </li>
                             <li class="index-item property">
@@ -679,7 +836,7 @@ shapes that are used for collisions.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l517"><code>src&#x2F;objects&#x2F;Body.js:517</code></a>
+        <a href="../files/src_objects_Body.js.html#l529"><code>src&#x2F;objects&#x2F;Body.js:529</code></a>
         </p>
 
 
@@ -741,7 +898,7 @@ Will automatically update the mass properties and bounding radius.</p>
 
             <div class="example-content">
                 <pre class="code prettyprint"><code>var body = new Body(),
-    shape = new Circle();
+    shape = new Circle({ radius: 1 });
 
 // Add the shape to the body, positioned in the center
 body.addShape(shape);
@@ -770,7 +927,7 @@ body.addShape(shape,[0,1],Math.PI/2);
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l752"><code>src&#x2F;objects&#x2F;Body.js:752</code></a>
+        <a href="../files/src_objects_Body.js.html#l858"><code>src&#x2F;objects&#x2F;Body.js:858</code></a>
         </p>
 
 
@@ -807,7 +964,7 @@ body.addShape(shape,[0,1],Math.PI/2);
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l821"><code>src&#x2F;objects&#x2F;Body.js:821</code></a>
+        <a href="../files/src_objects_Body.js.html#l919"><code>src&#x2F;objects&#x2F;Body.js:919</code></a>
         </p>
 
 
@@ -849,7 +1006,7 @@ body.addShape(shape,[0,1],Math.PI/2);
                         <code>force</code>
                 </li>
                 <li class="arg">
-                        <code>worldPoint</code>
+                        <code class="optional">[relativePoint]</code>
                 </li>
             </ul><span class="paren">)</span>
         </div>
@@ -864,7 +1021,7 @@ body.addShape(shape,[0,1],Math.PI/2);
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l626"><code>src&#x2F;objects&#x2F;Body.js:626</code></a>
+        <a href="../files/src_objects_Body.js.html#l646"><code>src&#x2F;objects&#x2F;Body.js:646</code></a>
         </p>
 
 
@@ -872,7 +1029,7 @@ body.addShape(shape,[0,1],Math.PI/2);
     </div>
 
     <div class="description">
-        <p>Apply force to a world point. This could for example be a point on the RigidBody surface. Applying force this way will add to Body.force and Body.angularForce.</p>
+        <p>Apply force to a point relative to the center of mass of the body. This could for example be a point on the RigidBody surface. Applying force this way will add to Body.force and Body.angularForce. If relativePoint is zero, the force will be applied directly on the center of mass, and the torque produced will be zero.</p>
 
     </div>
 
@@ -892,12 +1049,219 @@ body.addShape(shape,[0,1],Math.PI/2);
 
                 </li>
                 <li class="param">
-                        <code class="param-name">worldPoint</code>
+                        <code class="param-name optional">[relativePoint]</code>
                         <span class="type">Array</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
 
 
                     <div class="param-description">
                         <p>A world point to apply the force on.</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_applyForceLocal" class="method item">
+    <h3 class="name"><code>applyForceLocal</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>localForce</code>
+                </li>
+                <li class="arg">
+                        <code>localPoint</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l667"><code>src&#x2F;objects&#x2F;Body.js:667</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Apply force to a body-local point.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">localForce</code>
+                        <span class="type">Array</span>
+
+
+                    <div class="param-description">
+                        <p>The force vector to add, oriented in local body space.</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">localPoint</code>
+                        <span class="type">Array</span>
+
+
+                    <div class="param-description">
+                        <p>A point relative to the body in world space. If not given, it is set to zero and all of the impulse will be excerted on the center of mass.</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_applyImpulse" class="method item">
+    <h3 class="name"><code>applyImpulse</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>impulse</code>
+                </li>
+                <li class="arg">
+                        <code class="optional">[relativePoint]</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l685"><code>src&#x2F;objects&#x2F;Body.js:685</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Apply impulse to a point relative to the body. This could for example be a point on the Body surface. An impulse is a force added to a body during a short period of time (impulse = force * time). Impulses will be added to Body.velocity and Body.angularVelocity.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">impulse</code>
+                        <span class="type">Array</span>
+
+
+                    <div class="param-description">
+                        <p>The impulse vector to add, oriented in world space.</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name optional">[relativePoint]</code>
+                        <span class="type">Array</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                        <p>A point relative to the body in world space. If not given, it is set to zero and all of the impulse will be excerted on the center of mass.</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_applyImpulseLocal" class="method item">
+    <h3 class="name"><code>applyImpulseLocal</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>impulse</code>
+                </li>
+                <li class="arg">
+                        <code class="optional">[relativePoint]</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l715"><code>src&#x2F;objects&#x2F;Body.js:715</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Apply impulse to a point relative to the body. This could for example be a point on the Body surface. An impulse is a force added to a body during a short period of time (impulse = force * time). Impulses will be added to Body.velocity and Body.angularVelocity.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">impulse</code>
+                        <span class="type">Array</span>
+
+
+                    <div class="param-description">
+                        <p>The impulse vector to add, oriented in world space.</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name optional">[relativePoint]</code>
+                        <span class="type">Array</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                        <p>A point relative to the body in world space. If not given, it is set to zero and all of the impulse will be excerted on the center of mass.</p>
 
                     </div>
 
@@ -1011,7 +1375,7 @@ body.addShape(shape,[0,1],Math.PI/2);
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l667"><code>src&#x2F;objects&#x2F;Body.js:667</code></a>
+        <a href="../files/src_objects_Body.js.html#l773"><code>src&#x2F;objects&#x2F;Body.js:773</code></a>
         </p>
 
 
@@ -1104,6 +1468,9 @@ body.addShape(shape,[0,1],Math.PI/2);
 
         <span class="paren">()</span>
 
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/AABB.html" class="crosslink">AABB</a></span>
+        </span>
 
 
 
@@ -1114,7 +1481,7 @@ body.addShape(shape,[0,1],Math.PI/2);
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l447"><code>src&#x2F;objects&#x2F;Body.js:447</code></a>
+        <a href="../files/src_objects_Body.js.html#l462"><code>src&#x2F;objects&#x2F;Body.js:462</code></a>
         </p>
 
 
@@ -1127,6 +1494,15 @@ body.addShape(shape,[0,1],Math.PI/2);
     </div>
 
 
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type"><a href="../classes/AABB.html" class="crosslink">AABB</a></span>:
+                    <p>The AABB instance (this.aabb)</p>
+
+            </div>
+        </div>
 
 
 </div>
@@ -1148,7 +1524,7 @@ body.addShape(shape,[0,1],Math.PI/2);
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l434"><code>src&#x2F;objects&#x2F;Body.js:434</code></a>
+        <a href="../files/src_objects_Body.js.html#l449"><code>src&#x2F;objects&#x2F;Body.js:449</code></a>
         </p>
 
 
@@ -1166,6 +1542,86 @@ body.addShape(shape,[0,1],Math.PI/2);
 
             <div class="returns-description">
                         <span class="type">Number</span>:
+            </div>
+        </div>
+
+
+</div>
+<div id="method_getVelocityAtPoint" class="method item">
+    <h3 class="name"><code>getVelocityAtPoint</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>result</code>
+                </li>
+                <li class="arg">
+                        <code>relativePoint</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type">Array</span>
+        </span>
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l1138"><code>src&#x2F;objects&#x2F;Body.js:1138</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Get velocity of a point in the body.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">result</code>
+                        <span class="type">Array</span>
+
+
+                    <div class="param-description">
+                        <p>A vector to store the result in</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">relativePoint</code>
+                        <span class="type">Array</span>
+
+
+                    <div class="param-description">
+                        <p>A world oriented vector, indicating the position of the point to get the velocity from</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type">Array</span>:
+                    <p>The result vector</p>
+
             </div>
         </div>
 
@@ -1268,7 +1724,7 @@ body.addShape(shape,[0,1],Math.PI/2);
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l935"><code>src&#x2F;objects&#x2F;Body.js:935</code></a>
+        <a href="../files/src_objects_Body.js.html#l1007"><code>src&#x2F;objects&#x2F;Body.js:1007</code></a>
         </p>
 
 
@@ -1480,7 +1936,7 @@ body.addShape(shape,[0,1],Math.PI/2);
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l922"><code>src&#x2F;objects&#x2F;Body.js:922</code></a>
+        <a href="../files/src_objects_Body.js.html#l994"><code>src&#x2F;objects&#x2F;Body.js:994</code></a>
         </p>
 
 
@@ -1543,7 +1999,7 @@ body.addShape(shape,[0,1],Math.PI/2);
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l559"><code>src&#x2F;objects&#x2F;Body.js:559</code></a>
+        <a href="../files/src_objects_Body.js.html#l574"><code>src&#x2F;objects&#x2F;Body.js:574</code></a>
         </p>
 
 
@@ -1587,7 +2043,13 @@ body.addShape(shape,[0,1],Math.PI/2);
 <div id="method_setDensity" class="method item">
     <h3 class="name"><code>setDensity</code></h3>
 
-        <span class="paren">()</span>
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>density</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
 
 
 
@@ -1599,7 +2061,7 @@ body.addShape(shape,[0,1],Math.PI/2);
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l424"><code>src&#x2F;objects&#x2F;Body.js:424</code></a>
+        <a href="../files/src_objects_Body.js.html#l438"><code>src&#x2F;objects&#x2F;Body.js:438</code></a>
         </p>
 
 
@@ -1611,6 +2073,22 @@ body.addShape(shape,[0,1],Math.PI/2);
 
     </div>
 
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">density</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+            </ul>
+        </div>
 
 
 
@@ -1630,7 +2108,7 @@ body.addShape(shape,[0,1],Math.PI/2);
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l798"><code>src&#x2F;objects&#x2F;Body.js:798</code></a>
+        <a href="../files/src_objects_Body.js.html#l896"><code>src&#x2F;objects&#x2F;Body.js:896</code></a>
         </p>
 
 
@@ -1661,7 +2139,7 @@ body.addShape(shape,[0,1],Math.PI/2);
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l848"><code>src&#x2F;objects&#x2F;Body.js:848</code></a>
+        <a href="../files/src_objects_Body.js.html#l946"><code>src&#x2F;objects&#x2F;Body.js:946</code></a>
         </p>
 
 
@@ -1704,7 +2182,7 @@ body.addShape(shape,[0,1],Math.PI/2);
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l861"><code>src&#x2F;objects&#x2F;Body.js:861</code></a>
+        <a href="../files/src_objects_Body.js.html#l959"><code>src&#x2F;objects&#x2F;Body.js:959</code></a>
         </p>
 
 
@@ -1781,7 +2259,7 @@ body.addShape(shape,[0,1],Math.PI/2);
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l647"><code>src&#x2F;objects&#x2F;Body.js:647</code></a>
+        <a href="../files/src_objects_Body.js.html#l733"><code>src&#x2F;objects&#x2F;Body.js:733</code></a>
         </p>
 
 
@@ -1814,7 +2292,7 @@ body.addShape(shape,[0,1],Math.PI/2);
 
 
                     <div class="param-description">
-                        <p>The input world vector</p>
+                        <p>The input world point</p>
 
                     </div>
 
@@ -1849,7 +2327,7 @@ body.addShape(shape,[0,1],Math.PI/2);
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l657"><code>src&#x2F;objects&#x2F;Body.js:657</code></a>
+        <a href="../files/src_objects_Body.js.html#l743"><code>src&#x2F;objects&#x2F;Body.js:743</code></a>
         </p>
 
 
@@ -1882,7 +2360,7 @@ body.addShape(shape,[0,1],Math.PI/2);
 
 
                     <div class="param-description">
-                        <p>The input local vector</p>
+                        <p>The input local point</p>
 
                     </div>
 
@@ -1908,7 +2386,7 @@ body.addShape(shape,[0,1],Math.PI/2);
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l461"><code>src&#x2F;objects&#x2F;Body.js:461</code></a>
+        <a href="../files/src_objects_Body.js.html#l477"><code>src&#x2F;objects&#x2F;Body.js:477</code></a>
         </p>
 
 
@@ -1916,7 +2394,7 @@ body.addShape(shape,[0,1],Math.PI/2);
     </div>
 
     <div class="description">
-        <p>Updates the AABB of the Body</p>
+        <p>Updates the AABB of the Body, and set .aabbNeedsUpdate = false.</p>
 
     </div>
 
@@ -1939,7 +2417,7 @@ body.addShape(shape,[0,1],Math.PI/2);
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l494"><code>src&#x2F;objects&#x2F;Body.js:494</code></a>
+        <a href="../files/src_objects_Body.js.html#l508"><code>src&#x2F;objects&#x2F;Body.js:508</code></a>
         </p>
 
 
@@ -1947,8 +2425,7 @@ body.addShape(shape,[0,1],Math.PI/2);
     </div>
 
     <div class="description">
-        <p>Update the bounding radius of the body. Should be done if any of the shapes
-are changed.</p>
+        <p>Update the bounding radius of the body (this.boundingRadius). Should be done if any of the shape dimensions or positions are changed.</p>
 
     </div>
 
@@ -1971,7 +2448,7 @@ are changed.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l579"><code>src&#x2F;objects&#x2F;Body.js:579</code></a>
+        <a href="../files/src_objects_Body.js.html#l593"><code>src&#x2F;objects&#x2F;Body.js:593</code></a>
         </p>
 
 
@@ -1997,6 +2474,173 @@ body.updateMassProperties();
             </div>
         </div>
 </div>
+<div id="method_updateSolveMassProperties" class="method item private">
+    <h3 class="name"><code>updateSolveMassProperties</code></h3>
+
+        <span class="paren">()</span>
+
+
+
+        <span class="flag private">private</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l424"><code>src&#x2F;objects&#x2F;Body.js:424</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+
+</div>
+<div id="method_vectorToLocalFrame" class="method item">
+    <h3 class="name"><code>vectorToLocalFrame</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>out</code>
+                </li>
+                <li class="arg">
+                        <code>worldVector</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l753"><code>src&#x2F;objects&#x2F;Body.js:753</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Transform a world point to local body frame.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">out</code>
+                        <span class="type">Array</span>
+
+
+                    <div class="param-description">
+                        <p>The vector to store the result in</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">worldVector</code>
+                        <span class="type">Array</span>
+
+
+                    <div class="param-description">
+                        <p>The input world vector</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_vectorToWorldFrame" class="method item">
+    <h3 class="name"><code>vectorToWorldFrame</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>out</code>
+                </li>
+                <li class="arg">
+                        <code>localVector</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l763"><code>src&#x2F;objects&#x2F;Body.js:763</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Transform a local point to world frame.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">out</code>
+                        <span class="type">Array</span>
+
+
+                    <div class="param-description">
+                        <p>The vector to store the result in</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">localVector</code>
+                        <span class="type">Array</span>
+
+
+                    <div class="param-description">
+                        <p>The input local vector</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
 <div id="method_wakeUp" class="method item">
     <h3 class="name"><code>wakeUp</code></h3>
 
@@ -2012,7 +2656,7 @@ body.updateMassProperties();
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l834"><code>src&#x2F;objects&#x2F;Body.js:834</code></a>
+        <a href="../files/src_objects_Body.js.html#l932"><code>src&#x2F;objects&#x2F;Body.js:932</code></a>
         </p>
 
 
@@ -2045,7 +2689,7 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_objects_Body.js.html#l305"><code>src&#x2F;objects&#x2F;Body.js:305</code></a>
+                            <a href="../files/src_objects_Body.js.html#l315"><code>src&#x2F;objects&#x2F;Body.js:315</code></a>
                             </p>
                     
                     
@@ -2070,7 +2714,7 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_objects_Body.js.html#l312"><code>src&#x2F;objects&#x2F;Body.js:312</code></a>
+                            <a href="../files/src_objects_Body.js.html#l322"><code>src&#x2F;objects&#x2F;Body.js:322</code></a>
                             </p>
                     
                     
@@ -2106,7 +2750,7 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_objects_Body.js.html#l326"><code>src&#x2F;objects&#x2F;Body.js:326</code></a>
+                            <a href="../files/src_objects_Body.js.html#l336"><code>src&#x2F;objects&#x2F;Body.js:336</code></a>
                             </p>
                     
                     
@@ -2132,7 +2776,7 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_objects_Body.js.html#l188"><code>src&#x2F;objects&#x2F;Body.js:188</code></a>
+                            <a href="../files/src_objects_Body.js.html#l198"><code>src&#x2F;objects&#x2F;Body.js:198</code></a>
                             </p>
                     
                     
@@ -2173,7 +2817,7 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_objects_Body.js.html#l251"><code>src&#x2F;objects&#x2F;Body.js:251</code></a>
+                            <a href="../files/src_objects_Body.js.html#l261"><code>src&#x2F;objects&#x2F;Body.js:261</code></a>
                             </p>
                     
                     
@@ -2199,7 +2843,7 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_objects_Body.js.html#l236"><code>src&#x2F;objects&#x2F;Body.js:236</code></a>
+                            <a href="../files/src_objects_Body.js.html#l246"><code>src&#x2F;objects&#x2F;Body.js:246</code></a>
                             </p>
                     
                     
@@ -2224,7 +2868,7 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_objects_Body.js.html#l205"><code>src&#x2F;objects&#x2F;Body.js:205</code></a>
+                            <a href="../files/src_objects_Body.js.html#l215"><code>src&#x2F;objects&#x2F;Body.js:215</code></a>
                             </p>
                     
                     
@@ -2250,7 +2894,7 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_objects_Body.js.html#l1101"><code>src&#x2F;objects&#x2F;Body.js:1101</code></a>
+                            <a href="../files/src_objects_Body.js.html#l1196"><code>src&#x2F;objects&#x2F;Body.js:1196</code></a>
                             </p>
                     
                     
@@ -2274,7 +2918,7 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_objects_Body.js.html#l298"><code>src&#x2F;objects&#x2F;Body.js:298</code></a>
+                            <a href="../files/src_objects_Body.js.html#l308"><code>src&#x2F;objects&#x2F;Body.js:308</code></a>
                             </p>
                     
                     
@@ -2299,7 +2943,7 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_objects_Body.js.html#l396"><code>src&#x2F;objects&#x2F;Body.js:396</code></a>
+                            <a href="../files/src_objects_Body.js.html#l406"><code>src&#x2F;objects&#x2F;Body.js:406</code></a>
                             </p>
                     
                     
@@ -2325,7 +2969,7 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_objects_Body.js.html#l389"><code>src&#x2F;objects&#x2F;Body.js:389</code></a>
+                            <a href="../files/src_objects_Body.js.html#l399"><code>src&#x2F;objects&#x2F;Body.js:399</code></a>
                             </p>
                     
                     
@@ -2351,7 +2995,7 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_objects_Body.js.html#l370"><code>src&#x2F;objects&#x2F;Body.js:370</code></a>
+                            <a href="../files/src_objects_Body.js.html#l380"><code>src&#x2F;objects&#x2F;Body.js:380</code></a>
                             </p>
                     
                     
@@ -2376,7 +3020,7 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_objects_Body.js.html#l243"><code>src&#x2F;objects&#x2F;Body.js:243</code></a>
+                            <a href="../files/src_objects_Body.js.html#l253"><code>src&#x2F;objects&#x2F;Body.js:253</code></a>
                             </p>
                     
                     
@@ -2403,7 +3047,7 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_objects_Body.js.html#l1077"><code>src&#x2F;objects&#x2F;Body.js:1077</code></a>
+                            <a href="../files/src_objects_Body.js.html#l1172"><code>src&#x2F;objects&#x2F;Body.js:1172</code></a>
                             </p>
                     
                     
@@ -2428,7 +3072,7 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_objects_Body.js.html#l119"><code>src&#x2F;objects&#x2F;Body.js:119</code></a>
+                            <a href="../files/src_objects_Body.js.html#l111"><code>src&#x2F;objects&#x2F;Body.js:111</code></a>
                             </p>
                     
                     
@@ -2436,6 +3080,56 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
                     
                         <div class="description">
                             <p>Set to true if you want to fix the rotation of the body.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_fixedX" class="property item">
+                        <h3 class="name"><code>fixedX</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_objects_Body.js.html#l118"><code>src&#x2F;objects&#x2F;Body.js:118</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Set to true if you want to fix the body movement along the X axis. The body will still be able to move along Y.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_fixedY" class="property item">
+                        <h3 class="name"><code>fixedY</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_objects_Body.js.html#l124"><code>src&#x2F;objects&#x2F;Body.js:124</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Set to true if you want to fix the body movement along the Y axis. The body will still be able to move along X.</p>
                     
                         </div>
                     
@@ -2453,7 +3147,7 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_objects_Body.js.html#l212"><code>src&#x2F;objects&#x2F;Body.js:212</code></a>
+                            <a href="../files/src_objects_Body.js.html#l222"><code>src&#x2F;objects&#x2F;Body.js:222</code></a>
                             </p>
                     
                     
@@ -2495,7 +3189,7 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_objects_Body.js.html#l363"><code>src&#x2F;objects&#x2F;Body.js:363</code></a>
+                            <a href="../files/src_objects_Body.js.html#l373"><code>src&#x2F;objects&#x2F;Body.js:373</code></a>
                             </p>
                     
                     
@@ -2521,7 +3215,7 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_objects_Body.js.html#l50"><code>src&#x2F;objects&#x2F;Body.js:50</code></a>
+                            <a href="../files/src_objects_Body.js.html#l58"><code>src&#x2F;objects&#x2F;Body.js:58</code></a>
                             </p>
                     
                     
@@ -2546,7 +3240,7 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_objects_Body.js.html#l376"><code>src&#x2F;objects&#x2F;Body.js:376</code></a>
+                            <a href="../files/src_objects_Body.js.html#l386"><code>src&#x2F;objects&#x2F;Body.js:386</code></a>
                             </p>
                     
                     
@@ -2571,7 +3265,7 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_objects_Body.js.html#l102"><code>src&#x2F;objects&#x2F;Body.js:102</code></a>
+                            <a href="../files/src_objects_Body.js.html#l94"><code>src&#x2F;objects&#x2F;Body.js:94</code></a>
                             </p>
                     
                     
@@ -2596,14 +3290,14 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_objects_Body.js.html#l143"><code>src&#x2F;objects&#x2F;Body.js:143</code></a>
+                            <a href="../files/src_objects_Body.js.html#l153"><code>src&#x2F;objects&#x2F;Body.js:153</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The interpolated angle of the body.</p>
+                            <p>The interpolated angle of the body. Use this for rendering.</p>
                     
                         </div>
                     
@@ -2621,14 +3315,14 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_objects_Body.js.html#l136"><code>src&#x2F;objects&#x2F;Body.js:136</code></a>
+                            <a href="../files/src_objects_Body.js.html#l146"><code>src&#x2F;objects&#x2F;Body.js:146</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The interpolated position of the body.</p>
+                            <p>The interpolated position of the body. Use this for rendering.</p>
                     
                         </div>
                     
@@ -2646,7 +3340,7 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_objects_Body.js.html#l109"><code>src&#x2F;objects&#x2F;Body.js:109</code></a>
+                            <a href="../files/src_objects_Body.js.html#l101"><code>src&#x2F;objects&#x2F;Body.js:101</code></a>
                             </p>
                     
                     
@@ -2671,7 +3365,7 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_objects_Body.js.html#l95"><code>src&#x2F;objects&#x2F;Body.js:95</code></a>
+                            <a href="../files/src_objects_Body.js.html#l87"><code>src&#x2F;objects&#x2F;Body.js:87</code></a>
                             </p>
                     
                     
@@ -2697,7 +3391,7 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_objects_Body.js.html#l1093"><code>src&#x2F;objects&#x2F;Body.js:1093</code></a>
+                            <a href="../files/src_objects_Body.js.html#l1188"><code>src&#x2F;objects&#x2F;Body.js:1188</code></a>
                             </p>
                     
                     
@@ -2722,7 +3416,7 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_objects_Body.js.html#l88"><code>src&#x2F;objects&#x2F;Body.js:88</code></a>
+                            <a href="../files/src_objects_Body.js.html#l80"><code>src&#x2F;objects&#x2F;Body.js:80</code></a>
                             </p>
                     
                     
@@ -2731,6 +3425,31 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
                         <div class="description">
                             <p>The mass of the body.</p>
                     
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_massMultiplier" class="property item private">
+                        <h3 class="name"><code>massMultiplier</code></h3>
+                        <span class="type">Array</span>
+                    
+                    
+                            <span class="flag private">private</span>
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_objects_Body.js.html#l130"><code>src&#x2F;objects&#x2F;Body.js:130</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            
                         </div>
                     
                     
@@ -2747,7 +3466,7 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_objects_Body.js.html#l126"><code>src&#x2F;objects&#x2F;Body.js:126</code></a>
+                            <a href="../files/src_objects_Body.js.html#l136"><code>src&#x2F;objects&#x2F;Body.js:136</code></a>
                             </p>
                     
                     
@@ -2772,7 +3491,7 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_objects_Body.js.html#l157"><code>src&#x2F;objects&#x2F;Body.js:157</code></a>
+                            <a href="../files/src_objects_Body.js.html#l167"><code>src&#x2F;objects&#x2F;Body.js:167</code></a>
                             </p>
                     
                     
@@ -2797,7 +3516,7 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_objects_Body.js.html#l150"><code>src&#x2F;objects&#x2F;Body.js:150</code></a>
+                            <a href="../files/src_objects_Body.js.html#l160"><code>src&#x2F;objects&#x2F;Body.js:160</code></a>
                             </p>
                     
                     
@@ -2805,57 +3524,6 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
                     
                         <div class="description">
                             <p>The previous position of the body.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_shapeAngles" class="property item">
-                        <h3 class="name"><code>shapeAngles</code></h3>
-                        <span class="type">Array</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l81"><code>src&#x2F;objects&#x2F;Body.js:81</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The body-local shape angle transforms. This is an array of numbers (angles).</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_shapeOffsets" class="property item">
-                        <h3 class="name"><code>shapeOffsets</code></h3>
-                        <span class="type">Array</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l73"><code>src&#x2F;objects&#x2F;Body.js:73</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The local shape offsets, relative to the body center of mass. This is an
-                    array of Array.</p>
                     
                         </div>
                     
@@ -2873,15 +3541,14 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_objects_Body.js.html#l64"><code>src&#x2F;objects&#x2F;Body.js:64</code></a>
+                            <a href="../files/src_objects_Body.js.html#l72"><code>src&#x2F;objects&#x2F;Body.js:72</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The shapes of the body. The local transform of the shape in .shapes[i] is
-                    defined by .shapeOffsets[i] and .shapeAngles[i].</p>
+                            <p>The shapes of the body.</p>
                     
                         </div>
                     
@@ -2900,7 +3567,7 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_objects_Body.js.html#l1115"><code>src&#x2F;objects&#x2F;Body.js:1115</code></a>
+                            <a href="../files/src_objects_Body.js.html#l1210"><code>src&#x2F;objects&#x2F;Body.js:1210</code></a>
                             </p>
                     
                     
@@ -2924,7 +3591,7 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_objects_Body.js.html#l347"><code>src&#x2F;objects&#x2F;Body.js:347</code></a>
+                            <a href="../files/src_objects_Body.js.html#l357"><code>src&#x2F;objects&#x2F;Body.js:357</code></a>
                             </p>
                     
                     
@@ -2950,7 +3617,7 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_objects_Body.js.html#l336"><code>src&#x2F;objects&#x2F;Body.js:336</code></a>
+                            <a href="../files/src_objects_Body.js.html#l346"><code>src&#x2F;objects&#x2F;Body.js:346</code></a>
                             </p>
                     
                     
@@ -2977,7 +3644,7 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_objects_Body.js.html#l355"><code>src&#x2F;objects&#x2F;Body.js:355</code></a>
+                            <a href="../files/src_objects_Body.js.html#l365"><code>src&#x2F;objects&#x2F;Body.js:365</code></a>
                             </p>
                     
                     
@@ -3004,7 +3671,7 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_objects_Body.js.html#l1108"><code>src&#x2F;objects&#x2F;Body.js:1108</code></a>
+                            <a href="../files/src_objects_Body.js.html#l1203"><code>src&#x2F;objects&#x2F;Body.js:1203</code></a>
                             </p>
                     
                     
@@ -3029,7 +3696,7 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_objects_Body.js.html#l1085"><code>src&#x2F;objects&#x2F;Body.js:1085</code></a>
+                            <a href="../files/src_objects_Body.js.html#l1180"><code>src&#x2F;objects&#x2F;Body.js:1180</code></a>
                             </p>
                     
                     
@@ -3055,7 +3722,7 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_objects_Body.js.html#l382"><code>src&#x2F;objects&#x2F;Body.js:382</code></a>
+                            <a href="../files/src_objects_Body.js.html#l392"><code>src&#x2F;objects&#x2F;Body.js:392</code></a>
                             </p>
                     
                     
@@ -3080,7 +3747,7 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_objects_Body.js.html#l259"><code>src&#x2F;objects&#x2F;Body.js:259</code></a>
+                            <a href="../files/src_objects_Body.js.html#l269"><code>src&#x2F;objects&#x2F;Body.js:269</code></a>
                             </p>
                     
                     
@@ -3130,14 +3797,14 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_objects_Body.js.html#l164"><code>src&#x2F;objects&#x2F;Body.js:164</code></a>
+                            <a href="../files/src_objects_Body.js.html#l174"><code>src&#x2F;objects&#x2F;Body.js:174</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The velocity of the body</p>
+                            <p>The current velocity of the body.</p>
                     
                         </div>
                     
@@ -3155,7 +3822,7 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_objects_Body.js.html#l174"><code>src&#x2F;objects&#x2F;Body.js:174</code></a>
+                            <a href="../files/src_objects_Body.js.html#l184"><code>src&#x2F;objects&#x2F;Body.js:184</code></a>
                             </p>
                     
                     
@@ -3180,7 +3847,7 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_objects_Body.js.html#l181"><code>src&#x2F;objects&#x2F;Body.js:181</code></a>
+                            <a href="../files/src_objects_Body.js.html#l191"><code>src&#x2F;objects&#x2F;Body.js:191</code></a>
                             </p>
                     
                     
@@ -3205,7 +3872,7 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_objects_Body.js.html#l57"><code>src&#x2F;objects&#x2F;Body.js:57</code></a>
+                            <a href="../files/src_objects_Body.js.html#l65"><code>src&#x2F;objects&#x2F;Body.js:65</code></a>
                             </p>
                     
                     
@@ -3227,7 +3894,7 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
 
                     <div id="event_sleep" class="events item">
                         <h3 class="name"><code>sleep</code></h3>
-                        <span class="type"></span>
+                        <span class="type"><a href="../classes/.html" class="crosslink"></a></span>
                     
                     
                     
@@ -3236,7 +3903,7 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_objects_Body.js.html#l1063"><code>src&#x2F;objects&#x2F;Body.js:1063</code></a>
+                            <a href="../files/src_objects_Body.js.html#l1158"><code>src&#x2F;objects&#x2F;Body.js:1158</code></a>
                             </p>
                     
                     
@@ -3251,7 +3918,7 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
                     </div>
                     <div id="event_sleepy" class="events item">
                         <h3 class="name"><code>sleepy</code></h3>
-                        <span class="type"></span>
+                        <span class="type"><a href="../classes/.html" class="crosslink"></a></span>
                     
                     
                     
@@ -3260,7 +3927,7 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_objects_Body.js.html#l1056"><code>src&#x2F;objects&#x2F;Body.js:1056</code></a>
+                            <a href="../files/src_objects_Body.js.html#l1151"><code>src&#x2F;objects&#x2F;Body.js:1151</code></a>
                             </p>
                     
                     
@@ -3275,7 +3942,7 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
                     </div>
                     <div id="event_wakeup" class="events item">
                         <h3 class="name"><code>wakeup</code></h3>
-                        <span class="type"></span>
+                        <span class="type"><a href="../classes/.html" class="crosslink"></a></span>
                     
                     
                     
@@ -3284,7 +3951,7 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_objects_Body.js.html#l1070"><code>src&#x2F;objects&#x2F;Body.js:1070</code></a>
+                            <a href="../files/src_objects_Body.js.html#l1165"><code>src&#x2F;objects&#x2F;Body.js:1165</code></a>
                             </p>
                     
                     

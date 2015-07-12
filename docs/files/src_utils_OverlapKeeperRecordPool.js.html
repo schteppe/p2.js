@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/shapes/Rectangle.js - p2.js</title>
+    <title>src/utils/OverlapKeeperRecordPool.js - p2.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="p2.js" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.6.1</em>
+            <em>API Docs for: 0.7.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -41,6 +41,7 @@
                                 <li><a href="../classes/AABB.html">AABB</a></li>
                                 <li><a href="../classes/AngleLockEquation.html">AngleLockEquation</a></li>
                                 <li><a href="../classes/Body.html">Body</a></li>
+                                <li><a href="../classes/Box.html">Box</a></li>
                                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
                                 <li><a href="../classes/Capsule.html">Capsule</a></li>
                                 <li><a href="../classes/Circle.html">Circle</a></li>
@@ -53,7 +54,6 @@
                                 <li><a href="../classes/EventEmitter.html">EventEmitter</a></li>
                                 <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
                                 <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
-                                <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
                                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
                                 <li><a href="../classes/Heightfield.html">Heightfield</a></li>
                                 <li><a href="../classes/Island.html">Island</a></li>
@@ -65,6 +65,7 @@
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
                                 <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
+                                <li><a href="../classes/Object pooling utility..html">Object pooling utility.</a></li>
                                 <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
                                 <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
                                 <li><a href="../classes/Particle.html">Particle</a></li>
@@ -72,18 +73,20 @@
                                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
                                 <li><a href="../classes/Ray.html">Ray</a></li>
                                 <li><a href="../classes/RaycastResult.html">RaycastResult</a></li>
-                                <li><a href="../classes/Rectangle.html">Rectangle</a></li>
                                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
                                 <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
+                                <li><a href="../classes/.html"></a></li>
                                 <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
                                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
                                 <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
                                 <li><a href="../classes/Shape.html">Shape</a></li>
                                 <li><a href="../classes/Solver.html">Solver</a></li>
                                 <li><a href="../classes/Spring.html">Spring</a></li>
+                                <li><a href="../classes/TopDownVehicle.html">TopDownVehicle</a></li>
                                 <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
                                 <li><a href="../classes/Utils.html">Utils</a></li>
                                 <li><a href="../classes/vec2.html">vec2</a></li>
+                                <li><a href="../classes/WheelConstraint.html">WheelConstraint</a></li>
                                 <li><a href="../classes/World.html">World</a></li>
                             </ul>
                 
@@ -121,94 +124,41 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1 class="file-heading">File: src/shapes/Rectangle.js</h1>
+<h1 class="file-heading">File: src/utils/OverlapKeeperRecordPool.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
-var vec2 = require(&#x27;../math/vec2&#x27;)
-,   Shape = require(&#x27;./Shape&#x27;)
-,   Convex = require(&#x27;./Convex&#x27;);
+var OverlapKeeperRecord = require(&#x27;./OverlapKeeperRecord&#x27;);
+var Pool = require(&#x27;./Pool&#x27;);
 
-module.exports = Rectangle;
+module.exports = OverlapKeeperRecordPool;
 
 /**
- * Rectangle shape class.
- * @class Rectangle
- * @constructor
- * @param {Number} [width=1] Width
- * @param {Number} [height=1] Height
- * @extends Convex
+ * @class
  */
-function Rectangle(width, height){
-
-    /**
-     * Total width of the rectangle
-     * @property width
-     * @type {Number}
-     */
-    this.width = width || 1;
-
-    /**
-     * Total height of the rectangle
-     * @property height
-     * @type {Number}
-     */
-    this.height = height || 1;
-
-    var verts = [   vec2.fromValues(-width/2, -height/2),
-                    vec2.fromValues( width/2, -height/2),
-                    vec2.fromValues( width/2,  height/2),
-                    vec2.fromValues(-width/2,  height/2)];
-    var axes = [vec2.fromValues(1, 0), vec2.fromValues(0, 1)];
-
-    Convex.call(this, verts, axes);
-
-    this.type = Shape.RECTANGLE;
+function OverlapKeeperRecordPool() {
+	Pool.apply(this, arguments);
 }
-Rectangle.prototype = new Convex([]);
-Rectangle.prototype.constructor = Rectangle;
+OverlapKeeperRecordPool.prototype = new Pool();
+OverlapKeeperRecordPool.prototype.constructor = OverlapKeeperRecordPool;
 
 /**
- * Compute moment of inertia
- * @method computeMomentOfInertia
- * @param  {Number} mass
- * @return {Number}
+ * @method create
+ * @return {OverlapKeeperRecord}
  */
-Rectangle.prototype.computeMomentOfInertia = function(mass){
-    var w = this.width,
-        h = this.height;
-    return mass * (h*h + w*w) / 12;
+OverlapKeeperRecordPool.prototype.create = function () {
+	return new OverlapKeeperRecord();
 };
 
 /**
- * Update the bounding radius
- * @method updateBoundingRadius
+ * @method destroy
+ * @param {OverlapKeeperRecord} record
+ * @return {OverlapKeeperRecordPool}
  */
-Rectangle.prototype.updateBoundingRadius = function(){
-    var w = this.width,
-        h = this.height;
-    this.boundingRadius = Math.sqrt(w*w + h*h) / 2;
+OverlapKeeperRecordPool.prototype.destroy = function (record) {
+	record.bodyA = record.bodyB = record.shapeA = record.shapeB = null;
+	return this;
 };
-
-var corner1 = vec2.create(),
-    corner2 = vec2.create(),
-    corner3 = vec2.create(),
-    corner4 = vec2.create();
-
-/**
- * @method computeAABB
- * @param  {AABB}   out      The resulting AABB.
- * @param  {Array}  position
- * @param  {Number} angle
- */
-Rectangle.prototype.computeAABB = function(out, position, angle){
-    out.setFromPoints(this.vertices,position,angle,0);
-};
-
-Rectangle.prototype.updateArea = function(){
-    this.area = this.width * this.height;
-};
-
 
     </pre>
 </div>

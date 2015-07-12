@@ -33,7 +33,7 @@
                     mass: 1,
                     position: [1,4]
                 }),
-                boxShape = new p2.Rectangle(0.5,0.5);
+                boxShape = new p2.Box({ width: 0.5, height: 0.5 });
             boxShape.material = new p2.Material();
             boxBody.addShape(boxShape);
             world.addBody(boxBody);
@@ -43,7 +43,7 @@
                     mass: 0, // static
                     position: [-0.5,1]
                 }),
-                platformShape1 = new p2.Rectangle(3,0.2);
+                platformShape1 = new p2.Box({ width: 3, height: 0.2 });
             platformBody1.addShape(platformShape1);
             world.addBody(platformBody1);
             platformShape1.material = new p2.Material();
@@ -53,7 +53,7 @@
                     mass: 0, // static
                     position: [0.5, 2]
                 }),
-                platformShape2 = new p2.Rectangle(3,0.2);
+                platformShape2 = new p2.Box({ width: 3, height: 0.2 });
             platformBody2.addShape(platformShape2);
             world.addBody(platformBody2);
             platformShape2.material = new p2.Material();

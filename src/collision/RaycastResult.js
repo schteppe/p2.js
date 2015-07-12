@@ -1,38 +1,20 @@
 var vec2 = require('../math/vec2');
+var Ray = require('../collision/Ray');
 
 module.exports = RaycastResult;
 
 /**
- * Storage for Ray casting data.
+ * Storage for Ray casting hit data.
  * @class RaycastResult
  * @constructor
  */
 function RaycastResult(){
 
 	/**
-	 * @property {array} rayFromWorld
+	 * The normal of the hit, oriented in world space.
+	 * @property {array} normal
 	 */
-	this.rayFromWorld = vec2.create();
-
-	/**
-	 * @property {array} rayToWorld
-	 */
-	this.rayToWorld = vec2.create();
-
-	/**
-	 * @property {array} hitNormalWorld
-	 */
-	this.hitNormalWorld = vec2.create();
-
-	/**
-	 * @property {array} hitPointWorld
-	 */
-	this.hitPointWorld = vec2.create();
-
-	/**
-	 * @property {boolean} hasHit
-	 */
-	this.hasHit = false;
+	this.normal = vec2.create();
 
 	/**
 	 * The hit shape, or null.
@@ -47,76 +29,103 @@ function RaycastResult(){
 	this.body = null;
 
 	/**
-	 * The index of the hit triangle, if the hit shape was a trimesh.
-	 * @property {number} hitFaceIndex
+	 * The index of the hit triangle, if the hit shape was indexable.
+	 * @property {number} faceIndex
 	 * @default -1
 	 */
-	this.hitFaceIndex = -1;
+	this.faceIndex = -1;
 
 	/**
-	 * Distance to the hit. Will be set to -1 if there was no hit.
-	 * @property {number} distance
+	 * Distance to the hit, as a fraction. 0 is at the "from" point, 1 is at the "to" point. Will be set to -1 if there was no hit yet.
+	 * @property {number} fraction
 	 * @default -1
 	 */
-	this.distance = -1;
+	this.fraction = -1;
 
 	/**
-	 * If the ray should stop traversing the bodies.
-	 * @private
-	 * @property {Boolean} _shouldStop
-	 * @default false
+	 * If the ray should stop traversing.
+	 * @readonly
+	 * @property {Boolean} isStopped
 	 */
-	this._shouldStop = false;
+	this.isStopped = false;
 }
 
 /**
- * Reset all result data.
+ * Reset all result data. Must be done before re-using the result object.
  * @method reset
  */
 RaycastResult.prototype.reset = function () {
-	vec2.set(this.rayFromWorld, 0, 0);
-	vec2.set(this.rayToWorld, 0, 0);
-	vec2.set(this.hitNormalWorld, 0, 0);
-	vec2.set(this.hitPointWorld, 0, 0);
-	this.hasHit = false;
+	vec2.set(this.normal, 0, 0);
 	this.shape = null;
 	this.body = null;
-	this.hitFaceIndex = -1;
-	this.distance = -1;
-	this._shouldStop = false;
+	this.faceIndex = -1;
+	this.fraction = -1;
+	this.isStopped = false;
 };
 
 /**
- * @method abort
+ * Get the distance to the hit point.
+ * @method getHitDistance
+ * @param {Ray} ray
  */
-RaycastResult.prototype.abort = function(){
-	this._shouldStop = true;
+RaycastResult.prototype.getHitDistance = function (ray) {
+	return vec2.distance(ray.from, ray.to) * this.fraction;
+};
+
+/**
+ * Returns true if the ray hit something since the last reset().
+ * @method hasHit
+ */
+RaycastResult.prototype.hasHit = function () {
+	return this.fraction !== -1;
+};
+
+/**
+ * Get world hit point.
+ * @method getHitPoint
+ * @param {array} out
+ * @param {Ray} ray
+ */
+RaycastResult.prototype.getHitPoint = function (out, ray) {
+	vec2.lerp(out, ray.from, ray.to, this.fraction);
+};
+
+/**
+ * Can be called while iterating over hits to stop searching for hit points.
+ * @method stop
+ */
+RaycastResult.prototype.stop = function(){
+	this.isStopped = true;
+};
+
+/**
+ * @method shouldStop
+ * @private
+ * @param {Ray} ray
+ * @return {boolean}
+ */
+RaycastResult.prototype.shouldStop = function(ray){
+	return this.isStopped || (this.fraction !== -1 && ray.mode === Ray.ANY);
 };
 
 /**
  * @method set
- * @param {array} rayFromWorld
- * @param {array} rayToWorld
- * @param {array} hitNormalWorld
- * @param {array} hitPointWorld
+ * @private
+ * @param {array} normal
  * @param {Shape} shape
  * @param {Body} body
- * @param {number} distance
+ * @param {number} fraction
  */
 RaycastResult.prototype.set = function(
-	rayFromWorld,
-	rayToWorld,
-	hitNormalWorld,
-	hitPointWorld,
+	normal,
 	shape,
 	body,
-	distance
+	fraction,
+	faceIndex
 ){
-	vec2.copy(this.rayFromWorld, rayFromWorld);
-	vec2.copy(this.rayToWorld, rayToWorld);
-	vec2.copy(this.hitNormalWorld, hitNormalWorld);
-	vec2.copy(this.hitPointWorld, hitPointWorld);
+	vec2.copy(this.normal, normal);
 	this.shape = shape;
 	this.body = body;
-	this.distance = distance;
+	this.fraction = fraction;
+	this.faceIndex = faceIndex;
 };

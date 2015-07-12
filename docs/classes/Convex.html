@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="p2.js" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.6.1</em>
+            <em>API Docs for: 0.7.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -41,6 +41,7 @@
                                 <li><a href="../classes/AABB.html">AABB</a></li>
                                 <li><a href="../classes/AngleLockEquation.html">AngleLockEquation</a></li>
                                 <li><a href="../classes/Body.html">Body</a></li>
+                                <li><a href="../classes/Box.html">Box</a></li>
                                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
                                 <li><a href="../classes/Capsule.html">Capsule</a></li>
                                 <li><a href="../classes/Circle.html">Circle</a></li>
@@ -53,7 +54,6 @@
                                 <li><a href="../classes/EventEmitter.html">EventEmitter</a></li>
                                 <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
                                 <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
-                                <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
                                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
                                 <li><a href="../classes/Heightfield.html">Heightfield</a></li>
                                 <li><a href="../classes/Island.html">Island</a></li>
@@ -65,6 +65,7 @@
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
                                 <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
+                                <li><a href="../classes/Object pooling utility..html">Object pooling utility.</a></li>
                                 <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
                                 <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
                                 <li><a href="../classes/Particle.html">Particle</a></li>
@@ -72,18 +73,20 @@
                                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
                                 <li><a href="../classes/Ray.html">Ray</a></li>
                                 <li><a href="../classes/RaycastResult.html">RaycastResult</a></li>
-                                <li><a href="../classes/Rectangle.html">Rectangle</a></li>
                                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
                                 <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
+                                <li><a href="../classes/.html"></a></li>
                                 <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
                                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
                                 <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
                                 <li><a href="../classes/Shape.html">Shape</a></li>
                                 <li><a href="../classes/Solver.html">Solver</a></li>
                                 <li><a href="../classes/Spring.html">Spring</a></li>
+                                <li><a href="../classes/TopDownVehicle.html">TopDownVehicle</a></li>
                                 <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
                                 <li><a href="../classes/Utils.html">Utils</a></li>
                                 <li><a href="../classes/vec2.html">vec2</a></li>
+                                <li><a href="../classes/WheelConstraint.html">WheelConstraint</a></li>
                                 <li><a href="../classes/World.html">World</a></li>
                             </ul>
                 
@@ -149,10 +152,7 @@
                 <div class="args">
                     <span class="paren">(</span><ul class="args-list inline commas">
                         <li class="arg">
-                                <code>vertices</code>
-                        </li>
-                        <li class="arg">
-                                <code class="optional">[axes]</code>
+                                <code class="optional">[options]</code>
                         </li>
                     </ul><span class="paren">)</span>
                 </div>
@@ -183,27 +183,40 @@
         
                     <ul class="params-list">
                         <li class="param">
-                                <code class="param-name">vertices</code>
-                                <span class="type">Array</span>
-        
-        
-                            <div class="param-description">
-                                <p>An array of vertices that span this shape. Vertices are given in counter-clockwise (CCW) direction.</p>
-        
-                            </div>
-        
-                        </li>
-                        <li class="param">
-                                <code class="param-name optional">[axes]</code>
-                                <span class="type">Array</span>
+                                <code class="param-name optional">[options]</code>
+                                <span class="type">Object</span>
                                 <span class="flag optional" title="This parameter is optional.">optional</span>
         
         
                             <div class="param-description">
-                                <p>An array of unit length vectors, representing the symmetry axes in the convex.</p>
+                                <p>(Note that this options object will be passed on to the <a href="../classes/Shape.html" class="crosslink">Shape</a> constructor.)</p>
         
                             </div>
         
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name optional">[vertices]</code>
+                                            <span class="type">Array</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>An array of vertices that span this shape. Vertices are given in counter-clockwise (CCW) direction.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[axes]</code>
+                                            <span class="type">Array</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>An array of unit length vectors, representing the symmetry axes in the convex.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                </ul>
                         </li>
                     </ul>
                 </div>
@@ -216,7 +229,7 @@
                     <div class="example-content">
                         <pre class="code prettyprint"><code>// Create a box
         var vertices = [[-1,-1], [1,-1], [1,1], [-1,1]];
-        var convexShape = new Convex(vertices);
+        var convexShape = new Convex({ vertices: vertices });
         body.addShape(convexShape);
         </code></pre>
                     </div>
@@ -253,6 +266,10 @@
 
                                     <span class="flag static">static</span>
                             </li>
+                            <li class="index-item method inherited">
+                                <a href="#method_raycast">raycast</a>
+
+                            </li>
                             <li class="index-item method">
                                 <a href="#method_triangleArea">triangleArea</a>
 
@@ -282,11 +299,19 @@
 
                     <ul class="index-list properties extends">
                             <li class="index-item property inherited">
+                                <a href="#property_angle">angle</a>
+
+                            </li>
+                            <li class="index-item property inherited">
                                 <a href="#property_area">area</a>
 
                             </li>
                             <li class="index-item property">
                                 <a href="#property_axes">axes</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_body">body</a>
 
                             </li>
                             <li class="index-item property inherited">
@@ -315,6 +340,10 @@
                             </li>
                             <li class="index-item property inherited">
                                 <a href="#property_material">material</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_position">position</a>
 
                             </li>
                             <li class="index-item property inherited">
@@ -372,7 +401,7 @@
                 Shape
             </a>
             but overwritten in
-        <a href="../files/src_shapes_Convex.js.html#l318"><code>src&#x2F;shapes&#x2F;Convex.js:318</code></a>
+        <a href="../files/src_shapes_Convex.js.html#l333"><code>src&#x2F;shapes&#x2F;Convex.js:333</code></a>
         </p>
 
 
@@ -393,7 +422,7 @@
 
 
                     <div class="param-description">
-                         
+                        
                     </div>
 
                 </li>
@@ -403,7 +432,7 @@
 
 
                     <div class="param-description">
-                         
+                        
                     </div>
 
                 </li>
@@ -413,7 +442,7 @@
 
 
                     <div class="param-description">
-                         
+                        
                     </div>
 
                 </li>
@@ -450,7 +479,7 @@
                 Shape
             </a>
             but overwritten in
-        <a href="../files/src_shapes_Convex.js.html#l243"><code>src&#x2F;shapes&#x2F;Convex.js:243</code></a>
+        <a href="../files/src_shapes_Convex.js.html#l258"><code>src&#x2F;shapes&#x2F;Convex.js:258</code></a>
         </p>
 
 
@@ -472,7 +501,7 @@
 
 
                     <div class="param-description">
-                         
+                        
                     </div>
 
                 </li>
@@ -517,7 +546,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_shapes_Convex.js.html#l109"><code>src&#x2F;shapes&#x2F;Convex.js:109</code></a>
+        <a href="../files/src_shapes_Convex.js.html#l124"><code>src&#x2F;shapes&#x2F;Convex.js:124</code></a>
         </p>
 
 
@@ -569,6 +598,100 @@
 
 
 </div>
+<div id="method_raycast" class="method item">
+    <h3 class="name"><code>raycast</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>result</code>
+                </li>
+                <li class="arg">
+                        <code>ray</code>
+                </li>
+                <li class="arg">
+                        <code>position</code>
+                </li>
+                <li class="arg">
+                        <code>angle</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+            <p>Inherited from
+            <a href="../classes/Shape.html#method_raycast">
+                Shape
+            </a>
+            but overwritten in
+        <a href="../files/src_shapes_Convex.js.html#l347"><code>src&#x2F;shapes&#x2F;Convex.js:347</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">result</code>
+                        <span class="type"><a href="../classes/RaycastResult.html" class="crosslink">RaycastResult</a></span>
+
+
+                    <div class="param-description">
+                        
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">ray</code>
+                        <span class="type"><a href="../classes/Ray.html" class="crosslink">Ray</a></span>
+
+
+                    <div class="param-description">
+                        
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">position</code>
+                        <span class="type">Array</span>
+
+
+                    <div class="param-description">
+                        
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">angle</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                        
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
 <div id="method_triangleArea" class="method item">
     <h3 class="name"><code>triangleArea</code></h3>
 
@@ -600,7 +723,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_shapes_Convex.js.html#l283"><code>src&#x2F;shapes&#x2F;Convex.js:283</code></a>
+        <a href="../files/src_shapes_Convex.js.html#l298"><code>src&#x2F;shapes&#x2F;Convex.js:298</code></a>
         </p>
 
 
@@ -677,7 +800,7 @@
                 Shape
             </a>
             but overwritten in
-        <a href="../files/src_shapes_Convex.js.html#l296"><code>src&#x2F;shapes&#x2F;Convex.js:296</code></a>
+        <a href="../files/src_shapes_Convex.js.html#l311"><code>src&#x2F;shapes&#x2F;Convex.js:311</code></a>
         </p>
 
 
@@ -711,7 +834,7 @@
                 Shape
             </a>
             but overwritten in
-        <a href="../files/src_shapes_Convex.js.html#l265"><code>src&#x2F;shapes&#x2F;Convex.js:265</code></a>
+        <a href="../files/src_shapes_Convex.js.html#l280"><code>src&#x2F;shapes&#x2F;Convex.js:280</code></a>
         </p>
 
 
@@ -742,7 +865,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_shapes_Convex.js.html#l201"><code>src&#x2F;shapes&#x2F;Convex.js:201</code></a>
+        <a href="../files/src_shapes_Convex.js.html#l216"><code>src&#x2F;shapes&#x2F;Convex.js:216</code></a>
         </p>
 
 
@@ -773,7 +896,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_shapes_Convex.js.html#l162"><code>src&#x2F;shapes&#x2F;Convex.js:162</code></a>
+        <a href="../files/src_shapes_Convex.js.html#l177"><code>src&#x2F;shapes&#x2F;Convex.js:177</code></a>
         </p>
 
 
@@ -794,6 +917,31 @@
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
+                    <div id="property_angle" class="property item inherited">
+                        <h3 class="name"><code>angle</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Shape.html#property_angle">Shape</a>:
+                            <a href="../files/src_shapes_Shape.js.html#l36"><code>src&#x2F;shapes&#x2F;Shape.js:36</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Body-local angle of the shape.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_area" class="property item inherited">
                         <h3 class="name"><code>area</code></h3>
                         <span class="type">Number</span>
@@ -805,7 +953,7 @@
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Shape.html#property_area">Shape</a>:
-                            <a href="../files/src_shapes_Shape.js.html#l95"><code>src&#x2F;shapes&#x2F;Shape.js:95</code></a>
+                            <a href="../files/src_shapes_Shape.js.html#l123"><code>src&#x2F;shapes&#x2F;Shape.js:123</code></a>
                             </p>
                     
                     
@@ -830,7 +978,7 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_shapes_Convex.js.html#l30"><code>src&#x2F;shapes&#x2F;Convex.js:30</code></a>
+                            <a href="../files/src_shapes_Convex.js.html#l47"><code>src&#x2F;shapes&#x2F;Convex.js:47</code></a>
                             </p>
                     
                     
@@ -838,6 +986,31 @@
                     
                         <div class="description">
                             <p>Axes defined in the local frame.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_body" class="property item inherited">
+                        <h3 class="name"><code>body</code></h3>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Shape.html#property_body">Shape</a>:
+                            <a href="../files/src_shapes_Shape.js.html#l21"><code>src&#x2F;shapes&#x2F;Shape.js:21</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The body this shape is attached to. A shape can only be attached to a single body.</p>
                     
                         </div>
                     
@@ -858,7 +1031,7 @@
                                     Shape
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_shapes_Convex.js.html#l88"><code>src&#x2F;shapes&#x2F;Convex.js:88</code></a>
+                            <a href="../files/src_shapes_Convex.js.html#l102"><code>src&#x2F;shapes&#x2F;Convex.js:102</code></a>
                             </p>
                     
                     
@@ -883,7 +1056,7 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_shapes_Convex.js.html#l69"><code>src&#x2F;shapes&#x2F;Convex.js:69</code></a>
+                            <a href="../files/src_shapes_Convex.js.html#l83"><code>src&#x2F;shapes&#x2F;Convex.js:83</code></a>
                             </p>
                     
                     
@@ -908,7 +1081,7 @@
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Shape.html#property_collisionGroup">Shape</a>:
-                            <a href="../files/src_shapes_Shape.js.html#l41"><code>src&#x2F;shapes&#x2F;Shape.js:41</code></a>
+                            <a href="../files/src_shapes_Shape.js.html#l72"><code>src&#x2F;shapes&#x2F;Shape.js:72</code></a>
                             </p>
                     
                     
@@ -961,7 +1134,7 @@
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Shape.html#property_collisionMask">Shape</a>:
-                            <a href="../files/src_shapes_Shape.js.html#l78"><code>src&#x2F;shapes&#x2F;Shape.js:78</code></a>
+                            <a href="../files/src_shapes_Shape.js.html#l109"><code>src&#x2F;shapes&#x2F;Shape.js:109</code></a>
                             </p>
                     
                     
@@ -986,7 +1159,7 @@
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Shape.html#property_collisionResponse">Shape</a>:
-                            <a href="../files/src_shapes_Shape.js.html#l72"><code>src&#x2F;shapes&#x2F;Shape.js:72</code></a>
+                            <a href="../files/src_shapes_Shape.js.html#l103"><code>src&#x2F;shapes&#x2F;Shape.js:103</code></a>
                             </p>
                     
                     
@@ -1011,7 +1184,7 @@
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Shape.html#property_id">Shape</a>:
-                            <a href="../files/src_shapes_Shape.js.html#l27"><code>src&#x2F;shapes&#x2F;Shape.js:27</code></a>
+                            <a href="../files/src_shapes_Shape.js.html#l58"><code>src&#x2F;shapes&#x2F;Shape.js:58</code></a>
                             </p>
                     
                     
@@ -1036,7 +1209,7 @@
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Shape.html#property_material">Shape</a>:
-                            <a href="../files/src_shapes_Shape.js.html#l88"><code>src&#x2F;shapes&#x2F;Shape.js:88</code></a>
+                            <a href="../files/src_shapes_Shape.js.html#l116"><code>src&#x2F;shapes&#x2F;Shape.js:116</code></a>
                             </p>
                     
                     
@@ -1044,6 +1217,31 @@
                     
                         <div class="description">
                             <p>Material to use in collisions for this Shape. If this is set to null, the world will use default material properties instead.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_position" class="property item inherited">
+                        <h3 class="name"><code>position</code></h3>
+                        <span class="type">Array</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Shape.html#property_position">Shape</a>:
+                            <a href="../files/src_shapes_Shape.js.html#l27"><code>src&#x2F;shapes&#x2F;Shape.js:27</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Body-local position of the shape.</p>
                     
                         </div>
                     
@@ -1061,7 +1259,7 @@
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Shape.html#property_sensor">Shape</a>:
-                            <a href="../files/src_shapes_Shape.js.html#l102"><code>src&#x2F;shapes&#x2F;Shape.js:102</code></a>
+                            <a href="../files/src_shapes_Shape.js.html#l130"><code>src&#x2F;shapes&#x2F;Shape.js:130</code></a>
                             </p>
                     
                     
@@ -1086,7 +1284,7 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_shapes_Convex.js.html#l76"><code>src&#x2F;shapes&#x2F;Convex.js:76</code></a>
+                            <a href="../files/src_shapes_Convex.js.html#l90"><code>src&#x2F;shapes&#x2F;Convex.js:90</code></a>
                             </p>
                     
                     
@@ -1111,7 +1309,7 @@
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Shape.html#property_type">Shape</a>:
-                            <a href="../files/src_shapes_Shape.js.html#l11"><code>src&#x2F;shapes&#x2F;Shape.js:11</code></a>
+                            <a href="../files/src_shapes_Shape.js.html#l42"><code>src&#x2F;shapes&#x2F;Shape.js:42</code></a>
                             </p>
                     
                     
@@ -1125,7 +1323,7 @@
                     <li><a href="../classes/Shape.html#property_PLANE" class="crosslink">Shape.PLANE</a></li>
                     <li><a href="../classes/Shape.html#property_CONVEX" class="crosslink">Shape.CONVEX</a></li>
                     <li><a href="../classes/Shape.html#property_LINE" class="crosslink">Shape.LINE</a></li>
-                    <li><a href="../classes/Shape.html#property_RECTANGLE" class="crosslink">Shape.RECTANGLE</a></li>
+                    <li><a href="../classes/Shape.html#property_BOX" class="crosslink">Shape.BOX</a></li>
                     <li><a href="../classes/Shape.html#property_CAPSULE" class="crosslink">Shape.CAPSULE</a></li>
                     <li><a href="../classes/Shape.html#property_HEIGHTFIELD" class="crosslink">Shape.HEIGHTFIELD</a></li>
                     </ul>
@@ -1146,7 +1344,7 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_shapes_Convex.js.html#l23"><code>src&#x2F;shapes&#x2F;Convex.js:23</code></a>
+                            <a href="../files/src_shapes_Convex.js.html#l32"><code>src&#x2F;shapes&#x2F;Convex.js:32</code></a>
                             </p>
                     
                     

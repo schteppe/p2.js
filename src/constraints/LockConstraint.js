@@ -5,7 +5,7 @@ var Constraint = require('./Constraint')
 module.exports = LockConstraint;
 
 /**
- * Locks the relative position between two bodies.
+ * Locks the relative position and rotation between two bodies.
  *
  * @class LockConstraint
  * @constructor
@@ -17,6 +17,11 @@ module.exports = LockConstraint;
  * @param {number} [options.localAngleB] The angle of bodyB in bodyA's frame. If not given, the angle is computed from current angles.
  * @param {number} [options.maxForce]
  * @extends Constraint
+ *
+ * @example
+ *     // Locks the relative position and rotation between bodyA and bodyB
+ *     var constraint = new LockConstraint(bodyA, bodyB);
+ *     world.addConstraint(constraint);
  */
 function LockConstraint(bodyA, bodyB, options){
     options = options || {};

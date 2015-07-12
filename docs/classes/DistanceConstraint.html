@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="p2.js" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.6.1</em>
+            <em>API Docs for: 0.7.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -41,6 +41,7 @@
                                 <li><a href="../classes/AABB.html">AABB</a></li>
                                 <li><a href="../classes/AngleLockEquation.html">AngleLockEquation</a></li>
                                 <li><a href="../classes/Body.html">Body</a></li>
+                                <li><a href="../classes/Box.html">Box</a></li>
                                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
                                 <li><a href="../classes/Capsule.html">Capsule</a></li>
                                 <li><a href="../classes/Circle.html">Circle</a></li>
@@ -53,7 +54,6 @@
                                 <li><a href="../classes/EventEmitter.html">EventEmitter</a></li>
                                 <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
                                 <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
-                                <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
                                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
                                 <li><a href="../classes/Heightfield.html">Heightfield</a></li>
                                 <li><a href="../classes/Island.html">Island</a></li>
@@ -65,6 +65,7 @@
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
                                 <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
+                                <li><a href="../classes/Object pooling utility..html">Object pooling utility.</a></li>
                                 <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
                                 <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
                                 <li><a href="../classes/Particle.html">Particle</a></li>
@@ -72,18 +73,20 @@
                                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
                                 <li><a href="../classes/Ray.html">Ray</a></li>
                                 <li><a href="../classes/RaycastResult.html">RaycastResult</a></li>
-                                <li><a href="../classes/Rectangle.html">Rectangle</a></li>
                                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
                                 <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
+                                <li><a href="../classes/.html"></a></li>
                                 <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
                                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
                                 <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
                                 <li><a href="../classes/Shape.html">Shape</a></li>
                                 <li><a href="../classes/Solver.html">Solver</a></li>
                                 <li><a href="../classes/Spring.html">Spring</a></li>
+                                <li><a href="../classes/TopDownVehicle.html">TopDownVehicle</a></li>
                                 <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
                                 <li><a href="../classes/Utils.html">Utils</a></li>
                                 <li><a href="../classes/vec2.html">vec2</a></li>
+                                <li><a href="../classes/WheelConstraint.html">WheelConstraint</a></li>
                                 <li><a href="../classes/World.html">World</a></li>
                             </ul>
                 
@@ -276,11 +279,14 @@
         var bodyA = new Body({ mass: 1, position: [-1, 0] });
         var bodyB = new Body({ mass: 1, position: [1, 0] });
         var constraint = new DistanceConstraint(bodyA, bodyB);
-        </code></pre><pre class="code prettyprint"><code>var constraint = new DistanceConstraint(bodyA, bodyB, {
+        world.addConstraint(constraint);
+        </code></pre><pre class="code prettyprint"><code>// Manually set the distance and anchors
+        var constraint = new DistanceConstraint(bodyA, bodyB, {
             distance: 1,          // Distance to keep between the points
             localAnchorA: [1, 0], // Point on bodyA
             localAnchorB: [-1, 0] // Point on bodyB
         });
+        world.addConstraint(constraint);
         </code></pre>
                     </div>
                 </div>
@@ -413,7 +419,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_constraints_DistanceConstraint.js.html#l257"><code>src&#x2F;constraints&#x2F;DistanceConstraint.js:257</code></a>
+        <a href="../files/src_constraints_DistanceConstraint.js.html#l260"><code>src&#x2F;constraints&#x2F;DistanceConstraint.js:260</code></a>
         </p>
 
 
@@ -442,7 +448,7 @@
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
                 <li class="arg">
-                        <code>f</code>
+                        <code>maxForce</code>
                 </li>
             </ul><span class="paren">)</span>
         </div>
@@ -457,7 +463,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_constraints_DistanceConstraint.js.html#l246"><code>src&#x2F;constraints&#x2F;DistanceConstraint.js:246</code></a>
+        <a href="../files/src_constraints_DistanceConstraint.js.html#l249"><code>src&#x2F;constraints&#x2F;DistanceConstraint.js:249</code></a>
         </p>
 
 
@@ -474,7 +480,7 @@
 
             <ul class="params-list">
                 <li class="param">
-                        <code class="param-name">f</code>
+                        <code class="param-name">maxForce</code>
                         <span class="type">Number</span>
 
 
@@ -613,7 +619,7 @@
                 Constraint
             </a>
             but overwritten in
-        <a href="../files/src_constraints_DistanceConstraint.js.html#l177"><code>src&#x2F;constraints&#x2F;DistanceConstraint.js:177</code></a>
+        <a href="../files/src_constraints_DistanceConstraint.js.html#l180"><code>src&#x2F;constraints&#x2F;DistanceConstraint.js:180</code></a>
         </p>
 
 
@@ -721,7 +727,7 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_constraints_DistanceConstraint.js.html#l62"><code>src&#x2F;constraints&#x2F;DistanceConstraint.js:62</code></a>
+                            <a href="../files/src_constraints_DistanceConstraint.js.html#l65"><code>src&#x2F;constraints&#x2F;DistanceConstraint.js:65</code></a>
                             </p>
                     
                     
@@ -771,7 +777,7 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_constraints_DistanceConstraint.js.html#l45"><code>src&#x2F;constraints&#x2F;DistanceConstraint.js:45</code></a>
+                            <a href="../files/src_constraints_DistanceConstraint.js.html#l48"><code>src&#x2F;constraints&#x2F;DistanceConstraint.js:48</code></a>
                             </p>
                     
                     
@@ -796,7 +802,7 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_constraints_DistanceConstraint.js.html#l52"><code>src&#x2F;constraints&#x2F;DistanceConstraint.js:52</code></a>
+                            <a href="../files/src_constraints_DistanceConstraint.js.html#l55"><code>src&#x2F;constraints&#x2F;DistanceConstraint.js:55</code></a>
                             </p>
                     
                     
@@ -821,7 +827,7 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_constraints_DistanceConstraint.js.html#l162"><code>src&#x2F;constraints&#x2F;DistanceConstraint.js:162</code></a>
+                            <a href="../files/src_constraints_DistanceConstraint.js.html#l165"><code>src&#x2F;constraints&#x2F;DistanceConstraint.js:165</code></a>
                             </p>
                     
                     
@@ -846,7 +852,7 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_constraints_DistanceConstraint.js.html#l156"><code>src&#x2F;constraints&#x2F;DistanceConstraint.js:156</code></a>
+                            <a href="../files/src_constraints_DistanceConstraint.js.html#l159"><code>src&#x2F;constraints&#x2F;DistanceConstraint.js:159</code></a>
                             </p>
                     
                     
@@ -871,7 +877,7 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_constraints_DistanceConstraint.js.html#l98"><code>src&#x2F;constraints&#x2F;DistanceConstraint.js:98</code></a>
+                            <a href="../files/src_constraints_DistanceConstraint.js.html#l101"><code>src&#x2F;constraints&#x2F;DistanceConstraint.js:101</code></a>
                             </p>
                     
                     
@@ -896,7 +902,7 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_constraints_DistanceConstraint.js.html#l168"><code>src&#x2F;constraints&#x2F;DistanceConstraint.js:168</code></a>
+                            <a href="../files/src_constraints_DistanceConstraint.js.html#l171"><code>src&#x2F;constraints&#x2F;DistanceConstraint.js:171</code></a>
                             </p>
                     
                     
@@ -946,7 +952,7 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_constraints_DistanceConstraint.js.html#l150"><code>src&#x2F;constraints&#x2F;DistanceConstraint.js:150</code></a>
+                            <a href="../files/src_constraints_DistanceConstraint.js.html#l153"><code>src&#x2F;constraints&#x2F;DistanceConstraint.js:153</code></a>
                             </p>
                     
                     
@@ -971,7 +977,7 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_constraints_DistanceConstraint.js.html#l144"><code>src&#x2F;constraints&#x2F;DistanceConstraint.js:144</code></a>
+                            <a href="../files/src_constraints_DistanceConstraint.js.html#l147"><code>src&#x2F;constraints&#x2F;DistanceConstraint.js:147</code></a>
                             </p>
                     
                     

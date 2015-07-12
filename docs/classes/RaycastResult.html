@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="p2.js" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.6.1</em>
+            <em>API Docs for: 0.7.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -41,6 +41,7 @@
                                 <li><a href="../classes/AABB.html">AABB</a></li>
                                 <li><a href="../classes/AngleLockEquation.html">AngleLockEquation</a></li>
                                 <li><a href="../classes/Body.html">Body</a></li>
+                                <li><a href="../classes/Box.html">Box</a></li>
                                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
                                 <li><a href="../classes/Capsule.html">Capsule</a></li>
                                 <li><a href="../classes/Circle.html">Circle</a></li>
@@ -53,7 +54,6 @@
                                 <li><a href="../classes/EventEmitter.html">EventEmitter</a></li>
                                 <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
                                 <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
-                                <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
                                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
                                 <li><a href="../classes/Heightfield.html">Heightfield</a></li>
                                 <li><a href="../classes/Island.html">Island</a></li>
@@ -65,6 +65,7 @@
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
                                 <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
+                                <li><a href="../classes/Object pooling utility..html">Object pooling utility.</a></li>
                                 <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
                                 <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
                                 <li><a href="../classes/Particle.html">Particle</a></li>
@@ -72,18 +73,20 @@
                                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
                                 <li><a href="../classes/Ray.html">Ray</a></li>
                                 <li><a href="../classes/RaycastResult.html">RaycastResult</a></li>
-                                <li><a href="../classes/Rectangle.html">Rectangle</a></li>
                                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
                                 <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
+                                <li><a href="../classes/.html"></a></li>
                                 <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
                                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
                                 <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
                                 <li><a href="../classes/Shape.html">Shape</a></li>
                                 <li><a href="../classes/Solver.html">Solver</a></li>
                                 <li><a href="../classes/Spring.html">Spring</a></li>
+                                <li><a href="../classes/TopDownVehicle.html">TopDownVehicle</a></li>
                                 <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
                                 <li><a href="../classes/Utils.html">Utils</a></li>
                                 <li><a href="../classes/vec2.html">vec2</a></li>
+                                <li><a href="../classes/WheelConstraint.html">WheelConstraint</a></li>
                                 <li><a href="../classes/World.html">World</a></li>
                             </ul>
                 
@@ -126,7 +129,7 @@
 
 
         <div class="foundat">
-            Defined in: <a href="../files/src_collision_RaycastResult.js.html#l5"><code>src&#x2F;collision&#x2F;RaycastResult.js:5</code></a>
+            Defined in: <a href="../files/src_collision_RaycastResult.js.html#l6"><code>src&#x2F;collision&#x2F;RaycastResult.js:6</code></a>
         </div>
 
 
@@ -134,7 +137,7 @@
 
 
 <div class="box intro">
-    <p>Storage for Ray casting data.</p>
+    <p>Storage for Ray casting hit data.</p>
 
 </div>
 
@@ -155,7 +158,7 @@
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/src_collision_RaycastResult.js.html#l5"><code>src&#x2F;collision&#x2F;RaycastResult.js:5</code></a>
+                <a href="../files/src_collision_RaycastResult.js.html#l6"><code>src&#x2F;collision&#x2F;RaycastResult.js:6</code></a>
                 </p>
         
         
@@ -189,15 +192,31 @@
 
                     <ul class="index-list methods">
                             <li class="index-item method">
-                                <a href="#method_abort">abort</a>
+                                <a href="#method_getHitDistance">getHitDistance</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_getHitPoint">getHitPoint</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_hasHit">hasHit</a>
 
                             </li>
                             <li class="index-item method">
                                 <a href="#method_reset">reset</a>
 
                             </li>
-                            <li class="index-item method">
+                            <li class="index-item method private">
                                 <a href="#method_set">set</a>
+
+                            </li>
+                            <li class="index-item method private">
+                                <a href="#method_shouldStop">shouldStop</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_stop">stop</a>
 
                             </li>
                     </ul>
@@ -207,40 +226,24 @@
                     <h3>Properties</h3>
 
                     <ul class="index-list properties">
-                            <li class="index-item property private">
-                                <a href="#property__shouldStop">_shouldStop</a>
-
-                            </li>
                             <li class="index-item property">
                                 <a href="#property_body">body</a>
 
                             </li>
                             <li class="index-item property">
-                                <a href="#property_distance">distance</a>
+                                <a href="#property_faceIndex">faceIndex</a>
 
                             </li>
                             <li class="index-item property">
-                                <a href="#property_hasHit">hasHit</a>
+                                <a href="#property_fraction">fraction</a>
 
                             </li>
                             <li class="index-item property">
-                                <a href="#property_hitFaceIndex">hitFaceIndex</a>
+                                <a href="#property_isStopped">isStopped</a>
 
                             </li>
                             <li class="index-item property">
-                                <a href="#property_hitNormalWorld">hitNormalWorld</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_hitPointWorld">hitPointWorld</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_rayFromWorld">rayFromWorld</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_rayToWorld">rayToWorld</a>
+                                <a href="#property_normal">normal</a>
 
                             </li>
                             <li class="index-item property">
@@ -256,8 +259,127 @@
             <div id="methods" class="api-class-tabpanel">
                 <h2 class="off-left">Methods</h2>
 
-<div id="method_abort" class="method item">
-    <h3 class="name"><code>abort</code></h3>
+<div id="method_getHitDistance" class="method item">
+    <h3 class="name"><code>getHitDistance</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>ray</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_collision_RaycastResult.js.html#l66"><code>src&#x2F;collision&#x2F;RaycastResult.js:66</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Get the distance to the hit point.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">ray</code>
+                        <span class="type"><a href="../classes/Ray.html" class="crosslink">Ray</a></span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_getHitPoint" class="method item">
+    <h3 class="name"><code>getHitPoint</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>out</code>
+                </li>
+                <li class="arg">
+                        <code>ray</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_collision_RaycastResult.js.html#l83"><code>src&#x2F;collision&#x2F;RaycastResult.js:83</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Get world hit point.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">out</code>
+                        <span class="type">Array</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">ray</code>
+                        <span class="type"><a href="../classes/Ray.html" class="crosslink">Ray</a></span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_hasHit" class="method item">
+    <h3 class="name"><code>hasHit</code></h3>
 
         <span class="paren">()</span>
 
@@ -271,7 +393,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_collision_RaycastResult.js.html#l89"><code>src&#x2F;collision&#x2F;RaycastResult.js:89</code></a>
+        <a href="../files/src_collision_RaycastResult.js.html#l75"><code>src&#x2F;collision&#x2F;RaycastResult.js:75</code></a>
         </p>
 
 
@@ -279,7 +401,8 @@
     </div>
 
     <div class="description">
-        
+        <p>Returns true if the ray hit something since the last reset().</p>
+
     </div>
 
 
@@ -301,7 +424,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_collision_RaycastResult.js.html#l72"><code>src&#x2F;collision&#x2F;RaycastResult.js:72</code></a>
+        <a href="../files/src_collision_RaycastResult.js.html#l53"><code>src&#x2F;collision&#x2F;RaycastResult.js:53</code></a>
         </p>
 
 
@@ -309,7 +432,7 @@
     </div>
 
     <div class="description">
-        <p>Reset all result data.</p>
+        <p>Reset all result data. Must be done before re-using the result object.</p>
 
     </div>
 
@@ -317,22 +440,13 @@
 
 
 </div>
-<div id="method_set" class="method item">
+<div id="method_set" class="method item private">
     <h3 class="name"><code>set</code></h3>
 
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
                 <li class="arg">
-                        <code>rayFromWorld</code>
-                </li>
-                <li class="arg">
-                        <code>rayToWorld</code>
-                </li>
-                <li class="arg">
-                        <code>hitNormalWorld</code>
-                </li>
-                <li class="arg">
-                        <code>hitPointWorld</code>
+                        <code>normal</code>
                 </li>
                 <li class="arg">
                         <code>shape</code>
@@ -341,13 +455,14 @@
                         <code>body</code>
                 </li>
                 <li class="arg">
-                        <code>distance</code>
+                        <code>fraction</code>
                 </li>
             </ul><span class="paren">)</span>
         </div>
 
 
 
+        <span class="flag private">private</span>
 
 
 
@@ -356,7 +471,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_collision_RaycastResult.js.html#l96"><code>src&#x2F;collision&#x2F;RaycastResult.js:96</code></a>
+        <a href="../files/src_collision_RaycastResult.js.html#l111"><code>src&#x2F;collision&#x2F;RaycastResult.js:111</code></a>
         </p>
 
 
@@ -372,37 +487,7 @@
 
             <ul class="params-list">
                 <li class="param">
-                        <code class="param-name">rayFromWorld</code>
-                        <span class="type">Array</span>
-
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">rayToWorld</code>
-                        <span class="type">Array</span>
-
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">hitNormalWorld</code>
-                        <span class="type">Array</span>
-
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">hitPointWorld</code>
+                        <code class="param-name">normal</code>
                         <span class="type">Array</span>
 
 
@@ -432,7 +517,7 @@
 
                 </li>
                 <li class="param">
-                        <code class="param-name">distance</code>
+                        <code class="param-name">fraction</code>
                         <span class="type">Number</span>
 
 
@@ -447,38 +532,105 @@
 
 
 </div>
+<div id="method_shouldStop" class="method item private">
+    <h3 class="name"><code>shouldStop</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>ray</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type">Boolean</span>
+        </span>
+
+
+        <span class="flag private">private</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_collision_RaycastResult.js.html#l101"><code>src&#x2F;collision&#x2F;RaycastResult.js:101</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">ray</code>
+                        <span class="type"><a href="../classes/Ray.html" class="crosslink">Ray</a></span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type">Boolean</span>:
+            </div>
+        </div>
+
+
+</div>
+<div id="method_stop" class="method item">
+    <h3 class="name"><code>stop</code></h3>
+
+        <span class="paren">()</span>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_collision_RaycastResult.js.html#l93"><code>src&#x2F;collision&#x2F;RaycastResult.js:93</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Can be called while iterating over hits to stop searching for hit points.</p>
+
+    </div>
+
+
+
+
+</div>
             </div>
 
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
-                    <div id="property__shouldStop" class="property item private">
-                        <h3 class="name"><code>_shouldStop</code></h3>
-                        <span class="type">Boolean</span>
-                    
-                    
-                            <span class="flag private">private</span>
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_collision_RaycastResult.js.html#l63"><code>src&#x2F;collision&#x2F;RaycastResult.js:63</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>If the ray should stop traversing the bodies.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> false</p>
-                    
-                    
-                    </div>
                     <div id="property_body" class="property item">
                         <h3 class="name"><code>body</code></h3>
                         <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
@@ -490,7 +642,7 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_collision_RaycastResult.js.html#l43"><code>src&#x2F;collision&#x2F;RaycastResult.js:43</code></a>
+                            <a href="../files/src_collision_RaycastResult.js.html#l25"><code>src&#x2F;collision&#x2F;RaycastResult.js:25</code></a>
                             </p>
                     
                     
@@ -504,8 +656,8 @@
                     
                     
                     </div>
-                    <div id="property_distance" class="property item">
-                        <h3 class="name"><code>distance</code></h3>
+                    <div id="property_faceIndex" class="property item">
+                        <h3 class="name"><code>faceIndex</code></h3>
                         <span class="type">Number</span>
                     
                     
@@ -515,14 +667,14 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_collision_RaycastResult.js.html#l56"><code>src&#x2F;collision&#x2F;RaycastResult.js:56</code></a>
+                            <a href="../files/src_collision_RaycastResult.js.html#l31"><code>src&#x2F;collision&#x2F;RaycastResult.js:31</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Distance to the hit. Will be set to -1 if there was no hit.</p>
+                            <p>The index of the hit triangle, if the hit shape was indexable.</p>
                     
                         </div>
                     
@@ -530,8 +682,34 @@
                     
                     
                     </div>
-                    <div id="property_hasHit" class="property item">
-                        <h3 class="name"><code>hasHit</code></h3>
+                    <div id="property_fraction" class="property item">
+                        <h3 class="name"><code>fraction</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_collision_RaycastResult.js.html#l38"><code>src&#x2F;collision&#x2F;RaycastResult.js:38</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Distance to the hit, as a fraction. 0 is at the &quot;from&quot; point, 1 is at the &quot;to&quot; point. Will be set to -1 if there was no hit yet.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> -1</p>
+                    
+                    
+                    </div>
+                    <div id="property_isStopped" class="property item">
+                        <h3 class="name"><code>isStopped</code></h3>
                         <span class="type">Boolean</span>
                     
                     
@@ -541,47 +719,22 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_collision_RaycastResult.js.html#l32"><code>src&#x2F;collision&#x2F;RaycastResult.js:32</code></a>
+                            <a href="../files/src_collision_RaycastResult.js.html#l45"><code>src&#x2F;collision&#x2F;RaycastResult.js:45</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            
+                            <p>If the ray should stop traversing.</p>
+                    
                         </div>
                     
                     
                     
                     </div>
-                    <div id="property_hitFaceIndex" class="property item">
-                        <h3 class="name"><code>hitFaceIndex</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_collision_RaycastResult.js.html#l49"><code>src&#x2F;collision&#x2F;RaycastResult.js:49</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The index of the hit triangle, if the hit shape was a trimesh.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> -1</p>
-                    
-                    
-                    </div>
-                    <div id="property_hitNormalWorld" class="property item">
-                        <h3 class="name"><code>hitNormalWorld</code></h3>
+                    <div id="property_normal" class="property item">
+                        <h3 class="name"><code>normal</code></h3>
                         <span class="type">Array</span>
                     
                     
@@ -591,86 +744,15 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_collision_RaycastResult.js.html#l22"><code>src&#x2F;collision&#x2F;RaycastResult.js:22</code></a>
+                            <a href="../files/src_collision_RaycastResult.js.html#l13"><code>src&#x2F;collision&#x2F;RaycastResult.js:13</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            
-                        </div>
+                            <p>The normal of the hit, oriented in world space.</p>
                     
-                    
-                    
-                    </div>
-                    <div id="property_hitPointWorld" class="property item">
-                        <h3 class="name"><code>hitPointWorld</code></h3>
-                        <span class="type">Array</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_collision_RaycastResult.js.html#l27"><code>src&#x2F;collision&#x2F;RaycastResult.js:27</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_rayFromWorld" class="property item">
-                        <h3 class="name"><code>rayFromWorld</code></h3>
-                        <span class="type">Array</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_collision_RaycastResult.js.html#l12"><code>src&#x2F;collision&#x2F;RaycastResult.js:12</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_rayToWorld" class="property item">
-                        <h3 class="name"><code>rayToWorld</code></h3>
-                        <span class="type">Array</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_collision_RaycastResult.js.html#l17"><code>src&#x2F;collision&#x2F;RaycastResult.js:17</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
                         </div>
                     
                     
@@ -687,7 +769,7 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_collision_RaycastResult.js.html#l37"><code>src&#x2F;collision&#x2F;RaycastResult.js:37</code></a>
+                            <a href="../files/src_collision_RaycastResult.js.html#l19"><code>src&#x2F;collision&#x2F;RaycastResult.js:19</code></a>
                             </p>
                     
                     

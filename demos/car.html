@@ -36,7 +36,7 @@
             world.addBody(planeBody);       // Add the body to the World
 
             // Add circle bump in the center
-            circleShape = new p2.Circle(2); // Circle shape of radius 2
+            circleShape = new p2.Circle({ radius: 2 }); // Circle shape of radius 2
             circleBody = new p2.Body({
                 position:[0, -1] // Set initial position
             });
@@ -48,15 +48,15 @@
                 mass : 1,        // Setting mass > 0 makes it dynamic
                 position: [-4,1] // Initial position
             });
-            chassisShape = new p2.Rectangle(1,0.5);                     // Chassis shape is a rectangle
+            chassisShape = new p2.Box({ width: 1, height: 0.5 });                     // Chassis shape is a rectangle
             chassisBody.addShape(chassisShape);
             world.addBody(chassisBody);
 
             // Create wheels
             wheelBody1 = new p2.Body({ mass : 1, position:[chassisBody.position[0] - 0.5,0.7] });
             wheelBody2 = new p2.Body({ mass : 1, position:[chassisBody.position[0] + 0.5,0.7] });
-            wheelShape1 = new p2.Circle(0.2);
-            wheelShape2 = new p2.Circle(0.2);
+            wheelShape1 = new p2.Circle({ radius: 0.2 });
+            wheelShape2 = new p2.Circle({ radius: 0.2 });
             wheelBody1.addShape(wheelShape1);
             wheelBody2.addShape(wheelShape2);
             world.addBody(wheelBody1);

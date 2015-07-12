@@ -18,17 +18,27 @@ exports.construct = function(test){
     test.done();
 };
 
-exports.raycastClosest = function(test){
+exports.raycast = function(test){
     var world = new World();
     var shape = new Plane();
     var body = new Body();
     body.addShape(shape, [0,0], Math.PI / 2);
     world.addBody(body);
     var result = new RaycastResult();
-    world.raycastClosest([-1,1],[1,1],{},result);
-    test.ok(result.hasHit);
-    test.equal(result.hitPointWorld[0], 0);
-    test.equal(result.hitPointWorld[1], 1);
+    var ray = new Ray({
+        from: [0, -10],
+        to: [0, 10]
+    });
+    world.raycast(result, ray);
+    test.ok(result.hasHit());
+
+    var hitPointWorld = [1,1];
+    result.getHitPoint(hitPointWorld, ray);
+    test.equal(hitPointWorld[0], 0);
+    test.equal(hitPointWorld[1], 0);
+
+    test.equal(result.getHitDistance(ray), 10);
+
     test.done();
 };
 
@@ -66,8 +76,8 @@ exports.disableBodyCollision = function(test){
     var bodyA = new Body({ mass:1 }),
         bodyB = new Body({ mass:1 }),
         world = new World();
-    bodyA.addShape(new Circle(1));
-    bodyB.addShape(new Circle(1));
+    bodyA.addShape(new Circle({ radius: 1 }));
+    bodyB.addShape(new Circle({ radius: 1 }));
     world.addBody(bodyA);
     world.addBody(bodyB);
     world.disableBodyCollision(bodyA,bodyB);
@@ -95,15 +105,15 @@ exports.hitTest = function(test){
     world.addBody(b);
     test.deepEqual(world.hitTest([0,0],[b]) , [], "Should miss bodies without shapes");
 
-    b.addShape(new Circle(1));
+    b.addShape(new Circle({ radius: 1 }));
     test.deepEqual(world.hitTest([0,0],[b]) , [b], "Should hit Circle");
     test.deepEqual(world.hitTest([1.1,0],[b]) , [], "Should miss Circle");
 
     b = new Body();
-    b.addShape(new Convex([ [-1,-1],
+    b.addShape(new Convex({ vertices: [ [-1,-1],
                             [ 1,-1],
                             [ 1, 1],
-                            [-1, 1]]));
+                            [-1, 1]] }));
     test.deepEqual(world.hitTest([0,0],  [b]) , [b],  "Should hit Convex");
     test.deepEqual(world.hitTest([1.1,0],[b]) , [], "Should miss Convex");
     test.done();
@@ -139,6 +149,20 @@ exports.runNarrowphase = function(test){
     test.done();
 };
 
+exports.setGlobalStiffness = function(test){
+    var world = new World();
+    world.setGlobalStiffness(123);
+    test.equal(world.defaultContactMaterial.stiffness, 123);
+    test.done();
+};
+
+exports.setGlobalRelaxation = function(test){
+    var world = new World();
+    world.setGlobalRelaxation(123);
+    test.equal(world.defaultContactMaterial.relaxation, 123);
+    test.done();
+};
+
 exports.step = function(test){
     // STUB
     test.done();
@@ -151,8 +175,8 @@ exports.events = {
             bodyB = new Body({ mass:1 });
         world.addBody(bodyA);
         world.addBody(bodyB);
-        var shapeA = new Circle(1),
-            shapeB = new Circle(1);
+        var shapeA = new Circle({ radius: 1 }),
+            shapeB = new Circle({ radius: 1 });
         bodyA.addShape(shapeA);
         bodyB.addShape(shapeB);
         var beginContactHits = 0,
@@ -201,9 +225,9 @@ exports.events = {
         world.addBody(bodyA);
         world.addBody(bodyB);
         world.addBody(bodyC);
-        var shapeA = new Circle(1),
-            shapeB = new Circle(1),
-            shapeC = new Circle(1);
+        var shapeA = new Circle({ radius: 1 }),
+            shapeB = new Circle({ radius: 1 }),
+            shapeC = new Circle({ radius: 1 });
         bodyA.addShape(shapeA);
         bodyB.addShape(shapeB);
         bodyC.addShape(shapeC);

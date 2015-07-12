@@ -12,25 +12,26 @@ exports.tick = function(test){
 
     var bodyA = new Body();
     var bodyB = new Body();
-    var shapeA = new Circle(1);
-    var shapeB = new Circle(1);
+    var shapeA = new Circle({ radius: 1 });
+    var shapeB = new Circle({ radius: 1 });
 
     var keeper = new OverlapKeeper();
+    keeper.recordPool.resize(0);
     keeper.setOverlapping(bodyA, shapeA, bodyB, shapeB);
 
-    test.equal(keeper.recordPool.length, 0);
+    test.equal(keeper.recordPool.objects.length, 0);
 
     keeper.tick();
 
-    test.equal(keeper.recordPool.length, 0);
+    test.equal(keeper.recordPool.objects.length, 0);
 
     keeper.tick();
 
-    test.equal(keeper.recordPool.length, 1);
+    test.equal(keeper.recordPool.objects.length, 1);
 
     keeper.setOverlapping(bodyA, shapeA, bodyB, shapeB);
 
-    test.equal(keeper.recordPool.length, 0);
+    test.equal(keeper.recordPool.objects.length, 0);
 
     test.done();
 };
@@ -39,9 +40,9 @@ exports.getEndOverlaps = function(test){
     var bodyA = new Body();
     var bodyB = new Body();
     var bodyC = new Body();
-    var shapeA = new Circle(1);
-    var shapeB = new Circle(1);
-    var shapeC = new Circle(1);
+    var shapeA = new Circle({ radius: 1 });
+    var shapeB = new Circle({ radius: 1 });
+    var shapeC = new Circle({ radius: 1 });
 
     var keeper = new OverlapKeeper();
     keeper.setOverlapping(bodyA, shapeA, bodyB, shapeB);
@@ -80,9 +81,9 @@ exports.getNewOverlaps = function(test){
     var bodyA = new Body();
     var bodyB = new Body();
     var bodyC = new Body();
-    var shapeA = new Circle(1);
-    var shapeB = new Circle(1);
-    var shapeC = new Circle(1);
+    var shapeA = new Circle({ radius: 1 });
+    var shapeB = new Circle({ radius: 1 });
+    var shapeC = new Circle({ radius: 1 });
     var keeper = new OverlapKeeper();
     keeper.setOverlapping(bodyA, shapeA, bodyB, shapeB);
 
@@ -116,8 +117,8 @@ exports.getNewOverlaps = function(test){
 exports.isNewOverlap = function(test){
     var bodyA = new Body();
     var bodyB = new Body();
-    var shapeA = new Circle(1);
-    var shapeB = new Circle(1);
+    var shapeA = new Circle({ radius: 1 });
+    var shapeB = new Circle({ radius: 1 });
     var keeper = new OverlapKeeper();
     keeper.setOverlapping(bodyA, shapeA, bodyB, shapeB);
 
@@ -171,8 +172,8 @@ exports.getNewBodyOverlaps = function(test){
 exports.getEndBodyOverlaps = function(test){
     var bodyA = new Body();
     var bodyB = new Body();
-    var shapeA = new Circle(1);
-    var shapeB = new Circle(1);
+    var shapeA = new Circle({ radius: 1 });
+    var shapeB = new Circle({ radius: 1 });
     var keeper = new OverlapKeeper();
     keeper.setOverlapping(bodyA, shapeA, bodyB, shapeB);
 

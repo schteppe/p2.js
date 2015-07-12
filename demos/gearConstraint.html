@@ -15,8 +15,6 @@
         // Create demo application
         var app = new p2.WebGLRenderer(function(){
 
-            var shape = new p2.Circle(1);
-
             var world = new p2.World({
                 gravity : [0,-10]
             });
@@ -30,7 +28,7 @@
                 angle: Math.PI/2,
                 angularVelocity : -5,
             });
-            bodyA.addShape(shape);
+            bodyA.addShape(new p2.Circle({ radius: 1 }));
             world.addBody(bodyA);
 
             // Create second circle
@@ -38,7 +36,7 @@
                 mass: 1,
                 position: [2,0],
             });
-            bodyB.addShape(shape);
+            bodyB.addShape(new p2.Circle({ radius: 1 }));
             world.addBody(bodyB);
 
             // Create a dummy body that we can hinge them to

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FixedRotation demo - p2.js physics engine</title>
+    <script src="../build/p2.js"></script>
+    <script src="../build/p2.renderer.js"></script>
+    <link href="css/demo.css" rel="stylesheet"/>
+    <meta name="description" content="Fixes the rotation of a body.">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+</head>
+<body>
+    <script>
+
+        // Create demo application
+        var app = new p2.WebGLRenderer(function(){
+
+            var world = new p2.World({
+                gravity : [0,-10]
+            });
+
+            this.setWorld(world);
+
+            world.solver.tolerance = 0.01;
+
+            boxBody = new p2.Body({
+                mass: 1,
+                position: [-0.3,2],
+                fixedRotation: true,
+                fixedX: true
+            });
+            boxBody.addShape(new p2.Box({ width: 1, height: 1 }));
+            world.addBody(boxBody);
+
+            boxBody = new p2.Body({
+                mass: 1,
+                position: [0.3,0],
+                fixedRotation: true,
+                fixedY: true
+            });
+            boxBody.addShape(new p2.Box({ width: 1, height: 1 }));
+            world.addBody(boxBody);
+
+            // Create ground
+            var planeShape = new p2.Plane();
+            var plane = new p2.Body({
+                position:[0,-1],
+            });
+            plane.addShape(planeShape);
+            world.addBody(plane);
+        });
+
+    </script>
+</body>
+</html>

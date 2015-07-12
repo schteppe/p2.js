@@ -33,7 +33,7 @@
                 angle: Math.PI / 2,
                 angularVelocity : 10
             });
-            lineBody.addShape(new p2.Line(1));
+            lineBody.addShape(new p2.Line({ length: 1 }));
             world.addBody(lineBody);
 
             // Add a "null" body
@@ -46,7 +46,6 @@
             world.addConstraint(revolute);
 
             // Create circle rope
-            var shape = new p2.Circle(r);
             var lastBody;
             for(var i=N-1; i>=0; i--){
                 var x = 0;
@@ -55,7 +54,7 @@
                     mass: i==0 ? 0 : 1,
                     position: [x,y],
                 });
-                p.addShape(shape);
+                p.addShape(new p2.Circle({ radius: r }));
                 if(lastBody){
                     var c = new p2.DistanceConstraint(p, lastBody);
                     world.addConstraint(c);
@@ -72,13 +71,13 @@
                 position: [3,0],
                 angularVelocity: 30
             });
-            bodyA.addShape(new p2.Circle(1));
+            bodyA.addShape(new p2.Circle({ radius: 1 }));
             world.addBody(bodyA);
             var bodyB = new p2.Body({
                 mass: 0,
                 position: [3,4],
             });
-            bodyB.addShape(new p2.Circle(1));
+            bodyB.addShape(new p2.Circle({ radius: 1 }));
             world.addBody(bodyB);
             var pivotA = [0,2];
             var pivotB = [0,-2];

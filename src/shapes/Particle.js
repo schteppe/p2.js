@@ -7,10 +7,13 @@ module.exports = Particle;
  * Particle shape class.
  * @class Particle
  * @constructor
+ * @param {object} [options] (Note that this options object will be passed on to the {{#crossLink "Shape"}}{{/crossLink}} constructor.)
  * @extends Shape
  */
-function Particle(){
-    Shape.call(this,Shape.PARTICLE);
+function Particle(options){
+    options = options || {};
+	options.type = Shape.PARTICLE;
+    Shape.call(this, options);
 }
 Particle.prototype = new Shape();
 Particle.prototype.constructor = Particle;

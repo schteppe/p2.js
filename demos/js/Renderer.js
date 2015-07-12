@@ -67,7 +67,7 @@ function Renderer(scenes, options){
     this.nullBody = new p2.Body();
     this.pickPrecision = 5;
 
-    this.useInterpolatedPositions = false;
+    this.useInterpolatedPositions = true;
 
     this.drawPoints = [];
     this.drawPointsChangeEvent = { type : "drawPointsChange" };
@@ -211,6 +211,7 @@ Object.defineProperty(Renderer.prototype, 'paused', {
         return this.settings['paused [p]'];
     },
     set: function(value) {
+        this.resetCallTime = true;
         this.settings['paused [p]'] = value;
         this.updateGUI();
     }
@@ -266,7 +267,7 @@ Renderer.prototype.setupGUI = function() {
         that.paused = p;
     });
     worldFolder.add(settings, 'manualStep [s]');
-    worldFolder.add(settings, 'fps', 60, 60*10).step(60).onChange(function(freq){
+    worldFolder.add(settings, 'fps', 10, 60*10).step(10).onChange(function(freq){
         that.timeStep = 1 / freq;
     });
     worldFolder.add(settings, 'maxSubSteps', 0, 10).step(1);
@@ -532,7 +533,11 @@ Renderer.prototype.startRenderingLoop = function(){
     function update(){
         if(!demo.paused){
             var now = Date.now() / 1000,
-                timeSinceLastCall = now-lastCallTime;
+                timeSinceLastCall = now - lastCallTime;
+            if(demo.resetCallTime){
+                timeSinceLastCall = 0;
+                demo.resetCallTime = false;
+            }
             lastCallTime = now;
             demo.world.step(demo.timeStep, timeSinceLastCall, demo.settings.maxSubSteps);
         }
@@ -710,7 +715,7 @@ Renderer.prototype.handleMouseUp = function(physicsPosition){
         if(R > 0){
             // Create circle
             b = new p2.Body({ mass : 1, position : this.drawCircleCenter });
-            var circle = new p2.Circle(R);
+            var circle = new p2.Circle({ radius: R });
             b.addShape(circle);
             this.world.addBody(b);
         }
@@ -739,7 +744,7 @@ Renderer.prototype.handleMouseUp = function(physicsPosition){
                 mass : 1,
                 position : [this.drawRectStart[0] + width*0.5, this.drawRectStart[1] + height*0.5]
             });
-            var rectangleShape = new p2.Rectangle(width, height);
+            var rectangleShape = new p2.Box({ width: width, height:  height });
             b.addShape(rectangleShape);
             this.world.addBody(b);
         }
@@ -880,10 +885,8 @@ Renderer.zoomOutEvent = {
 };
 
 Renderer.prototype.setEquationParameters = function(){
-    this.world.setGlobalEquationParameters({
-        stiffness: this.settings.stiffness,
-        relaxation: this.settings.relaxation
-    });
+    this.world.setGlobalStiffness(this.settings.stiffness);
+    this.world.setGlobalRelaxation(this.settings.relaxation);
 };
 
 })(p2);

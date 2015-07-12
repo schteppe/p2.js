@@ -6,7 +6,7 @@ var Constraint = require('./Constraint')
 module.exports = GearConstraint;
 
 /**
- * Connects two bodies at given offset points, letting them rotate relative to each other around this point.
+ * Constrains the angle of two bodies to each other to be equal. If a gear ratio is not one, the angle of bodyA must be a multiple of the angle of bodyB.
  * @class GearConstraint
  * @constructor
  * @author schteppe
@@ -17,7 +17,17 @@ module.exports = GearConstraint;
  * @param {Number}          [options.ratio=1] Gear ratio.
  * @param {Number}          [options.maxTorque] Maximum torque to apply.
  * @extends Constraint
- * @todo Ability to specify world points
+ *
+ * @example
+ *     var constraint = new GearConstraint(bodyA, bodyB);
+ *     world.addConstraint(constraint);
+ *
+ * @example
+ *     var constraint = new GearConstraint(bodyA, bodyB, {
+ *         ratio: 2,
+ *         maxTorque: 1000
+ *     });
+ *     world.addConstraint(constraint);
  */
 function GearConstraint(bodyA, bodyB, options){
     options = options || {};
@@ -29,14 +39,14 @@ function GearConstraint(bodyA, bodyB, options){
      * @property ratio
      * @type {Number}
      */
-    this.ratio = typeof(options.ratio) === "number" ? options.ratio : 1;
+    this.ratio = options.ratio !== undefined ? options.ratio : 1;
 
     /**
      * The relative angle
      * @property angle
      * @type {Number}
      */
-    this.angle = typeof(options.angle) === "number" ? options.angle : bodyB.angle - this.ratio * bodyA.angle;
+    this.angle = options.angle !== undefined ? options.angle : bodyB.angle - this.ratio * bodyA.angle;
 
     // Send same parameters to the equation
     options.angle = this.angle;
@@ -47,7 +57,7 @@ function GearConstraint(bodyA, bodyB, options){
     ];
 
     // Set max torque
-    if(typeof(options.maxTorque) === "number"){
+    if(options.maxTorque !== undefined){
         this.setMaxTorque(options.maxTorque);
     }
 }

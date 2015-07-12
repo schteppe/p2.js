@@ -30,7 +30,7 @@
         world = new p2.World({ gravity:[0,0] });
 
         // Add a circle
-        circleShape = new p2.Circle(0.3);
+        circleShape = new p2.Circle({ radius: 0.3 });
         circleBody = new p2.Body({ mass:1 });
         circleBody.damping = 0;
         circleBody.addShape(circleShape);
@@ -39,7 +39,7 @@
 
         // Add sensors
         for(var i=0; i<4; i++){
-          sensorShape = new p2.Rectangle(sensorSize,sensorSize);
+          sensorShape = new p2.Box({ width: sensorSize, height: sensorSize });
           sensorShape.sensor = true;
           var pos = [sensorSize/2,sensorSize/2];
           if(i==1){

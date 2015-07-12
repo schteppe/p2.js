@@ -3,6 +3,8 @@ var vec2 = require('../math/vec2')
 ,   add = vec2.add
 ,   dot = vec2.dot
 ,   Utils = require('../utils/Utils')
+,   ContactEquationPool = require('../utils/ContactEquationPool')
+,   FrictionEquationPool = require('../utils/FrictionEquationPool')
 ,   TupleDictionary = require('../utils/TupleDictionary')
 ,   Equation = require('../equations/Equation')
 ,   ContactEquation = require('../equations/ContactEquation')
@@ -11,7 +13,7 @@ var vec2 = require('../math/vec2')
 ,   Convex = require('../shapes/Convex')
 ,   Shape = require('../shapes/Shape')
 ,   Body = require('../objects/Body')
-,   Rectangle = require('../shapes/Rectangle');
+,   Box = require('../shapes/Box');
 
 module.exports = Narrowphase;
 
@@ -91,9 +93,24 @@ function Narrowphase(){
      */
     this.surfaceVelocity = 0;
 
-    this.reuseObjects = true;
-    this.reusableContactEquations = [];
-    this.reusableFrictionEquations = [];
+    /**
+     * Keeps track of the allocated ContactEquations.
+     * @property {ContactEquationPool} contactEquationPool
+     *
+     * @example
+     *
+     *     // Allocate a few equations before starting the simulation.
+     *     // This way, no contact objects need to be created on the fly in the game loop.
+     *     world.narrowphase.contactEquationPool.resize(1024);
+     *     world.narrowphase.frictionEquationPool.resize(1024);
+     */
+    this.contactEquationPool = new ContactEquationPool({ size: 32 });
+
+    /**
+     * Keeps track of the allocated ContactEquations.
+     * @property {FrictionEquationPool} frictionEquationPool
+     */
+    this.frictionEquationPool = new FrictionEquationPool({ size: 64 });
 
     /**
      * The restitution value to use in the next contact equations.
@@ -161,6 +178,7 @@ var bodiesOverlap_shapePositionB = vec2.create();
  * @param  {Body} bodyA
  * @param  {Body} bodyB
  * @return {Boolean}
+ * @todo shape world transforms are wrong
  */
 Narrowphase.prototype.bodiesOverlap = function(bodyA, bodyB){
     var shapePositionA = bodiesOverlap_shapePositionA;
@@ -168,19 +186,15 @@ Narrowphase.prototype.bodiesOverlap = function(bodyA, bodyB){
 
     // Loop over all shapes of bodyA
     for(var k=0, Nshapesi=bodyA.shapes.length; k!==Nshapesi; k++){
-        var shapeA = bodyA.shapes[k],
-            positionA = bodyA.shapeOffsets[k],
-            angleA = bodyA.shapeAngles[k];
+        var shapeA = bodyA.shapes[k];
 
-        bodyA.toWorldFrame(shapePositionA, positionA);
+        bodyA.toWorldFrame(shapePositionA, shapeA.position);
 
         // All shapes of body j
         for(var l=0, Nshapesj=bodyB.shapes.length; l!==Nshapesj; l++){
-            var shapeB = bodyB.shapes[l],
-                positionB = bodyB.shapeOffsets[l],
-                angleB = bodyB.shapeAngles[l];
+            var shapeB = bodyB.shapes[l];
 
-            bodyB.toWorldFrame(shapePositionB, positionB);
+            bodyB.toWorldFrame(shapePositionB, shapeB.position);
 
             if(this[shapeA.type | shapeB.type](
                 bodyA,
@@ -230,13 +244,13 @@ Narrowphase.prototype.reset = function(){
         this.collidingBodiesLastStep.set(id1, id2, true);
     }
 
-    if(this.reuseObjects){
-        var ce = this.contactEquations,
-            fe = this.frictionEquations,
-            rfe = this.reusableFrictionEquations,
-            rce = this.reusableContactEquations;
-        Utils.appendArray(rce,ce);
-        Utils.appendArray(rfe,fe);
+    var ce = this.contactEquations,
+        fe = this.frictionEquations;
+    for(var i=0; i<ce.length; i++){
+        this.contactEquationPool.release(ce[i]);
+    }
+    for(var i=0; i<fe.length; i++){
+        this.frictionEquationPool.release(fe[i]);
     }
 
     // Reset
@@ -251,7 +265,7 @@ Narrowphase.prototype.reset = function(){
  * @return {ContactEquation}
  */
 Narrowphase.prototype.createContactEquation = function(bodyA, bodyB, shapeA, shapeB){
-    var c = this.reusableContactEquations.length ? this.reusableContactEquations.pop() : new ContactEquation(bodyA,bodyB);
+    var c = this.contactEquationPool.get();
     c.bodyA = bodyA;
     c.bodyB = bodyB;
     c.shapeA = shapeA;
@@ -275,7 +289,7 @@ Narrowphase.prototype.createContactEquation = function(bodyA, bodyB, shapeA, sha
  * @return {FrictionEquation}
  */
 Narrowphase.prototype.createFrictionEquation = function(bodyA, bodyB, shapeA, shapeB){
-    var c = this.reusableFrictionEquations.length ? this.reusableFrictionEquations.pop() : new FrictionEquation(bodyA,bodyB);
+    var c = this.frictionEquationPool.get();
     c.bodyA = bodyA;
     c.bodyB = bodyB;
     c.shapeA = shapeA;
@@ -372,29 +386,29 @@ Narrowphase.prototype.convexLine = function(
 };
 
 /**
- * Line/rectangle narrowphase
- * @method lineRectangle
+ * Line/box narrowphase
+ * @method lineBox
  * @param  {Body}       lineBody
  * @param  {Line}       lineShape
  * @param  {Array}      lineOffset
  * @param  {Number}     lineAngle
- * @param  {Body}       rectangleBody
- * @param  {Rectangle}  rectangleShape
- * @param  {Array}      rectangleOffset
- * @param  {Number}     rectangleAngle
+ * @param  {Body}       boxBody
+ * @param  {Box}  boxShape
+ * @param  {Array}      boxOffset
+ * @param  {Number}     boxAngle
  * @param  {Boolean}    justTest
  * @todo Implement me!
  */
-Narrowphase.prototype[Shape.LINE | Shape.RECTANGLE] =
-Narrowphase.prototype.lineRectangle = function(
+Narrowphase.prototype[Shape.LINE | Shape.BOX] =
+Narrowphase.prototype.lineBox = function(
     lineBody,
     lineShape,
     lineOffset,
     lineAngle,
-    rectangleBody,
-    rectangleShape,
-    rectangleOffset,
-    rectangleAngle,
+    boxBody,
+    boxShape,
+    boxOffset,
+    boxAngle,
     justTest
 ){
     // TODO
@@ -412,7 +426,7 @@ function setConvexToCapsuleShapeMiddle(convexShape, capsuleShape){
     vec2.set(convexShape.vertices[3], -capsuleShape.length * 0.5,  capsuleShape.radius);
 }
 
-var convexCapsule_tempRect = new Rectangle(1,1),
+var convexCapsule_tempRect = new Box({ width: 1, height: 1 }),
     convexCapsule_tempVec = vec2.create();
 
 /**
@@ -428,7 +442,7 @@ var convexCapsule_tempRect = new Rectangle(1,1),
  * @param  {Number}     capsuleAngle
  */
 Narrowphase.prototype[Shape.CAPSULE | Shape.CONVEX] =
-Narrowphase.prototype[Shape.CAPSULE | Shape.RECTANGLE] =
+Narrowphase.prototype[Shape.CAPSULE | Shape.BOX] =
 Narrowphase.prototype.convexCapsule = function(
     convexBody,
     convexShape,
@@ -501,7 +515,7 @@ Narrowphase.prototype.lineCapsule = function(
 
 var capsuleCapsule_tempVec1 = vec2.create();
 var capsuleCapsule_tempVec2 = vec2.create();
-var capsuleCapsule_tempRect1 = new Rectangle(1,1);
+var capsuleCapsule_tempRect1 = new Box({ width: 1, height: 1 });
 
 /**
  * Capsule/capsule narrowphase
@@ -567,7 +581,7 @@ Narrowphase.prototype.capsuleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTe
         this.enableFriction = false;
     }
 
-    // Check circles against the center rectangles
+    // Check circles against the center boxs
     var rect = capsuleCapsule_tempRect1;
     setConvexToCapsuleShapeMiddle(rect,si);
     var result1 = this.convexCapsule(bi,rect,xi,ai, bj,sj,xj,aj, justTest);
@@ -965,7 +979,7 @@ Narrowphase.prototype.circleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTes
  * @param  {Number} circleRadius
  */
 Narrowphase.prototype[Shape.CIRCLE | Shape.CONVEX] =
-Narrowphase.prototype[Shape.CIRCLE | Shape.RECTANGLE] =
+Narrowphase.prototype[Shape.CIRCLE | Shape.BOX] =
 Narrowphase.prototype.circleConvex = function(
     circleBody,
     circleShape,
@@ -1177,7 +1191,7 @@ function pointInConvex(worldPoint,convexShape,convexOffset,convexAngle){
  * @todo don't transform each vertex, but transform the particle position to convex-local instead
  */
 Narrowphase.prototype[Shape.PARTICLE | Shape.CONVEX] =
-Narrowphase.prototype[Shape.PARTICLE | Shape.RECTANGLE] =
+Narrowphase.prototype[Shape.PARTICLE | Shape.BOX] =
 Narrowphase.prototype.particleConvex = function(
     particleBody,
     particleShape,
@@ -1370,7 +1384,7 @@ Narrowphase.prototype.circleCircle = function(
  * @param {Boolean} justTest
  */
 Narrowphase.prototype[Shape.PLANE | Shape.CONVEX] =
-Narrowphase.prototype[Shape.PLANE | Shape.RECTANGLE] =
+Narrowphase.prototype[Shape.PLANE | Shape.BOX] =
 Narrowphase.prototype.planeConvex = function(
     planeBody,
     planeShape,
@@ -1560,7 +1574,7 @@ Narrowphase.prototype.circleParticle = function(
     return 1;
 };
 
-var planeCapsule_tmpCircle = new Circle(1),
+var planeCapsule_tmpCircle = new Circle({ radius: 1 }),
     planeCapsule_tmp1 = vec2.create(),
     planeCapsule_tmp2 = vec2.create(),
     planeCapsule_tmp3 = vec2.create();
@@ -1718,8 +1732,8 @@ Narrowphase.prototype.circlePlane = function(   bi,si,xi,ai, bj,sj,xj,aj, justTe
  * @param  {Number} aj
  */
 Narrowphase.prototype[Shape.CONVEX] =
-Narrowphase.prototype[Shape.CONVEX | Shape.RECTANGLE] =
-Narrowphase.prototype[Shape.RECTANGLE] =
+Narrowphase.prototype[Shape.CONVEX | Shape.BOX] =
+Narrowphase.prototype[Shape.BOX] =
 Narrowphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTest, precision ){
     var sepAxis = tmp1,
         worldPoint = tmp2,
@@ -1963,7 +1977,7 @@ Narrowphase.findSeparatingAxis = function(c1,offset1,angle1,c2,offset2,angle2,se
         span1 = fsa_tmp5,
         span2 = fsa_tmp6;
 
-    if(c1 instanceof Rectangle && c2 instanceof Rectangle){
+    if(c1 instanceof Box && c2 instanceof Box){
 
         for(var j=0; j!==2; j++){
             var c = c1,
@@ -2172,7 +2186,7 @@ var circleHeightfield_candidate = vec2.create(),
 Narrowphase.prototype[Shape.CIRCLE | Shape.HEIGHTFIELD] =
 Narrowphase.prototype.circleHeightfield = function( circleBody,circleShape,circlePos,circleAngle,
                                                     hfBody,hfShape,hfPos,hfAngle, justTest, radius ){
-    var data = hfShape.data,
+    var data = hfShape.heights,
         radius = radius || circleShape.radius,
         w = hfShape.elementWidth,
         dist = circleHeightfield_dist,
@@ -2337,7 +2351,7 @@ Narrowphase.prototype.circleHeightfield = function( circleBody,circleShape,circl
 var convexHeightfield_v0 = vec2.create(),
     convexHeightfield_v1 = vec2.create(),
     convexHeightfield_tilePos = vec2.create(),
-    convexHeightfield_tempConvexShape = new Convex([vec2.create(),vec2.create(),vec2.create(),vec2.create()]);
+    convexHeightfield_tempConvexShape = new Convex({ vertices: [vec2.create(),vec2.create(),vec2.create(),vec2.create()] });
 /**
  * @method circleHeightfield
  * @param  {Body}           bi
@@ -2348,11 +2362,11 @@ var convexHeightfield_v0 = vec2.create(),
  * @param  {Array}          xj
  * @param  {Number}         aj
  */
-Narrowphase.prototype[Shape.RECTANGLE | Shape.HEIGHTFIELD] =
+Narrowphase.prototype[Shape.BOX | Shape.HEIGHTFIELD] =
 Narrowphase.prototype[Shape.CONVEX | Shape.HEIGHTFIELD] =
 Narrowphase.prototype.convexHeightfield = function( convexBody,convexShape,convexPos,convexAngle,
                                                     hfBody,hfShape,hfPos,hfAngle, justTest ){
-    var data = hfShape.data,
+    var data = hfShape.heights,
         w = hfShape.elementWidth,
         v0 = convexHeightfield_v0,
         v1 = convexHeightfield_v1,

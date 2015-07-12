@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="p2.js" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.6.1</em>
+            <em>API Docs for: 0.7.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -41,6 +41,7 @@
                                 <li><a href="../classes/AABB.html">AABB</a></li>
                                 <li><a href="../classes/AngleLockEquation.html">AngleLockEquation</a></li>
                                 <li><a href="../classes/Body.html">Body</a></li>
+                                <li><a href="../classes/Box.html">Box</a></li>
                                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
                                 <li><a href="../classes/Capsule.html">Capsule</a></li>
                                 <li><a href="../classes/Circle.html">Circle</a></li>
@@ -53,7 +54,6 @@
                                 <li><a href="../classes/EventEmitter.html">EventEmitter</a></li>
                                 <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
                                 <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
-                                <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
                                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
                                 <li><a href="../classes/Heightfield.html">Heightfield</a></li>
                                 <li><a href="../classes/Island.html">Island</a></li>
@@ -65,6 +65,7 @@
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
                                 <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
+                                <li><a href="../classes/Object pooling utility..html">Object pooling utility.</a></li>
                                 <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
                                 <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
                                 <li><a href="../classes/Particle.html">Particle</a></li>
@@ -72,18 +73,20 @@
                                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
                                 <li><a href="../classes/Ray.html">Ray</a></li>
                                 <li><a href="../classes/RaycastResult.html">RaycastResult</a></li>
-                                <li><a href="../classes/Rectangle.html">Rectangle</a></li>
                                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
                                 <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
+                                <li><a href="../classes/.html"></a></li>
                                 <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
                                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
                                 <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
                                 <li><a href="../classes/Shape.html">Shape</a></li>
                                 <li><a href="../classes/Solver.html">Solver</a></li>
                                 <li><a href="../classes/Spring.html">Spring</a></li>
+                                <li><a href="../classes/TopDownVehicle.html">TopDownVehicle</a></li>
                                 <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
                                 <li><a href="../classes/Utils.html">Utils</a></li>
                                 <li><a href="../classes/vec2.html">vec2</a></li>
+                                <li><a href="../classes/WheelConstraint.html">WheelConstraint</a></li>
                                 <li><a href="../classes/World.html">World</a></li>
                             </ul>
                 
@@ -225,12 +228,27 @@
                                     <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
+                                <a href="#method_getLineSegmentsIntersection">getLineSegmentsIntersection</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_getLineSegmentsIntersectionFraction">getLineSegmentsIntersectionFraction</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item method">
                                 <a href="#method_len">len</a>
 
                                     <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
                                 <a href="#method_length">length</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_lerp">lerp</a>
 
                                     <span class="flag static">static</span>
                             </li>
@@ -251,6 +269,11 @@
                             </li>
                             <li class="index-item method">
                                 <a href="#method_normalize">normalize</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_reflect">reflect</a>
 
                                     <span class="flag static">static</span>
                             </li>
@@ -314,7 +337,15 @@
 
                             </li>
                             <li class="index-item method">
+                                <a href="#method_toGlobalFrame">toGlobalFrame</a>
+
+                            </li>
+                            <li class="index-item method">
                                 <a href="#method_toLocalFrame">toLocalFrame</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_vectorToLocalFrame">vectorToLocalFrame</a>
 
                             </li>
                     </ul>
@@ -358,7 +389,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_vec2.js.html#l227"><code>src&#x2F;math&#x2F;vec2.js:227</code></a>
+        <a href="../files/src_math_vec2.js.html#l249"><code>src&#x2F;math&#x2F;vec2.js:249</code></a>
         </p>
 
 
@@ -456,7 +487,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_vec2.js.html#l139"><code>src&#x2F;math&#x2F;vec2.js:139</code></a>
+        <a href="../files/src_math_vec2.js.html#l161"><code>src&#x2F;math&#x2F;vec2.js:161</code></a>
         </p>
 
 
@@ -552,7 +583,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_vec2.js.html#l169"><code>src&#x2F;math&#x2F;vec2.js:169</code></a>
+        <a href="../files/src_math_vec2.js.html#l191"><code>src&#x2F;math&#x2F;vec2.js:191</code></a>
         </p>
 
 
@@ -622,7 +653,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_vec2.js.html#l198"><code>src&#x2F;math&#x2F;vec2.js:198</code></a>
+        <a href="../files/src_math_vec2.js.html#l220"><code>src&#x2F;math&#x2F;vec2.js:220</code></a>
         </p>
 
 
@@ -694,7 +725,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_vec2.js.html#l156"><code>src&#x2F;math&#x2F;vec2.js:156</code></a>
+        <a href="../files/src_math_vec2.js.html#l178"><code>src&#x2F;math&#x2F;vec2.js:178</code></a>
         </p>
 
 
@@ -992,7 +1023,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_vec2.js.html#l337"><code>src&#x2F;math&#x2F;vec2.js:337</code></a>
+        <a href="../files/src_math_vec2.js.html#l359"><code>src&#x2F;math&#x2F;vec2.js:359</code></a>
         </p>
 
 
@@ -1036,7 +1067,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_vec2.js.html#l323"><code>src&#x2F;math&#x2F;vec2.js:323</code></a>
+        <a href="../files/src_math_vec2.js.html#l345"><code>src&#x2F;math&#x2F;vec2.js:345</code></a>
         </p>
 
 
@@ -1105,7 +1136,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_vec2.js.html#l301"><code>src&#x2F;math&#x2F;vec2.js:301</code></a>
+        <a href="../files/src_math_vec2.js.html#l323"><code>src&#x2F;math&#x2F;vec2.js:323</code></a>
         </p>
 
 
@@ -1152,7 +1183,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_vec2.js.html#l286"><code>src&#x2F;math&#x2F;vec2.js:286</code></a>
+        <a href="../files/src_math_vec2.js.html#l308"><code>src&#x2F;math&#x2F;vec2.js:308</code></a>
         </p>
 
 
@@ -1244,7 +1275,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_vec2.js.html#l440"><code>src&#x2F;math&#x2F;vec2.js:440</code></a>
+        <a href="../files/src_math_vec2.js.html#l462"><code>src&#x2F;math&#x2F;vec2.js:462</code></a>
         </p>
 
 
@@ -1325,7 +1356,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_vec2.js.html#l183"><code>src&#x2F;math&#x2F;vec2.js:183</code></a>
+        <a href="../files/src_math_vec2.js.html#l205"><code>src&#x2F;math&#x2F;vec2.js:205</code></a>
         </p>
 
 
@@ -1378,6 +1409,229 @@
 
 
 </div>
+<div id="method_getLineSegmentsIntersection" class="method item">
+    <h3 class="name"><code>getLineSegmentsIntersection</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>out</code>
+                </li>
+                <li class="arg">
+                        <code>p0</code>
+                </li>
+                <li class="arg">
+                        <code>p1</code>
+                </li>
+                <li class="arg">
+                        <code>p2</code>
+                </li>
+                <li class="arg">
+                        <code>p3</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type">Boolean</span>
+        </span>
+
+
+
+
+        <span class="flag static">static</span>
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_math_vec2.js.html#l516"><code>src&#x2F;math&#x2F;vec2.js:516</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Get the intersection point between two line segments.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">out</code>
+                        <span class="type">Array</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">p0</code>
+                        <span class="type">Array</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">p1</code>
+                        <span class="type">Array</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">p2</code>
+                        <span class="type">Array</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">p3</code>
+                        <span class="type">Array</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type">Boolean</span>:
+                    <p>True if there was an intersection, otherwise false.</p>
+
+            </div>
+        </div>
+
+
+</div>
+<div id="method_getLineSegmentsIntersectionFraction" class="method item">
+    <h3 class="name"><code>getLineSegmentsIntersectionFraction</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>p0</code>
+                </li>
+                <li class="arg">
+                        <code>p1</code>
+                </li>
+                <li class="arg">
+                        <code>p2</code>
+                </li>
+                <li class="arg">
+                        <code>p3</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type">Number</span>
+        </span>
+
+
+
+
+        <span class="flag static">static</span>
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_math_vec2.js.html#l538"><code>src&#x2F;math&#x2F;vec2.js:538</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Get the intersection fraction between two line segments. If successful, the intersection is at p0 + t * (p1 - p0)</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">p0</code>
+                        <span class="type">Array</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">p1</code>
+                        <span class="type">Array</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">p2</code>
+                        <span class="type">Array</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">p3</code>
+                        <span class="type">Array</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type">Number</span>:
+                    <p>A number between 0 and 1 if there was an intersection, otherwise -1.</p>
+
+            </div>
+        </div>
+
+
+</div>
 <div id="method_len" class="method item">
     <h3 class="name"><code>len</code></h3>
 
@@ -1394,7 +1648,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_vec2.js.html#l378"><code>src&#x2F;math&#x2F;vec2.js:378</code></a>
+        <a href="../files/src_math_vec2.js.html#l400"><code>src&#x2F;math&#x2F;vec2.js:400</code></a>
         </p>
 
 
@@ -1435,7 +1689,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_vec2.js.html#l365"><code>src&#x2F;math&#x2F;vec2.js:365</code></a>
+        <a href="../files/src_math_vec2.js.html#l387"><code>src&#x2F;math&#x2F;vec2.js:387</code></a>
         </p>
 
 
@@ -1477,6 +1731,102 @@
 
 
 </div>
+<div id="method_lerp" class="method item">
+    <h3 class="name"><code>lerp</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>out</code>
+                </li>
+                <li class="arg">
+                        <code>a</code>
+                </li>
+                <li class="arg">
+                        <code>b</code>
+                </li>
+                <li class="arg">
+                        <code>t</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+        <span class="flag static">static</span>
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_math_vec2.js.html#l485"><code>src&#x2F;math&#x2F;vec2.js:485</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Linearly interpolate/mix two vectors.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">out</code>
+                        <span class="type">Array</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">a</code>
+                        <span class="type">Array</span>
+
+
+                    <div class="param-description">
+                        <p>First vector</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">b</code>
+                        <span class="type">Array</span>
+
+
+                    <div class="param-description">
+                        <p>Second vector</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">t</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                        <p>Lerp factor</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
 <div id="method_mul" class="method item">
     <h3 class="name"><code>mul</code></h3>
 
@@ -1493,7 +1843,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_vec2.js.html#l279"><code>src&#x2F;math&#x2F;vec2.js:279</code></a>
+        <a href="../files/src_math_vec2.js.html#l301"><code>src&#x2F;math&#x2F;vec2.js:301</code></a>
         </p>
 
 
@@ -1540,7 +1890,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_vec2.js.html#l264"><code>src&#x2F;math&#x2F;vec2.js:264</code></a>
+        <a href="../files/src_math_vec2.js.html#l286"><code>src&#x2F;math&#x2F;vec2.js:286</code></a>
         </p>
 
 
@@ -1632,7 +1982,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_vec2.js.html#l405"><code>src&#x2F;math&#x2F;vec2.js:405</code></a>
+        <a href="../files/src_math_vec2.js.html#l427"><code>src&#x2F;math&#x2F;vec2.js:427</code></a>
         </p>
 
 
@@ -1713,7 +2063,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_vec2.js.html#l419"><code>src&#x2F;math&#x2F;vec2.js:419</code></a>
+        <a href="../files/src_math_vec2.js.html#l441"><code>src&#x2F;math&#x2F;vec2.js:441</code></a>
         </p>
 
 
@@ -1763,6 +2113,86 @@
 
             </div>
         </div>
+
+
+</div>
+<div id="method_reflect" class="method item">
+    <h3 class="name"><code>reflect</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>out</code>
+                </li>
+                <li class="arg">
+                        <code>vector</code>
+                </li>
+                <li class="arg">
+                        <code>normal</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+        <span class="flag static">static</span>
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_math_vec2.js.html#l502"><code>src&#x2F;math&#x2F;vec2.js:502</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Reflect a vector along a normal.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">out</code>
+                        <span class="type">Array</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">vector</code>
+                        <span class="type">Array</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">normal</code>
+                        <span class="type">Array</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
 
 
 </div>
@@ -1957,7 +2387,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_vec2.js.html#l308"><code>src&#x2F;math&#x2F;vec2.js:308</code></a>
+        <a href="../files/src_math_vec2.js.html#l330"><code>src&#x2F;math&#x2F;vec2.js:330</code></a>
         </p>
 
 
@@ -2052,7 +2482,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_vec2.js.html#l212"><code>src&#x2F;math&#x2F;vec2.js:212</code></a>
+        <a href="../files/src_math_vec2.js.html#l234"><code>src&#x2F;math&#x2F;vec2.js:234</code></a>
         </p>
 
 
@@ -2132,7 +2562,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_vec2.js.html#l358"><code>src&#x2F;math&#x2F;vec2.js:358</code></a>
+        <a href="../files/src_math_vec2.js.html#l380"><code>src&#x2F;math&#x2F;vec2.js:380</code></a>
         </p>
 
 
@@ -2164,7 +2594,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_vec2.js.html#l398"><code>src&#x2F;math&#x2F;vec2.js:398</code></a>
+        <a href="../files/src_math_vec2.js.html#l420"><code>src&#x2F;math&#x2F;vec2.js:420</code></a>
         </p>
 
 
@@ -2208,7 +2638,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_vec2.js.html#l344"><code>src&#x2F;math&#x2F;vec2.js:344</code></a>
+        <a href="../files/src_math_vec2.js.html#l366"><code>src&#x2F;math&#x2F;vec2.js:366</code></a>
         </p>
 
 
@@ -2286,7 +2716,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_vec2.js.html#l385"><code>src&#x2F;math&#x2F;vec2.js:385</code></a>
+        <a href="../files/src_math_vec2.js.html#l407"><code>src&#x2F;math&#x2F;vec2.js:407</code></a>
         </p>
 
 
@@ -2353,7 +2783,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_vec2.js.html#l452"><code>src&#x2F;math&#x2F;vec2.js:452</code></a>
+        <a href="../files/src_math_vec2.js.html#l474"><code>src&#x2F;math&#x2F;vec2.js:474</code></a>
         </p>
 
 
@@ -2411,7 +2841,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_vec2.js.html#l257"><code>src&#x2F;math&#x2F;vec2.js:257</code></a>
+        <a href="../files/src_math_vec2.js.html#l279"><code>src&#x2F;math&#x2F;vec2.js:279</code></a>
         </p>
 
 
@@ -2458,7 +2888,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_vec2.js.html#l242"><code>src&#x2F;math&#x2F;vec2.js:242</code></a>
+        <a href="../files/src_math_vec2.js.html#l264"><code>src&#x2F;math&#x2F;vec2.js:264</code></a>
         </p>
 
 
@@ -2614,6 +3044,85 @@
 
 
 </div>
+<div id="method_toGlobalFrame" class="method item">
+    <h3 class="name"><code>toGlobalFrame</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>out</code>
+                </li>
+                <li class="arg">
+                        <code>localVector</code>
+                </li>
+                <li class="arg">
+                        <code>frameAngle</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_math_vec2.js.html#l150"><code>src&#x2F;math&#x2F;vec2.js:150</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Transform a point position to global frame.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">out</code>
+                        <span class="type">Array</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">localVector</code>
+                        <span class="type">Array</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">frameAngle</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
 <div id="method_toLocalFrame" class="method item">
     <h3 class="name"><code>toLocalFrame</code></h3>
 
@@ -2682,6 +3191,85 @@
                 </li>
                 <li class="param">
                         <code class="param-name">framePosition</code>
+                        <span class="type">Array</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">frameAngle</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_vectorToLocalFrame" class="method item">
+    <h3 class="name"><code>vectorToLocalFrame</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>out</code>
+                </li>
+                <li class="arg">
+                        <code>worldVector</code>
+                </li>
+                <li class="arg">
+                        <code>frameAngle</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_math_vec2.js.html#l139"><code>src&#x2F;math&#x2F;vec2.js:139</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Transform a vector to local frame.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">out</code>
+                        <span class="type">Array</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">worldVector</code>
                         <span class="type">Array</span>
 
 

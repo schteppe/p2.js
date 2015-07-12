@@ -28,11 +28,12 @@
 
             // Create ground
             var data = [];
-            var numDataPoints = 10000;
+            var numDataPoints = 200;
             for(var i=0; i<numDataPoints; i++){
                 data.push(0.5*Math.cos(0.2*i) * Math.sin(0.5*i) + 0.6*Math.sin(0.1*i) * Math.sin(0.05*i));
             }
-            var heightfieldShape = new p2.Heightfield(data,{
+            var heightfieldShape = new p2.Heightfield({
+                heights: data,
                 elementWidth: 1
             });
             var heightfield = new p2.Body({
@@ -44,16 +45,17 @@
 
             // Create chassis
             var chassisBody = new p2.Body({ mass : 1, position:[-4,1] }),
-                chassisShape = new p2.Rectangle(1,0.5);
+                chassisShape = new p2.Box({ width: 1, height: 0.5 });
             chassisBody.addShape(chassisShape);
             world.addBody(chassisBody);
 
             // Create wheels
             var wheelBody1 = new p2.Body({ mass : 1, position:[chassisBody.position[0] - 0.5,0.7] }),
                 wheelBody2 = new p2.Body({ mass : 1, position:[chassisBody.position[0] + 0.5,0.7] }),
-                wheelShape = new p2.Circle(0.3);
-            wheelBody1.addShape(wheelShape);
-            wheelBody2.addShape(wheelShape);
+                wheelShapeLeft = new p2.Circle({ radius: 0.3 }),
+                wheelShapeRight = new p2.Circle({ radius: 0.3 });
+            wheelBody1.addShape(wheelShapeLeft);
+            wheelBody2.addShape(wheelShapeRight);
             world.addBody(wheelBody1);
             world.addBody(wheelBody2);
 
@@ -63,13 +65,13 @@
                 GROUND =  4,
                 OTHER =   8;
 
-            wheelShape  .collisionGroup =   WHEELS; // Assign groups
+            wheelShapeLeft.collisionGroup = wheelShapeRight.collisionGroup = WHEELS; // Assign groups
             chassisShape.collisionGroup =   CHASSIS;
             heightfieldShape  .collisionGroup =   GROUND;
 
-            wheelShape  .collisionMask =    GROUND | OTHER;             // Wheels can only collide with ground
-            chassisShape.collisionMask =    GROUND | OTHER;             // Chassis can only collide with ground
-            heightfieldShape  .collisionMask =    WHEELS | CHASSIS | OTHER;   // Ground can collide with wheels and chassis
+            wheelShapeLeft.collisionMask = wheelShapeRight.collisionMask = GROUND | OTHER;             // Wheels can only collide with ground
+            chassisShape.collisionMask = GROUND | OTHER;             // Chassis can only collide with ground
+            heightfieldShape.collisionMask = WHEELS | CHASSIS | OTHER;   // Ground can collide with wheels and chassis
 
             // Constrain wheels to chassis
             var c1 = new p2.PrismaticConstraint(chassisBody,wheelBody1,{
@@ -118,8 +120,8 @@
             world.on("postStep",function(evt){
                 wheelBody1.angularForce += torque;
                 wheelBody2.angularForce += torque;
-                app.centerCamera(chassisBody.position[0], chassisBody.position[1]);
             });
+            app.followBody = chassisBody; // Make camera follow
 
             // Change the current engine torque with the left/right keys
             this.on("keydown",function(evt){

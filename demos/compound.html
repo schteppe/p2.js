@@ -20,9 +20,6 @@
                 d = 1.2,
                 r = 0.3;
 
-            var childShape1 = new p2.Particle();
-            var childShape2 = new p2.Circle(r);
-
             var world = new p2.World({
                 gravity : [0,-10]
             });
@@ -44,26 +41,25 @@
                 for(var j=0; j<M; j++){
                     var x = (i-N/2+1/2)*2*r*d;
                     var y = (j-M/2+1/2)*2*r*d;
-                    body1.addShape(childShape1, [x,y], 0);
-                    body2.addShape(childShape2, [x,y], 0);
+                    body1.addShape(new p2.Particle(), [x,y], 0);
+                    body2.addShape(new p2.Circle({ radius: r }), [x,y], 0);
                 }
             }
             world.addBody(body1);
             world.addBody(body2);
 
             // Create boxes
-            var boxShape = new p2.Rectangle(1,1);
             box = new p2.Body({
                 position:[3,2],
                 mass : 1,
                 angularVelocity : -0.2
             });
-            box.addShape(boxShape,[0,0.5]);
-            box.addShape(boxShape,[0,-0.5]);
+            box.addShape(new p2.Box({ width: 1, height: 1 }), [0,0.5]);
+            box.addShape(new p2.Box({ width: 1, height: 1 }), [0,-0.5]);
             world.addBody(box);
 
             // Create circle
-            var circleShape = new p2.Circle(0.5);
+            var circleShape = new p2.Circle({ radius: 0.5 });
             var circle = new p2.Body({
                 position:[3,4],
                 mass : 1,
@@ -78,14 +74,13 @@
                 var a = 2*Math.PI / N * i;
                 verts.push([0.5*Math.cos(a),0.5*Math.sin(a)]);
             }
-            convexShape = new p2.Convex(verts);
             convex = new p2.Body({
                 position:[-4,2],
                 mass : 1,
                 angularVelocity : -0.1
             });
-            convex.addShape(convexShape,[0, 0.5]);
-            convex.addShape(convexShape,[0,-0.5],Math.PI/4);
+            convex.addShape(new p2.Convex({ vertices: verts }),[0, 0.5]);
+            convex.addShape(new p2.Convex({ vertices: verts }),[0,-0.5],Math.PI/4);
             world.addBody(convex);
 
             // Create ground

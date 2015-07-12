@@ -23,18 +23,17 @@
             this.setWorld(world);
 
             // Create two circles
-            var circleShape = new p2.Circle(0.5);
             var bodyA = new p2.Body({
                 mass: 1,
                 position: [-2, 1],
             });
-            bodyA.addShape(circleShape);
+            bodyA.addShape(new p2.Circle({ radius: 0.5 }));
             world.addBody(bodyA);
             var bodyB = new p2.Body({
                 mass: 1,
                 position: [-0.5, 1],
             });
-            bodyB.addShape(circleShape);
+            bodyB.addShape(new p2.Circle({ radius: 0.5 }));
             world.addBody(bodyB);
 
             // Create constraint.
@@ -47,24 +46,24 @@
             constraint1.lowerLimit = 1.5;
 
             // Create two boxes that must have distance 0 between their corners
-            var boxShape = new p2.Rectangle(0.5,0.5);
+            var w = h = 0.5;
             var boxBodyA = new p2.Body({
                 mass: 1,
                 position: [1.5, 1],
             });
-            boxBodyA.addShape(boxShape);
+            boxBodyA.addShape(new p2.Box({ width: 0.5, height: 0.5 }));
             world.addBody(boxBodyA);
             var boxBodyB = new p2.Body({
                 mass: 1,
                 position: [2, 1],
             });
-            boxBodyB.addShape(boxShape);
+            boxBodyB.addShape(new p2.Box({ width: 0.5, height: 0.5 }));
             world.addBody(boxBodyB);
 
             // Create constraint.
             var constraint2 = new p2.DistanceConstraint(boxBodyA, boxBodyB, {
-                localAnchorA: [boxShape.width/2, boxShape.height/2],
-                localAnchorB: [-boxShape.width/2, boxShape.height/2],
+                localAnchorA: [w/2, h/2],
+                localAnchorB: [-w/2, h/2],
             });
             world.addConstraint(constraint2);
 

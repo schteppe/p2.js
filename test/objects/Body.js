@@ -51,9 +51,109 @@ exports.applyDamping = function(test){
     test.done();
 };
 
-exports.applyForce = function(test){
-    // STUB
-    test.done();
+exports.applyForce = {
+    withPoint: function(test){
+        var body = new Body({ mass: 1, position: [2,3] });
+        var force = [0,1];
+        var point = [1,0];
+
+        body.applyForce(force, point);
+        test.equal(body.force[0], 0);
+        test.equal(body.force[1], 1);
+        test.equal(body.angularForce, 1); // [1,0,0] cross [0,1,0] is [0,0,1]
+
+        test.done();
+    },
+    withoutPoint: function(test){
+        var body = new Body({ mass: 1, position: [2,3] });
+        var force = [0,1];
+
+        body.applyForce(force);
+        test.equal(body.force[0], 0);
+        test.equal(body.force[1], 1);
+        test.equal(body.angularForce, 0);
+
+        test.done();
+    },
+};
+
+exports.applyForceLocal = {
+    withPoint: function(test){
+        var bodyA = new Body({
+            mass: 1,
+            position: [2,3],
+            angle: Math.PI // rotated 180 degrees
+        });
+        bodyA.addShape(new Circle({ radius: 1 }));
+        bodyA.applyForceLocal([-1,0],[0,1]);
+        test.ok(bodyA.angularForce > 0);
+        test.ok(bodyA.force[0] > 0);
+        test.ok(Math.abs(bodyA.force[1]) < 0.001);
+        test.done();
+    },
+    withoutPoint: function(test){
+        var bodyA = new Body({
+            mass: 1,
+            position: [2,3],
+            angle: Math.PI // rotated 180 degrees
+        });
+        bodyA.addShape(new Circle({ radius: 1 }));
+        bodyA.applyForceLocal([-1,0]);
+        test.equal(bodyA.angularForce, 0);
+        test.ok(bodyA.force[0] > 0);
+        test.ok(Math.abs(bodyA.force[1]) < 0.001);
+        test.done();
+    }
+};
+
+exports.applyImpulse = {
+    withPoint: function(test){
+        var bodyA = new Body({ mass: 1, position: [2,3] });
+        bodyA.addShape(new Circle({ radius: 1 }));
+        bodyA.applyImpulse([-1,0],[0,1]);
+        test.ok(bodyA.angularVelocity !== 0);
+        test.ok(bodyA.velocity[0] !== 0);
+        test.equal(bodyA.velocity[1], 0);
+        test.done();
+    },
+    withoutPoint: function(test){
+        var bodyA = new Body({ mass: 1, position: [2,3] });
+        bodyA.addShape(new Circle({ radius: 1 }));
+        bodyA.applyImpulse([-1,0]);
+        test.equal(bodyA.angularVelocity, 0);
+        test.ok(bodyA.velocity[0] !== 0);
+        test.equal(bodyA.velocity[1], 0);
+        test.done();
+    }
+};
+
+exports.applyImpulseLocal = {
+    withPoint: function(test){
+        var bodyA = new Body({
+            mass: 1,
+            position: [2,3],
+            angle: Math.PI // rotated 180 degrees
+        });
+        bodyA.addShape(new Circle({ radius: 1 }));
+        bodyA.applyImpulseLocal([-1,0],[0,1]);
+        test.ok(bodyA.angularVelocity > 0);
+        test.ok(bodyA.velocity[0] > 0);
+        test.ok(Math.abs(bodyA.velocity[1]) < 0.001);
+        test.done();
+    },
+    withoutPoint: function(test){
+        var bodyA = new Body({
+            mass: 1,
+            position: [2,3],
+            angle: Math.PI // rotated 180 degrees
+        });
+        bodyA.addShape(new Circle({ radius: 1 }));
+        bodyA.applyImpulseLocal([-1,0]);
+        test.equal(bodyA.angularVelocity, 0);
+        test.ok(bodyA.velocity[0] > 0);
+        test.ok(Math.abs(bodyA.velocity[1]) < 0.001);
+        test.done();
+    }
 };
 
 exports.fromPolygon = function(test){
@@ -83,17 +183,21 @@ exports.overlaps = function(test){
 };
 
 exports.removeShape = function(test){
-    // STUB
+    var body = new Body();
+    body.addShape(new Circle({ radius: 1 }));
+    test.ok(body.removeShape(body.shapes[0]));
+    test.ok(!body.removeShape(new Circle({ radius: 1 })));
+    test.equal(body.shapes.length, 0);
     test.done();
 };
 
 exports.setDensity = function(test){
-    // STUB
-    test.done();
-};
-
-exports.setDensity = function(test){
-    // STUB
+    var body = new Body({ mass: 1 });
+    body.addShape(new Circle({ radius: 1 }));
+    var inertiaBefore = body.inertia;
+    body.setDensity(10);
+    test.equal(body.mass, body.getArea() * 10);
+    test.ok(inertiaBefore !== body.inertia);
     test.done();
 };
 
@@ -130,7 +234,7 @@ exports.updateAABB = function(test){
     b.updateAABB();
 
     var b = new Body(),
-        s = new Circle(1);
+        s = new Circle({ radius: 1 });
     b.addShape(s);
     b.updateAABB();
 
@@ -140,7 +244,7 @@ exports.updateAABB = function(test){
     test.equal(b.aabb.upperBound[1],  1, 'Upper AABB bound should be 1');
 
     var b = new Body(),
-        s = new Circle(1),
+        s = new Circle({ radius: 1 }),
         offset = [-2,3];
     b.addShape(s,offset,Math.PI/2);
     b.updateAABB();
@@ -154,7 +258,14 @@ exports.updateAABB = function(test){
 };
 
 exports.updateBoundingRadius = function(test){
-    // STUB
+    var body = new Body({ mass: 1 });
+    var shape = new Circle({ radius: 1 });
+    body.addShape(shape);
+    test.equal(body.boundingRadius, 1);
+    shape.radius = 2;
+    shape.updateBoundingRadius();
+    body.updateBoundingRadius();
+    test.equal(body.boundingRadius, 2);
     test.done();
 };
 
@@ -168,12 +279,30 @@ exports.wakeUp = function(test){
     test.done();
 };
 
+exports.getVelocityAtPoint = function(test){
+    var body = new Body({
+        mass: 1,
+        velocity: [1,0]
+    });
+    var velocity = [0,0];
+    body.getVelocityAtPoint(velocity, [0,0]);
+    test.deepEqual(velocity, [1,0]);
+
+    body.velocity[0] = 0;
+    body.angularVelocity = 1;
+    body.getVelocityAtPoint(velocity, [1,0]);
+    test.ok(Math.abs(velocity[0]) < 0.001);
+    test.equal(velocity[1], 1); // r x w = 1 x 1 = 1
+
+    test.done();
+};
+
 exports.collisionResponse = function(test){
     var bodyA = new Body({ mass: 1, position: [1, 0] });
-    bodyA.addShape(new Circle(1));
+    bodyA.addShape(new Circle({ radius: 1 }));
 
     var bodyB = new Body({ mass: 1, position: [-1, 0] });
-    bodyB.addShape(new Circle(1));
+    bodyB.addShape(new Circle({ radius: 1 }));
 
     var world = new World();
     world.addBody(bodyA);

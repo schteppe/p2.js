@@ -230,8 +230,10 @@ Equation.prototype.computeGiMf = function(){
         invIj = bj.invInertiaSolve,
         G = this.G;
 
-    vec2.scale(iMfi, fi,invMassi);
+    vec2.scale(iMfi, fi, invMassi);
+    vec2.multiply(iMfi, bi.massMultiplier, iMfi);
     vec2.scale(iMfj, fj,invMassj);
+    vec2.multiply(iMfj, bj.massMultiplier, iMfj);
 
     return this.gmult(G,iMfi,ti*invIi,iMfj,tj*invIj);
 };
@@ -250,11 +252,11 @@ Equation.prototype.computeGiMGt = function(){
         invIj = bj.invInertiaSolve,
         G = this.G;
 
-    return  G[0] * G[0] * invMassi +
-            G[1] * G[1] * invMassi +
+    return  G[0] * G[0] * invMassi * bi.massMultiplier[0] +
+            G[1] * G[1] * invMassi * bi.massMultiplier[1] +
             G[2] * G[2] *    invIi +
-            G[3] * G[3] * invMassj +
-            G[4] * G[4] * invMassj +
+            G[3] * G[3] * invMassj * bj.massMultiplier[0] +
+            G[4] * G[4] * invMassj * bj.massMultiplier[1] +
             G[5] * G[5] *    invIj;
 };
 
@@ -293,6 +295,7 @@ Equation.prototype.addToWlambda = function(deltalambda){
     // Add to linear velocity
     // v_lambda += inv(M) * delta_lamba * G
     vec2.scale(temp, Gi, invMassi*deltalambda);
+    vec2.multiply(temp, temp, bi.massMultiplier);
     vec2.add( bi.vlambda, bi.vlambda, temp);
     // This impulse is in the offset frame
     // Also add contribution to angular
@@ -301,6 +304,7 @@ Equation.prototype.addToWlambda = function(deltalambda){
 
 
     vec2.scale(temp, Gj, invMassj*deltalambda);
+    vec2.multiply(temp, temp, bj.massMultiplier);
     vec2.add( bj.vlambda, bj.vlambda, temp);
     //bj.wlambda -= vec2.crossLength(temp,rj);
     bj.wlambda += invIj * G[5] * deltalambda;

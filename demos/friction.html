@@ -23,7 +23,7 @@
             this.setWorld(world);
 
             // Create a circle
-            var shape = new p2.Circle(0.5);
+            var shape = new p2.Circle({ radius: 0.5 });
             shape.material = new p2.Material();
             var p = new p2.Body({
                 mass: 1,
@@ -33,7 +33,7 @@
             world.addBody(p);
 
             // Create a slippery circle
-            var slipperyShape = new p2.Circle(0.5);
+            var slipperyShape = new p2.Circle({ radius: 0.5 });
             slipperyShape.material = new p2.Material();
             var p = new p2.Body({
                 mass: 1,

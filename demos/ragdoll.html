@@ -35,26 +35,36 @@
                 OTHER =     Math.pow(2,4),
                 bodyPartShapes = [];
 
-            var headShape =      new p2.Circle(headRadius),
-                upperArmShape =  new p2.Rectangle(upperArmLength,upperArmSize),
-                lowerArmShape =  new p2.Rectangle(lowerArmLength,lowerArmSize),
-                upperBodyShape = new p2.Rectangle(shouldersDistance,upperBodyLength),
-                pelvisShape =    new p2.Rectangle(shouldersDistance,pelvisLength),
-                upperLegShape =  new p2.Rectangle(upperLegSize,upperLegLength),
-                lowerLegShape =  new p2.Rectangle(lowerLegSize,lowerLegLength);
+            var headShape = new p2.Circle({ radius: headRadius }),
+                upperArmShapeLeft = new p2.Box({ width: upperArmLength, height: upperArmSize }),
+                upperArmShapeRight = new p2.Box({ width: upperArmLength, height: upperArmSize }),
+                lowerArmShapeLeft = new p2.Box({ width: lowerArmLength, height: lowerArmSize }),
+                lowerArmShapeRight = new p2.Box({ width: lowerArmLength, height: lowerArmSize }),
+                upperBodyShape = new p2.Box({ width: shouldersDistance, height: upperBodyLength }),
+                pelvisShape = new p2.Box({ width: shouldersDistance, height: pelvisLength }),
+                upperLegShapeLeft = new p2.Box({ width: upperLegSize, height: upperLegLength }),
+                upperLegShapeRight = new p2.Box({ width: upperLegSize, height: upperLegLength }),
+                lowerLegShapeLeft = new p2.Box({ width: lowerLegSize, height: lowerLegLength }),
+                lowerLegShapeRight = new p2.Box({ width: lowerLegSize, height: lowerLegLength });
 
-            bodyPartShapes.push(headShape,
-                                upperArmShape,
-                                lowerArmShape,
-                                upperBodyShape,
-                                pelvisShape,
-                                upperLegShape,
-                                lowerLegShape);
+            bodyPartShapes.push(
+                headShape,
+                upperArmShapeRight,
+                upperArmShapeLeft,
+                lowerArmShapeRight,
+                lowerArmShapeLeft,
+                upperBodyShape,
+                pelvisShape,
+                upperLegShapeRight,
+                upperLegShapeLeft,
+                lowerLegShapeRight,
+                lowerLegShapeLeft
+            );
 
             for(var i=0; i<bodyPartShapes.length; i++){
                 var s = bodyPartShapes[i];
                 s.collisionGroup = BODYPARTS;
-                s.collisionMask =  GROUND|OTHER;
+                s.collisionMask = GROUND|OTHER;
             }
 
             var world = new p2.World({
@@ -75,8 +85,8 @@
                 mass: 1,
                 position: [shouldersDistance/2,lowerLegLength / 2],
             });
-            lowerLeftLeg.addShape(lowerLegShape);
-            lowerRightLeg.addShape(lowerLegShape);
+            lowerLeftLeg.addShape(lowerLegShapeLeft);
+            lowerRightLeg.addShape(lowerLegShapeRight);
             world.addBody(lowerLeftLeg);
             world.addBody(lowerRightLeg);
 
@@ -89,8 +99,8 @@
                 mass: 1,
                 position: [shouldersDistance/2,lowerRightLeg.position[1]+lowerLegLength/2+upperLegLength / 2],
             });
-            upperLeftLeg.addShape(upperLegShape);
-            upperRightLeg.addShape(upperLegShape);
+            upperLeftLeg.addShape(upperLegShapeLeft);
+            upperRightLeg.addShape(upperLegShapeRight);
             world.addBody(upperLeftLeg);
             world.addBody(upperRightLeg);
 
@@ -127,8 +137,8 @@
                 mass: 1,
                 position: [shouldersDistance/2+upperArmLength/2, upperBody.position[1]+upperBodyLength/2],
             });
-            upperLeftArm.addShape(upperArmShape);
-            upperRightArm.addShape(upperArmShape);
+            upperLeftArm.addShape(upperArmShapeLeft);
+            upperRightArm.addShape(upperArmShapeRight);
             world.addBody(upperLeftArm);
             world.addBody(upperRightArm);
 
@@ -143,8 +153,8 @@
                 position: [ upperRightArm.position[0] + lowerArmLength/2 + upperArmLength/2,
                             upperRightArm.position[1]],
             });
-            lowerLeftArm.addShape(lowerArmShape);
-            lowerRightArm.addShape(lowerArmShape);
+            lowerLeftArm.addShape(lowerArmShapeLeft);
+            lowerRightArm.addShape(lowerArmShapeRight);
             world.addBody(lowerLeftArm);
             world.addBody(lowerRightArm);
 

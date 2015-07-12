@@ -3,11 +3,12 @@ p2.js
 
 2D rigid body physics engine written in JavaScript. Includes collision detection, contacts, friction, restitution, motors, springs, advanced constraints and various shape types.
 
-[Demos](#demos) | [Examples](#examples) | [Documentation](http://schteppe.github.io/p2.js/docs/) | [Download](https://raw.github.com/schteppe/p2.js/master/build/p2.js) | [CDN](http://cdnjs.com/libraries/p2.js)
+[Demos](#demos) | [Examples](#examples) | [Documentation](http://schteppe.github.io/p2.js/docs/) | [Download](https://raw.github.com/schteppe/p2.js/master/build/p2.js) | [CDN](http://cdnjs.com/libraries/p2.js) | [Wiki](https://github.com/schteppe/p2.js/wiki)
 
 ### Featured projects using p2.js
 * [Google I/O 2015 Experiment](http://www.chromeexperiments.com/detail/io-2015-experiment) by Instrument
 * [PixiLights, a Christmas Experiment](http://christmasexperiments.com/experiments/11) by Mat Groves
+* [More...](https://github.com/schteppe/p2.js/wiki/Projects-using-p2.js)
 
 ### Demos
 These demos use the p2 Demo framework, which provides rendering and interactivity. Use mouse/touch to throw or create objects. Use the right menu (or console!) to tweak parameters. Or just check the source to see how to programmatically build the current scene using p2.
@@ -52,6 +53,7 @@ Examples showing how to use p2.js with your favorite renderer.
 
 ### Sample code
 The following example uses the [World](http://schteppe.github.io/p2.js/docs/classes/World.html), [Circle](http://schteppe.github.io/p2.js/docs/classes/Circle.html), [Body](http://schteppe.github.io/p2.js/docs/classes/Body.html) and [Plane](http://schteppe.github.io/p2.js/docs/classes/Plane.html) classes to set up a simple physics scene with a ball on a plane.
+
 ```js
 // Create a physics world, where bodies and constraints live
 var world = new p2.World({
@@ -106,10 +108,10 @@ Download either [p2.js](build/p2.js) or the minified [p2.min.js](build/p2.min.js
 <script src="p2.js" type="text/javascript"></script>
 ```
 
-If you would like to use ordinary ```Array``` instead of ```Float32Array```, define ```GLMAT_ARRAY_TYPE``` globally before loading the library.
+If you would like to use ordinary ```Array``` instead of ```Float32Array```, define ```P2_ARRAY_TYPE``` globally before loading the library.
 
 ```html
-<script type="text/javascript">GLMAT_ARRAY_TYPE = Array;</script>
+<script type="text/javascript">P2_ARRAY_TYPE = Array;</script>
 <script src="p2.js" type="text/javascript"></script>
 ```
 
@@ -130,10 +132,10 @@ var p2 = require('p2');
 | [Rectangle](http://schteppe.github.io/p2.js/docs/classes/Rectangle.html)     | Yes    | Yes   | Yes       | -      | -        | -      | -       | -           | -      |
 | [Convex](http://schteppe.github.io/p2.js/docs/classes/Convex.html)           | Yes    | Yes   | Yes       | Yes    | -        | -      | -       | -           | -      |
 | [Particle](http://schteppe.github.io/p2.js/docs/classes/Particle.html)       | Yes    | Yes   | Yes       | Yes    | -        | -      | -       | -           | -      |
-| [Line](http://schteppe.github.io/p2.js/docs/classes/Line.html)               | Yes    | Yes   | (todo)    | (todo) | -        | (todo) | -       | -           | -      |
+| [Line](http://schteppe.github.io/p2.js/docs/classes/Line.html)               | Yes    | Yes   | (todo)    | (todo) | -        | -      | -       | -           | -      |
 | [Capsule](http://schteppe.github.io/p2.js/docs/classes/Capsule.html)         | Yes    | Yes   | Yes       | Yes    | Yes      | (todo) | Yes     | -           | -      |
-| [Heightfield](http://schteppe.github.io/p2.js/docs/classes/Heightfield.html) | Yes    | -     | Yes       | Yes    | (todo)   | (todo) | (todo)  | (todo)      | -      |
-| Ray                                                                          | Yes    | Yes   | Yes       | (todo) | -        | (todo) | (todo)  | (todo)      | -      |
+| [Heightfield](http://schteppe.github.io/p2.js/docs/classes/Heightfield.html) | Yes    | -     | Yes       | Yes    | (todo)   | (todo) | (todo)  | -           | -      |
+| Ray                                                                          | Yes    | Yes   | Yes       | Yes    | -        | Yes    | Yes     | Yes         | -      |
 
 Note that concave polygon shapes can be created using [Body.fromPolygon](http://schteppe.github.io/p2.js/docs/classes/Body.html#method_fromPolygon).
 

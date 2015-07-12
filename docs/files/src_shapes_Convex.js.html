@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="p2.js" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.6.1</em>
+            <em>API Docs for: 0.7.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -41,6 +41,7 @@
                                 <li><a href="../classes/AABB.html">AABB</a></li>
                                 <li><a href="../classes/AngleLockEquation.html">AngleLockEquation</a></li>
                                 <li><a href="../classes/Body.html">Body</a></li>
+                                <li><a href="../classes/Box.html">Box</a></li>
                                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
                                 <li><a href="../classes/Capsule.html">Capsule</a></li>
                                 <li><a href="../classes/Circle.html">Circle</a></li>
@@ -53,7 +54,6 @@
                                 <li><a href="../classes/EventEmitter.html">EventEmitter</a></li>
                                 <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
                                 <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
-                                <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
                                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
                                 <li><a href="../classes/Heightfield.html">Heightfield</a></li>
                                 <li><a href="../classes/Island.html">Island</a></li>
@@ -65,6 +65,7 @@
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
                                 <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
+                                <li><a href="../classes/Object pooling utility..html">Object pooling utility.</a></li>
                                 <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
                                 <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
                                 <li><a href="../classes/Particle.html">Particle</a></li>
@@ -72,18 +73,20 @@
                                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
                                 <li><a href="../classes/Ray.html">Ray</a></li>
                                 <li><a href="../classes/RaycastResult.html">RaycastResult</a></li>
-                                <li><a href="../classes/Rectangle.html">Rectangle</a></li>
                                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
                                 <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
+                                <li><a href="../classes/.html"></a></li>
                                 <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
                                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
                                 <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
                                 <li><a href="../classes/Shape.html">Shape</a></li>
                                 <li><a href="../classes/Solver.html">Solver</a></li>
                                 <li><a href="../classes/Spring.html">Spring</a></li>
+                                <li><a href="../classes/TopDownVehicle.html">TopDownVehicle</a></li>
                                 <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
                                 <li><a href="../classes/Utils.html">Utils</a></li>
                                 <li><a href="../classes/vec2.html">vec2</a></li>
+                                <li><a href="../classes/WheelConstraint.html">WheelConstraint</a></li>
                                 <li><a href="../classes/World.html">World</a></li>
                             </ul>
                 
@@ -137,15 +140,24 @@ module.exports = Convex;
  * @class Convex
  * @constructor
  * @extends Shape
- * @param {Array} vertices An array of vertices that span this shape. Vertices are given in counter-clockwise (CCW) direction.
- * @param {Array} [axes] An array of unit length vectors, representing the symmetry axes in the convex.
+ * @param {object} [options] (Note that this options object will be passed on to the {{#crossLink &quot;Shape&quot;}}{{/crossLink}} constructor.)
+ * @param {Array} [options.vertices] An array of vertices that span this shape. Vertices are given in counter-clockwise (CCW) direction.
+ * @param {Array} [options.axes] An array of unit length vectors, representing the symmetry axes in the convex.
  * @example
  *     // Create a box
  *     var vertices = [[-1,-1], [1,-1], [1,1], [-1,1]];
- *     var convexShape = new Convex(vertices);
+ *     var convexShape = new Convex({ vertices: vertices });
  *     body.addShape(convexShape);
  */
-function Convex(vertices, axes){
+function Convex(options){
+    if(Array.isArray(arguments[0])){
+        options = {
+            vertices: arguments[0],
+            axes: arguments[1]
+        };
+        console.warn(&#x27;The Convex constructor signature has changed. Please use the following format: new Convex({ vertices: [...], ... })&#x27;);
+    }
+    options = options || {};
 
     /**
      * Vertices defined in the local frame.
@@ -154,6 +166,14 @@ function Convex(vertices, axes){
      */
     this.vertices = [];
 
+    // Copy the verts
+    var vertices = options.vertices !== undefined ? options.vertices : [];
+    for(var i=0; i &lt; vertices.length; i++){
+        var v = vec2.create();
+        vec2.copy(v, vertices[i]);
+        this.vertices.push(v);
+    }
+
     /**
      * Axes defined in the local frame.
      * @property axes
@@ -161,26 +181,22 @@ function Convex(vertices, axes){
      */
     this.axes = [];
 
-    // Copy the verts
-    for(var i=0; i&lt;vertices.length; i++){
-        var v = vec2.create();
-        vec2.copy(v,vertices[i]);
-        this.vertices.push(v);
-    }
+    if(options.axes){
 
-    if(axes){
         // Copy the axes
-        for(var i=0; i &lt; axes.length; i++){
+        for(var i=0; i &lt; options.axes.length; i++){
             var axis = vec2.create();
-            vec2.copy(axis, axes[i]);
+            vec2.copy(axis, options.axes[i]);
             this.axes.push(axis);
         }
+
     } else {
+
         // Construct axes from the vertex data
-        for(var i = 0; i &lt; vertices.length; i++){
+        for(var i = 0; i &lt; this.vertices.length; i++){
             // Get the world edge
-            var worldPoint0 = vertices[i];
-            var worldPoint1 = vertices[(i+1) % vertices.length];
+            var worldPoint0 = this.vertices[i];
+            var worldPoint1 = this.vertices[(i+1) % this.vertices.length];
 
             var normal = vec2.create();
             vec2.sub(normal, worldPoint1, worldPoint0);
@@ -191,6 +207,7 @@ function Convex(vertices, axes){
 
             this.axes.push(normal);
         }
+
     }
 
     /**
@@ -219,7 +236,8 @@ function Convex(vertices, axes){
      */
     this.boundingRadius = 0;
 
-    Shape.call(this, Shape.CONVEX);
+    options.type = Shape.CONVEX;
+    Shape.call(this, options);
 
     this.updateBoundingRadius();
     this.updateArea();
@@ -450,6 +468,43 @@ Convex.prototype.updateArea = function(){
  */
 Convex.prototype.computeAABB = function(out, position, angle){
     out.setFromPoints(this.vertices, position, angle, 0);
+};
+
+var intersectConvex_rayStart = vec2.create();
+var intersectConvex_rayEnd = vec2.create();
+var intersectConvex_normal = vec2.create();
+
+/**
+ * @method raycast
+ * @param  {RaycastResult} result
+ * @param  {Ray} ray
+ * @param  {array} position
+ * @param  {number} angle
+ */
+Convex.prototype.raycast = function(result, ray, position, angle){
+    var rayStart = intersectConvex_rayStart;
+    var rayEnd = intersectConvex_rayEnd;
+    var normal = intersectConvex_normal;
+    var vertices = this.vertices;
+
+    // Transform to local shape space
+    vec2.toLocalFrame(rayStart, ray.from, position, angle);
+    vec2.toLocalFrame(rayEnd, ray.to, position, angle);
+
+    var n = vertices.length;
+
+    for (var i = 0; i &lt; n &amp;&amp; !result.shouldStop(ray); i++) {
+        var q1 = vertices[i];
+        var q2 = vertices[(i+1) % n];
+        var delta = vec2.getLineSegmentsIntersectionFraction(rayStart, rayEnd, q1, q2);
+
+        if(delta &gt;= 0){
+            vec2.sub(normal, q2, q1);
+            vec2.rotate(normal, normal, -Math.PI / 2 + angle);
+            vec2.normalize(normal, normal);
+            ray.reportIntersection(result, delta, normal, i);
+        }
+    }
 };
 
     </pre>

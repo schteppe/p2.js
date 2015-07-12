@@ -13,7 +13,7 @@
     <p>Use arrow keys to control character</p>
 
     <script>
-      var canvas, ctx, w, h, zoom=50, jumpSpeed=6, walkSpeed=2,
+      var canvas, ctx, w, h, zoom=50, jumpSpeed=6, walkSpeed=2, timeStep=1/60, maxSubSteps=10,
           world, characterBody, planeBody, platforms=[], boxes=[];
 
       var buttons = {
@@ -46,7 +46,7 @@
             boxMaterial = new p2.Material();
 
         // Add a character body
-        characterShape = new p2.Rectangle(0.5,1);
+        characterShape = new p2.Box({ width: 0.5, height: 1 });
         characterBody = new p2.Body({
           mass: 1,
           position:[0,3],
@@ -67,33 +67,33 @@
         planeShape.material = groundMaterial;
 
         // Add platforms
-        var platformPositions = [[2,0],[0,1],[-2,2]],
-            platformShape = new p2.Rectangle(1,0.3);
+        var platformPositions = [[2,0],[0,1],[-2,2]];
         for(var i=0; i<platformPositions.length; i++){
           var platformBody = new p2.Body({
             mass: 0, // Static
             position:platformPositions[i],
           });
           platformBody.type = p2.Body.KINEMATIC;
+          var platformShape = new p2.Box({ width: 1, height: 0.3 });
+          platformShape.material = groundMaterial;
           platformBody.addShape(platformShape);
           world.addBody(platformBody);
           platforms.push(platformBody);
         }
-        platformShape.material = groundMaterial;
 
         // Add movable boxes
-        var boxPositions = [[2,1],[0,2],[-2,3]],
-            boxShape = new p2.Rectangle(0.8,0.8);
+        var boxPositions = [[2,1],[0,2],[-2,3]];
         for(var i=0; i<boxPositions.length; i++){
           var boxBody = new p2.Body({
             mass: 1,
             position:boxPositions[i],
           });
+          var boxShape = new p2.Box({ width: 0.8, height: 0.8 });
+          boxShape.material = boxMaterial;
           boxBody.addShape(boxShape);
           world.addBody(boxBody);
           boxes.push(boxBody);
         }
-        boxShape.material = boxMaterial;
 
         // Init contactmaterials
         var groundCharacterCM = new p2.ContactMaterial(groundMaterial, characterMaterial,{
@@ -108,6 +108,41 @@
         world.addContactMaterial(groundCharacterCM);
         world.addContactMaterial(boxCharacterCM);
         world.addContactMaterial(boxGroundCM);
+
+
+        // Allow pass through platforms from below
+        var passThroughBody;
+
+        world.on('beginContact', function (evt){
+          if(evt.bodyA !== characterBody && evt.bodyB !== characterBody) return;
+          var otherBody = evt.bodyA === characterBody ? evt.bodyB : evt.bodyA;
+          if(platforms.indexOf(otherBody) !== -1 && otherBody.position[1] > characterBody.position[1]){
+            passThroughBody = otherBody;
+          }
+        });
+
+        // Disable any equations between the current passthrough body and the character
+        world.on('preSolve', function (evt){
+          for(var i=0; i<evt.contactEquations.length; i++){
+            var eq = evt.contactEquations[i];
+            if((eq.bodyA === characterBody && eq.bodyB === passThroughBody) || eq.bodyB === characterBody && eq.bodyA === passThroughBody){
+              eq.enabled = false;
+            }
+          }
+          for(var i=0; i<evt.frictionEquations.length; i++){
+            var eq = evt.frictionEquations[i];
+            if((eq.bodyA === characterBody && eq.bodyB === passThroughBody) || eq.bodyB === characterBody && eq.bodyA === passThroughBody){
+              eq.enabled = false;
+            }
+          }
+        });
+
+        world.on('endContact', function (evt){
+          if((evt.bodyA === characterBody && evt.bodyB === passThroughBody) || evt.bodyB === characterBody && evt.bodyA === passThroughBody){
+            passThroughBody = undefined;
+          }
+        });
+
       }
 
       function drawBox(body){
@@ -160,25 +195,35 @@
         ctx.restore();
       }
 
+      world.on('postStep', function(){
+        for(var i=0; i<platforms.length; i++){
+          platforms[i].velocity[0] = 2*Math.sin(world.time);
+        }
+      });
+
+      var lastTime;
+
       // Animation loop
       function animate(t){
-        t = t || 0;
         requestAnimationFrame(animate);
 
-        for(var i=0; i<platforms.length; i++){
-          platforms[i].velocity[0] = Math.sin(t*0.001);
-        }
+        var dt = t !== undefined && lastTime !== undefined ? t / 1000 - lastTime : 0;
 
         // Apply button response
-        if(buttons.right) characterBody.velocity[0] =  walkSpeed;
-        else if(buttons.left)  characterBody.velocity[0] = -walkSpeed;
-        else characterBody.velocity[0] = 0;
+        if(buttons.right)
+          characterBody.velocity[0] =  walkSpeed;
+        else if(buttons.left)
+          characterBody.velocity[0] = -walkSpeed;
+        else
+          characterBody.velocity[0] = 0;
 
         // Move physics bodies forward in time
-        world.step(1/60);
+        world.step(timeStep, dt, maxSubSteps);
 
         // Render scene
         render();
+
+        lastTime = t / 1000;
       }
 
       var yAxis = p2.vec2.fromValues(0,1);

@@ -6,6 +6,11 @@
     <script src="../../build/p2.js"></script>
   </head>
   <body>
+    <p>
+      <span style="color:red">Any</span>
+      <span style="color:green">All</span>
+      <span style="color:blue">Closest</span>
+    </p>
 
     <!-- The canvas, where we draw stuff -->
     <canvas width="600" height="400" id="myCanvas"></canvas>
@@ -17,6 +22,19 @@
       var start = [0,0];
       var end = [0,0];
       var result = new p2.RaycastResult();
+      var hitPoint = p2.vec2.create();
+      var rayClosest = new p2.Ray({
+        mode: p2.Ray.CLOSEST
+      });
+      var rayAll = new p2.Ray({
+        mode: p2.Ray.ALL,
+        callback: function(result){
+          drawRayResult(result, rayAll);
+        }
+      });
+      var rayAny = new p2.Ray({
+        mode: p2.Ray.ANY
+      });
       var raycastOptions = {};
       init();
       animate();
@@ -29,7 +47,7 @@
         h = canvas.height;
 
         ctx = canvas.getContext("2d");
-        ctx.lineWidth = 0.05;
+        ctx.lineWidth = 0.02;
         ctx.fillStyle = 'white';
 
         // Init p2.js
@@ -38,17 +56,18 @@
         });
 
         // Add a box
-        boxShape = new p2.Rectangle(2,1);
+        boxShape = new p2.Box({ width: 2, height: 1 });
         boxBody = new p2.Body({
           mass:1,
           position:[0,2],
-          angularVelocity:1
+          angularVelocity:1,
+          angularDamping: 0
         });
         boxBody.addShape(boxShape);
         world.addBody(boxBody);
 
         // Add a circle
-        circleShape = new p2.Circle(0.5);
+        circleShape = new p2.Circle({ radius: 0.5 });
         circleBody = new p2.Body({
           mass:1,
           position:[0,-1],
@@ -58,11 +77,12 @@
         world.addBody(circleBody);
 
         // Add a capsule
-        capsuleShape = new p2.Capsule(1,0.5);
+        capsuleShape = new p2.Capsule({ length: 1, radius: 0.5 });
         capsuleBody = new p2.Body({
           mass:1,
           position:[-1.5,0],
-          angularVelocity:1
+          angularVelocity:1,
+          angularDamping: 0
         });
         capsuleBody.addShape(capsuleShape);
         world.addBody(capsuleBody);
@@ -75,6 +95,24 @@
         });
         planeBody.addShape(planeShape);
         world.addBody(planeBody);
+
+        // Add a convex
+        var vertices = [];
+        var size = 1;
+        for(var i=0, N=5; i<N; i++){
+            var a = 2*Math.PI / N * i;
+            var vertex = [size*0.5*Math.cos(a), size*0.5*Math.sin(a)]; // Note: vertices are added counter-clockwise
+            vertices.push(vertex);
+        }
+        convexShape = new p2.Convex({ vertices: vertices });
+        convexBody = new p2.Body({
+          mass: 1,
+          position: [1,0],
+          angle: Math.PI / 3,
+          angularVelocity: 1
+        });
+        convexBody.addShape(convexShape);
+        world.addBody(convexBody);
       }
 
       function drawbox(){
@@ -110,6 +148,21 @@
         ctx.translate(x, y);
         ctx.rotate(circleBody.angle);
         ctx.arc(0,0,circleShape.radius,0,2*Math.PI);
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      function drawConvex(){
+        ctx.beginPath();
+        var x = convexBody.position[0],
+            y = convexBody.position[1];
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(convexBody.angle);
+        ctx.moveTo(convexShape.vertices[0][0], convexShape.vertices[0][1]);
+        for (var i = 1; i < convexShape.vertices.length+1; i++) {
+          ctx.lineTo(convexShape.vertices[i%convexShape.vertices.length][0], convexShape.vertices[i%convexShape.vertices.length][1]);
+        }
         ctx.stroke();
         ctx.restore();
       }
@@ -157,40 +210,78 @@
         ctx.restore();
       }
 
-      function drawRays(){
-        start[0] = -3;
-        start[1] = Math.sin(world.time) * 4;
-        end[0] = 5;
-        end[1] = Math.sin(world.time);
+      function drawRayResult(result, ray){
 
-        result.reset();
-        world.raycastClosest(start, end, raycastOptions, result);
+        result.getHitPoint(hitPoint, ray);
 
+        // Draw hit point
+        if(result.hasHit()){
+          ctx.beginPath();
+          ctx.arc(hitPoint[0],hitPoint[1],0.1,0,2*Math.PI);
+          ctx.stroke();
+        }
+
+        // Draw hit normal
+        ctx.beginPath();
+        ctx.moveTo(hitPoint[0], hitPoint[1]);
+        ctx.lineTo(
+          hitPoint[0] + result.normal[0],
+          hitPoint[1] + result.normal[1]
+        );
+        ctx.stroke();
+      };
+
+      function drawRay(start, end){
         // Draw line
         ctx.beginPath();
         ctx.moveTo(start[0], start[1]);
         ctx.lineTo(end[0], end[1]);
         ctx.stroke();
+      }
 
+      function drawRays(){
+
+        start[0] = -3;
+        start[1] = Math.sin(world.time) * 4;
+        end[0] = 5;
+        end[1] = Math.sin(world.time);
+
+        // Closest
+        p2.vec2.copy(rayClosest.from, start);
+        p2.vec2.copy(rayClosest.to, end);
+        rayClosest.update();
+        ctx.strokeStyle = 'blue';
+        drawRay(start, end);
         result.reset();
-        world.raycastAll(start, end, {}, function(result){
+        world.raycast(result, rayClosest);
+        drawRayResult(result, rayClosest);
 
-          // Draw hit point
-          if(result.hasHit){
-            ctx.beginPath();
-            ctx.arc(result.hitPointWorld[0],result.hitPointWorld[1],0.1,0,2*Math.PI);
-            ctx.stroke();
-          }
+        start[1] += 0.5;
+        end[1] += 0.5;
 
-          // Draw hit normal
-          ctx.beginPath();
-          ctx.moveTo(result.hitPointWorld[0], result.hitPointWorld[1]);
-          ctx.lineTo(
-            result.hitPointWorld[0] + result.hitNormalWorld[0],
-            result.hitPointWorld[1] + result.hitNormalWorld[1]
-          );
-          ctx.stroke();
-        });
+        // All
+        p2.vec2.copy(rayAll.from, start);
+        p2.vec2.copy(rayAll.to, end);
+        rayAll.update();
+        ctx.strokeStyle = 'green';
+        drawRay(start, end);
+        result.reset();
+        world.raycast(result, rayAll); // drawRayResult
+
+        start[1] += 0.5;
+        end[1] += 0.5;
+
+        // Any
+        p2.vec2.copy(rayAny.from, start);
+        p2.vec2.copy(rayAny.to, end);
+        rayAny.update();
+        ctx.strokeStyle = 'red';
+        drawRay(start, end);
+        result.reset();
+        world.raycast(result, rayAny);
+        drawRayResult(result, rayAny);
+
+        ctx.strokeStyle = 'black';
       }
 
       function render(){
@@ -207,6 +298,7 @@
         drawPlane();
         drawCircle();
         drawCapsule();
+        drawConvex();
         drawRays();
 
         // Restore transform

@@ -1,6 +1,8 @@
 var vec2 = require('../math/vec2')
 ,   decomp = require('poly-decomp')
 ,   Convex = require('../shapes/Convex')
+,   RaycastResult = require('../collision/RaycastResult')
+,   Ray = require('../collision/Ray')
 ,   AABB = require('../collision/AABB')
 ,   EventEmitter = require('../events/EventEmitter');
 
@@ -13,17 +15,23 @@ module.exports = Body;
  * @class Body
  * @constructor
  * @extends EventEmitter
- * @param {Object}              [options]
- * @param {Number}              [options.mass=0]    A number >= 0. If zero, the .type will be set to Body.STATIC.
- * @param {Array}               [options.position]
- * @param {Array}               [options.velocity]
- * @param {Number}              [options.angle=0]
- * @param {Number}              [options.angularVelocity=0]
- * @param {Array}               [options.force]
- * @param {Number}              [options.angularForce=0]
- * @param {Number}              [options.fixedRotation=false]
- * @param {Number}              [options.ccdSpeedThreshold=-1]
- * @param {Number}              [options.ccdIterations=10]
+ * @param {Array} [options.force]
+ * @param {Array} [options.position]
+ * @param {Array} [options.velocity]
+ * @param {Boolean} [options.allowSleep]
+ * @param {Boolean} [options.collisionResponse]
+ * @param {Number} [options.angle=0]
+ * @param {Number} [options.angularForce=0]
+ * @param {Number} [options.angularVelocity=0]
+ * @param {Number} [options.ccdIterations=10]
+ * @param {Number} [options.ccdSpeedThreshold=-1]
+ * @param {Number} [options.fixedRotation=false]
+ * @param {Number} [options.gravityScale]
+ * @param {Number} [options.id]
+ * @param {Number} [options.mass=0] A number >= 0. If zero, the .type will be set to Body.STATIC.
+ * @param {Number} [options.sleepSpeedLimit]
+ * @param {Number} [options.sleepTimeLimit]
+ * @param {Object} [options]
  *
  * @example
  *
@@ -37,7 +45,7 @@ module.exports = Body;
  *     });
  *
  *     // Add a circular shape to the body
- *     body.addShape(new Circle(1));
+ *     body.addShape(new Circle({ radius: 1 }));
  *
  *     // Add the body to the world
  *     world.addBody(body);
@@ -52,7 +60,7 @@ function Body(options){
      * @property id
      * @type {Number}
      */
-    this.id = ++Body._idCounter;
+    this.id = options.id || ++Body._idCounter;
 
     /**
      * The world that this body is added to. This property is set to NULL if the body is not added to any world.
@@ -62,28 +70,12 @@ function Body(options){
     this.world = null;
 
     /**
-     * The shapes of the body. The local transform of the shape in .shapes[i] is
-     * defined by .shapeOffsets[i] and .shapeAngles[i].
+     * The shapes of the body.
      *
      * @property shapes
      * @type {Array}
      */
     this.shapes = [];
-
-    /**
-     * The local shape offsets, relative to the body center of mass. This is an
-     * array of Array.
-     * @property shapeOffsets
-     * @type {Array}
-     */
-    this.shapeOffsets = [];
-
-    /**
-     * The body-local shape angle transforms. This is an array of numbers (angles).
-     * @property shapeAngles
-     * @type {Array}
-     */
-    this.shapeAngles = [];
 
     /**
      * The mass of the body.
@@ -124,6 +116,24 @@ function Body(options){
     this.fixedRotation = !!options.fixedRotation;
 
     /**
+     * Set to true if you want to fix the body movement along the X axis. The body will still be able to move along Y.
+     * @property {Boolean} fixedX
+     */
+    this.fixedX = !!options.fixedX;
+
+    /**
+     * Set to true if you want to fix the body movement along the Y axis. The body will still be able to move along X.
+     * @property {Boolean} fixedY
+     */
+    this.fixedY = !!options.fixedY;
+
+    /**
+     * @private
+     * @property {array} massMultiplier
+     */
+    this.massMultiplier = vec2.create();
+
+    /**
      * The position of the body
      * @property position
      * @type {Array}
@@ -134,14 +144,14 @@ function Body(options){
     }
 
     /**
-     * The interpolated position of the body.
+     * The interpolated position of the body. Use this for rendering.
      * @property interpolatedPosition
      * @type {Array}
      */
     this.interpolatedPosition = vec2.fromValues(0,0);
 
     /**
-     * The interpolated angle of the body.
+     * The interpolated angle of the body. Use this for rendering.
      * @property interpolatedAngle
      * @type {Number}
      */
@@ -162,7 +172,7 @@ function Body(options){
     this.previousAngle = 0;
 
     /**
-     * The velocity of the body
+     * The current velocity of the body.
      * @property velocity
      * @type {Array}
      */
@@ -329,7 +339,7 @@ function Body(options){
      * @type {Boolean}
      * @default true
      */
-    this.allowSleep = true;
+    this.allowSleep = options.allowSleep !== undefined ? options.allowSleep : true;
 
     this.wantsToSleep = false;
 
@@ -350,7 +360,7 @@ function Body(options){
      * @type {Number}
      * @default 0.2
      */
-    this.sleepSpeedLimit = 0.2;
+    this.sleepSpeedLimit = options.sleepSpeedLimit !== undefined ? options.sleepSpeedLimit : 0.2;
 
     /**
      * If the body has been sleepy for this sleepTimeLimit seconds, it is considered sleeping.
@@ -358,20 +368,20 @@ function Body(options){
      * @type {Number}
      * @default 1
      */
-    this.sleepTimeLimit = 1;
+    this.sleepTimeLimit = options.sleepTimeLimit !== undefined ? options.sleepTimeLimit : 1;
 
     /**
      * Gravity scaling factor. If you want the body to ignore gravity, set this to zero. If you want to reverse gravity, set it to -1.
      * @property {Number} gravityScale
      * @default 1
      */
-    this.gravityScale = 1;
+    this.gravityScale = options.gravityScale !== undefined ? options.gravityScale : 1;
 
     /**
      * Whether to produce contact forces when in contact with other bodies. Note that contacts will be generated, but they will be disabled. That means that this body will move through other bodies, but it will still trigger contact events, etc.
      * @property {Boolean} collisionResponse
      */
-    this.collisionResponse = true;
+    this.collisionResponse = options.collisionResponse !== undefined ? options.collisionResponse : true;
 
     /**
      * How long the body has been sleeping.
@@ -411,6 +421,10 @@ Body.prototype.constructor = Body;
 
 Body._idCounter = 0;
 
+/**
+ * @private
+ * @method updateSolveMassProperties
+ */
 Body.prototype.updateSolveMassProperties = function(){
     if(this.sleepState === Body.SLEEPING || this.type === Body.KINEMATIC){
         this.invMassSolve = 0;
@@ -424,6 +438,7 @@ Body.prototype.updateSolveMassProperties = function(){
 /**
  * Set the total density of the body
  * @method setDensity
+ * @param {number} density
  */
 Body.prototype.setDensity = function(density) {
     var totalArea = this.getArea();
@@ -447,6 +462,7 @@ Body.prototype.getArea = function() {
 /**
  * Get the AABB from the body. The AABB is updated if necessary.
  * @method getAABB
+ * @return {AABB} The AABB instance (this.aabb)
  */
 Body.prototype.getAABB = function(){
     if(this.aabbNeedsUpdate){
@@ -459,23 +475,21 @@ var shapeAABB = new AABB(),
     tmp = vec2.create();
 
 /**
- * Updates the AABB of the Body
+ * Updates the AABB of the Body, and set .aabbNeedsUpdate = false.
  * @method updateAABB
  */
 Body.prototype.updateAABB = function() {
     var shapes = this.shapes,
-        shapeOffsets = this.shapeOffsets,
-        shapeAngles = this.shapeAngles,
         N = shapes.length,
         offset = tmp,
         bodyAngle = this.angle;
 
     for(var i=0; i!==N; i++){
         var shape = shapes[i],
-            angle = shapeAngles[i] + bodyAngle;
+            angle = shape.angle + bodyAngle;
 
         // Get shape world offset
-        vec2.rotate(offset, shapeOffsets[i], bodyAngle);
+        vec2.rotate(offset, shape.position, bodyAngle);
         vec2.add(offset, offset, this.position);
 
         // Get shape AABB
@@ -492,19 +506,17 @@ Body.prototype.updateAABB = function() {
 };
 
 /**
- * Update the bounding radius of the body. Should be done if any of the shapes
- * are changed.
+ * Update the bounding radius of the body (this.boundingRadius). Should be done if any of the shape dimensions or positions are changed.
  * @method updateBoundingRadius
  */
 Body.prototype.updateBoundingRadius = function(){
     var shapes = this.shapes,
-        shapeOffsets = this.shapeOffsets,
         N = shapes.length,
         radius = 0;
 
     for(var i=0; i!==N; i++){
         var shape = shapes[i],
-            offset = vec2.length(shapeOffsets[i]),
+            offset = vec2.length(shape.position),
             r = shape.boundingRadius;
         if(offset + r > radius){
             radius = offset + r;
@@ -526,7 +538,7 @@ Body.prototype.updateBoundingRadius = function(){
  *
  * @example
  *     var body = new Body(),
- *         shape = new Circle();
+ *         shape = new Circle({ radius: 1 });
  *
  *     // Add the shape to the body, positioned in the center
  *     body.addShape(shape);
@@ -537,19 +549,22 @@ Body.prototype.updateBoundingRadius = function(){
  *     // Add another shape to the body, positioned 1 unit length from the body center of mass along the local y-axis, and rotated 90 degrees CCW.
  *     body.addShape(shape,[0,1],Math.PI/2);
  */
-Body.prototype.addShape = function(shape,offset,angle){
-    angle = angle || 0.0;
+Body.prototype.addShape = function(shape, offset, angle){
+    if(shape.body){
+        throw new Error('A shape can only be added to one body.');
+    }
+    shape.body = this;
 
     // Copy the offset vector
     if(offset){
-        offset = vec2.fromValues(offset[0],offset[1]);
+        vec2.copy(shape.position, offset);
     } else {
-        offset = vec2.fromValues(0,0);
+        vec2.set(shape.position, 0, 0);
     }
 
-    this.shapes      .push(shape);
-    this.shapeOffsets.push(offset);
-    this.shapeAngles .push(angle);
+    shape.angle = angle || 0;
+
+    this.shapes.push(shape);
     this.updateMassProperties();
     this.updateBoundingRadius();
 
@@ -559,17 +574,16 @@ Body.prototype.addShape = function(shape,offset,angle){
 /**
  * Remove a shape
  * @method removeShape
- * @param  {Shape}  shape
- * @return {Boolean}       True if the shape was found and removed, else false.
+ * @param  {Shape} shape
+ * @return {Boolean} True if the shape was found and removed, else false.
  */
 Body.prototype.removeShape = function(shape){
     var idx = this.shapes.indexOf(shape);
 
     if(idx !== -1){
         this.shapes.splice(idx,1);
-        this.shapeOffsets.splice(idx,1);
-        this.shapeAngles.splice(idx,1);
         this.aabbNeedsUpdate = true;
+        shape.body = null;
         return true;
     } else {
         return false;
@@ -604,7 +618,7 @@ Body.prototype.updateMassProperties = function(){
         if(!this.fixedRotation){
             for(var i=0; i<N; i++){
                 var shape = shapes[i],
-                    r2 = vec2.squaredLength(this.shapeOffsets[i]),
+                    r2 = vec2.squaredLength(shape.position),
                     Icm = shape.computeMomentOfInertia(m);
                 I += Icm + m*r2;
             }
@@ -617,38 +631,110 @@ Body.prototype.updateMassProperties = function(){
         }
 
         // Inverse mass properties are easy
-        this.invMass = 1/this.mass;// > 0 ? 1/this.mass : 0;
+        this.invMass = 1 / this.mass;
+
+        vec2.set(
+            this.massMultiplier,
+            this.fixedX ? 0 : 1,
+            this.fixedY ? 0 : 1
+        );
     }
 };
 
 var Body_applyForce_r = vec2.create();
 
 /**
- * Apply force to a world point. This could for example be a point on the RigidBody surface. Applying force this way will add to Body.force and Body.angularForce.
+ * Apply force to a point relative to the center of mass of the body. This could for example be a point on the RigidBody surface. Applying force this way will add to Body.force and Body.angularForce. If relativePoint is zero, the force will be applied directly on the center of mass, and the torque produced will be zero.
  * @method applyForce
  * @param {Array} force The force to add.
- * @param {Array} worldPoint A world point to apply the force on.
+ * @param {Array} [relativePoint] A world point to apply the force on.
  */
-Body.prototype.applyForce = function(force,worldPoint){
-    // Compute point position relative to the body center
-    var r = Body_applyForce_r;
-    vec2.sub(r,worldPoint,this.position);
+Body.prototype.applyForce = function(force, relativePoint){
 
     // Add linear force
-    vec2.add(this.force,this.force,force);
+    vec2.add(this.force, this.force, force);
 
-    // Compute produced rotational force
-    var rotForce = vec2.crossLength(r,force);
+    if(relativePoint){
 
-    // Add rotational force
-    this.angularForce += rotForce;
+        // Compute produced rotational force
+        var rotForce = vec2.crossLength(relativePoint,force);
+
+        // Add rotational force
+        this.angularForce += rotForce;
+    }
+};
+
+/**
+ * Apply force to a body-local point.
+ * @method applyForceLocal
+ * @param  {Array} localForce The force vector to add, oriented in local body space.
+ * @param  {Array} localPoint A point relative to the body in world space. If not given, it is set to zero and all of the impulse will be excerted on the center of mass.
+ */
+var Body_applyForce_forceWorld = vec2.create();
+var Body_applyForce_pointWorld = vec2.create();
+var Body_applyForce_pointLocal = vec2.create();
+Body.prototype.applyForceLocal = function(localForce, localPoint){
+    localPoint = localPoint || Body_applyForce_pointLocal;
+    var worldForce = Body_applyForce_forceWorld;
+    var worldPoint = Body_applyForce_pointWorld;
+    this.vectorToWorldFrame(worldForce, localForce);
+    this.vectorToWorldFrame(worldPoint, localPoint);
+    this.applyForce(worldForce, worldPoint);
+};
+
+/**
+ * Apply impulse to a point relative to the body. This could for example be a point on the Body surface. An impulse is a force added to a body during a short period of time (impulse = force * time). Impulses will be added to Body.velocity and Body.angularVelocity.
+ * @method applyImpulse
+ * @param  {Array} impulse The impulse vector to add, oriented in world space.
+ * @param  {Array} [relativePoint] A point relative to the body in world space. If not given, it is set to zero and all of the impulse will be excerted on the center of mass.
+ */
+var Body_applyImpulse_velo = vec2.create();
+Body.prototype.applyImpulse = function(impulseVector, relativePoint){
+    if(this.type !== Body.DYNAMIC){
+        return;
+    }
+
+    // Compute produced central impulse velocity
+    var velo = Body_applyImpulse_velo;
+    vec2.scale(velo, impulseVector, this.invMass);
+    vec2.multiply(velo, this.massMultiplier, velo);
+
+    // Add linear impulse
+    vec2.add(this.velocity, velo, this.velocity);
+
+    if(relativePoint){
+        // Compute produced rotational impulse velocity
+        var rotVelo = vec2.crossLength(relativePoint, impulseVector);
+        rotVelo *= this.invInertia;
+
+        // Add rotational Impulse
+        this.angularVelocity += rotVelo;
+    }
+};
+
+/**
+ * Apply impulse to a point relative to the body. This could for example be a point on the Body surface. An impulse is a force added to a body during a short period of time (impulse = force * time). Impulses will be added to Body.velocity and Body.angularVelocity.
+ * @method applyImpulseLocal
+ * @param  {Array} impulse The impulse vector to add, oriented in world space.
+ * @param  {Array} [relativePoint] A point relative to the body in world space. If not given, it is set to zero and all of the impulse will be excerted on the center of mass.
+ */
+var Body_applyImpulse_impulseWorld = vec2.create();
+var Body_applyImpulse_pointWorld = vec2.create();
+var Body_applyImpulse_pointLocal = vec2.create();
+Body.prototype.applyImpulseLocal = function(localImpulse, localPoint){
+    localPoint = localPoint || Body_applyImpulse_pointLocal;
+    var worldImpulse = Body_applyImpulse_impulseWorld;
+    var worldPoint = Body_applyImpulse_pointWorld;
+    this.vectorToWorldFrame(worldImpulse, localImpulse);
+    this.vectorToWorldFrame(worldPoint, localPoint);
+    this.applyImpulse(worldImpulse, worldPoint);
 };
 
 /**
  * Transform a world point to local body frame.
  * @method toLocalFrame
  * @param  {Array} out          The vector to store the result in
- * @param  {Array} worldPoint   The input world vector
+ * @param  {Array} worldPoint   The input world point
  */
 Body.prototype.toLocalFrame = function(out, worldPoint){
     vec2.toLocalFrame(out, worldPoint, this.position, this.angle);
@@ -658,10 +744,30 @@ Body.prototype.toLocalFrame = function(out, worldPoint){
  * Transform a local point to world frame.
  * @method toWorldFrame
  * @param  {Array} out          The vector to store the result in
- * @param  {Array} localPoint   The input local vector
+ * @param  {Array} localPoint   The input local point
  */
 Body.prototype.toWorldFrame = function(out, localPoint){
     vec2.toGlobalFrame(out, localPoint, this.position, this.angle);
+};
+
+/**
+ * Transform a world point to local body frame.
+ * @method vectorToLocalFrame
+ * @param  {Array} out          The vector to store the result in
+ * @param  {Array} worldVector  The input world vector
+ */
+Body.prototype.vectorToLocalFrame = function(out, worldVector){
+    vec2.vectorToLocalFrame(out, worldVector, this.angle);
+};
+
+/**
+ * Transform a local point to world frame.
+ * @method vectorToWorldFrame
+ * @param  {Array} out          The vector to store the result in
+ * @param  {Array} localVector  The input local vector
+ */
+Body.prototype.vectorToWorldFrame = function(out, localVector){
+    vec2.vectorToGlobalFrame(out, localVector, this.angle);
 };
 
 /**
@@ -720,7 +826,7 @@ Body.prototype.fromPolygon = function(path,options){
     // Add convexes
     for(var i=0; i!==convexes.length; i++){
         // Create convex
-        var c = new Convex(convexes[i].vertices);
+        var c = new Convex({ vertices: convexes[i].vertices });
 
         // Move all vertices so its center of mass is in the local center of the convex
         for(var j=0; j!==c.vertices.length; j++){
@@ -761,10 +867,9 @@ Body.prototype.adjustCenterOfMass = function(){
     vec2.set(sum,0,0);
 
     for(var i=0; i!==this.shapes.length; i++){
-        var s = this.shapes[i],
-            offset = this.shapeOffsets[i];
-        vec2.scale(offset_times_area,offset,s.area);
-        vec2.add(sum,sum,offset_times_area);
+        var s = this.shapes[i];
+        vec2.scale(offset_times_area, s.position, s.area);
+        vec2.add(sum, sum, offset_times_area);
         totalArea += s.area;
     }
 
@@ -772,15 +877,8 @@ Body.prototype.adjustCenterOfMass = function(){
 
     // Now move all shapes
     for(var i=0; i!==this.shapes.length; i++){
-        var s = this.shapes[i],
-            offset = this.shapeOffsets[i];
-
-        // Offset may be undefined. Fix that.
-        if(!offset){
-            offset = this.shapeOffsets[i] = vec2.create();
-        }
-
-        vec2.sub(offset,offset,cm);
+        var s = this.shapes[i];
+        vec2.sub(s.position, s.position, cm);
     }
 
     // Move the body position too
@@ -891,32 +989,6 @@ Body.prototype.sleepTick = function(time, dontSleep, dt){
             this.wantsToSleep = true;
         }
     }
-
-    /*
-    if(sleepState===Body.AWAKE && speedSquared < speedLimitSquared){
-        this.sleepState = Body.SLEEPY; // Sleepy
-        this.timeLastSleepy = time;
-        this.emit(Body.sleepyEvent);
-    } else if(sleepState===Body.SLEEPY && speedSquared >= speedLimitSquared){
-        this.wakeUp(); // Wake up
-    } else if(sleepState===Body.SLEEPY && (time - this.timeLastSleepy ) > this.sleepTimeLimit){
-        this.wantsToSleep = true;
-        if(!dontSleep){
-            this.sleep();
-        }
-    }
-    */
-};
-
-Body.prototype.getVelocityFromPosition = function(store, timeStep){
-    store = store || vec2.create();
-    vec2.sub(store, this.position, this.previousPosition);
-    vec2.scale(store, store, 1/timeStep);
-    return store;
-};
-
-Body.prototype.getAngularVelocityFromPosition = function(timeStep){
-    return (this.angle - this.previousAngle) / timeStep;
 };
 
 /**
@@ -952,6 +1024,7 @@ Body.prototype.integrate = function(dt){
         this.angularVelocity += this.angularForce * this.invInertia * dt;
     }
     vec2.scale(integrate_fhMinv, f, dt * minv);
+    vec2.multiply(integrate_fhMinv, this.massMultiplier, integrate_fhMinv);
     vec2.add(velo, integrate_fhMinv, velo);
 
     // CCD
@@ -968,6 +1041,10 @@ Body.prototype.integrate = function(dt){
     this.aabbNeedsUpdate = true;
 };
 
+var result = new RaycastResult();
+var ray = new Ray({
+    mode: Ray.ALL
+});
 var direction = vec2.create();
 var end = vec2.create();
 var startToEnd = vec2.create();
@@ -991,16 +1068,21 @@ Body.prototype.integrateToTimeOfImpact = function(dt){
 
     var hit;
     var that = this;
-    this.world.raycastAll(this.position, end, {}, function (result) {
+    result.reset();
+    ray.callback = function (result) {
         if(result.body === that){
             return;
         }
         hit = result.body;
-        vec2.copy(end, result.hitPointWorld);
-        vec2.sub(startToEnd, result.hitPointWorld, that.position);
+        result.getHitPoint(end, ray);
+        vec2.sub(startToEnd, end, that.position);
         timeOfImpact = vec2.length(startToEnd) / len;
-        result.abort();
-    });
+        result.stop();
+    };
+    vec2.copy(ray.from, this.position);
+    vec2.copy(ray.to, end);
+    ray.update();
+    this.world.raycast(result, ray);
 
     if(!hit){
         return false;
@@ -1051,6 +1133,19 @@ Body.prototype.integrateToTimeOfImpact = function(dt){
     }
 
     return true;
+};
+
+/**
+ * Get velocity of a point in the body.
+ * @method getVelocityAtPoint
+ * @param  {Array} result A vector to store the result in
+ * @param  {Array} relativePoint A world oriented vector, indicating the position of the point to get the velocity from
+ * @return {Array} The result vector
+ */
+Body.prototype.getVelocityAtPoint = function(result, relativePoint){
+    vec2.crossVZ(result, relativePoint, this.angularVelocity);
+    vec2.subtract(result, this.velocity, result);
+    return result;
 };
 
 /**

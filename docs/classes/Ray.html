@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="p2.js" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.6.1</em>
+            <em>API Docs for: 0.7.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -41,6 +41,7 @@
                                 <li><a href="../classes/AABB.html">AABB</a></li>
                                 <li><a href="../classes/AngleLockEquation.html">AngleLockEquation</a></li>
                                 <li><a href="../classes/Body.html">Body</a></li>
+                                <li><a href="../classes/Box.html">Box</a></li>
                                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
                                 <li><a href="../classes/Capsule.html">Capsule</a></li>
                                 <li><a href="../classes/Circle.html">Circle</a></li>
@@ -53,7 +54,6 @@
                                 <li><a href="../classes/EventEmitter.html">EventEmitter</a></li>
                                 <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
                                 <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
-                                <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
                                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
                                 <li><a href="../classes/Heightfield.html">Heightfield</a></li>
                                 <li><a href="../classes/Island.html">Island</a></li>
@@ -65,6 +65,7 @@
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
                                 <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
+                                <li><a href="../classes/Object pooling utility..html">Object pooling utility.</a></li>
                                 <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
                                 <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
                                 <li><a href="../classes/Particle.html">Particle</a></li>
@@ -72,18 +73,20 @@
                                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
                                 <li><a href="../classes/Ray.html">Ray</a></li>
                                 <li><a href="../classes/RaycastResult.html">RaycastResult</a></li>
-                                <li><a href="../classes/Rectangle.html">Rectangle</a></li>
                                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
                                 <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
+                                <li><a href="../classes/.html"></a></li>
                                 <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
                                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
                                 <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
                                 <li><a href="../classes/Shape.html">Shape</a></li>
                                 <li><a href="../classes/Solver.html">Solver</a></li>
                                 <li><a href="../classes/Spring.html">Spring</a></li>
+                                <li><a href="../classes/TopDownVehicle.html">TopDownVehicle</a></li>
                                 <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
                                 <li><a href="../classes/Utils.html">Utils</a></li>
                                 <li><a href="../classes/vec2.html">vec2</a></li>
+                                <li><a href="../classes/WheelConstraint.html">WheelConstraint</a></li>
                                 <li><a href="../classes/World.html">World</a></li>
                             </ul>
                 
@@ -134,7 +137,7 @@
 
 
 <div class="box intro">
-    <p>A line with a start and end point that is used to intersect shapes.</p>
+    <p>A line with a start and end point that is used to intersect shapes. For an example, see <a href="../classes/World.html#method_raycast" class="crosslink">World.raycast</a></p>
 
 </div>
 
@@ -143,7 +146,13 @@
         <div id="method_Ray" class="method item">
             <h3 class="name"><code>Ray</code></h3>
         
-                <span class="paren">()</span>
+                <div class="args">
+                    <span class="paren">(</span><ul class="args-list inline commas">
+                        <li class="arg">
+                                <code class="optional">[options]</code>
+                        </li>
+                    </ul><span class="paren">)</span>
+                </div>
         
         
         
@@ -166,6 +175,105 @@
                 
             </div>
         
+                <div class="params">
+                    <h4>Parameters:</h4>
+        
+                    <ul class="params-list">
+                        <li class="param">
+                                <code class="param-name optional">[options]</code>
+                                <span class="type">Object</span>
+                                <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+        
+                            <div class="param-description">
+                                 
+                            </div>
+        
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name optional">[from]</code>
+                                            <span class="type">Array</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[to]</code>
+                                            <span class="type">Array</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[checkCollisionResponse=true]</code>
+                                            <span class="type">Boolean</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[skipBackfaces=false]</code>
+                                            <span class="type">Boolean</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[collisionMask=-1]</code>
+                                            <span class="type">Number</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[collisionGroup=-1]</code>
+                                            <span class="type">Number</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[mode=Ray.ANY]</code>
+                                            <span class="type">Number</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[callback]</code>
+                                            <span class="type">Number</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            
+                                        </div>
+        
+                                    </li>
+                                </ul>
+                        </li>
+                    </ul>
+                </div>
         
         
         
@@ -188,10 +296,6 @@
                     <h3>Methods</h3>
 
                     <ul class="index-list methods">
-                            <li class="index-item method private">
-                                <a href="#method__updateDirection">_updateDirection</a>
-
-                            </li>
                             <li class="index-item method">
                                 <a href="#method_getAABB">getAABB</a>
 
@@ -205,23 +309,15 @@
 
                             </li>
                             <li class="index-item method private">
-                                <a href="#method_intersectPlane">intersectPlane</a>
-
-                            </li>
-                            <li class="index-item method private">
-                                <a href="#method_intersectRectangle">intersectRectangle</a>
-
-                            </li>
-                            <li class="index-item method private">
                                 <a href="#method_intersectShape">intersectShape</a>
-
-                            </li>
-                            <li class="index-item method">
-                                <a href="#method_intersectWorld">intersectWorld</a>
 
                             </li>
                             <li class="index-item method private">
                                 <a href="#method_reportIntersection">reportIntersection</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_update">update</a>
 
                             </li>
                     </ul>
@@ -231,9 +327,15 @@
                     <h3>Properties</h3>
 
                     <ul class="index-list properties">
-                            <li class="index-item property private">
-                                <a href="#property__direction">_direction</a>
+                            <li class="index-item property">
+                                <a href="#property_ALL">ALL</a>
 
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_ANY">ANY</a>
+
+                                    <span class="flag static">static</span>
                             </li>
                             <li class="index-item property">
                                 <a href="#property_callback">callback</a>
@@ -244,6 +346,11 @@
 
                             </li>
                             <li class="index-item property">
+                                <a href="#property_CLOSEST">CLOSEST</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item property">
                                 <a href="#property_collisionGroup">collisionGroup</a>
 
                             </li>
@@ -252,23 +359,19 @@
 
                             </li>
                             <li class="index-item property">
+                                <a href="#property_direction">direction</a>
+
+                            </li>
+                            <li class="index-item property">
                                 <a href="#property_from">from</a>
 
                             </li>
                             <li class="index-item property">
-                                <a href="#property_hasHit">hasHit</a>
+                                <a href="#property_length">length</a>
 
                             </li>
                             <li class="index-item property">
                                 <a href="#property_mode">mode</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_precision">precision</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_result">result</a>
 
                             </li>
                             <li class="index-item property">
@@ -288,38 +391,6 @@
             <div id="methods" class="api-class-tabpanel">
                 <h2 class="off-left">Methods</h2>
 
-<div id="method__updateDirection" class="method item private">
-    <h3 class="name"><code>_updateDirection</code></h3>
-
-        <span class="paren">()</span>
-
-
-
-        <span class="flag private">private</span>
-
-
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_collision_Ray.js.html#l200"><code>src&#x2F;collision&#x2F;Ray.js:200</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Updates the _direction vector.</p>
-
-    </div>
-
-
-
-
-</div>
 <div id="method_getAABB" class="method item">
     <h3 class="name"><code>getAABB</code></h3>
 
@@ -341,7 +412,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_collision_Ray.js.html#l459"><code>src&#x2F;collision&#x2F;Ray.js:459</code></a>
+        <a href="../files/src_collision_Ray.js.html#l211"><code>src&#x2F;collision&#x2F;Ray.js:211</code></a>
         </p>
 
 
@@ -381,9 +452,6 @@
                 <li class="arg">
                         <code>bodies</code>
                 </li>
-                <li class="arg">
-                        <code class="optional">[result]</code>
-                </li>
             </ul><span class="paren">)</span>
         </div>
 
@@ -397,7 +465,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_collision_Ray.js.html#l184"><code>src&#x2F;collision&#x2F;Ray.js:184</code></a>
+        <a href="../files/src_collision_Ray.js.html#l125"><code>src&#x2F;collision&#x2F;Ray.js:125</code></a>
         </p>
 
 
@@ -423,18 +491,6 @@
                     </div>
 
                 </li>
-                <li class="param">
-                        <code class="param-name optional">[result]</code>
-                        <span class="type"><a href="../classes/RaycastResult.html" class="crosslink">RaycastResult</a></span>
-                        <span class="flag optional" title="This parameter is optional.">optional</span>
-
-
-                    <div class="param-description">
-                        <p>Deprecated</p>
-
-                    </div>
-
-                </li>
             </ul>
         </div>
 
@@ -448,9 +504,6 @@
             <span class="paren">(</span><ul class="args-list inline commas">
                 <li class="arg">
                         <code>body</code>
-                </li>
-                <li class="arg">
-                        <code class="optional">[result]</code>
                 </li>
             </ul><span class="paren">)</span>
         </div>
@@ -466,7 +519,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_collision_Ray.js.html#l133"><code>src&#x2F;collision&#x2F;Ray.js:133</code></a>
+        <a href="../files/src_collision_Ray.js.html#l141"><code>src&#x2F;collision&#x2F;Ray.js:141</code></a>
         </p>
 
 
@@ -482,202 +535,6 @@
             <h4>Parameters:</h4>
 
             <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">body</code>
-                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
-
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name optional">[result]</code>
-                        <span class="type"><a href="../classes/RaycastResult.html" class="crosslink">RaycastResult</a></span>
-                        <span class="flag optional" title="This parameter is optional.">optional</span>
-
-
-                    <div class="param-description">
-                        <p>Deprecated - set the result property of the Ray instead.</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
-<div id="method_intersectPlane" class="method item private">
-    <h3 class="name"><code>intersectPlane</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>shape</code>
-                </li>
-                <li class="arg">
-                        <code>angle</code>
-                </li>
-                <li class="arg">
-                        <code>position</code>
-                </li>
-                <li class="arg">
-                        <code>body</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-        <span class="flag private">private</span>
-
-
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_collision_Ray.js.html#l352"><code>src&#x2F;collision&#x2F;Ray.js:352</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">shape</code>
-                        <span class="type"><a href="../classes/Shape.html" class="crosslink">Shape</a></span>
-
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">angle</code>
-                        <span class="type">Number</span>
-
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">position</code>
-                        <span class="type">Array</span>
-
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">body</code>
-                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
-
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
-<div id="method_intersectRectangle" class="method item private">
-    <h3 class="name"><code>intersectRectangle</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>shape</code>
-                </li>
-                <li class="arg">
-                        <code>angle</code>
-                </li>
-                <li class="arg">
-                        <code>position</code>
-                </li>
-                <li class="arg">
-                        <code>body</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-        <span class="flag private">private</span>
-
-
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_collision_Ray.js.html#l253"><code>src&#x2F;collision&#x2F;Ray.js:253</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">shape</code>
-                        <span class="type"><a href="../classes/Shape.html" class="crosslink">Shape</a></span>
-
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">angle</code>
-                        <span class="type">Number</span>
-
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">position</code>
-                        <span class="type">Array</span>
-
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                </li>
                 <li class="param">
                         <code class="param-name">body</code>
                         <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
@@ -725,7 +582,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_collision_Ray.js.html#l211"><code>src&#x2F;collision&#x2F;Ray.js:211</code></a>
+        <a href="../files/src_collision_Ray.js.html#l186"><code>src&#x2F;collision&#x2F;Ray.js:186</code></a>
         </p>
 
 
@@ -786,100 +643,19 @@
 
 
 </div>
-<div id="method_intersectWorld" class="method item">
-    <h3 class="name"><code>intersectWorld</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>world</code>
-                </li>
-                <li class="arg">
-                        <code>options</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-        <span class="returns-inline">
-            <span class="type">Boolean</span>
-        </span>
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_collision_Ray.js.html#l95"><code>src&#x2F;collision&#x2F;Ray.js:95</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Do itersection against all bodies in the given World.</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">world</code>
-                        <span class="type"><a href="../classes/World.html" class="crosslink">World</a></span>
-
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">options</code>
-                        <span class="type">Object</span>
-
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                        <span class="type">Boolean</span>:
-                    <p>True if the ray hit anything, otherwise false.</p>
-
-            </div>
-        </div>
-
-
-</div>
 <div id="method_reportIntersection" class="method item private">
     <h3 class="name"><code>reportIntersection</code></h3>
 
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
                 <li class="arg">
+                        <code>fraction</code>
+                </li>
+                <li class="arg">
                         <code>normal</code>
                 </li>
                 <li class="arg">
-                        <code>hitPointWorld</code>
-                </li>
-                <li class="arg">
-                        <code>shape</code>
-                </li>
-                <li class="arg">
-                        <code>body</code>
+                        <code class="optional">[faceIndex=-1]</code>
                 </li>
             </ul><span class="paren">)</span>
         </div>
@@ -898,7 +674,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_collision_Ray.js.html#l473"><code>src&#x2F;collision&#x2F;Ray.js:473</code></a>
+        <a href="../files/src_collision_Ray.js.html#l233"><code>src&#x2F;collision&#x2F;Ray.js:233</code></a>
         </p>
 
 
@@ -914,6 +690,16 @@
 
             <ul class="params-list">
                 <li class="param">
+                        <code class="param-name">fraction</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
                         <code class="param-name">normal</code>
                         <span class="type">Array</span>
 
@@ -924,28 +710,9 @@
 
                 </li>
                 <li class="param">
-                        <code class="param-name">hitPointWorld</code>
-                        <span class="type">Array</span>
-
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">shape</code>
-                        <span class="type"><a href="../classes/Shape.html" class="crosslink">Shape</a></span>
-
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">body</code>
-                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                        <code class="param-name optional">[faceIndex=-1]</code>
+                        <span class="type">Number</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
 
 
                     <div class="param-description">
@@ -968,31 +735,89 @@
 
 
 </div>
+<div id="method_update" class="method item">
+    <h3 class="name"><code>update</code></h3>
+
+        <span class="paren">()</span>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_collision_Ray.js.html#l111"><code>src&#x2F;collision&#x2F;Ray.js:111</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Should be called if you change the from or to point.</p>
+
+    </div>
+
+
+
+
+</div>
             </div>
 
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
-                    <div id="property__direction" class="property item private">
-                        <h3 class="name"><code>_direction</code></h3>
-                        <span class="type">Array</span>
+                    <div id="property_ALL" class="property item">
+                        <h3 class="name"><code>ALL</code></h3>
+                        <span class="type">Number</span>
                     
                     
-                            <span class="flag private">private</span>
                     
                     
+                            <span class="flag static">static</span>
                     
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_collision_Ray.js.html#l26"><code>src&#x2F;collision&#x2F;Ray.js:26</code></a>
+                            <a href="../files/src_collision_Ray.js.html#l104"><code>src&#x2F;collision&#x2F;Ray.js:104</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            
+                            <p>This raycasting mode will traverse all intersection points and executes a callback for each one.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_ANY" class="property item">
+                        <h3 class="name"><code>ANY</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                            <span class="flag static">static</span>
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_collision_Ray.js.html#l97"><code>src&#x2F;collision&#x2F;Ray.js:97</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>This raycasting mode will make the Ray stop when it finds the first intersection point.</p>
+                    
                         </div>
                     
                     
@@ -1009,7 +834,7 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_collision_Ray.js.html#l80"><code>src&#x2F;collision&#x2F;Ray.js:80</code></a>
+                            <a href="../files/src_collision_Ray.js.html#l67"><code>src&#x2F;collision&#x2F;Ray.js:67</code></a>
                             </p>
                     
                     
@@ -1034,7 +859,7 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_collision_Ray.js.html#l38"><code>src&#x2F;collision&#x2F;Ray.js:38</code></a>
+                            <a href="../files/src_collision_Ray.js.html#l37"><code>src&#x2F;collision&#x2F;Ray.js:37</code></a>
                             </p>
                     
                     
@@ -1042,6 +867,32 @@
                     
                         <div class="description">
                             <p>Set to true if you want the Ray to take .collisionResponse flags into account on bodies and shapes.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_CLOSEST" class="property item">
+                        <h3 class="name"><code>CLOSEST</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                            <span class="flag static">static</span>
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_collision_Ray.js.html#l90"><code>src&#x2F;collision&#x2F;Ray.js:90</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>This raycasting mode will make the Ray traverse through all intersection points and only return the closest one.</p>
                     
                         </div>
                     
@@ -1059,7 +910,7 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_collision_Ray.js.html#l56"><code>src&#x2F;collision&#x2F;Ray.js:56</code></a>
+                            <a href="../files/src_collision_Ray.js.html#l55"><code>src&#x2F;collision&#x2F;Ray.js:55</code></a>
                             </p>
                     
                     
@@ -1084,7 +935,7 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_collision_Ray.js.html#l50"><code>src&#x2F;collision&#x2F;Ray.js:50</code></a>
+                            <a href="../files/src_collision_Ray.js.html#l49"><code>src&#x2F;collision&#x2F;Ray.js:49</code></a>
                             </p>
                     
                     
@@ -1095,6 +946,30 @@
                         </div>
                     
                             <p><strong>Default:</strong> -1</p>
+                    
+                    
+                    </div>
+                    <div id="property_direction" class="property item">
+                        <h3 class="name"><code>direction</code></h3>
+                        <span class="type">Array</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_collision_Ray.js.html#l73"><code>src&#x2F;collision&#x2F;Ray.js:73</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            
+                        </div>
+                    
                     
                     
                     </div>
@@ -1109,22 +984,23 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_collision_Ray.js.html#l16"><code>src&#x2F;collision&#x2F;Ray.js:16</code></a>
+                            <a href="../files/src_collision_Ray.js.html#l25"><code>src&#x2F;collision&#x2F;Ray.js:25</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            
+                            <p>Ray start point.</p>
+                    
                         </div>
                     
                     
                     
                     </div>
-                    <div id="property_hasHit" class="property item">
-                        <h3 class="name"><code>hasHit</code></h3>
-                        <span class="type">Boolean</span>
+                    <div id="property_length" class="property item">
+                        <h3 class="name"><code>length</code></h3>
+                        <span class="type">Number</span>
                     
                     
                     
@@ -1133,14 +1009,14 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_collision_Ray.js.html#l74"><code>src&#x2F;collision&#x2F;Ray.js:74</code></a>
+                            <a href="../files/src_collision_Ray.js.html#l79"><code>src&#x2F;collision&#x2F;Ray.js:79</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Will be set to true during intersectWorld() if the ray hit anything.</p>
+                            <p>Length of the ray</p>
                     
                         </div>
                     
@@ -1158,64 +1034,14 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_collision_Ray.js.html#l62"><code>src&#x2F;collision&#x2F;Ray.js:62</code></a>
+                            <a href="../files/src_collision_Ray.js.html#l61"><code>src&#x2F;collision&#x2F;Ray.js:61</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The intersection mode. Should be Ray.ANY, Ray.ALL or Ray.CLOSEST.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_precision" class="property item">
-                        <h3 class="name"><code>precision</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_collision_Ray.js.html#l32"><code>src&#x2F;collision&#x2F;Ray.js:32</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The precision of the ray. Used when checking parallelity etc.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_result" class="property item">
-                        <h3 class="name"><code>result</code></h3>
-                        <span class="type"><a href="../classes/RaycastResult.html" class="crosslink">RaycastResult</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_collision_Ray.js.html#l68"><code>src&#x2F;collision&#x2F;Ray.js:68</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Current result object.</p>
+                            <p>The intersection mode. Should be <a href="../classes/Ray.html#property_ANY" class="crosslink">Ray.ANY</a>, <a href="../classes/Ray.html#property_ALL" class="crosslink">Ray.ALL</a> or <a href="../classes/Ray.html#property_CLOSEST" class="crosslink">Ray.CLOSEST</a>.</p>
                     
                         </div>
                     
@@ -1233,7 +1059,7 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_collision_Ray.js.html#l44"><code>src&#x2F;collision&#x2F;Ray.js:44</code></a>
+                            <a href="../files/src_collision_Ray.js.html#l43"><code>src&#x2F;collision&#x2F;Ray.js:43</code></a>
                             </p>
                     
                     
@@ -1258,14 +1084,15 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_collision_Ray.js.html#l21"><code>src&#x2F;collision&#x2F;Ray.js:21</code></a>
+                            <a href="../files/src_collision_Ray.js.html#l31"><code>src&#x2F;collision&#x2F;Ray.js:31</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            
+                            <p>Ray end point</p>
+                    
                         </div>
                     
                     

@@ -16121,7 +16121,7 @@ function Renderer(scenes, options){
     this.nullBody = new p2.Body();
     this.pickPrecision = 5;
 
-    this.useInterpolatedPositions = false;
+    this.useInterpolatedPositions = true;
 
     this.drawPoints = [];
     this.drawPointsChangeEvent = { type : "drawPointsChange" };
@@ -16265,6 +16265,7 @@ Object.defineProperty(Renderer.prototype, 'paused', {
         return this.settings['paused [p]'];
     },
     set: function(value) {
+        this.resetCallTime = true;
         this.settings['paused [p]'] = value;
         this.updateGUI();
     }
@@ -16320,7 +16321,7 @@ Renderer.prototype.setupGUI = function() {
         that.paused = p;
     });
     worldFolder.add(settings, 'manualStep [s]');
-    worldFolder.add(settings, 'fps', 60, 60*10).step(60).onChange(function(freq){
+    worldFolder.add(settings, 'fps', 10, 60*10).step(10).onChange(function(freq){
         that.timeStep = 1 / freq;
     });
     worldFolder.add(settings, 'maxSubSteps', 0, 10).step(1);
@@ -16586,7 +16587,11 @@ Renderer.prototype.startRenderingLoop = function(){
     function update(){
         if(!demo.paused){
             var now = Date.now() / 1000,
-                timeSinceLastCall = now-lastCallTime;
+                timeSinceLastCall = now - lastCallTime;
+            if(demo.resetCallTime){
+                timeSinceLastCall = 0;
+                demo.resetCallTime = false;
+            }
             lastCallTime = now;
             demo.world.step(demo.timeStep, timeSinceLastCall, demo.settings.maxSubSteps);
         }
@@ -16764,7 +16769,7 @@ Renderer.prototype.handleMouseUp = function(physicsPosition){
         if(R > 0){
             // Create circle
             b = new p2.Body({ mass : 1, position : this.drawCircleCenter });
-            var circle = new p2.Circle(R);
+            var circle = new p2.Circle({ radius: R });
             b.addShape(circle);
             this.world.addBody(b);
         }
@@ -16793,7 +16798,7 @@ Renderer.prototype.handleMouseUp = function(physicsPosition){
                 mass : 1,
                 position : [this.drawRectStart[0] + width*0.5, this.drawRectStart[1] + height*0.5]
             });
-            var rectangleShape = new p2.Rectangle(width, height);
+            var rectangleShape = new p2.Box({ width: width, height:  height });
             b.addShape(rectangleShape);
             this.world.addBody(b);
         }
@@ -16934,10 +16939,8 @@ Renderer.zoomOutEvent = {
 };
 
 Renderer.prototype.setEquationParameters = function(){
-    this.world.setGlobalEquationParameters({
-        stiffness: this.settings.stiffness,
-        relaxation: this.settings.relaxation
-    });
+    this.world.setGlobalStiffness(this.settings.stiffness);
+    this.world.setGlobalRelaxation(this.settings.relaxation);
 };
 
 })(p2);
@@ -17281,6 +17284,8 @@ WebGLRenderer.prototype.zoom = function(x, y, zoomOut, actualScaleX, actualScale
 WebGLRenderer.prototype.centerCamera = function(x, y){
     this.stage.position.x = this.renderer.width / 2 - this.stage.scale.x * x;
     this.stage.position.y = this.renderer.height / 2 - this.stage.scale.y * y;
+
+    this.stage.updateTransform();
 };
 
 /**
@@ -17531,7 +17536,7 @@ WebGLRenderer.prototype.drawPath = function(g,path,color,fillColor,lineWidth,isS
 };
 
 WebGLRenderer.prototype.updateSpriteTransform = function(sprite,body){
-    if(this.useInterpolatedPositions){
+    if(this.useInterpolatedPositions && !this.paused){
         sprite.position.x = body.interpolatedPosition[0];
         sprite.position.y = body.interpolatedPosition[1];
         sprite.rotation = body.interpolatedAngle;
@@ -17575,7 +17580,7 @@ WebGLRenderer.prototype.render = function(){
             bA = s.bodyA,
             bB = s.bodyB;
 
-        if(this.useInterpolatedPositions){
+        if(this.useInterpolatedPositions && !this.paused){
             p2.vec2.toGlobalFrame(worldAnchorA, s.localAnchorA, bA.interpolatedPosition, bA.interpolatedAngle);
             p2.vec2.toGlobalFrame(worldAnchorB, s.localAnchorB, bB.interpolatedPosition, bB.interpolatedAngle);
         } else {
@@ -17661,6 +17666,10 @@ WebGLRenderer.prototype.render = function(){
         this.aabbGraphics.cleared = true;
     }
 
+    if(this.followBody){
+        app.centerCamera(this.followBody.interpolatedPosition[0], this.followBody.interpolatedPosition[1]);
+    }
+
     this.renderer.render(this.container);
 };
 
@@ -17710,10 +17719,8 @@ WebGLRenderer.prototype.drawRenderable = function(obj, graphics, color, lineColo
         } else {
             for(var i=0; i<obj.shapes.length; i++){
                 var child = obj.shapes[i],
-                    offset = obj.shapeOffsets[i],
-                    angle = obj.shapeAngles[i];
-                offset = offset || zero;
-                angle = angle || 0;
+                    offset = child.position,
+                    angle = child.angle;
 
                 if(child instanceof p2.Circle){
                     this.drawCircle(graphics, offset[0], offset[1], angle, child.radius,color,lw,isSleeping);
@@ -17728,7 +17735,7 @@ WebGLRenderer.prototype.drawRenderable = function(obj, graphics, color, lineColo
                 } else if(child instanceof p2.Line){
                     WebGLRenderer.drawLine(graphics, offset, angle, child.length, lineColor, lw);
 
-                } else if(child instanceof p2.Rectangle){
+                } else if(child instanceof p2.Box){
                     this.drawRectangle(graphics, offset[0], offset[1], angle, child.width, child.height, lineColor, color, lw, isSleeping);
 
                 } else if(child instanceof p2.Capsule){
@@ -17747,11 +17754,11 @@ WebGLRenderer.prototype.drawRenderable = function(obj, graphics, color, lineColo
 
                 } else if(child instanceof p2.Heightfield){
                     var path = [[0,-100]];
-                    for(var j=0; j!==child.data.length; j++){
-                        var v = child.data[j];
+                    for(var j=0; j!==child.heights.length; j++){
+                        var v = child.heights[j];
                         path.push([j*child.elementWidth, v]);
                     }
-                    path.push([child.data.length*child.elementWidth,-100]);
+                    path.push([child.heights.length*child.elementWidth,-100]);
                     this.drawPath(graphics, path, lineColor, color, lw, isSleeping);
 
                 }

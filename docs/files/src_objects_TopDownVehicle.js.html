@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>src/objects/TopDownVehicle.js - p2.js</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="icon" href="../assets/favicon.ico">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+                <h1><img src="../assets/css/logo.png" title="p2.js" width="117" height="52"></h1>
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 0.7.0</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+                    <h2 class="off-left">APIs</h2>
+                    <div id="api-tabview" class="tabview">
+                        <ul class="tabs">
+                            <li><a href="#api-classes">Classes</a></li>
+                            <li><a href="#api-modules">Modules</a></li>
+                        </ul>
+                
+                        <div id="api-tabview-filter">
+                            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+                        </div>
+                
+                        <div id="api-tabview-panel">
+                            <ul id="api-classes" class="apis classes">
+                                <li><a href="../classes/AABB.html">AABB</a></li>
+                                <li><a href="../classes/AngleLockEquation.html">AngleLockEquation</a></li>
+                                <li><a href="../classes/Body.html">Body</a></li>
+                                <li><a href="../classes/Box.html">Box</a></li>
+                                <li><a href="../classes/Broadphase.html">Broadphase</a></li>
+                                <li><a href="../classes/Capsule.html">Capsule</a></li>
+                                <li><a href="../classes/Circle.html">Circle</a></li>
+                                <li><a href="../classes/Constraint.html">Constraint</a></li>
+                                <li><a href="../classes/ContactEquation.html">ContactEquation</a></li>
+                                <li><a href="../classes/ContactMaterial.html">ContactMaterial</a></li>
+                                <li><a href="../classes/Convex.html">Convex</a></li>
+                                <li><a href="../classes/DistanceConstraint.html">DistanceConstraint</a></li>
+                                <li><a href="../classes/Equation.html">Equation</a></li>
+                                <li><a href="../classes/EventEmitter.html">EventEmitter</a></li>
+                                <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
+                                <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
+                                <li><a href="../classes/GSSolver.html">GSSolver</a></li>
+                                <li><a href="../classes/Heightfield.html">Heightfield</a></li>
+                                <li><a href="../classes/Island.html">Island</a></li>
+                                <li><a href="../classes/IslandManager.html">IslandManager</a></li>
+                                <li><a href="../classes/IslandNode.html">IslandNode</a></li>
+                                <li><a href="../classes/Line.html">Line</a></li>
+                                <li><a href="../classes/LinearSpring.html">LinearSpring</a></li>
+                                <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
+                                <li><a href="../classes/Material.html">Material</a></li>
+                                <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
+                                <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
+                                <li><a href="../classes/Object pooling utility..html">Object pooling utility.</a></li>
+                                <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
+                                <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
+                                <li><a href="../classes/Particle.html">Particle</a></li>
+                                <li><a href="../classes/Plane.html">Plane</a></li>
+                                <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
+                                <li><a href="../classes/Ray.html">Ray</a></li>
+                                <li><a href="../classes/RaycastResult.html">RaycastResult</a></li>
+                                <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
+                                <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
+                                <li><a href="../classes/.html"></a></li>
+                                <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
+                                <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
+                                <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
+                                <li><a href="../classes/Shape.html">Shape</a></li>
+                                <li><a href="../classes/Solver.html">Solver</a></li>
+                                <li><a href="../classes/Spring.html">Spring</a></li>
+                                <li><a href="../classes/TopDownVehicle.html">TopDownVehicle</a></li>
+                                <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
+                                <li><a href="../classes/Utils.html">Utils</a></li>
+                                <li><a href="../classes/vec2.html">vec2</a></li>
+                                <li><a href="../classes/WheelConstraint.html">WheelConstraint</a></li>
+                                <li><a href="../classes/World.html">World</a></li>
+                            </ul>
+                
+                            <ul id="api-modules" class="apis modules">
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+                    Show:
+                    <label for="api-show-inherited">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
+            
+                    <label for="api-show-protected">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
+            
+                    <label for="api-show-private">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
+            
+                </div>
+            
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+<h1 class="file-heading">File: src/objects/TopDownVehicle.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+var vec2 = require(&#x27;../math/vec2&#x27;);
+var Utils = require(&#x27;../utils/Utils&#x27;);
+var Constraint = require(&#x27;../constraints/Constraint&#x27;);
+var FrictionEquation = require(&#x27;../equations/FrictionEquation&#x27;);
+var Body = require(&#x27;../objects/Body&#x27;);
+
+module.exports = TopDownVehicle;
+
+/**
+ * @class TopDownVehicle
+ * @constructor
+ * @param {Body} chassisBody A dynamic body, already added to the world.
+ * @param {Object} [options]
+ *
+ * @example
+ *
+ *     // Create a dynamic body for the chassis
+ *     var chassisBody = new Body({
+ *         mass: 1
+ *     });
+ *     var boxShape = new Box({ width: 0.5, height: 1 });
+ *     chassisBody.addShape(boxShape);
+ *     world.addBody(chassisBody);
+ *
+ *     // Create the vehicle
+ *     var vehicle = new TopDownVehicle(chassisBody);
+ *
+ *     // Add one front wheel and one back wheel - we don&#x27;t actually need four :)
+ *     var frontWheel = vehicle.addWheel({
+ *         localPosition: [0, 0.5] // front
+ *     });
+ *     frontWheel.setSideFriction(4);
+ *
+ *     // Back wheel
+ *     var backWheel = vehicle.addWheel({
+ *         localPosition: [0, -0.5] // back
+ *     });
+ *     backWheel.setSideFriction(3); // Less side friction on back wheel makes it easier to drift
+ *     vehicle.addToWorld(world);
+ *
+ *     // Steer value zero means straight forward. Positive is left and negative right.
+ *     frontWheel.steerValue = Math.PI / 16;
+ *
+ *     // Engine force forward
+ *     backWheel.engineForce = 10;
+ *     backWheel.setBrakeForce(0);
+ */
+function TopDownVehicle(chassisBody, options){
+    options = options || {};
+
+    /**
+     * @property {Body} chassisBody
+     */
+    this.chassisBody = chassisBody;
+
+    /**
+     * @property {Array} wheels
+     */
+    this.wheels = [];
+
+    // A dummy body to constrain the chassis to
+    this.groundBody = new Body({ mass: 0 });
+
+    this.world = null;
+
+    var that = this;
+    this.preStepCallback = function(){
+        that.update();
+    };
+}
+
+/**
+ * @method addToWorld
+ * @param {World} world
+ */
+TopDownVehicle.prototype.addToWorld = function(world){
+    this.world = world;
+    world.addBody(this.groundBody);
+    world.on(&#x27;preStep&#x27;, this.preStepCallback);
+    for (var i = 0; i &lt; this.wheels.length; i++) {
+        var wheel = this.wheels[i];
+        world.addConstraint(wheel);
+    }
+};
+
+/**
+ * @method removeFromWorld
+ * @param {World} world
+ */
+TopDownVehicle.prototype.removeFromWorld = function(){
+    var world = this.world;
+    world.removeBody(this.groundBody);
+    world.off(&#x27;preStep&#x27;, this.preStepCallback);
+    for (var i = 0; i &lt; this.wheels.length; i++) {
+        var wheel = this.wheels[i];
+        world.removeConstraint(wheel);
+    }
+    this.world = null;
+};
+
+/**
+ * @method addWheel
+ * @param {object} [wheelOptions]
+ * @return {WheelConstraint}
+ */
+TopDownVehicle.prototype.addWheel = function(wheelOptions){
+    var wheel = new WheelConstraint(this,wheelOptions);
+    this.wheels.push(wheel);
+    return wheel;
+};
+
+/**
+ * @method update
+ */
+TopDownVehicle.prototype.update = function(){
+    for (var i = 0; i &lt; this.wheels.length; i++) {
+        this.wheels[i].update();
+    }
+};
+
+/**
+ * @class WheelConstraint
+ * @constructor
+ * @extends {Constraint}
+ * @param {Vehicle} vehicle
+ * @param {object} [options]
+ * @param {Array} [options.localForwardVector]The local wheel forward vector in local body space. Default is zero.
+ * @param {Array} [options.localPosition] The local position of the wheen in the chassis body. Default is zero - the center of the body.
+ * @param {Array} [options.sideFriction=5] The max friction force in the sideways direction.
+ */
+function WheelConstraint(vehicle, options){
+    options = options || {};
+
+    this.vehicle = vehicle;
+
+    this.forwardEquation = new FrictionEquation(vehicle.chassisBody, vehicle.groundBody);
+
+    this.sideEquation = new FrictionEquation(vehicle.chassisBody, vehicle.groundBody);
+
+    /**
+     * @property {number} steerValue
+     */
+    this.steerValue = 0;
+
+    /**
+     * @property {number} engineForce
+     */
+    this.engineForce = 0;
+
+    this.setSideFriction(options.sideFriction !== undefined ? options.sideFriction : 5);
+
+    /**
+     * @property {Array} localForwardVector
+     */
+    this.localForwardVector = vec2.fromValues(0, 1);
+    if(options.localForwardVector){
+        vec2.copy(this.localForwardVector, options.localForwardVector);
+    }
+
+    /**
+     * @property {Array} localPosition
+     */
+    this.localPosition = vec2.fromValues(0, 0);
+    if(options.localPosition){
+        vec2.copy(this.localPosition, options.localPosition);
+    }
+
+    Constraint.apply(this, vehicle.chassisBody, vehicle.groundBody);
+
+    this.equations.push(
+        this.forwardEquation,
+        this.sideEquation
+    );
+
+    this.setBrakeForce(0);
+}
+WheelConstraint.prototype = new Constraint();
+
+/**
+ * @method setForwardFriction
+ */
+WheelConstraint.prototype.setBrakeForce = function(force){
+    this.forwardEquation.setSlipForce(force);
+};
+
+/**
+ * @method setSideFriction
+ */
+WheelConstraint.prototype.setSideFriction = function(force){
+    this.sideEquation.setSlipForce(force);
+};
+
+var worldVelocity = vec2.create();
+var relativePoint = vec2.create();
+
+/**
+ * @method getSpeed
+ */
+WheelConstraint.prototype.getSpeed = function(){
+    this.vehicle.chassisBody.vectorToWorldFrame(relativePoint, this.localForwardVector);
+    this.vehicle.chassisBody.getVelocityAtPoint(worldVelocity, relativePoint);
+    return vec2.dot(worldVelocity, relativePoint);
+};
+
+var tmpVec = vec2.create();
+
+/**
+ * @method update
+ */
+WheelConstraint.prototype.update = function(){
+
+    // Directional
+    this.vehicle.chassisBody.vectorToWorldFrame(this.forwardEquation.t, this.localForwardVector);
+    vec2.rotate(this.sideEquation.t, this.localForwardVector, Math.PI / 2);
+    this.vehicle.chassisBody.vectorToWorldFrame(this.sideEquation.t, this.sideEquation.t);
+
+    vec2.rotate(this.forwardEquation.t, this.forwardEquation.t, this.steerValue);
+    vec2.rotate(this.sideEquation.t, this.sideEquation.t, this.steerValue);
+
+    // Attachment point
+    this.vehicle.chassisBody.toWorldFrame(this.forwardEquation.contactPointB, this.localPosition);
+    vec2.copy(this.sideEquation.contactPointB, this.forwardEquation.contactPointB);
+
+    this.vehicle.chassisBody.vectorToWorldFrame(this.forwardEquation.contactPointA, this.localPosition);
+    vec2.copy(this.sideEquation.contactPointA, this.forwardEquation.contactPointA);
+
+    // Add engine force
+    vec2.normalize(tmpVec, this.forwardEquation.t);
+    vec2.scale(tmpVec, tmpVec, this.engineForce);
+
+    this.vehicle.chassisBody.applyForce(tmpVec, this.forwardEquation.contactPointA);
+};
+    </pre>
+</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>
