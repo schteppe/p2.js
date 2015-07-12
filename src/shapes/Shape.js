@@ -118,7 +118,7 @@ function Shape(options){
      * @property material
      * @type {Material}
      */
-    this.material = null;
+    this.material = options.material || null;
 
     /**
      * Area of this shape.
