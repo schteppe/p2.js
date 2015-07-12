@@ -1,6 +1,6 @@
 {
   "name": "p2",
-  "version": "0.6.1",
+  "version": "0.7.0",
   "description": "A JavaScript 2D physics engine.",
   "author": "Stefan Hedman <schteppe@gmail.com> (http://steffe.se)",
   "keywords": [

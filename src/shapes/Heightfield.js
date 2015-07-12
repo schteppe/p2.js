@@ -86,6 +86,7 @@ Heightfield.prototype.constructor = Heightfield;
 
 /**
  * Update the .minValue and the .maxValue
+ * @method updateMaxMinValues
  */
 Heightfield.prototype.updateMaxMinValues = function(){
     var data = this.heights;
@@ -149,6 +150,7 @@ Heightfield.prototype.computeAABB = function(out, position, angle){
 
 /**
  * Get a line segment in the heightfield
+ * @method getLineSegment
  * @param  {array} start Where to store the resulting start point
  * @param  {array} end Where to store the resulting end point
  * @param  {number} i

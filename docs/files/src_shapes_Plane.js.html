@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="p2.js" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.6.1</em>
+            <em>API Docs for: 0.7.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -41,6 +41,7 @@
                                 <li><a href="../classes/AABB.html">AABB</a></li>
                                 <li><a href="../classes/AngleLockEquation.html">AngleLockEquation</a></li>
                                 <li><a href="../classes/Body.html">Body</a></li>
+                                <li><a href="../classes/Box.html">Box</a></li>
                                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
                                 <li><a href="../classes/Capsule.html">Capsule</a></li>
                                 <li><a href="../classes/Circle.html">Circle</a></li>
@@ -53,7 +54,6 @@
                                 <li><a href="../classes/EventEmitter.html">EventEmitter</a></li>
                                 <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
                                 <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
-                                <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
                                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
                                 <li><a href="../classes/Heightfield.html">Heightfield</a></li>
                                 <li><a href="../classes/Island.html">Island</a></li>
@@ -65,6 +65,7 @@
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
                                 <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
+                                <li><a href="../classes/Object pooling utility..html">Object pooling utility.</a></li>
                                 <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
                                 <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
                                 <li><a href="../classes/Particle.html">Particle</a></li>
@@ -72,18 +73,20 @@
                                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
                                 <li><a href="../classes/Ray.html">Ray</a></li>
                                 <li><a href="../classes/RaycastResult.html">RaycastResult</a></li>
-                                <li><a href="../classes/Rectangle.html">Rectangle</a></li>
                                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
                                 <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
+                                <li><a href="../classes/.html"></a></li>
                                 <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
                                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
                                 <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
                                 <li><a href="../classes/Shape.html">Shape</a></li>
                                 <li><a href="../classes/Solver.html">Solver</a></li>
                                 <li><a href="../classes/Spring.html">Spring</a></li>
+                                <li><a href="../classes/TopDownVehicle.html">TopDownVehicle</a></li>
                                 <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
                                 <li><a href="../classes/Utils.html">Utils</a></li>
                                 <li><a href="../classes/vec2.html">vec2</a></li>
+                                <li><a href="../classes/WheelConstraint.html">WheelConstraint</a></li>
                                 <li><a href="../classes/World.html">World</a></li>
                             </ul>
                 
@@ -136,9 +139,12 @@ module.exports = Plane;
  * @class Plane
  * @extends Shape
  * @constructor
+ * @param {object} [options] (Note that this options object will be passed on to the {{#crossLink &quot;Shape&quot;}}{{/crossLink}} constructor.)
  */
-function Plane(){
-    Shape.call(this,Shape.PLANE);
+function Plane(options){
+    options = options || {};
+    options.type = Shape.PLANE;
+    Shape.call(this, options);
 }
 Plane.prototype = new Shape();
 Plane.prototype.constructor = Plane;
@@ -166,43 +172,98 @@ Plane.prototype.updateBoundingRadius = function(){
  * @param  {Number} angle
  */
 Plane.prototype.computeAABB = function(out, position, angle){
-    var a = 0,
-        set = vec2.set;
-    if(typeof(angle) === &quot;number&quot;){
-        a = angle % (2*Math.PI);
-    }
+    var a = angle % (2 * Math.PI);
+    var set = vec2.set;
+    var max = Number.MAX_VALUE;
+    var lowerBound = out.lowerBound;
+    var upperBound = out.upperBound;
 
     if(a === 0){
         // y goes from -inf to 0
-        set(out.lowerBound, -Number.MAX_VALUE, -Number.MAX_VALUE);
-        set(out.upperBound,  Number.MAX_VALUE,  0);
+        set(lowerBound, -max, -max);
+        set(upperBound,  max,  0);
+
     } else if(a === Math.PI / 2){
+
         // x goes from 0 to inf
-        set(out.lowerBound, 0, -Number.MAX_VALUE);
-        set(out.upperBound,      Number.MAX_VALUE,  Number.MAX_VALUE);
+        set(lowerBound, 0, -max);
+        set(upperBound,      max,  max);
+
     } else if(a === Math.PI){
+
         // y goes from 0 to inf
-        set(out.lowerBound, -Number.MAX_VALUE, 0);
-        set(out.upperBound,  Number.MAX_VALUE, Number.MAX_VALUE);
+        set(lowerBound, -max, 0);
+        set(upperBound,  max, max);
+
     } else if(a === 3*Math.PI/2){
+
         // x goes from -inf to 0
-        set(out.lowerBound, -Number.MAX_VALUE,     -Number.MAX_VALUE);
-        set(out.upperBound,  0,  Number.MAX_VALUE);
+        set(lowerBound, -max,     -max);
+        set(upperBound,  0,  max);
+
     } else {
+
         // Set max bounds
-        set(out.lowerBound, -Number.MAX_VALUE, -Number.MAX_VALUE);
-        set(out.upperBound,  Number.MAX_VALUE,  Number.MAX_VALUE);
+        set(lowerBound, -max, -max);
+        set(upperBound,  max,  max);
     }
 
-    vec2.add(out.lowerBound, out.lowerBound, position);
-    vec2.add(out.upperBound, out.upperBound, position);
+    vec2.add(lowerBound, lowerBound, position);
+    vec2.add(upperBound, upperBound, position);
 };
 
 Plane.prototype.updateArea = function(){
     this.area = Number.MAX_VALUE;
 };
 
+var intersectPlane_planePointToFrom = vec2.create();
+var intersectPlane_dir_scaled_with_t = vec2.create();
+var intersectPlane_hitPoint = vec2.create();
+var intersectPlane_normal = vec2.create();
+var intersectPlane_len = vec2.create();
 
+/**
+ * @method raycast
+ * @param  {RayResult} result
+ * @param  {Ray} ray
+ * @param  {array} position
+ * @param  {number} angle
+ */
+Plane.prototype.raycast = function(result, ray, position, angle){
+    var from = ray.from;
+    var to = ray.to;
+    var direction = ray.direction;
+    var planePointToFrom = intersectPlane_planePointToFrom;
+    var dir_scaled_with_t = intersectPlane_dir_scaled_with_t;
+    var hitPoint = intersectPlane_hitPoint;
+    var normal = intersectPlane_normal;
+    var len = intersectPlane_len;
+
+    // Get plane normal
+    vec2.set(normal, 0, 1);
+    vec2.rotate(normal, normal, angle);
+
+    vec2.sub(len, from, position);
+    var planeToFrom = vec2.dot(len, normal);
+    vec2.sub(len, to, position);
+    var planeToTo = vec2.dot(len, normal);
+
+    if(planeToFrom * planeToTo &gt; 0){
+        // &quot;from&quot; and &quot;to&quot; are on the same side of the plane... bail out
+        return;
+    }
+
+    if(vec2.squaredDistance(from, to) &lt; planeToFrom * planeToFrom){
+        return;
+    }
+
+    var n_dot_dir = vec2.dot(normal, direction);
+
+    vec2.sub(planePointToFrom, from, position);
+    var t = -vec2.dot(normal, planePointToFrom) / n_dot_dir / ray.length;
+
+    ray.reportIntersection(result, t, normal, -1);
+};
     </pre>
 </div>
                     </div>

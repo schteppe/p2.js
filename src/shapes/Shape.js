@@ -6,26 +6,26 @@ var vec2 = require('../math/vec2');
  * Base class for shapes.
  * @class Shape
  * @constructor
- * @param {object} [options] (Note that this options object will be passed on to the {{#crossLink "Shape"}}{{/crossLink}} constructor.)
+ * @param {object} [options]
  * @param {array} [options.position]
  * @param {number} [options.angle=0]
  * @param {number} [options.collisionGroup=1]
  * @param {number} [options.collisionMask=1]
- * @param {boolean} [options.sensor]
- * @param {boolean} [options.collisionResponse]
- * @param {object} [options.type]
+ * @param {boolean} [options.sensor=false]
+ * @param {boolean} [options.collisionResponse=true]
+ * @param {object} [options.type=0]
  */
 function Shape(options){
     options = options || {};
 
     /**
-     * The body this shape is attached to.
+     * The body this shape is attached to. A shape can only be attached to a single body.
      * @property {Body} body
      */
     this.body = null;
 
     /**
-     * Position of the shape.
+     * Body-local position of the shape.
      * @property {Array} position
      */
     this.position = vec2.fromValues(0,0);
@@ -34,7 +34,7 @@ function Shape(options){
     }
 
     /**
-     * Angle of the shape.
+     * Body-local angle of the shape.
      * @property {number} angle
      */
     this.angle = options.angle || 0;
@@ -232,11 +232,12 @@ Shape.prototype.computeAABB = function(out, position, angle){
 };
 
 /**
+ * Perform raycasting on this shape.
  * @method raycast
- * @param  {RayResult} result
- * @param  {Ray} ray
- * @param  {array} position
- * @param  {number} angle
+ * @param  {RayResult} result Where to store the resulting data.
+ * @param  {Ray} ray The Ray that you want to use for raycasting.
+ * @param  {array} position World position of the shape (the .position property will be ignored).
+ * @param  {number} angle World angle of the shape (the .angle property will be ignored).
  */
 Shape.prototype.raycast = function(result, ray, position, angle){
     // To be implemented in each subclass

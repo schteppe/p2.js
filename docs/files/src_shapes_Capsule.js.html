@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="p2.js" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.6.1</em>
+            <em>API Docs for: 0.7.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -41,6 +41,7 @@
                                 <li><a href="../classes/AABB.html">AABB</a></li>
                                 <li><a href="../classes/AngleLockEquation.html">AngleLockEquation</a></li>
                                 <li><a href="../classes/Body.html">Body</a></li>
+                                <li><a href="../classes/Box.html">Box</a></li>
                                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
                                 <li><a href="../classes/Capsule.html">Capsule</a></li>
                                 <li><a href="../classes/Circle.html">Circle</a></li>
@@ -53,7 +54,6 @@
                                 <li><a href="../classes/EventEmitter.html">EventEmitter</a></li>
                                 <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
                                 <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
-                                <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
                                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
                                 <li><a href="../classes/Heightfield.html">Heightfield</a></li>
                                 <li><a href="../classes/Island.html">Island</a></li>
@@ -65,6 +65,7 @@
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
                                 <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
+                                <li><a href="../classes/Object pooling utility..html">Object pooling utility.</a></li>
                                 <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
                                 <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
                                 <li><a href="../classes/Particle.html">Particle</a></li>
@@ -72,18 +73,20 @@
                                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
                                 <li><a href="../classes/Ray.html">Ray</a></li>
                                 <li><a href="../classes/RaycastResult.html">RaycastResult</a></li>
-                                <li><a href="../classes/Rectangle.html">Rectangle</a></li>
                                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
                                 <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
+                                <li><a href="../classes/.html"></a></li>
                                 <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
                                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
                                 <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
                                 <li><a href="../classes/Shape.html">Shape</a></li>
                                 <li><a href="../classes/Solver.html">Solver</a></li>
                                 <li><a href="../classes/Spring.html">Spring</a></li>
+                                <li><a href="../classes/TopDownVehicle.html">TopDownVehicle</a></li>
                                 <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
                                 <li><a href="../classes/Utils.html">Utils</a></li>
                                 <li><a href="../classes/vec2.html">vec2</a></li>
+                                <li><a href="../classes/WheelConstraint.html">WheelConstraint</a></li>
                                 <li><a href="../classes/World.html">World</a></li>
                             </ul>
                 
@@ -135,29 +138,40 @@ module.exports = Capsule;
  * @class Capsule
  * @constructor
  * @extends Shape
- * @param {Number} [length=1] The distance between the end points
- * @param {Number} [radius=1] Radius of the capsule
+ * @param {object} [options] (Note that this options object will be passed on to the {{#crossLink &quot;Shape&quot;}}{{/crossLink}} constructor.)
+ * @param {Number} [options.length=1] The distance between the end points
+ * @param {Number} [options.radius=1] Radius of the capsule
  * @example
- *     var radius = 1;
- *     var length = 2;
- *     var capsuleShape = new Capsule(length, radius);
+ *     var capsuleShape = new Capsule({
+ *         length: 1,
+ *         radius: 2
+ *     });
  *     body.addShape(capsuleShape);
  */
-function Capsule(length, radius){
+function Capsule(options){
+    if(typeof(arguments[0]) === &#x27;number&#x27; &amp;&amp; typeof(arguments[1]) === &#x27;number&#x27;){
+        options = {
+            length: arguments[0],
+            radius: arguments[1]
+        };
+        console.warn(&#x27;The Capsule constructor signature has changed. Please use the following format: new Capsule({ radius: 1, length: 1 })&#x27;);
+    }
+    options = options || {};
 
     /**
      * The distance between the end points.
      * @property {Number} length
      */
-    this.length = length || 1;
+    this.length = options.length || 1;
 
     /**
      * The radius of the capsule.
      * @property {Number} radius
      */
-    this.radius = radius || 1;
+    this.radius = options.radius || 1;
 
-    Shape.call(this,Shape.CAPSULE);
+    options.type = Shape.CAPSULE;
+    Shape.call(this, options);
 }
 Capsule.prototype = new Shape();
 Capsule.prototype.constructor = Capsule;
@@ -219,6 +233,111 @@ Capsule.prototype.computeAABB = function(out, position, angle){
     vec2.add(out.upperBound, out.upperBound, position);
 };
 
+var intersectCapsule_hitPointWorld = vec2.create();
+var intersectCapsule_normal = vec2.create();
+var intersectCapsule_l0 = vec2.create();
+var intersectCapsule_l1 = vec2.create();
+var intersectCapsule_unit_y = vec2.fromValues(0,1);
+
+/**
+ * @method raycast
+ * @param  {RaycastResult} result
+ * @param  {Ray} ray
+ * @param  {array} position
+ * @param  {number} angle
+ */
+Capsule.prototype.raycast = function(result, ray, position, angle){
+    var from = ray.from;
+    var to = ray.to;
+    var direction = ray.direction;
+
+    var hitPointWorld = intersectCapsule_hitPointWorld;
+    var normal = intersectCapsule_normal;
+    var l0 = intersectCapsule_l0;
+    var l1 = intersectCapsule_l1;
+
+    // The sides
+    var halfLen = this.length / 2;
+    for(var i=0; i&lt;2; i++){
+
+        // get start and end of the line
+        var y = this.radius * (i*2-1);
+        vec2.set(l0, -halfLen, y);
+        vec2.set(l1, halfLen, y);
+        vec2.toGlobalFrame(l0, l0, position, angle);
+        vec2.toGlobalFrame(l1, l1, position, angle);
+
+        var delta = vec2.getLineSegmentsIntersectionFraction(from, to, l0, l1);
+        if(delta &gt;= 0){
+            vec2.rotate(normal, intersectCapsule_unit_y, angle);
+            vec2.scale(normal, normal, (i*2-1));
+            ray.reportIntersection(result, delta, normal, -1);
+            if(result.shouldStop(ray)){
+                return;
+            }
+        }
+    }
+
+    // Circles
+    var diagonalLengthSquared = Math.pow(this.radius, 2) + Math.pow(halfLen, 2);
+    for(var i=0; i&lt;2; i++){
+        vec2.set(l0, halfLen * (i*2-1), 0);
+        vec2.toGlobalFrame(l0, l0, position, angle);
+
+        var a = Math.pow(to[0] - from[0], 2) + Math.pow(to[1] - from[1], 2);
+        var b = 2 * ((to[0] - from[0]) * (from[0] - l0[0]) + (to[1] - from[1]) * (from[1] - l0[1]));
+        var c = Math.pow(from[0] - l0[0], 2) + Math.pow(from[1] - l0[1], 2) - Math.pow(this.radius, 2);
+        var delta = Math.pow(b, 2) - 4 * a * c;
+
+        if(delta &lt; 0){
+            // No intersection
+            continue;
+
+        } else if(delta === 0){
+            // single intersection point
+            vec2.lerp(hitPointWorld, from, to, delta);
+
+            if(vec2.squaredDistance(hitPointWorld, position) &gt; diagonalLengthSquared){
+                vec2.sub(normal, hitPointWorld, l0);
+                vec2.normalize(normal,normal);
+                ray.reportIntersection(result, delta, normal, -1);
+                if(result.shouldStop(ray)){
+                    return;
+                }
+            }
+
+        } else {
+            var sqrtDelta = Math.sqrt(delta);
+            var inv2a = 1 / (2 * a);
+            var d1 = (- b - sqrtDelta) * inv2a;
+            var d2 = (- b + sqrtDelta) * inv2a;
+
+            if(d1 &gt;= 0 &amp;&amp; d1 &lt;= 1){
+                vec2.lerp(hitPointWorld, from, to, d1);
+                if(vec2.squaredDistance(hitPointWorld, position) &gt; diagonalLengthSquared){
+                    vec2.sub(normal, hitPointWorld, l0);
+                    vec2.normalize(normal,normal);
+                    ray.reportIntersection(result, d1, normal, -1);
+                    if(result.shouldStop(ray)){
+                        return;
+                    }
+                }
+            }
+
+            if(d2 &gt;= 0 &amp;&amp; d2 &lt;= 1){
+                vec2.lerp(hitPointWorld, from, to, d2);
+                if(vec2.squaredDistance(hitPointWorld, position) &gt; diagonalLengthSquared){
+                    vec2.sub(normal, hitPointWorld, l0);
+                    vec2.normalize(normal,normal);
+                    ray.reportIntersection(result, d2, normal, -1);
+                    if(result.shouldStop(ray)){
+                        return;
+                    }
+                }
+            }
+        }
+    }
+};
     </pre>
 </div>
                     </div>

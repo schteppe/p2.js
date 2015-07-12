@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="p2.js" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.6.1</em>
+            <em>API Docs for: 0.7.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -41,6 +41,7 @@
                                 <li><a href="../classes/AABB.html">AABB</a></li>
                                 <li><a href="../classes/AngleLockEquation.html">AngleLockEquation</a></li>
                                 <li><a href="../classes/Body.html">Body</a></li>
+                                <li><a href="../classes/Box.html">Box</a></li>
                                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
                                 <li><a href="../classes/Capsule.html">Capsule</a></li>
                                 <li><a href="../classes/Circle.html">Circle</a></li>
@@ -53,7 +54,6 @@
                                 <li><a href="../classes/EventEmitter.html">EventEmitter</a></li>
                                 <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
                                 <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
-                                <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
                                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
                                 <li><a href="../classes/Heightfield.html">Heightfield</a></li>
                                 <li><a href="../classes/Island.html">Island</a></li>
@@ -65,6 +65,7 @@
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
                                 <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
+                                <li><a href="../classes/Object pooling utility..html">Object pooling utility.</a></li>
                                 <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
                                 <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
                                 <li><a href="../classes/Particle.html">Particle</a></li>
@@ -72,18 +73,20 @@
                                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
                                 <li><a href="../classes/Ray.html">Ray</a></li>
                                 <li><a href="../classes/RaycastResult.html">RaycastResult</a></li>
-                                <li><a href="../classes/Rectangle.html">Rectangle</a></li>
                                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
                                 <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
+                                <li><a href="../classes/.html"></a></li>
                                 <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
                                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
                                 <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
                                 <li><a href="../classes/Shape.html">Shape</a></li>
                                 <li><a href="../classes/Solver.html">Solver</a></li>
                                 <li><a href="../classes/Spring.html">Spring</a></li>
+                                <li><a href="../classes/TopDownVehicle.html">TopDownVehicle</a></li>
                                 <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
                                 <li><a href="../classes/Utils.html">Utils</a></li>
                                 <li><a href="../classes/vec2.html">vec2</a></li>
+                                <li><a href="../classes/WheelConstraint.html">WheelConstraint</a></li>
                                 <li><a href="../classes/World.html">World</a></li>
                             </ul>
                 
@@ -127,13 +130,44 @@
     <pre class="code prettyprint linenums">
 module.exports = Shape;
 
+var vec2 = require(&#x27;../math/vec2&#x27;);
+
 /**
  * Base class for shapes.
  * @class Shape
  * @constructor
- * @param {Number} type
+ * @param {object} [options]
+ * @param {array} [options.position]
+ * @param {number} [options.angle=0]
+ * @param {number} [options.collisionGroup=1]
+ * @param {number} [options.collisionMask=1]
+ * @param {boolean} [options.sensor=false]
+ * @param {boolean} [options.collisionResponse=true]
+ * @param {object} [options.type=0]
  */
-function Shape(type){
+function Shape(options){
+    options = options || {};
+
+    /**
+     * The body this shape is attached to. A shape can only be attached to a single body.
+     * @property {Body} body
+     */
+    this.body = null;
+
+    /**
+     * Body-local position of the shape.
+     * @property {Array} position
+     */
+    this.position = vec2.fromValues(0,0);
+    if(options.position){
+        vec2.copy(this.position, options.position);
+    }
+
+    /**
+     * Body-local angle of the shape.
+     * @property {number} angle
+     */
+    this.angle = options.angle || 0;
 
     /**
      * The type of the shape. One of:
@@ -143,13 +177,13 @@ function Shape(type){
      * * {{#crossLink &quot;Shape/PLANE:property&quot;}}Shape.PLANE{{/crossLink}}
      * * {{#crossLink &quot;Shape/CONVEX:property&quot;}}Shape.CONVEX{{/crossLink}}
      * * {{#crossLink &quot;Shape/LINE:property&quot;}}Shape.LINE{{/crossLink}}
-     * * {{#crossLink &quot;Shape/RECTANGLE:property&quot;}}Shape.RECTANGLE{{/crossLink}}
+     * * {{#crossLink &quot;Shape/BOX:property&quot;}}Shape.BOX{{/crossLink}}
      * * {{#crossLink &quot;Shape/CAPSULE:property&quot;}}Shape.CAPSULE{{/crossLink}}
      * * {{#crossLink &quot;Shape/HEIGHTFIELD:property&quot;}}Shape.HEIGHTFIELD{{/crossLink}}
      *
      * @property {number} type
      */
-    this.type = type;
+    this.type = options.type || 0;
 
     /**
      * Shape object identifier.
@@ -194,30 +228,27 @@ function Shape(type){
      *         // The shapes will collide
      *     }
      */
-    this.collisionGroup = 1;
+    this.collisionGroup = options.collisionGroup !== undefined ? options.collisionGroup : 1;
 
     /**
      * Whether to produce contact forces when in contact with other bodies. Note that contacts will be generated, but they will be disabled. That means that this shape will move through other body shapes, but it will still trigger contact events, etc.
      * @property {Boolean} collisionResponse
      */
-    this.collisionResponse = true;
+    this.collisionResponse = options.collisionResponse !== undefined ? options.collisionResponse : true;
 
     /**
      * Collision mask of this shape. See .collisionGroup.
      * @property collisionMask
      * @type {Number}
      */
-    this.collisionMask =  1;
-    if(type){
-        this.updateBoundingRadius();
-    }
+    this.collisionMask = options.collisionMask !== undefined ? options.collisionMask : 1;
 
     /**
      * Material to use in collisions for this Shape. If this is set to null, the world will use default material properties instead.
      * @property material
      * @type {Material}
      */
-    this.material = null;
+    this.material = options.material || null;
 
     /**
      * Area of this shape.
@@ -230,7 +261,11 @@ function Shape(type){
      * Set to true if you want this shape to be a sensor. A sensor does not generate contacts, but it still reports contact events. This is good if you want to know if a shape is overlapping another shape, without them generating contacts.
      * @property {Boolean} sensor
      */
-    this.sensor = false;
+    this.sensor = options.sensor !== undefined ? options.sensor : false;
+
+    if(this.type){
+        this.updateBoundingRadius();
+    }
 
     this.updateArea();
 }
@@ -269,9 +304,16 @@ Shape.LINE =        16;
 
 /**
  * @static
- * @property {Number} RECTANGLE
+ * @property {Number} BOX
  */
-Shape.RECTANGLE =   32;
+Shape.BOX =   32;
+
+Object.defineProperty(Shape, &#x27;RECTANGLE&#x27;, {
+    get: function() {
+        console.warn(&#x27;Shape.RECTANGLE is deprecated, use Shape.BOX instead.&#x27;);
+        return Shape.BOX;
+    }
+});
 
 /**
  * @static
@@ -291,18 +333,14 @@ Shape.HEIGHTFIELD = 128;
  * @param  {Number} mass
  * @return {Number} If the inertia is infinity or if the object simply isn&#x27;t possible to rotate, return 0.
  */
-Shape.prototype.computeMomentOfInertia = function(mass){
-    throw new Error(&quot;Shape.computeMomentOfInertia is not implemented in this Shape...&quot;);
-};
+Shape.prototype.computeMomentOfInertia = function(mass){};
 
 /**
  * Returns the bounding circle radius of this shape.
  * @method updateBoundingRadius
  * @return {Number}
  */
-Shape.prototype.updateBoundingRadius = function(){
-    throw new Error(&quot;Shape.updateBoundingRadius is not implemented in this Shape...&quot;);
-};
+Shape.prototype.updateBoundingRadius = function(){};
 
 /**
  * Update the .area property of the shape.
@@ -315,14 +353,25 @@ Shape.prototype.updateArea = function(){
 /**
  * Compute the world axis-aligned bounding box (AABB) of this shape.
  * @method computeAABB
- * @param  {AABB}   out      The resulting AABB.
- * @param  {Array}  position
- * @param  {Number} angle
+ * @param  {AABB} out The resulting AABB.
+ * @param  {Array} position World position of the shape.
+ * @param  {Number} angle World angle of the shape.
  */
 Shape.prototype.computeAABB = function(out, position, angle){
     // To be implemented in each subclass
 };
 
+/**
+ * Perform raycasting on this shape.
+ * @method raycast
+ * @param  {RayResult} result Where to store the resulting data.
+ * @param  {Ray} ray The Ray that you want to use for raycasting.
+ * @param  {array} position World position of the shape (the .position property will be ignored).
+ * @param  {number} angle World angle of the shape (the .angle property will be ignored).
+ */
+Shape.prototype.raycast = function(result, ray, position, angle){
+    // To be implemented in each subclass
+};
     </pre>
 </div>
                     </div>

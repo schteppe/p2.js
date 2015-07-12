@@ -39,7 +39,7 @@ Pool.prototype.resize = function (size) {
 /**
  * Get an object from the pool or create a new instance.
  * @method get
- * @returns {Object}
+ * @return {Object}
  */
 Pool.prototype.get = function () {
 	var objects = this.objects;

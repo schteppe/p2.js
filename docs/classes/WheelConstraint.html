@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>GridBroadphase - p2.js</title>
+    <title>WheelConstraint - p2.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="p2.js" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.6.1</em>
+            <em>API Docs for: 0.7.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -41,6 +41,7 @@
                                 <li><a href="../classes/AABB.html">AABB</a></li>
                                 <li><a href="../classes/AngleLockEquation.html">AngleLockEquation</a></li>
                                 <li><a href="../classes/Body.html">Body</a></li>
+                                <li><a href="../classes/Box.html">Box</a></li>
                                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
                                 <li><a href="../classes/Capsule.html">Capsule</a></li>
                                 <li><a href="../classes/Circle.html">Circle</a></li>
@@ -53,7 +54,6 @@
                                 <li><a href="../classes/EventEmitter.html">EventEmitter</a></li>
                                 <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
                                 <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
-                                <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
                                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
                                 <li><a href="../classes/Heightfield.html">Heightfield</a></li>
                                 <li><a href="../classes/Island.html">Island</a></li>
@@ -65,6 +65,7 @@
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
                                 <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
+                                <li><a href="../classes/Object pooling utility..html">Object pooling utility.</a></li>
                                 <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
                                 <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
                                 <li><a href="../classes/Particle.html">Particle</a></li>
@@ -72,18 +73,20 @@
                                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
                                 <li><a href="../classes/Ray.html">Ray</a></li>
                                 <li><a href="../classes/RaycastResult.html">RaycastResult</a></li>
-                                <li><a href="../classes/Rectangle.html">Rectangle</a></li>
                                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
                                 <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
+                                <li><a href="../classes/.html"></a></li>
                                 <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
                                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
                                 <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
                                 <li><a href="../classes/Shape.html">Shape</a></li>
                                 <li><a href="../classes/Solver.html">Solver</a></li>
                                 <li><a href="../classes/Spring.html">Spring</a></li>
+                                <li><a href="../classes/TopDownVehicle.html">TopDownVehicle</a></li>
                                 <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
                                 <li><a href="../classes/Utils.html">Utils</a></li>
                                 <li><a href="../classes/vec2.html">vec2</a></li>
+                                <li><a href="../classes/WheelConstraint.html">WheelConstraint</a></li>
                                 <li><a href="../classes/World.html">World</a></li>
                             </ul>
                 
@@ -121,15 +124,15 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1>GridBroadphase Class</h1>
+<h1>WheelConstraint Class</h1>
 <div class="box meta">
 
         <div class="extends">
-            Extends <a href="../classes/Broadphase.html" class="crosslink">Broadphase</a>
+            Extends <a href="../classes/Constraint.html" class="crosslink">Constraint</a>
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_collision_GridBroadphase.js.html#l10"><code>src&#x2F;collision&#x2F;GridBroadphase.js:10</code></a>
+            Defined in: <a href="../files/src_objects_TopDownVehicle.js.html#l121"><code>src&#x2F;objects&#x2F;TopDownVehicle.js:121</code></a>
         </div>
 
 
@@ -137,17 +140,19 @@
 
 
 <div class="box intro">
-    <p>Broadphase that uses axis-aligned bins.</p>
-
+    
 </div>
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_GridBroadphase" class="method item">
-            <h3 class="name"><code>GridBroadphase</code></h3>
+        <div id="method_WheelConstraint" class="method item">
+            <h3 class="name"><code>WheelConstraint</code></h3>
         
                 <div class="args">
                     <span class="paren">(</span><ul class="args-list inline commas">
+                        <li class="arg">
+                                <code>vehicle</code>
+                        </li>
                         <li class="arg">
                                 <code class="optional">[options]</code>
                         </li>
@@ -164,7 +169,7 @@
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/src_collision_GridBroadphase.js.html#l10"><code>src&#x2F;collision&#x2F;GridBroadphase.js:10</code></a>
+                <a href="../files/src_objects_TopDownVehicle.js.html#l121"><code>src&#x2F;objects&#x2F;TopDownVehicle.js:121</code></a>
                 </p>
         
         
@@ -180,6 +185,16 @@
         
                     <ul class="params-list">
                         <li class="param">
+                                <code class="param-name">vehicle</code>
+                                <span class="type">Vehicle</span>
+        
+        
+                            <div class="param-description">
+                                 
+                            </div>
+        
+                        </li>
+                        <li class="param">
                                 <code class="param-name optional">[options]</code>
                                 <span class="type">Object</span>
                                 <span class="flag optional" title="This parameter is optional.">optional</span>
@@ -191,67 +206,34 @@
         
                                 <ul class="params-list">
                                     <li class="param">
-                                            <code class="param-name optional">[xmin]</code>
-                                            <span class="type">Number</span>
+                                            <code class="param-name optional">[localForwardVector]</code>
+                                            <span class="type">Array</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Lower x bound of the grid</p>
+                                            <p>The local wheel forward vector in local body space. Default is zero.</p>
         
                                         </div>
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[xmax]</code>
-                                            <span class="type">Number</span>
+                                            <code class="param-name optional">[localPosition]</code>
+                                            <span class="type">Array</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Upper x bound</p>
+                                            <p>The local position of the wheen in the chassis body. Default is zero - the center of the body.</p>
         
                                         </div>
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[ymin]</code>
-                                            <span class="type">Number</span>
+                                            <code class="param-name optional">[sideFriction=5]</code>
+                                            <span class="type">Array</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Lower y bound</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[ymax]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>Upper y bound</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[nx]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>Number of bins along x axis</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[ny]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>Number of bins along y axis</p>
+                                            <p>The max friction force in the sideways direction.</p>
         
                                         </div>
         
@@ -282,20 +264,20 @@
                     <h3>Methods</h3>
 
                     <ul class="index-list methods extends">
-                            <li class="index-item method inherited inherited">
-                                <a href="#method_boundingRadiusCheck">boundingRadiusCheck</a>
+                            <li class="index-item method">
+                                <a href="#method_getSpeed">getSpeed</a>
 
                             </li>
-                            <li class="index-item method inherited">
-                                <a href="#method_canCollide">canCollide</a>
+                            <li class="index-item method">
+                                <a href="#method_setForwardFriction">setForwardFriction</a>
 
                             </li>
-                            <li class="index-item method inherited">
-                                <a href="#method_getCollisionPairs">getCollisionPairs</a>
+                            <li class="index-item method">
+                                <a href="#method_setSideFriction">setSideFriction</a>
 
                             </li>
-                            <li class="index-item method inherited">
-                                <a href="#method_setWorld">setWorld</a>
+                            <li class="index-item method">
+                                <a href="#method_update">update</a>
 
                             </li>
                     </ul>
@@ -305,16 +287,20 @@
                     <h3>Properties</h3>
 
                     <ul class="index-list properties extends">
-                            <li class="index-item property inherited">
-                                <a href="#property_boundingVolumeType">boundingVolumeType</a>
+                            <li class="index-item property">
+                                <a href="#property_engineForce">engineForce</a>
 
                             </li>
-                            <li class="index-item property inherited">
-                                <a href="#property_result">result</a>
+                            <li class="index-item property">
+                                <a href="#property_localForwardVector">localForwardVector</a>
 
                             </li>
-                            <li class="index-item property inherited">
-                                <a href="#property_world">world</a>
+                            <li class="index-item property">
+                                <a href="#property_localPosition">localPosition</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_steerValue">steerValue</a>
 
                             </li>
                     </ul>
@@ -326,23 +312,11 @@
             <div id="methods" class="api-class-tabpanel">
                 <h2 class="off-left">Methods</h2>
 
-<div id="method_boundingRadiusCheck" class="method item inherited">
-    <h3 class="name"><code>boundingRadiusCheck</code></h3>
+<div id="method_getSpeed" class="method item">
+    <h3 class="name"><code>getSpeed</code></h3>
 
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>bodyA</code>
-                </li>
-                <li class="arg">
-                        <code>bodyB</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
+        <span class="paren">()</span>
 
-        <span class="returns-inline">
-            <span class="type">Boolean</span>
-        </span>
 
 
 
@@ -351,12 +325,9 @@
 
 
     <div class="meta">
-            <p>Inherited from
-            <a href="../classes/Broadphase.html#method_boundingRadiusCheck">
-                Broadphase
-            </a>
-            but overwritten in
-        <a href="../files/src_collision_Broadphase.js.html#l72"><code>src&#x2F;collision&#x2F;Broadphase.js:72</code></a>
+                <p>
+                Defined in
+        <a href="../files/src_objects_TopDownVehicle.js.html#l196"><code>src&#x2F;objects&#x2F;TopDownVehicle.js:196</code></a>
         </p>
 
 
@@ -364,64 +335,18 @@
     </div>
 
     <div class="description">
-        <p>Check whether the bounding radius of two bodies overlap.</p>
-
+        
     </div>
 
-        <div class="params">
-            <h4>Parameters:</h4>
 
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">bodyA</code>
-                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
-
-
-                    <div class="param-description">
-                        
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">bodyB</code>
-                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
-
-
-                    <div class="param-description">
-                        
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                        <span class="type">Boolean</span>:
-            </div>
-        </div>
 
 
 </div>
-<div id="method_canCollide" class="method item inherited">
-    <h3 class="name"><code>canCollide</code></h3>
+<div id="method_setForwardFriction" class="method item">
+    <h3 class="name"><code>setForwardFriction</code></h3>
 
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>bodyA</code>
-                </li>
-                <li class="arg">
-                        <code>bodyB</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
+        <span class="paren">()</span>
 
-        <span class="returns-inline">
-            <span class="type">Boolean</span>
-        </span>
 
 
 
@@ -430,9 +355,9 @@
 
 
     <div class="meta">
-                <p>Inherited from
-                <a href="../classes/Broadphase.html#method_canCollide">Broadphase</a>:
-        <a href="../files/src_collision_Broadphase.js.html#l120"><code>src&#x2F;collision&#x2F;Broadphase.js:120</code></a>
+                <p>
+                Defined in
+        <a href="../files/src_objects_TopDownVehicle.js.html#l179"><code>src&#x2F;objects&#x2F;TopDownVehicle.js:179</code></a>
         </p>
 
 
@@ -440,61 +365,18 @@
     </div>
 
     <div class="description">
-        <p>Check whether two bodies are allowed to collide at all.</p>
-
+        
     </div>
 
-        <div class="params">
-            <h4>Parameters:</h4>
 
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">bodyA</code>
-                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
-
-
-                    <div class="param-description">
-                        
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">bodyB</code>
-                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
-
-
-                    <div class="param-description">
-                        
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                        <span class="type">Boolean</span>:
-            </div>
-        </div>
 
 
 </div>
-<div id="method_getCollisionPairs" class="method item">
-    <h3 class="name"><code>getCollisionPairs</code></h3>
+<div id="method_setSideFriction" class="method item">
+    <h3 class="name"><code>setSideFriction</code></h3>
 
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>world</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
+        <span class="paren">()</span>
 
-        <span class="returns-inline">
-            <span class="type">Array</span>
-        </span>
 
 
 
@@ -503,12 +385,9 @@
 
 
     <div class="meta">
-            <p>Inherited from
-            <a href="../classes/Broadphase.html#method_getCollisionPairs">
-                Broadphase
-            </a>
-            but overwritten in
-        <a href="../files/src_collision_GridBroadphase.js.html#l49"><code>src&#x2F;collision&#x2F;GridBroadphase.js:49</code></a>
+                <p>
+                Defined in
+        <a href="../files/src_objects_TopDownVehicle.js.html#l186"><code>src&#x2F;objects&#x2F;TopDownVehicle.js:186</code></a>
         </p>
 
 
@@ -516,47 +395,17 @@
     </div>
 
     <div class="description">
-        <p>Get collision pairs.</p>
-
+        
     </div>
 
-        <div class="params">
-            <h4>Parameters:</h4>
 
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">world</code>
-                        <span class="type"><a href="../classes/World.html" class="crosslink">World</a></span>
-
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                        <span class="type">Array</span>:
-            </div>
-        </div>
 
 
 </div>
-<div id="method_setWorld" class="method item inherited">
-    <h3 class="name"><code>setWorld</code></h3>
+<div id="method_update" class="method item">
+    <h3 class="name"><code>update</code></h3>
 
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>world</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
+        <span class="paren">()</span>
 
 
 
@@ -566,9 +415,9 @@
 
 
     <div class="meta">
-                <p>Inherited from
-                <a href="../classes/Broadphase.html#method_setWorld">Broadphase</a>:
-        <a href="../files/src_collision_Broadphase.js.html#l51"><code>src&#x2F;collision&#x2F;Broadphase.js:51</code></a>
+                <p>
+                Defined in
+        <a href="../files/src_objects_TopDownVehicle.js.html#l207"><code>src&#x2F;objects&#x2F;TopDownVehicle.js:207</code></a>
         </p>
 
 
@@ -576,26 +425,9 @@
     </div>
 
     <div class="description">
-        <p>Set the world that we are searching for collision pairs in</p>
-
+        
     </div>
 
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">world</code>
-                        <span class="type"><a href="../classes/World.html" class="crosslink">World</a></span>
-
-
-                    <div class="param-description">
-                        
-                    </div>
-
-                </li>
-            </ul>
-        </div>
 
 
 
@@ -605,8 +437,8 @@
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
-                    <div id="property_boundingVolumeType" class="property item inherited">
-                        <h3 class="name"><code>boundingVolumeType</code></h3>
+                    <div id="property_engineForce" class="property item">
+                        <h3 class="name"><code>engineForce</code></h3>
                         <span class="type">Number</span>
                     
                     
@@ -614,24 +446,23 @@
                     
                     
                         <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Broadphase.html#property_boundingVolumeType">Broadphase</a>:
-                            <a href="../files/src_collision_Broadphase.js.html#l30"><code>src&#x2F;collision&#x2F;Broadphase.js:30</code></a>
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_objects_TopDownVehicle.js.html#l145"><code>src&#x2F;objects&#x2F;TopDownVehicle.js:145</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The bounding volume type to use in the broadphase algorithms.</p>
-                    
+                            
                         </div>
                     
                     
                     
                     </div>
-                    <div id="property_result" class="property item inherited">
-                        <h3 class="name"><code>result</code></h3>
+                    <div id="property_localForwardVector" class="property item">
+                        <h3 class="name"><code>localForwardVector</code></h3>
                         <span class="type">Array</span>
                     
                     
@@ -639,42 +470,64 @@
                     
                     
                         <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Broadphase.html#property_result">Broadphase</a>:
-                            <a href="../files/src_collision_Broadphase.js.html#l15"><code>src&#x2F;collision&#x2F;Broadphase.js:15</code></a>
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_objects_TopDownVehicle.js.html#l152"><code>src&#x2F;objects&#x2F;TopDownVehicle.js:152</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The resulting overlapping pairs. Will be filled with results during .getCollisionPairs().</p>
-                    
+                            
                         </div>
                     
                     
                     
                     </div>
-                    <div id="property_world" class="property item inherited">
-                        <h3 class="name"><code>world</code></h3>
-                        <span class="type"><a href="../classes/World.html" class="crosslink">World</a></span>
+                    <div id="property_localPosition" class="property item">
+                        <h3 class="name"><code>localPosition</code></h3>
+                        <span class="type">Array</span>
                     
                     
                     
                     
                     
                         <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Broadphase.html#property_world">Broadphase</a>:
-                            <a href="../files/src_collision_Broadphase.js.html#l22"><code>src&#x2F;collision&#x2F;Broadphase.js:22</code></a>
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_objects_TopDownVehicle.js.html#l160"><code>src&#x2F;objects&#x2F;TopDownVehicle.js:160</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The world to search for collision pairs in. To change it, use .setWorld()</p>
+                            
+                        </div>
                     
+                    
+                    
+                    </div>
+                    <div id="property_steerValue" class="property item">
+                        <h3 class="name"><code>steerValue</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_objects_TopDownVehicle.js.html#l140"><code>src&#x2F;objects&#x2F;TopDownVehicle.js:140</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            
                         </div>
                     
                     

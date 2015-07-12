@@ -6,17 +6,17 @@ var Shape = require('../shapes/Shape');
 var AABB = require('../collision/AABB');
 
 /**
- * A line with a start and end point that is used to intersect shapes.
+ * A line with a start and end point that is used to intersect shapes. For an example, see {{#crossLink "World/raycast:method"}}World.raycast{{/crossLink}}
  * @class Ray
  * @constructor
  * @param {object} [options]
  * @param {array} [options.from]
  * @param {array} [options.to]
- * @param {boolean} [options.checkCollisionResponse]
- * @param {boolean} [options.skipBackfaces]
- * @param {number} [options.collisionMask]
- * @param {number} [options.collisionGroup]
- * @param {number} [options.mode]
+ * @param {boolean} [options.checkCollisionResponse=true]
+ * @param {boolean} [options.skipBackfaces=false]
+ * @param {number} [options.collisionMask=-1]
+ * @param {number} [options.collisionGroup=-1]
+ * @param {number} [options.mode=Ray.ANY]
  * @param {number} [options.callback]
  */
 function Ray(options){
@@ -71,14 +71,14 @@ function Ray(options){
     this.callback = options.callback || function(result){};
 
     /**
-     * @readonly
+     * @readOnly
      * @property {array} direction
      */
     this.direction = vec2.create();
 
     /**
      * Length of the ray
-     * @readonly
+     * @readOnly
      * @property {number} length
      */
     this.length = 1;
@@ -88,18 +88,21 @@ function Ray(options){
 Ray.prototype.constructor = Ray;
 
 /**
+ * This raycasting mode will make the Ray traverse through all intersection points and only return the closest one.
  * @static
  * @property {Number} CLOSEST
  */
 Ray.CLOSEST = 1;
 
 /**
+ * This raycasting mode will make the Ray stop when it finds the first intersection point.
  * @static
  * @property {Number} ANY
  */
 Ray.ANY = 2;
 
 /**
+ * This raycasting mode will traverse all intersection points and executes a callback for each one.
  * @static
  * @property {Number} ALL
  */
@@ -107,6 +110,7 @@ Ray.ALL = 4;
 
 /**
  * Should be called if you change the from or to point.
+ * @method update
  */
 Ray.prototype.update = function(){
 

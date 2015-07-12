@@ -11,6 +11,39 @@ module.exports = TopDownVehicle;
  * @constructor
  * @param {Body} chassisBody A dynamic body, already added to the world.
  * @param {Object} [options]
+ *
+ * @example
+ *
+ *     // Create a dynamic body for the chassis
+ *     var chassisBody = new Body({
+ *         mass: 1
+ *     });
+ *     var boxShape = new Box({ width: 0.5, height: 1 });
+ *     chassisBody.addShape(boxShape);
+ *     world.addBody(chassisBody);
+ *
+ *     // Create the vehicle
+ *     var vehicle = new TopDownVehicle(chassisBody);
+ *
+ *     // Add one front wheel and one back wheel - we don't actually need four :)
+ *     var frontWheel = vehicle.addWheel({
+ *         localPosition: [0, 0.5] // front
+ *     });
+ *     frontWheel.setSideFriction(4);
+ *
+ *     // Back wheel
+ *     var backWheel = vehicle.addWheel({
+ *         localPosition: [0, -0.5] // back
+ *     });
+ *     backWheel.setSideFriction(3); // Less side friction on back wheel makes it easier to drift
+ *     vehicle.addToWorld(world);
+ *
+ *     // Steer value zero means straight forward. Positive is left and negative right.
+ *     frontWheel.steerValue = Math.PI / 16;
+ *
+ *     // Engine force forward
+ *     backWheel.engineForce = 10;
+ *     backWheel.setBrakeForce(0);
  */
 function TopDownVehicle(chassisBody, options){
     options = options || {};
@@ -91,8 +124,8 @@ TopDownVehicle.prototype.update = function(){
  * @extends {Constraint}
  * @param {Vehicle} vehicle
  * @param {object} [options]
- * @param {Array} [options.localForwardVector] The local wheel forward vector in local body space. Default is [0,1].
- * @param {Array} [options.localPosition] The local position of the wheen in the chassis body. Default is [0,0] - the center of the body.
+ * @param {Array} [options.localForwardVector]The local wheel forward vector in local body space. Default is zero.
+ * @param {Array} [options.localPosition] The local position of the wheen in the chassis body. Default is zero - the center of the body.
  * @param {Array} [options.sideFriction=5] The max friction force in the sideways direction.
  */
 function WheelConstraint(vehicle, options){
