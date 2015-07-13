@@ -1,6 +1,8 @@
 var Body = require(__dirname + '/../../src/objects/Body');
 var Circle = require(__dirname + '/../../src/shapes/Circle');
+var Box = require(__dirname + '/../../src/shapes/Box');
 var World = require(__dirname + '/../../src/world/World');
+var AABB = require(__dirname + '/../../src/collision/AABB');
 var vec2 = require(__dirname + '/../../src/math/vec2');
 var Shape = require(__dirname + '/../../src/shapes/Shape');
 
@@ -194,10 +196,16 @@ module.exports = {
     },
 
     getArea: function(test){
+        var body = new Body();
+        body.addShape(new Box({ width: 1, height: 1 }));
+        test.equal(body.getArea(), 1);
         test.done();
     },
 
     getAABB: function(test){
+        var body = new Body();
+        body.addShape(new Box({ width: 1, height: 1 }));
+        test.deepEqual(body.getAABB(), new AABB({ lowerBound: [-0.5, -0.5], upperBound: [0.5, 0.5] }));
         test.done();
     },
 
@@ -220,17 +228,26 @@ module.exports = {
     },
 
     sleep: function(test){
-        // STUB
+        var b = new Body({ mass: 1 });
+        test.equal(b.sleepState, Body.AWAKE);
+        b.sleep();
+        test.equal(b.sleepState, Body.SLEEPING);
         test.done();
     },
 
     toLocalFrame: function(test){
-        // STUB
+        var b = new Body({ position: [1,1] });
+        var localPoint = [123, 456];
+        b.toLocalFrame(localPoint, [1,1]);
+        test.deepEqual(localPoint, [0,0]);
         test.done();
     },
 
     toWorldFrame: function(test){
-        // STUB
+        var b = new Body({ position: [1,1] });
+        var worldPoint = [123, 456];
+        b.toWorldFrame(worldPoint, [1,1]);
+        test.deepEqual(worldPoint, [2,2]);
         test.done();
     },
 
@@ -290,12 +307,18 @@ module.exports = {
     },
 
     wakeUp: function(test){
-        // STUB
+        var b = new Body({ mass: 1 });
+        b.sleep();
+        test.equal(b.sleepState, Body.SLEEPING);
+        b.wakeUp();
+        test.equal(b.sleepState, Body.AWAKE);
         test.done();
     },
 
     integrate: function(test){
-        // STUB
+        var b = new Body({ velocity: [1,0], mass: 1 });
+        b.integrate(1);
+        test.deepEqual(b.position, vec2.fromValues(1,0));
         test.done();
     },
 
