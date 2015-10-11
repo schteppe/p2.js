@@ -177,7 +177,7 @@ function WheelConstraint(vehicle, options){
 WheelConstraint.prototype = new Constraint();
 
 /**
- * @method setForwardFriction
+ * @method setBrakeForce
  */
 WheelConstraint.prototype.setBrakeForce = function(force){
     this.forwardEquation.setSlipForce(force);
