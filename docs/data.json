@@ -2,7 +2,7 @@
     "project": {
         "name": "p2.js",
         "description": "A JavaScript 2D physics engine.",
-        "version": "0.7.0"
+        "version": "0.7.1"
     },
     "files": {
         "src/collision/AABB.js": {
@@ -1367,113 +1367,115 @@
             "extends": "EventEmitter",
             "params": [
                 {
-                    "name": "options.force",
-                    "description": "",
-                    "type": "Array",
-                    "optional": true
-                },
-                {
-                    "name": "options.position",
-                    "description": "",
-                    "type": "Array",
-                    "optional": true
-                },
-                {
-                    "name": "options.velocity",
-                    "description": "",
-                    "type": "Array",
-                    "optional": true
-                },
-                {
-                    "name": "options.allowSleep",
-                    "description": "",
-                    "type": "Boolean",
-                    "optional": true
-                },
-                {
-                    "name": "options.collisionResponse",
-                    "description": "",
-                    "type": "Boolean",
-                    "optional": true
-                },
-                {
-                    "name": "options.angle",
-                    "description": "",
-                    "type": "Number",
-                    "optional": true,
-                    "optdefault": "0"
-                },
-                {
-                    "name": "options.angularForce",
-                    "description": "",
-                    "type": "Number",
-                    "optional": true,
-                    "optdefault": "0"
-                },
-                {
-                    "name": "options.angularVelocity",
-                    "description": "",
-                    "type": "Number",
-                    "optional": true,
-                    "optdefault": "0"
-                },
-                {
-                    "name": "options.ccdIterations",
-                    "description": "",
-                    "type": "Number",
-                    "optional": true,
-                    "optdefault": "10"
-                },
-                {
-                    "name": "options.ccdSpeedThreshold",
-                    "description": "",
-                    "type": "Number",
-                    "optional": true,
-                    "optdefault": "-1"
-                },
-                {
-                    "name": "options.fixedRotation",
-                    "description": "",
-                    "type": "Number",
-                    "optional": true,
-                    "optdefault": "false"
-                },
-                {
-                    "name": "options.gravityScale",
-                    "description": "",
-                    "type": "Number",
-                    "optional": true
-                },
-                {
-                    "name": "options.id",
-                    "description": "",
-                    "type": "Number",
-                    "optional": true
-                },
-                {
-                    "name": "options.mass",
-                    "description": "A number >= 0. If zero, the .type will be set to Body.STATIC.",
-                    "type": "Number",
-                    "optional": true,
-                    "optdefault": "0"
-                },
-                {
-                    "name": "options.sleepSpeedLimit",
-                    "description": "",
-                    "type": "Number",
-                    "optional": true
-                },
-                {
-                    "name": "options.sleepTimeLimit",
-                    "description": "",
-                    "type": "Number",
-                    "optional": true
-                },
-                {
                     "name": "options",
                     "description": "",
                     "type": "Object",
-                    "optional": true
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "force",
+                            "description": "",
+                            "type": "Array",
+                            "optional": true
+                        },
+                        {
+                            "name": "position",
+                            "description": "",
+                            "type": "Array",
+                            "optional": true
+                        },
+                        {
+                            "name": "velocity",
+                            "description": "",
+                            "type": "Array",
+                            "optional": true
+                        },
+                        {
+                            "name": "allowSleep",
+                            "description": "",
+                            "type": "Boolean",
+                            "optional": true
+                        },
+                        {
+                            "name": "collisionResponse",
+                            "description": "",
+                            "type": "Boolean",
+                            "optional": true
+                        },
+                        {
+                            "name": "angle",
+                            "description": "",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "0"
+                        },
+                        {
+                            "name": "angularForce",
+                            "description": "",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "0"
+                        },
+                        {
+                            "name": "angularVelocity",
+                            "description": "",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "0"
+                        },
+                        {
+                            "name": "ccdIterations",
+                            "description": "",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "10"
+                        },
+                        {
+                            "name": "ccdSpeedThreshold",
+                            "description": "",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "-1"
+                        },
+                        {
+                            "name": "fixedRotation",
+                            "description": "",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "false"
+                        },
+                        {
+                            "name": "gravityScale",
+                            "description": "",
+                            "type": "Number",
+                            "optional": true
+                        },
+                        {
+                            "name": "id",
+                            "description": "",
+                            "type": "Number",
+                            "optional": true
+                        },
+                        {
+                            "name": "mass",
+                            "description": "A number >= 0. If zero, the .type will be set to Body.STATIC.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "0"
+                        },
+                        {
+                            "name": "sleepSpeedLimit",
+                            "description": "",
+                            "type": "Number",
+                            "optional": true
+                        },
+                        {
+                            "name": "sleepTimeLimit",
+                            "description": "",
+                            "type": "Number",
+                            "optional": true
+                        }
+                    ]
                 }
             ],
             "example": [
@@ -5445,6 +5447,16 @@
             "class": "ContactEquation"
         },
         {
+            "file": "src/equations/ContactEquation.js",
+            "line": 120,
+            "description": "Get the relative velocity along the normal vector.",
+            "return": {
+                "description": "",
+                "type": "Number"
+            },
+            "class": "ContactEquation"
+        },
+        {
             "file": "src/equations/Equation.js",
             "line": 18,
             "description": "Minimum force to apply when solving.",
@@ -5923,25 +5935,27 @@
         {
             "file": "src/material/ContactMaterial.js",
             "line": 50,
-            "description": "Friction to use in the contact of these two materials",
+            "description": "Friction coefficient to use in the contact of these two materials. Friction = 0 will make the involved objects super slippery, and friction = 1 will make it much less slippery. A friction coefficient larger than 1 will allow for very large friction forces, which can be convenient for preventing car tires not slip on the ground.",
             "itemtype": "property",
             "name": "friction",
             "type": "{Number}",
+            "default": "0.3",
             "class": "ContactMaterial"
         },
         {
             "file": "src/material/ContactMaterial.js",
-            "line": 57,
-            "description": "Restitution to use in the contact of these two materials",
+            "line": 58,
+            "description": "Restitution, or \"bounciness\" to use in the contact of these two materials. A restitution of 0 will make no bounce, while restitution=1 will approximately bounce back with the same velocity the object came with.",
             "itemtype": "property",
             "name": "restitution",
             "type": "{Number}",
+            "default": "0",
             "class": "ContactMaterial"
         },
         {
             "file": "src/material/ContactMaterial.js",
-            "line": 64,
-            "description": "Stiffness of the resulting ContactEquation that this ContactMaterial generate",
+            "line": 66,
+            "description": "Hardness of the contact. Less stiffness will make the objects penetrate more, and will make the contact act more like a spring than a contact force. Default value is {{#crossLink \"Equation/DEFAULT_STIFFNESS:property\"}}Equation.DEFAULT_STIFFNESS{{/crossLink}}.",
             "itemtype": "property",
             "name": "stiffness",
             "type": "{Number}",
@@ -5949,8 +5963,8 @@
         },
         {
             "file": "src/material/ContactMaterial.js",
-            "line": 71,
-            "description": "Relaxation of the resulting ContactEquation that this ContactMaterial generate",
+            "line": 73,
+            "description": "Relaxation of the resulting ContactEquation that this ContactMaterial generate. Default value is {{#crossLink \"Equation/DEFAULT_RELAXATION:property\"}}Equation.DEFAULT_RELAXATION{{/crossLink}}.",
             "itemtype": "property",
             "name": "relaxation",
             "type": "{Number}",
@@ -5958,8 +5972,8 @@
         },
         {
             "file": "src/material/ContactMaterial.js",
-            "line": 78,
-            "description": "Stiffness of the resulting FrictionEquation that this ContactMaterial generate",
+            "line": 80,
+            "description": "Stiffness of the resulting friction force. For most cases, the value of this property should be a large number. I cannot think of any case where you would want less frictionStiffness. Default value is {{#crossLink \"Equation/DEFAULT_STIFFNESS:property\"}}Equation.DEFAULT_STIFFNESS{{/crossLink}}.",
             "itemtype": "property",
             "name": "frictionStiffness",
             "type": "{Number}",
@@ -5967,8 +5981,8 @@
         },
         {
             "file": "src/material/ContactMaterial.js",
-            "line": 85,
-            "description": "Relaxation of the resulting FrictionEquation that this ContactMaterial generate",
+            "line": 87,
+            "description": "Relaxation of the resulting friction force. The default value should be good for most simulations. Default value is {{#crossLink \"Equation/DEFAULT_RELAXATION:property\"}}Equation.DEFAULT_RELAXATION{{/crossLink}}.",
             "itemtype": "property",
             "name": "frictionRelaxation",
             "type": "{Number}",
@@ -5976,16 +5990,17 @@
         },
         {
             "file": "src/material/ContactMaterial.js",
-            "line": 92,
+            "line": 94,
             "description": "Will add surface velocity to this material. If bodyA rests on top if bodyB, and the surface velocity is positive, bodyA will slide to the right.",
             "itemtype": "property",
             "name": "surfaceVelocity",
             "type": "Number",
+            "default": "0",
             "class": "ContactMaterial"
         },
         {
             "file": "src/material/ContactMaterial.js",
-            "line": 98,
+            "line": 101,
             "description": "Offset to be set on ContactEquations. A positive value will make the bodies penetrate more into each other. Can be useful in scenes where contacts need to be more persistent, for example when stacking. Aka \"cure for nervous contacts\".",
             "itemtype": "property",
             "name": "contactSkinSize",
@@ -7467,7 +7482,8 @@
                 {
                     "name": "localPoint",
                     "description": "A point relative to the body in world space. If not given, it is set to zero and all of the impulse will be excerted on the center of mass.",
-                    "type": "Array"
+                    "type": "Array",
+                    "optional": true
                 }
             ],
             "class": "Body"
@@ -9222,20 +9238,25 @@
             "itemtype": "property",
             "name": "useZeroRHS",
             "type": "{Boolean}",
+            "todo": [
+                "Remove",
+                "not used"
+            ],
             "class": "GSSolver"
         },
         {
             "file": "src/solver/GSSolver.js",
-            "line": 49,
-            "description": "Number of solver iterations that are done to approximate normal forces. When these iterations are done, friction force will be computed from the contact normal forces. These friction forces will override any other friction forces set from the World for example.\nThe solver will use less iterations if the solution is below the .tolerance.",
+            "line": 50,
+            "description": "Number of solver iterations that are used to approximate normal forces used for friction (F_friction = mu * F_normal). These friction forces will override any other friction forces that are set. If you set frictionIterations = 0, then this feature will be disabled.\n\nUse only frictionIterations > 0 if the approximated normal force (F_normal = mass * gravity) is not good enough. Examples of where it can happen is in space games where gravity is zero, or in tall stacks where the normal force is large at bottom but small at top.",
             "itemtype": "property",
             "name": "frictionIterations",
             "type": "{Number}",
+            "default": "0",
             "class": "GSSolver"
         },
         {
             "file": "src/solver/GSSolver.js",
-            "line": 57,
+            "line": 61,
             "description": "The number of iterations that were made during the last solve. If .tolerance is zero, this value will always be equal to .iterations, but if .tolerance is larger than zero, and the solver can quit early, then this number will be somewhere between 1 and .iterations.",
             "itemtype": "property",
             "name": "usedIterations",
@@ -9244,7 +9265,7 @@
         },
         {
             "file": "src/solver/GSSolver.js",
-            "line": 73,
+            "line": 77,
             "description": "Solve the system of equations",
             "itemtype": "method",
             "name": "solve",
@@ -11011,13 +11032,14 @@
             },
             "todo": [
                 "Should use an api similar to the raycast function",
-                "Should probably implement a .containsPoint method for all shapes. Would be more efficient"
+                "Should probably implement a .containsPoint method for all shapes. Would be more efficient",
+                "Should use the broadphase"
             ],
             "class": "World"
         },
         {
             "file": "src/world/World.js",
-            "line": 1167,
+            "line": 1168,
             "description": "Set the stiffness for all equations and contact materials.",
             "itemtype": "method",
             "name": "setGlobalStiffness",
@@ -11032,7 +11054,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 1197,
+            "line": 1198,
             "description": "Set the relaxation for all equations and contact materials.",
             "itemtype": "method",
             "name": "setGlobalRelaxation",
@@ -11047,7 +11069,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 1228,
+            "line": 1229,
             "description": "Ray cast against all bodies in the world.",
             "itemtype": "method",
             "name": "raycast",
@@ -11074,5 +11096,10 @@
             "class": "World"
         }
     ],
-    "warnings": []
+    "warnings": [
+        {
+            "message": "Missing item type\nGet the relative velocity along the normal vector.",
+            "line": " src/equations/ContactEquation.js:120"
+        }
+    ]
 }

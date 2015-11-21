@@ -15,6 +15,7 @@ module.exports = Body;
  * @class Body
  * @constructor
  * @extends EventEmitter
+ * @param {Object} [options]
  * @param {Array} [options.force]
  * @param {Array} [options.position]
  * @param {Array} [options.velocity]
@@ -31,7 +32,6 @@ module.exports = Body;
  * @param {Number} [options.mass=0] A number >= 0. If zero, the .type will be set to Body.STATIC.
  * @param {Number} [options.sleepSpeedLimit]
  * @param {Number} [options.sleepTimeLimit]
- * @param {Object} [options]
  *
  * @example
  *

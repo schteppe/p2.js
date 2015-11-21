@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="p2.js" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.7.0</em>
+            <em>API Docs for: 0.7.1</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -384,7 +384,7 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_material_ContactMaterial.js.html#l98"><code>src&#x2F;material&#x2F;ContactMaterial.js:98</code></a>
+                            <a href="../files/src_material_ContactMaterial.js.html#l101"><code>src&#x2F;material&#x2F;ContactMaterial.js:101</code></a>
                             </p>
                     
                     
@@ -416,10 +416,11 @@
                         </div>
                     
                         <div class="description">
-                            <p>Friction to use in the contact of these two materials</p>
+                            <p>Friction coefficient to use in the contact of these two materials. Friction = 0 will make the involved objects super slippery, and friction = 1 will make it much less slippery. A friction coefficient larger than 1 will allow for very large friction forces, which can be convenient for preventing car tires not slip on the ground.</p>
                     
                         </div>
                     
+                            <p><strong>Default:</strong> 0.3</p>
                     
                     
                     </div>
@@ -434,14 +435,14 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_material_ContactMaterial.js.html#l85"><code>src&#x2F;material&#x2F;ContactMaterial.js:85</code></a>
+                            <a href="../files/src_material_ContactMaterial.js.html#l87"><code>src&#x2F;material&#x2F;ContactMaterial.js:87</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Relaxation of the resulting FrictionEquation that this ContactMaterial generate</p>
+                            <p>Relaxation of the resulting friction force. The default value should be good for most simulations. Default value is <a href="../classes/Equation.html#property_DEFAULT_RELAXATION" class="crosslink">Equation.DEFAULT_RELAXATION</a>.</p>
                     
                         </div>
                     
@@ -459,14 +460,14 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_material_ContactMaterial.js.html#l78"><code>src&#x2F;material&#x2F;ContactMaterial.js:78</code></a>
+                            <a href="../files/src_material_ContactMaterial.js.html#l80"><code>src&#x2F;material&#x2F;ContactMaterial.js:80</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Stiffness of the resulting FrictionEquation that this ContactMaterial generate</p>
+                            <p>Stiffness of the resulting friction force. For most cases, the value of this property should be a large number. I cannot think of any case where you would want less frictionStiffness. Default value is <a href="../classes/Equation.html#property_DEFAULT_STIFFNESS" class="crosslink">Equation.DEFAULT_STIFFNESS</a>.</p>
                     
                         </div>
                     
@@ -559,14 +560,14 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_material_ContactMaterial.js.html#l71"><code>src&#x2F;material&#x2F;ContactMaterial.js:71</code></a>
+                            <a href="../files/src_material_ContactMaterial.js.html#l73"><code>src&#x2F;material&#x2F;ContactMaterial.js:73</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Relaxation of the resulting ContactEquation that this ContactMaterial generate</p>
+                            <p>Relaxation of the resulting ContactEquation that this ContactMaterial generate. Default value is <a href="../classes/Equation.html#property_DEFAULT_RELAXATION" class="crosslink">Equation.DEFAULT_RELAXATION</a>.</p>
                     
                         </div>
                     
@@ -584,17 +585,18 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_material_ContactMaterial.js.html#l57"><code>src&#x2F;material&#x2F;ContactMaterial.js:57</code></a>
+                            <a href="../files/src_material_ContactMaterial.js.html#l58"><code>src&#x2F;material&#x2F;ContactMaterial.js:58</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Restitution to use in the contact of these two materials</p>
+                            <p>Restitution, or &quot;bounciness&quot; to use in the contact of these two materials. A restitution of 0 will make no bounce, while restitution=1 will approximately bounce back with the same velocity the object came with.</p>
                     
                         </div>
                     
+                            <p><strong>Default:</strong> 0</p>
                     
                     
                     </div>
@@ -609,14 +611,14 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_material_ContactMaterial.js.html#l64"><code>src&#x2F;material&#x2F;ContactMaterial.js:64</code></a>
+                            <a href="../files/src_material_ContactMaterial.js.html#l66"><code>src&#x2F;material&#x2F;ContactMaterial.js:66</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Stiffness of the resulting ContactEquation that this ContactMaterial generate</p>
+                            <p>Hardness of the contact. Less stiffness will make the objects penetrate more, and will make the contact act more like a spring than a contact force. Default value is <a href="../classes/Equation.html#property_DEFAULT_STIFFNESS" class="crosslink">Equation.DEFAULT_STIFFNESS</a>.</p>
                     
                         </div>
                     
@@ -634,7 +636,7 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_material_ContactMaterial.js.html#l92"><code>src&#x2F;material&#x2F;ContactMaterial.js:92</code></a>
+                            <a href="../files/src_material_ContactMaterial.js.html#l94"><code>src&#x2F;material&#x2F;ContactMaterial.js:94</code></a>
                             </p>
                     
                     
@@ -645,6 +647,7 @@
                     
                         </div>
                     
+                            <p><strong>Default:</strong> 0</p>
                     
                     
                     </div>

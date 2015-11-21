@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="p2.js" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.7.0</em>
+            <em>API Docs for: 0.7.1</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -852,7 +852,7 @@
                 Solver
             </a>
             but overwritten in
-        <a href="../files/src_solver_GSSolver.js.html#l73"><code>src&#x2F;solver&#x2F;GSSolver.js:73</code></a>
+        <a href="../files/src_solver_GSSolver.js.html#l77"><code>src&#x2F;solver&#x2F;GSSolver.js:77</code></a>
         </p>
 
 
@@ -1059,18 +1059,19 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_solver_GSSolver.js.html#l49"><code>src&#x2F;solver&#x2F;GSSolver.js:49</code></a>
+                            <a href="../files/src_solver_GSSolver.js.html#l50"><code>src&#x2F;solver&#x2F;GSSolver.js:50</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Number of solver iterations that are done to approximate normal forces. When these iterations are done, friction force will be computed from the contact normal forces. These friction forces will override any other friction forces set from the World for example.
-                    The solver will use less iterations if the solution is below the .tolerance.</p>
+                            <p>Number of solver iterations that are used to approximate normal forces used for friction (F_friction = mu * F_normal). These friction forces will override any other friction forces that are set. If you set frictionIterations = 0, then this feature will be disabled.</p>
+                    <p>Use only frictionIterations &gt; 0 if the approximated normal force (F_normal = mass * gravity) is not good enough. Examples of where it can happen is in space games where gravity is zero, or in tall stacks where the normal force is large at bottom but small at top.</p>
                     
                         </div>
                     
+                            <p><strong>Default:</strong> 0</p>
                     
                     
                     </div>
@@ -1136,7 +1137,7 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_solver_GSSolver.js.html#l57"><code>src&#x2F;solver&#x2F;GSSolver.js:57</code></a>
+                            <a href="../files/src_solver_GSSolver.js.html#l61"><code>src&#x2F;solver&#x2F;GSSolver.js:61</code></a>
                             </p>
                     
                     
