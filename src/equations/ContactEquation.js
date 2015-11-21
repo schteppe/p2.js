@@ -112,3 +112,21 @@ ContactEquation.prototype.computeB = function(a,b,h){
 
     return B;
 };
+
+var vi = vec2.create();
+var vj = vec2.create();
+var relVel = vec2.create();
+
+/**
+ * Get the relative velocity along the normal vector.
+ * @return {number}
+ */
+ContactEquation.prototype.getVelocityAlongNormal = function(){
+
+    this.bodyA.getVelocityAtPoint(vi, this.contactPointA);
+    this.bodyB.getVelocityAtPoint(vj, this.contactPointB);
+
+    vec2.subtract(relVel, vi, vj);
+
+    return vec2.dot(this.normalA, relVel);
+};

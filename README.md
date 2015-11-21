@@ -13,7 +13,9 @@ p2.js
 ### Demos
 These demos use the p2 Demo framework, which provides rendering and interactivity. Use mouse/touch to throw or create objects. Use the right menu (or console!) to tweak parameters. Or just check the source to see how to programmatically build the current scene using p2.
 
+* [Buoyancy](http://schteppe.github.io/p2.js/demos/buoyancy.html)
 * [Car](http://schteppe.github.io/p2.js/demos/car.html)
+* [CCD](http://schteppe.github.io/p2.js/demos/ccd.html)
 * [Circle container](http://schteppe.github.io/p2.js/demos/circles.html)
 * [Collision tests](http://schteppe.github.io/p2.js/demos/collisions.html)
 * [Compound objects](http://schteppe.github.io/p2.js/demos/compound.html)
@@ -21,6 +23,7 @@ These demos use the p2 Demo framework, which provides rendering and interactivit
 * [Constraints](http://schteppe.github.io/p2.js/demos/constraints.html)
 * [DistanceConstraint](http://schteppe.github.io/p2.js/demos/distanceConstraint.html)
 * [Fixed rotation](http://schteppe.github.io/p2.js/demos/fixedRotation.html)
+* [Fixed XY](http://schteppe.github.io/p2.js/demos/fixedXY.html)
 * [Friction](http://schteppe.github.io/p2.js/demos/friction.html)
 * [Gear constraint](http://schteppe.github.io/p2.js/demos/gearConstraint.html)
 * [Heightfield](http://schteppe.github.io/p2.js/demos/heightfield.html)
@@ -33,10 +36,13 @@ These demos use the p2 Demo framework, which provides rendering and interactivit
 * [Sensor](http://schteppe.github.io/p2.js/demos/removeSensor.html)
 * [Restitution](http://schteppe.github.io/p2.js/demos/restitution.html)
 * [Sleep](http://schteppe.github.io/p2.js/demos/sleep.html)
+* [Segway](http://schteppe.github.io/p2.js/demos/segway.html)
+* [Sleep](http://schteppe.github.io/p2.js/demos/sleep.html)
 * [Springs](http://schteppe.github.io/p2.js/demos/springs.html)
 * [Surface velocity](http://schteppe.github.io/p2.js/demos/surfaceVelocity.html)
 * [Suspension](http://schteppe.github.io/p2.js/demos/suspension.html)
 * [Tearable constraints](http://schteppe.github.io/p2.js/demos/tearable.html)
+* [TopDownVehicle](http://schteppe.github.io/p2.js/demos/topDownVehicle.html)
 
 ### Examples
 Examples showing how to use p2.js with your favorite renderer.
@@ -47,6 +53,8 @@ Examples showing how to use p2.js with your favorite renderer.
 * [Canvas: Circle on plane](http://schteppe.github.io/p2.js/examples/canvas/circle.html)
 * [Canvas: Interpolation](http://schteppe.github.io/p2.js/examples/canvas/interpolation.html)
 * [Canvas: Mousejoint](http://schteppe.github.io/p2.js/examples/canvas/mouseJoint.html)
+* [Canvas: Raycasting](http://schteppe.github.io/p2.js/examples/canvas/raycasting.html)
+* [Canvas: Rayreflect](http://schteppe.github.io/p2.js/examples/canvas/rayreflect.html)
 * [Canvas: Sensors](http://schteppe.github.io/p2.js/examples/canvas/sensors.html)
 * [Canvas: Sensors 2](http://schteppe.github.io/p2.js/examples/canvas/sensors2.html)
 * [Pixi.js: Box on plane](http://schteppe.github.io/p2.js/examples/pixijs/box.html)
@@ -67,8 +75,7 @@ var circleBody = new p2.Body({
 });
 
 // Add a circle shape to the body.
-var radius = 1;
-var circleShape = new p2.Circle(radius);
+var circleShape = new p2.Circle({ radius: 1 });
 circleBody.addShape(circleShape);
 
 // ...and add the body to the world.
@@ -125,17 +132,17 @@ var p2 = require('p2');
 ```
 
 ### Supported collision pairs
-|                                                                              | Circle | Plane | Rectangle | Convex | Particle | Line   | Capsule | Heightfield | Ray    |
+|                                                                              | Circle | Plane | Box       | Convex | Particle | Line   | Capsule | Heightfield | Ray    |
 | :--------------------------------------------------------------------------: |:------:|:-----:|:---------:|:------:|:--------:|:------:|:-------:|:-----------:|:------:|
 | [Circle](http://schteppe.github.io/p2.js/docs/classes/Circle.html)           | Yes    | -     | -         | -      | -        | -      | -       | -           | -      |
 | [Plane](http://schteppe.github.io/p2.js/docs/classes/Plane.html)             | Yes    | -     | -         | -      | -        | -      | -       | -           | -      |
-| [Rectangle](http://schteppe.github.io/p2.js/docs/classes/Rectangle.html)     | Yes    | Yes   | Yes       | -      | -        | -      | -       | -           | -      |
+| [Box](http://schteppe.github.io/p2.js/docs/classes/Box.html)                 | Yes    | Yes   | Yes       | -      | -        | -      | -       | -           | -      |
 | [Convex](http://schteppe.github.io/p2.js/docs/classes/Convex.html)           | Yes    | Yes   | Yes       | Yes    | -        | -      | -       | -           | -      |
 | [Particle](http://schteppe.github.io/p2.js/docs/classes/Particle.html)       | Yes    | Yes   | Yes       | Yes    | -        | -      | -       | -           | -      |
 | [Line](http://schteppe.github.io/p2.js/docs/classes/Line.html)               | Yes    | Yes   | (todo)    | (todo) | -        | -      | -       | -           | -      |
 | [Capsule](http://schteppe.github.io/p2.js/docs/classes/Capsule.html)         | Yes    | Yes   | Yes       | Yes    | Yes      | (todo) | Yes     | -           | -      |
 | [Heightfield](http://schteppe.github.io/p2.js/docs/classes/Heightfield.html) | Yes    | -     | Yes       | Yes    | (todo)   | (todo) | (todo)  | -           | -      |
-| Ray                                                                          | Yes    | Yes   | Yes       | Yes    | -        | Yes    | Yes     | Yes         | -      |
+| [Ray](http://schteppe.github.io/p2.js/docs/classes/Ray.html)                 | Yes    | Yes   | Yes       | Yes    | -        | Yes    | Yes     | Yes         | -      |
 
 Note that concave polygon shapes can be created using [Body.fromPolygon](http://schteppe.github.io/p2.js/docs/classes/Body.html#method_fromPolygon).
 

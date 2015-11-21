@@ -43,16 +43,20 @@ function GSSolver(options){
      * Set to true to set all right hand side terms to zero when solving. Can be handy for a few applications.
      * @property useZeroRHS
      * @type {Boolean}
+     * @todo Remove, not used
      */
     this.useZeroRHS = false;
 
     /**
-     * Number of solver iterations that are done to approximate normal forces. When these iterations are done, friction force will be computed from the contact normal forces. These friction forces will override any other friction forces set from the World for example.
-     * The solver will use less iterations if the solution is below the .tolerance.
+     * Number of solver iterations that are used to approximate normal forces used for friction (F_friction = mu * F_normal). These friction forces will override any other friction forces that are set. If you set frictionIterations = 0, then this feature will be disabled.
+     *
+     * Use only frictionIterations > 0 if the approximated normal force (F_normal = mass * gravity) is not good enough. Examples of where it can happen is in space games where gravity is zero, or in tall stacks where the normal force is large at bottom but small at top.
+     *
      * @property frictionIterations
      * @type {Number}
+     * @default 0
      */
-    this.frictionIterations = 0;
+    this.frictionIterations = options.frictionIterations !== undefined ? 0 : options.frictionIterations;
 
     /**
      * The number of iterations that were made during the last solve. If .tolerance is zero, this value will always be equal to .iterations, but if .tolerance is larger than zero, and the solver can quit early, then this number will be somewhere between 1 and .iterations.

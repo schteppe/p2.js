@@ -15,6 +15,7 @@ module.exports = Body;
  * @class Body
  * @constructor
  * @extends EventEmitter
+ * @param {Object} [options]
  * @param {Array} [options.force]
  * @param {Array} [options.position]
  * @param {Array} [options.velocity]
@@ -31,7 +32,6 @@ module.exports = Body;
  * @param {Number} [options.mass=0] A number >= 0. If zero, the .type will be set to Body.STATIC.
  * @param {Number} [options.sleepSpeedLimit]
  * @param {Number} [options.sleepTimeLimit]
- * @param {Object} [options]
  *
  * @example
  *
@@ -668,7 +668,7 @@ Body.prototype.applyForce = function(force, relativePoint){
  * Apply force to a body-local point.
  * @method applyForceLocal
  * @param  {Array} localForce The force vector to add, oriented in local body space.
- * @param  {Array} localPoint A point relative to the body in world space. If not given, it is set to zero and all of the impulse will be excerted on the center of mass.
+ * @param  {Array} [localPoint] A point relative to the body in world space. If not given, it is set to zero and all of the impulse will be excerted on the center of mass.
  */
 var Body_applyForce_forceWorld = vec2.create();
 var Body_applyForce_pointWorld = vec2.create();

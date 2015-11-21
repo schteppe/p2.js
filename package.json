@@ -1,6 +1,6 @@
 {
   "name": "p2",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "A JavaScript 2D physics engine.",
   "author": "Stefan Hedman <schteppe@gmail.com> (http://steffe.se)",
   "keywords": [
@@ -36,6 +36,6 @@
     "grunt-contrib-concat": "^0.4.0"
   },
   "dependencies": {
-    "poly-decomp": "0.1.0"
+    "poly-decomp": "0.1.1"
   }
 }

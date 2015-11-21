@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="p2.js" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.7.0</em>
+            <em>API Docs for: 0.7.1</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -243,6 +243,23 @@ ContactEquation.prototype.computeB = function(a,b,h){
     return B;
 };
 
+var vi = vec2.create();
+var vj = vec2.create();
+var relVel = vec2.create();
+
+/**
+ * Get the relative velocity along the normal vector.
+ * @return {number}
+ */
+ContactEquation.prototype.getVelocityAlongNormal = function(){
+
+    this.bodyA.getVelocityAtPoint(vi, this.contactPointA);
+    this.bodyB.getVelocityAtPoint(vj, this.contactPointB);
+
+    vec2.subtract(relVel, vi, vj);
+
+    return vec2.dot(this.normalA, relVel);
+};
     </pre>
 </div>
                     </div>
