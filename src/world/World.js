@@ -1121,6 +1121,7 @@ var hitTest_tmp1 = vec2.create(),
  * @return {Array}              Array of bodies that overlap the point
  * @todo Should use an api similar to the raycast function
  * @todo Should probably implement a .containsPoint method for all shapes. Would be more efficient
+ * @todo Should use the broadphase
  */
 World.prototype.hitTest = function(worldPoint,bodies,precision){
     precision = precision || 0;
