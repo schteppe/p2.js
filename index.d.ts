@@ -7,11 +7,15 @@ declare module p2 {
             lowerBound?: number[];
         });
 
+        upperBound: number[];
+        lowerBound: number[];
+
         setFromPoints(points: number[][], position: number[], angle: number, skinSize: number): void;
         copy(aabb: AABB): void;
         extend(aabb: AABB): void;
         overlaps(aabb: AABB): boolean;
-
+        containsPoint(point: number[]): boolean;
+        overlapsRay(ray: Ray): number;
     }
 
     export class Broadphase {
@@ -36,28 +40,6 @@ declare module p2 {
         setWorld(world: World): void;
         getCollisionPairs(world: World): Body[];
         boundingVolumeCheck(bodyA: Body, bodyB: Body): boolean;
-
-    }
-
-    export class GridBroadphase extends Broadphase {
-
-        constructor(options?: {
-            xmin?: number;
-            xmax?: number;
-            ymin?: number;
-            ymax?: number;
-            nx?: number;
-            ny?: number;
-        });
-
-        xmin: number;
-        xmax: number;
-        ymin: number;
-        ymax: number;
-        nx: number;
-        ny: number;
-        binsizeX: number;
-        binsizeY: number;
 
     }
 
@@ -89,6 +71,7 @@ declare module p2 {
         reset(): void;
         createContactEquation(bodyA: Body, bodyB: Body, shapeA: Shape, shapeB: Shape): ContactEquation;
         createFrictionFromContact(c: ContactEquation): FrictionEquation;
+        bodiesOverlap(bodyA: Body, bodyB: Body, checkCollisionMasks?: boolean): boolean;
 
     }
 
@@ -97,6 +80,7 @@ declare module p2 {
         axisList: Body[];
         axisIndex: number;
 
+        sortList(): void;
     }
 
     export class Constraint {
@@ -355,7 +339,7 @@ declare module p2 {
 
     export class EventEmitter {
 
-        on(type: string, listener: Function, context: any): EventEmitter;
+        on(type: string, listener: Function, context?: any): EventEmitter;
         has(type: string, listener: Function): boolean;
         off(type: string, listener: Function): EventEmitter;
         emit(event: any): EventEmitter;
@@ -452,6 +436,13 @@ declare module p2 {
         force?: number[];
         angularForce?: number;
         fixedRotation?: boolean;
+        allowSleep?: boolean;
+        collisionResponse?: boolean;
+        ccdIterations?: number;
+        ccdSpeedThreshold?: number;
+        gravityScale?: number;
+        sleepSpeedLimit?: number;
+        sleepTimeLimit?: number;
 
     }
 
@@ -577,6 +568,52 @@ declare module p2 {
         getWorldAnchorA(result: number[]): number[];
         getWorldAnchorB(result: number[]): number[];
         applyForce(): void;
+
+    }
+
+    export class Ray {
+
+        constructor(options?: {
+            from?: number[];
+            to?: number[];
+            checkCollisionResponse?: boolean;
+            skipBackfaces?: boolean;
+            collisionMask?: number;
+            collisionGroup?: number;
+            mode?: number;
+            callback?: (result: RaycastResult) => void;
+        });
+
+        from: number[];
+        to: number[];
+        length: number;
+
+        update(): void;
+
+        static CLOSEST: number;
+        static ANY: number;
+        static ALL: number;
+
+    }
+
+    export class RaycastResult {
+
+        constructor();
+
+        normal: number[];
+        shape: Shape;
+        body: Body;
+        faceIndex: number;
+        fraction: number;
+        isStopped: boolean;
+
+        reset(): void;
+        getHitDistance(): number;
+        hasHit(): boolean;
+        stop(): boolean;
+        getHitPoint(out: number[], ray: Ray): void;
+        shouldStop(ray: Ray): boolean;
+        set(normal: number[], shape: Shape, body: Body, fraction: number, faceIndex: number): boolean;
 
     }
 
