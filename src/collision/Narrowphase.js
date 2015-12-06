@@ -177,10 +177,11 @@ var bodiesOverlap_shapePositionB = vec2.create();
  * @method bodiesOverlap
  * @param  {Body} bodyA
  * @param  {Body} bodyB
+ * @param  {boolean} [checkCollisionMasks=false]
  * @return {Boolean}
- * @todo shape world transforms are wrong
+ * @todo shape world transforms are wrong?
  */
-Narrowphase.prototype.bodiesOverlap = function(bodyA, bodyB){
+Narrowphase.prototype.bodiesOverlap = function(bodyA, bodyB, checkCollisionMasks){
     var shapePositionA = bodiesOverlap_shapePositionA;
     var shapePositionB = bodiesOverlap_shapePositionB;
 
@@ -193,6 +194,11 @@ Narrowphase.prototype.bodiesOverlap = function(bodyA, bodyB){
         // All shapes of body j
         for(var l=0, Nshapesj=bodyB.shapes.length; l!==Nshapesj; l++){
             var shapeB = bodyB.shapes[l];
+
+            // Check collision groups and masks
+            if(checkCollisionMasks && !((shapeA.collisionGroup & shapeB.collisionMask) !== 0 && (shapeB.collisionGroup & shapeA.collisionMask) !== 0)){
+                return;
+            }
 
             bodyB.toWorldFrame(shapePositionB, shapeB.position);
 

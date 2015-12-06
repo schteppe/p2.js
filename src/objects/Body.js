@@ -1109,7 +1109,7 @@ Body.prototype.integrateToTimeOfImpact = function(dt){
         this.updateAABB();
 
         // check overlap
-        var overlaps = this.aabb.overlaps(hitBody.aabb) && this.world.narrowphase.bodiesOverlap(this, hitBody);
+        var overlaps = this.aabb.overlaps(hitBody.aabb) && this.world.narrowphase.bodiesOverlap(this, hitBody, true);
 
         if (overlaps) {
             // change max to search lower interval
