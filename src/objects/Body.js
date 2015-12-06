@@ -1066,17 +1066,17 @@ Body.prototype.integrateToTimeOfImpact = function(dt){
 
     var timeOfImpact = 1;
 
-    var hit;
+    var hitBody;
     var that = this;
     result.reset();
     ray.callback = function (result) {
         if(result.body === that){
             return;
         }
-        hit = result.body;
+        hitBody = result.body;
         result.getHitPoint(end, ray);
         vec2.sub(startToEnd, end, that.position);
-        timeOfImpact = vec2.length(startToEnd) / len;
+        timeOfImpact = vec2.distance(end, that.position) / len; // guess
         result.stop();
     };
     vec2.copy(ray.from, this.position);
@@ -1084,7 +1084,7 @@ Body.prototype.integrateToTimeOfImpact = function(dt){
     ray.update();
     this.world.raycast(result, ray);
 
-    if(!hit){
+    if(!hitBody){
         return false;
     }
 
@@ -1094,33 +1094,33 @@ Body.prototype.integrateToTimeOfImpact = function(dt){
     // Got a start and end point. Approximate time of impact using binary search
     var iter = 0;
     var tmin = 0;
-    var tmid = 0;
-    var tmax = timeOfImpact;
+    var tmid = timeOfImpact;
+    var tmax = 1;
     while (tmax >= tmin && iter < this.ccdIterations) {
         iter++;
 
         // calculate the midpoint
-        tmid = (tmax - tmin) / 2;
+        tmid = (tmax + tmin) / 2;
 
         // Move the body to that point
-        vec2.scale(integrate_velodt, startToEnd, timeOfImpact);
+        vec2.scale(integrate_velodt, startToEnd, tmid);
         vec2.add(this.position, rememberPosition, integrate_velodt);
-        this.angle = rememberAngle + startToEndAngle * timeOfImpact;
+        this.angle = rememberAngle + startToEndAngle * tmid;
         this.updateAABB();
 
         // check overlap
-        var overlaps = this.aabb.overlaps(hit.aabb) && this.world.narrowphase.bodiesOverlap(this, hit);
+        var overlaps = this.aabb.overlaps(hitBody.aabb) && this.world.narrowphase.bodiesOverlap(this, hitBody);
 
         if (overlaps) {
-            // change min to search upper interval
-            tmin = tmid;
-        } else {
             // change max to search lower interval
             tmax = tmid;
+        } else {
+            // change min to search upper interval
+            tmin = tmid;
         }
     }
 
-    timeOfImpact = tmid;
+    timeOfImpact = tmax; // Need to guarantee overlap to resolve collisions
 
     vec2.copy(this.position, rememberPosition);
     this.angle = rememberAngle;
