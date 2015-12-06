@@ -17,7 +17,7 @@ var AABB = require('../collision/AABB');
  * @param {number} [options.collisionMask=-1]
  * @param {number} [options.collisionGroup=-1]
  * @param {number} [options.mode=Ray.ANY]
- * @param {number} [options.callback]
+ * @param {Function} [options.callback]
  */
 function Ray(options){
     options = options || {};

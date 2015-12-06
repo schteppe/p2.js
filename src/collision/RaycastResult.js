@@ -115,6 +115,7 @@ RaycastResult.prototype.shouldStop = function(ray){
  * @param {Shape} shape
  * @param {Body} body
  * @param {number} fraction
+ * @param {number} faceIndex
  */
 RaycastResult.prototype.set = function(
 	normal,

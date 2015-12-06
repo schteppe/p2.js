@@ -158,3 +158,15 @@ Broadphase.canCollide = function(bodyA, bodyB){
 
 Broadphase.NAIVE = 1;
 Broadphase.SAP = 2;
+
+/**
+ * Returns all the bodies within an AABB.
+ * @method aabbQuery
+ * @param  {World} world
+ * @param  {AABB} aabb
+ * @param {array} result An array to store resulting bodies in.
+ * @return {array}
+ */
+Broadphase.prototype.aabbQuery = function(world, aabb, result){
+    // To be implemented in subclasses
+};
