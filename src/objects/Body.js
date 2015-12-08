@@ -1068,7 +1068,6 @@ Body.prototype.integrateToTimeOfImpact = function(dt){
 
     var hitBody;
     var that = this;
-    result.reset();
     ray.callback = function (result) {
         if(result.body === that){
             return;
@@ -1082,9 +1081,18 @@ Body.prototype.integrateToTimeOfImpact = function(dt){
     vec2.copy(ray.from, this.position);
     vec2.copy(ray.to, end);
     ray.update();
-    this.world.raycast(result, ray);
+    for(var i=0; i<this.shapes.length; i++){
+        var shape = this.shapes[i];
+        result.reset();
+        ray.collisionGroup = shape.collisionGroup;
+        ray.collisionMask = shape.collisionMask;
+        this.world.raycast(result, ray);
+        if(hitBody){
+            break;
+        }
+    }
 
-    if(!hitBody){
+    if(!hitBody || !timeOfImpact){
         return false;
     }
 
