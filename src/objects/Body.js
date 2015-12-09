@@ -1043,7 +1043,8 @@ Body.prototype.integrate = function(dt){
 
 var result = new RaycastResult();
 var ray = new Ray({
-    mode: Ray.ALL
+    mode: Ray.CLOSEST,
+    skipBackfaces: true
 });
 var direction = vec2.create();
 var end = vec2.create();
@@ -1067,17 +1068,6 @@ Body.prototype.integrateToTimeOfImpact = function(dt){
     var timeOfImpact = 1;
 
     var hitBody;
-    var that = this;
-    ray.callback = function (result) {
-        if(result.body === that){
-            return;
-        }
-        hitBody = result.body;
-        result.getHitPoint(end, ray);
-        vec2.sub(startToEnd, end, that.position);
-        timeOfImpact = vec2.distance(end, that.position) / len; // guess
-        result.stop();
-    };
     vec2.copy(ray.from, this.position);
     vec2.copy(ray.to, end);
     ray.update();
@@ -1087,6 +1077,12 @@ Body.prototype.integrateToTimeOfImpact = function(dt){
         ray.collisionGroup = shape.collisionGroup;
         ray.collisionMask = shape.collisionMask;
         this.world.raycast(result, ray);
+        hitBody = result.body;
+
+        if(hitBody === this){
+            hitBody = null;
+        }
+
         if(hitBody){
             break;
         }
@@ -1095,6 +1091,9 @@ Body.prototype.integrateToTimeOfImpact = function(dt){
     if(!hitBody || !timeOfImpact){
         return false;
     }
+    result.getHitPoint(end, ray);
+    vec2.sub(startToEnd, end, this.position);
+    timeOfImpact = vec2.distance(end, this.position) / len; // guess
 
     var rememberAngle = this.angle;
     vec2.copy(rememberPosition, this.position);

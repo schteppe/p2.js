@@ -1173,7 +1173,7 @@ function pointInConvex(worldPoint,convexShape,convexOffset,convexAngle){
         }
 
         // If we got a different sign of the distance vector, the point is out of the polygon
-        if(cross*lastCross <= 0){
+        if(cross*lastCross < 0){
             return false;
         }
         lastCross = cross;
@@ -1237,7 +1237,7 @@ Narrowphase.prototype.particleConvex = function(
 
     // Check if the particle is in the polygon at all
     if(!pointInConvex(particleOffset,convexShape,convexOffset,convexAngle)){
-        return 0;
+        return justTest ? false : 0;
     }
 
     if(justTest){
