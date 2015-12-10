@@ -1056,6 +1056,20 @@ Body.prototype.integrateToTimeOfImpact = function(dt){
         return false;
     }
 
+    // Ignore all the ignored body pairs
+    // This should probably be done somewhere else for optimization
+    var ignoreBodies = [];
+    var disabledPairs = this.world.disabledBodyCollisionPairs;
+    for(var i=0; i<disabledPairs.length; i+=2){
+        var bodyA = disabledPairs[i];
+        var bodyB = disabledPairs[i+1];
+        if(bodyA === this){
+            ignoreBodies.push(bodyB);
+        } else if(bodyB === this){
+            ignoreBodies.push(bodyA);
+        }
+    }
+
     vec2.normalize(direction, this.velocity);
 
     vec2.scale(end, this.velocity, dt);
@@ -1079,7 +1093,7 @@ Body.prototype.integrateToTimeOfImpact = function(dt){
         this.world.raycast(result, ray);
         hitBody = result.body;
 
-        if(hitBody === this){
+        if(hitBody === this || ignoreBodies.indexOf(hitBody) !== -1){
             hitBody = null;
         }
 
