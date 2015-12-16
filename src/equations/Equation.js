@@ -98,6 +98,10 @@ function Equation(bodyA, bodyB, minForce, maxForce){
      * @property {Boolean} enabled
      */
     this.enabled = true;
+
+    if(this._constructCallback){
+        this._constructCallback();
+    }
 }
 Equation.prototype.constructor = Equation;
 
