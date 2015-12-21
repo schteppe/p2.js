@@ -12,7 +12,7 @@ module.exports = {
 
         // Static via mass=0
         var body = new Body({
-            mass : 0,
+            mass : 0
         });
         test.equal(body.invMass,0);
         test.equal(body.type,Body.STATIC);
@@ -27,15 +27,19 @@ module.exports = {
             angle:Math.PI/2
         };
         body = new Body(o);
-        test.equal(vec2.distance(body.position, o.position),0);
-        test.equal(vec2.distance(body.velocity, o.velocity),0);
-        test.equal(vec2.distance(body.force,    o.force   ),0);
-        test.equal(body.angle,                  o.angle);
-        test.equal(body.angularVelocity,        o.angularVelocity);
-        test.equal(body.angularForce,           o.angularForce);
+        test.deepEqual(body.position, o.position);
+        test.deepEqual(body.interpolatedPosition, o.position);
+        test.deepEqual(body.previousPosition, o.position);
+        test.deepEqual(body.velocity, o.velocity);
+        test.deepEqual(body.force, o.force);
+        test.equal(body.angle, o.angle);
+        test.equal(body.previousAngle, o.angle);
+        test.equal(body.interpolatedAngle, o.angle);
+        test.equal(body.angularVelocity, o.angularVelocity);
+        test.equal(body.angularForce, o.angularForce);
 
         // id tick
-        test.equal(new Body().id+1, new Body().id);
+        test.notEqual(new Body().id, new Body().id);
 
         test.done();
     },

@@ -138,7 +138,7 @@ function Body(options){
      * @property position
      * @type {Array}
      */
-    this.position = vec2.fromValues(0,0);
+    this.position = vec2.create();
     if(options.position){
         vec2.copy(this.position, options.position);
     }
@@ -148,35 +148,21 @@ function Body(options){
      * @property interpolatedPosition
      * @type {Array}
      */
-    this.interpolatedPosition = vec2.fromValues(0,0);
-
-    /**
-     * The interpolated angle of the body. Use this for rendering.
-     * @property interpolatedAngle
-     * @type {Number}
-     */
-    this.interpolatedAngle = 0;
+    this.interpolatedPosition = vec2.clone(this.position);
 
     /**
      * The previous position of the body.
      * @property previousPosition
      * @type {Array}
      */
-    this.previousPosition = vec2.fromValues(0,0);
-
-    /**
-     * The previous angle of the body.
-     * @property previousAngle
-     * @type {Number}
-     */
-    this.previousAngle = 0;
+    this.previousPosition = vec2.clone(this.position);
 
     /**
      * The current velocity of the body.
      * @property velocity
      * @type {Array}
      */
-    this.velocity = vec2.fromValues(0,0);
+    this.velocity = vec2.create();
     if(options.velocity){
         vec2.copy(this.velocity, options.velocity);
     }
@@ -186,7 +172,7 @@ function Body(options){
      * @property vlambda
      * @type {Array}
      */
-    this.vlambda = vec2.fromValues(0,0);
+    this.vlambda = vec2.create();
 
     /**
      * Angular constraint velocity that was added to the body during last step.
@@ -211,6 +197,20 @@ function Body(options){
      *     }
      */
     this.angle = options.angle || 0;
+
+    /**
+     * The previous angle of the body.
+     * @property previousAngle
+     * @type {Number}
+     */
+    this.previousAngle = this.angle;
+
+    /**
+     * The interpolated angle of the body. Use this for rendering.
+     * @property interpolatedAngle
+     * @type {Number}
+     */
+    this.interpolatedAngle = this.angle;
 
     /**
      * The angular velocity of the body, in radians per second.
@@ -297,7 +297,7 @@ function Body(options){
      */
     this.type = Body.STATIC;
 
-    if(typeof(options.type) !== 'undefined'){
+    if(options.type !== undefined){
         this.type = options.type;
     } else if(!options.mass){
         this.type = Body.STATIC;
@@ -850,10 +850,10 @@ Body.prototype.fromPolygon = function(path,options){
     return true;
 };
 
-var adjustCenterOfMass_tmp1 = vec2.fromValues(0,0),
-    adjustCenterOfMass_tmp2 = vec2.fromValues(0,0),
-    adjustCenterOfMass_tmp3 = vec2.fromValues(0,0),
-    adjustCenterOfMass_tmp4 = vec2.fromValues(0,0);
+var adjustCenterOfMass_tmp1 = vec2.create(),
+    adjustCenterOfMass_tmp2 = vec2.create(),
+    adjustCenterOfMass_tmp3 = vec2.create(),
+    adjustCenterOfMass_tmp4 = vec2.create();
 
 /**
  * Moves the shape offsets so their center of mass becomes the body center of mass.
