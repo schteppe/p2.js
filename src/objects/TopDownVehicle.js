@@ -197,8 +197,9 @@ var relativePoint = vec2.create();
  * @method getSpeed
  */
 WheelConstraint.prototype.getSpeed = function(){
-    this.vehicle.chassisBody.vectorToWorldFrame(relativePoint, this.localForwardVector);
-    this.vehicle.chassisBody.getVelocityAtPoint(worldVelocity, relativePoint);
+    var body = this.vehicle.chassisBody;
+    body.vectorToWorldFrame(relativePoint, this.localForwardVector);
+    body.getVelocityAtPoint(worldVelocity, relativePoint);
     return vec2.dot(worldVelocity, relativePoint);
 };
 
@@ -208,25 +209,29 @@ var tmpVec = vec2.create();
  * @method update
  */
 WheelConstraint.prototype.update = function(){
+    var body = this.vehicle.chassisBody;
+    var forwardEquation = this.forwardEquation;
+    var sideEquation = this.sideEquation;
+    var steerValue = this.steerValue;
 
     // Directional
-    this.vehicle.chassisBody.vectorToWorldFrame(this.forwardEquation.t, this.localForwardVector);
-    vec2.rotate(this.sideEquation.t, this.localForwardVector, Math.PI / 2);
-    this.vehicle.chassisBody.vectorToWorldFrame(this.sideEquation.t, this.sideEquation.t);
+    body.vectorToWorldFrame(forwardEquation.t, this.localForwardVector);
+    vec2.rotate(sideEquation.t, this.localForwardVector, Math.PI / 2);
+    body.vectorToWorldFrame(sideEquation.t, sideEquation.t);
 
-    vec2.rotate(this.forwardEquation.t, this.forwardEquation.t, this.steerValue);
-    vec2.rotate(this.sideEquation.t, this.sideEquation.t, this.steerValue);
+    vec2.rotate(forwardEquation.t, forwardEquation.t, steerValue);
+    vec2.rotate(sideEquation.t, sideEquation.t, steerValue);
 
     // Attachment point
-    this.vehicle.chassisBody.toWorldFrame(this.forwardEquation.contactPointB, this.localPosition);
-    vec2.copy(this.sideEquation.contactPointB, this.forwardEquation.contactPointB);
+    body.toWorldFrame(forwardEquation.contactPointB, this.localPosition);
+    vec2.copy(sideEquation.contactPointB, forwardEquation.contactPointB);
 
-    this.vehicle.chassisBody.vectorToWorldFrame(this.forwardEquation.contactPointA, this.localPosition);
-    vec2.copy(this.sideEquation.contactPointA, this.forwardEquation.contactPointA);
+    body.vectorToWorldFrame(forwardEquation.contactPointA, this.localPosition);
+    vec2.copy(sideEquation.contactPointA, forwardEquation.contactPointA);
 
     // Add engine force
-    vec2.normalize(tmpVec, this.forwardEquation.t);
+    vec2.normalize(tmpVec, forwardEquation.t);
     vec2.scale(tmpVec, tmpVec, this.engineForce);
 
-    this.vehicle.chassisBody.applyForce(tmpVec, this.forwardEquation.contactPointA);
+    this.vehicle.chassisBody.applyForce(tmpVec, forwardEquation.contactPointA);
 };
