@@ -45,17 +45,37 @@ module.exports = {
     },
 
     addShape: function(test){
-        // STUB
+        var body = new Body();
+        var shape = new Circle({ radius: 1 });
+        body.addShape(shape);
+        test.deepEqual(body.shapes, [shape]);
         test.done();
     },
 
     adjustCenterOfMass: function(test){
-        // STUB
+        var body = new Body();
+        var shape = new Circle({ radius: 1 });
+        body.addShape(shape, [1, 0], 0);
+        body.adjustCenterOfMass();
+        test.deepEqual(body.position, vec2.fromValues(1,0));
+        test.deepEqual(body.shapes[0].position, vec2.fromValues(0,0));
         test.done();
     },
 
     applyDamping: function(test){
-        // STUB
+        var body = new Body({
+            mass: 1,
+            velocity: [1, 0],
+            angularVelocity: 1,
+            damping: 0.5,
+            angularDamping: 0.5
+        });
+
+        body.applyDamping(1);
+
+        test.deepEqual(body.velocity, [0.5, 0]);
+        test.deepEqual(body.angularVelocity, 0.5);
+
         test.done();
     },
 
@@ -256,12 +276,18 @@ module.exports = {
     },
 
     vectorToLocalFrame: function(test){
-        // STUB
+        var b = new Body({ angle: Math.PI, position: [1,1] });
+        var v = [1, 0];
+        b.vectorToLocalFrame(v, v);
+        test.ok(vec2.distance(v, [-1,0]) < 0.01);
         test.done();
     },
 
     vectorToWorldFrame: function(test){
-        // STUB
+        var b = new Body({ angle: Math.PI, position: [1,1] });
+        var v = [1, 0];
+        b.vectorToWorldFrame(v, v);
+        test.ok(vec2.distance(v, [-1,0]) < 0.01);
         test.done();
     },
 

@@ -28,7 +28,7 @@ function Shape(options){
      * Body-local position of the shape.
      * @property {Array} position
      */
-    this.position = vec2.fromValues(0,0);
+    this.position = vec2.create();
     if(options.position){
         vec2.copy(this.position, options.position);
     }
