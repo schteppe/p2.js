@@ -43,7 +43,7 @@ var p2 = module.exports = {
     Utils :                         require('./utils/Utils'),
     World :                         require('./world/World'),
     vec2 :                          require('./math/vec2'),
-    version :                       require('../package.json').version,
+    version :                       '0.7.1',
 };
 
 Object.defineProperty(p2, 'Rectangle', {
