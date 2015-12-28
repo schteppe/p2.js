@@ -426,10 +426,13 @@ Narrowphase.prototype.lineBox = function(
 };
 
 function setConvexToCapsuleShapeMiddle(convexShape, capsuleShape){
-    vec2.set(convexShape.vertices[0], -capsuleShape.length * 0.5, -capsuleShape.radius);
-    vec2.set(convexShape.vertices[1],  capsuleShape.length * 0.5, -capsuleShape.radius);
-    vec2.set(convexShape.vertices[2],  capsuleShape.length * 0.5,  capsuleShape.radius);
-    vec2.set(convexShape.vertices[3], -capsuleShape.length * 0.5,  capsuleShape.radius);
+    var capsuleRadius = capsuleShape.radius;
+    var halfCapsuleLength = capsuleShape.length * 0.5;
+    var verts = convexShape.vertices;
+    vec2.set(verts[0], -halfCapsuleLength, -capsuleRadius);
+    vec2.set(verts[1],  halfCapsuleLength, -capsuleRadius);
+    vec2.set(verts[2],  halfCapsuleLength,  capsuleRadius);
+    vec2.set(verts[3], -halfCapsuleLength,  capsuleRadius);
 }
 
 var convexCapsule_tempRect = new Box({ width: 1, height: 1 }),
@@ -1153,9 +1156,9 @@ function pointInConvex(worldPoint,convexShape,convexOffset,convexAngle){
 
     vec2.toLocalFrame(localPoint, worldPoint, convexOffset, convexAngle);
 
-    for(var i=0; i!==verts.length+1; i++){
-        var v0 = verts[i%verts.length],
-            v1 = verts[(i+1)%verts.length];
+    for(var i=0, numVerts=verts.length; i!==numVerts+1; i++){
+        var v0 = verts[i % numVerts],
+            v1 = verts[(i+1) % numVerts];
 
         sub(r0, v0, localPoint);
         sub(r1, v1, localPoint);
@@ -1240,11 +1243,12 @@ Narrowphase.prototype.particleConvex = function(
 
     // Check edges first
     var lastCross = null;
-    for(var i=0; i!==verts.length+1; i++){
-        var v0 = verts[i%verts.length],
-            v1 = verts[(i+1)%verts.length];
+    for(var i=0, numVerts=verts.length; i!==numVerts+1; i++){
+        var v0 = verts[i%numVerts],
+            v1 = verts[(i+1)%numVerts];
 
         // Transform vertices to world
+        // @todo transform point to local space instead
         vec2.rotate(worldVertex0, v0, convexAngle);
         vec2.rotate(worldVertex1, v1, convexAngle);
         add(worldVertex0, worldVertex0, convexOffset);
@@ -1405,6 +1409,8 @@ Narrowphase.prototype.planeConvex = function(
 
     for(var i=0; i!==convexShape.vertices.length; i++){
         var v = convexShape.vertices[i];
+
+        // @todo transform the plane to local convex space instead
         vec2.rotate(worldVertex, v, convexAngle);
         add(worldVertex, worldVertex, convexOffset);
 
@@ -2247,7 +2253,7 @@ Narrowphase.prototype.circleHeightfield = function( circleBody,circleShape,circl
         // Get points
         vec2.set(v0,     i*w, data[i]  );
         vec2.set(v1, (i+1)*w, data[i+1]);
-        vec2.add(v0,v0,hfPos);
+        vec2.add(v0,v0,hfPos); // @todo transform circle to local heightfield space instead
         vec2.add(v1,v1,hfPos);
 
         // Get normal
@@ -2404,7 +2410,9 @@ Narrowphase.prototype.convexHeightfield = function( convexBody,convexShape,conve
     var numContacts = 0;
 
     // Loop over all edges
-    // TODO: If possible, construct a convex from several data points (need o check if the points make a convex shape)
+    // @todo If possible, construct a convex from several data points (need o check if the points make a convex shape)
+    // @todo transform convex to local heightfield space.
+    // @todo bail out if the heightfield tile is not tall enough.
     for(var i=idxA; i<idxB; i++){
 
         // Get points
