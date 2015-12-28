@@ -106,7 +106,7 @@ function Convex(options){
      */
     this.boundingRadius = 0;
 
-    options.type = Shape.CONVEX;
+    options.type = options.type || Shape.CONVEX;
     Shape.call(this, options);
 
     this.updateBoundingRadius();
