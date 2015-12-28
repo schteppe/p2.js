@@ -65,8 +65,6 @@ Broadphase.prototype.setWorld = function(world){
  */
 Broadphase.prototype.getCollisionPairs = function(world){};
 
-var dist = vec2.create();
-
 /**
  * Check whether the bounding radius of two bodies overlap.
  * @method  boundingRadiusCheck
@@ -75,8 +73,7 @@ var dist = vec2.create();
  * @return {Boolean}
  */
 Broadphase.boundingRadiusCheck = function(bodyA, bodyB){
-    vec2.sub(dist, bodyA.position, bodyB.position);
-    var d2 = vec2.squaredLength(dist),
+    var d2 = vec2.squaredDistance(bodyA.position, bodyB.position),
         r = bodyA.boundingRadius + bodyB.boundingRadius;
     return d2 <= r*r;
 };
@@ -125,20 +122,22 @@ Broadphase.prototype.boundingVolumeCheck = function(bodyA, bodyB){
 Broadphase.canCollide = function(bodyA, bodyB){
     var KINEMATIC = Body.KINEMATIC;
     var STATIC = Body.STATIC;
+    var typeA = bodyA.type;
+    var typeB = bodyB.type;
 
     // Cannot collide static bodies
-    if(bodyA.type === STATIC && bodyB.type === STATIC){
+    if(typeA === STATIC && typeB === STATIC){
         return false;
     }
 
     // Cannot collide static vs kinematic bodies
-    if( (bodyA.type === KINEMATIC && bodyB.type === STATIC) ||
-        (bodyA.type === STATIC    && bodyB.type === KINEMATIC)){
+    if( (typeA === KINEMATIC && typeB === STATIC) ||
+        (typeA === STATIC    && typeB === KINEMATIC)){
         return false;
     }
 
     // Cannot collide kinematic vs kinematic
-    if(bodyA.type === KINEMATIC && bodyB.type === KINEMATIC){
+    if(typeA === KINEMATIC && typeB === KINEMATIC){
         return false;
     }
 
@@ -148,8 +147,8 @@ Broadphase.canCollide = function(bodyA, bodyB){
     }
 
     // Cannot collide if one is static and the other is sleeping
-    if( (bodyA.sleepState === Body.SLEEPING && bodyB.type === STATIC) ||
-        (bodyB.sleepState === Body.SLEEPING && bodyA.type === STATIC)){
+    if( (bodyA.sleepState === Body.SLEEPING && typeB === STATIC) ||
+        (bodyB.sleepState === Body.SLEEPING && typeA === STATIC)){
         return false;
     }
 
