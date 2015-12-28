@@ -85,7 +85,7 @@ function Convex(options){
      * @property centerOfMass
      * @type {Array}
      */
-    this.centerOfMass = vec2.fromValues(0,0);
+    this.centerOfMass = vec2.create();
 
     /**
      * Triangulated version of this convex. The structure is Array of 3-Arrays, and each subarray contains 3 integers, referencing the vertices.

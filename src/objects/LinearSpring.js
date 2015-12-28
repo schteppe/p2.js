@@ -33,14 +33,14 @@ function LinearSpring(bodyA,bodyB,options){
      * @property localAnchorA
      * @type {Array}
      */
-    this.localAnchorA = vec2.fromValues(0,0);
+    this.localAnchorA = vec2.create();
 
     /**
      * Anchor for bodyB in local bodyB coordinates.
      * @property localAnchorB
      * @type {Array}
      */
-    this.localAnchorB = vec2.fromValues(0,0);
+    this.localAnchorB = vec2.create();
 
     if(options.localAnchorA){ vec2.copy(this.localAnchorA, options.localAnchorA); }
     if(options.localAnchorB){ vec2.copy(this.localAnchorB, options.localAnchorB); }

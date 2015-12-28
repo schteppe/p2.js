@@ -20,24 +20,24 @@ module.exports = Narrowphase;
 // Temp things
 var yAxis = vec2.fromValues(0,1);
 
-var tmp1 = vec2.fromValues(0,0)
-,   tmp2 = vec2.fromValues(0,0)
-,   tmp3 = vec2.fromValues(0,0)
-,   tmp4 = vec2.fromValues(0,0)
-,   tmp5 = vec2.fromValues(0,0)
-,   tmp6 = vec2.fromValues(0,0)
-,   tmp7 = vec2.fromValues(0,0)
-,   tmp8 = vec2.fromValues(0,0)
-,   tmp9 = vec2.fromValues(0,0)
-,   tmp10 = vec2.fromValues(0,0)
-,   tmp11 = vec2.fromValues(0,0)
-,   tmp12 = vec2.fromValues(0,0)
-,   tmp13 = vec2.fromValues(0,0)
-,   tmp14 = vec2.fromValues(0,0)
-,   tmp15 = vec2.fromValues(0,0)
-,   tmp16 = vec2.fromValues(0,0)
-,   tmp17 = vec2.fromValues(0,0)
-,   tmp18 = vec2.fromValues(0,0)
+var tmp1 = vec2.create()
+,   tmp2 = vec2.create()
+,   tmp3 = vec2.create()
+,   tmp4 = vec2.create()
+,   tmp5 = vec2.create()
+,   tmp6 = vec2.create()
+,   tmp7 = vec2.create()
+,   tmp8 = vec2.create()
+,   tmp9 = vec2.create()
+,   tmp10 = vec2.create()
+,   tmp11 = vec2.create()
+,   tmp12 = vec2.create()
+,   tmp13 = vec2.create()
+,   tmp14 = vec2.create()
+,   tmp15 = vec2.create()
+,   tmp16 = vec2.create()
+,   tmp17 = vec2.create()
+,   tmp18 = vec2.create()
 ,   tmpArray = [];
 
 /**
@@ -1905,7 +1905,7 @@ Narrowphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
 };
 
 // .projectConvex is called by other functions, need local tmp vectors
-var pcoa_tmp1 = vec2.fromValues(0,0);
+var pcoa_tmp1 = vec2.create();
 
 /**
  * Project a Convex onto a world-oriented axis
@@ -1952,12 +1952,12 @@ Narrowphase.projectConvexOntoAxis = function(convexShape, convexOffset, convexAn
 };
 
 // .findSeparatingAxis is called by other functions, need local tmp vectors
-var fsa_tmp1 = vec2.fromValues(0,0)
-,   fsa_tmp2 = vec2.fromValues(0,0)
-,   fsa_tmp3 = vec2.fromValues(0,0)
-,   fsa_tmp4 = vec2.fromValues(0,0)
-,   fsa_tmp5 = vec2.fromValues(0,0)
-,   fsa_tmp6 = vec2.fromValues(0,0);
+var fsa_tmp1 = vec2.create()
+,   fsa_tmp2 = vec2.create()
+,   fsa_tmp3 = vec2.create()
+,   fsa_tmp4 = vec2.create()
+,   fsa_tmp5 = vec2.create()
+,   fsa_tmp6 = vec2.create();
 
 /**
  * Find a separating axis between the shapes, that maximizes the separating distance between them.
@@ -2125,9 +2125,9 @@ Narrowphase.findSeparatingAxis = function(c1,offset1,angle1,c2,offset2,angle2,se
 };
 
 // .getClosestEdge is called by other functions, need local tmp vectors
-var gce_tmp1 = vec2.fromValues(0,0)
-,   gce_tmp2 = vec2.fromValues(0,0)
-,   gce_tmp3 = vec2.fromValues(0,0);
+var gce_tmp1 = vec2.create()
+,   gce_tmp2 = vec2.create()
+,   gce_tmp3 = vec2.create();
 
 /**
  * Get the edge that has a normal closest to an axis.

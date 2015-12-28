@@ -471,10 +471,10 @@ var step_r = vec2.create(),
     step_fhMinv = vec2.create(),
     step_velodt = vec2.create(),
     step_mg = vec2.create(),
-    xiw = vec2.fromValues(0,0),
-    xjw = vec2.fromValues(0,0),
-    zero = vec2.fromValues(0,0),
-    interpvelo = vec2.fromValues(0,0);
+    xiw = vec2.create(),
+    xjw = vec2.create(),
+    zero = vec2.create(),
+    interpvelo = vec2.create();
 
 /**
  * Step the physics world forward in time.
@@ -1109,8 +1109,8 @@ World.prototype.clear = function(){
 };
 
 var hitTest_tmp1 = vec2.create(),
-    hitTest_zero = vec2.fromValues(0,0),
-    hitTest_tmp2 = vec2.fromValues(0,0);
+    hitTest_zero = vec2.create(),
+    hitTest_tmp2 = vec2.create();
 
 /**
  * Test if a world point overlaps bodies

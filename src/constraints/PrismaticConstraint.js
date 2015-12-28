@@ -30,9 +30,9 @@ function PrismaticConstraint(bodyA, bodyB, options){
     Constraint.call(this,bodyA,bodyB,Constraint.PRISMATIC,options);
 
     // Get anchors
-    var localAnchorA = vec2.fromValues(0,0),
+    var localAnchorA = vec2.create(),
         localAxisA = vec2.fromValues(1,0),
-        localAnchorB = vec2.fromValues(0,0);
+        localAnchorB = vec2.create();
     if(options.localAnchorA){ vec2.copy(localAnchorA, options.localAnchorA); }
     if(options.localAxisA){ vec2.copy(localAxisA,   options.localAxisA); }
     if(options.localAnchorB){ vec2.copy(localAnchorB, options.localAnchorB); }

@@ -160,7 +160,7 @@ function WheelConstraint(vehicle, options){
     /**
      * @property {Array} localPosition
      */
-    this.localPosition = vec2.fromValues(0, 0);
+    this.localPosition = vec2.create();
     if(options.localPosition){
         vec2.copy(this.localPosition, options.localPosition);
     }
