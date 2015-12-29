@@ -1,6 +1,10 @@
 module.exports = Equation;
 
 var vec2 = require('../math/vec2'),
+    add = vec2.add,
+    scale = vec2.scale,
+    multiply = vec2.multiply,
+    createVec2 = vec2.create,
     Utils = require('../utils/Utils'),
     Body = require('../objects/Body');
 
@@ -101,7 +105,6 @@ function Equation(bodyA, bodyB, minForce, maxForce){
 
     this.lambda = this.B = this.invC = 0;
 }
-Equation.prototype.constructor = Equation;
 
 /**
  * The default stiffness when creating a new Equation.
@@ -119,203 +122,206 @@ Equation.DEFAULT_STIFFNESS = 1e6;
  */
 Equation.DEFAULT_RELAXATION = 4;
 
-/**
- * Compute SPOOK parameters .a, .b and .epsilon according to the current parameters. See equations 9, 10 and 11 in the <a href="http://www8.cs.umu.se/kurser/5DV058/VT09/lectures/spooknotes.pdf">SPOOK notes</a>.
- * @method update
- */
-Equation.prototype.update = function(){
-    var k = this.stiffness,
-        d = this.relaxation,
-        h = this.timeStep;
+var addToWlambda_temp = createVec2(),
+    addToWlambda_Gi = createVec2(),
+    addToWlambda_Gj = createVec2(),
+    addToWlambda_ri = createVec2(),
+    addToWlambda_rj = createVec2(),
+    addToWlambda_Mdiag = createVec2(),
+    qi = createVec2(),
+    qj = createVec2(),
+    iMfi = createVec2(),
+    iMfj = createVec2();
 
-    this.a = 4.0 / (h * (1 + 4 * d));
-    this.b = (4.0 * d) / (1 + 4 * d);
-    this.epsilon = 4.0 / (h * h * k * (1 + 4 * d));
+Equation.prototype = {
 
-    this.needsUpdate = false;
-};
+    /**
+     * Compute SPOOK parameters .a, .b and .epsilon according to the current parameters. See equations 9, 10 and 11 in the <a href="http://www8.cs.umu.se/kurser/5DV058/VT09/lectures/spooknotes.pdf">SPOOK notes</a>.
+     * @method update
+     */
+    update: function(){
+        var k = this.stiffness,
+            d = this.relaxation,
+            h = this.timeStep;
 
-/**
- * Multiply a jacobian entry with corresponding positions or velocities
- * @method gmult
- * @return {Number}
- */
-Equation.prototype.gmult = function(G,vi,wi,vj,wj){
-    return  G[0] * vi[0] +
-            G[1] * vi[1] +
-            G[2] * wi +
-            G[3] * vj[0] +
-            G[4] * vj[1] +
-            G[5] * wj;
-};
+        this.a = 4.0 / (h * (1 + 4 * d));
+        this.b = (4.0 * d) / (1 + 4 * d);
+        this.epsilon = 4.0 / (h * h * k * (1 + 4 * d));
 
-/**
- * Computes the RHS of the SPOOK equation
- * @method computeB
- * @return {Number}
- */
-Equation.prototype.computeB = function(a,b,h){
-    var GW = this.computeGW();
-    var Gq = this.computeGq();
-    var GiMf = this.computeGiMf();
-    var B = - Gq * a - GW * b - GiMf * h;
-    return B;
-};
+        this.needsUpdate = false;
+    },
 
-/**
- * Computes G\*q, where q are the generalized body coordinates
- * @method computeGq
- * @return {Number}
- */
-var qi = vec2.create(),
-    qj = vec2.create();
-Equation.prototype.computeGq = function(){
-    var G = this.G,
-        bi = this.bodyA,
-        bj = this.bodyB,
-        xi = bi.position,
-        xj = bj.position,
-        ai = bi.angle,
-        aj = bj.angle;
+    /**
+     * Multiply a jacobian entry with corresponding positions or velocities
+     * @method gmult
+     * @return {Number}
+     */
+    gmult: function(G,vi,wi,vj,wj){
+        return  G[0] * vi[0] +
+                G[1] * vi[1] +
+                G[2] * wi +
+                G[3] * vj[0] +
+                G[4] * vj[1] +
+                G[5] * wj;
+    },
 
-    return this.gmult(G, qi, ai, qj, aj) + this.offset;
-};
+    /**
+     * Computes the RHS of the SPOOK equation
+     * @method computeB
+     * @return {Number}
+     */
+    computeB: function(a,b,h){
+        var GW = this.computeGW();
+        var Gq = this.computeGq();
+        var GiMf = this.computeGiMf();
+        var B = - Gq * a - GW * b - GiMf * h;
+        return B;
+    },
 
-/**
- * Computes G\*W, where W are the body velocities
- * @method computeGW
- * @return {Number}
- */
-Equation.prototype.computeGW = function(){
-    var G = this.G,
-        bi = this.bodyA,
-        bj = this.bodyB,
-        vi = bi.velocity,
-        vj = bj.velocity,
-        wi = bi.angularVelocity,
-        wj = bj.angularVelocity;
-    return this.gmult(G,vi,wi,vj,wj) + this.relativeVelocity;
-};
+    /**
+     * Computes G\*q, where q are the generalized body coordinates
+     * @method computeGq
+     * @return {Number}
+     */
+    computeGq: function(){
+        var G = this.G,
+            bi = this.bodyA,
+            bj = this.bodyB,
+            xi = bi.position,
+            xj = bj.position,
+            ai = bi.angle,
+            aj = bj.angle;
 
-/**
- * Computes G\*Wlambda, where W are the body velocities
- * @method computeGWlambda
- * @return {Number}
- */
-Equation.prototype.computeGWlambda = function(){
-    var G = this.G,
-        bi = this.bodyA,
-        bj = this.bodyB,
-        vi = bi.vlambda,
-        vj = bj.vlambda,
-        wi = bi.wlambda,
-        wj = bj.wlambda;
-    return this.gmult(G,vi,wi,vj,wj);
-};
+        return this.gmult(G, qi, ai, qj, aj) + this.offset;
+    },
 
-/**
- * Computes G\*inv(M)\*f, where M is the mass matrix with diagonal blocks for each body, and f are the forces on the bodies.
- * @method computeGiMf
- * @return {Number}
- */
-var iMfi = vec2.create(),
-    iMfj = vec2.create();
-Equation.prototype.computeGiMf = function(){
-    var bi = this.bodyA,
-        bj = this.bodyB,
-        fi = bi.force,
-        ti = bi.angularForce,
-        fj = bj.force,
-        tj = bj.angularForce,
-        invMassi = bi.invMassSolve,
-        invMassj = bj.invMassSolve,
-        invIi = bi.invInertiaSolve,
-        invIj = bj.invInertiaSolve,
-        G = this.G;
+    /**
+     * Computes G\*W, where W are the body velocities
+     * @method computeGW
+     * @return {Number}
+     */
+    computeGW: function(){
+        var G = this.G,
+            bi = this.bodyA,
+            bj = this.bodyB,
+            vi = bi.velocity,
+            vj = bj.velocity,
+            wi = bi.angularVelocity,
+            wj = bj.angularVelocity;
+        return this.gmult(G,vi,wi,vj,wj) + this.relativeVelocity;
+    },
 
-    vec2.scale(iMfi, fi, invMassi);
-    vec2.multiply(iMfi, bi.massMultiplier, iMfi);
-    vec2.scale(iMfj, fj,invMassj);
-    vec2.multiply(iMfj, bj.massMultiplier, iMfj);
+    /**
+     * Computes G\*Wlambda, where W are the body velocities
+     * @method computeGWlambda
+     * @return {Number}
+     */
+    computeGWlambda: function(){
+        var G = this.G,
+            bi = this.bodyA,
+            bj = this.bodyB,
+            vi = bi.vlambda,
+            vj = bj.vlambda,
+            wi = bi.wlambda,
+            wj = bj.wlambda;
+        return this.gmult(G,vi,wi,vj,wj);
+    },
 
-    return this.gmult(G,iMfi,ti*invIi,iMfj,tj*invIj);
-};
+    /**
+     * Computes G\*inv(M)\*f, where M is the mass matrix with diagonal blocks for each body, and f are the forces on the bodies.
+     * @method computeGiMf
+     * @return {Number}
+     */
+    computeGiMf: function(){
+        var bi = this.bodyA,
+            bj = this.bodyB,
+            fi = bi.force,
+            ti = bi.angularForce,
+            fj = bj.force,
+            tj = bj.angularForce,
+            invMassi = bi.invMassSolve,
+            invMassj = bj.invMassSolve,
+            invIi = bi.invInertiaSolve,
+            invIj = bj.invInertiaSolve,
+            G = this.G;
 
-/**
- * Computes G\*inv(M)\*G'
- * @method computeGiMGt
- * @return {Number}
- */
-Equation.prototype.computeGiMGt = function(){
-    var bi = this.bodyA,
-        bj = this.bodyB,
-        invMassi = bi.invMassSolve,
-        invMassj = bj.invMassSolve,
-        invIi = bi.invInertiaSolve,
-        invIj = bj.invInertiaSolve,
-        G = this.G;
+        scale(iMfi, fi, invMassi);
+        multiply(iMfi, bi.massMultiplier, iMfi);
+        scale(iMfj, fj,invMassj);
+        multiply(iMfj, bj.massMultiplier, iMfj);
 
-    return  G[0] * G[0] * invMassi * bi.massMultiplier[0] +
-            G[1] * G[1] * invMassi * bi.massMultiplier[1] +
-            G[2] * G[2] *    invIi +
-            G[3] * G[3] * invMassj * bj.massMultiplier[0] +
-            G[4] * G[4] * invMassj * bj.massMultiplier[1] +
-            G[5] * G[5] *    invIj;
-};
+        return this.gmult(G,iMfi,ti*invIi,iMfj,tj*invIj);
+    },
 
-var addToWlambda_temp = vec2.create(),
-    addToWlambda_Gi = vec2.create(),
-    addToWlambda_Gj = vec2.create(),
-    addToWlambda_ri = vec2.create(),
-    addToWlambda_rj = vec2.create(),
-    addToWlambda_Mdiag = vec2.create();
+    /**
+     * Computes G\*inv(M)\*G'
+     * @method computeGiMGt
+     * @return {Number}
+     */
+    computeGiMGt: function(){
+        var bi = this.bodyA,
+            bj = this.bodyB,
+            invMassi = bi.invMassSolve,
+            invMassj = bj.invMassSolve,
+            invIi = bi.invInertiaSolve,
+            invIj = bj.invInertiaSolve,
+            G = this.G;
 
-/**
- * Add constraint velocity to the bodies.
- * @method addToWlambda
- * @param {Number} deltalambda
- */
-Equation.prototype.addToWlambda = function(deltalambda){
-    var bi = this.bodyA,
-        bj = this.bodyB,
-        temp = addToWlambda_temp,
-        Gi = addToWlambda_Gi,
-        Gj = addToWlambda_Gj,
-        ri = addToWlambda_ri,
-        rj = addToWlambda_rj,
-        invMassi = bi.invMassSolve,
-        invMassj = bj.invMassSolve,
-        invIi = bi.invInertiaSolve,
-        invIj = bj.invInertiaSolve,
-        Mdiag = addToWlambda_Mdiag,
-        G = this.G;
+        return  G[0] * G[0] * invMassi * bi.massMultiplier[0] +
+                G[1] * G[1] * invMassi * bi.massMultiplier[1] +
+                G[2] * G[2] *    invIi +
+                G[3] * G[3] * invMassj * bj.massMultiplier[0] +
+                G[4] * G[4] * invMassj * bj.massMultiplier[1] +
+                G[5] * G[5] *    invIj;
+    },
 
-    Gi[0] = G[0];
-    Gi[1] = G[1];
-    Gj[0] = G[3];
-    Gj[1] = G[4];
+    /**
+     * Add constraint velocity to the bodies.
+     * @method addToWlambda
+     * @param {Number} deltalambda
+     */
+    addToWlambda: function(deltalambda){
+        var bi = this.bodyA,
+            bj = this.bodyB,
+            temp = addToWlambda_temp,
+            Gi = addToWlambda_Gi,
+            Gj = addToWlambda_Gj,
+            ri = addToWlambda_ri,
+            rj = addToWlambda_rj,
+            invMassi = bi.invMassSolve,
+            invMassj = bj.invMassSolve,
+            invIi = bi.invInertiaSolve,
+            invIj = bj.invInertiaSolve,
+            Mdiag = addToWlambda_Mdiag,
+            G = this.G;
 
-    // Add to linear velocity
-    vec2.scale(temp, Gi, invMassi*deltalambda);
-    vec2.multiply(temp, temp, bi.massMultiplier);
-    vec2.add( bi.vlambda, bi.vlambda, temp);
-    // This impulse is in the offset frame
-    // Also add contribution to angular
-    bi.wlambda += invIi * G[2] * deltalambda;
+        Gi[0] = G[0];
+        Gi[1] = G[1];
+        Gj[0] = G[3];
+        Gj[1] = G[4];
 
-    vec2.scale(temp, Gj, invMassj*deltalambda);
-    vec2.multiply(temp, temp, bj.massMultiplier);
-    vec2.add( bj.vlambda, bj.vlambda, temp);
-    bj.wlambda += invIj * G[5] * deltalambda;
-};
+        // Add to linear velocity
+        scale(temp, Gi, invMassi*deltalambda);
+        multiply(temp, temp, bi.massMultiplier);
+        add( bi.vlambda, bi.vlambda, temp);
+        // This impulse is in the offset frame
+        // Also add contribution to angular
+        bi.wlambda += invIi * G[2] * deltalambda;
 
-/**
- * Compute the denominator part of the SPOOK equation: C = G\*inv(M)\*G' + eps
- * @method computeInvC
- * @param  {Number} eps
- * @return {Number}
- */
-Equation.prototype.computeInvC = function(eps){
-    var invC = 1 / (this.computeGiMGt() + eps);
-    return invC;
+        scale(temp, Gj, invMassj*deltalambda);
+        multiply(temp, temp, bj.massMultiplier);
+        add( bj.vlambda, bj.vlambda, temp);
+        bj.wlambda += invIj * G[5] * deltalambda;
+    },
+
+    /**
+     * Compute the denominator part of the SPOOK equation: C = G\*inv(M)\*G' + eps
+     * @method computeInvC
+     * @param  {Number} eps
+     * @return {Number}
+     */
+    computeInvC: function(eps){
+        var invC = 1 / (this.computeGiMGt() + eps);
+        return invC;
+    }
 };
