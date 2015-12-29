@@ -22,7 +22,8 @@ exports.solve = function(test){
     });
     world.addConstraint(constraint);
     var solver = new GSSolver({
-        iterations: 10
+        iterations: 10,
+        tolerance: 0
     });
     solver.addEquations(constraint.equations);
     solver.solve(1/60, world);

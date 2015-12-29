@@ -98,6 +98,8 @@ function Equation(bodyA, bodyB, minForce, maxForce){
      * @property {Boolean} enabled
      */
     this.enabled = true;
+
+    this.lambda = this.B = this.invC = 0;
 }
 Equation.prototype.constructor = Equation;
 
@@ -156,7 +158,8 @@ Equation.prototype.computeB = function(a,b,h){
     var GW = this.computeGW();
     var Gq = this.computeGq();
     var GiMf = this.computeGiMf();
-    return - Gq * a - GW * b - GiMf*h;
+    var B = - Gq * a - GW * b - GiMf * h;
+    return B;
 };
 
 /**
@@ -293,20 +296,16 @@ Equation.prototype.addToWlambda = function(deltalambda){
     Gj[1] = G[4];
 
     // Add to linear velocity
-    // v_lambda += inv(M) * delta_lamba * G
     vec2.scale(temp, Gi, invMassi*deltalambda);
     vec2.multiply(temp, temp, bi.massMultiplier);
     vec2.add( bi.vlambda, bi.vlambda, temp);
     // This impulse is in the offset frame
     // Also add contribution to angular
-    //bi.wlambda -= vec2.crossLength(temp,ri);
     bi.wlambda += invIi * G[2] * deltalambda;
-
 
     vec2.scale(temp, Gj, invMassj*deltalambda);
     vec2.multiply(temp, temp, bj.massMultiplier);
     vec2.add( bj.vlambda, bj.vlambda, temp);
-    //bj.wlambda -= vec2.crossLength(temp,rj);
     bj.wlambda += invIj * G[5] * deltalambda;
 };
 
@@ -317,5 +316,6 @@ Equation.prototype.addToWlambda = function(deltalambda){
  * @return {Number}
  */
 Equation.prototype.computeInvC = function(eps){
-    return 1.0 / (this.computeGiMGt() + eps);
+    var invC = 1 / (this.computeGiMGt() + eps);
+    return invC;
 };
