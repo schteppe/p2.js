@@ -1,4 +1,5 @@
 var Shape = require('./Shape')
+,   shallowClone = require('../utils/Utils').shallowClone
 ,   vec2 = require('../math/vec2');
 
 module.exports = Line;
@@ -18,7 +19,7 @@ function Line(options){
         };
         console.warn('The Line constructor signature has changed. Please use the following format: new Line({ length: 1, ... })');
     }
-    options = options || {};
+    options = options ? shallowClone(options) : {};
 
     /**
      * Length of this line

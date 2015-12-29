@@ -1,5 +1,6 @@
 var vec2 = require('../math/vec2')
 ,   Shape = require('./Shape')
+,   shallowClone = require('../utils/Utils').shallowClone
 ,   Convex = require('./Convex');
 
 module.exports = Box;
@@ -48,10 +49,11 @@ function Box(options){
         vec2.fromValues(0, 1)
     ];
 
-    options.vertices = verts;
-    options.axes = axes;
-    options.type = Shape.BOX;
-    Convex.call(this, options);
+    var convexOptions = shallowClone(options);
+    convexOptions.vertices = verts;
+    convexOptions.axes = axes;
+    convexOptions.type = Shape.BOX;
+    Convex.call(this, convexOptions);
 }
 Box.prototype = new Convex();
 Box.prototype.constructor = Box;

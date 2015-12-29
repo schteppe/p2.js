@@ -1,5 +1,6 @@
 var Shape = require('./Shape')
-,   vec2 = require('../math/vec2');
+,   shallowClone = require('../utils/Utils').shallowClone
+,   copy = require('../math/vec2').copy;
 
 module.exports = Particle;
 
@@ -11,7 +12,7 @@ module.exports = Particle;
  * @extends Shape
  */
 function Particle(options){
-    options = options || {};
+    options = options ? shallowClone(options) : {};
 	options.type = Shape.PARTICLE;
     Shape.call(this, options);
 }
@@ -33,6 +34,6 @@ Particle.prototype.updateBoundingRadius = function(){
  * @param  {Number} angle
  */
 Particle.prototype.computeAABB = function(out, position, angle){
-    vec2.copy(out.lowerBound, position);
-    vec2.copy(out.upperBound, position);
+    copy(out.lowerBound, position);
+    copy(out.upperBound, position);
 };

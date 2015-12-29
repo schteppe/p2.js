@@ -1,5 +1,6 @@
 var Shape = require('./Shape')
-,    vec2 = require('../math/vec2');
+,    vec2 = require('../math/vec2')
+,    shallowClone = require('../utils/Utils').shallowClone;
 
 module.exports = Circle;
 
@@ -22,7 +23,7 @@ function Circle(options){
         };
         console.warn('The Circle constructor signature has changed. Please use the following format: new Circle({ radius: 1 })');
     }
-    options = options || {};
+    options = options ? shallowClone(options) : {};
 
     /**
      * The radius of the circle.

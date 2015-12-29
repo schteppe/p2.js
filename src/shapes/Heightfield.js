@@ -1,5 +1,6 @@
 var Shape = require('./Shape')
 ,    vec2 = require('../math/vec2')
+,    shallowClone = require('../utils/Utils').shallowClone
 ,    Utils = require('../utils/Utils');
 
 module.exports = Heightfield;
@@ -48,7 +49,7 @@ function Heightfield(options){
 
         console.warn('The Heightfield constructor signature has changed. Please use the following format: new Heightfield({ heights: [...], ... })');
     }
-    options = options || {};
+    options = options ? shallowClone(options) : {};
 
     /**
      * An array of numbers, or height values, that are spread out along the x axis.

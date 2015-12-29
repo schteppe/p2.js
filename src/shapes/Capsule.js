@@ -1,4 +1,5 @@
 var Shape = require('./Shape')
+,   shallowClone = require('../utils/Utils').shallowClone
 ,   vec2 = require('../math/vec2');
 
 module.exports = Capsule;
@@ -26,7 +27,7 @@ function Capsule(options){
         };
         console.warn('The Capsule constructor signature has changed. Please use the following format: new Capsule({ radius: 1, length: 1 })');
     }
-    options = options || {};
+    options = options ? shallowClone(options) : {};
 
     /**
      * The distance between the end points.

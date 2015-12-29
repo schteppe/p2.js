@@ -1,6 +1,7 @@
 var Shape = require('./Shape')
 ,   vec2 = require('../math/vec2')
 ,   polyk = require('../math/polyk')
+,   shallowClone = require('../utils/Utils').shallowClone
 ,   decomp = require('poly-decomp');
 
 module.exports = Convex;
@@ -27,7 +28,7 @@ function Convex(options){
         };
         console.warn('The Convex constructor signature has changed. Please use the following format: new Convex({ vertices: [...], ... })');
     }
-    options = options || {};
+    options = options ? shallowClone(options) : {};
 
     /**
      * Vertices defined in the local frame.

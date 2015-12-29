@@ -12,7 +12,7 @@ module.exports = Plane;
  * @param {object} [options] (Note that this options object will be passed on to the {{#crossLink "Shape"}}{{/crossLink}} constructor.)
  */
 function Plane(options){
-    options = options || {};
+    options = options ? Utils.shallowClone(options) : {};
     options.type = Shape.PLANE;
     Shape.call(this, options);
 }
