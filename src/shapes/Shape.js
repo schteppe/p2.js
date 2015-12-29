@@ -197,48 +197,51 @@ Shape.CAPSULE =     64;
  */
 Shape.HEIGHTFIELD = 128;
 
-/**
- * Should return the moment of inertia around the Z axis of the body given the total mass. See <a href="http://en.wikipedia.org/wiki/List_of_moments_of_inertia">Wikipedia's list of moments of inertia</a>.
- * @method computeMomentOfInertia
- * @param  {Number} mass
- * @return {Number} If the inertia is infinity or if the object simply isn't possible to rotate, return 0.
- */
-Shape.prototype.computeMomentOfInertia = function(mass){};
+Shape.prototype = {
 
-/**
- * Returns the bounding circle radius of this shape.
- * @method updateBoundingRadius
- * @return {Number}
- */
-Shape.prototype.updateBoundingRadius = function(){};
+    /**
+     * Should return the moment of inertia around the Z axis of the body given the total mass. See <a href="http://en.wikipedia.org/wiki/List_of_moments_of_inertia">Wikipedia's list of moments of inertia</a>.
+     * @method computeMomentOfInertia
+     * @param  {Number} mass
+     * @return {Number} If the inertia is infinity or if the object simply isn't possible to rotate, return 0.
+     */
+    computeMomentOfInertia: function(mass){},
 
-/**
- * Update the .area property of the shape.
- * @method updateArea
- */
-Shape.prototype.updateArea = function(){
-    // To be implemented in all subclasses
-};
+    /**
+     * Returns the bounding circle radius of this shape.
+     * @method updateBoundingRadius
+     * @return {Number}
+     */
+    updateBoundingRadius: function(){},
 
-/**
- * Compute the world axis-aligned bounding box (AABB) of this shape.
- * @method computeAABB
- * @param  {AABB} out The resulting AABB.
- * @param  {Array} position World position of the shape.
- * @param  {Number} angle World angle of the shape.
- */
-Shape.prototype.computeAABB = function(out, position, angle){
-    // To be implemented in each subclass
-};
+    /**
+     * Update the .area property of the shape.
+     * @method updateArea
+     */
+    updateArea: function(){
+        // To be implemented in all subclasses
+    },
 
-/**
- * Perform raycasting on this shape.
- * @method raycast
- * @param  {RayResult} result Where to store the resulting data.
- * @param  {Ray} ray The Ray that you want to use for raycasting.
- * @param  {array} position World position of the shape (the .position property will be ignored).
- * @param  {number} angle World angle of the shape (the .angle property will be ignored).
- */
-Shape.prototype.raycast = function(result, ray, position, angle){
-    // To be implemented in each subclass
+    /**
+     * Compute the world axis-aligned bounding box (AABB) of this shape.
+     * @method computeAABB
+     * @param  {AABB} out The resulting AABB.
+     * @param  {Array} position World position of the shape.
+     * @param  {Number} angle World angle of the shape.
+     */
+    computeAABB: function(out, position, angle){
+        // To be implemented in each subclass
+    },
+
+    /**
+     * Perform raycasting on this shape.
+     * @method raycast
+     * @param  {RayResult} result Where to store the resulting data.
+     * @param  {Ray} ray The Ray that you want to use for raycasting.
+     * @param  {array} position World position of the shape (the .position property will be ignored).
+     * @param  {number} angle World angle of the shape (the .angle property will be ignored).
+     */
+    raycast: function(result, ray, position, angle){
+        // To be implemented in each subclass
+    }
 };
