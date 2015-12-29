@@ -119,6 +119,7 @@ var relVel = vec2.create();
 
 /**
  * Get the relative velocity along the normal vector.
+ * @method getVelocityAlongNormal
  * @return {number}
  */
 ContactEquation.prototype.getVelocityAlongNormal = function(){
