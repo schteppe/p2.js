@@ -75,6 +75,18 @@ Utils.extend = function(a,b){
 };
 
 /**
+ * Shallow clone an object. Returns a new object instance with the same properties as the input instance.
+ * @static
+ * @method shallowClone
+ * @param  {object} obj
+ */
+Utils.shallowClone = function(obj){
+    var newObj = {};
+    Utils.extend(newObj, obj);
+    return newObj;
+};
+
+/**
  * Extend an options object with default values.
  * @static
  * @method defaults
