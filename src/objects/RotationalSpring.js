@@ -28,7 +28,7 @@ function RotationalSpring(bodyA, bodyB, options){
      * @property restAngle
      * @type {number}
      */
-    this.restAngle = typeof(options.restAngle) === "number" ? options.restAngle : bodyB.angle - bodyA.angle;
+    this.restAngle = options.restAngle !== undefined ? options.restAngle : bodyB.angle - bodyA.angle;
 }
 RotationalSpring.prototype = new Spring();
 RotationalSpring.prototype.constructor = RotationalSpring;
