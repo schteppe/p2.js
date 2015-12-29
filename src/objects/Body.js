@@ -789,7 +789,10 @@ Body.prototype.fromPolygon = function(path,options){
     }
 
     var p = new decomp.Polygon();
-    p.vertices = path;
+    p.vertices = path.slice(0);
+    for(var i=0; i<p.vertices.length; i++){
+        p.vertices[i] = vec2.clone(p.vertices[i]);
+    }
 
     // Make it counter-clockwise
     p.makeCCW();
@@ -806,11 +809,9 @@ Body.prototype.fromPolygon = function(path,options){
     }
 
     // Save this path for later
-    this.concavePath = p.vertices.slice(0);
-    for(var i=0; i<this.concavePath.length; i++){
-        var v = [0,0];
-        vec2.copy(v,this.concavePath[i]);
-        this.concavePath[i] = v;
+    var concavePath = this.concavePath = p.vertices.slice(0);
+    for(var i=0; i<concavePath.length; i++){
+        concavePath[i] = vec2.clone(concavePath[i]);
     }
 
     // Slow or fast decomp?
