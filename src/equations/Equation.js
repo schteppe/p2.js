@@ -5,8 +5,7 @@ var vec2 = require('../math/vec2'),
     scale = vec2.scale,
     multiply = vec2.multiply,
     createVec2 = vec2.create,
-    Utils = require('../utils/Utils'),
-    Body = require('../objects/Body');
+    Utils = require('../utils/Utils');
 
 /**
  * Base class for constraint equations.
@@ -125,9 +124,6 @@ Equation.DEFAULT_RELAXATION = 4;
 var addToWlambda_temp = createVec2(),
     addToWlambda_Gi = createVec2(),
     addToWlambda_Gj = createVec2(),
-    addToWlambda_ri = createVec2(),
-    addToWlambda_rj = createVec2(),
-    addToWlambda_Mdiag = createVec2(),
     qi = createVec2(),
     qj = createVec2(),
     iMfi = createVec2(),
@@ -187,8 +183,6 @@ Equation.prototype = {
         var G = this.G,
             bi = this.bodyA,
             bj = this.bodyB,
-            xi = bi.position,
-            xj = bj.position,
             ai = bi.angle,
             aj = bj.angle;
 
@@ -286,13 +280,10 @@ Equation.prototype = {
             temp = addToWlambda_temp,
             Gi = addToWlambda_Gi,
             Gj = addToWlambda_Gj,
-            ri = addToWlambda_ri,
-            rj = addToWlambda_rj,
             invMassi = bi.invMassSolve,
             invMassj = bj.invMassSolve,
             invIi = bi.invInertiaSolve,
             invIj = bj.invInertiaSolve,
-            Mdiag = addToWlambda_Mdiag,
             G = this.G;
 
         Gi[0] = G[0];

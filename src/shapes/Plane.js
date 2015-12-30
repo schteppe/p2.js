@@ -23,7 +23,7 @@ Plane.prototype.constructor = Plane;
  * Compute moment of inertia
  * @method computeMomentOfInertia
  */
-Plane.prototype.computeMomentOfInertia = function(mass){
+Plane.prototype.computeMomentOfInertia = function(/*mass*/){
     return 0; // Plane is infinite. The inertia should therefore be infinty but by convention we set 0 here
 };
 
@@ -87,8 +87,6 @@ Plane.prototype.updateArea = function(){
 };
 
 var intersectPlane_planePointToFrom = vec2.create();
-var intersectPlane_dir_scaled_with_t = vec2.create();
-var intersectPlane_hitPoint = vec2.create();
 var intersectPlane_normal = vec2.create();
 var intersectPlane_len = vec2.create();
 
@@ -104,8 +102,6 @@ Plane.prototype.raycast = function(result, ray, position, angle){
     var to = ray.to;
     var direction = ray.direction;
     var planePointToFrom = intersectPlane_planePointToFrom;
-    var dir_scaled_with_t = intersectPlane_dir_scaled_with_t;
-    var hitPoint = intersectPlane_hitPoint;
     var normal = intersectPlane_normal;
     var len = intersectPlane_len;
 

@@ -188,7 +188,6 @@ DistanceConstraint.prototype.update = function(){
     var normal = this.equations[0],
         bodyA = this.bodyA,
         bodyB = this.bodyB,
-        distance = this.distance,
         xi = bodyA.position,
         xj = bodyB.position,
         normalEquation = this.equations[0],

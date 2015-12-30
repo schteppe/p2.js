@@ -70,7 +70,7 @@ Circle.prototype.updateArea = function(){
  * @param  {Array}  position
  * @param  {Number} angle
  */
-Circle.prototype.computeAABB = function(out, position, angle){
+Circle.prototype.computeAABB = function(out, position/*, angle*/){
     var r = this.radius;
     vec2.set(out.upperBound,  r,  r);
     vec2.set(out.lowerBound, -r, -r);
@@ -90,7 +90,7 @@ var Ray_intersectSphere_normal = vec2.create();
  * @param  {array} position
  * @param  {number} angle
  */
-Circle.prototype.raycast = function(result, ray, position, angle){
+Circle.prototype.raycast = function(result, ray, position/*, angle*/){
     var from = ray.from,
         to = ray.to,
         r = this.radius;

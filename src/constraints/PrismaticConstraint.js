@@ -180,7 +180,6 @@ function PrismaticConstraint(bodyA, bodyB, options){
 
     var that = this;
     var motorEquation = this.motorEquation;
-    var old = motorEquation.computeGW;
     motorEquation.computeGq = function(){ return 0; };
     motorEquation.computeGW = function(){
         var G = this.G,

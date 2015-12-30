@@ -8,17 +8,13 @@ var vec2 = require('../math/vec2')
 ,   scale = vec2.scale
 ,   squaredLength = vec2.squaredLength
 ,   createVec2 = vec2.create
-,   Utils = require('../utils/Utils')
 ,   ContactEquationPool = require('../utils/ContactEquationPool')
 ,   FrictionEquationPool = require('../utils/FrictionEquationPool')
 ,   TupleDictionary = require('../utils/TupleDictionary')
 ,   Equation = require('../equations/Equation')
-,   ContactEquation = require('../equations/ContactEquation')
-,   FrictionEquation = require('../equations/FrictionEquation')
 ,   Circle = require('../shapes/Circle')
 ,   Convex = require('../shapes/Convex')
 ,   Shape = require('../shapes/Shape')
-,   Body = require('../objects/Body')
 ,   Box = require('../shapes/Box');
 
 module.exports = Narrowphase;
@@ -337,7 +333,6 @@ Narrowphase.prototype.createFrictionFromAverage = function(numContacts){
     var c = this.contactEquations[this.contactEquations.length - 1];
     var eq = this.createFrictionEquation(c.bodyA, c.bodyB, c.shapeA, c.shapeB);
     var bodyA = c.bodyA;
-    var bodyB = c.bodyB;
     vec2.set(eq.contactPointA, 0, 0);
     vec2.set(eq.contactPointB, 0, 0);
     vec2.set(eq.t, 0, 0);
@@ -1014,16 +1009,9 @@ Narrowphase.prototype.circleConvex = function(
         worldEdge = tmp3,
         worldEdgeUnit = tmp4,
         worldNormal = tmp5,
-        centerDist = tmp6,
-        convexToCircle = tmp7,
-        orthoDist = tmp8,
-        projectedPoint = tmp9,
         dist = tmp10,
         worldVertex = tmp11,
 
-        closestEdge = -1,
-        closestEdgeDistance = null,
-        closestEdgeOrthoDist = tmp12,
         closestEdgeProjectedPoint = tmp13,
         candidate = tmp14,
         candidateDist = tmp15,
@@ -1031,8 +1019,6 @@ Narrowphase.prototype.circleConvex = function(
 
         found = false,
         minCandidateDistance = Number.MAX_VALUE;
-
-    var numReported = 0;
 
     // New algorithm:
     // 1. Check so center of circle is not inside the polygon. If it is, this wont work...
@@ -1219,22 +1205,11 @@ Narrowphase.prototype.particleConvex = function(
         worldTangent = tmp5,
         centerDist = tmp6,
         convexToparticle = tmp7,
-        orthoDist = tmp8,
-        projectedPoint = tmp9,
-        dist = tmp10,
-        worldVertex = tmp11,
-        closestEdge = -1,
-        closestEdgeDistance = null,
-        closestEdgeOrthoDist = tmp12,
+        //dist = tmp10,
         closestEdgeProjectedPoint = tmp13,
-        r0 = tmp14, // vector from particle to vertex0
-        r1 = tmp15,
-        localPoint = tmp16,
         candidateDist = tmp17,
         minEdgeNormal = tmp18,
-        minCandidateDistance = Number.MAX_VALUE;
-
-    var numReported = 0,
+        minCandidateDistance = Number.MAX_VALUE,
         found = false,
         verts = convexShape.vertices;
 
@@ -1248,7 +1223,6 @@ Narrowphase.prototype.particleConvex = function(
     }
 
     // Check edges first
-    var lastCross = null;
     for(var i=0, numVerts=verts.length; i!==numVerts+1; i++){
         var v0 = verts[i%numVerts],
             v1 = verts[(i+1)%numVerts];
@@ -1268,8 +1242,8 @@ Narrowphase.prototype.particleConvex = function(
         vec2.rotate90cw(worldTangent, worldEdgeUnit);
 
         // Check distance from the infinite line (spanned by the edge) to the particle
-        sub(dist, particleOffset, worldVertex0);
-        var d = dot(dist, worldTangent);
+        //sub(dist, particleOffset, worldVertex0);
+        //var d = dot(dist, worldTangent);
         sub(centerDist, worldVertex0, convexOffset);
 
         sub(convexToparticle, particleOffset, convexOffset);
@@ -1596,8 +1570,7 @@ Narrowphase.prototype.circleParticle = function(
 
 var planeCapsule_tmpCircle = new Circle({ radius: 1 }),
     planeCapsule_tmp1 = createVec2(),
-    planeCapsule_tmp2 = createVec2(),
-    planeCapsule_tmp3 = createVec2();
+    planeCapsule_tmp2 = createVec2();
 
 /**
  * @method planeCapsule
@@ -1625,8 +1598,7 @@ Narrowphase.prototype.planeCapsule = function(
 ){
     var end1 = planeCapsule_tmp1,
         end2 = planeCapsule_tmp2,
-        circle = planeCapsule_tmpCircle,
-        dst = planeCapsule_tmp3;
+        circle = planeCapsule_tmpCircle;
 
     // Compute world end positions
     vec2.set(end1, -capsuleShape.length/2, 0);
@@ -1686,7 +1658,6 @@ Narrowphase.prototype.circlePlane = function(   bi,si,xi,ai, bj,sj,xj,aj, justTe
         circleShape = si,
         circleOffset = xi, // Offset from body center, rotated!
         planeBody = bj,
-        shapeB = sj,
         planeOffset = xj,
         planeAngle = aj;
 
@@ -1760,7 +1731,6 @@ Narrowphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
         worldPoint0 = tmp3,
         worldPoint1 = tmp4,
         worldEdge = tmp5,
-        projected = tmp6,
         penetrationVec = tmp7,
         dist = tmp8,
         worldNormal = tmp9,
@@ -2420,7 +2390,6 @@ Narrowphase.prototype.convexHeightfield = function( convexBody,convexShape,conve
         return justTest ? false : 0;
     }
 
-    var found = false;
     var numContacts = 0;
 
     // Loop over all edges

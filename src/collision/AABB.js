@@ -1,5 +1,4 @@
-var vec2 = require('../math/vec2')
-,   Utils = require('../utils/Utils');
+var vec2 = require('../math/vec2');
 
 module.exports = AABB;
 
@@ -166,7 +165,6 @@ AABB.prototype.containsPoint = function(point){
  * @return {number} -1 if no hit, a number between 0 and 1 if hit.
  */
 AABB.prototype.overlapsRay = function(ray){
-    var t = 0;
 
     // ray.direction is unit direction vector of ray
     var dirFracX = 1 / ray.direction[0];

@@ -80,11 +80,6 @@ Box.prototype.updateBoundingRadius = function(){
     this.boundingRadius = Math.sqrt(w*w + h*h) / 2;
 };
 
-var corner1 = vec2.create(),
-    corner2 = vec2.create(),
-    corner3 = vec2.create(),
-    corner4 = vec2.create();
-
 /**
  * @method computeAABB
  * @param  {AABB}   out      The resulting AABB.

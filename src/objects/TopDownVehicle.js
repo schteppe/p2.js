@@ -1,5 +1,4 @@
 var vec2 = require('../math/vec2');
-var Utils = require('../utils/Utils');
 var Constraint = require('../constraints/Constraint');
 var FrictionEquation = require('../equations/FrictionEquation');
 var Body = require('../objects/Body');

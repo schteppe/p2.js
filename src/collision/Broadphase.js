@@ -63,7 +63,7 @@ Broadphase.prototype.setWorld = function(world){
  * @param  {World} world The world to search in.
  * @return {Array} An array of the bodies, ordered in pairs. Example: A result of [a,b,c,d] means that the potential pairs are: (a,b), (c,d).
  */
-Broadphase.prototype.getCollisionPairs = function(world){};
+Broadphase.prototype.getCollisionPairs = function(/*world*/){};
 
 /**
  * Check whether the bounding radius of two bodies overlap.
@@ -166,6 +166,6 @@ Broadphase.SAP = 2;
  * @param {array} result An array to store resulting bodies in.
  * @return {array}
  */
-Broadphase.prototype.aabbQuery = function(world, aabb, result){
+Broadphase.prototype.aabbQuery = function(/*world, aabb, result*/){
     // To be implemented in subclasses
 };

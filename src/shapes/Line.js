@@ -57,7 +57,6 @@ Line.prototype.computeAABB = function(out, position, angle){
     out.setFromPoints(points,position,angle,0);
 };
 
-var raycast_hitPoint = vec2.create();
 var raycast_normal = vec2.create();
 var raycast_l0 = vec2.create();
 var raycast_l1 = vec2.create();

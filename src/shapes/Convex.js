@@ -1,8 +1,7 @@
 var Shape = require('./Shape')
 ,   vec2 = require('../math/vec2')
 ,   polyk = require('../math/polyk')
-,   shallowClone = require('../utils/Utils').shallowClone
-,   decomp = require('poly-decomp');
+,   shallowClone = require('../utils/Utils').shallowClone;
 
 module.exports = Convex;
 
@@ -208,11 +207,7 @@ var updateCenterOfMass_centroid = vec2.create(),
     updateCenterOfMass_centroid_times_mass = vec2.create(),
     updateCenterOfMass_a = vec2.create(),
     updateCenterOfMass_b = vec2.create(),
-    updateCenterOfMass_c = vec2.create(),
-    updateCenterOfMass_ac = vec2.create(),
-    updateCenterOfMass_ca = vec2.create(),
-    updateCenterOfMass_cb = vec2.create(),
-    updateCenterOfMass_n = vec2.create();
+    updateCenterOfMass_c = vec2.create();
 
 /**
  * Update the .centerOfMass property.
@@ -223,13 +218,9 @@ Convex.prototype.updateCenterOfMass = function(){
         verts = this.vertices,
         cm = this.centerOfMass,
         centroid = updateCenterOfMass_centroid,
-        n = updateCenterOfMass_n,
         a = updateCenterOfMass_a,
         b = updateCenterOfMass_b,
         c = updateCenterOfMass_c,
-        ac = updateCenterOfMass_ac,
-        ca = updateCenterOfMass_ca,
-        cb = updateCenterOfMass_cb,
         centroid_times_mass = updateCenterOfMass_centroid_times_mass;
 
     vec2.set(cm,0,0);

@@ -102,7 +102,7 @@ SAPBroadphase.prototype.sortList = function(){
  * @param  {World} world
  * @return {Array}
  */
-SAPBroadphase.prototype.getCollisionPairs = function(world){
+SAPBroadphase.prototype.getCollisionPairs = function(/*world*/){
     var bodies = this.axisList,
         result = this.result,
         axisIndex = this.axisIndex;
@@ -150,20 +150,14 @@ SAPBroadphase.prototype.getCollisionPairs = function(world){
  * @param  {AABB} aabb
  * @param {array} result An array to store resulting bodies in.
  * @return {array}
+ * @todo since the list is sorted, optimization can be done
  */
 SAPBroadphase.prototype.aabbQuery = function(world, aabb, result){
     result = result || [];
 
     this.sortList();
 
-    var axisIndex = this.axisIndex;
-    var axis = 'x';
-    if(axisIndex === 1){ axis = 'y'; }
-    if(axisIndex === 2){ axis = 'z'; }
-
     var axisList = this.axisList;
-    var lower = aabb.lowerBound[axis];
-    var upper = aabb.upperBound[axis];
     for(var i = 0; i < axisList.length; i++){
         var b = axisList[i];
 

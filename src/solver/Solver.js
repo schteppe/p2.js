@@ -1,5 +1,4 @@
-var Utils = require('../utils/Utils')
-,   EventEmitter = require('../events/EventEmitter');
+var EventEmitter = require('../events/EventEmitter');
 
 module.exports = Solver;
 
@@ -40,7 +39,7 @@ Solver.prototype.constructor = Solver;
  * @param  {Number} dt
  * @param  {World} world
  */
-Solver.prototype.solve = function(dt,world){
+Solver.prototype.solve = function(/*dt,world*/){
     throw new Error("Solver.solve should be implemented by subclasses!");
 };
 

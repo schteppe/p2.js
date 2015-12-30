@@ -1,4 +1,3 @@
-var vec2 = require('../math/vec2');
 var Utils = require('../utils/Utils');
 
 module.exports = Spring;

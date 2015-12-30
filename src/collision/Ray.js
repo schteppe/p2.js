@@ -1,9 +1,6 @@
 module.exports = Ray;
 
 var vec2 = require('../math/vec2');
-var RaycastResult = require('../collision/RaycastResult');
-var Shape = require('../shapes/Shape');
-var AABB = require('../collision/AABB');
 
 /**
  * A line with a start and end point that is used to intersect shapes. For an example, see {{#crossLink "World/raycast:method"}}World.raycast{{/crossLink}}
@@ -68,7 +65,7 @@ function Ray(options){
      * Current, user-provided result callback. Will be used if mode is Ray.ALL.
      * @property {Function} callback
      */
-    this.callback = options.callback || function(result){};
+    this.callback = options.callback || function(/*result*/){};
 
     /**
      * @readOnly
@@ -228,8 +225,6 @@ Ray.prototype.getAABB = function(result){
     );
 };
 
-var hitPointWorld = vec2.create();
-
 /**
  * @method reportIntersection
  * @private
@@ -239,8 +234,6 @@ var hitPointWorld = vec2.create();
  * @return {boolean} True if the intersections should continue
  */
 Ray.prototype.reportIntersection = function(result, fraction, normal, faceIndex){
-    var from = this.from;
-    var to = this.to;
     var shape = this._currentShape;
     var body = this._currentBody;
 

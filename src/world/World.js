@@ -1,34 +1,20 @@
 var  GSSolver = require('../solver/GSSolver')
-,    Solver = require('../solver/Solver')
-,    Ray = require('../collision/Ray')
 ,    vec2 = require('../math/vec2')
 ,    Circle = require('../shapes/Circle')
 ,    Convex = require('../shapes/Convex')
-,    Line = require('../shapes/Line')
 ,    Plane = require('../shapes/Plane')
 ,    Capsule = require('../shapes/Capsule')
 ,    Particle = require('../shapes/Particle')
 ,    EventEmitter = require('../events/EventEmitter')
 ,    Body = require('../objects/Body')
-,    Shape = require('../shapes/Shape')
-,    LinearSpring = require('../objects/LinearSpring')
 ,    Material = require('../material/Material')
 ,    ContactMaterial = require('../material/ContactMaterial')
-,    DistanceConstraint = require('../constraints/DistanceConstraint')
-,    Constraint = require('../constraints/Constraint')
-,    LockConstraint = require('../constraints/LockConstraint')
-,    RevoluteConstraint = require('../constraints/RevoluteConstraint')
-,    PrismaticConstraint = require('../constraints/PrismaticConstraint')
-,    GearConstraint = require('../constraints/GearConstraint')
-,    pkg = require('../../package.json')
-,    Broadphase = require('../collision/Broadphase')
 ,    AABB = require('../collision/AABB')
 ,    SAPBroadphase = require('../collision/SAPBroadphase')
 ,    Narrowphase = require('../collision/Narrowphase')
 ,    Utils = require('../utils/Utils')
 ,    OverlapKeeper = require('../utils/OverlapKeeper')
-,    IslandManager = require('./IslandManager')
-,    RotationalSpring = require('../objects/RotationalSpring');
+,    IslandManager = require('./IslandManager');
 
 module.exports = World;
 
@@ -464,17 +450,9 @@ World.prototype.removeConstraint = function(constraint){
     }
 };
 
-var step_r = vec2.create(),
-    step_runit = vec2.create(),
-    step_u = vec2.create(),
-    step_f = vec2.create(),
-    step_fhMinv = vec2.create(),
-    step_velodt = vec2.create(),
-    step_mg = vec2.create(),
+var step_mg = vec2.create(),
     xiw = vec2.create(),
-    xjw = vec2.create(),
-    zero = vec2.create(),
-    interpvelo = vec2.create();
+    xjw = vec2.create();
 
 /**
  * Step the physics world forward in time.
@@ -566,8 +544,7 @@ var endOverlaps = [];
 World.prototype.internalStep = function(dt){
     this.stepping = true;
 
-    var that = this,
-        Nsprings = this.springs.length,
+    var Nsprings = this.springs.length,
         springs = this.springs,
         bodies = this.bodies,
         g = this.gravity,
@@ -576,13 +553,8 @@ World.prototype.internalStep = function(dt){
         broadphase = this.broadphase,
         np = this.narrowphase,
         constraints = this.constraints,
-        t0, t1,
-        fhMinv = step_fhMinv,
-        velodt = step_velodt,
         mg = step_mg,
-        scale = vec2.scale,
         add = vec2.add,
-        rotate = vec2.rotate,
         islandManager = this.islandManager;
 
     this.overlapKeeper.tick();
@@ -1109,7 +1081,6 @@ World.prototype.clear = function(){
 };
 
 var hitTest_tmp1 = vec2.create(),
-    hitTest_zero = vec2.create(),
     hitTest_tmp2 = vec2.create();
 
 /**
@@ -1132,7 +1103,6 @@ World.prototype.hitTest = function(worldPoint,bodies,precision){
         px = worldPoint,
         pa = 0,
         x = hitTest_tmp1,
-        zero = hitTest_zero,
         tmp = hitTest_tmp2;
     pb.addShape(ps);
 

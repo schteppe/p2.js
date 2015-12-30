@@ -23,6 +23,7 @@
     "strict": false,
     "trailing" : true,
     "undef": true,
+    "unused": true,
     "indent": 4,
     "shadow" : true,
     "laxcomma": true,

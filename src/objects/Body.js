@@ -641,8 +641,6 @@ Body.prototype.updateMassProperties = function(){
     }
 };
 
-var Body_applyForce_r = vec2.create();
-
 /**
  * Apply force to a point relative to the center of mass of the body. This could for example be a point on the RigidBody surface. Applying force this way will add to Body.force and Body.angularForce. If relativePoint is zero, the force will be applied directly on the center of mass, and the torque produced will be zero.
  * @method applyForce
@@ -851,8 +849,7 @@ Body.prototype.fromPolygon = function(path,options){
     return true;
 };
 
-var adjustCenterOfMass_tmp1 = vec2.create(),
-    adjustCenterOfMass_tmp2 = vec2.create(),
+var adjustCenterOfMass_tmp2 = vec2.create(),
     adjustCenterOfMass_tmp3 = vec2.create(),
     adjustCenterOfMass_tmp4 = vec2.create();
 
@@ -971,8 +968,7 @@ Body.prototype.sleepTick = function(time, dontSleep, dt){
 
     this.wantsToSleep = false;
 
-    var sleepState = this.sleepState,
-        speedSquared = vec2.squaredLength(this.velocity) + Math.pow(this.angularVelocity,2),
+    var speedSquared = vec2.squaredLength(this.velocity) + Math.pow(this.angularVelocity,2),
         speedLimitSquared = Math.pow(this.sleepSpeedLimit,2);
 
     // Add to idle time

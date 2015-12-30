@@ -1,4 +1,3 @@
-var vec2 = require('../math/vec2');
 var Spring = require('./Spring');
 
 module.exports = RotationalSpring;

@@ -1,8 +1,6 @@
 var Constraint = require('./Constraint')
-,   Equation = require('../equations/Equation')
 ,   AngleLockEquation = require('../equations/AngleLockEquation')
-,   Utils = require('../utils/Utils')
-,   vec2 = require('../math/vec2');
+,   Utils = require('../utils/Utils');
 
 module.exports = GearConstraint;
 
@@ -89,6 +87,6 @@ GearConstraint.prototype.setMaxTorque = function(torque){
  * @method getMaxTorque
  * @return {Number}
  */
-GearConstraint.prototype.getMaxTorque = function(torque){
+GearConstraint.prototype.getMaxTorque = function(){
     return this.equations[0].maxForce;
 };

@@ -1,7 +1,4 @@
-var vec2 = require('../math/vec2')
-,   Island = require('./Island')
-,   IslandNode = require('./IslandNode')
-,   IslandNodePool = require('./../utils/IslandNodePool')
+var IslandNodePool = require('./../utils/IslandNodePool')
 ,   IslandPool = require('./../utils/IslandPool')
 ,   Body = require('../objects/Body');
 
@@ -15,7 +12,7 @@ module.exports = IslandManager;
  * @param {Object} [options]
  * @extends Solver
  */
-function IslandManager(options){
+function IslandManager(/*options*/){
 
     /**
      * @property nodePool

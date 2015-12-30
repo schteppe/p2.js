@@ -205,7 +205,7 @@ Shape.prototype = {
      * @param  {Number} mass
      * @return {Number} If the inertia is infinity or if the object simply isn't possible to rotate, return 0.
      */
-    computeMomentOfInertia: function(mass){},
+    computeMomentOfInertia: function(/*mass*/){},
 
     /**
      * Returns the bounding circle radius of this shape.
@@ -229,7 +229,7 @@ Shape.prototype = {
      * @param  {Array} position World position of the shape.
      * @param  {Number} angle World angle of the shape.
      */
-    computeAABB: function(out, position, angle){
+    computeAABB: function(/*out, position, angle*/){
         // To be implemented in each subclass
     },
 
@@ -241,7 +241,7 @@ Shape.prototype = {
      * @param  {array} position World position of the shape (the .position property will be ignored).
      * @param  {number} angle World angle of the shape (the .angle property will be ignored).
      */
-    raycast: function(result, ray, position, angle){
+    raycast: function(/*result, ray, position, angle*/){
         // To be implemented in each subclass
     }
 };

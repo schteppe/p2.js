@@ -120,7 +120,6 @@ var intersectCapsule_unit_y = vec2.fromValues(0,1);
 Capsule.prototype.raycast = function(result, ray, position, angle){
     var from = ray.from;
     var to = ray.to;
-    var direction = ray.direction;
 
     var hitPointWorld = intersectCapsule_hitPointWorld;
     var normal = intersectCapsule_normal;

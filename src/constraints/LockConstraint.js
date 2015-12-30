@@ -30,8 +30,6 @@ function LockConstraint(bodyA, bodyB, options){
 
     var maxForce = ( typeof(options.maxForce)==="undefined" ? Number.MAX_VALUE : options.maxForce );
 
-    var localAngleB = options.localAngleB || 0;
-
     // Use 3 equations:
     // gx =   (xj - xi - l) * xhat = 0
     // gy =   (xj - xi - l) * yhat = 0
