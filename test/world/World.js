@@ -127,8 +127,8 @@ exports.integrateBody = function(test){
 // TODO test other aspects of removeBody
 exports.removeBody = {
     "removes relevant pairs from disabledBodyCollisionPairs": function(test){
-        var a = new Body(),
-            b = new Body(),
+        var a = new Body({id: 'Body a'}),
+            b = new Body({id: 'Body b'}),
             world = new World();
         world.addBody(a);
         world.addBody(b);
@@ -137,7 +137,9 @@ exports.removeBody = {
 
         world.removeBody(a);
 
-        test.deepEqual(world.disabledBodyCollisionPairs, [b, b]);
+        test.equal(world.disabledBodyCollisionPairs.length, 2);
+        test.equal(world.disabledBodyCollisionPairs[0].id, b.id);
+        test.equal(world.disabledBodyCollisionPairs[1].id, b.id);
         test.done();
     }
 };
