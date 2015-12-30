@@ -1408,25 +1408,33 @@ Narrowphase.prototype.planeConvex = function(
 ){
     var worldVertex = tmp1,
         worldNormal = tmp2,
-        dist = tmp3;
+        dist = tmp3,
+        localPlaneOffset = tmp4,
+        localPlaneNormal = tmp5,
+        localDist = tmp6;
 
     var numReported = 0;
     rotate(worldNormal, yAxis, planeAngle);
 
-    for(var i=0; i!==convexShape.vertices.length; i++){
-        var v = convexShape.vertices[i];
+    // Get convex-local plane offset and normal
+    vec2.vectorToLocalFrame(localPlaneNormal, worldNormal, convexAngle);
+    vec2.toLocalFrame(localPlaneOffset, planeOffset, convexOffset, convexAngle);
 
-        // @todo transform the plane to local convex space instead
-        rotate(worldVertex, v, convexAngle);
-        add(worldVertex, worldVertex, convexOffset);
+    var vertices = convexShape.vertices;
+    for(var i=0, numVerts=vertices.length; i!==numVerts; i++){
+        var v = vertices[i];
 
-        sub(dist, worldVertex, planeOffset);
+        sub(localDist, v, localPlaneOffset);
 
-        if(dot(dist,worldNormal) <= 0){
+        if(dot(localDist,localPlaneNormal) <= 0){
 
             if(justTest){
                 return true;
             }
+
+            rotate(worldVertex, v, convexAngle);
+            add(worldVertex, worldVertex, convexOffset);
+            sub(dist, worldVertex, planeOffset);
 
             // Found vertex
             numReported++;
