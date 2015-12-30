@@ -129,17 +129,20 @@ exports.removeBody = {
     "removes relevant pairs from disabledBodyCollisionPairs": function(test){
         var a = new Body({id: 'Body a'}),
             b = new Body({id: 'Body b'}),
+            c = new Body({id: 'Body c'}),
             world = new World();
         world.addBody(a);
         world.addBody(b);
-        world.disableBodyCollision(a, a);
-        world.disableBodyCollision(b, b);
+        world.addBody(c);
+        world.disableBodyCollision(a, b);
+        world.disableBodyCollision(b, a);
+        world.disableBodyCollision(c, c);
 
         world.removeBody(a);
 
         test.equal(world.disabledBodyCollisionPairs.length, 2);
-        test.equal(world.disabledBodyCollisionPairs[0].id, b.id);
-        test.equal(world.disabledBodyCollisionPairs[1].id, b.id);
+        test.equal(world.disabledBodyCollisionPairs[0].id, c.id);
+        test.equal(world.disabledBodyCollisionPairs[1].id, c.id);
         test.done();
     }
 };
