@@ -124,9 +124,22 @@ exports.integrateBody = function(test){
     test.done();
 };
 
-exports.removeBody = function(test){
-    // STUB
-    test.done();
+// TODO test other aspects of removeBody
+exports.removeBody = {
+    "removes relevant pairs from disabledBodyCollisionPairs": function(test){
+        var a = new Body(),
+            b = new Body(),
+            world = new World();
+        world.addBody(a);
+        world.addBody(b);
+        world.disableBodyCollision(a, a);
+        world.disableBodyCollision(b, b);
+
+        world.removeBody(a);
+
+        test.deepEqual(world.disabledBodyCollisionPairs, [b, b]);
+        test.done();
+    }
 };
 
 exports.removeConstraint = function(test){
