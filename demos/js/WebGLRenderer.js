@@ -468,29 +468,65 @@ WebGLRenderer.prototype.drawCapsule = function(g, x, y, angle, len, radius, colo
     color = typeof(color)==="undefined" ? 0x000000 : color;
     g.lineStyle(lineWidth, color, 1);
 
+    var vec2 = p2.vec2;
+
     // Draw circles at ends
     var c = Math.cos(angle);
     var s = Math.sin(angle);
+    var hl = len / 2;
     g.beginFill(fillColor, isSleeping ? this.sleepOpacity : 1.0);
-    g.drawCircle(-len/2*c + x, -len/2*s + y, radius);
-    g.drawCircle( len/2*c + x,  len/2*s + y, radius);
+    var localPos = vec2.fromValues(x, y);
+    var p0 = vec2.fromValues(-hl, 0);
+    var p1 = vec2.fromValues(hl, 0);
+    vec2.rotate(p0, p0, angle);
+    vec2.rotate(p1, p1, angle);
+    vec2.add(p0, p0, localPos);
+    vec2.add(p1, p1, localPos);
+    g.drawCircle(p0[0], p0[1], radius);
+    g.drawCircle(p1[0], p1[1], radius);
     g.endFill();
 
     // Draw rectangle
+    var pp2 = vec2.create();
+    var p3 = vec2.create();
+    vec2.set(p0, -hl, radius);
+    vec2.set(p1, hl, radius);
+    vec2.set(pp2, hl, -radius);
+    vec2.set(p3, -hl, -radius);
+
+    vec2.rotate(p0, p0, angle);
+    vec2.rotate(p1, p1, angle);
+    vec2.rotate(pp2, pp2, angle);
+    vec2.rotate(p3, p3, angle);
+
+    vec2.add(p0, p0, localPos);
+    vec2.add(p1, p1, localPos);
+    vec2.add(pp2, pp2, localPos);
+    vec2.add(p3, p3, localPos);
+
     g.lineStyle(lineWidth, color, 0);
     g.beginFill(fillColor, isSleeping ? this.sleepOpacity : 1.0);
-    g.moveTo(-len/2*c + radius*s + x, -len/2*s + radius*c + y);
-    g.lineTo( len/2*c + radius*s + x,  len/2*s + radius*c + y);
-    g.lineTo( len/2*c - radius*s + x,  len/2*s - radius*c + y);
-    g.lineTo(-len/2*c - radius*s + x, -len/2*s - radius*c + y);
+    g.moveTo(p0[0], p0[1]);
+    g.lineTo(p1[0], p1[1]);
+    g.lineTo(pp2[0], pp2[1]);
+    g.lineTo(p3[0], p3[1]);
+    // g.lineTo( hl*c - radius*s + x,  hl*s - radius*c + y);
+    // g.lineTo(-hl*c - radius*s + x, -hl*s - radius*c + y);
     g.endFill();
 
     // Draw lines in between
-    g.lineStyle(lineWidth, color, 1);
-    g.moveTo(-len/2*c + radius*s + x, -len/2*s + radius*c + y);
-    g.lineTo( len/2*c + radius*s + x,  len/2*s + radius*c + y);
-    g.moveTo(-len/2*c - radius*s + x, -len/2*s - radius*c + y);
-    g.lineTo( len/2*c - radius*s + x,  len/2*s - radius*c + y);
+    for(var i=0; i<2; i++){
+        g.lineStyle(lineWidth, color, 1);
+        var sign = (i===0?1:-1);
+        vec2.set(p0, -hl, sign*radius);
+        vec2.set(p1, hl, sign*radius);
+        vec2.rotate(p0, p0, angle);
+        vec2.rotate(p1, p1, angle);
+        vec2.add(p0, p0, localPos);
+        vec2.add(p1, p1, localPos);
+        g.moveTo(p0[0], p0[1]);
+        g.lineTo(p1[0], p1[1]);
+    }
 
 };
 
@@ -757,7 +793,6 @@ WebGLRenderer.prototype.drawRenderable = function(obj, graphics, color, lineColo
     graphics.drawnSleeping = false;
     graphics.drawnColor = color;
     graphics.drawnLineColor = lineColor;
-
     if(obj instanceof p2.Body && obj.shapes.length){
 
         var isSleeping = (obj.sleepState === p2.Body.SLEEPING);
