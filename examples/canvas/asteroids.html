@@ -76,7 +76,7 @@
       var keyLeft, keyRight, keyUp, keyDown, keyShoot, lastShootTime=0;
 
       init();
-      animate();
+      requestAnimationFrame(animate);
 
       function init(){
 
@@ -97,7 +97,7 @@
 
         // Init p2.js
         world = new p2.World({
-          gravity : [0,0],
+          gravity : [0,0]
         });
 
         // Add ship physics
@@ -109,6 +109,13 @@
         shipShape.collisionMask = ASTEROID;
         world.addBody(shipBody);
 
+        world.on('postStep', function(){
+          // Thrust: add some force in the ship direction
+          if(keyUp){
+            shipBody.applyForceLocal([0,2]);
+          }
+        })
+
         // Init asteroid shapes
         addAsteroids();
 
@@ -118,28 +125,25 @@
       }
 
       // Animation loop
-      function animate(){
+      function animate(time){
         requestAnimationFrame(animate);
 
-        updatePhysics();
+        updatePhysics(time);
 
         // Render scene
         render();
       }
 
-      function updatePhysics(){
-
+      var lastTime;
+      var maxSubSteps = 5; // Max physics ticks per render frame
+      var fixedDeltaTime = 1 / 30; // Physics "tick" delta time
+      function updatePhysics(time){
         allowShipCollision = true;
 
         // Set velocities
         if(keyLeft)       shipBody.angularVelocity =  shipTurnSpeed;
         else if(keyRight) shipBody.angularVelocity = -shipTurnSpeed;
         else              shipBody.angularVelocity =  0;
-
-        // Thrust: add some force in the ship direction
-        if(keyUp){
-          shipBody.applyForceLocal([0,2]);
-        }
 
         // Shoot
         if(keyShoot && !hideShip && world.time - lastShootTime > shipReloadTime){
@@ -196,8 +200,15 @@
         // Warp the ship
         warp(shipBody);
 
+        // Get the elapsed time since last frame, in seconds
+        var deltaTime = lastTime ? (time - lastTime) / 1000 : 0;
+        lastTime = time;
+
+        // Make sure the time delta is not too big (can happen if user switches browser tab)
+        deltaTime = Math.min(1 / 10, deltaTime);
+
         // Move physics bodies forward in time
-        world.step(1/60);
+        world.step(fixedDeltaTime, deltaTime, maxSubSteps);
       }
 
       function turnOffDamping(body){
@@ -211,6 +222,8 @@
         if(p[1] >  spaceHeight/2) p[1] = -spaceHeight/2;
         if(p[0] < -spaceWidth /2) p[0] =  spaceWidth/2;
         if(p[1] < -spaceHeight/2) p[1] =  spaceHeight/2;
+        body.previousPosition[0] = p[0];
+        body.previousPosition[1] = p[1];
       }
 
       function render(){
@@ -236,12 +249,12 @@
 
       function drawShip(){
         if(!hideShip){
-            var x = shipBody.position[0],
-                y = shipBody.position[1],
+            var x = shipBody.interpolatedPosition[0],
+                y = shipBody.interpolatedPosition[1],
                 radius = shipShape.radius;
             ctx.save();
             ctx.translate(x,y);         // Translate to the ship center
-            ctx.rotate(shipBody.angle); // Rotate to ship orientation
+            ctx.rotate(shipBody.interpolatedAngle); // Rotate to ship orientation
             ctx.moveTo(-radius*0.6,-radius);
             ctx.lineTo(0,radius);
             ctx.lineTo( radius*0.6,-radius);
@@ -255,12 +268,12 @@
       function drawAsteroids(){
         for(var i=0; i!==asteroids.length; i++){
           var a = asteroids[i],
-              x = a.position[0],
-              y = a.position[1],
+              x = a.interpolatedPosition[0],
+              y = a.interpolatedPosition[1],
               radius = a.shapes[0].radius;
           ctx.save();
           ctx.translate(x,y);  // Translate to the center
-          ctx.rotate(a.angle);
+          ctx.rotate(a.interpolatedAngle);
 
           ctx.beginPath();
 
@@ -280,8 +293,8 @@
       function drawBullets(){
         for(var i=0; i!==bulletBodies.length; i++){
           var bulletBody=bulletBodies[i],
-              x = bulletBody.position[0],
-              y = bulletBody.position[1];
+              x = bulletBody.interpolatedPosition[0],
+              y = bulletBody.interpolatedPosition[1];
           ctx.beginPath();
           ctx.arc(x,y,bulletRadius,0,2*Math.PI);
           ctx.fill();
@@ -392,17 +405,17 @@
 
       // Catch impacts in the world
       // Todo: check if several bullets hit the same asteroid in the same time step
-      world.on("impact",function(evt){
+      world.on("beginContact",function(evt){
         var bodyA = evt.bodyA,
             bodyB = evt.bodyB;
 
-        if(!hideShip && allowShipCollision && (bodyA.id == shipBody.id || bodyB.id == shipBody.id)){
+        if(!hideShip && allowShipCollision && (bodyA === shipBody || bodyB === shipBody)){
+
           // Ship collided with something
           allowShipCollision = false;
 
-          var s = bodyA.shapes[0].collisionGroup == SHIP ? bodyA : bodyB,
-              otherBody = bodyB==s ? bodyA : bodyB;
-          if(otherBody.shapes[0].collisionGroup == ASTEROID){
+          var otherBody = (bodyA === shipBody ? bodyB : bodyA);
+          if(asteroids.indexOf(otherBody) !== -1){
             lives--;
             updateLives();
 
@@ -438,12 +451,13 @@
             }
           }
 
-        } else if(bodyA.shapes[0].collisionGroup == BULLET || bodyB.shapes[0].collisionGroup == BULLET){
-          // Bullet collided with something
-          var bulletBody = bodyA.shapes[0].collisionGroup == BULLET ? bodyA : bodyB,
-              otherBody = bodyB==bulletBody ? bodyA : bodyB;
+        } else if(bulletBodies.indexOf(bodyA) !== -1 || bulletBodies.indexOf(bodyB) !== -1){
 
-          if(otherBody.shapes[0].collisionGroup == ASTEROID){
+          // Bullet collided with something
+          var bulletBody = (bulletBodies.indexOf(bodyA) !== -1 ? bodyA : bodyB),
+              otherBody = (bodyB === bulletBody ? bodyA : bodyB);
+
+          if(asteroids.indexOf(otherBody) !== -1){
             explode(otherBody,bulletBody);
           }
         }
@@ -468,7 +482,7 @@
           if(asteroidBody.level < 4){
             var angleDisturb = Math.PI/2 * Math.random();
             for(var i=0; i<4; i++){
-              var angle = Math.PI/2*i+ angleDisturb;
+              var angle = Math.PI/2 * i + angleDisturb;
               var shape = createAsteroidShape(asteroidBody.level);
               var r = asteroidBody.shapes[0].radius - shape.radius;
               var subAsteroidBody = new p2.Body({
