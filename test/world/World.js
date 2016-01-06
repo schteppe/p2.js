@@ -124,9 +124,27 @@ exports.integrateBody = function(test){
     test.done();
 };
 
-exports.removeBody = function(test){
-    // STUB
-    test.done();
+// TODO test other aspects of removeBody
+exports.removeBody = {
+    "removes relevant pairs from disabledBodyCollisionPairs": function(test){
+        var body1 = new Body({id: 1}),
+            body2 = new Body({id: 2}),
+            body3 = new Body({id: 3}),
+            world = new World();
+        world.addBody(body1);
+        world.addBody(body2);
+        world.addBody(body3);
+        world.disableBodyCollision(body1, body2);
+        world.disableBodyCollision(body2, body1);
+        world.disableBodyCollision(body3, body3);
+
+        world.removeBody(body1);
+
+        test.equal(world.disabledBodyCollisionPairs.length, 2);
+        test.equal(world.disabledBodyCollisionPairs[0].id, body3.id);
+        test.equal(world.disabledBodyCollisionPairs[1].id, body3.id);
+        test.done();
+    }
 };
 
 exports.removeConstraint = function(test){
