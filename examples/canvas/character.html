@@ -162,7 +162,7 @@
             s = body.shapes[0];
         ctx.save();
         ctx.translate(x, y);     // Translate to the center of the box
-        ctx.rotate(body.angle);  // Rotate to the box body frame
+        ctx.rotate(body.interpolatedAngle);  // Rotate to the box body frame
         ctx.fillRect(-s.width/2, -s.height/2, s.width, s.height);
         ctx.restore();
       }
@@ -220,7 +220,8 @@
       function animate(time){
         requestAnimationFrame(animate);
 
-        var dt = lastTime ? time / 1000 - lastTime : 0;
+        var dt = lastTime ? (time - lastTime) / 1000 : 0;
+        dt = Math.min(1 / 10, dt);
 
         // Move physics bodies forward in time
         world.step(timeStep, dt, maxSubSteps);
@@ -228,10 +229,9 @@
         // Render scene
         render();
 
-        lastTime = time / 1000;
+        lastTime = time;
       }
 
-      var yAxis = p2.vec2.fromValues(0,1);
       function checkIfCanJump(){
         for(var i=0; i<world.narrowphase.contactEquations.length; i++){
           var c = world.narrowphase.contactEquations[i];
