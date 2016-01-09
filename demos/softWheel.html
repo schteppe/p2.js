@@ -14,7 +14,10 @@
 
         var N = 15, // Number of capsules in a wheel
             r = 1, // Radius of the wheel
-            thickness = 0.18; // Thickness of the wheel capsules
+            thickness = 0.18, // Thickness of the wheel capsules
+            GROUND = Math.pow(2, 1),
+            CHASSIS = Math.pow(2, 2),
+            WHEELS = Math.pow(2, 3);
 
         var app = new p2.WebGLRenderer(function(){
 
@@ -41,19 +44,27 @@
             var chassisBody = new p2.Body({ mass : 1, position:[-0.3 * r, 2.2 * r] });
             chassisBody.addShape(new p2.Capsule({ // Capsule below the chassis
                 length: 1.8 * r,
-                radius: r * 0.6
+                radius: r * 0.6,
+                collisionGroup: CHASSIS,
+                collisionMask: GROUND
             }), [r * 0.5,-r * 0.4], -0.1);
             chassisBody.addShape(new p2.Capsule({ // First capsule above the trunk
                 length: 1.8 * r,
-                radius: r * 0.1
+                radius: r * 0.1,
+                collisionGroup: CHASSIS,
+                collisionMask: GROUND
             }), [-r*0.4,r*0.6], Math.PI/2);
             chassisBody.addShape(new p2.Capsule({ // Second capsule above the trunk
                 length: 1.8 * r,
-                radius: r * 0.1
+                radius: r * 0.1,
+                collisionGroup: CHASSIS,
+                collisionMask: GROUND
             }), [-r*0.2,r*0.6], Math.PI/2);
             chassisBody.addShape(new p2.Capsule({ // Inclined capsule above the trunk
                 length: 1.8 * r,
-                radius: r * 0.1
+                radius: r * 0.1,
+                collisionGroup: CHASSIS,
+                collisionMask: GROUND
             }), [-r*1.4,r*1], Math.PI/7);
             chassisBody.addShape(new p2.Convex({ // Main chassis shape
                 vertices: [
@@ -66,7 +77,9 @@
                     [-3.4*r, -0.6*r]
                 ],
                 width: 3.5*r*2,
-                height: 0.6 * r * 2
+                height: 0.6 * r * 2,
+                collisionGroup: CHASSIS,
+                collisionMask: GROUND
             }));
             chassisBody.addShape(new p2.Convex({ // Top "window"
                 vertices: [
@@ -74,7 +87,9 @@
                     [0.3 * r, 0.5 * r],
                     [-r, 0.5 * r],
                     [-r * 1.1, -0.5 * r]
-                ]
+                ],
+                collisionGroup: CHASSIS,
+                collisionMask: GROUND
             }), [r,0.55 * r * 2], 0);
             world.addBody(chassisBody);
 
@@ -114,7 +129,11 @@
             groundBody = new p2.Body({
                 position: [0, -r * 2]
             });
-            groundBody.addShape(new p2.Plane({ material: groundMaterial }));
+            groundBody.addShape(new p2.Plane({
+                material: groundMaterial,
+                collisionGroup: GROUND,
+                collisionMask: WHEELS | CHASSIS | GROUND
+            }));
             world.addBody(groundBody);
 
             // Add circle bumps along the ground
@@ -122,7 +141,12 @@
                 circleBody = new p2.Body({
                     position:[6+6*i + Math.random()*3, -2] // Set initial position
                 });
-                circleBody.addShape(new p2.Circle({ radius: 5*Math.random(), material: groundMaterial }));
+                circleBody.addShape(new p2.Circle({
+                    radius: 5*Math.random(),
+                    material: groundMaterial,
+                    collisionGroup: GROUND,
+                    collisionMask: WHEELS | GROUND | CHASSIS
+                }));
                 world.addBody(circleBody);
             }
 
@@ -166,7 +190,11 @@
                 mass: 1,
                 position: position
             });
-            wheelBody.addShape(new p2.Circle({ radius: r/3 }));
+            wheelBody.addShape(new p2.Circle({
+                radius: r/2,
+                collisionGroup: GROUND,
+                collisionMask: GROUND | WHEELS | CHASSIS
+            }));
             world.addBody(wheelBody);
 
             // Create a chain of capsules around the center.
@@ -183,7 +211,13 @@
                     position: [x,y],
                     angle: angle + Math.PI / 2
                 });
-                body.addShape(new p2.Capsule({ radius: thickness/2, length: linkLength, material: material }));
+                body.addShape(new p2.Capsule({
+                    radius: thickness/2,
+                    length: linkLength,
+                    material: material,
+                    collisionGroup: WHEELS,
+                    collisionMask: GROUND
+                }));
                 world.addBody(body);
 
                 // Constrain the capsule body to the center body.
@@ -199,7 +233,8 @@
 
                 // Make a "spring" that keeps the body from the center body at a given distance with some flexing
                 world.addConstraint(new p2.DistanceConstraint(wheelBody, body, {
-                    maxForce: 4 // Allow flexing
+                    maxForce: 4, // Allow flexing
+                    collideConnected: true
                 }));
 
                 if(lastBody){
