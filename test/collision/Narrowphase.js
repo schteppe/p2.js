@@ -9,6 +9,8 @@ var Narrowphase = require(__dirname + '/../../src/collision/Narrowphase')
 ,   Line = require(__dirname + "/../../src/shapes/Line")
 ,   ContactEquation = require(__dirname + "/../../src/equations/ContactEquation")
 ,   FrictionEquation = require(__dirname + "/../../src/equations/FrictionEquation")
+,   ContactMaterial = require(__dirname + "/../../src/material/ContactMaterial")
+,   Material = require(__dirname + "/../../src/material/Material")
 ,   vec2 = require(__dirname + "/../../src/math/vec2");
 
 var rect,
@@ -45,6 +47,7 @@ exports.setUp = function(callback){
     line = new Line();
 
     narrowphase = new Narrowphase();
+    narrowphase.currentContactMaterial = new ContactMaterial(new Material(), new Material());
 
     bodyA = new Body();
     bodyB = new Body();

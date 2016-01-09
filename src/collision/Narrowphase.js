@@ -11,7 +11,6 @@ var vec2 = require('../math/vec2')
 ,   ContactEquationPool = require('../utils/ContactEquationPool')
 ,   FrictionEquationPool = require('../utils/FrictionEquationPool')
 ,   TupleDictionary = require('../utils/TupleDictionary')
-,   Equation = require('../equations/Equation')
 ,   Circle = require('../shapes/Circle')
 ,   Convex = require('../shapes/Convex')
 ,   Shape = require('../shapes/Shape')
@@ -83,21 +82,6 @@ function Narrowphase(){
     this.slipForce = 10.0;
 
     /**
-     * The friction value to use in the upcoming friction equations.
-     * @property frictionCoefficient
-     * @type {Number}
-     * @todo Remove and use a new property currentContactMaterial instead
-     */
-    this.frictionCoefficient = 0.3;
-
-    /**
-     * Will be the .relativeVelocity in each produced FrictionEquation.
-     * @property {Number} surfaceVelocity
-     * @todo Remove and use a new property currentContactMaterial instead
-     */
-    this.surfaceVelocity = 0;
-
-    /**
      * Keeps track of the allocated ContactEquations.
      * @property {ContactEquationPool} contactEquationPool
      *
@@ -117,44 +101,6 @@ function Narrowphase(){
     this.frictionEquationPool = new FrictionEquationPool({ size: 64 });
 
     /**
-     * The restitution value to use in the next contact equations.
-     * @property restitution
-     * @type {Number}
-     * @todo Remove and use a new property currentContactMaterial instead
-     */
-    this.restitution = 0;
-
-    /**
-     * The stiffness value to use in the next contact equations.
-     * @property {Number} stiffness
-     * @todo Remove and use a new property currentContactMaterial instead
-     */
-    this.stiffness = Equation.DEFAULT_STIFFNESS;
-
-    /**
-     * The stiffness value to use in the next contact equations.
-     * @property {Number} stiffness
-     * @todo Remove and use a new property currentContactMaterial instead
-     */
-    this.relaxation = Equation.DEFAULT_RELAXATION;
-
-    /**
-     * The stiffness value to use in the next friction equations.
-     * @property frictionStiffness
-     * @type {Number}
-     * @todo Remove and use a new property currentContactMaterial instead
-     */
-    this.frictionStiffness = Equation.DEFAULT_STIFFNESS;
-
-    /**
-     * The relaxation value to use in the next friction equations.
-     * @property frictionRelaxation
-     * @type {Number}
-     * @todo Remove and use a new property currentContactMaterial instead
-     */
-    this.frictionRelaxation = Equation.DEFAULT_RELAXATION;
-
-    /**
      * Enable reduction of friction equations. If disabled, a box on a plane will generate 2 contact equations and 2 friction equations. If enabled, there will be only one friction equation. Same kind of simplifications are made  for all collision types.
      * @property enableFrictionReduction
      * @type {Boolean}
@@ -172,12 +118,10 @@ function Narrowphase(){
     this.collidingBodiesLastStep = new TupleDictionary();
 
     /**
-     * Contact skin size value to use in the next contact equations.
-     * @property {Number} contactSkinSize
-     * @default 0.01
-     * @todo Remove and use a new property currentContactMaterial instead
+     * @property currentContactMaterial
+     * @type {ContactMaterial}
      */
-    this.contactSkinSize = 0.01;
+    this.currentContactMaterial = null;
 }
 
 var bodiesOverlap_shapePositionA = createVec2();
@@ -280,17 +224,20 @@ Narrowphase.prototype.reset = function(){
  */
 Narrowphase.prototype.createContactEquation = function(bodyA, bodyB, shapeA, shapeB){
     var c = this.contactEquationPool.get();
+    var currentContactMaterial = this.currentContactMaterial;
     c.bodyA = bodyA;
     c.bodyB = bodyB;
     c.shapeA = shapeA;
     c.shapeB = shapeB;
-    c.restitution = this.restitution;
-    c.firstImpact = !this.collidedLastStep(bodyA,bodyB);
-    c.stiffness = this.stiffness;
-    c.relaxation = this.relaxation;
-    c.needsUpdate = true;
     c.enabled = this.enabledEquations;
-    c.offset = this.contactSkinSize;
+    c.firstImpact = !this.collidedLastStep(bodyA,bodyB);
+
+    c.restitution = currentContactMaterial.restitution;
+    c.stiffness = currentContactMaterial.stiffness;
+    c.relaxation = currentContactMaterial.relaxation;
+    c.offset = currentContactMaterial.contactSkinSize;
+
+    c.needsUpdate = true;
 
     return c;
 };
@@ -304,17 +251,20 @@ Narrowphase.prototype.createContactEquation = function(bodyA, bodyB, shapeA, sha
  */
 Narrowphase.prototype.createFrictionEquation = function(bodyA, bodyB, shapeA, shapeB){
     var c = this.frictionEquationPool.get();
+    var currentContactMaterial = this.currentContactMaterial;
     c.bodyA = bodyA;
     c.bodyB = bodyB;
     c.shapeA = shapeA;
     c.shapeB = shapeB;
     c.setSlipForce(this.slipForce);
-    c.frictionCoefficient = this.frictionCoefficient;
-    c.relativeVelocity = this.surfaceVelocity;
     c.enabled = this.enabledEquations;
+
+    c.frictionCoefficient = currentContactMaterial.friction;
+    c.relativeVelocity = currentContactMaterial.surfaceVelocity;
+    c.stiffness = currentContactMaterial.frictionStiffness;
+    c.relaxation = currentContactMaterial.frictionRelaxation;
     c.needsUpdate = true;
-    c.stiffness = this.frictionStiffness;
-    c.relaxation = this.frictionRelaxation;
+
     c.contactEquations.length = 0;
     return c;
 };
@@ -556,7 +506,6 @@ Narrowphase.prototype.capsuleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTe
         circlePosj = capsuleCapsule_tempVec2;
 
     var numContacts = 0;
-
 
     // Need 4 circle checks, between all
     for(var i=0; i<2; i++){

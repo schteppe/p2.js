@@ -805,11 +805,11 @@ function runNarrowphase(world, np, bi, si, xi, ai, bj, sj, xj, aj, cm, glen){
     vec2.rotate(xjw, xj, bj.angle);
     vec2.add(xiw, xiw, bi.position);
     vec2.add(xjw, xjw, bj.position);
+
     var aiw = ai + bi.angle;
     var ajw = aj + bj.angle;
 
     np.enableFriction = cm.friction > 0;
-    np.frictionCoefficient = cm.friction;
     var reducedMass;
     if(bi.type === Body.STATIC || bi.type === Body.KINEMATIC){
         reducedMass = bj.mass;
@@ -819,13 +819,7 @@ function runNarrowphase(world, np, bi, si, xi, ai, bj, sj, xj, aj, cm, glen){
         reducedMass = (bi.mass*bj.mass)/(bi.mass+bj.mass);
     }
     np.slipForce = cm.friction*glen*reducedMass;
-    np.restitution = cm.restitution;
-    np.surfaceVelocity = cm.surfaceVelocity;
-    np.frictionStiffness = cm.frictionStiffness;
-    np.frictionRelaxation = cm.frictionRelaxation;
-    np.stiffness = cm.stiffness;
-    np.relaxation = cm.relaxation;
-    np.contactSkinSize = cm.contactSkinSize;
+    np.currentContactMaterial = cm;
     np.enabledEquations = bi.collisionResponse && bj.collisionResponse && si.collisionResponse && sj.collisionResponse;
 
     var resolver = np[si.type | sj.type],
