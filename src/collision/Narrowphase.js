@@ -86,12 +86,14 @@ function Narrowphase(){
      * The friction value to use in the upcoming friction equations.
      * @property frictionCoefficient
      * @type {Number}
+     * @todo Remove and use a new property currentContactMaterial instead
      */
     this.frictionCoefficient = 0.3;
 
     /**
      * Will be the .relativeVelocity in each produced FrictionEquation.
      * @property {Number} surfaceVelocity
+     * @todo Remove and use a new property currentContactMaterial instead
      */
     this.surfaceVelocity = 0;
 
@@ -118,18 +120,21 @@ function Narrowphase(){
      * The restitution value to use in the next contact equations.
      * @property restitution
      * @type {Number}
+     * @todo Remove and use a new property currentContactMaterial instead
      */
     this.restitution = 0;
 
     /**
      * The stiffness value to use in the next contact equations.
      * @property {Number} stiffness
+     * @todo Remove and use a new property currentContactMaterial instead
      */
     this.stiffness = Equation.DEFAULT_STIFFNESS;
 
     /**
      * The stiffness value to use in the next contact equations.
      * @property {Number} stiffness
+     * @todo Remove and use a new property currentContactMaterial instead
      */
     this.relaxation = Equation.DEFAULT_RELAXATION;
 
@@ -137,6 +142,7 @@ function Narrowphase(){
      * The stiffness value to use in the next friction equations.
      * @property frictionStiffness
      * @type {Number}
+     * @todo Remove and use a new property currentContactMaterial instead
      */
     this.frictionStiffness = Equation.DEFAULT_STIFFNESS;
 
@@ -144,6 +150,7 @@ function Narrowphase(){
      * The relaxation value to use in the next friction equations.
      * @property frictionRelaxation
      * @type {Number}
+     * @todo Remove and use a new property currentContactMaterial instead
      */
     this.frictionRelaxation = Equation.DEFAULT_RELAXATION;
 
@@ -168,6 +175,7 @@ function Narrowphase(){
      * Contact skin size value to use in the next contact equations.
      * @property {Number} contactSkinSize
      * @default 0.01
+     * @todo Remove and use a new property currentContactMaterial instead
      */
     this.contactSkinSize = 0.01;
 }
@@ -181,7 +189,6 @@ var bodiesOverlap_shapePositionB = createVec2();
  * @param  {Body} bodyB
  * @param  {boolean} [checkCollisionMasks=false]
  * @return {Boolean}
- * @todo shape world transforms are wrong?
  */
 Narrowphase.prototype.bodiesOverlap = function(bodyA, bodyB, checkCollisionMasks){
     var shapePositionA = bodiesOverlap_shapePositionA;
@@ -190,8 +197,6 @@ Narrowphase.prototype.bodiesOverlap = function(bodyA, bodyB, checkCollisionMasks
     // Loop over all shapes of bodyA
     for(var k=0, Nshapesi=bodyA.shapes.length; k!==Nshapesi; k++){
         var shapeA = bodyA.shapes[k];
-
-        bodyA.toWorldFrame(shapePositionA, shapeA.position);
 
         // All shapes of body j
         for(var l=0, Nshapesj=bodyB.shapes.length; l!==Nshapesj; l++){
@@ -202,6 +207,7 @@ Narrowphase.prototype.bodiesOverlap = function(bodyA, bodyB, checkCollisionMasks
                 return;
             }
 
+            bodyA.toWorldFrame(shapePositionA, shapeA.position);
             bodyB.toWorldFrame(shapePositionB, shapeB.position);
 
             if(this[shapeA.type | shapeB.type](
