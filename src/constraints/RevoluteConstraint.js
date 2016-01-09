@@ -130,14 +130,6 @@ function RevoluteConstraint(bodyA, bodyB, options){
     y.G[4] =  1;
 
     /**
-     * Indicates whether the motor is enabled. Use .enableMotor() to enable the constraint motor.
-     * @property {Boolean} motorEnabled
-     * @readOnly
-     * @deprecated This state can be read from the .motorEquation if needed
-     */
-    this.motorEnabled = false;
-
-    /**
      * The constraint position.
      * @property angle
      * @type {Number}
@@ -252,48 +244,91 @@ RevoluteConstraint.prototype.update = function(){
     yG[5] =  crossLength(worldPivotB,yAxis);
 };
 
+Object.defineProperties(RevoluteConstraint.prototype, {
+
+    /**
+     * @property {boolean} motorEnabled
+     */
+    motorEnabled: {
+        get: function() {
+            return this.motorEquation.enabled;
+        },
+        set: function(value){
+            this.motorEquation.enabled = value;
+        }
+    },
+
+    /**
+     * @property {boolean} motorSpeed
+     */
+    motorSpeed: {
+        get: function() {
+            return this.motorEquation.relativeVelocity;
+        },
+        set: function(value){
+            this.motorEquation.relativeVelocity = value;
+        }
+    },
+
+    /**
+     * @property {boolean} motorMaxForce
+     */
+    motorMaxForce: {
+        get: function() {
+            return this.motorEquation.maxForce;
+        },
+        set: function(value){
+            var eq = this.motorEquation;
+            eq.maxForce = value;
+            eq.minForce = -value;
+        }
+    }
+});
+
 /**
  * Enable the rotational motor
+ * @deprecated Use motorEnabled instead
  * @method enableMotor
  */
 RevoluteConstraint.prototype.enableMotor = function(){
-    this.motorEquation.enabled = true;
     this.motorEnabled = true;
 };
 
 /**
  * Disable the rotational motor
+ * @deprecated Use motorEnabled instead
  * @method disableMotor
  */
 RevoluteConstraint.prototype.disableMotor = function(){
-    this.motorEquation.enabled = false;
     this.motorEnabled = false;
 };
 
 /**
  * Check if the motor is enabled.
  * @method motorIsEnabled
- * @deprecated This state can be read from the .motorEquation if needed
+ * @deprecated Use motorEnabled instead
  * @return {Boolean}
  */
 RevoluteConstraint.prototype.motorIsEnabled = function(){
-    return !!this.motorEnabled;
+    return this.motorEnabled;
 };
 
 /**
  * Set the speed of the rotational constraint motor
  * @method setMotorSpeed
- * @param  {Number} speed
+ * @deprecated Use .motorSpeed instead
+ * @param {Number} speed
  */
 RevoluteConstraint.prototype.setMotorSpeed = function(speed){
-    this.motorEquation.relativeVelocity = speed;
+    this.motorSpeed = speed;
 };
 
 /**
  * Get the speed of the rotational constraint motor
+ * @deprecated Use .motorSpeed instead
  * @method getMotorSpeed
- * @return {Number} The current speed, or false if the motor is not enabled.
+ * @return {Number}
  */
 RevoluteConstraint.prototype.getMotorSpeed = function(){
-    return this.motorEquation.relativeVelocity;
+    return this.motorSpeed;
 };
