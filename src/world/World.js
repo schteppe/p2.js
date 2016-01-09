@@ -1145,17 +1145,7 @@ World.prototype.hitTest = function(worldPoint,bodies,precision){
  * @param {Number} stiffness
  */
 World.prototype.setGlobalStiffness = function(stiffness){
-
-    // Set for all constraints
-    var constraints = this.constraints;
-    for(var i=0; i !== constraints.length; i++){
-        var c = constraints[i];
-        for(var j=0; j !== c.equations.length; j++){
-            var eq = c.equations[j];
-            eq.stiffness = stiffness;
-            eq.needsUpdate = true;
-        }
-    }
+    setGlobalEquationParams(this, { stiffness: stiffness });
 
     // Set for all contact materials
     var contactMaterials = this.contactMaterials;
@@ -1175,16 +1165,7 @@ World.prototype.setGlobalStiffness = function(stiffness){
  * @param {Number} relaxation
  */
 World.prototype.setGlobalRelaxation = function(relaxation){
-
-    // Set for all constraints
-    for(var i=0; i !== this.constraints.length; i++){
-        var c = this.constraints[i];
-        for(var j=0; j !== c.equations.length; j++){
-            var eq = c.equations[j];
-            eq.relaxation = relaxation;
-            eq.needsUpdate = true;
-        }
-    }
+    setGlobalEquationParams(this, { relaxation: relaxation });
 
     // Set for all contact materials
     for(var i=0; i !== this.contactMaterials.length; i++){
@@ -1196,6 +1177,18 @@ World.prototype.setGlobalRelaxation = function(relaxation){
     var c = this.defaultContactMaterial;
     c.relaxation = c.frictionRelaxation = relaxation;
 };
+
+function setGlobalEquationParams(world, params){
+    for(var i=0; i !== world.constraints.length; i++){
+        var c = world.constraints[i];
+        for(var j=0; j !== c.equations.length; j++){
+            var eq = c.equations[j];
+            eq.relaxation = params.relaxation !== undefined ? params.relaxation : eq.relaxation;
+            eq.stiffness = params.stiffness !== undefined ? params.stiffness : eq.stiffness;
+            eq.needsUpdate = true;
+        }
+    }
+}
 
 var tmpAABB = new AABB();
 var tmpArray = [];
