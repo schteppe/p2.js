@@ -216,7 +216,7 @@ function World(options){
      * @property {Boolean} islandSplit
      * @default true
      */
-    this.islandSplit = typeof(options.islandSplit)!=="undefined" ? !!options.islandSplit : true;
+    this.islandSplit = options.islandSplit !== undefined ? !!options.islandSplit : true;
 
     /**
      * Set to true if you want to the world to emit the "impact" event. Turning this off could improve performance.
@@ -735,10 +735,7 @@ World.prototype.internalStep = function(dt){
     // Step forward
     for(var i=0; i!==Nbodies; i++){
         var body = bodies[i];
-
-        // if(body.sleepState !== Body.SLEEPING && body.type !== Body.STATIC){
         body.integrate(dt);
-        // }
     }
 
     // Reset force
@@ -1028,7 +1025,7 @@ World.prototype.disableBodyCollision = function(bodyA,bodyB){
 };
 
 /**
- * Enable collisions between the given two bodies
+ * Enable collisions between the given two bodies, if they were previously disabled using .disableBodyCollision().
  * @method enableBodyCollision
  * @param {Body} bodyA
  * @param {Body} bodyB
@@ -1050,31 +1047,33 @@ World.prototype.enableBodyCollision = function(bodyA,bodyB){
 World.prototype.clear = function(){
 
     // Remove all solver equations
-    if(this.solver && this.solver.equations.length){
-        this.solver.removeAllEquations();
-    }
+    this.solver.removeAllEquations();
 
     // Remove all constraints
     var cs = this.constraints;
-    for(var i=cs.length-1; i>=0; i--){
+    var i = cs.length;
+    while(i--){
         this.removeConstraint(cs[i]);
     }
 
     // Remove all bodies
     var bodies = this.bodies;
-    for(var i=bodies.length-1; i>=0; i--){
+    i = bodies.length;
+    while(i--){
         this.removeBody(bodies[i]);
     }
 
     // Remove all springs
     var springs = this.springs;
-    for(var i=springs.length-1; i>=0; i--){
+    i = springs.length;
+    while(i--){
         this.removeSpring(springs[i]);
     }
 
     // Remove all contact materials
     var cms = this.contactMaterials;
-    for(var i=cms.length-1; i>=0; i--){
+    i = cms.length;
+    while(i--){
         this.removeContactMaterial(cms[i]);
     }
 };
@@ -1174,10 +1173,12 @@ World.prototype.setGlobalRelaxation = function(relaxation){
 };
 
 function setGlobalEquationParams(world, params){
-    for(var i=0; i !== world.constraints.length; i++){
-        var c = world.constraints[i];
-        for(var j=0; j !== c.equations.length; j++){
-            var eq = c.equations[j];
+    var constraints = world.constraints;
+    for(var i=0; i !== constraints.length; i++){
+        var c = constraints[i];
+        var eqs = c.equations;
+        for(var j=0; j !== eqs.length; j++){
+            var eq = eqs[j];
             eq.relaxation = params.relaxation !== undefined ? params.relaxation : eq.relaxation;
             eq.stiffness = params.stiffness !== undefined ? params.stiffness : eq.stiffness;
             eq.needsUpdate = true;
