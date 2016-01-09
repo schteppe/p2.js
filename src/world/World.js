@@ -632,6 +632,8 @@ World.prototype.internalStep = function(dt){
 
     // Narrowphase
     np.reset(this);
+    var defaultContactMaterial = this.defaultContactMaterial;
+    var frictionGravity = this.frictionGravity;
     for(var i=0, Nresults=result.length; i!==Nresults; i+=2){
         var bi = result[i],
             bj = result[i+1];
@@ -648,15 +650,12 @@ World.prototype.internalStep = function(dt){
                     xj = sj.position,
                     aj = sj.angle;
 
-                var cm = this.defaultContactMaterial;
+                var contactMaterial;
                 if(si.material && sj.material){
-                    var tmp = this.getContactMaterial(si.material,sj.material);
-                    if(tmp){
-                        cm = tmp;
-                    }
+                    contactMaterial = this.getContactMaterial(si.material,sj.material);
                 }
 
-                this.runNarrowphase(np,bi,si,xi,ai,bj,sj,xj,aj,cm,this.frictionGravity);
+                runNarrowphase(this,np,bi,si,xi,ai,bj,sj,xj,aj,contactMaterial || defaultContactMaterial, frictionGravity);
             }
         }
     }
@@ -794,21 +793,7 @@ World.prototype.internalStep = function(dt){
     this.emit(postStepEvent);
 };
 
-/**
- * Runs narrowphase for the shape pair i and j.
- * @method runNarrowphase
- * @param  {Narrowphase} np
- * @param  {Body} bi
- * @param  {Shape} si
- * @param  {Array} xi
- * @param  {Number} ai
- * @param  {Body} bj
- * @param  {Shape} sj
- * @param  {Array} xj
- * @param  {Number} aj
- * @param  {Number} mu
- */
-World.prototype.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,cm,glen){
+function runNarrowphase(world, np, bi, si, xi, ai, bj, sj, xj, aj, cm, glen){
 
     // Check collision groups and masks
     if(!((si.collisionGroup & sj.collisionMask) !== 0 && (sj.collisionGroup & si.collisionMask) !== 0)){
@@ -883,8 +868,8 @@ World.prototype.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,cm,glen){
                 }
             }
 
-            this.overlapKeeper.setOverlapping(bi, si, bj, sj);
-            if(this.has('beginContact') && this.overlapKeeper.isNewOverlap(si, sj)){
+            world.overlapKeeper.setOverlapping(bi, si, bj, sj);
+            if(world.has('beginContact') && world.overlapKeeper.isNewOverlap(si, sj)){
 
                 // Report new shape overlap
                 var e = beginContactEvent;
@@ -902,7 +887,7 @@ World.prototype.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,cm,glen){
                     }
                 }
 
-                this.emit(e);
+                world.emit(e);
             }
 
             // divide the max friction force by the number of contacts
@@ -914,8 +899,7 @@ World.prototype.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,cm,glen){
             }
         }
     }
-
-};
+}
 
 /**
  * Add a spring to the simulation
