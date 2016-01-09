@@ -214,9 +214,9 @@ function World(options){
     /**
      * Whether to enable island splitting. Island splitting can be an advantage for both precision and performance. See {{#crossLink "IslandManager"}}{{/crossLink}}.
      * @property {Boolean} islandSplit
-     * @default true
+     * @default false
      */
-    this.islandSplit = options.islandSplit !== undefined ? !!options.islandSplit : true;
+    this.islandSplit = options.islandSplit !== undefined ? !!options.islandSplit : false;
 
     /**
      * Set to true if you want to the world to emit the "impact" event. Turning this off could improve performance.
