@@ -226,75 +226,6 @@ function World(options){
      */
     this.emitImpactEvent = true;
 
-    // Id counters
-    this._constraintIdCounter = 0;
-    this._bodyIdCounter = 0;
-
-    /**
-     * Fired after the step().
-     * @event postStep
-     */
-    this.postStepEvent = {
-        type : "postStep"
-    };
-
-    /**
-     * Fired when a body is added to the world.
-     * @event addBody
-     * @param {Body} body
-     */
-    this.addBodyEvent = {
-        type : "addBody",
-        body : null
-    };
-
-    /**
-     * Fired when a body is removed from the world.
-     * @event removeBody
-     * @param {Body} body
-     */
-    this.removeBodyEvent = {
-        type : "removeBody",
-        body : null
-    };
-
-    /**
-     * Fired when a spring is added to the world.
-     * @event addSpring
-     * @param {Spring} spring
-     */
-    this.addSpringEvent = {
-        type : "addSpring",
-        spring : null
-    };
-
-    /**
-     * Fired when a first contact is created between two bodies. This event is fired after the step has been done.
-     * @event impact
-     * @param {Body} bodyA
-     * @param {Body} bodyB
-     */
-    this.impactEvent = {
-        type: "impact",
-        bodyA : null,
-        bodyB : null,
-        shapeA : null,
-        shapeB : null,
-        contactEquation : null
-    };
-
-    /**
-     * Fired after the Broadphase has collected collision pairs in the world.
-     * Inside the event handler, you can modify the pairs array as you like, to
-     * prevent collisions between objects that you don't want.
-     * @event postBroadphase
-     * @param {Array} pairs An array of collision pairs. If this array is [body1,body2,body3,body4], then the body pairs 1,2 and 3,4 would advance to narrowphase.
-     */
-    this.postBroadphaseEvent = {
-        type: "postBroadphase",
-        pairs: null
-    };
-
     /**
      * How to deactivate bodies during simulation. Possible modes are: {{#crossLink "World/NO_SLEEPING:property"}}World.NO_SLEEPING{{/crossLink}}, {{#crossLink "World/BODY_SLEEPING:property"}}World.BODY_SLEEPING{{/crossLink}} and {{#crossLink "World/ISLAND_SLEEPING:property"}}World.ISLAND_SLEEPING{{/crossLink}}.
      * If sleeping is enabled, you might need to {{#crossLink "Body/wakeUp:method"}}wake up{{/crossLink}} the bodies if they fall asleep when they shouldn't. If you want to enable sleeping in the world, but want to disable it for a particular body, see {{#crossLink "Body/allowSleep:property"}}Body.allowSleep{{/crossLink}}.
@@ -304,51 +235,9 @@ function World(options){
      */
     this.sleepMode = World.NO_SLEEPING;
 
-    /**
-     * Fired when two shapes starts start to overlap. Fired in the narrowphase, during step.
-     * @event beginContact
-     * @param {Shape} shapeA
-     * @param {Shape} shapeB
-     * @param {Body}  bodyA
-     * @param {Body}  bodyB
-     * @param {Array} contactEquations
-     */
-    this.beginContactEvent = {
-        type: "beginContact",
-        shapeA: null,
-        shapeB: null,
-        bodyA: null,
-        bodyB: null,
-        contactEquations: []
-    };
-
-    /**
-     * Fired when two shapes stop overlapping, after the narrowphase (during step).
-     * @event endContact
-     * @param {Shape} shapeA
-     * @param {Shape} shapeB
-     * @param {Body}  bodyA
-     * @param {Body}  bodyB
-     */
-    this.endContactEvent = {
-        type: "endContact",
-        shapeA: null,
-        shapeB: null,
-        bodyA: null,
-        bodyB: null
-    };
-
-    /**
-     * Fired just before equations are added to the solver to be solved. Can be used to control what equations goes into the solver.
-     * @event preSolve
-     * @param {Array} contactEquations  An array of contacts to be solved.
-     * @param {Array} frictionEquations An array of friction equations to be solved.
-     */
-    this.preSolveEvent = {
-        type: "preSolve",
-        contactEquations: null,
-        frictionEquations: null
-    };
+    // Id counters
+    this._constraintIdCounter = 0;
+    this._bodyIdCounter = 0;
 
     // For keeping track of overlapping shapes
     this.overlappingShapesLastState = { keys:[] };
@@ -361,6 +250,120 @@ function World(options){
 }
 World.prototype = new Object(EventEmitter.prototype);
 World.prototype.constructor = World;
+
+/**
+ * Fired after the step().
+ * @event postStep
+ */
+var postStepEvent = {
+    type: "postStep"
+};
+
+/**
+ * Fired when a body is added to the world.
+ * @event addBody
+ * @param {Body} body
+ * @deprecated
+ */
+var addBodyEvent = {
+    type : "addBody",
+    body : null
+};
+
+/**
+ * Fired when a body is removed from the world.
+ * @event removeBody
+ * @param {Body} body
+ * @deprecated
+ */
+var removeBodyEvent = {
+    type : "removeBody",
+    body : null
+};
+
+/**
+ * Fired when a spring is added to the world.
+ * @event addSpring
+ * @param {Spring} spring
+ * @deprecated
+ */
+var addSpringEvent = {
+    type : "addSpring",
+    spring : null
+};
+
+/**
+ * Fired when a first contact is created between two bodies. This event is fired after the step has been done.
+ * @event impact
+ * @param {Body} bodyA
+ * @param {Body} bodyB
+ */
+var impactEvent = {
+    type: "impact",
+    bodyA : null,
+    bodyB : null,
+    shapeA : null,
+    shapeB : null,
+    contactEquation : null
+};
+
+/**
+ * Fired after the Broadphase has collected collision pairs in the world.
+ * Inside the event handler, you can modify the pairs array as you like, to
+ * prevent collisions between objects that you don't want.
+ * @event postBroadphase
+ * @param {Array} pairs An array of collision pairs. If this array is [body1,body2,body3,body4], then the body pairs 1,2 and 3,4 would advance to narrowphase.
+ */
+var postBroadphaseEvent = {
+    type: "postBroadphase",
+    pairs: null
+};
+
+/**
+ * Fired when two shapes starts start to overlap. Fired in the narrowphase, during step.
+ * @event beginContact
+ * @param {Shape} shapeA
+ * @param {Shape} shapeB
+ * @param {Body}  bodyA
+ * @param {Body}  bodyB
+ * @param {Array} contactEquations
+ */
+var beginContactEvent = {
+    type: "beginContact",
+    shapeA: null,
+    shapeB: null,
+    bodyA: null,
+    bodyB: null,
+    contactEquations: []
+};
+
+/**
+ * Fired when two shapes stop overlapping, after the narrowphase (during step).
+ * @event endContact
+ * @param {Shape} shapeA
+ * @param {Shape} shapeB
+ * @param {Body}  bodyA
+ * @param {Body}  bodyB
+ */
+var endContactEvent = {
+    type: "endContact",
+    shapeA: null,
+    shapeB: null,
+    bodyA: null,
+    bodyB: null
+};
+
+/**
+ * Fired just before equations are added to the solver to be solved. Can be used to control what equations goes into the solver.
+ * @event preSolve
+ * @param {Array} contactEquations  An array of contacts to be solved.
+ * @param {Array} frictionEquations An array of friction equations to be solved.
+ */
+var preSolveEvent = {
+    type: "preSolve",
+    contactEquations: null,
+    frictionEquations: null
+};
 
 /**
  * Never deactivate bodies.
@@ -623,9 +626,9 @@ World.prototype.internalStep = function(dt){
     }
 
     // postBroadphase event
-    this.postBroadphaseEvent.pairs = result;
-    this.emit(this.postBroadphaseEvent);
-    this.postBroadphaseEvent.pairs = null;
+    postBroadphaseEvent.pairs = result;
+    this.emit(postBroadphaseEvent);
+    postBroadphaseEvent.pairs = null;
 
     // Narrowphase
     np.reset(this);
@@ -670,7 +673,7 @@ World.prototype.internalStep = function(dt){
     // Emit end overlap events
     if(this.has('endContact')){
         this.overlapKeeper.getEndOverlaps(endOverlaps);
-        var e = this.endContactEvent;
+        var e = endContactEvent;
         var l = endOverlaps.length;
         while(l--){
             var data = endOverlaps[l];
@@ -683,7 +686,6 @@ World.prototype.internalStep = function(dt){
         endOverlaps.length = 0;
     }
 
-    var preSolveEvent = this.preSolveEvent;
     preSolveEvent.contactEquations = np.contactEquations;
     preSolveEvent.frictionEquations = np.frictionEquations;
     this.emit(preSolveEvent);
@@ -745,7 +747,7 @@ World.prototype.internalStep = function(dt){
 
     // Emit impact event
     if(this.emitImpactEvent && this.has('impact')){
-        var ev = this.impactEvent;
+        var ev = impactEvent;
         for(var i=0; i!==np.contactEquations.length; i++){
             var eq = np.contactEquations[i];
             if(eq.firstImpact){
@@ -789,7 +791,7 @@ World.prototype.internalStep = function(dt){
     }
     bodiesToBeRemoved.length = 0;
 
-    this.emit(this.postStepEvent);
+    this.emit(postStepEvent);
 };
 
 /**
@@ -885,7 +887,7 @@ World.prototype.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,cm,glen){
             if(this.has('beginContact') && this.overlapKeeper.isNewOverlap(si, sj)){
 
                 // Report new shape overlap
-                var e = this.beginContactEvent;
+                var e = beginContactEvent;
                 e.shapeA = si;
                 e.shapeB = sj;
                 e.bodyA = bi;
@@ -923,10 +925,9 @@ World.prototype.runNarrowphase = function(np,bi,si,xi,ai,bj,sj,xj,aj,cm,glen){
  */
 World.prototype.addSpring = function(spring){
     this.springs.push(spring);
-    var evt = this.addSpringEvent;
-    evt.spring = spring;
-    this.emit(evt);
-    evt.spring = null;
+    addSpringEvent.spring = spring;
+    this.emit(addSpringEvent);
+    addSpringEvent.spring = null;
 };
 
 /**
@@ -959,10 +960,10 @@ World.prototype.addBody = function(body){
 
     this.bodies.push(body);
     body.world = this;
-    var evt = this.addBodyEvent;
-    evt.body = body;
-    this.emit(evt);
-    evt.body = null;
+
+    addBodyEvent.body = body;
+    this.emit(addBodyEvent);
+    addBodyEvent.body = null;
 };
 
 /**
@@ -979,10 +980,10 @@ World.prototype.removeBody = function(body){
         arrayRemove(this.bodies, body);
 
         // Emit removeBody event
-        this.removeBodyEvent.body = body;
+        removeBodyEvent.body = body;
         body.resetConstraintVelocity();
-        this.emit(this.removeBodyEvent);
-        this.removeBodyEvent.body = null;
+        this.emit(removeBodyEvent);
+        removeBodyEvent.body = null;
 
         // Remove disabled body collision pairs that involve body
         var pairs = this.disabledBodyCollisionPairs;
