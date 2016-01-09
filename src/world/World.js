@@ -1044,13 +1044,10 @@ World.prototype.enableBodyCollision = function(bodyA,bodyB){
 };
 
 /**
- * Resets the World, removes all bodies, constraints and springs.
- *
+ * Removes all bodies, constraints, springs, and contact materials from the world.
  * @method clear
  */
 World.prototype.clear = function(){
-
-    this.time = 0;
 
     // Remove all solver equations
     if(this.solver && this.solver.equations.length){
@@ -1080,8 +1077,6 @@ World.prototype.clear = function(){
     for(var i=cms.length-1; i>=0; i--){
         this.removeContactMaterial(cms[i]);
     }
-
-    World.apply(this);
 };
 
 var hitTest_tmp1 = vec2.create(),
