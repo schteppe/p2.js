@@ -806,6 +806,10 @@ function runNarrowphase(world, np, bi, si, xi, ai, bj, sj, xj, aj, cm, glen){
     vec2.add(xiw, xiw, bi.position);
     vec2.add(xjw, xjw, bj.position);
 
+    if(vec2.distance(xi,xj) > si.boundingRadius + sj.boundingRadius){
+        return;
+    }
+
     var aiw = ai + bi.angle;
     var ajw = aj + bj.angle;
 
