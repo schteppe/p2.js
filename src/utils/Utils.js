@@ -43,6 +43,20 @@ Utils.splice = function(array,index,howmany){
 };
 
 /**
+ * Remove an element from an array, if the array contains the element.
+ * @method arrayRemove
+ * @static
+ * @param  {Array} array
+ * @param  {Number} element
+ */
+Utils.arrayRemove = function(array, element){
+    var idx = array.indexOf(element);
+    if(idx!==-1){
+        Utils.splice(array, idx, 1);
+    }
+};
+
+/**
  * The array type to use for internal numeric computations throughout the library. Float32Array is used if it is available, but falls back on Array. If you want to set array type manually, inject it via the global variable P2_ARRAY_TYPE. See example below.
  * @static
  * @property {function} ARRAY_TYPE

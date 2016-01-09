@@ -13,6 +13,7 @@ var  GSSolver = require('../solver/GSSolver')
 ,    SAPBroadphase = require('../collision/SAPBroadphase')
 ,    Narrowphase = require('../collision/Narrowphase')
 ,    Utils = require('../utils/Utils')
+,    arrayRemove = Utils.arrayRemove
 ,    OverlapKeeper = require('../utils/OverlapKeeper')
 ,    IslandManager = require('./IslandManager');
 
@@ -411,10 +412,7 @@ World.prototype.addContactMaterial = function(contactMaterial){
  * @param {ContactMaterial} cm
  */
 World.prototype.removeContactMaterial = function(cm){
-    var idx = this.contactMaterials.indexOf(cm);
-    if(idx!==-1){
-        Utils.splice(this.contactMaterials,idx,1);
-    }
+    arrayRemove(this.contactMaterials, cm);
 };
 
 /**
@@ -429,8 +427,7 @@ World.prototype.getContactMaterial = function(materialA,materialB){
     var cmats = this.contactMaterials;
     for(var i=0, N=cmats.length; i!==N; i++){
         var cm = cmats[i];
-        if( (cm.materialA.id === materialA.id) && (cm.materialB.id === materialB.id) ||
-            (cm.materialA.id === materialB.id) && (cm.materialB.id === materialA.id) ){
+        if((cm.materialA === materialA && cm.materialB === materialB) || (cm.materialA === materialB && cm.materialB === materialA)){
             return cm;
         }
     }
@@ -444,10 +441,7 @@ World.prototype.getContactMaterial = function(materialA,materialB){
  * @param {Constraint} constraint
  */
 World.prototype.removeConstraint = function(constraint){
-    var idx = this.constraints.indexOf(constraint);
-    if(idx!==-1){
-        Utils.splice(this.constraints,idx,1);
-    }
+    arrayRemove(this.constraints, constraint);
 };
 
 var step_mg = vec2.create(),
@@ -945,10 +939,7 @@ World.prototype.addSpring = function(spring){
  * @param {Spring} spring
  */
 World.prototype.removeSpring = function(spring){
-    var idx = this.springs.indexOf(spring);
-    if(idx !== -1){
-        Utils.splice(this.springs,idx,1);
-    }
+    arrayRemove(this.springs, spring);
 };
 
 /**
@@ -964,14 +955,17 @@ World.prototype.removeSpring = function(spring){
  * @todo What if this is done during step?
  */
 World.prototype.addBody = function(body){
-    if(this.bodies.indexOf(body) === -1){
-        this.bodies.push(body);
-        body.world = this;
-        var evt = this.addBodyEvent;
-        evt.body = body;
-        this.emit(evt);
-        evt.body = null;
+    // Already added?
+    if(body.world){
+        return;
     }
+
+    this.bodies.push(body);
+    body.world = this;
+    var evt = this.addBodyEvent;
+    evt.body = body;
+    this.emit(evt);
+    evt.body = null;
 };
 
 /**
@@ -985,23 +979,22 @@ World.prototype.removeBody = function(body){
         this.bodiesToBeRemoved.push(body);
     } else {
         body.world = null;
-        var idx = this.bodies.indexOf(body);
-        if(idx!==-1){
-            Utils.splice(this.bodies,idx,1);
-            this.removeBodyEvent.body = body;
-            body.resetConstraintVelocity();
-            this.emit(this.removeBodyEvent);
-            this.removeBodyEvent.body = null;
+        arrayRemove(this.bodies, body);
 
-            // Remove disabled body collision pairs that involve body
-            var pairs = this.disabledBodyCollisionPairs;
-            var i = 0;
-            while (i < pairs.length) {
-                if (pairs[i] === body || pairs[i + 1] === body) {
-                    pairs.splice(i, 2);
-                } else {
-                    i += 2;
-                }
+        // Emit removeBody event
+        this.removeBodyEvent.body = body;
+        body.resetConstraintVelocity();
+        this.emit(this.removeBodyEvent);
+        this.removeBodyEvent.body = null;
+
+        // Remove disabled body collision pairs that involve body
+        var pairs = this.disabledBodyCollisionPairs;
+        var i = 0;
+        while (i < pairs.length) {
+            if (pairs[i] === body || pairs[i + 1] === body) {
+                pairs.splice(i, 2);
+            } else {
+                i += 2;
             }
         }
     }
