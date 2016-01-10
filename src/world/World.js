@@ -801,10 +801,8 @@ function runNarrowphase(world, np, bi, si, xi, ai, bj, sj, xj, aj, cm, glen){
     }
 
     // Get world position and angle of each shape
-    vec2.rotate(xiw, xi, bi.angle);
-    vec2.rotate(xjw, xj, bj.angle);
-    vec2.add(xiw, xiw, bi.position);
-    vec2.add(xjw, xjw, bj.position);
+    vec2.toGlobalFrame(xiw, xi, bi.position, bi.angle);
+    vec2.toGlobalFrame(xjw, xj, bj.position, bj.angle);
 
     if(vec2.distance(xiw,xiw) > si.boundingRadius + sj.boundingRadius){
         return;

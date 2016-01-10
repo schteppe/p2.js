@@ -424,14 +424,13 @@ Narrowphase.prototype.convexCapsule = function(
     // Check the circles
     // Add offsets!
     var circlePos = convexCapsule_tempVec;
-    vec2.set(circlePos, capsuleShape.length/2,0);
-    rotate(circlePos,circlePos,capsuleAngle);
-    add(circlePos,circlePos,capsulePosition);
+    var halfLength = capsuleShape.length / 2;
+    vec2.set(circlePos, halfLength, 0);
+    vec2.toGlobalFrame(circlePos, circlePos, capsulePosition, capsuleAngle);
     var result1 = this.circleConvex(capsuleBody,capsuleShape,circlePos,capsuleAngle, convexBody,convexShape,convexPosition,convexAngle, justTest, capsuleShape.radius);
 
-    vec2.set(circlePos,-capsuleShape.length/2, 0);
-    rotate(circlePos,circlePos,capsuleAngle);
-    add(circlePos,circlePos,capsulePosition);
+    vec2.set(circlePos,-halfLength, 0);
+    vec2.toGlobalFrame(circlePos, circlePos, capsulePosition, capsuleAngle);
     var result2 = this.circleConvex(capsuleBody,capsuleShape,circlePos,capsuleAngle, convexBody,convexShape,convexPosition,convexAngle, justTest, capsuleShape.radius);
 
     if(justTest && (result1 || result2)){
@@ -511,14 +510,12 @@ Narrowphase.prototype.capsuleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTe
     for(var i=0; i<2; i++){
 
         vec2.set(circlePosi,(i===0?-1:1)*si.length/2,0);
-        rotate(circlePosi,circlePosi,ai);
-        add(circlePosi,circlePosi,xi);
+        vec2.toGlobalFrame(circlePosi, circlePosi, xi, ai);
 
         for(var j=0; j<2; j++){
 
             vec2.set(circlePosj,(j===0?-1:1)*sj.length/2, 0);
-            rotate(circlePosj,circlePosj,aj);
-            add(circlePosj,circlePosj,xj);
+            vec2.toGlobalFrame(circlePosj, circlePosj, xj, aj);
 
             // Temporarily turn off friction
             if(this.enableFrictionReduction){
