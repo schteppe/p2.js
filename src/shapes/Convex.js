@@ -39,10 +39,19 @@ function Convex(options){
     // Copy the verts
     var vertices = options.vertices !== undefined ? options.vertices : [];
     for(var i=0; i < vertices.length; i++){
-        var v = vec2.create();
-        vec2.copy(v, vertices[i]);
-        this.vertices.push(v);
+        this.vertices.push(vec2.clone(vertices[i]));
     }
+
+    /**
+     * Edge normals defined in the local frame, pointing out of the shape.
+     * @property normals
+     * @type {Array}
+     */
+    var normals = this.normals = [];
+    for(var i=0; i < vertices.length; i++){
+        normals.push(vec2.create());
+    }
+    this.updateNormals();
 
     /**
      * Axes defined in the local frame.
@@ -53,11 +62,9 @@ function Convex(options){
 
     if(options.axes){
 
-        // Copy the axes
+        // Copy the axes given
         for(var i=0; i < options.axes.length; i++){
-            var axis = vec2.create();
-            vec2.copy(axis, options.axes[i]);
-            this.axes.push(axis);
+            this.axes.push(vec2.clone(options.axes[i]));
         }
 
     } else {
@@ -120,6 +127,23 @@ Convex.prototype.constructor = Convex;
 
 var tmpVec1 = vec2.create();
 var tmpVec2 = vec2.create();
+
+Convex.prototype.updateNormals = function(){
+    var vertices = this.vertices;
+    var normals = this.normals;
+
+    for(var i = 0; i < vertices.length; i++){
+        var worldPoint0 = vertices[i];
+        var worldPoint1 = vertices[(i+1) % vertices.length];
+
+        var normal = normals[i];
+        vec2.sub(normal, worldPoint1, worldPoint0);
+
+        // Get normal - just rotate 90 degrees since vertices are given in CCW
+        vec2.rotate90cw(normal, normal);
+        vec2.normalize(normal, normal);
+    }
+};
 
 /**
  * Project a Convex onto a world-oriented axis
