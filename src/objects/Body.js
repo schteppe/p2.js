@@ -1,4 +1,7 @@
 var vec2 = require('../math/vec2')
+,   add = vec2.add
+,   sub = vec2.sub
+,   vec2create = vec2.create
 ,   decomp = require('poly-decomp')
 ,   Convex = require('../shapes/Convex')
 ,   RaycastResult = require('../collision/RaycastResult')
@@ -131,17 +134,14 @@ function Body(options){
      * @private
      * @property {array} massMultiplier
      */
-    this.massMultiplier = vec2.create();
+    this.massMultiplier = vec2create();
 
     /**
      * The position of the body
      * @property position
      * @type {Array}
      */
-    this.position = vec2.create();
-    if(options.position){
-        vec2.copy(this.position, options.position);
-    }
+    this.position = options.position ? vec2.clone(options.position) : vec2create();
 
     /**
      * The interpolated position of the body. Use this for rendering.
@@ -162,17 +162,14 @@ function Body(options){
      * @property velocity
      * @type {Array}
      */
-    this.velocity = vec2.create();
-    if(options.velocity){
-        vec2.copy(this.velocity, options.velocity);
-    }
+    this.velocity = options.velocity ? vec2.clone(options.velocity) : vec2create();
 
     /**
      * Constraint velocity that was added to the body during the last step.
      * @property vlambda
      * @type {Array}
      */
-    this.vlambda = vec2.create();
+    this.vlambda = vec2create();
 
     /**
      * Angular constraint velocity that was added to the body during last step.
@@ -238,10 +235,7 @@ function Body(options){
      *         world.step(1/60);
      *     }
      */
-    this.force = vec2.create();
-    if(options.force){
-        vec2.copy(this.force, options.force);
-    }
+    this.force = options.force ? vec2.clone(options.force) : vec2create();
 
     /**
      * The angular force acting on the body. See {{#crossLink "Body/force:property"}}{{/crossLink}}.
@@ -256,7 +250,7 @@ function Body(options){
      * @type {Number}
      * @default 0.1
      */
-    this.damping = typeof(options.damping) === "number" ? options.damping : 0.1;
+    this.damping = options.damping !== undefined ? options.damping : 0.1;
 
     /**
      * The angular force acting on the body. Should be a value between 0 and 1.
@@ -264,7 +258,7 @@ function Body(options){
      * @type {Number}
      * @default 0.1
      */
-    this.angularDamping = typeof(options.angularDamping) === "number" ? options.angularDamping : 0.1;
+    this.angularDamping = options.angularDamping !== undefined ? options.angularDamping : 0.1;
 
     /**
      * The type of motion this body has. Should be one of: {{#crossLink "Body/STATIC:property"}}Body.STATIC{{/crossLink}}, {{#crossLink "Body/DYNAMIC:property"}}Body.DYNAMIC{{/crossLink}} and {{#crossLink "Body/KINEMATIC:property"}}Body.KINEMATIC{{/crossLink}}.
@@ -422,6 +416,27 @@ Body.prototype.constructor = Body;
 Body._idCounter = 0;
 
 /**
+ * @event sleepy
+ */
+var sleepyEvent = {
+    type: "sleepy"
+};
+
+/**
+ * @event sleep
+ */
+var sleepEvent = {
+    type: "sleep"
+};
+
+/**
+ * @event wakeup
+ */
+var wakeUpEvent = {
+    type: "wakeup"
+};
+
+/**
  * @private
  * @method updateSolveMassProperties
  */
@@ -472,7 +487,7 @@ Body.prototype.getAABB = function(){
 };
 
 var shapeAABB = new AABB(),
-    tmp = vec2.create();
+    tmp = vec2create();
 
 /**
  * Updates the AABB of the Body, and set .aabbNeedsUpdate = false.
@@ -490,7 +505,7 @@ Body.prototype.updateAABB = function() {
 
         // Get shape world offset
         vec2.rotate(offset, shape.position, bodyAngle);
-        vec2.add(offset, offset, this.position);
+        add(offset, offset, this.position);
 
         // Get shape AABB
         shape.computeAABB(shapeAABB, offset, angle);
@@ -650,7 +665,7 @@ Body.prototype.updateMassProperties = function(){
 Body.prototype.applyForce = function(force, relativePoint){
 
     // Add linear force
-    vec2.add(this.force, this.force, force);
+    add(this.force, this.force, force);
 
     if(relativePoint){
 
@@ -668,9 +683,9 @@ Body.prototype.applyForce = function(force, relativePoint){
  * @param  {Array} localForce The force vector to add, oriented in local body space.
  * @param  {Array} [localPoint] A point relative to the body in world space. If not given, it is set to zero and all of the impulse will be excerted on the center of mass.
  */
-var Body_applyForce_forceWorld = vec2.create();
-var Body_applyForce_pointWorld = vec2.create();
-var Body_applyForce_pointLocal = vec2.create();
+var Body_applyForce_forceWorld = vec2create();
+var Body_applyForce_pointWorld = vec2create();
+var Body_applyForce_pointLocal = vec2create();
 Body.prototype.applyForceLocal = function(localForce, localPoint){
     localPoint = localPoint || Body_applyForce_pointLocal;
     var worldForce = Body_applyForce_forceWorld;
@@ -686,7 +701,7 @@ Body.prototype.applyForceLocal = function(localForce, localPoint){
  * @param  {Array} impulse The impulse vector to add, oriented in world space.
  * @param  {Array} [relativePoint] A point relative to the body in world space. If not given, it is set to zero and all of the impulse will be excerted on the center of mass.
  */
-var Body_applyImpulse_velo = vec2.create();
+var Body_applyImpulse_velo = vec2create();
 Body.prototype.applyImpulse = function(impulseVector, relativePoint){
     if(this.type !== Body.DYNAMIC){
         return;
@@ -698,7 +713,7 @@ Body.prototype.applyImpulse = function(impulseVector, relativePoint){
     vec2.multiply(velo, this.massMultiplier, velo);
 
     // Add linear impulse
-    vec2.add(this.velocity, velo, this.velocity);
+    add(this.velocity, velo, this.velocity);
 
     if(relativePoint){
         // Compute produced rotational impulse velocity
@@ -716,9 +731,9 @@ Body.prototype.applyImpulse = function(impulseVector, relativePoint){
  * @param  {Array} impulse The impulse vector to add, oriented in world space.
  * @param  {Array} [relativePoint] A point relative to the body in world space. If not given, it is set to zero and all of the impulse will be excerted on the center of mass.
  */
-var Body_applyImpulse_impulseWorld = vec2.create();
-var Body_applyImpulse_pointWorld = vec2.create();
-var Body_applyImpulse_pointLocal = vec2.create();
+var Body_applyImpulse_impulseWorld = vec2create();
+var Body_applyImpulse_pointWorld = vec2create();
+var Body_applyImpulse_pointLocal = vec2create();
 Body.prototype.applyImpulseLocal = function(localImpulse, localPoint){
     localPoint = localPoint || Body_applyImpulse_pointLocal;
     var worldImpulse = Body_applyImpulse_impulseWorld;
@@ -795,12 +810,12 @@ Body.prototype.fromPolygon = function(path,options){
     // Make it counter-clockwise
     p.makeCCW();
 
-    if(typeof(options.removeCollinearPoints) === "number"){
+    if(options.removeCollinearPoints !== undefined){
         p.removeCollinearPoints(options.removeCollinearPoints);
     }
 
     // Check if any line segment intersects the path itself
-    if(typeof(options.skipSimpleCheck) === "undefined"){
+    if(options.skipSimpleCheck){
         if(!p.isSimple()){
             return false;
         }
@@ -820,7 +835,7 @@ Body.prototype.fromPolygon = function(path,options){
         convexes = p.quickDecomp();
     }
 
-    var cm = vec2.create();
+    var cm = vec2create();
 
     // Add convexes
     for(var i=0; i!==convexes.length; i++){
@@ -830,7 +845,7 @@ Body.prototype.fromPolygon = function(path,options){
         // Move all vertices so its center of mass is in the local center of the convex
         for(var j=0; j!==c.vertices.length; j++){
             var v = c.vertices[j];
-            vec2.sub(v,v,c.centerOfMass);
+            sub(v,v,c.centerOfMass);
         }
 
         vec2.scale(cm,c.centerOfMass,1);
@@ -849,9 +864,9 @@ Body.prototype.fromPolygon = function(path,options){
     return true;
 };
 
-var adjustCenterOfMass_tmp2 = vec2.create(),
-    adjustCenterOfMass_tmp3 = vec2.create(),
-    adjustCenterOfMass_tmp4 = vec2.create();
+var adjustCenterOfMass_tmp2 = vec2create(),
+    adjustCenterOfMass_tmp3 = vec2create(),
+    adjustCenterOfMass_tmp4 = vec2create();
 
 /**
  * Moves the shape offsets so their center of mass becomes the body center of mass.
@@ -867,7 +882,7 @@ Body.prototype.adjustCenterOfMass = function(){
     for(var i=0; i!==this.shapes.length; i++){
         var s = this.shapes[i];
         vec2.scale(offset_times_area, s.position, s.area);
-        vec2.add(sum, sum, offset_times_area);
+        add(sum, sum, offset_times_area);
         totalArea += s.area;
     }
 
@@ -876,15 +891,15 @@ Body.prototype.adjustCenterOfMass = function(){
     // Now move all shapes
     for(var i=0; i!==this.shapes.length; i++){
         var s = this.shapes[i];
-        vec2.sub(s.position, s.position, cm);
+        sub(s.position, s.position, cm);
     }
 
     // Move the body position too
-    vec2.add(this.position,this.position,cm);
+    add(this.position,this.position,cm);
 
     // And concave path
     for(var i=0; this.concavePath && i<this.concavePath.length; i++){
-        vec2.sub(this.concavePath[i], this.concavePath[i], cm);
+        sub(this.concavePath[i], this.concavePath[i], cm);
     }
 
     this.updateMassProperties();
@@ -896,8 +911,8 @@ Body.prototype.adjustCenterOfMass = function(){
  * @method setZeroForce
  */
 Body.prototype.setZeroForce = function(){
-    vec2.set(this.force,0.0,0.0);
-    this.angularForce = 0.0;
+    vec2.set(this.force,0,0);
+    this.angularForce = 0;
 };
 
 Body.prototype.resetConstraintVelocity = function(){
@@ -910,7 +925,7 @@ Body.prototype.resetConstraintVelocity = function(){
 Body.prototype.addConstraintVelocity = function(){
     var b = this,
         v = b.velocity;
-    vec2.add( v, v, b.vlambda);
+    add( v, v, b.vlambda);
     b.angularVelocity += b.wlambda;
 };
 
@@ -922,8 +937,8 @@ Body.prototype.addConstraintVelocity = function(){
 Body.prototype.applyDamping = function(dt){
     if(this.type === Body.DYNAMIC){ // Only for dynamic bodies
         var v = this.velocity;
-        vec2.scale(v, v, Math.pow(1.0 - this.damping,dt));
-        this.angularVelocity *= Math.pow(1.0 - this.angularDamping,dt);
+        vec2.scale(v, v, Math.pow(1 - this.damping,dt));
+        this.angularVelocity *= Math.pow(1 - this.angularDamping,dt);
     }
 };
 
@@ -937,7 +952,7 @@ Body.prototype.wakeUp = function(){
     this.sleepState = Body.AWAKE;
     this.idleTime = 0;
     if(s !== Body.AWAKE){
-        this.emit(Body.wakeUpEvent);
+        this.emit(wakeUpEvent);
     }
 };
 
@@ -947,11 +962,10 @@ Body.prototype.wakeUp = function(){
  */
 Body.prototype.sleep = function(){
     this.sleepState = Body.SLEEPING;
-    this.angularVelocity = 0;
-    this.angularForce = 0;
+    this.angularVelocity = this.angularForce = 0;
     vec2.set(this.velocity,0,0);
     vec2.set(this.force,0,0);
-    this.emit(Body.sleepEvent);
+    this.emit(sleepEvent);
 };
 
 /**
@@ -977,8 +991,12 @@ Body.prototype.sleepTick = function(time, dontSleep, dt){
         this.sleepState = Body.AWAKE;
     } else {
         this.idleTime += dt;
-        this.sleepState = Body.SLEEPY;
+        if(this.sleepState !== Body.SLEEPY){
+            this.sleepState = Body.SLEEPY;
+            this.emit(sleepyEvent);
+        }
     }
+
     if(this.idleTime > this.sleepTimeLimit){
         if(!dontSleep){
             this.sleep();
@@ -998,8 +1016,8 @@ Body.prototype.overlaps = function(body){
     return this.world.overlapKeeper.bodiesAreOverlapping(this, body);
 };
 
-var integrate_fhMinv = vec2.create();
-var integrate_velodt = vec2.create();
+var integrate_fhMinv = vec2create();
+var integrate_velodt = vec2create();
 
 /**
  * Move the body forward in time given its current velocity.
@@ -1022,14 +1040,14 @@ Body.prototype.integrate = function(dt){
     }
     vec2.scale(integrate_fhMinv, f, dt * minv);
     vec2.multiply(integrate_fhMinv, this.massMultiplier, integrate_fhMinv);
-    vec2.add(velo, integrate_fhMinv, velo);
+    add(velo, integrate_fhMinv, velo);
 
     // CCD
     if(!this.integrateToTimeOfImpact(dt)){
 
         // Regular position update
         vec2.scale(integrate_velodt, velo, dt);
-        vec2.add(pos, pos, integrate_velodt);
+        add(pos, pos, integrate_velodt);
         if(!this.fixedRotation){
             this.angle += this.angularVelocity * dt;
         }
@@ -1043,10 +1061,10 @@ var ray = new Ray({
     mode: Ray.CLOSEST,
     skipBackfaces: true
 });
-var direction = vec2.create();
-var end = vec2.create();
-var startToEnd = vec2.create();
-var rememberPosition = vec2.create();
+var direction = vec2create();
+var end = vec2create();
+var startToEnd = vec2create();
+var rememberPosition = vec2create();
 Body.prototype.integrateToTimeOfImpact = function(dt){
 
     if(this.ccdSpeedThreshold < 0 || vec2.squaredLength(this.velocity) < Math.pow(this.ccdSpeedThreshold, 2)){
@@ -1070,9 +1088,9 @@ Body.prototype.integrateToTimeOfImpact = function(dt){
     vec2.normalize(direction, this.velocity);
 
     vec2.scale(end, this.velocity, dt);
-    vec2.add(end, end, this.position);
+    add(end, end, this.position);
 
-    vec2.sub(startToEnd, end, this.position);
+    sub(startToEnd, end, this.position);
     var startToEndAngle = this.angularVelocity * dt;
     var len = vec2.length(startToEnd);
 
@@ -1103,7 +1121,7 @@ Body.prototype.integrateToTimeOfImpact = function(dt){
         return false;
     }
     result.getHitPoint(end, ray);
-    vec2.sub(startToEnd, end, this.position);
+    sub(startToEnd, end, this.position);
     timeOfImpact = vec2.distance(end, this.position) / len; // guess
 
     var rememberAngle = this.angle;
@@ -1122,7 +1140,7 @@ Body.prototype.integrateToTimeOfImpact = function(dt){
 
         // Move the body to that point
         vec2.scale(integrate_velodt, startToEnd, tmid);
-        vec2.add(this.position, rememberPosition, integrate_velodt);
+        add(this.position, rememberPosition, integrate_velodt);
         this.angle = rememberAngle + startToEndAngle * tmid;
         this.updateAABB();
 
@@ -1145,7 +1163,7 @@ Body.prototype.integrateToTimeOfImpact = function(dt){
 
     // move to TOI
     vec2.scale(integrate_velodt, startToEnd, timeOfImpact);
-    vec2.add(this.position, this.position, integrate_velodt);
+    add(this.position, this.position, integrate_velodt);
     if(!this.fixedRotation){
         this.angle += startToEndAngle * timeOfImpact;
     }
@@ -1164,27 +1182,6 @@ Body.prototype.getVelocityAtPoint = function(result, relativePoint){
     vec2.crossVZ(result, relativePoint, this.angularVelocity);
     vec2.subtract(result, this.velocity, result);
     return result;
-};
-
-/**
- * @event sleepy
- */
-Body.sleepyEvent = {
-    type: "sleepy"
-};
-
-/**
- * @event sleep
- */
-Body.sleepEvent = {
-    type: "sleep"
-};
-
-/**
- * @event wakeup
- */
-Body.wakeUpEvent = {
-    type: "wakeup"
 };
 
 /**
