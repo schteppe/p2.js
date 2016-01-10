@@ -146,6 +146,10 @@ WebGLRenderer.prototype.init = function(){
     this.aabbGraphics = new PIXI.Graphics();
     stage.addChild(this.aabbGraphics);
 
+    // Graphics object for pick
+    this.pickGraphics = new PIXI.Graphics();
+    stage.addChild(this.pickGraphics);
+
     stage.scale.x = 200; // Flip Y direction.
     stage.scale.y = -200;
 
@@ -754,6 +758,24 @@ WebGLRenderer.prototype.render = function(){
     } else if(!this.aabbGraphics.cleared){
         this.aabbGraphics.clear();
         this.aabbGraphics.cleared = true;
+    }
+
+    // Draw pick line
+    if(this.mouseConstraint){
+        var g = this.pickGraphics;
+        g.clear();
+        this.stage.removeChild(g);
+        this.stage.addChild(g);
+        g.lineStyle(this.lineWidth,0x000000,1);
+        var c = this.mouseConstraint;
+        var worldPivotB = p2.vec2.create();
+        c.bodyB.toWorldFrame(worldPivotB, c.pivotB);
+        g.moveTo(c.pivotA[0], c.pivotA[1]);
+        g.lineTo(worldPivotB[0], worldPivotB[1]);
+        g.cleared = false;
+    } else if(!this.pickGraphics.cleared){
+        this.pickGraphics.clear();
+        this.pickGraphics.cleared = true;
     }
 
     if(this.followBody){

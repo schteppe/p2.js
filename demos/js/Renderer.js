@@ -592,7 +592,8 @@ Renderer.prototype.handleMouseDown = function(physicsPosition){
             this.world.addBody(this.nullBody);
             this.mouseConstraint = new p2.RevoluteConstraint(this.nullBody, b, {
                 localPivotA: physicsPosition,
-                localPivotB: localPoint
+                localPivotB: localPoint,
+                maxForce: 1000 * b.mass
             });
             this.world.addConstraint(this.mouseConstraint);
         } else {
