@@ -36,9 +36,6 @@ var tmp1 = createVec2()
 ,   tmp13 = createVec2()
 ,   tmp14 = createVec2()
 ,   tmp15 = createVec2()
-,   tmp16 = createVec2()
-,   tmp17 = createVec2()
-,   tmp18 = createVec2()
 ,   tmpArray = [];
 
 /**
@@ -649,11 +646,8 @@ Narrowphase.prototype.planeLine = function(planeBody, planeShape, planeOffset, p
     vec2.set(worldVertex1,  lineShape.length/2, 0);
 
     // Not sure why we have to use worldVertex*1 here, but it won't work otherwise. Tired.
-    rotate(worldVertex01, worldVertex0, lineAngle);
-    rotate(worldVertex11, worldVertex1, lineAngle);
-
-    add(worldVertex01, worldVertex01, lineOffset);
-    add(worldVertex11, worldVertex11, lineOffset);
+    vec2.toGlobalFrame(worldVertex01, worldVertex0, lineOffset, lineAngle);
+    vec2.toGlobalFrame(worldVertex11, worldVertex1, lineOffset, lineAngle);
 
     copy(worldVertex0,worldVertex01);
     copy(worldVertex1,worldVertex11);
@@ -769,7 +763,7 @@ Narrowphase.prototype.circleLine = function(
     circleRadius
 ){
     var lineRadius = lineRadius || 0,
-        circleRadius = typeof(circleRadius)!=="undefined" ? circleRadius : circleShape.radius,
+        circleRadius = circleRadius !== undefined ? circleRadius : circleShape.radius,
 
         orthoDist = tmp1,
         lineToCircleOrthoUnit = tmp2,
@@ -788,16 +782,15 @@ Narrowphase.prototype.circleLine = function(
 
         verts = tmpArray;
 
+    var halfLineLength = lineShape.length / 2;
+
     // Get start and end points
-    vec2.set(worldVertex0, -lineShape.length/2, 0);
-    vec2.set(worldVertex1,  lineShape.length/2, 0);
+    vec2.set(worldVertex0, -halfLineLength, 0);
+    vec2.set(worldVertex1,  halfLineLength, 0);
 
     // Not sure why we have to use worldVertex*1 here, but it won't work otherwise. Tired.
-    rotate(worldVertex01, worldVertex0, lineAngle);
-    rotate(worldVertex11, worldVertex1, lineAngle);
-
-    add(worldVertex01, worldVertex01, lineOffset);
-    add(worldVertex11, worldVertex11, lineOffset);
+    vec2.toGlobalFrame(worldVertex01, worldVertex0, lineOffset, lineAngle);
+    vec2.toGlobalFrame(worldVertex11, worldVertex1, lineOffset, lineAngle);
 
     copy(worldVertex0,worldVertex01);
     copy(worldVertex1,worldVertex11);
@@ -939,6 +932,7 @@ Narrowphase.prototype.circleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTes
  * @param  {Number} convexAngle
  * @param  {Boolean} justTest
  * @param  {Number} circleRadius
+ * @todo Should probably do a separating axis test like https://github.com/erincatto/Box2D/blob/master/Box2D/Box2D/Collision/b2CollideCircle.cpp#L62
  */
 Narrowphase.prototype[Shape.CIRCLE | Shape.CONVEX] =
 Narrowphase.prototype[Shape.CIRCLE | Shape.BOX] =
@@ -954,23 +948,24 @@ Narrowphase.prototype.circleConvex = function(
     justTest,
     circleRadius
 ){
-    var circleRadius = typeof(circleRadius)==="number" ? circleRadius : circleShape.radius;
+    var circleRadius = circleRadius !== undefined ? circleRadius : circleShape.radius;
 
     var worldVertex0 = tmp1,
         worldVertex1 = tmp2,
-        worldEdge = tmp3,
-        worldEdgeUnit = tmp4,
-        worldNormal = tmp5,
+        edge = tmp3,
+        edgeUnit = tmp4,
+        normal = tmp5,
+        zero = tmp6,
+        localCirclePosition = tmp7,
         dist = tmp10,
         worldVertex = tmp11,
-
         closestEdgeProjectedPoint = tmp13,
         candidate = tmp14,
         candidateDist = tmp15,
-        minCandidate = tmp16,
-
-        found = false,
+        found = -1,
         minCandidateDistance = Number.MAX_VALUE;
+
+    vec2.set(zero, 0, 0);
 
     // New algorithm:
     // 1. Check so center of circle is not inside the polygon. If it is, this wont work...
@@ -978,51 +973,67 @@ Narrowphase.prototype.circleConvex = function(
     // 2. 1. Get point on circle that is closest to the edge (scale normal with -radius)
     // 2. 2. Check if point is inside.
 
+    vec2.toLocalFrame(localCirclePosition, circleOffset, convexOffset, convexAngle);
+
     var verts = convexShape.vertices;
 
     // Check all edges first
-    for(var i=0; i!==verts.length+1; i++){
-        var v0 = verts[i%verts.length],
-            v1 = verts[(i+1)%verts.length];
+    var numVerts = verts.length;
+    for(var i=0; i!==numVerts+1; i++){
+        var v0 = verts[i % numVerts],
+            v1 = verts[(i+1) % numVerts];
 
-        rotate(worldVertex0, v0, convexAngle);
-        rotate(worldVertex1, v1, convexAngle);
-        add(worldVertex0, worldVertex0, convexOffset);
-        add(worldVertex1, worldVertex1, convexOffset);
-        sub(worldEdge, worldVertex1, worldVertex0);
+        sub(edge, v1, v0);
 
-        normalize(worldEdgeUnit, worldEdge);
+        normalize(edgeUnit, edge);
 
         // Get tangent to the edge. Points out of the Convex
-        vec2.rotate90cw(worldNormal, worldEdgeUnit);
+        vec2.rotate90cw(normal, edgeUnit);
 
-        // Get point on circle, closest to the polygon
-        scale(candidate,worldNormal,-circleShape.radius);
-        add(candidate,candidate,circleOffset);
+        // Get point on circle, closest to the convex
+        scale(candidate, normal, -circleRadius);
+        add(candidate,candidate,localCirclePosition);
 
-        if(pointInConvex(candidate,convexShape,convexOffset,convexAngle)){
+        if(pointInConvex(candidate,convexShape,zero,0)){
 
-            sub(candidateDist,worldVertex0,candidate);
-            var candidateDistance = Math.abs(dot(candidateDist,worldNormal));
+            sub(candidateDist,v0,candidate);
+            var candidateDistance = Math.abs(dot(candidateDist, normal));
 
             if(candidateDistance < minCandidateDistance){
-                copy(minCandidate,candidate);
                 minCandidateDistance = candidateDistance;
-                scale(closestEdgeProjectedPoint,worldNormal,candidateDistance);
-                add(closestEdgeProjectedPoint,closestEdgeProjectedPoint,candidate);
-                found = true;
+                found = i;
             }
         }
     }
 
-    if(found){
+    if(found !== -1){
 
         if(justTest){
             return true;
         }
 
+        var v0 = verts[found % numVerts],
+            v1 = verts[(found+1) % numVerts];
+
+        vec2.toGlobalFrame(worldVertex0, v0, convexOffset, convexAngle);
+        vec2.toGlobalFrame(worldVertex1, v1, convexOffset, convexAngle);
+
+        sub(edge, worldVertex1, worldVertex0);
+
+        normalize(edgeUnit, edge);
+
+        // Get tangent to the edge. Points out of the Convex
+        vec2.rotate90cw(normal, edgeUnit);
+
+        // Get point on circle, closest to the convex
+        scale(candidate, normal, -circleRadius);
+        add(candidate,candidate,circleOffset);
+
+        scale(closestEdgeProjectedPoint, normal, minCandidateDistance);
+        add(closestEdgeProjectedPoint,closestEdgeProjectedPoint,candidate);
+
         var c = this.createContactEquation(circleBody,convexBody,circleShape,convexShape);
-        sub(c.normalA, minCandidate, circleOffset);
+        sub(c.normalA, candidate, circleOffset);
         normalize(c.normalA, c.normalA);
 
         scale(c.contactPointA,  c.normalA, circleRadius);
@@ -1046,15 +1057,17 @@ Narrowphase.prototype.circleConvex = function(
     if(circleRadius > 0){
         for(var i=0; i<verts.length; i++){
             var localVertex = verts[i];
-            rotate(worldVertex, localVertex, convexAngle);
-            add(worldVertex, worldVertex, convexOffset);
 
-            sub(dist, worldVertex, circleOffset);
-            if(squaredLength(dist) < Math.pow(circleRadius, 2)){
+            sub(dist, localVertex, localCirclePosition);
+
+            if(squaredLength(dist) < circleRadius * circleRadius){
 
                 if(justTest){
                     return true;
                 }
+
+                vec2.toGlobalFrame(worldVertex, localVertex, convexOffset, convexAngle);
+                sub(dist, worldVertex, circleOffset);
 
                 var c = this.createContactEquation(circleBody,convexBody,circleShape,convexShape);
 
@@ -1157,10 +1170,9 @@ Narrowphase.prototype.particleConvex = function(
         worldTangent = tmp5,
         centerDist = tmp6,
         convexToparticle = tmp7,
-        //dist = tmp10,
         closestEdgeProjectedPoint = tmp13,
-        candidateDist = tmp17,
-        minEdgeNormal = tmp18,
+        candidateDist = tmp14,
+        minEdgeNormal = tmp15,
         minCandidateDistance = Number.MAX_VALUE,
         found = false,
         verts = convexShape.vertices;
