@@ -504,8 +504,7 @@ Body.prototype.updateAABB = function() {
             angle = shape.angle + bodyAngle;
 
         // Get shape world offset
-        vec2.rotate(offset, shape.position, bodyAngle);
-        add(offset, offset, this.position);
+        vec2.toGlobalFrame(offset, shape.position, this.position, bodyAngle);
 
         // Get shape AABB
         shape.computeAABB(shapeAABB, offset, angle);

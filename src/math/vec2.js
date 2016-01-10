@@ -117,9 +117,12 @@ vec2.rotate90cw = function(out, a) {
  * @param  {Number} frameAngle
  */
 vec2.toLocalFrame = function(out, worldPoint, framePosition, frameAngle){
-    vec2.copy(out, worldPoint);
-    vec2.sub(out, out, framePosition);
-    vec2.rotate(out, out, -frameAngle);
+    var c = Math.cos(-frameAngle),
+        s = Math.sin(-frameAngle),
+        x = worldPoint[0] - framePosition[0],
+        y = worldPoint[1] - framePosition[1];
+    out[0] = c * x - s * y;
+    out[1] = s * x + c * y;
 };
 
 /**
@@ -131,9 +134,14 @@ vec2.toLocalFrame = function(out, worldPoint, framePosition, frameAngle){
  * @param  {Number} frameAngle
  */
 vec2.toGlobalFrame = function(out, localPoint, framePosition, frameAngle){
-    vec2.copy(out, localPoint);
-    vec2.rotate(out, out, frameAngle);
-    vec2.add(out, out, framePosition);
+    var c = Math.cos(frameAngle),
+        s = Math.sin(frameAngle),
+        x = localPoint[0],
+        y = localPoint[1],
+        addX = framePosition[0],
+        addY = framePosition[1];
+    out[0] = c * x - s * y + addX;
+    out[1] = s * x + c * y + addY;
 };
 
 /**
@@ -154,9 +162,7 @@ vec2.vectorToLocalFrame = function(out, worldVector, frameAngle){
  * @param  {Array} localVector
  * @param  {Number} frameAngle
  */
-vec2.vectorToGlobalFrame = function(out, localVector, frameAngle){
-    vec2.rotate(out, localVector, frameAngle);
-};
+vec2.vectorToGlobalFrame = vec2.rotate;
 
 /**
  * Compute centroid of a triangle spanned by vectors a,b,c. See http://easycalculation.com/analytical/learn-centroid.php
