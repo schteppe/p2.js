@@ -22,14 +22,14 @@ function Equation(bodyA, bodyB, minForce, maxForce){
      * @property minForce
      * @type {Number}
      */
-    this.minForce = typeof(minForce)==="undefined" ? -Number.MAX_VALUE : minForce;
+    this.minForce = minForce === undefined ? -Number.MAX_VALUE : minForce;
 
     /**
      * Max force to apply when solving.
      * @property maxForce
      * @type {Number}
      */
-    this.maxForce = typeof(maxForce)==="undefined" ? Number.MAX_VALUE : maxForce;
+    this.maxForce = maxForce === undefined ? Number.MAX_VALUE : maxForce;
 
     /**
      * First body participating in the constraint
