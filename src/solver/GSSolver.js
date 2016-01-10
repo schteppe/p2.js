@@ -91,6 +91,9 @@ GSSolver.prototype.solve = function(h, world){
         }
         c.B = c.computeB(c.a,c.b,h);
         c.invC = c.computeInvC(c.epsilon);
+
+        c.maxForceDt = c.maxForce * h;
+        c.minForceDt = c.minForce * h;
     }
 
     var c, deltalambdaTot, i, j;
@@ -139,6 +142,9 @@ GSSolver.prototype.solve = function(h, world){
                     f *= eq.frictionCoefficient / eq.contactEquations.length;
                     eq.maxForce =  f;
                     eq.minForce = -f;
+
+                    eq.maxForceDt = f * h;
+                    eq.minForceDt = -f * h;
                 }
             }
         }
@@ -181,25 +187,24 @@ function updateMultipliers(equations, invDt){
     }
 }
 
-function iterateEquation(eq,dt){
+function iterateEquation(eq){
     // Compute iteration
     var B = eq.B,
         eps = eq.epsilon,
         invC = eq.invC,
         lambdaj = eq.lambda,
-        GWlambda = eq.computeGWlambda();
-
-    var maxForce = eq.maxForce,
-        minForce = eq.minForce;
+        GWlambda = eq.computeGWlambda(),
+        maxForce_dt = eq.maxForceDt,
+        minForce_dt = eq.minForceDt;
 
     var deltalambda = invC * ( B - GWlambda - eps * lambdaj );
 
     // Clamp if we are not within the min/max interval
     var lambdaj_plus_deltalambda = lambdaj + deltalambda;
-    if(lambdaj_plus_deltalambda < minForce*dt){
-        deltalambda = minForce*dt - lambdaj;
-    } else if(lambdaj_plus_deltalambda > maxForce*dt){
-        deltalambda = maxForce*dt - lambdaj;
+    if(lambdaj_plus_deltalambda < minForce_dt){
+        deltalambda = minForce_dt - lambdaj;
+    } else if(lambdaj_plus_deltalambda > maxForce_dt){
+        deltalambda = maxForce_dt - lambdaj;
     }
     eq.lambda += deltalambda;
     eq.addToWlambda(deltalambda);

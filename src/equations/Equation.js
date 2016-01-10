@@ -1,7 +1,6 @@
 module.exports = Equation;
 
 var vec2 = require('../math/vec2'),
-    add = vec2.add,
     scale = vec2.scale,
     multiply = vec2.multiply,
     createVec2 = vec2.create,
@@ -102,7 +101,8 @@ function Equation(bodyA, bodyB, minForce, maxForce){
      */
     this.enabled = true;
 
-    this.lambda = this.B = this.invC = 0;
+    // Temp stuff
+    this.lambda = this.B = this.invC = this.minForceDt = this.maxForceDt = 0;
 }
 
 /**
@@ -121,10 +121,7 @@ Equation.DEFAULT_STIFFNESS = 1e6;
  */
 Equation.DEFAULT_RELAXATION = 4;
 
-var addToWlambda_temp = createVec2(),
-    addToWlambda_Gi = createVec2(),
-    addToWlambda_Gj = createVec2(),
-    qi = createVec2(),
+var qi = createVec2(),
     qj = createVec2(),
     iMfi = createVec2(),
     iMfj = createVec2();
@@ -277,31 +274,18 @@ Equation.prototype = {
     addToWlambda: function(deltalambda){
         var bi = this.bodyA,
             bj = this.bodyB,
-            temp = addToWlambda_temp,
-            Gi = addToWlambda_Gi,
-            Gj = addToWlambda_Gj,
             invMassi = bi.invMassSolve,
             invMassj = bj.invMassSolve,
             invIi = bi.invInertiaSolve,
             invIj = bj.invInertiaSolve,
             G = this.G;
 
-        Gi[0] = G[0];
-        Gi[1] = G[1];
-        Gj[0] = G[3];
-        Gj[1] = G[4];
+        // v_lambda = G * inv(M) * delta_lambda
 
-        // Add to linear velocity
-        scale(temp, Gi, invMassi*deltalambda);
-        multiply(temp, temp, bi.massMultiplier);
-        add( bi.vlambda, bi.vlambda, temp);
-        // This impulse is in the offset frame
-        // Also add contribution to angular
+        addToVLambda(bi.vlambda, G[0], G[1], invMassi, deltalambda, bi.massMultiplier);
         bi.wlambda += invIi * G[2] * deltalambda;
 
-        scale(temp, Gj, invMassj*deltalambda);
-        multiply(temp, temp, bj.massMultiplier);
-        add( bj.vlambda, bj.vlambda, temp);
+        addToVLambda(bj.vlambda, G[3], G[4], invMassj, deltalambda, bj.massMultiplier);
         bj.wlambda += invIj * G[5] * deltalambda;
     },
 
@@ -316,3 +300,8 @@ Equation.prototype = {
         return invC;
     }
 };
+
+function addToVLambda(vlambda, Gx, Gy, invMass, deltalambda, massMultiplier){
+    vlambda[0] += Gx * invMass * deltalambda * massMultiplier[0];
+    vlambda[1] += Gy * invMass * deltalambda * massMultiplier[1];
+}
