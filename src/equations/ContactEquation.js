@@ -76,8 +76,7 @@ ContactEquation.prototype.computeB = function(a,b,h){
         xi = bi.position,
         xj = bj.position;
 
-    var penetrationVec = this.penetrationVec,
-        n = this.normalA,
+    var n = this.normalA,
         G = this.G;
 
     // Caluclate cross products
@@ -92,10 +91,6 @@ ContactEquation.prototype.computeB = function(a,b,h){
     G[4] = n[1];
     G[5] = rjxn;
 
-    // Calculate q = xj+rj -(xi+ri) i.e. the penetration vector
-    vec2.add(penetrationVec,xj,rj);
-    vec2.sub(penetrationVec,penetrationVec,xi);
-    vec2.sub(penetrationVec,penetrationVec,ri);
 
     // Compute iteration
     var GW, Gq;
@@ -103,6 +98,9 @@ ContactEquation.prototype.computeB = function(a,b,h){
         Gq = 0;
         GW = (1/b)*(1+this.restitution) * this.computeGW();
     } else {
+        // Calculate q = xj+rj -(xi+ri) i.e. the penetration vector
+        var penetrationVec = this.penetrationVec;
+        addSubSub(penetrationVec,xj,rj,xi,ri);
         Gq = vec2.dot(n,penetrationVec) + this.offset;
         GW = this.computeGW();
     }
@@ -112,6 +110,11 @@ ContactEquation.prototype.computeB = function(a,b,h){
 
     return B;
 };
+
+function addSubSub(out, a, b, c, d){
+    out[0] = a[0] + b[0] - c[0] - d[0];
+    out[1] = a[1] + b[1] - c[1] - d[1];
+}
 
 var vi = vec2.create();
 var vj = vec2.create();
