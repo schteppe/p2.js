@@ -957,6 +957,7 @@ Narrowphase.prototype.circleConvex = function(
         normal = tmp5,
         zero = tmp6,
         localCirclePosition = tmp7,
+        r = tmp8,
         dist = tmp10,
         worldVertex = tmp11,
         closestEdgeProjectedPoint = tmp13,
@@ -975,29 +976,43 @@ Narrowphase.prototype.circleConvex = function(
 
     vec2.toLocalFrame(localCirclePosition, circleOffset, convexOffset, convexAngle);
 
-    var verts = convexShape.vertices;
+    var vertices = convexShape.vertices;
+    var normals = convexShape.normals;
+    var numVertices = vertices.length;
+    var normalIndex = -1;
 
-    // Check all edges first
-    var numVerts = verts.length;
-    for(var i=0; i!==numVerts+1; i++){
-        var v0 = verts[i % numVerts],
-            v1 = verts[(i+1) % numVerts];
+    // Find the min separating edge.
+    var separation = -Number.MAX_VALUE;
+    var radius = convexShape.boundingRadius + circleRadius;
 
-        sub(edge, v1, v0);
+    for (var i = 0; i < numVertices; i++){
+        sub(r, localCirclePosition, vertices[i]);
+        var s = dot(normals[i], r);
 
-        normalize(edgeUnit, edge);
+        if (s > radius){
+            // Early out.
+            return justTest ? false : 0;
+        }
 
-        // Get tangent to the edge. Points out of the Convex
-        vec2.rotate90cw(normal, edgeUnit);
+        if (s > separation){
+            separation = s;
+            normalIndex = i;
+        }
+    }
+
+    // Check edges first
+    for(var i=normalIndex + numVertices - 1; i < normalIndex + numVertices + 2; i++){
+        var v0 = vertices[i % numVertices],
+            n = normals[i % numVertices];
 
         // Get point on circle, closest to the convex
-        scale(candidate, normal, -circleRadius);
+        scale(candidate, n, -circleRadius);
         add(candidate,candidate,localCirclePosition);
 
-        if(pointInConvex(candidate,convexShape,zero,0)){
+        if(pointInConvexLocal(candidate,convexShape)){
 
             sub(candidateDist,v0,candidate);
-            var candidateDistance = Math.abs(dot(candidateDist, normal));
+            var candidateDistance = Math.abs(dot(candidateDist, n));
 
             if(candidateDistance < minCandidateDistance){
                 minCandidateDistance = candidateDistance;
@@ -1012,8 +1027,8 @@ Narrowphase.prototype.circleConvex = function(
             return true;
         }
 
-        var v0 = verts[found % numVerts],
-            v1 = verts[(found+1) % numVerts];
+        var v0 = vertices[found % numVertices],
+            v1 = vertices[(found+1) % numVertices];
 
         vec2.toGlobalFrame(worldVertex0, v0, convexOffset, convexAngle);
         vec2.toGlobalFrame(worldVertex1, v1, convexOffset, convexAngle);
@@ -1053,10 +1068,10 @@ Narrowphase.prototype.circleConvex = function(
         return 1;
     }
 
-    // Check all vertices
-    if(circleRadius > 0){
-        for(var i=0; i<verts.length; i++){
-            var localVertex = verts[i];
+    // Check closest vertices
+    if(circleRadius > 0 && normalIndex !== -1){
+        for(var i=normalIndex + numVertices; i < normalIndex + numVertices + 2; i++){
+            var localVertex = vertices[i % numVertices];
 
             sub(dist, localVertex, localCirclePosition);
 
@@ -1116,6 +1131,38 @@ function pointInConvex(worldPoint,convexShape,convexOffset,convexAngle){
     for(var i=0, numVerts=verts.length; i!==numVerts+1; i++){
         var v0 = verts[i % numVerts],
             v1 = verts[(i+1) % numVerts];
+
+        sub(r0, v0, localPoint);
+        sub(r1, v1, localPoint);
+
+        var cross = vec2.crossLength(r0,r1);
+
+        if(lastCross === null){
+            lastCross = cross;
+        }
+
+        // If we got a different sign of the distance vector, the point is out of the polygon
+        if(cross*lastCross < 0){
+            return false;
+        }
+        lastCross = cross;
+    }
+    return true;
+}
+
+/*
+ * Check if a point is in a polygon
+ */
+function pointInConvexLocal(localPoint,convexShape){
+    var r0 = pic_r0,
+        r1 = pic_r1,
+        verts = convexShape.vertices,
+        lastCross = null,
+        numVerts = verts.length;
+
+    for(var i=0; i < numVerts + 1; i++){
+        var v0 = verts[i % numVerts],
+            v1 = verts[(i + 1) % numVerts];
 
         sub(r0, v0, localPoint);
         sub(r1, v1, localPoint);
