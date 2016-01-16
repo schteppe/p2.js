@@ -804,7 +804,7 @@ function runNarrowphase(world, np, bi, si, xi, ai, bj, sj, xj, aj, cm, glen){
     vec2.toGlobalFrame(xiw, xi, bi.position, bi.angle);
     vec2.toGlobalFrame(xjw, xj, bj.position, bj.angle);
 
-    if(vec2.distance(xiw,xiw) > si.boundingRadius + sj.boundingRadius){
+    if(vec2.distance(xiw,xjw) > si.boundingRadius + sj.boundingRadius){
         return;
     }
 
