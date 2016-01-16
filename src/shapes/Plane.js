@@ -54,30 +54,22 @@ Plane.prototype.computeAABB = function(out, position, angle){
 
     if(a === 0){
         // y goes from -inf to 0
-        upperBound[1] = 0;
-        // set(lowerBound, -max, -max);
-        // set(upperBound,  max,  0);
+        upperBound[1] = position[1];
 
     } else if(a === Math.PI / 2){
 
         // x goes from 0 to inf
-        lowerBound[0] = 0;
-        // set(lowerBound, 0, -max);
-        // set(upperBound,      max,  max);
+        lowerBound[0] = position[0];
 
     } else if(a === Math.PI){
 
         // y goes from 0 to inf
-        lowerBound[1] = 0;
-        // set(lowerBound, -max, 0);
-        // set(upperBound,  max, max);
+        lowerBound[1] = position[1];
 
     } else if(a === 3*Math.PI/2){
 
         // x goes from -inf to 0
-        upperBound[0] = 0;
-        // set(lowerBound, -max,     -max);
-        // set(upperBound,  0,  max);
+        upperBound[0] = position[0];
 
     }
 };
