@@ -1336,7 +1336,7 @@ Narrowphase.prototype.circleCircle = function(
 
     sub(dist,offsetA,offsetB);
     var r = radiusA + radiusB;
-    if(squaredLength(dist) > Math.pow(r,2)){
+    if(squaredLength(dist) > r*r){
         return 0;
     }
 
@@ -1345,17 +1345,18 @@ Narrowphase.prototype.circleCircle = function(
     }
 
     var c = this.createContactEquation(bodyA,bodyB,shapeA,shapeB);
-    sub(c.normalA, offsetB, offsetA);
-    normalize(c.normalA,c.normalA);
+    var cpA = c.contactPointA;
+    var cpB = c.contactPointB;
+    var normalA = c.normalA;
 
-    scale( c.contactPointA, c.normalA,  radiusA);
-    scale( c.contactPointB, c.normalA, -radiusB);
+    sub(normalA, offsetB, offsetA);
+    normalize(normalA,normalA);
 
-    add(c.contactPointA, c.contactPointA, offsetA);
-    sub(c.contactPointA, c.contactPointA, bodyA.position);
+    scale( cpA, normalA,  radiusA);
+    scale( cpB, normalA, -radiusB);
 
-    add(c.contactPointB, c.contactPointB, offsetB);
-    sub(c.contactPointB, c.contactPointB, bodyB.position);
+    addSub(cpA, cpA, offsetA, bodyA.position);
+    addSub(cpB, cpB, offsetB, bodyB.position);
 
     this.contactEquations.push(c);
 
@@ -1364,6 +1365,11 @@ Narrowphase.prototype.circleCircle = function(
     }
     return 1;
 };
+
+function addSub(out, a, b, c){
+    out[0] = a[0] + b[0] - c[0];
+    out[1] = a[1] + b[1] - c[1];
+}
 
 /**
  * Plane/Convex Narrowphase
@@ -1549,26 +1555,31 @@ Narrowphase.prototype.circleParticle = function(
     justTest
 ){
     var dist = tmp1;
+    var circleRadius = circleShape.radius;
 
     sub(dist, particleOffset, circleOffset);
-    if(squaredLength(dist) > Math.pow(circleShape.radius, 2)){
-        return 0;
+    if(squaredLength(dist) > circleRadius*circleRadius){
+        return justTest ? false : 0;
     }
     if(justTest){
         return true;
     }
 
     var c = this.createContactEquation(circleBody,particleBody,circleShape,particleShape);
-    copy(c.normalA, dist);
-    normalize(c.normalA,c.normalA);
+    var normalA = c.normalA;
+    var contactPointA = c.contactPointA;
+    var contactPointB = c.contactPointB;
+
+    copy(normalA, dist);
+    normalize(normalA, normalA);
 
     // Vector from circle to contact point is the normal times the circle radius
-    scale(c.contactPointA, c.normalA, circleShape.radius);
-    add(c.contactPointA, c.contactPointA, circleOffset);
-    sub(c.contactPointA, c.contactPointA, circleBody.position);
+    scale(contactPointA, normalA, circleRadius);
+    add(contactPointA, contactPointA, circleOffset);
+    sub(contactPointA, contactPointA, circleBody.position);
 
     // Vector from particle center to contact point is zero
-    sub(c.contactPointB, particleOffset, particleBody.position);
+    sub(contactPointB, particleOffset, particleBody.position);
 
     this.contactEquations.push(c);
 
