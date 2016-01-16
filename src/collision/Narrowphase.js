@@ -1377,6 +1377,7 @@ Narrowphase.prototype.circleCircle = function(
  * @param  {Array} convexOffset
  * @param  {Number} convexAngle
  * @param {Boolean} justTest
+ * @todo only use the deepest contact point + the contact point furthest away from it
  */
 Narrowphase.prototype[Shape.PLANE | Shape.CONVEX] =
 Narrowphase.prototype[Shape.PLANE | Shape.BOX] =
@@ -1417,8 +1418,8 @@ Narrowphase.prototype.planeConvex = function(
                 return true;
             }
 
-            rotate(worldVertex, v, convexAngle);
-            add(worldVertex, worldVertex, convexOffset);
+            vec2.toGlobalFrame(worldVertex, v, convexOffset, convexAngle);
+
             sub(dist, worldVertex, planeOffset);
 
             // Found vertex
@@ -1435,7 +1436,6 @@ Narrowphase.prototype.planeConvex = function(
 
             // rj is from convex center to contact
             sub(c.contactPointB, worldVertex, convexBody.position);
-
 
             // ri is from plane center to contact
             sub( c.contactPointA, worldVertex, dist);
@@ -1609,16 +1609,14 @@ Narrowphase.prototype.planeCapsule = function(
 ){
     var end1 = planeCapsule_tmp1,
         end2 = planeCapsule_tmp2,
-        circle = planeCapsule_tmpCircle;
+        circle = planeCapsule_tmpCircle,
+        halfLength = capsuleShape.length / 2;
 
     // Compute world end positions
-    vec2.set(end1, -capsuleShape.length/2, 0);
-    rotate(end1,end1,capsuleAngle);
-    add(end1,end1,capsuleOffset);
-
-    vec2.set(end2,  capsuleShape.length/2, 0);
-    rotate(end2,end2,capsuleAngle);
-    add(end2,end2,capsuleOffset);
+    vec2.set(end1, -halfLength, 0);
+    vec2.set(end2, halfLength, 0);
+    vec2.toGlobalFrame(end1, end1, capsuleOffset, capsuleAngle);
+    vec2.toGlobalFrame(end2, end2, capsuleOffset, capsuleAngle);
 
     circle.radius = capsuleShape.radius;
 
@@ -1767,7 +1765,7 @@ Narrowphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
 
     // Find edges with normals closest to the separating axis
     var closestEdge1 = Narrowphase.getClosestEdge(si,ai,sepAxis,true), // Flipped axis
-        closestEdge2 = Narrowphase.getClosestEdge(sj,aj,sepAxis);
+        closestEdge2 = Narrowphase.getClosestEdge(sj,aj,sepAxis,false);
 
     if(closestEdge1 === -1 || closestEdge2 === -1){
         return 0;
@@ -1812,27 +1810,26 @@ Narrowphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
 
             // Get world point
             var v = shapeB.vertices[(j+shapeB.vertices.length)%shapeB.vertices.length];
-            rotate(worldPoint, v, angleB);
-            add(worldPoint, worldPoint, offsetB);
+            vec2.toGlobalFrame(worldPoint, v, offsetB, angleB);
 
             var insideNumEdges = 0;
 
             // Loop over the 3 closest edges in convex A
             for(var i=closestEdgeA-1; i<closestEdgeA+2; i++){
 
-                var v0 = shapeA.vertices[(i  +shapeA.vertices.length)%shapeA.vertices.length],
-                    v1 = shapeA.vertices[(i+1+shapeA.vertices.length)%shapeA.vertices.length];
+                var normalizedI = (i + shapeA.vertices.length) % shapeA.vertices.length,
+                    v0 = shapeA.vertices[normalizedI],
+                    v1 = shapeA.vertices[(normalizedI+1) % shapeA.vertices.length];
 
                 // Construct the edge
-                rotate(worldPoint0, v0, angleA);
-                rotate(worldPoint1, v1, angleA);
-                add(worldPoint0, worldPoint0, offsetA);
-                add(worldPoint1, worldPoint1, offsetA);
+                vec2.toGlobalFrame(worldPoint0, v0, offsetA, angleA);
+                //vec2.toGlobalFrame(worldPoint1, v1, offsetA, angleA);
 
-                sub(worldEdge, worldPoint1, worldPoint0);
+                //sub(worldEdge, worldPoint1, worldPoint0);
 
-                vec2.rotate90cw(worldNormal, worldEdge); // Normal points out of convex 1
-                normalize(worldNormal,worldNormal);
+                // vec2.rotate90cw(worldNormal, worldEdge); // Normal points out of convex 1
+                // normalize(worldNormal,worldNormal);
+                rotate(worldNormal, shapeA.normals[normalizedI], angleA);
 
                 sub(dist, worldPoint, worldPoint0);
 
@@ -1919,23 +1916,26 @@ var pcoa_tmp1 = createVec2();
  * @param  {Array} result
  */
 Narrowphase.projectConvexOntoAxis = function(convexShape, convexOffset, convexAngle, worldAxis, result){
-    var max=null,
-        min=null,
+    var max,
+        min,
         v,
         value,
+        vertices = convexShape.vertices,
         localAxis = pcoa_tmp1;
 
     // Convert the axis to local coords of the body
     rotate(localAxis, worldAxis, -convexAngle);
 
+    value = min = max = dot(vertices[0], localAxis);
+
     // Get projected position of all vertices
-    for(var i=0; i<convexShape.vertices.length; i++){
-        v = convexShape.vertices[i];
+    for(var i=1, numVerts=vertices.length; i<numVerts; i++){
+        v = vertices[i];
         value = dot(v,localAxis);
-        if(max === null || value > max){
+        if(value > max){
             max = value;
         }
-        if(min === null || value < min){
+        if(value < min){
             min = value;
         }
     }
@@ -1953,10 +1953,7 @@ Narrowphase.projectConvexOntoAxis = function(convexShape, convexOffset, convexAn
 };
 
 // .findSeparatingAxis is called by other functions, need local tmp vectors
-var fsa_tmp1 = createVec2()
-,   fsa_tmp2 = createVec2()
-,   fsa_tmp3 = createVec2()
-,   fsa_tmp4 = createVec2()
+var fsa_tmp4 = createVec2()
 ,   fsa_tmp5 = createVec2()
 ,   fsa_tmp6 = createVec2();
 
@@ -1977,9 +1974,6 @@ Narrowphase.findSeparatingAxis = function(c1,offset1,angle1,c2,offset2,angle2,se
     var maxDist = null,
         overlap = false,
         found = false,
-        edge = fsa_tmp1,
-        worldPoint0 = fsa_tmp2,
-        worldPoint1 = fsa_tmp3,
         normal = fsa_tmp4,
         span1 = fsa_tmp5,
         span2 = fsa_tmp6;
@@ -2043,15 +2037,8 @@ Narrowphase.findSeparatingAxis = function(c1,offset1,angle1,c2,offset2,angle2,se
             }
 
             for(var i=0; i!==c.vertices.length; i++){
-                // Get the world edge
-                rotate(worldPoint0, c.vertices[i], angle);
-                rotate(worldPoint1, c.vertices[(i+1)%c.vertices.length], angle);
-
-                sub(edge, worldPoint1, worldPoint0);
-
-                // Get normal - just rotate 90 degrees since vertices are given in CCW
-                vec2.rotate90cw(normal, edge);
-                normalize(normal,normal);
+                // Get world normal
+                rotate(normal, c.normals[i], angle);
 
                 // Project hulls onto that normal
                 Narrowphase.projectConvexOntoAxis(c1,offset1,angle1,normal,span1);
@@ -2126,9 +2113,7 @@ Narrowphase.findSeparatingAxis = function(c1,offset1,angle1,c2,offset2,angle2,se
 };
 
 // .getClosestEdge is called by other functions, need local tmp vectors
-var gce_tmp1 = createVec2()
-,   gce_tmp2 = createVec2()
-,   gce_tmp3 = createVec2();
+var gce_tmp1 = createVec2();
 
 /**
  * Get the edge that has a normal closest to an axis.
@@ -2142,29 +2127,19 @@ var gce_tmp1 = createVec2()
  */
 Narrowphase.getClosestEdge = function(c,angle,axis,flip){
     var localAxis = gce_tmp1,
-        edge = gce_tmp2,
-        normal = gce_tmp3;
+        normal;
 
     // Convert the axis to local coords of the body
-    rotate(localAxis, axis, -angle);
-    if(flip){
-        scale(localAxis,localAxis,-1);
-    }
+    rotate(localAxis, axis, -angle + (flip ? Math.PI : 0));
 
-    var closestEdge = -1,
+    var closestEdge = 0,
         N = c.vertices.length,
-        maxDot = -1;
-    for(var i=0; i!==N; i++){
-        // Get the edge
-        sub(edge, c.vertices[(i+1)%N], c.vertices[i%N]);
-
-        // Get normal - just rotate 90 degrees since vertices are given in CCW
-        vec2.rotate90cw(normal, edge);
-        normalize(normal,normal);
-
+        maxDot = dot(c.normals[0],localAxis);
+    for(var i=1; i!==N; i++){
+        normal = c.normals[i];
         var d = dot(normal,localAxis);
-        if(closestEdge === -1 || d > maxDot){
-            closestEdge = i % N;
+        if(d > maxDot){
+            closestEdge = i;
             maxDot = d;
         }
     }
