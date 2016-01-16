@@ -1653,26 +1653,30 @@ Narrowphase.prototype.planeCapsule = function(
 };
 
 /**
- * Creates ContactEquations and FrictionEquations for a collision.
  * @method circlePlane
- * @param  {Body}    bi     The first body that should be connected to the equations.
- * @param  {Circle}  si     The circle shape participating in the collision.
- * @param  {Array}   xi     Extra offset to take into account for the Shape, in addition to the one in circleBody.position. Will *not* be rotated by circleBody.angle (maybe it should, for sake of homogenity?). Set to null if none.
- * @param  {Body}    bj     The second body that should be connected to the equations.
- * @param  {Plane}   sj     The Plane shape that is participating
- * @param  {Array}   xj     Extra offset for the plane shape.
- * @param  {Number}  aj     Extra angle to apply to the plane
+ * @param  {Body}    circleBody
+ * @param  {Circle}  circleShape
+ * @param  {Array}   circleOffset
+ * @param  {Number}  circleAngle
+ * @param  {Body}    planeBody
+ * @param  {Plane}   planeShape
+ * @param  {Array}   planeOffset
+ * @param  {Number}  planeAngle
+ * @param  {Boolean} justTest
  */
 Narrowphase.prototype[Shape.CIRCLE | Shape.PLANE] =
-Narrowphase.prototype.circlePlane = function(   bi,si,xi,ai, bj,sj,xj,aj, justTest ){
-    var circleBody = bi,
-        circleShape = si,
-        circleOffset = xi, // Offset from body center, rotated!
-        planeBody = bj,
-        planeOffset = xj,
-        planeAngle = aj;
-
-    planeAngle = planeAngle || 0;
+Narrowphase.prototype.circlePlane = function(
+    circleBody,
+    circleShape,
+    circleOffset,
+    circleAngle,
+    planeBody,
+    planeShape,
+    planeOffset,
+    planeAngle,
+    justTest
+){
+    var circleRadius = circleShape.radius;
 
     // Vector from plane to circle
     var planeToCircle = tmp1,
@@ -1687,7 +1691,7 @@ Narrowphase.prototype.circlePlane = function(   bi,si,xi,ai, bj,sj,xj,aj, justTe
     // Normal direction distance
     var d = dot(worldNormal, planeToCircle);
 
-    if(d > circleShape.radius){
+    if(d > circleRadius){
         return 0; // No overlap. Abort.
     }
 
@@ -1696,21 +1700,23 @@ Narrowphase.prototype.circlePlane = function(   bi,si,xi,ai, bj,sj,xj,aj, justTe
     }
 
     // Create contact
-    var contact = this.createContactEquation(planeBody,circleBody,sj,si);
+    var contact = this.createContactEquation(planeBody,circleBody,planeShape,circleShape);
 
     // ni is the plane world normal
     copy(contact.normalA, worldNormal);
 
     // rj is the vector from circle center to the contact point
-    scale(contact.contactPointB, contact.normalA, -circleShape.radius);
-    add(contact.contactPointB, contact.contactPointB, circleOffset);
-    sub(contact.contactPointB, contact.contactPointB, circleBody.position);
+    var cpB = contact.contactPointB;
+    scale(cpB, contact.normalA, -circleRadius);
+    add(cpB, cpB, circleOffset);
+    sub(cpB, cpB, circleBody.position);
 
     // ri is the distance from plane center to contact.
+    var cpA = contact.contactPointA;
     scale(temp, contact.normalA, d);
-    sub(contact.contactPointA, planeToCircle, temp ); // Subtract normal distance vector from the distance vector
-    add(contact.contactPointA, contact.contactPointA, planeOffset);
-    sub(contact.contactPointA, contact.contactPointA, planeBody.position);
+    sub(cpA, planeToCircle, temp ); // Subtract normal distance vector from the distance vector
+    add(cpA, cpA, planeOffset);
+    sub(cpA, cpA, planeBody.position);
 
     this.contactEquations.push(contact);
 
@@ -1746,7 +1752,7 @@ Narrowphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
         dist = tmp8,
         worldNormal = tmp9,
         numContacts = 0,
-        precision = typeof(precision) === 'number' ? precision : 0;
+        precision = precision || 0;
 
     var found = Narrowphase.findSeparatingAxis(si,xi,ai,sj,xj,aj,sepAxis);
     if(!found){
