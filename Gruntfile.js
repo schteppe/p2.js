@@ -80,6 +80,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-concat');
 
     grunt.registerTask('default', ['test','jshint','browserify','concat','uglify','addLicense','requireJsFix']);
+    grunt.registerTask('dev', ['test','jshint','browserify','concat']);
     grunt.registerTask('test', ['nodeunit']);
 
     // Not sure what flag Browserify needs to do this. Fixing it manually for now.
