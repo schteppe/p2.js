@@ -1,5 +1,6 @@
 var Shape = require('./Shape')
 ,   vec2 = require('../math/vec2')
+,   dot = vec2.dot
 ,   polyk = require('../math/polyk')
 ,   shallowClone = require('../utils/Utils').shallowClone;
 
@@ -163,7 +164,7 @@ Convex.prototype.projectOntoLocalAxis = function(localAxis, result){
     // Get projected position of all vertices
     for(var i=0; i<this.vertices.length; i++){
         v = this.vertices[i];
-        value = vec2.dot(v, localAxis);
+        value = dot(v, localAxis);
         if(max === null || value > max){
             max = value;
         }
@@ -192,7 +193,7 @@ Convex.prototype.projectOntoWorldAxis = function(localAxis, shapeOffset, shapeAn
     } else {
         worldAxis = localAxis;
     }
-    var offset = vec2.dot(shapeOffset, worldAxis);
+    var offset = dot(shapeOffset, worldAxis);
 
     vec2.set(result, result[0] + offset, result[1] + offset);
 };
@@ -260,7 +261,7 @@ Convex.prototype.updateCenterOfMass = function(){
 
         // Get mass for the triangle (density=1 in this case)
         // http://math.stackexchange.com/questions/80198/area-of-triangle-via-vectors
-        var m = Convex.triangleArea(a,b,c);
+        var m = triangleArea(a,b,c);
         totalArea += m;
 
         // Add to center of mass
@@ -286,7 +287,7 @@ Convex.prototype.computeMomentOfInertia = function(mass){
         var p0 = this.vertices[j];
         var p1 = this.vertices[i];
         var a = Math.abs(vec2.crossLength(p0,p1));
-        var b = vec2.dot(p1,p1) + vec2.dot(p1,p0) + vec2.dot(p0,p0);
+        var b = dot(p1,p1) + dot(p1,p0) + dot(p0,p0);
         denom += a * b;
         numer += a;
     }
@@ -319,10 +320,13 @@ Convex.prototype.updateBoundingRadius = function(){
  * @param {Array} b
  * @param {Array} c
  * @return {Number}
+ * @deprecated
  */
-Convex.triangleArea = function(a,b,c){
+Convex.triangleArea = triangleArea;
+
+function triangleArea(a,b,c){
     return (((b[0] - a[0])*(c[1] - a[1]))-((c[0] - a[0])*(b[1] - a[1]))) * 0.5;
-};
+}
 
 /**
  * Update the .area
@@ -341,7 +345,7 @@ Convex.prototype.updateArea = function(){
             c = verts[t[2]];
 
         // Get mass for the triangle (density=1 in this case)
-        var m = Convex.triangleArea(a,b,c);
+        var m = triangleArea(a,b,c);
         this.area += m;
     }
 };
@@ -351,6 +355,7 @@ Convex.prototype.updateArea = function(){
  * @param  {AABB}   out
  * @param  {Array}  position
  * @param  {Number} angle
+ * @todo: approximate with a local AABB?
  */
 Convex.prototype.computeAABB = function(out, position, angle){
     out.setFromPoints(this.vertices, position, angle, 0);
