@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Collision demo - p2.js physics engine</title>
+    <script src="../build/p2.js"></script>
+    <script src="../src/p2.simd.js"></script>
+    <script src="../build/p2.renderer.js"></script>
+    <link href="css/demo.css" rel="stylesheet"/>
+    <meta name="description" content="Tests all combinations of shape collisions.">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+</head>
+<body>
+    <script>
+
+        var size = 0.23,
+            dropHeight = size*2,
+            dist = size * 2;
+
+        // Create demo application
+        var app = new p2.WebGLRenderer(function(){
+
+            var world = new p2.World({
+                gravity : [0,-10]
+            });
+
+            this.setWorld(world);
+
+            world.islandSplit = true;
+            world.sleepMode = p2.World.ISLAND_SLEEPING;
+
+            world.solver.iterations = 20;
+            world.solver.tolerance = 0.001;
+            //world.defaultContactMaterial.friction = 0;
+
+            world.setGlobalStiffness(1e4);
+
+            // Create all testable shapes
+            var particle = function(){ return new p2.Particle(); };
+            var circle =   function(){ return new p2.Circle({ radius: size/2 }); };
+            var rectangle= function(){ return new p2.Box({ width: size, height: size }); };
+            var line =     function(){ return new p2.Line({ length: size }); };
+            var capsule =  function(){ return new p2.Capsule({ length: size*2, radius: size/4 }); };
+            var plane = function(){ return null; };
+
+            var convex = function(){
+                // Create a convex shape.
+                var vertices = [];
+                for(var i=0, N=5; i<N; i++){
+                    var a = 2*Math.PI / N * i;
+                    var vertex = [size*0.5*Math.cos(a), size*0.5*Math.sin(a)]; // Note: vertices are added counter-clockwise
+                    vertices.push(vertex);
+                }
+                return new p2.Convex({ vertices: vertices });
+            }
+
+            var opts = {
+                mass: 1,
+                position: [0,1],
+            };
+
+            var numAdded = 0;
+
+            function add(shapeA,shapeB){
+                if(shapeA){
+                    var bodyA = new p2.Body(opts);
+                    bodyA.addShape(shapeA);
+                    world.addBody(bodyA);
+                }
+                if(shapeB){
+                    var bodyB = new p2.Body(opts);
+                    bodyB.addShape(shapeB);
+                    world.addBody(bodyB);
+                    bodyB.position[1] = dropHeight;
+                }
+                opts.position[0] += dist;
+                numAdded++;
+            }
+
+            setInterval(function(){
+                add(circle(), circle());
+                add(circle(), plane());
+                add(circle(), rectangle());
+                add(circle(), convex());
+                add(circle(), particle());
+                add(circle(), line());
+                add(plane(), rectangle());
+                add(plane(), convex());
+                add(plane(), particle());
+                add(plane(), line());
+                add(rectangle(), rectangle());
+                add(rectangle(), convex());
+                add(rectangle(), particle());
+                add(rectangle(), line());
+                add(convex(), convex());
+                add(convex(), particle());
+                add(convex(), line());
+                add(particle(), line());
+                add(line(), line());
+                add(capsule());
+                add(circle(), capsule());
+                add(capsule(), particle());
+            }, 1000);
+
+            // for(var i=0; i<world.bodies.length; i++){
+            //     world.bodies[i].position[0] -= (numAdded-1)*dist / 2;
+            // }
+
+            // Create ground
+            var planeShape = new p2.Plane();
+            var plane = new p2.Body({
+                position:[0,0],
+            });
+            plane.addShape(planeShape);
+            world.addBody(plane);
+
+            this.frame(0, 0, 12, 2);
+        });
+
+    </script>
+</body>
+</html>
