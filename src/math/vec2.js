@@ -152,7 +152,12 @@ vec2.toGlobalFrame = function(out, localPoint, framePosition, frameAngle){
  * @param  {Number} frameAngle
  */
 vec2.vectorToLocalFrame = function(out, worldVector, frameAngle){
-    vec2.rotate(out, worldVector, -frameAngle);
+    var c = Math.cos(-frameAngle),
+        s = Math.sin(-frameAngle),
+        x = worldVector[0],
+        y = worldVector[1];
+    out[0] = c*x -s*y;
+    out[1] = s*x +c*y;
 };
 
 /**
