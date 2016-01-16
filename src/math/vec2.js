@@ -559,3 +559,80 @@ vec2.getLineSegmentsIntersectionFraction = function(p0, p1, p2, p3) {
     }
     return -1; // No collision
 };
+
+// SIMD SHIMS
+if(typeof SIMD !== 'undefined'){
+    console.log('USING SIMD')
+    vec2.create = function(){
+        return new Float32Array(4);
+    };
+    vec2.clone = function(a) {
+        var out = vec2.create();
+        out[0] = a[0];
+        out[1] = a[1];
+        return out;
+    };
+    vec2.fromValues = function(x, y) {
+        var out = vec2.create();
+        out[0] = x;
+        out[1] = y;
+        return out;
+    };
+    vec2.add = function(out, a, b) {
+        var sa = SIMD.Float32x4.load(a, 0);
+        var sb = SIMD.Float32x4.load(b, 0);
+        var sout = SIMD.Float32x4.add(sa,sb);
+        SIMD.Float32x4.store(out, 0, sout);
+        return out;
+    };
+    vec2.subtract = function(out, a, b) {
+        var sa = SIMD.Float32x4.load(a, 0);
+        var sb = SIMD.Float32x4.load(b, 0);
+        var sout = SIMD.Float32x4.sub(sa,sb);
+        SIMD.Float32x4.store(out, 0, sout);
+        return out;
+    };
+    vec2.sub = vec2.subtract;
+    vec2.multiply = function(out, a, b) {
+        var sa = SIMD.Float32x4.load(a, 0);
+        var sb = SIMD.Float32x4.load(b, 0);
+        var sout = SIMD.Float32x4.mul(sa,sb);
+        SIMD.Float32x4.store(out, 0, sout);
+        return out;
+    };
+    vec2.mul = vec2.multiply;
+    vec2.divide = function(out, a, b) {
+        var sa = SIMD.Float32x4.load(a, 0);
+        var sb = SIMD.Float32x4.load(b, 0);
+        var sout = SIMD.Float32x4.div(sa,sb);
+        SIMD.Float32x4.store(out, 0, sout);
+        return out;
+    };
+    vec2.div = vec2.divide;
+    vec2.scale = function(out, a, b) {
+        var sa = SIMD.Float32x4.load(a, 0);
+        var sb = SIMD.Float32x4.splat(b);
+        var sout = SIMD.Float32x4.mul(sa,sb);
+        SIMD.Float32x4.store(out, 0, sout);
+        return out;
+    };
+    vec2.rotate = function(out,a,angle){
+        var sa = SIMD.Float32x4.load(a, 0);
+
+        var c = Math.cos(angle),
+            s = Math.sin(angle);
+
+        var cs = SIMD.Float32x4(c,s,0,0);
+        var sc = SIMD.Float32x4(-s,c,0,0);
+
+        var xx = SIMD.Float32x4.swizzle(sa,0,0,2,3);
+        var yy = SIMD.Float32x4.swizzle(sa,1,1,2,3);
+
+        var sout = SIMD.Float32x4.add(
+            SIMD.Float32x4.mul(cs,xx),
+            SIMD.Float32x4.mul(sc,yy)
+        );
+
+        SIMD.Float32x4.store(out, 0, sout);
+    };
+}
