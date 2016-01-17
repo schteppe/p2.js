@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>p2.js performance test</title>
+  </head>
+  <style>
+  td,th {
+    padding-right: 20px;
+  }
+  th {
+    text-align: left;
+  }
+  td.ops {
+    text-align: right;
+  }
+  </style>
+  <body>
+    <h1>p2.js performance test</h1>
+    <p>Used to incrementally improve performance of parts of the lib, across browsers.</p>
+    <table id="results">
+      <thead>
+        <th>method</th>
+        <th>ops/s</th>
+        <th>±%</th>
+        <th>samples</th>
+        <th>status</th>
+      </thead>
+    </table>
+    <p>
+      <a href="#" onclick="javascript:location.reload()">Run all</a>
+    </p>
+    <script src="../build/p2.js"></script>
+    <script src="../node_modules/benchmark/node_modules/lodash/index.js"></script>
+    <script src="../node_modules/benchmark/node_modules/platform/platform.js"></script>
+    <script src="../node_modules/benchmark/benchmark.js"></script>
+    <script src="http://code.jquery.com/jquery-2.2.0.min.js"></script>
+    <script>
+
+      var benchmarks = [{
+        name: 'Body.prototype.integrate',
+        setup: function(){
+          body = new p2.Body();
+          body.addShape(new p2.Circle({
+            radius: 0.5
+          }));
+        },
+        fn: function() {
+          body.integrate(0.1);
+        }
+      },{
+        name: 'Body.prototype.updateAABB',
+        setup: function(){
+          body = new p2.Body();
+          body.addShape(new p2.Circle({
+            radius: 0.5
+          }));
+        },
+        fn: function() {
+          body.updateAABB();
+        }
+      }];
+
+      window.onload = function(){
+
+        function extend(a,b){
+          for(var key in b){
+            a[key] = b[key];
+          }
+        }
+
+        extend(Benchmark.options, {
+          async: true,
+          setup: function(event){
+            var def = benchmarks[this.index];
+            if(def.setup){
+              def.setup();
+            }
+          }
+        });
+
+        var suite = new Benchmark.Suite();
+
+        function formatNumber(number,delimiter) {
+          number = String(number).split('.');
+          return number[0].replace(/(?=(?:\d{3})+$)(?!\b)/g, delimiter) +
+            (number[1] ? '.' + number[1] : '');
+        }
+
+        for (var i = 0; i < benchmarks.length; i++) {
+          var benchmark = benchmarks[i];
+          benchmark.index = i;
+
+          var hash = window.location.hash;
+          if(!hash || hash === '#' + benchmark.name){
+            suite.add(benchmark);
+          }
+        }
+
+        suite
+          .on('cycle', function(event) {
+            var bench = event.target,
+                error = bench.error,
+                hz = bench.hz,
+                id = bench.index,
+                stats = bench.stats,
+                size = stats.sample.length;
+
+            if (error) {
+              console.error(error);
+            } else {
+              var name = (bench.name || (_.isNaN(id) ? id : '<Test #' + id + '>'));
+              var samples = size + ' run' + (size == 1 ? '' : 's');
+              var ops = (hz.toFixed(hz < 100 ? 2 : 0));
+              var plusMinus = stats.rme.toFixed(2);
+              $("#bench-" + id + " td.ops").text(formatNumber(ops,'.'));
+              $("#bench-" + id + " td.pm").text(plusMinus);
+              $("#bench-" + id + " td.samples").text(samples);
+              $("#bench-" + id + " td.status").text('done');
+            }
+          });
+
+          for(var i=0; i<suite.length; i++){
+            var name = suite[i].name;
+            $("#results").append([
+              "<tr id='bench-" + suite[i].index + "'>",
+              "<td class='name'><a href='#" + name +"' onclick='javascript:location.reload()'>" + name + "</a></td>",
+              "<td class='ops'></td>",
+              "<td class='pm'></td>",
+              "<td class='samples'></td>",
+              "<td class='status'></td>",
+              "</tr>"
+            ].join(''));
+          }
+
+          suite.run({ 'async': true });
+      };
+    </script>
+  </body>
+</html>
