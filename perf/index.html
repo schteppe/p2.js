@@ -21,10 +21,17 @@
   </style>
   <body>
     <h1>p2.js performance test</h1>
-    <p>Used to incrementally improve performance of parts of the lib, across browsers.</p>
+    <p>Used to incrementally improve performance of parts of the lib, across browsers. Work flow:</p>
+    <ol>
+      <li>Optional: create new benchmark</li>
+      <li>Run the benchmark you are interested in</li>
+      <li>Click "Save reference values"</li>
+      <li>Optimize and rebuild p2.js</li>
+      <li>Run benchmark again. If your optimizations were good, the "relative" column will display a number larger than 1!</li>
+    </ol>
     <table id="results">
       <thead>
-        <th>method</th>
+        <th>name</th>
         <th>ops/s</th>
         <th>±%</th>
         <th>samples</th>
@@ -33,10 +40,7 @@
       </thead>
     </table>
     <p>
-      <button onmouseup="javascript:runAll()">Run all</button>
-    </p>
-    <p>
-      <button onmouseup="javascript:saveRefs()">Save current results to localStorage as reference values</button>
+      <button onmouseup="javascript:runAll()">Run all</button> <button onmouseup="javascript:saveRefs()">Save reference values</button>
     </p>
     <script src="../build/p2.js"></script>
     <script src="../node_modules/benchmark/node_modules/lodash/index.js"></script>
