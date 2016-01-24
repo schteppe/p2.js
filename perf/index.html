@@ -8,6 +8,10 @@
   td,th {
     padding-right: 20px;
   }
+  td.name {
+    text-decoration: underline;
+    cursor: pointer;
+  }
   th {
     text-align: left;
   }
@@ -29,10 +33,10 @@
       </thead>
     </table>
     <p>
-      <a href="#" onclick="javascript:location.reload()">Run all</a>
+      <button onmouseup="javascript:runAll()">Run all</button>
     </p>
     <p>
-      <a href="#" onclick="javascript:saveRefs()">Save current results to localStorage as reference values</a>
+      <button onmouseup="javascript:saveRefs()">Save current results to localStorage as reference values</button>
     </p>
     <script src="../build/p2.js"></script>
     <script src="../node_modules/benchmark/node_modules/lodash/index.js"></script>
@@ -112,18 +116,12 @@
 
         var suite = new Benchmark.Suite();
 
-        function formatNumber(number,delimiter) {
-          number = String(number).split('.');
-          return number[0].replace(/(?=(?:\d{3})+$)(?!\b)/g, delimiter) +
-            (number[1] ? '.' + number[1] : '');
-        }
-
         for (var i = 0; i < benchmarks.length; i++) {
           var benchmark = benchmarks[i];
           benchmark.index = i;
 
           var hash = window.location.hash;
-          if(!hash || hash === '#' + benchmark.name){
+          if(!hash || hash === '#' + encodeURIComponent(benchmark.name)){
             suite.add(benchmark);
           }
         }
@@ -158,7 +156,7 @@
             var name = suite[i].name;
             $("#results").append([
               "<tr id='bench-" + suite[i].index + "'>",
-              "<td class='name'><a href='#" + name +"' onclick='javascript:location.reload()'>" + name + "</a></td>",
+              "<td class='name'><a onmouseup='javascript:goToBench(\"" + encodeURIComponent(name) + "\")'>" + name + "</a></td>",
               "<td class='ops'></td>",
               "<td class='pm'></td>",
               "<td class='samples'></td>",
@@ -173,6 +171,22 @@
 
       function saveRefs(){
         localStorage.setItem('referenceResults', JSON.stringify(window.currentResults));
+      }
+
+      function goToBench(name){
+        location.href = '#' + name;
+        location.reload();
+      }
+
+      function runAll(){
+        location.href = '#';
+        location.reload();
+      }
+
+      function formatNumber(number,delimiter) {
+        number = String(number).split('.');
+        return number[0].replace(/(?=(?:\d{3})+$)(?!\b)/g, delimiter) +
+          (number[1] ? '.' + number[1] : '');
       }
     </script>
   </body>
