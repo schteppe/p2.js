@@ -382,7 +382,7 @@ declare module p2 {
 
         static idCounter: number;
 
-        constructor(id: number);
+        constructor(id?: number);
 
         id: number;
 
