@@ -41,20 +41,24 @@
         name: 'Body.prototype.integrate',
         setup: function(){
           body = new p2.Body();
-          body.addShape(new p2.Circle({
-            radius: 0.5
-          }));
         },
         fn: function() {
           body.integrate(0.1);
         }
       },{
-        name: 'Body.prototype.updateAABB',
+        name: 'Body.prototype.updateAABB (circle)',
         setup: function(){
           body = new p2.Body();
-          body.addShape(new p2.Circle({
-            radius: 0.5
-          }));
+          body.addShape(new p2.Circle());
+        },
+        fn: function() {
+          body.updateAABB();
+        }
+      },{
+        name: 'Body.prototype.updateAABB (box)',
+        setup: function(){
+          body = new p2.Body();
+          body.addShape(new p2.Box());
         },
         fn: function() {
           body.updateAABB();
