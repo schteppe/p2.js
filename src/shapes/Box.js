@@ -87,7 +87,22 @@ Box.prototype.updateBoundingRadius = function(){
  * @param  {Number} angle
  */
 Box.prototype.computeAABB = function(out, position, angle){
-    out.setFromPoints(this.vertices,position,angle,0);
+    var c = Math.abs(Math.cos(angle)),
+        s = Math.abs(Math.sin(angle)),
+        w = this.width,
+        h = this.height;
+
+    var height = (w * s + h * c) * 0.5;
+    var width = (h * s + w * c) * 0.5;
+
+    var l = out.lowerBound;
+    var u = out.upperBound;
+    var px = position[0];
+    var py = position[1];
+    l[0] = px - width;
+    l[1] = py - height;
+    u[0] = px + width;
+    u[1] = py + height;
 };
 
 Box.prototype.updateArea = function(){
