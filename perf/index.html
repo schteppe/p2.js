@@ -24,11 +24,15 @@
         <th>ops/s</th>
         <th>±%</th>
         <th>samples</th>
+        <th>relative</th>
         <th>status</th>
       </thead>
     </table>
     <p>
       <a href="#" onclick="javascript:location.reload()">Run all</a>
+    </p>
+    <p>
+      <a href="#" onclick="javascript:saveRefs()">Save current results to localStorage as reference values</a>
     </p>
     <script src="../build/p2.js"></script>
     <script src="../node_modules/benchmark/node_modules/lodash/index.js"></script>
@@ -37,7 +41,25 @@
     <script src="http://code.jquery.com/jquery-2.2.0.min.js"></script>
     <script>
 
+      window.currentResults = {};
+
       var benchmarks = [{
+        name: 'Equation.prototype.computeGiMGt',
+        setup: function(){
+          eq = new p2.Equation(new p2.Body(), new p2.Body());
+        },
+        fn: function() {
+          eq.computeGiMGt();
+        }
+      },{
+        name: 'Equation.prototype.update',
+        setup: function(){
+          eq = new p2.Equation(new p2.Body(), new p2.Body());
+        },
+        fn: function() {
+          eq.update();
+        }
+      },{
         name: 'Body.prototype.integrate',
         setup: function(){
           body = new p2.Body();
@@ -66,6 +88,11 @@
       }];
 
       window.onload = function(){
+
+        var referenceResults = localStorage.getItem('referenceResults');
+        if(referenceResults){
+          referenceResults = JSON.parse(referenceResults);
+        }
 
         function extend(a,b){
           for(var key in b){
@@ -120,7 +147,10 @@
               $("#bench-" + id + " td.ops").text(formatNumber(ops,'.'));
               $("#bench-" + id + " td.pm").text(plusMinus);
               $("#bench-" + id + " td.samples").text(samples);
+              $("#bench-" + id + " td.rel").text(referenceResults && referenceResults[bench.name] ? (ops / referenceResults[bench.name]).toFixed(2) + 'x' : '');
               $("#bench-" + id + " td.status").text('done');
+
+              window.currentResults[bench.name] = ops;
             }
           });
 
@@ -132,6 +162,7 @@
               "<td class='ops'></td>",
               "<td class='pm'></td>",
               "<td class='samples'></td>",
+              "<td class='rel'></td>",
               "<td class='status'></td>",
               "</tr>"
             ].join(''));
@@ -139,6 +170,10 @@
 
           suite.run({ 'async': true });
       };
+
+      function saveRefs(){
+        localStorage.setItem('referenceResults', JSON.stringify(window.currentResults));
+      }
     </script>
   </body>
 </html>
