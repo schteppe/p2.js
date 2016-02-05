@@ -745,7 +745,7 @@ Body.prototype.applyImpulseLocal = function(localImpulse, localPoint){
 /**
  * Transform a world point to local body frame.
  * @method toLocalFrame
- * @param  {Array} out          The vector to store the result in
+ * @param  {Array} out          The point to store the result in
  * @param  {Array} worldPoint   The input world point
  */
 Body.prototype.toLocalFrame = function(out, worldPoint){
@@ -755,7 +755,7 @@ Body.prototype.toLocalFrame = function(out, worldPoint){
 /**
  * Transform a local point to world frame.
  * @method toWorldFrame
- * @param  {Array} out          The vector to store the result in
+ * @param  {Array} out          The point to store the result in
  * @param  {Array} localPoint   The input local point
  */
 Body.prototype.toWorldFrame = function(out, localPoint){
@@ -763,7 +763,7 @@ Body.prototype.toWorldFrame = function(out, localPoint){
 };
 
 /**
- * Transform a world point to local body frame.
+ * Transform a world vector to local body frame.
  * @method vectorToLocalFrame
  * @param  {Array} out          The vector to store the result in
  * @param  {Array} worldVector  The input world vector
@@ -773,7 +773,7 @@ Body.prototype.vectorToLocalFrame = function(out, worldVector){
 };
 
 /**
- * Transform a local point to world frame.
+ * Transform a local vector to world frame.
  * @method vectorToWorldFrame
  * @param  {Array} out          The vector to store the result in
  * @param  {Array} localVector  The input local vector
