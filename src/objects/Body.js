@@ -656,10 +656,10 @@ Body.prototype.updateMassProperties = function(){
 };
 
 /**
- * Apply force to a point relative to the center of mass of the body. This could for example be a point on the RigidBody surface. Applying force this way will add to Body.force and Body.angularForce. If relativePoint is zero, the force will be applied directly on the center of mass, and the torque produced will be zero.
+ * Apply force to a point relative to the center of mass of the body. This could for example be a point on the Body surface. Applying force this way will add to Body.force and Body.angularForce.
  * @method applyForce
- * @param {Array} force The force to add.
- * @param {Array} [relativePoint] A world point to apply the force on.
+ * @param  {Array} force The force vector to add, oriented in world space.
+ * @param  {Array} [relativePoint] A point relative to the body in world space. If not given, it is set to zero and all of the force will be exerted on the center of mass.
  */
 Body.prototype.applyForce = function(force, relativePoint){
 
@@ -677,10 +677,10 @@ Body.prototype.applyForce = function(force, relativePoint){
 };
 
 /**
- * Apply force to a body-local point.
+ * Apply force to a point relative to the center of mass of the body. This could for example be a point on the Body surface. Applying force this way will add to Body.force and Body.angularForce.
  * @method applyForceLocal
  * @param  {Array} localForce The force vector to add, oriented in local body space.
- * @param  {Array} [localPoint] A point relative to the body in world space. If not given, it is set to zero and all of the impulse will be excerted on the center of mass.
+ * @param  {Array} [localPoint] A point relative to the body in local body space. If not given, it is set to zero and all of the force will be exerted on the center of mass.
  */
 var Body_applyForce_forceWorld = vec2create();
 var Body_applyForce_pointWorld = vec2create();
@@ -697,8 +697,8 @@ Body.prototype.applyForceLocal = function(localForce, localPoint){
 /**
  * Apply impulse to a point relative to the body. This could for example be a point on the Body surface. An impulse is a force added to a body during a short period of time (impulse = force * time). Impulses will be added to Body.velocity and Body.angularVelocity.
  * @method applyImpulse
- * @param  {Array} impulse The impulse vector to add, oriented in world space.
- * @param  {Array} [relativePoint] A point relative to the body in world space. If not given, it is set to zero and all of the impulse will be excerted on the center of mass.
+ * @param  {Array} impulseVector The impulse vector to add, oriented in world space.
+ * @param  {Array} [relativePoint] A point relative to the body in world space. If not given, it is set to zero and all of the impulse will be exerted on the center of mass.
  */
 var Body_applyImpulse_velo = vec2create();
 Body.prototype.applyImpulse = function(impulseVector, relativePoint){
@@ -727,8 +727,8 @@ Body.prototype.applyImpulse = function(impulseVector, relativePoint){
 /**
  * Apply impulse to a point relative to the body. This could for example be a point on the Body surface. An impulse is a force added to a body during a short period of time (impulse = force * time). Impulses will be added to Body.velocity and Body.angularVelocity.
  * @method applyImpulseLocal
- * @param  {Array} impulse The impulse vector to add, oriented in world space.
- * @param  {Array} [relativePoint] A point relative to the body in world space. If not given, it is set to zero and all of the impulse will be excerted on the center of mass.
+ * @param  {Array} localImpulse The impulse vector to add, oriented in local body space.
+ * @param  {Array} [localPoint] A point relative to the body in local body space. If not given, it is set to zero and all of the impulse will be exerted on the center of mass.
  */
 var Body_applyImpulse_impulseWorld = vec2create();
 var Body_applyImpulse_pointWorld = vec2create();
