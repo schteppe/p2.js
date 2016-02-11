@@ -640,12 +640,18 @@ World.prototype.internalStep = function(dt){
 
         // Loop over all shapes of body i
         for(var k=0, Nshapesi=bi.shapes.length; k!==Nshapesi; k++){
+            if(!bi.shapes[k]){
+                continue;
+            }
             var si = bi.shapes[k],
                 xi = si.position,
                 ai = si.angle;
 
             // All shapes of body j
             for(var l=0, Nshapesj=bj.shapes.length; l!==Nshapesj; l++){
+                if(!bj.shapes[l]){
+                    continue;
+                }
                 var sj = bj.shapes[l],
                     xj = sj.position,
                     aj = sj.angle;
