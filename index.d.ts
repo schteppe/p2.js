@@ -661,8 +661,8 @@ declare module p2 {
 
     export interface ConvexOptions extends SharedShapeOptions {
 
-      length?: number;
-      radius?: number;
+      vertices?: number[][];
+      axes?: number[][];
 
     }
 
