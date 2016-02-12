@@ -79,8 +79,6 @@
             });
             bodyB.addShape(new p2.Circle({ radius: 1 }));
             world.addBody(bodyB);
-            var pivotA = [0,2];
-            var pivotB = [0,-2];
             var cr = new p2.RevoluteConstraint(bodyA, bodyB, {
                 worldPivot: [3, 2]
             });
