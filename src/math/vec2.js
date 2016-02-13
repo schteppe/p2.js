@@ -161,8 +161,8 @@ vec2.vectorToLocalFrame = function(out, worldVector, frameAngle){
 };
 
 /**
- * Transform a point position to global frame.
- * @method toGlobalFrame
+ * Transform a vector to global frame.
+ * @method vectorToGlobalFrame
  * @param  {Array} out
  * @param  {Array} localVector
  * @param  {Number} frameAngle
