@@ -44,12 +44,26 @@ module.exports = {
         test.done();
     },
 
-    addShape: function(test){
-        var body = new Body();
-        var shape = new Circle({ radius: 1 });
-        body.addShape(shape);
-        test.deepEqual(body.shapes, [shape]);
-        test.done();
+    addShape: {
+        normal: function(test){
+            var body = new Body();
+            var shape = new Circle({ radius: 1 });
+            body.addShape(shape);
+            test.deepEqual(body.shapes, [shape]);
+            test.done();
+        },
+        duringStep: function(test){
+            var world = new World();
+            var body = new Body();
+            world.addBody(body);
+            world.on('postBroadphase', function(){
+                test.throws(function(){
+                    body.addShape(new Circle());
+                }, 'should throw on adding shapes during step');
+                test.done();
+            });
+            world.step(1);
+        }
     },
 
     adjustCenterOfMass: function(test){
@@ -210,13 +224,29 @@ module.exports = {
         test.done();
     },
 
-    removeShape: function(test){
-        var body = new Body();
-        body.addShape(new Circle({ radius: 1 }));
-        test.ok(body.removeShape(body.shapes[0]));
-        test.ok(!body.removeShape(new Circle({ radius: 1 })));
-        test.equal(body.shapes.length, 0);
-        test.done();
+    removeShape: {
+        canRemove: function(test){
+            var body = new Body();
+            body.addShape(new Circle({ radius: 1 }));
+            test.ok(body.removeShape(body.shapes[0]));
+            test.ok(!body.removeShape(new Circle({ radius: 1 })));
+            test.equal(body.shapes.length, 0);
+            test.done();
+        },
+        duringStep: function(test){
+            var world = new World();
+            var body = new Body();
+            var shape = new Circle();
+            world.addBody(body);
+            body.addShape(shape);
+            world.on('postBroadphase', function(){
+                test.throws(function(){
+                    body.removeShape(shape);
+                }, 'should throw on removing shapes during step');
+                test.done();
+            });
+            world.step(1);
+        }
     },
 
     getArea: function(test){

@@ -567,6 +567,10 @@ Body.prototype.addShape = function(shape, offset, angle){
     if(shape.body){
         throw new Error('A shape can only be added to one body.');
     }
+    var world = this.world;
+    if(world && world.stepping){
+        throw new Error('A shape cannot be added during step.');
+    }
     shape.body = this;
 
     // Copy the offset vector
@@ -592,6 +596,11 @@ Body.prototype.addShape = function(shape, offset, angle){
  * @return {Boolean} True if the shape was found and removed, else false.
  */
 Body.prototype.removeShape = function(shape){
+    var world = this.world;
+    if(world && world.stepping){
+        throw new Error('A shape cannot be removed during step.');
+    }
+
     var idx = this.shapes.indexOf(shape);
 
     if(idx !== -1){

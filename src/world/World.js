@@ -205,13 +205,6 @@ function World(options){
     this.stepping = false;
 
     /**
-     * Bodies that are scheduled to be removed at the end of the step.
-     * @property {Array} bodiesToBeRemoved
-     * @private
-     */
-    this.bodiesToBeRemoved = [];
-
-    /**
      * Whether to enable island splitting. Island splitting can be an advantage for both precision and performance. See {{#crossLink "IslandManager"}}{{/crossLink}}.
      * @property {Boolean} islandSplit
      * @default false
@@ -387,7 +380,7 @@ World.BODY_SLEEPING = 2;
 World.ISLAND_SLEEPING = 4;
 
 /**
- * Add a constraint to the simulation.
+ * Add a constraint to the simulation. Note that both bodies connected to the constraint must be added to the world first. Also note that you can't run this method during step.
  *
  * @method addConstraint
  * @param {Constraint} constraint
@@ -396,6 +389,18 @@ World.ISLAND_SLEEPING = 4;
  *     world.addConstraint(constraint);
  */
 World.prototype.addConstraint = function(constraint){
+    if(this.stepping){
+        throw new Error('Constraints cannot be added during step.');
+    }
+
+    var bodies = this.bodies;
+    if(bodies.indexOf(constraint.bodyA) === -1){
+        throw new Error('Cannot add Constraint: bodyA is not added to the World.');
+    }
+    if(bodies.indexOf(constraint.bodyB) === -1){
+        throw new Error('Cannot add Constraint: bodyB is not added to the World.');
+    }
+
     this.constraints.push(constraint);
 };
 
@@ -438,12 +443,15 @@ World.prototype.getContactMaterial = function(materialA,materialB){
 };
 
 /**
- * Removes a constraint
+ * Removes a constraint. Note that you can't run this method during step.
  *
  * @method removeConstraint
  * @param {Constraint} constraint
  */
 World.prototype.removeConstraint = function(constraint){
+    if(this.stepping){
+        throw new Error('Constraints cannot be removed during step.');
+    }
     arrayRemove(this.constraints, constraint);
 };
 
@@ -783,13 +791,6 @@ World.prototype.internalStep = function(dt){
 
     this.stepping = false;
 
-    // Remove bodies that are scheduled for removal
-    var bodiesToBeRemoved = this.bodiesToBeRemoved;
-    for(var i=0; i!==bodiesToBeRemoved.length; i++){
-        this.removeBody(bodiesToBeRemoved[i]);
-    }
-    bodiesToBeRemoved.length = 0;
-
     this.emit(postStepEvent);
 };
 
@@ -898,12 +899,15 @@ function runNarrowphase(world, np, bi, si, xi, ai, bj, sj, xj, aj, cm, glen){
 }
 
 /**
- * Add a spring to the simulation
+ * Add a spring to the simulation. Note that this operation can't be done during step.
  *
  * @method addSpring
  * @param {Spring} spring
  */
 World.prototype.addSpring = function(spring){
+    if(this.stepping){
+        throw new Error('Springs cannot be added during step.');
+    }
     this.springs.push(spring);
     addSpringEvent.spring = spring;
     this.emit(addSpringEvent);
@@ -911,17 +915,21 @@ World.prototype.addSpring = function(spring){
 };
 
 /**
- * Remove a spring
+ * Remove a spring. Note that this operation can't be done during step.
  *
  * @method removeSpring
  * @param {Spring} spring
  */
 World.prototype.removeSpring = function(spring){
+    if(this.stepping){
+        throw new Error('Springs cannot be removed during step.');
+    }
     arrayRemove(this.springs, spring);
 };
 
 /**
- * Add a body to the simulation
+ * Add a body to the simulation. Note that you can't add a body during step: you have to wait until after the step (see the postStep event).
+ * Also note that bodies can only be added to one World at a time.
  *
  * @method addBody
  * @param {Body} body
@@ -930,12 +938,15 @@ World.prototype.removeSpring = function(spring){
  *     var world = new World(),
  *         body = new Body();
  *     world.addBody(body);
- * @todo What if this is done during step?
  */
 World.prototype.addBody = function(body){
+    if(this.stepping){
+        throw new Error('Bodies cannot be added during step.');
+    }
+
     // Already added?
     if(body.world){
-        return;
+        throw new Error('Body is already added to a World.');
     }
 
     this.bodies.push(body);
@@ -947,33 +958,58 @@ World.prototype.addBody = function(body){
 };
 
 /**
- * Remove a body from the simulation. If this method is called during step(), the body removal is scheduled to after the step.
+ * Remove a body from the simulation. Note that bodies cannot be removed during step (for example, inside the beginContact event). In that case you need to wait until the step is done (see the postStep event).
+ *
+ * Also note that any constraints connected to the body must be removed before the body.
  *
  * @method removeBody
  * @param {Body} body
+ *
+ * @example
+ *     var removeBody;
+ *     world.on("beginContact",function(event){
+ *         // We cannot remove the body here since the world is still stepping.
+ *         // Instead, schedule the body to be removed after the step is done.
+ *         removeBody = body;
+ *     });
+ *     world.on("postStep",function(event){
+ *         if(removeBody){
+ *             // Safely remove the body from the world.
+ *             world.removeBody(removeBody);
+ *             removeBody = null;
+ *         }
+ *     });
  */
 World.prototype.removeBody = function(body){
     if(this.stepping){
-        this.bodiesToBeRemoved.push(body);
-    } else {
-        body.world = null;
-        arrayRemove(this.bodies, body);
+        throw new Error('Bodies cannot be removed during step.');
+    }
 
-        // Emit removeBody event
-        removeBodyEvent.body = body;
-        body.resetConstraintVelocity();
-        this.emit(removeBodyEvent);
-        removeBodyEvent.body = null;
+    var constraints = this.constraints;
+    var l = constraints.length;
+    while (l--) {
+        if(constraints[l].bodyA === this || constraints[l].bodyB === this){
+            throw new Error('Cannot remove Body from World: it still has constraints connected to it.');
+        }
+    }
 
-        // Remove disabled body collision pairs that involve body
-        var pairs = this.disabledBodyCollisionPairs;
-        var i = 0;
-        while (i < pairs.length) {
-            if (pairs[i] === body || pairs[i + 1] === body) {
-                pairs.splice(i, 2);
-            } else {
-                i += 2;
-            }
+    body.world = null;
+    arrayRemove(this.bodies, body);
+
+    // Emit removeBody event
+    removeBodyEvent.body = body;
+    body.resetConstraintVelocity();
+    this.emit(removeBodyEvent);
+    removeBodyEvent.body = null;
+
+    // Remove disabled body collision pairs that involve body
+    var pairs = this.disabledBodyCollisionPairs;
+    var i = 0;
+    while (i < pairs.length) {
+        if (pairs[i] === body || pairs[i + 1] === body) {
+            pairs.splice(i, 2);
+        } else {
+            i += 2;
         }
     }
 };

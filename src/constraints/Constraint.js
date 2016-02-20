@@ -24,7 +24,7 @@ function Constraint(bodyA, bodyB, type, options){
 
     options = Utils.defaults(options,{
         collideConnected : true,
-        wakeUpBodies : true,
+        wakeUpBodies : true
     });
 
     /**

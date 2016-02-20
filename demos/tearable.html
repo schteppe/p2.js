@@ -39,6 +39,7 @@
                     angularDamping:0.5,
                 });
                 p.addShape(new p2.Circle({ radius: r }));
+                world.addBody(p);
                 if(lastBody){
                     // Create a DistanceConstraint, it will constrain the
                     // current and the last body to have a fixed distance from each other
@@ -53,7 +54,6 @@
                     p.velocity[0] = 1;
                 }
                 lastBody = p;
-                world.addBody(p);
             }
 
             // Create ground

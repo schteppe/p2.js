@@ -72,7 +72,9 @@
           initSpace = asteroidRadius * 2,
           level = 1,
           lives = 3,
-          lastShootTime = 0;
+          lastShootTime = 0,
+          removeBodies = [],
+          addBodies = [];
 
       var keyLeft = 0, keyRight = 0, keyUp = 0, keyShoot = 0;
 
@@ -163,6 +165,18 @@
             continue;
           }
         }
+
+        // Remove bodies scheduled to be removed
+        for (var i = 0; i < removeBodies.length; i++) {
+          world.removeBody(removeBodies[i]);
+        }
+        removeBodies.length = 0;
+
+        // Add bodies scheduled to be added
+        for (var i = 0; i < addBodies.length; i++) {
+          world.addBody(addBodies[i]);
+        }
+        addBodies.length = 0;
 
         // Warp all bodies
         for(var i=0; i < world.bodies.length; i++){
@@ -361,7 +375,7 @@
           });
           asteroidBody.addShape(createAsteroidShape(0));
           asteroids.push(asteroidBody);
-          world.addBody(asteroidBody);
+          addBodies.push(asteroidBody);
           asteroidBody.level = 1;
           addAsteroidVerts(asteroidBody);
         }
@@ -428,7 +442,7 @@
             updateLives();
 
             // Remove the ship body for a while
-            world.removeBody(shipBody);
+            removeBodies.push(shipBody);
             hideShip = true;
 
             if(lives > 0){
@@ -476,11 +490,11 @@
         var idx = bulletBodies.indexOf(bulletBody);
         if(aidx != -1 && idx != -1){
           // Remove asteroid
-          world.removeBody(asteroidBody);
+          removeBodies.push(asteroidBody);
           asteroids.splice(aidx,1);
 
           // Remove bullet
-          world.removeBody(bulletBody);
+          removeBodies.push(bulletBody);
 
           bulletBodies.splice(idx,1);
 
@@ -505,7 +519,7 @@
               });
               subAsteroidBody.addShape(shape);
               subAsteroidBody.level = asteroidBody.level + 1;
-              world.addBody(subAsteroidBody);
+              addBodies.push(subAsteroidBody);
               addAsteroidVerts(subAsteroidBody);
               asteroids.push(subAsteroidBody);
             }

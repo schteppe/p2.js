@@ -46,6 +46,7 @@
                             position: [x, y]
                         });
                         p.addShape(new p2.Circle({ radius: r }));
+                        world.addBody(p);
                         if(lastBody){
                             // Connect the current body to the previous one
                             var dist = Math.abs(p.position[1]-lastBody.position[1]);
@@ -57,7 +58,6 @@
                             p.velocity[0] = 1*i;
                         }
                         lastBody = p;
-                        world.addBody(p);
                     }
                     lastBody = null;
                 }

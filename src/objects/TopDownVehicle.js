@@ -164,7 +164,7 @@ function WheelConstraint(vehicle, options){
         vec2.copy(this.localPosition, options.localPosition);
     }
 
-    Constraint.apply(this, vehicle.chassisBody, vehicle.groundBody);
+    Constraint.call(this, vehicle.chassisBody, vehicle.groundBody);
 
     this.equations.push(
         this.forwardEquation,

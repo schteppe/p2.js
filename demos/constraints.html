@@ -55,6 +55,7 @@
                     position: [x,y],
                 });
                 p.addShape(new p2.Circle({ radius: r }));
+                world.addBody(p);
                 if(lastBody){
                     var c = new p2.DistanceConstraint(p, lastBody);
                     world.addConstraint(c);
@@ -62,7 +63,6 @@
                     p.velocity[0] = 10;
                 }
                 lastBody = p;
-                world.addBody(p);
             }
 
             // Create RevoluteConstraint
