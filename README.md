@@ -146,16 +146,28 @@ var p2 = require('p2');
 
 Note that concave polygon shapes can be created using [Body.fromPolygon](http://schteppe.github.io/p2.js/docs/classes/Body.html#method_fromPolygon).
 
-### Unit testing
-Tests are written for [Nodeunit](https://github.com/caolan/nodeunit). Run the tests with the command ```grunt test```.
-
-### Contribute
+### Install
 Make sure you have git, [Node.js](http://nodejs.org), NPM and [grunt](http://gruntjs.com/) installed.
 ```
-git clone https://github.com/schteppe/p2.js.git; # Clone the repo
+git clone https://github.com/schteppe/p2.js.git;
 cd p2.js;
-npm install;                                     # Install dependencies
-                                                 # (make changes to source)
-grunt;                                           # Builds build/p2.js and build/p2.min.js
+npm install; # Install dependencies
+grunt;
 ```
-The most recent commits are currently pushed to the ```master``` branch. Thanks for contributing!
+
+### Grunt tasks
+List all tasks using ```grunt --help```.
+```
+grunt        # Run tests, build, minify
+grunt dev    # Run tests, build
+grunt test   # Run tests
+grunt yuidoc # Build docs
+grunt watch  # Watch for changes and run the "dev" task
+```
+
+### Release process
+1. Bump version number.
+2. Build and commit files in ```build/``` and ```docs/```.
+3. Tag the commit with the version number e.g. vX.Y.Z
+4. Add relase notes to github
+5. Publish to NPM
