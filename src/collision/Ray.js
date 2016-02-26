@@ -23,13 +23,13 @@ function Ray(options){
      * Ray start point.
      * @property {array} from
      */
-    this.from = options.from ? vec2.fromValues(options.from[0], options.from[1]) : vec2.create();
+    this.from = options.from ? vec2.clone(options.from) : vec2.create();
 
     /**
      * Ray end point
      * @property {array} to
      */
-    this.to = options.to ? vec2.fromValues(options.to[0], options.to[1]) : vec2.create();
+    this.to = options.to ? vec2.clone(options.to) : vec2.create();
 
     /**
      * Set to true if you want the Ray to take .collisionResponse flags into account on bodies and shapes.
