@@ -10,6 +10,9 @@ module.exports = Plane;
  * @extends Shape
  * @constructor
  * @param {object} [options] (Note that this options object will be passed on to the {{#crossLink "Shape"}}{{/crossLink}} constructor.)
+ * @example
+ *     var planeShape = new Particle();
+ *     body.addShape(planeShape);
  */
 function Plane(options){
     options = options ? Utils.shallowClone(options) : {};

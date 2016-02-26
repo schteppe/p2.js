@@ -13,7 +13,9 @@ module.exports = Circle;
  * @param {number} [options.radius=1] The radius of this circle
  *
  * @example
- *     var circleShape = new Circle({ radius: 1 });
+ *     var circleShape = new Circle({
+ *         radius: 1
+ *     });
  *     body.addShape(circleShape);
  */
 function Circle(options){

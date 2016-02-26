@@ -21,6 +21,15 @@ module.exports = LinearSpring;
  * @param {Array}  [options.worldAnchorB]
  * @param {Array}  [options.localAnchorA]   Where to hook the spring to body A, in local body coordinates. Defaults to the body center.
  * @param {Array}  [options.localAnchorB]
+ *
+ * @example
+ *     var spring = new LinearSpring(bodyA, bodyB, {
+ *         stiffness: 100,
+ *         damping: 1,
+ *         localAnchorA: [0,0], // center of bodyA
+ *         localAnchorB: [0,0] // center of bodyB
+ *     });
+ *     world.addSpring(spring);
  */
 function LinearSpring(bodyA,bodyB,options){
     options = options || {};
@@ -53,11 +62,11 @@ function LinearSpring(bodyA,bodyB,options){
     var worldDistance = vec2.distance(worldAnchorA, worldAnchorB);
 
     /**
-     * Rest length of the spring.
+     * Rest length of the spring. Can be set dynamically.
      * @property restLength
      * @type {number}
      */
-    this.restLength = typeof(options.restLength) === "number" ? options.restLength : worldDistance;
+    this.restLength = options.restLength !== undefined ? options.restLength : worldDistance;
 }
 LinearSpring.prototype = new Spring();
 LinearSpring.prototype.constructor = LinearSpring;
@@ -110,6 +119,7 @@ var applyForce_r =              vec2.create(),
 
 /**
  * Apply the spring force to the connected bodies.
+ * @private
  * @method applyForce
  */
 LinearSpring.prototype.applyForce = function(){

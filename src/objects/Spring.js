@@ -3,7 +3,7 @@ var Utils = require('../utils/Utils');
 module.exports = Spring;
 
 /**
- * A spring, connecting two bodies. The Spring explicitly adds force and angularForce to the bodies and does therefore not put load on the constraint solver.
+ * Base class for {{#crossLink "LinearSpring"}}{{/crossLink}} and {{#crossLink "RotationalSpring"}}{{/crossLink}}. Not supposed to be used directly.
  *
  * @class Spring
  * @constructor
@@ -20,7 +20,7 @@ module.exports = Spring;
 function Spring(bodyA, bodyB, options){
     options = Utils.defaults(options,{
         stiffness: 100,
-        damping: 1,
+        damping: 1
     });
 
     /**
@@ -53,7 +53,8 @@ function Spring(bodyA, bodyB, options){
 }
 
 /**
- * Apply the spring force to the connected bodies.
+ * Apply the spring force to the connected bodies. Called automatically by the World.
+ * @private
  * @method applyForce
  */
 Spring.prototype.applyForce = function(){

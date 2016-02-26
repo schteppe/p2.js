@@ -3,16 +3,17 @@ module.exports = Shape;
 var vec2 = require('../math/vec2');
 
 /**
- * Base class for shapes.
+ * Base class for shapes. Not to be used directly.
  * @class Shape
  * @constructor
  * @param {object} [options]
- * @param {array} [options.position]
  * @param {number} [options.angle=0]
  * @param {number} [options.collisionGroup=1]
  * @param {number} [options.collisionMask=1]
- * @param {boolean} [options.sensor=false]
  * @param {boolean} [options.collisionResponse=true]
+ * @param {Material} [options.material]
+ * @param {array} [options.position]
+ * @param {boolean} [options.sensor=false]
  * @param {object} [options.type=0]
  */
 function Shape(options){
@@ -56,7 +57,8 @@ function Shape(options){
     this.type = options.type || 0;
 
     /**
-     * Shape object identifier.
+     * Shape object identifier. Read only.
+     * @readonly
      * @type {Number}
      * @property id
      */
@@ -64,6 +66,7 @@ function Shape(options){
 
     /**
      * Bounding circle radius of this shape
+     * @readonly
      * @property boundingRadius
      * @type {Number}
      */

@@ -13,6 +13,12 @@ module.exports = Box;
  * @param {Number} [options.width=1] Total width of the box
  * @param {Number} [options.height=1] Total height of the box
  * @extends Convex
+ * @example
+ *     var boxShape = new Box({
+ *         width: 2,
+ *         height: 1
+ *     });
+ *     body.addShape(boxShape);
  */
 function Box(options){
     if(typeof(arguments[0]) === 'number' && typeof(arguments[1]) === 'number'){

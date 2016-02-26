@@ -11,6 +11,11 @@ module.exports = Line;
  * @param {Number} [options.length=1] The total length of the line
  * @extends Shape
  * @constructor
+ * @example
+ *     var lineShape = new Line({
+ *         length: 1
+ *     });
+ *     body.addShape(lineShape);
  */
 function Line(options){
     if(typeof(arguments[0]) === 'number'){

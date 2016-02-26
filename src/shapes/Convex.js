@@ -17,7 +17,9 @@ module.exports = Convex;
  * @example
  *     // Create a box
  *     var vertices = [[-1,-1], [1,-1], [1,1], [-1,1]];
- *     var convexShape = new Convex({ vertices: vertices });
+ *     var convexShape = new Convex({
+ *         vertices: vertices
+ *     });
  *     body.addShape(convexShape);
  */
 function Convex(options){

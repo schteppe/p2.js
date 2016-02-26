@@ -10,6 +10,9 @@ module.exports = Particle;
  * @constructor
  * @param {object} [options] (Note that this options object will be passed on to the {{#crossLink "Shape"}}{{/crossLink}} constructor.)
  * @extends Shape
+ * @example
+ *     var particleShape = new Particle();
+ *     body.addShape(particleShape);
  */
 function Particle(options){
     options = options ? shallowClone(options) : {};
