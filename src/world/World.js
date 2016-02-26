@@ -985,6 +985,7 @@ World.prototype.removeBody = function(body){
         throw new Error('Bodies cannot be removed during step.');
     }
 
+    // TODO: would it be smart to have a .constraints array on the body?
     var constraints = this.constraints;
     var l = constraints.length;
     while (l--) {

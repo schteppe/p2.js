@@ -19,22 +19,26 @@ module.exports = Body;
  * @constructor
  * @extends EventEmitter
  * @param {Object} [options]
- * @param {Array} [options.force]
- * @param {Array} [options.position]
- * @param {Array} [options.velocity]
- * @param {Boolean} [options.allowSleep]
- * @param {Boolean} [options.collisionResponse]
+ * @param {Boolean} [options.allowSleep=true]
  * @param {Number} [options.angle=0]
+ * @param {Number} [options.angularDamping=0.1]
  * @param {Number} [options.angularForce=0]
  * @param {Number} [options.angularVelocity=0]
  * @param {Number} [options.ccdIterations=10]
  * @param {Number} [options.ccdSpeedThreshold=-1]
+ * @param {Boolean} [options.collisionResponse]
+ * @param {Boolean} [options.damping=0.1]
  * @param {Number} [options.fixedRotation=false]
- * @param {Number} [options.gravityScale]
- * @param {Number} [options.id]
+ * @param {Number} [options.fixedX=false]
+ * @param {Number} [options.fixedY=false]
+ * @param {Array} [options.force]
+ * @param {Number} [options.gravityScale=1]
  * @param {Number} [options.mass=0] A number >= 0. If zero, the .type will be set to Body.STATIC.
+ * @param {Array} [options.position]
  * @param {Number} [options.sleepSpeedLimit]
  * @param {Number} [options.sleepTimeLimit]
+ * @param {Number} [options.type] See {{#crossLink "Body/type:property"}}{{/crossLink}}
+ * @param {Array} [options.velocity]
  *
  * @example
  *
@@ -59,14 +63,16 @@ function Body(options){
     EventEmitter.call(this);
 
     /**
-     * The body identifyer
+     * The body identifier. Read only!
+     * @readonly
      * @property id
      * @type {Number}
      */
     this.id = options.id || ++Body._idCounter;
 
     /**
-     * The world that this body is added to. This property is set to NULL if the body is not added to any world.
+     * The world that this body is added to (read only). This property is set to NULL if the body is not added to any world.
+     * @readonly
      * @property world
      * @type {World}
      */
@@ -81,14 +87,21 @@ function Body(options){
     this.shapes = [];
 
     /**
-     * The mass of the body.
+     * The mass of the body. If you change this number, you should call {{#crossLink "Body/updateMassProperties:method"}}{{/crossLink}}.
+     *
      * @property mass
      * @type {number}
+     *
+     * @example
+     *     body.mass = 1;
+     *     body.updateMassProperties();
      */
     this.mass = options.mass || 0;
 
     /**
      * The inverse mass of the body.
+     *
+     * @readonly
      * @property invMass
      * @type {number}
      */
@@ -96,6 +109,7 @@ function Body(options){
 
     /**
      * The inertia of the body around the Z axis.
+     * @readonly
      * @property inertia
      * @type {number}
      */
@@ -103,6 +117,7 @@ function Body(options){
 
     /**
      * The inverse inertia of the body.
+     * @readonly
      * @property invInertia
      * @type {number}
      */
@@ -113,19 +128,34 @@ function Body(options){
 
     /**
      * Set to true if you want to fix the rotation of the body.
+     *
      * @property fixedRotation
      * @type {Boolean}
+     *
+     * @example
+     *     // Fix rotation during runtime
+     *     body.fixedRotation = true;
+     *     body.updateMassProperties();
      */
     this.fixedRotation = !!options.fixedRotation;
 
     /**
      * Set to true if you want to fix the body movement along the X axis. The body will still be able to move along Y.
      * @property {Boolean} fixedX
+     *
+     * @example
+     *     // Fix X movement on body creation
+     *     var body = new Body({ mass: 1, fixedX: true });
+     *
+     * @example
+     *     // Fix X movement during runtime
+     *     body.fixedX = true;
+     *     body.updateMassProperties();
      */
     this.fixedX = !!options.fixedX;
 
     /**
-     * Set to true if you want to fix the body movement along the Y axis. The body will still be able to move along X.
+     * Set to true if you want to fix the body movement along the Y axis. The body will still be able to move along X. See .fixedX
      * @property {Boolean} fixedY
      */
     this.fixedY = !!options.fixedY;
@@ -137,7 +167,7 @@ function Body(options){
     this.massMultiplier = vec2create();
 
     /**
-     * The position of the body
+     * The position of the body in the world. Don't use this for rendering, instead use .interpolatedPosition
      * @property position
      * @type {Array}
      */
@@ -145,6 +175,7 @@ function Body(options){
 
     /**
      * The interpolated position of the body. Use this for rendering.
+     * @readonly
      * @property interpolatedPosition
      * @type {Array}
      */
@@ -166,6 +197,7 @@ function Body(options){
 
     /**
      * Constraint velocity that was added to the body during the last step.
+     * @readonly
      * @property vlambda
      * @type {Array}
      */
@@ -173,6 +205,7 @@ function Body(options){
 
     /**
      * Angular constraint velocity that was added to the body during last step.
+     * @readonly
      * @property wlambda
      * @type {Array}
      */
@@ -197,6 +230,7 @@ function Body(options){
 
     /**
      * The previous angle of the body.
+     * @readonly
      * @property previousAngle
      * @type {Number}
      */
@@ -204,6 +238,7 @@ function Body(options){
 
     /**
      * The interpolated angle of the body. Use this for rendering.
+     * @readonly
      * @property interpolatedAngle
      * @type {Number}
      */
@@ -300,21 +335,22 @@ function Body(options){
     }
 
     /**
-     * Bounding circle radius.
+     * Bounding circle radius. Update with {{#crossLink "Body/updateBoundingRadius:method"}}{{/crossLink}}.
+     * @readonly
      * @property boundingRadius
      * @type {Number}
      */
     this.boundingRadius = 0;
 
     /**
-     * Bounding box of this body.
+     * Bounding box of this body. Update with {{#crossLink "Body/updateAABB:method"}}{{/crossLink}}.
      * @property aabb
      * @type {AABB}
      */
     this.aabb = new AABB();
 
     /**
-     * Indicates if the AABB needs update. Update it with {{#crossLink "Body/updateAABB:method"}}.updateAABB(){{/crossLink}}.
+     * Indicates if the AABB needs update. Update it with {{#crossLink "Body/updateAABB:method"}}{{/crossLink}}.
      * @property aabbNeedsUpdate
      * @type {Boolean}
      * @see updateAABB
@@ -379,12 +415,14 @@ function Body(options){
 
     /**
      * How long the body has been sleeping.
+     * @readonly
      * @property {Number} idleTime
      */
     this.idleTime = 0;
 
     /**
      * The last time when the body went to SLEEPY state.
+     * @readonly
      * @property {Number} timeLastSleepy
      * @private
      */
