@@ -4,7 +4,7 @@ var Equation = require('../equations/Equation');
 module.exports = ContactMaterial;
 
 /**
- * Defines what happens when two materials meet, such as what friction coefficient to use. You can also set other things such as restitution, surface velocity and constraint parameters.
+ * Defines what happens when two materials meet, such as what friction coefficient to use. You can also set other things such as restitution, surface velocity and constraint parameters. Also see {{#crossLink "Material"}}{{/crossLink}}.
  * @class ContactMaterial
  * @constructor
  * @param {Material} materialA
@@ -18,6 +18,14 @@ module.exports = ContactMaterial;
  * @param {Number}   [options.frictionRelaxation] FrictionEquation relaxation.
  * @param {Number}   [options.surfaceVelocity=0]  Surface velocity.
  * @author schteppe
+ * @example
+ *     var ice = new Material();
+ *     var wood = new Material();
+ *     var iceWoodContactMaterial = new ContactMaterial(ice, wood, {
+ *         friction: 0.2,
+ *         restitution: 0.3
+ *     });
+ *     world.addContactMaterial(iceWoodContactMaterial);
  */
 function ContactMaterial(materialA, materialB, options){
     options = options || {};
@@ -27,7 +35,8 @@ function ContactMaterial(materialA, materialB, options){
     }
 
     /**
-     * The contact material identifier
+     * The contact material identifier. Read only.
+     * @readonly
      * @property id
      * @type {Number}
      */
