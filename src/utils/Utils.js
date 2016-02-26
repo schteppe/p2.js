@@ -102,6 +102,7 @@ Utils.shallowClone = function(obj){
 
 /**
  * Extend an options object with default values.
+ * @deprecated Not used internally, will be removed.
  * @static
  * @method defaults
  * @param  {object} options The options object. May be falsy: in this case, a new object is created and returned.

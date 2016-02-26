@@ -1,7 +1,5 @@
 module.exports = Constraint;
 
-var Utils = require('../utils/Utils');
-
 /**
  * Base constraint class.
  *
@@ -15,17 +13,13 @@ var Utils = require('../utils/Utils');
  * @param {Object} [options.collideConnected=true]
  */
 function Constraint(bodyA, bodyB, type, options){
+    options = options || {};
 
     /**
      * The type of constraint. May be one of Constraint.DISTANCE, Constraint.GEAR, Constraint.LOCK, Constraint.PRISMATIC or Constraint.REVOLUTE.
      * @property {number} type
      */
     this.type = type;
-
-    options = Utils.defaults(options,{
-        collideConnected : true,
-        wakeUpBodies : true
-    });
 
     /**
      * Equations to be solved in this constraint
@@ -55,10 +49,10 @@ function Constraint(bodyA, bodyB, type, options){
      * @type {Boolean}
      * @default true
      */
-    this.collideConnected = options.collideConnected;
+    this.collideConnected = options.collideConnected !== undefined ? options.collideConnected : true;
 
     // Wake up bodies when connected
-    if(options.wakeUpBodies){
+    if(options.wakeUpBodies !== false){
         if(bodyA){
             bodyA.wakeUp();
         }

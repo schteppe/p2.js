@@ -216,6 +216,7 @@ function World(options){
      * @property emitImpactEvent
      * @type {Boolean}
      * @default true
+     * @deprecated Impact event will be removed. Use beginContact instead.
      */
     this.emitImpactEvent = true;
 
@@ -290,6 +291,7 @@ var addSpringEvent = {
  * @event impact
  * @param {Body} bodyA
  * @param {Body} bodyB
+ * @deprecated Impact event will be removed. Use beginContact instead.
  */
 var impactEvent = {
     type: "impact",

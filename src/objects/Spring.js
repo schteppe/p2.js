@@ -1,5 +1,3 @@
-var Utils = require('../utils/Utils');
-
 module.exports = Spring;
 
 /**
@@ -18,24 +16,21 @@ module.exports = Spring;
  * @param {Array}  [options.worldAnchorB]
  */
 function Spring(bodyA, bodyB, options){
-    options = Utils.defaults(options,{
-        stiffness: 100,
-        damping: 1
-    });
+    options = options || {};
 
     /**
      * Stiffness of the spring.
      * @property stiffness
      * @type {number}
      */
-    this.stiffness = options.stiffness;
+    this.stiffness = options.stiffness !== undefined ? options.stiffness : 100;
 
     /**
      * Damping of the spring.
      * @property damping
      * @type {number}
      */
-    this.damping = options.damping;
+    this.damping = options.damping !== undefined ? options.damping : 1;
 
     /**
      * First connected body.
