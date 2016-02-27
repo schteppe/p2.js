@@ -127,3 +127,15 @@ Constraint.prototype.setRelaxation = function(relaxation){
         eq.needsUpdate = true;
     }
 };
+
+/**
+ * @method setMaxBias
+ * @param {Number} maxBias
+ */
+Constraint.prototype.setMaxBias = function(maxBias){
+    var eqs = this.equations;
+    for(var i=0; i !== eqs.length; i++){
+        var eq = eqs[i];
+        eq.maxBias = maxBias;
+    }
+};

@@ -80,6 +80,7 @@ function Renderer(scenes, options){
 
     this.stateChangeEvent = { type : "stateChange", state:null };
 
+    this.mousePosition = p2.vec2.create();
 
     // Default collision masks for new shapes
     this.newShapeCollisionMask = 1;
@@ -633,6 +634,8 @@ Renderer.prototype.handleMouseDown = function(physicsPosition){
  * Should be called by subclasses whenever there's a mousedown event
  */
 Renderer.prototype.handleMouseMove = function(physicsPosition){
+    p2.vec2.copy(this.mousePosition, physicsPosition);
+
     var sampling = 0.4;
     switch(this.state){
     case Renderer.DEFAULT:

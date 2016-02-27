@@ -32,6 +32,13 @@ function Equation(bodyA, bodyB, minForce, maxForce){
     this.maxForce = maxForce === undefined ? Number.MAX_VALUE : maxForce;
 
     /**
+     * Cap the constraint violation (G*q) to this value.
+     * @property maxBias
+     * @type {Number}
+     */
+    this.maxBias = Number.MAX_VALUE;
+
+    /**
      * First body participating in the constraint
      * @property bodyA
      * @type {Body}
@@ -166,6 +173,10 @@ Equation.prototype = {
     computeB: function(a,b,h){
         var GW = this.computeGW();
         var Gq = this.computeGq();
+        var maxBias = this.maxBias;
+        if(Math.abs(Gq) > maxBias){
+            Gq = Gq > 0 ? maxBias : -maxBias;
+        }
         var GiMf = this.computeGiMf();
         var B = - Gq * a - GW * b - GiMf * h;
         return B;
