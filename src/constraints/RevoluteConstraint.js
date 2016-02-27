@@ -72,8 +72,12 @@ function RevoluteConstraint(bodyA, bodyB, options){
         rotate(pivotB, pivotB, -bodyB.angle);
     } else {
         // Get pivotA and pivotB
-        copy(pivotA, options.localPivotA);
-        copy(pivotB, options.localPivotB);
+        if(options.localPivotA){
+            copy(pivotA, options.localPivotA);
+        }
+        if(options.localPivotB){
+            copy(pivotB, options.localPivotB);
+        }
     }
 
     var motorEquation = this.motorEquation = new RotationalVelocityEquation(bodyA,bodyB);
