@@ -1,11 +1,13 @@
+module.exports = EventEmitter;
+
 /**
  * Base class for objects that dispatches events.
  * @class EventEmitter
  * @constructor
  */
-var EventEmitter = function () {};
-
-module.exports = EventEmitter;
+function EventEmitter() {
+    this.tmpArray = [];
+}
 
 EventEmitter.prototype = {
     constructor: EventEmitter,
@@ -91,10 +93,17 @@ EventEmitter.prototype = {
         var listenerArray = listeners[ event.type ];
         if ( listenerArray !== undefined ) {
             event.target = this;
-            for ( var i = 0, l = listenerArray.length; i < l; i ++ ) {
-                var listener = listenerArray[ i ];
+
+            // Need to copy the listener array, in case some listener was added/removed inside a listener
+            var tmpArray = this.tmpArray;
+            for (var i = 0, l = listenerArray.length; i < l; i++) {
+                tmpArray[i] = listenerArray[i];
+            }
+            for (var i = 0, l = tmpArray.length; i < l; i++) {
+                var listener = tmpArray[ i ];
                 listener.call( listener.context, event );
             }
+            tmpArray.length = 0;
         }
         return this;
     }
