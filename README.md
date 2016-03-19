@@ -74,7 +74,7 @@ var circleBody = new p2.Body({
     position: [0, 10]
 });
 
-// Add a circle shape to the body.
+// Add a circle shape to the body
 var circleShape = new p2.Circle({ radius: 1 });
 circleBody.addShape(circleShape);
 
@@ -82,30 +82,47 @@ circleBody.addShape(circleShape);
 // If we don't add it to the world, it won't be simulated.
 world.addBody(circleBody);
 
-// Create an infinite ground plane.
+// Create an infinite ground plane body
 var groundBody = new p2.Body({
-    mass: 0 // Setting mass to 0 makes the body static
+    mass: 0 // Setting mass to 0 makes it static
 });
 var groundShape = new p2.Plane();
 groundBody.addShape(groundShape);
 world.addBody(groundBody);
 
-// To get the trajectories of the bodies,
-// we must step the world forward in time.
-// This is done using a fixed time step size.
-var timeStep = 1 / 60; // seconds
+// To animate the bodies, we must step the world forward in time, using a fixed time step size.
+// The World will run substeps and interpolate automatically for us, to get smooth animation.
+var fixedTimeStep = 1 / 60; // seconds
+var maxSubSteps = 10; // Max sub steps to catch up with the wall clock
+var lastTime;
 
-// The "Game loop". Could be replaced by, for example, requestAnimationFrame.
-setInterval(function(){
+// Animation loop
+function animate(time){
+	requestAnimationFrame(animate);
 
-    // The step method moves the bodies forward in time.
-    world.step(timeStep);
+    // Compute elapsed time since last render frame
+    var deltaTime = lastTime ? (time - lastTime) / 1000 : 0;
 
-    // Print the circle position to console.
-    // Could be replaced by a render call.
-    console.log("Circle y position: " + circleBody.position[1]);
+    // Move bodies forward in time
+    world.step(fixedTimeStep, deltaTime, maxSubSteps);
 
-}, 1000 * timeStep);
+    // Render the circle at the current interpolated position
+    renderCircleAtPosition(circleBody.interpolatedPosition);
+
+    lastTime = time;
+}
+
+// Start the animation loop
+requestAnimationFrame(animate);
+```
+
+To interact with bodies, you need to do it *after each internal step*. Simply attach a *"postStep"* listener to the world, and make sure to use ```body.position``` here - ```body.interpolatedPosition``` is only for rendering.
+
+```js
+world.on('postStep', function(event){
+    // Add horizontal spring force
+    circleBody.force[0] -= 100 * circleBody.position[0];
+});
 ```
 
 ### Install
