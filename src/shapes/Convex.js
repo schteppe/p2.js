@@ -122,7 +122,7 @@ function Convex(options){
     this.updateBoundingRadius();
     this.updateArea();
     if(this.area < 0){
-        throw new Error("Convex vertices must be given in conter-clockwise winding.");
+        throw new Error("Convex vertices must be given in counter-clockwise winding.");
     }
 }
 Convex.prototype = new Shape();
