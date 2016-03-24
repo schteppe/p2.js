@@ -515,7 +515,7 @@ Body.prototype.getArea = function() {
 /**
  * Get the AABB from the body. The AABB is updated if necessary.
  * @method getAABB
- * @return {AABB} The AABB instance (this.aabb)
+ * @return {AABB} The AABB instance from the body.
  */
 Body.prototype.getAABB = function(){
     if(this.aabbNeedsUpdate){
@@ -628,7 +628,7 @@ Body.prototype.addShape = function(shape, offset, angle){
 };
 
 /**
- * Remove a shape
+ * Remove a shape.
  * @method removeShape
  * @param  {Shape} shape
  * @return {Boolean} True if the shape was found and removed, else false.
@@ -652,8 +652,7 @@ Body.prototype.removeShape = function(shape){
 };
 
 /**
- * Updates .inertia, .invMass, .invInertia for this Body. Should be called when
- * changing the structure or mass of the Body.
+ * Updates .inertia, .invMass, .invInertia for this Body. Should be called when changing the structure or mass of the Body.
  *
  * @method updateMassProperties
  *
@@ -707,6 +706,13 @@ Body.prototype.updateMassProperties = function(){
  * @method applyForce
  * @param  {Array} force The force vector to add, oriented in world space.
  * @param  {Array} [relativePoint] A point relative to the body in world space. If not given, it is set to zero and all of the force will be exerted on the center of mass.
+ * @example
+ * var body = new Body({ mass: 1 });
+ * var relativePoint = [1, 0]; // Will apply the force at [body.position[0] + 1, body.position[1]]
+ * var force = [0, 1]; // up
+ * body.applyForce(force, relativePoint);
+ * console.log(body.force); // [0, 1]
+ * console.log(body.angularForce); // 1
  */
 Body.prototype.applyForce = function(force, relativePoint){
 
@@ -728,6 +734,13 @@ Body.prototype.applyForce = function(force, relativePoint){
  * @method applyForceLocal
  * @param  {Array} localForce The force vector to add, oriented in local body space.
  * @param  {Array} [localPoint] A point relative to the body in local body space. If not given, it is set to zero and all of the force will be exerted on the center of mass.
+ * @example
+ * var body = new Body({ mass: 1 });
+ * var localPoint = [1, 0]; // x=1 locally in the body
+ * var localForce = [0, 1]; // up, locally in the body
+ * body.applyForceLocal(localForce, localPoint);
+ * console.log(body.force); // [0, 1]
+ * console.log(body.angularForce); // 1
  */
 var Body_applyForce_forceWorld = vec2create();
 var Body_applyForce_pointWorld = vec2create();
@@ -746,6 +759,11 @@ Body.prototype.applyForceLocal = function(localForce, localPoint){
  * @method applyImpulse
  * @param  {Array} impulseVector The impulse vector to add, oriented in world space.
  * @param  {Array} [relativePoint] A point relative to the body in world space. If not given, it is set to zero and all of the impulse will be exerted on the center of mass.
+ * @example
+ * var body = new Body({ mass: 1 });
+ * var relativePoint = [0, 0]; // center of the body
+ * var impulseVector = [0, 1]; // world up
+ * body.applyImpulse(impulseVector, relativePoint);
  */
 var Body_applyImpulse_velo = vec2create();
 Body.prototype.applyImpulse = function(impulseVector, relativePoint){
@@ -776,6 +794,13 @@ Body.prototype.applyImpulse = function(impulseVector, relativePoint){
  * @method applyImpulseLocal
  * @param  {Array} localImpulse The impulse vector to add, oriented in local body space.
  * @param  {Array} [localPoint] A point relative to the body in local body space. If not given, it is set to zero and all of the impulse will be exerted on the center of mass.
+ * @example
+ * var body = new Body({ mass: 1 });
+ * var localPoint = [1, 0]; // x=1, locally in the body
+ * var localImpulse = [0, 1]; // up, locally in the body
+ * body.applyImpulseLocal(localImpulse, localPoint);
+ * console.log(body.velocity); // [1, 0]
+ * console.log(body.angularVelocity); // 1
  */
 var Body_applyImpulse_impulseWorld = vec2create();
 var Body_applyImpulse_pointWorld = vec2create();
@@ -838,6 +863,17 @@ Body.prototype.vectorToWorldFrame = function(out, localVector){
  * @param {Boolean} [options.skipSimpleCheck=false] Set to true if you already know that the path is not intersecting itself.
  * @param {Boolean|Number} [options.removeCollinearPoints=false] Set to a number (angle threshold value) to remove collinear points, or false to keep all points.
  * @return {Boolean} True on success, else false.
+ * @example
+ * var body = new Body();
+ * var path = [
+ *     [-1, 1],
+ *     [-1, 0],
+ *     [1, 0],
+ *     [1, 1],
+ *     [0.5, 0.5]
+ * ];
+ * body.fromPolygon(path);
+ * console.log(body.shapes); // [Convex, Convex, ...]
  */
 Body.prototype.fromPolygon = function(path,options){
     options = options || {};
@@ -917,6 +953,13 @@ var adjustCenterOfMass_tmp2 = vec2create(),
 /**
  * Moves the shape offsets so their center of mass becomes the body center of mass.
  * @method adjustCenterOfMass
+ * @example
+ * var body = new Body({ position: [0, 0] });
+ * var shape = new Circle({ radius: 1 });
+ * body.addShape(shape, [1, 0], 0);
+ * body.adjustCenterOfMass();
+ * console.log(body.position); // [1, 0]
+ * console.log(shape.position); // [0, 0]
  */
 Body.prototype.adjustCenterOfMass = function(){
     var offset_times_area = adjustCenterOfMass_tmp2,
@@ -1223,6 +1266,16 @@ Body.prototype.integrateToTimeOfImpact = function(dt){
  * @param  {Array} result A vector to store the result in
  * @param  {Array} relativePoint A world oriented vector, indicating the position of the point to get the velocity from
  * @return {Array} The result vector
+ * @example
+ * var body = new Body({
+ *     mass: 1,
+ *     velocity: [1, 0],
+ *     angularVelocity: 1
+ * });
+ * var result = [];
+ * var point = [1, 0];
+ * body.getVelocityAtPoint(result, point);
+ * console.log(result); // [1, 1]
  */
 Body.prototype.getVelocityAtPoint = function(result, relativePoint){
     vec2.crossVZ(result, relativePoint, this.angularVelocity);
