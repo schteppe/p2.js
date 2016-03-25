@@ -107,10 +107,9 @@ Heightfield.prototype.updateMaxMinValues = function(){
 
 /**
  * @method computeMomentOfInertia
- * @param  {Number} mass
  * @return {Number}
  */
-Heightfield.prototype.computeMomentOfInertia = function(/*mass*/){
+Heightfield.prototype.computeMomentOfInertia = function(){
     return Number.MAX_VALUE;
 };
 

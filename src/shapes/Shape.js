@@ -203,12 +203,11 @@ Shape.HEIGHTFIELD = 128;
 Shape.prototype = {
 
     /**
-     * Should return the moment of inertia around the Z axis of the body given the total mass. See <a href="http://en.wikipedia.org/wiki/List_of_moments_of_inertia">Wikipedia's list of moments of inertia</a>.
+     * Should return the moment of inertia around the Z axis of the body. See <a href="http://en.wikipedia.org/wiki/List_of_moments_of_inertia">Wikipedia's list of moments of inertia</a>.
      * @method computeMomentOfInertia
-     * @param  {Number} mass
      * @return {Number} If the inertia is infinity or if the object simply isn't possible to rotate, return 0.
      */
-    computeMomentOfInertia: function(/*mass*/){},
+    computeMomentOfInertia: function(){},
 
     /**
      * Returns the bounding circle radius of this shape.

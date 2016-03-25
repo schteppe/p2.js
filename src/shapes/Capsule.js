@@ -50,16 +50,36 @@ Capsule.prototype.constructor = Capsule;
 /**
  * Compute the mass moment of inertia of the Capsule.
  * @method conputeMomentOfInertia
- * @param  {Number} mass
  * @return {Number}
  * @todo
  */
-Capsule.prototype.computeMomentOfInertia = function(mass){
-    // Approximate with rectangle
+Capsule.prototype.computeMomentOfInertia = function(){
+    // http://www.efunda.com/math/areas/rectangle.cfm
+    function boxI(w, h) {
+        return w * h * (Math.pow(w, 2) + Math.pow(h, 2)) / 12;
+    }
+    function semiA(r) {
+        return Math.PI * Math.pow(r, 2) / 2;
+    }
+    // http://www.efunda.com/math/areas/CircleHalf.cfm
+    function semiI(r) {
+        return ((Math.PI / 4) - (8 / (9 * Math.PI))) * Math.pow(r, 4);
+    }
+    function semiC(r) {
+        return (4 * r) / (3 * Math.PI);
+    }
+    // https://en.wikipedia.org/wiki/Second_moment_of_area#Parallel_axis_theorem
+    function capsuleA(l, r) {
+        return l * 2 * r + Math.PI * Math.pow(r, 2);
+    }
+    function capsuleI(l, r) {
+        var d = l / 2 + semiC(r);
+        return boxI(l, 2 * r) + 2 * (semiI(r) + semiA(r) * Math.pow(d, 2));
+    }
     var r = this.radius,
-        w = this.length + r, // 2*r is too much, 0 is too little
-        h = r*2;
-    return mass * (h*h + w*w) / 12;
+        l = this.length,
+        area = capsuleA(l, r);
+    return (area > 0) ? capsuleI(l, r) / area : 0;
 };
 
 /**

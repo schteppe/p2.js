@@ -673,17 +673,16 @@ Body.prototype.updateMassProperties = function(){
 
         var shapes = this.shapes,
             N = shapes.length,
-            m = this.mass / N,
             I = 0;
 
         if(!this.fixedRotation){
             for(var i=0; i<N; i++){
                 var shape = shapes[i],
                     r2 = vec2.squaredLength(shape.position),
-                    Icm = shape.computeMomentOfInertia(m);
-                I += Icm + m*r2;
+                    Icm = shape.computeMomentOfInertia();
+                I += Icm + r2;
             }
-            this.inertia = I;
+            this.inertia = this.mass * I;
             this.invInertia = I>0 ? 1/I : 0;
 
         } else {
@@ -1274,4 +1273,3 @@ Body.SLEEPY = 1;
  * @static
  */
 Body.SLEEPING = 2;
-

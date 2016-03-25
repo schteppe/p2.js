@@ -26,7 +26,7 @@ Plane.prototype.constructor = Plane;
  * Compute moment of inertia
  * @method computeMomentOfInertia
  */
-Plane.prototype.computeMomentOfInertia = function(/*mass*/){
+Plane.prototype.computeMomentOfInertia = function(){
     return 0; // Plane is infinite. The inertia should therefore be infinty but by convention we set 0 here
 };
 
