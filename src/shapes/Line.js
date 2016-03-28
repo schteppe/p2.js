@@ -40,8 +40,8 @@ function Line(options){
 Line.prototype = new Shape();
 Line.prototype.constructor = Line;
 
-Line.prototype.computeMomentOfInertia = function(mass){
-    return mass * Math.pow(this.length,2) / 12;
+Line.prototype.computeMomentOfInertia = function(){
+    return Math.pow(this.length,2) / 12;
 };
 
 Line.prototype.updateBoundingRadius = function(){
