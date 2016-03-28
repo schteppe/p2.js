@@ -13,17 +13,22 @@ module.exports = PrismaticConstraint;
  * @constructor
  * @extends Constraint
  * @author schteppe
- * @param {Body}    bodyA
- * @param {Body}    bodyB
- * @param {Object}  [options]
- * @param {Number}  [options.maxForce]                Max force to be applied by the constraint
- * @param {Array}   [options.localAnchorA]            Body A's anchor point, defined in its own local frame.
- * @param {Array}   [options.localAnchorB]            Body B's anchor point, defined in its own local frame.
- * @param {Array}   [options.localAxisA]              An axis, defined in body A frame, that body B's anchor point may slide along.
- * @param {Boolean} [options.disableRotationalLock]   If set to true, bodyB will be free to rotate around its anchor point.
- * @param {Number}  [options.upperLimit]
- * @param {Number}  [options.lowerLimit]
+ * @param {Body} bodyA
+ * @param {Body} bodyB
+ * @param {Object} [options]
+ * @param {Number} [options.maxForce] Max force to be applied by the constraint
+ * @param {Array} [options.localAnchorA] Body A's anchor point, defined in its own local frame.
+ * @param {Array} [options.localAnchorB] Body B's anchor point, defined in its own local frame.
+ * @param {Array} [options.localAxisA] An axis, defined in body A frame, that body B's anchor point may slide along.
+ * @param {Boolean} [options.disableRotationalLock] If set to true, bodyB will be free to rotate around its anchor point.
+ * @param {Number} [options.upperLimit]
+ * @param {Number} [options.lowerLimit]
  * @todo Ability to create using only a point and a worldAxis
+ * @example
+ *     var constraint = new PrismaticConstraint(bodyA, bodyB, {
+ *         localAxisA: [0, 1]
+ *     });
+ *     world.addConstraint(constraint);
  */
 function PrismaticConstraint(bodyA, bodyB, options){
     options = options || {};
@@ -73,7 +78,7 @@ function PrismaticConstraint(bodyA, bodyB, options){
 
      */
 
-    var maxForce = this.maxForce = typeof(options.maxForce)!=="undefined" ? options.maxForce : Number.MAX_VALUE;
+    var maxForce = this.maxForce = options.maxForce !== undefined ? options.maxForce : Number.MAX_VALUE;
 
     // Translational part
     var trans = new Equation(bodyA,bodyB,-maxForce,maxForce);
@@ -126,28 +131,28 @@ function PrismaticConstraint(bodyA, bodyB, options){
      * @property lowerLimitEnabled
      * @type {Boolean}
      */
-    this.lowerLimitEnabled = typeof(options.lowerLimit)!=="undefined" ? true : false;
+    this.lowerLimitEnabled = options.lowerLimit !== undefined ? true : false;
 
     /**
      * Set to true to enable upper limit.
      * @property upperLimitEnabled
      * @type {Boolean}
      */
-    this.upperLimitEnabled = typeof(options.upperLimit)!=="undefined" ? true : false;
+    this.upperLimitEnabled = options.upperLimit !== undefined ? true : false;
 
     /**
      * Lower constraint limit. The constraint position is forced to be larger than this value.
      * @property lowerLimit
      * @type {Number}
      */
-    this.lowerLimit = typeof(options.lowerLimit)!=="undefined" ? options.lowerLimit : 0;
+    this.lowerLimit = options.lowerLimit !== undefined ? options.lowerLimit : 0;
 
     /**
      * Upper constraint limit. The constraint position is forced to be smaller than this value.
      * @property upperLimit
      * @type {Number}
      */
-    this.upperLimit = typeof(options.upperLimit)!=="undefined" ? options.upperLimit : 1;
+    this.upperLimit = options.upperLimit !== undefined ? options.upperLimit : 1;
 
     // Equations used for limits
     this.upperLimitEquation = new ContactEquation(bodyA,bodyB);

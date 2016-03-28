@@ -164,15 +164,15 @@ AABB.prototype.containsPoint = function(point){
  * @param  {Ray} ray
  * @return {number} -1 if no hit, a number between 0 and 1 if hit, indicating the position between the "from" and "to" points.
  * @example
- * var aabb = new AABB({
- *     upperBound: [1, 1],
- *     lowerBound: [-1, -1]
- * });
- * var ray = new Ray({
- *     from: [-2, 0],
- *     to: [0, 0]
- * });
- * var fraction = aabb.overlapsRay(ray); // fraction == 0.5
+ *     var aabb = new AABB({
+ *         upperBound: [1, 1],
+ *         lowerBound: [-1, -1]
+ *     });
+ *     var ray = new Ray({
+ *         from: [-2, 0],
+ *         to: [0, 0]
+ *     });
+ *     var fraction = aabb.overlapsRay(ray); // fraction == 0.5
  */
 AABB.prototype.overlapsRay = function(ray){
 
