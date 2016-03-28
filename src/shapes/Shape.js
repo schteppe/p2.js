@@ -11,7 +11,7 @@ var vec2 = require('../math/vec2');
  * @param {number} [options.collisionGroup=1]
  * @param {number} [options.collisionMask=1]
  * @param {boolean} [options.collisionResponse=true]
- * @param {Material} [options.material]
+ * @param {Material} [options.material=null]
  * @param {array} [options.position]
  * @param {boolean} [options.sensor=false]
  * @param {object} [options.type=0]
