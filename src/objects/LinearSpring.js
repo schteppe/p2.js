@@ -152,9 +152,6 @@ LinearSpring.prototype.applyForce = function(){
     var rlen = vec2.len(r);
     vec2.normalize(r_unit,r);
 
-    //console.log(rlen)
-    //console.log("A",vec2.str(worldAnchorA),"B",vec2.str(worldAnchorB))
-
     // Compute relative velocity of the anchor points, u
     vec2.sub(u, bodyB.velocity, bodyA.velocity);
     vec2.crossZV(tmp, bodyB.angularVelocity, rj);

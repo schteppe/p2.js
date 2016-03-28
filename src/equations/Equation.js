@@ -144,9 +144,9 @@ Equation.prototype = {
             d = this.relaxation,
             h = this.timeStep;
 
-        this.a = 4.0 / (h * (1 + 4 * d));
-        this.b = (4.0 * d) / (1 + 4 * d);
-        this.epsilon = 4.0 / (h * h * k * (1 + 4 * d));
+        this.a = 4 / (h * (1 + 4 * d));
+        this.b = (4 * d) / (1 + 4 * d);
+        this.epsilon = 4 / (h * h * k * (1 + 4 * d));
 
         this.needsUpdate = false;
     },
