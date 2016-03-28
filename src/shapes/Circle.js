@@ -43,12 +43,11 @@ Circle.prototype.constructor = Circle;
 
 /**
  * @method computeMomentOfInertia
- * @param  {Number} mass
  * @return {Number}
  */
-Circle.prototype.computeMomentOfInertia = function(mass){
+Circle.prototype.computeMomentOfInertia = function(){
     var r = this.radius;
-    return mass * r * r / 2;
+    return r * r / 2;
 };
 
 /**

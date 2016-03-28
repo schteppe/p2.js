@@ -68,13 +68,12 @@ Box.prototype.constructor = Box;
 /**
  * Compute moment of inertia
  * @method computeMomentOfInertia
- * @param  {Number} mass
  * @return {Number}
  */
-Box.prototype.computeMomentOfInertia = function(mass){
+Box.prototype.computeMomentOfInertia = function(){
     var w = this.width,
         h = this.height;
-    return mass * (h*h + w*w) / 12;
+    return (h*h + w*w) / 12;
 };
 
 /**

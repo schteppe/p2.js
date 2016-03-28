@@ -275,13 +275,12 @@ Convex.prototype.updateCenterOfMass = function(){
 };
 
 /**
- * Compute the mass moment of inertia of the Convex.
+ * Compute the moment of inertia of the Convex.
  * @method computeMomentOfInertia
- * @param  {Number} mass
  * @return {Number}
  * @see http://www.gamedev.net/topic/342822-moment-of-inertia-of-a-polygon-2d/
  */
-Convex.prototype.computeMomentOfInertia = function(mass){
+Convex.prototype.computeMomentOfInertia = function(){
     var denom = 0.0,
         numer = 0.0,
         N = this.vertices.length;
@@ -293,7 +292,7 @@ Convex.prototype.computeMomentOfInertia = function(mass){
         denom += a * b;
         numer += a;
     }
-    return (mass / 6.0) * (denom / numer);
+    return (1.0 / 6.0) * (denom / numer);
 };
 
 /**

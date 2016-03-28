@@ -23,7 +23,7 @@ function Particle(options){
 Particle.prototype = new Shape();
 Particle.prototype.constructor = Particle;
 
-Particle.prototype.computeMomentOfInertia = function(/*mass*/){
+Particle.prototype.computeMomentOfInertia = function(){
     return 0; // Can't rotate a particle
 };
 
