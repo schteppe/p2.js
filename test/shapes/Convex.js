@@ -134,6 +134,22 @@ exports.updateTriangles = function(test){
     test.done();
 };
 
+exports.pointTest = function(test){
+    var w = 2;
+    var h = 1;
+    var shape = new Convex({
+        vertices: [
+            [-w/2,-h/2],
+            [ w/2,-h/2],
+            [ w/2, h/2],
+        ]
+    });
+    test.equal(shape.pointTest([0, 0]), true);
+    test.equal(shape.pointTest([1, 0]), true);
+    test.equal(shape.pointTest([2, 0]), false);
+    test.done();
+};
+
 exports.raycast = function(test){
     var ray = new Ray({
         mode: Ray.CLOSEST,

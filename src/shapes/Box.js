@@ -14,6 +14,7 @@ module.exports = Box;
  * @param {Number} [options.height=1] Total height of the box
  * @extends Convex
  * @example
+ *     var body = new Body({ mass: 1 });
  *     var boxShape = new Box({
  *         width: 2,
  *         height: 1
@@ -115,3 +116,6 @@ Box.prototype.updateArea = function(){
     this.area = this.width * this.height;
 };
 
+Box.prototype.pointTest = function(localPoint){
+    return Math.abs(localPoint[0]) <= this.width * 0.5 && Math.abs(localPoint[1]) <= this.height * 0.5;
+};

@@ -1,9 +1,5 @@
 var  GSSolver = require('../solver/GSSolver')
 ,    vec2 = require('../math/vec2')
-,    Circle = require('../shapes/Circle')
-,    Convex = require('../shapes/Convex')
-,    Plane = require('../shapes/Plane')
-,    Capsule = require('../shapes/Capsule')
 ,    Particle = require('../shapes/Particle')
 ,    EventEmitter = require('../events/EventEmitter')
 ,    Body = require('../objects/Body')
@@ -1104,48 +1100,45 @@ var hitTest_tmp1 = vec2.create(),
 /**
  * Test if a world point overlaps bodies
  * @method hitTest
- * @param  {Array}  worldPoint  Point to use for intersection tests
- * @param  {Array}  bodies      A list of objects to check for intersection
- * @param  {Number} precision   Used for matching against particles and lines. Adds some margin to these infinitesimal objects.
- * @return {Array}              Array of bodies that overlap the point
+ * @param  {Array} worldPoint Point to use for intersection tests
+ * @param  {Array} bodies A list of objects to check for intersection
+ * @param  {Number} precision Used for matching against particles and lines. Adds some margin to these infinitesimal objects.
+ * @return {Array} Array of bodies that overlap the point
  * @todo Should use an api similar to the raycast function
  * @todo Should probably implement a .containsPoint method for all shapes. Would be more efficient
  * @todo Should use the broadphase
+ * @todo Returning the hit shape would be fine - it carries a reference to the body now
  */
-World.prototype.hitTest = function(worldPoint,bodies,precision){
+World.prototype.hitTest = function(worldPoint, bodies, precision){
     precision = precision || 0;
 
     // Create a dummy particle body with a particle shape to test against the bodies
-    var pb = new Body({ position:worldPoint }),
-        ps = new Particle(),
-        px = worldPoint,
-        pa = 0,
-        x = hitTest_tmp1,
-        tmp = hitTest_tmp2;
-    pb.addShape(ps);
+    var shapeWorldPosition = hitTest_tmp1,
+        shapeLocalPoint = hitTest_tmp2;
 
-    var n = this.narrowphase,
-        result = [];
+    var result = [];
 
     // Check bodies
-    for(var i=0, N=bodies.length; i!==N; i++){
-        var b = bodies[i];
+    for(var i=0, N = bodies.length; i!==N; i++){
+        var body = bodies[i];
 
-        for(var j=0, NS=b.shapes.length; j!==NS; j++){
-            var s = b.shapes[j];
+        for(var j=0, NS = body.shapes.length; j!==NS; j++){
+            var shape = body.shapes[j];
 
-            // Get shape world position + angle
-            vec2.rotate(x, s.position, b.angle);
-            vec2.add(x, x, b.position);
-            var a = s.angle + b.angle;
+            // Get local point position in the shape
+            shape.worldPointToLocal(shapeLocalPoint, worldPoint);
 
-            if( (s instanceof Circle    && n.circleParticle  (b,s,x,a,     pb,ps,px,pa, true)) ||
-                (s instanceof Convex    && n.particleConvex  (pb,ps,px,pa, b,s,x,a,     true)) ||
-                (s instanceof Plane     && n.particlePlane   (pb,ps,px,pa, b,s,x,a,     true)) ||
-                (s instanceof Capsule   && n.particleCapsule (pb,ps,px,pa, b,s,x,a,     true)) ||
-                (s instanceof Particle  && vec2.squaredLength(vec2.sub(tmp,x,worldPoint)) < precision*precision)
-                ){
-                result.push(b);
+            if(shape.pointTest(shapeLocalPoint)){
+                result.push(body);
+            } else {
+
+                // Get shape world position
+                vec2.rotate(shapeWorldPosition, shape.position, body.angle);
+                vec2.add(shapeWorldPosition, shapeWorldPosition, body.position);
+
+                if(shape instanceof Particle && vec2.squaredDistance(shapeWorldPosition, worldPoint) < precision * precision){
+                    result.push(body);
+                }
             }
         }
     }

@@ -5,14 +5,15 @@ var Shape = require('./Shape')
 module.exports = Capsule;
 
 /**
- * Capsule shape class.
+ * Capsule shape.
  * @class Capsule
  * @constructor
  * @extends Shape
  * @param {object} [options] (Note that this options object will be passed on to the {{#crossLink "Shape"}}{{/crossLink}} constructor.)
- * @param {Number} [options.length=1] The distance between the end points
- * @param {Number} [options.radius=1] Radius of the capsule
+ * @param {Number} [options.length=1] The distance between the end points, extends along the X axis.
+ * @param {Number} [options.radius=1] Radius of the capsule.
  * @example
+ *     var body = new Body({ mass: 1 });
  *     var capsuleShape = new Capsule({
  *         length: 1,
  *         radius: 2
@@ -207,4 +208,23 @@ Capsule.prototype.raycast = function(result, ray, position, angle){
             }
         }
     }
+};
+
+Capsule.prototype.pointTest = function(localPoint){
+    var radius = this.radius;
+    var halfLength = this.length * 0.5;
+
+    if((Math.abs(localPoint[0]) <= halfLength && Math.abs(localPoint[1]) <= radius)){
+        return true;
+    }
+
+    if(Math.pow(localPoint[0] - halfLength, 2) + Math.pow(localPoint[1], 2) <= radius * radius){
+        return true;
+    }
+
+    if(Math.pow(localPoint[0] + halfLength, 2) + Math.pow(localPoint[1], 2) <= radius * radius){
+        return true;
+    }
+
+    return false;
 };

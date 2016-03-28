@@ -13,6 +13,7 @@ module.exports = Circle;
  * @param {number} [options.radius=1] The radius of this circle
  *
  * @example
+ *     var body = new Body({ mass: 1 });
  *     var circleShape = new Circle({
  *         radius: 1
  *     });
@@ -146,4 +147,9 @@ Circle.prototype.raycast = function(result, ray, position/*, angle*/){
             ray.reportIntersection(result, d2, normal, -1);
         }
     }
+};
+
+Circle.prototype.pointTest = function(localPoint){
+    var radius = this.radius;
+    return vec2.squaredLength(localPoint) <= radius * radius;
 };

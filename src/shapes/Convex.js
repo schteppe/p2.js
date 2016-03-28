@@ -15,7 +15,7 @@ module.exports = Convex;
  * @param {Array} [options.vertices] An array of vertices that span this shape. Vertices are given in counter-clockwise (CCW) direction.
  * @param {Array} [options.axes] An array of unit length vectors, representing the symmetry axes in the convex.
  * @example
- *     // Create a box
+ *     var body = new Body({ mass: 1 });
  *     var vertices = [[-1,-1], [1,-1], [1,1], [-1,1]];
  *     var convexShape = new Convex({
  *         vertices: vertices
@@ -398,4 +398,35 @@ Convex.prototype.raycast = function(result, ray, position, angle){
             ray.reportIntersection(result, delta, normal, i);
         }
     }
+};
+
+var pic_r0 = vec2.create();
+var pic_r1 = vec2.create();
+Convex.prototype.pointTest = function(localPoint){
+    var r0 = pic_r0,
+        r1 = pic_r1,
+        verts = this.vertices,
+        lastCross = null,
+        numVerts = verts.length;
+
+    for(var i=0; i < numVerts + 1; i++){
+        var v0 = verts[i % numVerts],
+            v1 = verts[(i + 1) % numVerts];
+
+        vec2.sub(r0, v0, localPoint);
+        vec2.sub(r1, v1, localPoint);
+
+        var cross = vec2.crossLength(r0,r1);
+
+        if(lastCross === null){
+            lastCross = cross;
+        }
+
+        // If we got a different sign of the distance vector, the point is out of the polygon
+        if(cross * lastCross < 0){
+            return false;
+        }
+        lastCross = cross;
+    }
+    return true;
 };

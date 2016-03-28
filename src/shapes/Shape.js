@@ -192,7 +192,7 @@ Object.defineProperty(Shape, 'RECTANGLE', {
  * @static
  * @property {Number} CAPSULE
  */
-Shape.CAPSULE =     64;
+Shape.CAPSULE = 64;
 
 /**
  * @static
@@ -221,9 +221,7 @@ Shape.prototype = {
      * Update the .area property of the shape.
      * @method updateArea
      */
-    updateArea: function(){
-        // To be implemented in all subclasses
-    },
+    updateArea: function(){},
 
     /**
      * Compute the world axis-aligned bounding box (AABB) of this shape.
@@ -246,5 +244,31 @@ Shape.prototype = {
      */
     raycast: function(/*result, ray, position, angle*/){
         // To be implemented in each subclass
-    }
+    },
+
+    /**
+     * Test if a point is inside this shape.
+     * @method pointTest
+     * @param {array} localPoint
+     * @return {boolean}
+     */
+    pointTest: function(/*localPoint*/){ return false; },
+
+    /**
+     * Transform a world point to local shape space (assumed the shape is transformed by both itself and the body).
+     * @method worldPointToLocal
+     * @param {array} out
+     * @param {array} worldPoint
+     */
+    worldPointToLocal: (function () {
+        var shapeWorldPosition = vec2.create();
+        return function (out, worldPoint) {
+            var body = this.body;
+
+            vec2.rotate(shapeWorldPosition, this.position, body.angle);
+            vec2.add(shapeWorldPosition, shapeWorldPosition, body.position);
+
+            vec2.toLocalFrame(out, worldPoint, shapeWorldPosition, this.body.angle + this.angle);
+        };
+    })()
 };

@@ -11,8 +11,9 @@ module.exports = Plane;
  * @constructor
  * @param {object} [options] (Note that this options object will be passed on to the {{#crossLink "Shape"}}{{/crossLink}} constructor.)
  * @example
- *     var planeShape = new Particle();
- *     body.addShape(planeShape);
+ *     var body = new Body();
+ *     var shape = new Plane();
+ *     body.addShape(shape);
  */
 function Plane(options){
     options = options ? Utils.shallowClone(options) : {};
@@ -124,4 +125,8 @@ Plane.prototype.raycast = function(result, ray, position, angle){
     var t = -vec2.dot(normal, planePointToFrom) / n_dot_dir / ray.length;
 
     ray.reportIntersection(result, t, normal, -1);
+};
+
+Plane.prototype.pointTest = function(localPoint){
+    return localPoint[1] <= 0;
 };
