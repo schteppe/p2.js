@@ -368,13 +368,6 @@ vec2.distance = function(a, b) {
 };
 
 /**
- * Alias for vec2.distance
- * @static
- * @method dist
- */
-vec2.dist = vec2.distance;
-
-/**
  * Calculates the squared euclidian distance between two vec2's
  * @static
  * @method squaredDistance
@@ -387,13 +380,6 @@ vec2.squaredDistance = function(a, b) {
         y = b[1] - a[1];
     return x*x + y*y;
 };
-
-/**
- * Alias for vec2.squaredDistance
- * @static
- * @method sqrDist
- */
-vec2.sqrDist = vec2.squaredDistance;
 
 /**
  * Calculates the length of a vec2
@@ -409,13 +395,6 @@ vec2.length = function (a) {
 };
 
 /**
- * Alias for vec2.length
- * @method len
- * @static
- */
-vec2.len = vec2.length;
-
-/**
  * Calculates the squared length of a vec2
  * @static
  * @method squaredLength
@@ -427,13 +406,6 @@ vec2.squaredLength = function (a) {
         y = a[1];
     return x*x + y*y;
 };
-
-/**
- * Alias for vec2.squaredLength
- * @static
- * @method sqrLen
- */
-vec2.sqrLen = vec2.squaredLength;
 
 /**
  * Negates the components of a vec2

@@ -149,7 +149,7 @@ LinearSpring.prototype.applyForce = function(){
 
     // Compute distance vector between world anchor points
     vec2.sub(r, worldAnchorB, worldAnchorA);
-    var rlen = vec2.len(r);
+    var rlen = vec2.length(r);
     vec2.normalize(r_unit,r);
 
     // Compute relative velocity of the anchor points, u
