@@ -34,13 +34,13 @@ function Capsule(options){
      * The distance between the end points.
      * @property {Number} length
      */
-    this.length = options.length || 1;
+    this.length = options.length !== undefined ? options.length : 1;
 
     /**
      * The radius of the capsule.
      * @property {Number} radius
      */
-    this.radius = options.radius || 1;
+    this.radius = options.radius !== undefined ? options.radius : 1;
 
     options.type = Shape.CAPSULE;
     Shape.call(this, options);

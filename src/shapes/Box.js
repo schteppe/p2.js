@@ -36,14 +36,14 @@ function Box(options){
      * @property width
      * @type {Number}
      */
-    var width = this.width = options.width || 1;
+    var width = this.width = options.width !== undefined ? options.width : 1;
 
     /**
      * Total height of the box
      * @property height
      * @type {Number}
      */
-    var height = this.height = options.height || 1;
+    var height = this.height = options.height !== undefined ? options.height : 1;
 
     var verts = [
         vec2.fromValues(-width/2, -height/2),

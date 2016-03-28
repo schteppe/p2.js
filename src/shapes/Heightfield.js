@@ -72,7 +72,7 @@ function Heightfield(options){
      * The width of each element
      * @property {number} elementWidth
      */
-    this.elementWidth = options.elementWidth || 0.1;
+    this.elementWidth = options.elementWidth !== undefined ? options.elementWidth : 0.1;
 
     if(options.maxValue === undefined || options.minValue === undefined){
         this.updateMaxMinValues();

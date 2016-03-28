@@ -32,7 +32,7 @@ function Line(options){
      * @property {Number} length
      * @default 1
      */
-    this.length = options.length || 1;
+    this.length = options.length !== undefined ? options.length : 1;
 
     options.type = Shape.LINE;
     Shape.call(this, options);

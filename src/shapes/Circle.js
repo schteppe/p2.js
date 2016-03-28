@@ -33,7 +33,7 @@ function Circle(options){
      * @property radius
      * @type {number}
      */
-    this.radius = options.radius || 1;
+    this.radius = options.radius !== undefined ? options.radius : 1;
 
     options.type = Shape.CIRCLE;
     Shape.call(this, options);
