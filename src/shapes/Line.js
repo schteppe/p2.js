@@ -12,6 +12,7 @@ module.exports = Line;
  * @extends Shape
  * @constructor
  * @example
+ *     var body = new Body();
  *     var lineShape = new Line({
  *         length: 1
  *     });

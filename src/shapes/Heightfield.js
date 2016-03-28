@@ -24,13 +24,13 @@ module.exports = Heightfield;
  *     }
  *
  *     // Create the heightfield shape
- *     var heightfieldShape = new Heightfield({
+ *     var shape = new Heightfield({
  *         heights: heights,
  *         elementWidth: 1 // Distance between the data points in X direction
  *     });
- *     var heightfieldBody = new Body();
- *     heightfieldBody.addShape(heightfieldShape);
- *     world.addBody(heightfieldBody);
+ *     var body = new Body();
+ *     body.addShape(shape);
+ *     world.addBody(body);
  *
  * @todo Should use a scale property with X and Y direction instead of just elementWidth
  */
