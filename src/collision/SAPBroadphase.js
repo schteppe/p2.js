@@ -66,14 +66,7 @@ SAPBroadphase.prototype.setWorld = function(world){
     this.world = world;
 };
 
-/**
- * Sorts bodies along an axis.
- * @method sortAxisList
- * @param {Array} a
- * @param {number} axisIndex
- * @return {Array}
- */
-SAPBroadphase.sortAxisList = function(a, axisIndex){
+function sortAxisList(a, axisIndex){
     axisIndex = axisIndex|0;
     for(var i=1,l=a.length; i<l; i++) {
         var v = a[i];
@@ -86,14 +79,14 @@ SAPBroadphase.sortAxisList = function(a, axisIndex){
         a[j+1] = v;
     }
     return a;
-};
+}
 
 SAPBroadphase.prototype.sortList = function(){
     var bodies = this.axisList,
     axisIndex = this.axisIndex;
 
     // Sort the lists
-    SAPBroadphase.sortAxisList(bodies, axisIndex);
+    sortAxisList(bodies, axisIndex);
 };
 
 /**
