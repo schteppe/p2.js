@@ -9,7 +9,7 @@ module.exports = TopDownVehicle;
  * @class TopDownVehicle
  * @constructor
  *
- * @deprecated This class will be moved our of the core library in future versions.
+ * @deprecated This class will be moved out of the core library in future versions.
  *
  * @param {Body} chassisBody A dynamic body, already added to the world.
  * @param {Object} [options]
