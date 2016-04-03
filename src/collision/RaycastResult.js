@@ -67,6 +67,7 @@ RaycastResult.prototype.reset = function () {
  * Get the distance to the hit point.
  * @method getHitDistance
  * @param {Ray} ray
+ * @return {number}
  */
 RaycastResult.prototype.getHitDistance = function (ray) {
 	return vec2.distance(ray.from, ray.to) * this.fraction;
@@ -75,6 +76,7 @@ RaycastResult.prototype.getHitDistance = function (ray) {
 /**
  * Returns true if the ray hit something since the last reset().
  * @method hasHit
+ * @®eturn {boolean}
  */
 RaycastResult.prototype.hasHit = function () {
 	return this.fraction !== -1;
