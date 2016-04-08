@@ -1118,68 +1118,53 @@ var pic_localPoint = createVec2(),
 
 /*
  * Check if a point is in a polygon
+ * https://en.wikipedia.org/wiki/Even-odd_rule
  */
 function pointInConvex(worldPoint,convexShape,convexOffset,convexAngle){
-    var localPoint = pic_localPoint,
-        r0 = pic_r0,
-        r1 = pic_r1,
-        verts = convexShape.vertices,
-        lastCross = null;
-
-    vec2.toLocalFrame(localPoint, worldPoint, convexOffset, convexAngle);
-
-    for(var i=0, numVerts=verts.length; i!==numVerts+1; i++){
-        var v0 = verts[i % numVerts],
-            v1 = verts[(i+1) % numVerts];
-
-        sub(r0, v0, localPoint);
-        sub(r1, v1, localPoint);
-
-        var cross = vec2.crossLength(r0,r1);
-
-        if(lastCross === null){
-            lastCross = cross;
-        }
-
-        // If we got a different sign of the distance vector, the point is out of the polygon
-        if(cross*lastCross < 0){
-            return false;
-        }
-        lastCross = cross;
-    }
-    return true;
+    var point = worldPoint,
+        verts = convexShape.vertices;
+       
+	var num = verts.length,
+	i = 0,
+	j = num - 1,
+	sin = Math.sin(-convexAngle),
+	cos = Math.cos(-convexAngle),
+	x=(point[0]-convexOffset[0])*cos - (point[1]-convexOffset[1])*sin,
+	y=(point[0]-convexOffset[0])*sin + (point[1]-convexOffset[1])*cos,
+	c = false;
+	for(i=0;i<num;i++)
+	{
+		if  (((verts[i][1] > y) != (verts[j][1] > y))&&(x < (verts[j][0] - verts[i][0]) * (y - verts[i][1]) / (verts[j][1] - verts[i][1]) + verts[i][0]))
+			{
+				c = !c;
+			}
+			j = i;
+	}
+	return c;
 }
 
 /*
  * Check if a point is in a polygon
  */
 function pointInConvexLocal(localPoint,convexShape){
-    var r0 = pic_r0,
-        r1 = pic_r1,
-        verts = convexShape.vertices,
-        lastCross = null,
-        numVerts = verts.length;
-
-    for(var i=0; i < numVerts + 1; i++){
-        var v0 = verts[i % numVerts],
-            v1 = verts[(i + 1) % numVerts];
-
-        sub(r0, v0, localPoint);
-        sub(r1, v1, localPoint);
-
-        var cross = vec2.crossLength(r0,r1);
-
-        if(lastCross === null){
-            lastCross = cross;
-        }
-
-        // If we got a different sign of the distance vector, the point is out of the polygon
-        if(cross*lastCross < 0){
-            return false;
-        }
-        lastCross = cross;
-    }
-    return true;
+    var point = localPoint,
+        verts = convexShape.vertices;
+       
+	var num = verts.length,
+	i = 0,
+	j = num - 1,
+	x=point[0],
+	y=point[1],
+	c = false;
+	for(i=0;i<num;i++)
+	{
+		if  (((verts[i][1] > y) != (verts[j][1] > y))&&(x < (verts[j][0] - verts[i][0]) * (y - verts[i][1]) / (verts[j][1] - verts[i][1]) + verts[i][0]))
+			{
+				c = !c;
+			}
+			j = i;
+	}
+	return c;
 }
 
 /**
@@ -1194,8 +1179,6 @@ function pointInConvexLocal(localPoint,convexShape){
  * @param  {Array} convexOffset
  * @param  {Number} convexAngle
  * @param {Boolean} justTest
- * @todo use pointInConvex and code more similar to circleConvex
- * @todo don't transform each vertex, but transform the particle position to convex-local instead
  */
 Narrowphase.prototype[Shape.PARTICLE | Shape.CONVEX] =
 Narrowphase.prototype[Shape.PARTICLE | Shape.BOX] =
