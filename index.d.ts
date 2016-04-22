@@ -110,9 +110,7 @@ declare module p2 {
 
     export class DistanceConstraint extends Constraint {
 
-        constructor(bodyA: Body, bodyB: Body, type: number, options?: {
-            collideConnected?: boolean;
-            wakeUpBodies?: boolean;
+        constructor(bodyA: Body, bodyB: Body, options?: {
             distance?: number;
             localAnchorA?: number[];
             localAnchorB?: number[];
@@ -136,9 +134,7 @@ declare module p2 {
 
     export class GearConstraint extends Constraint {
 
-        constructor(bodyA: Body, bodyB: Body, type: number, options?: {
-            collideConnected?: boolean;
-            wakeUpBodies?: boolean;
+        constructor(bodyA: Body, bodyB: Body, options?: {
             angle?: number;
             ratio?: number;
             maxTorque?: number;
@@ -154,9 +150,7 @@ declare module p2 {
 
     export class LockConstraint extends Constraint {
 
-        constructor(bodyA: Body, bodyB: Body, type: number, options?: {
-            collideConnected?: boolean;
-            wakeUpBodies?: boolean;
+        constructor(bodyA: Body, bodyB: Body, options?: {
             localOffsetB?: number[];
             localAngleB?: number;
             maxForce?: number;
@@ -169,9 +163,7 @@ declare module p2 {
 
     export class PrismaticConstraint extends Constraint {
 
-        constructor(bodyA: Body, bodyB: Body, type: number, options?: {
-            collideConnected?: boolean;
-            wakeUpBodies?: boolean;
+        constructor(bodyA: Body, bodyB: Body, options?: {
             maxForce?: number;
             localAnchorA?: number[];
             localAnchorB?: number[];
@@ -204,9 +196,7 @@ declare module p2 {
 
     export class RevoluteConstraint extends Constraint {
 
-        constructor(bodyA: Body, bodyB: Body, type: number, options?: {
-            collideConnected?: boolean;
-            wakeUpBodies?: boolean;
+        constructor(bodyA: Body, bodyB: Body, options?: {
             worldPivot?: number[];
             localPivotA?: number[];
             localPivotB?: number[];
