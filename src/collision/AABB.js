@@ -9,6 +9,11 @@ module.exports = AABB;
  * @param {Object}  [options]
  * @param {Array}   [options.upperBound]
  * @param {Array}   [options.lowerBound]
+ * @example
+ *     var aabb = new AABB({
+ *         upperBound: [1, 1],
+ *         lowerBound: [-1, -1]
+ *     });
  */
 function AABB(options){
     options = options || {};
