@@ -48,7 +48,7 @@ vec2.crossLength = function(a,b){
  * @param  {Array} out
  * @param  {Array} vec
  * @param  {Number} zcomp
- * @return {Number}
+ * @return {Array}
  */
 vec2.crossVZ = function(out, vec, zcomp){
     vec2.rotate(out,vec,-Math.PI/2);// Rotate according to the right hand rule
@@ -63,7 +63,7 @@ vec2.crossVZ = function(out, vec, zcomp){
  * @param  {Array} out
  * @param  {Number} zcomp
  * @param  {Array} vec
- * @return {Number}
+ * @return {Array}
  */
 vec2.crossZV = function(out, zcomp, vec){
     vec2.rotate(out,vec,Math.PI/2); // Rotate according to the right hand rule
@@ -78,6 +78,7 @@ vec2.crossZV = function(out, zcomp, vec){
  * @param  {Array} out
  * @param  {Array} a
  * @param  {Number} angle
+ * @return {Array}
  */
 vec2.rotate = function(out,a,angle){
     if(angle !== 0){
@@ -91,6 +92,7 @@ vec2.rotate = function(out,a,angle){
         out[0] = a[0];
         out[1] = a[1];
     }
+    return out;
 };
 
 /**
@@ -100,12 +102,14 @@ vec2.rotate = function(out,a,angle){
  * @param  {Array} out
  * @param  {Array} a
  * @param  {Number} angle
+ * @return {Array}
  */
 vec2.rotate90cw = function(out, a) {
     var x = a[0];
     var y = a[1];
     out[0] = y;
     out[1] = -x;
+    return out;
 };
 
 /**
@@ -115,6 +119,7 @@ vec2.rotate90cw = function(out, a) {
  * @param  {Array} worldPoint
  * @param  {Array} framePosition
  * @param  {Number} frameAngle
+ * @return {Array}
  */
 vec2.toLocalFrame = function(out, worldPoint, framePosition, frameAngle){
     var c = Math.cos(-frameAngle),
@@ -123,6 +128,7 @@ vec2.toLocalFrame = function(out, worldPoint, framePosition, frameAngle){
         y = worldPoint[1] - framePosition[1];
     out[0] = c * x - s * y;
     out[1] = s * x + c * y;
+    return out;
 };
 
 /**
@@ -150,6 +156,7 @@ vec2.toGlobalFrame = function(out, localPoint, framePosition, frameAngle){
  * @param  {Array} out
  * @param  {Array} worldVector
  * @param  {Number} frameAngle
+ * @return {Array}
  */
 vec2.vectorToLocalFrame = function(out, worldVector, frameAngle){
     var c = Math.cos(-frameAngle),
@@ -158,6 +165,7 @@ vec2.vectorToLocalFrame = function(out, worldVector, frameAngle){
         y = worldVector[1];
     out[0] = c*x -s*y;
     out[1] = s*x +c*y;
+    return out;
 };
 
 /**
@@ -177,7 +185,7 @@ vec2.vectorToGlobalFrame = vec2.rotate;
  * @param  {Array} a
  * @param  {Array} b
  * @param  {Array} c
- * @return  {Array} The out object
+ * @return  {Array} a new 2D vector
  */
 vec2.centroid = function(out, a, b, c){
     vec2.add(out, a, b);
