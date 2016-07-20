@@ -72,7 +72,7 @@ function World(options){
      * @property narrowphase
      * @type {Narrowphase}
      */
-    this.narrowphase = new Narrowphase(this);
+    this.narrowphase = new Narrowphase();
 
     /**
      * The island manager of this world.
