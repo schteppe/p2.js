@@ -229,10 +229,6 @@ function World(options){
     this._constraintIdCounter = 0;
     this._bodyIdCounter = 0;
 
-    // For keeping track of overlapping shapes
-    this.overlappingShapesLastState = { keys:[] };
-    this.overlappingShapesCurrentState = { keys:[] };
-
     /**
      * @property {OverlapKeeper} overlapKeeper
      */
