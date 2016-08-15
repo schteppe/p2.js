@@ -151,18 +151,37 @@ Narrowphase.prototype.bodiesOverlap = function(bodyA, bodyB, checkCollisionMasks
             bodyA.toWorldFrame(shapePositionA, shapeA.position);
             bodyB.toWorldFrame(shapePositionB, shapeB.position);
 
-            if(this[shapeA.type | shapeB.type](
-                bodyA,
-                shapeA,
-                shapePositionA,
-                shapeA.angle + bodyA.angle,
-                bodyB,
-                shapeB,
-                shapePositionB,
-                shapeB.angle + bodyB.angle,
-                true
-            )){
-                return true;
+            if(shapeA.type <= shapeB.type)
+            {
+                if(this[shapeA.type | shapeB.type](
+                    bodyA,
+                    shapeA,
+                    shapePositionA,
+                    shapeA.angle + bodyA.angle,
+                    bodyB,
+                    shapeB,
+                    shapePositionB,
+                    shapeB.angle + bodyB.angle,
+                    true
+                )){
+                    return true;
+                }
+            }
+            else
+            {
+                if(this[shapeA.type | shapeB.type](
+                    bodyB,
+                    shapeB,
+                    shapePositionB,
+                    shapeB.angle + bodyB.angle,
+                    bodyA,
+                    shapeA,
+                    shapePositionA,
+                    shapeA.angle + bodyA.angle,
+                    true
+                )){
+                    return true;
+                }
             }
         }
     }
@@ -325,7 +344,7 @@ Narrowphase.prototype.createFrictionFromAverage = function(numContacts){
  * @param {boolean}     justTest
  * @todo Implement me!
  */
-Narrowphase.prototype[Shape.LINE | Shape.CONVEX] =
+Narrowphase.prototype[Shape.CONVEX | Shape.LINE] =
 Narrowphase.prototype.convexLine = function(
     convexBody,
     convexShape,
@@ -404,8 +423,8 @@ var convexCapsule_tempRect = new Box({ width: 1, height: 1 }),
  * @param  {Array}      capsulePosition
  * @param  {Number}     capsuleAngle
  */
-Narrowphase.prototype[Shape.CAPSULE | Shape.CONVEX] =
-Narrowphase.prototype[Shape.CAPSULE | Shape.BOX] =
+Narrowphase.prototype[Shape.CONVEX | Shape.CAPSULE] =
+Narrowphase.prototype[Shape.BOX | Shape.CAPSULE] =
 Narrowphase.prototype.convexCapsule = function(
     convexBody,
     convexShape,
@@ -455,7 +474,7 @@ Narrowphase.prototype.convexCapsule = function(
  * @param  {Number}     capsuleAngle
  * @todo Implement me!
  */
-Narrowphase.prototype[Shape.CAPSULE | Shape.LINE] =
+Narrowphase.prototype[Shape.LINE | Shape.CAPSULE] =
 Narrowphase.prototype.lineCapsule = function(
     lineBody,
     lineShape,
@@ -491,7 +510,7 @@ var capsuleCapsule_tempRect1 = new Box({ width: 1, height: 1 });
  * @param  {Array}      xj
  * @param  {Number}     aj
  */
-Narrowphase.prototype[Shape.CAPSULE | Shape.CAPSULE] =
+Narrowphase.prototype[Shape.CAPSULE] =
 Narrowphase.prototype.capsuleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTest){
 
     var enableFrictionBefore;
@@ -594,7 +613,7 @@ Narrowphase.prototype.capsuleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTe
  * @param  {Number}     angleB
  * @todo Implement me!
  */
-Narrowphase.prototype[Shape.LINE | Shape.LINE] =
+Narrowphase.prototype[Shape.LINE] =
 Narrowphase.prototype.lineLine = function(
     bodyA,
     shapeA,
