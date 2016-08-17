@@ -637,7 +637,7 @@ World.prototype.internalStep = function(dt){
     postBroadphaseEvent.pairs = null;
 
     // Narrowphase
-    np.reset(this);
+    np.reset();
     var defaultContactMaterial = this.defaultContactMaterial;
     var frictionGravity = this.frictionGravity;
     for(var i=0, Nresults=result.length; i!==Nresults; i+=2){
