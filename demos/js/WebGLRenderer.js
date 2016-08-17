@@ -77,7 +77,7 @@ function WebGLRenderer(scenes, options){
         var g = that.drawShapeGraphics;
         g.clear();
         var center = that.drawCircleCenter;
-        var R = p2.vec2.dist(center, that.drawCirclePoint);
+        var R = p2.vec2.distance(center, that.drawCirclePoint);
         that.drawCircle(g,center[0], center[1], 0, R,false, that.lineWidth);
     });
 
@@ -183,7 +183,7 @@ WebGLRenderer.prototype.init = function(){
             p2.vec2.set(stagePos, pos.x, pos.y);
             that.stagePositionToPhysics(physicsPosB, stagePos);
 
-            initPinchLength = p2.vec2.dist(physicsPosA, physicsPosB);
+            initPinchLength = p2.vec2.distance(physicsPosA, physicsPosB);
 
             var initScaleX = stage.scale.x;
             var initScaleY = stage.scale.y;
@@ -230,7 +230,7 @@ WebGLRenderer.prototype.init = function(){
             p2.vec2.set(stagePos, pos.x, pos.y);
             that.stagePositionToPhysics(physicsPosB, stagePos);
 
-            var pinchLength = p2.vec2.dist(physicsPosA, physicsPosB);
+            var pinchLength = p2.vec2.distance(physicsPosA, physicsPosB);
 
             // Get center
             p2.vec2.add(physicsPosA, physicsPosA, physicsPosB);

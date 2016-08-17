@@ -649,7 +649,7 @@ Renderer.prototype.handleMouseMove = function(physicsPosition){
 
     case Renderer.DRAWINGPOLYGON:
         // drawing a polygon - add new point
-        var sqdist = p2.vec2.dist(physicsPosition,this.drawPoints[this.drawPoints.length-1]);
+        var sqdist = p2.vec2.distance(physicsPosition,this.drawPoints[this.drawPoints.length-1]);
         if(sqdist > sampling*sampling){
             var copy = [0,0];
             p2.vec2.copy(copy,physicsPosition);
@@ -715,7 +715,7 @@ Renderer.prototype.handleMouseUp = function(physicsPosition){
     case Renderer.DRAWINGCIRCLE:
         // End this drawing state
         this.setState(Renderer.DRAWCIRCLE);
-        var R = p2.vec2.dist(this.drawCircleCenter,this.drawCirclePoint);
+        var R = p2.vec2.distance(this.drawCircleCenter,this.drawCirclePoint);
         if(R > 0){
             // Create circle
             b = new p2.Body({ mass : 1, position : this.drawCircleCenter });
