@@ -72,7 +72,7 @@ function World(options){
      * @property narrowphase
      * @type {Narrowphase}
      */
-    this.narrowphase = new Narrowphase(this);
+    this.narrowphase = new Narrowphase();
 
     /**
      * The island manager of this world.
@@ -637,7 +637,7 @@ World.prototype.internalStep = function(dt){
     postBroadphaseEvent.pairs = null;
 
     // Narrowphase
-    np.reset(this);
+    np.reset();
     var defaultContactMaterial = this.defaultContactMaterial;
     var frictionGravity = this.frictionGravity;
     for(var i=0, Nresults=result.length; i!==Nresults; i+=2){
