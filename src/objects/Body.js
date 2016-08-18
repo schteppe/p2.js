@@ -442,6 +442,11 @@ function Body(options){
      */
     this.ccdIterations = options.ccdIterations !== undefined ? options.ccdIterations : 10;
 
+    /**
+     * @property {number} islandId
+     */
+    this.islandId = -1;
+
     this.concavePath = null;
 
     this._wakeUpAfterNarrowphase = false;

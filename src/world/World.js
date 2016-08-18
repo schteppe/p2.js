@@ -11,7 +11,8 @@ var  GSSolver = require('../solver/GSSolver')
 ,    Utils = require('../utils/Utils')
 ,    arrayRemove = Utils.arrayRemove
 ,    OverlapKeeper = require('../utils/OverlapKeeper')
-,    IslandManager = require('./IslandManager');
+,    IslandManager = require('./IslandManager')
+,    UnionFind = require('./UnionFind');
 
 module.exports = World;
 
@@ -205,7 +206,7 @@ function World(options){
      * @property {Boolean} islandSplit
      * @default false
      */
-    this.islandSplit = options.islandSplit !== undefined ? !!options.islandSplit : false;
+    this.islandSplit = options.islandSplit !== undefined ? !!options.islandSplit : true;
 
     /**
      * Set to true if you want to the world to emit the "impact" event. Turning this off could improve performance.
@@ -224,6 +225,8 @@ function World(options){
      * @default World.NO_SLEEPING
      */
     this.sleepMode = World.NO_SLEEPING;
+
+    this.unionFind = new UnionFind(1);
 
     // Id counters
     this._constraintIdCounter = 0;
@@ -699,20 +702,56 @@ World.prototype.internalStep = function(dt){
     }
 
     if(np.contactEquations.length || np.frictionEquations.length || Nconstraints){
-        if(this.islandSplit){
-            // Split into islands
-            islandManager.equations.length = 0;
-            Utils.appendArray(islandManager.equations, np.contactEquations);
-            Utils.appendArray(islandManager.equations, np.frictionEquations);
-            for(i=0; i!==Nconstraints; i++){
-                Utils.appendArray(islandManager.equations, constraints[i].equations);
-            }
-            islandManager.split(this);
 
-            for(var i=0; i!==islandManager.islands.length; i++){
-                var island = islandManager.islands[i];
-                if(island.equations.length){
-                    solver.solveIsland(dt,island);
+        if(this.islandSplit){
+
+            // Initialize the UnionFind
+            var unionFind = this.unionFind;
+            unionFind.resize(this.bodies.length + 1);
+
+            // Get all equations
+            var equations = [];
+            Utils.appendArray(equations, np.contactEquations);
+            Utils.appendArray(equations, np.frictionEquations);
+            for(i=0; i!==Nconstraints; i++){
+                Utils.appendArray(equations, constraints[i].equations);
+            }
+
+            // Unite bodies if they are connected by an equation
+            for(var i=0; i<equations.length; i++){
+                var bodyA = equations[i].bodyA;
+                var bodyB = equations[i].bodyB;
+                if(bodyA.type === Body.DYNAMIC && bodyB.type === Body.DYNAMIC){
+                    unionFind.union(bodyA.id, bodyB.id);
+                }
+            }
+
+            // Find the body islands
+            for(var i=0; i<bodies.length; i++){
+                var body = bodies[i];
+                body.islandId = body.type === Body.DYNAMIC ? unionFind.find(body.id) : -1;
+            }
+
+            // Sort equations by island
+            equations = equations.sort(sortEquationsByIsland);
+
+            var equationIndex = 0;
+            while(equationIndex < equations.length){
+                var equation = equations[equationIndex++];
+                solver.addEquation(equation);
+
+                var currentIslandId = equation.bodyA.islandId > 0 ? equation.bodyA.islandId : equation.bodyB.islandId;
+                var nextIslandId = -1;
+                if(equations[equationIndex]){
+                    nextIslandId = equations[equationIndex].bodyA.islandId > 0 ? equations[equationIndex].bodyA.islandId : equations[equationIndex].bodyB.islandId;
+                }
+
+                if(nextIslandId !== currentIslandId){
+                    // Solve this island
+                    if(this.solveConstraints){
+                        solver.solve(dt,this);
+                    }
+                    solver.removeAllEquations();
                 }
             }
 
@@ -787,6 +826,15 @@ World.prototype.internalStep = function(dt){
 
     this.emit(postStepEvent);
 };
+
+function sortEquationsByIsland(equationA, equationB){
+
+    // TODO: Sort by equation type if same island
+    var islandA = equationA.bodyA.islandId > 0 ? equationA.bodyA.islandId : equationA.bodyB.islandId;
+    var islandB = equationB.bodyA.islandId > 0 ? equationB.bodyA.islandId : equationB.bodyB.islandId;
+
+    return islandA - islandB;
+}
 
 function runNarrowphase(world, np, bi, si, xi, ai, bj, sj, xj, aj, cm, glen){
 
