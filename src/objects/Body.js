@@ -71,6 +71,14 @@ function Body(options){
     this.id = options.id || ++Body._idCounter;
 
     /**
+     * Index of the body in the World .bodies array. Is set to -1 if the body isn't added to a World.
+     * @readonly
+     * @property index
+     * @type {Number}
+     */
+    this.index = -1;
+
+    /**
      * The world that this body is added to (read only). This property is set to NULL if the body is not added to any world.
      * @readonly
      * @property world

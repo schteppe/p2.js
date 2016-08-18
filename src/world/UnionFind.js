@@ -57,13 +57,6 @@ UnionFind.prototype = {
     },
 
     /**
-     * Returns true if p and p are both in same group, false otherwise.
-     */
-    connected: function(p, q){
-        return this.find(p) === this.find(q);
-    },
-
-    /**
      * Combine elements in groups p and q into a single group. In other words connect the two groups.
      * @method union
      * @param {number} p
