@@ -72,7 +72,6 @@ Solver.prototype.addEquation = function(eq){
  * @param {Array} eqs
  */
 Solver.prototype.addEquations = function(eqs){
-    //Utils.appendArray(this.equations,eqs);
     for(var i=0, N=eqs.length; i!==N; i++){
         var eq = eqs[i];
         if(eq.enabled){
@@ -103,5 +102,10 @@ Solver.prototype.removeAllEquations = function(){
     this.equations.length=0;
 };
 
+/**
+ * Gauss-Seidel solver.
+ * @property GS
+ * @type {Number}
+ * @static
+ */
 Solver.GS = 1;
-Solver.ISLAND = 2;
