@@ -882,38 +882,38 @@ Body.prototype.fromPolygon = function(path,options){
         this.removeShape(this.shapes[i]);
     }
 
-    var p = new decomp.Polygon();
-    p.vertices = path.slice(0);
-    for(var i=0; i<p.vertices.length; i++){
-        p.vertices[i] = vec2.clone(p.vertices[i]);
+    // Copy the path
+    var p = [];
+    for(var i=0; i<path.length; i++){
+        p[i] = vec2.clone(path[i]);
     }
 
     // Make it counter-clockwise
-    p.makeCCW();
+    decomp.makeCCW(p);
 
     if(options.removeCollinearPoints !== undefined){
-        p.removeCollinearPoints(options.removeCollinearPoints);
+        decomp.removeCollinearPoints(p, options.removeCollinearPoints);
     }
 
     // Check if any line segment intersects the path itself
-    if(options.skipSimpleCheck){
-        if(!p.isSimple()){
+    if(!options.skipSimpleCheck){
+        if(!decomp.isSimple(p)){
             return false;
         }
     }
 
     // Save this path for later
-    var concavePath = this.concavePath = p.vertices.slice(0);
-    for(var i=0; i<concavePath.length; i++){
-        concavePath[i] = vec2.clone(concavePath[i]);
+    var concavePath = this.concavePath = [];
+    for(var i=0; i<p.length; i++){
+        concavePath[i] = vec2.clone(p[i]);
     }
 
     // Slow or fast decomp?
     var convexes;
     if(options.optimalDecomp){
-        convexes = p.decomp();
+        convexes = decomp.decomp(p);
     } else {
-        convexes = p.quickDecomp();
+        convexes = decomp.quickDecomp(p);
     }
 
     var cm = vec2create();
@@ -921,7 +921,7 @@ Body.prototype.fromPolygon = function(path,options){
     // Add convexes
     for(var i=0; i!==convexes.length; i++){
         // Create convex
-        var c = new Convex({ vertices: convexes[i].vertices });
+        var c = new Convex({ vertices: convexes[i] });
 
         // Move all vertices so its center of mass is in the local center of the convex
         for(var j=0; j!==c.vertices.length; j++){
