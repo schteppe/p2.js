@@ -43,31 +43,6 @@ Solver.prototype.solve = function(/*dt,world*/){
     throw new Error("Solver.solve should be implemented by subclasses!");
 };
 
-var mockWorld = {bodies:[]};
-
-/**
- * Solves all constraints in an island.
- * @method solveIsland
- * @param  {Number} dt
- * @param  {Island} island
- */
-Solver.prototype.solveIsland = function(dt,island){
-
-    this.removeAllEquations();
-
-    if(island.equations.length){
-        // Add equations to solver
-        this.addEquations(island.equations);
-        mockWorld.bodies.length = 0;
-        island.getBodies(mockWorld.bodies);
-
-        // Solve
-        if(mockWorld.bodies.length){
-            this.solve(dt,mockWorld);
-        }
-    }
-};
-
 /**
  * Sort all equations using the .equationSortFunction. Should be called by subclasses before solving.
  * @method sortEquations

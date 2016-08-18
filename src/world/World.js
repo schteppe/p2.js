@@ -11,7 +11,6 @@ var  GSSolver = require('../solver/GSSolver')
 ,    Utils = require('../utils/Utils')
 ,    arrayRemove = Utils.arrayRemove
 ,    OverlapKeeper = require('../utils/OverlapKeeper')
-,    IslandManager = require('./IslandManager')
 ,    UnionFind = require('./UnionFind');
 
 module.exports = World;
@@ -74,12 +73,6 @@ function World(options){
      * @type {Narrowphase}
      */
     this.narrowphase = new Narrowphase();
-
-    /**
-     * The island manager of this world.
-     * @property {IslandManager} islandManager
-     */
-    this.islandManager = new IslandManager();
 
     /**
      * Gravity in the world. This is applied on all bodies in the beginning of each step().
@@ -202,7 +195,7 @@ function World(options){
     this.stepping = false;
 
     /**
-     * Whether to enable island splitting. Island splitting can be an advantage for both precision and performance. See {{#crossLink "IslandManager"}}{{/crossLink}}.
+     * Whether to enable island splitting. Island splitting can be an advantage for both precision and performance.
      * @property {Boolean} islandSplit
      * @default false
      */
@@ -556,8 +549,7 @@ World.prototype.internalStep = function(dt){
         np = this.narrowphase,
         constraints = this.constraints,
         mg = step_mg,
-        add = vec2.add,
-        islandManager = this.islandManager;
+        add = vec2.add;
 
     this.overlapKeeper.tick();
 
@@ -820,10 +812,12 @@ World.prototype.internalStep = function(dt){
             var islandId = bodiesSortedByIsland[islandStart].islandId;
 
             // Get islandEnd index
-            for(islandEnd = islandStart+1; islandEnd < bodiesSortedByIsland.length && bodiesSortedByIsland[islandEnd].islandId === islandId; islandEnd++){}
+            for(islandEnd = islandStart+1; islandEnd < bodiesSortedByIsland.length && bodiesSortedByIsland[islandEnd].islandId === islandId; islandEnd++);
 
             // Don't check static objects
-            if(islandId === -1) continue;
+            if(islandId === -1){
+                continue;
+            }
 
             var islandShouldSleep = true;
             for(var i=islandStart; i<islandEnd; i++){

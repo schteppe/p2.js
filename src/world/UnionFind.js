@@ -1,7 +1,7 @@
 module.exports = UnionFind;
 
 /**
- * Weighted Quick Union-Find with Path Compression. From https://github.com/juzerali/unionfind.
+ * Weighted Quick Union-Find with Path Compression. Based on https://github.com/juzerali/unionfind, but optimized for performance.
  * @class UnionFind
  * @constructor
  * @param {number} size
