@@ -647,7 +647,7 @@ World.prototype.internalStep = function(dt){
                     xj = sj.position,
                     aj = sj.angle;
 
-                var contactMaterial;
+                var contactMaterial = null;
                 if(si.material && sj.material){
                     contactMaterial = this.getContactMaterial(si.material,sj.material);
                 }
