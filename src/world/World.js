@@ -1,6 +1,6 @@
 var  GSSolver = require('../solver/GSSolver')
 ,    vec2 = require('../math/vec2')
-,    Particle = require('../shapes/Particle')
+,    Shape = require('../shapes/Shape')
 ,    EventEmitter = require('../events/EventEmitter')
 ,    Body = require('../objects/Body')
 ,    Material = require('../material/Material')
@@ -1132,7 +1132,7 @@ World.prototype.hitTest = function(worldPoint, bodies, precision){
                 vec2.rotate(shapeWorldPosition, shape.position, body.angle);
                 vec2.add(shapeWorldPosition, shapeWorldPosition, body.position);
 
-                if(shape instanceof Particle && vec2.squaredDistance(shapeWorldPosition, worldPoint) < precision * precision){
+                if(shape.type === Shape.PARTICLE && vec2.squaredDistance(shapeWorldPosition, worldPoint) < precision * precision){
                     result.push(body);
                 }
             }

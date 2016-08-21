@@ -2008,7 +2008,7 @@ Narrowphase.findSeparatingAxis = function(c1,offset1,angle1,c2,offset2,angle2,se
         span1 = fsa_tmp5,
         span2 = fsa_tmp6;
 
-    if(c1 instanceof Box && c2 instanceof Box){
+    if(c1.type === Shape.BOX && c2.type === Shape.BOX){
 
         for(var j=0; j!==2; j++){
             var c = c1,
