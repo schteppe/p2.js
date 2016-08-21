@@ -743,7 +743,7 @@ World.prototype.internalStep = function(dt){
                     nextIslandId = equations[equationIndex].bodyA.islandId > 0 ? equations[equationIndex].bodyA.islandId : equations[equationIndex].bodyB.islandId;
                 }
 
-                if(nextIslandId !== currentIslandId){
+                if(nextIslandId !== currentIslandId || equationIndex === equations.length){
                     // Solve this island
                     if(this.solveConstraints){
                         solver.solve(dt,this);
