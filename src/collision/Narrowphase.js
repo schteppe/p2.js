@@ -1767,10 +1767,11 @@ Narrowphase.prototype.circlePlane = function(
  * @param  {Array} xj
  * @param  {Number} aj
  */
+/*
 Narrowphase.prototype[Shape.CONVEX] =
 Narrowphase.prototype[Shape.CONVEX | Shape.BOX] =
 Narrowphase.prototype[Shape.BOX] =
-Narrowphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTest, precision ){
+Narrowphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTest, precision){
     var sepAxis = tmp1,
         worldPoint = tmp2,
         worldPoint0 = tmp3,
@@ -1931,6 +1932,348 @@ Narrowphase.prototype.convexConvex = function(  bi,si,xi,ai, bj,sj,xj,aj, justTe
 
     return numContacts;
 };
+*/
+
+
+
+
+// Find the max separation between poly1 and poly2 using edge normals from poly1.
+var findMaxSeparation_n = vec2.create();
+var findMaxSeparation_v1 = vec2.create();
+var findMaxSeparation_tmp = vec2.create();
+var findMaxSeparation_tmp2 = vec2.create();
+function findMaxSeparation(maxSeparationOut, poly1, position1, angle1, poly2, position2, angle2)
+{
+    var count1 = poly1.vertices.length;
+    var count2 = poly2.vertices.length;
+    var n1s = poly1.normals;
+    var v1s = poly1.vertices;
+    var v2s = poly2.vertices;
+
+    var n = findMaxSeparation_n;
+    var v1 = findMaxSeparation_v1;
+    var tmp = findMaxSeparation_tmp;
+    var tmp2 = findMaxSeparation_tmp2;
+
+    var angle = angle1 - angle2;
+
+    var bestIndex = 0;
+    var maxSeparation = -Number.MAX_VALUE;
+    for (var i = 0; i < count1; ++i)
+    {
+        // Get poly1 normal in frame2.
+        vec2.rotate(n, n1s[i], angle);
+
+        // Get poly1 vertex in frame2
+        vec2.toGlobalFrame(tmp2, v1s[i], position1, angle1);
+        vec2.toLocalFrame(v1, tmp2, position2, angle2);
+
+        // Find deepest point for normal i.
+        var si = Number.MAX_VALUE;
+        for (var j = 0; j < count2; ++j)
+        {
+            vec2.subtract(tmp, v2s[j], v1);
+            var sij = vec2.dot(n, tmp);
+            if (sij < si)
+            {
+                si = sij;
+            }
+        }
+
+        if (si > maxSeparation)
+        {
+            maxSeparation = si;
+            bestIndex = i;
+        }
+    }
+
+    // Use a vec2 for storing the float value and always return int, for perf
+    maxSeparationOut[0] = maxSeparation;
+
+    return bestIndex;
+}
+
+var findIncidentEdge_tmpVec = vec2.create();
+var findIncidentEdge_tempVec = vec2.create();
+var findIncidentEdge_normal1 = vec2.create();
+function findIncidentEdge(clipVerticesOut, poly1, position1, angle1, edge1, poly2, position2, angle2)
+{
+    var normals1 = poly1.normals;
+    var count2 = poly2.vertices.length;
+    var vertices2 = poly2.vertices;
+    var normals2 = poly2.normals;
+
+    // Get the normal of the reference edge in poly2's frame.
+    var normal1 = findIncidentEdge_normal1;
+    vec2.rotate(normal1, normals1[edge1], angle1 - angle2);
+
+    // Find the incident edge on poly2.
+    var index = 0;
+    var minDot = Number.MAX_VALUE;
+    for (var i = 0; i < count2; ++i)
+    {
+        var dot = vec2.dot(normal1, normals2[i]);
+        if (dot < minDot)
+        {
+            minDot = dot;
+            index = i;
+        }
+    }
+
+    // Build the clip vertices for the incident edge.
+    var i1 = index;
+    var i2 = i1 + 1 < count2 ? i1 + 1 : 0;
+
+    vec2.toGlobalFrame(clipVerticesOut[0], vertices2[i1], position2, angle2);
+    vec2.toGlobalFrame(clipVerticesOut[1], vertices2[i2], position2, angle2);
+}
+
+// Find edge normal of max separation on A - return if separating axis is found
+// Find edge normal of max separation on B - return if separation axis is found
+// Choose reference edge as min(minA, minB)
+// Find incident edge
+// Clip
+// The normal points from 1 to 2
+var collidePolygons_tempVec = vec2.create();
+var collidePolygons_tmpVec = vec2.create();
+var collidePolygons_localTangent = vec2.create();
+var collidePolygons_localNormal = vec2.create();
+var collidePolygons_planePoint = vec2.create();
+var collidePolygons_tangent = vec2.create();
+var collidePolygons_normal = vec2.create();
+var collidePolygons_negativeTangent = vec2.create();
+var collidePolygons_v11 = vec2.create();
+var collidePolygons_v12 = vec2.create();
+var collidePolygons_dist = vec2.create();
+var collidePolygons_clipPoints1 = [vec2.create(), vec2.create()];
+var collidePolygons_clipPoints2 = [vec2.create(), vec2.create()];
+var collidePolygons_incidentEdge = [vec2.create(), vec2.create()];
+var maxManifoldPoints = 2;
+/*function collidePolygons(
+    manifold,
+    polyA, positionA, angleA,
+    polyB, positionB, angleB,
+    incidentEdge
+) {*/
+
+/**
+ * Convex/convex Narrowphase.See <a href="http://www.altdevblogaday.com/2011/05/13/contact-generation-between-3d-convex-meshes/">this article</a> for more info.
+ * @method convexConvex
+ * @param  {Body} bi
+ * @param  {Convex} si
+ * @param  {Array} xi
+ * @param  {Number} ai
+ * @param  {Body} bj
+ * @param  {Convex} sj
+ * @param  {Array} xj
+ * @param  {Number} aj
+ */
+Narrowphase.prototype[Shape.CONVEX] =
+Narrowphase.prototype[Shape.CONVEX | Shape.BOX] =
+Narrowphase.prototype[Shape.BOX] =
+Narrowphase.prototype.convexConvex = function(
+    bodyA,
+    polyA,
+    positionA,
+    angleA,
+    bodyB,
+    polyB,
+    positionB,
+    angleB,
+    justTest
+){
+    var sepAxis = tmp1,
+        worldPoint = tmp2,
+        worldPoint0 = tmp3,
+        worldPoint1 = tmp4,
+        worldEdge = tmp5,
+        penetrationVec = tmp7,
+        dist = tmp8,
+        worldNormal = tmp9,
+        totalRadius = 0;
+    var dist = collidePolygons_dist;
+
+    var tempVec = collidePolygons_tempVec;
+    var tmpVec = collidePolygons_tmpVec;
+
+    var edgeA = findMaxSeparation(tempVec, polyA, positionA, angleA, polyB, positionB, angleB);
+    separationA = tempVec[0];
+    if (separationA > totalRadius){
+        return justTest ? false : 0;
+    }
+
+    var edgeB = findMaxSeparation(tmpVec, polyB, positionB, angleB, polyA, positionA, angleA);
+    var separationB = tmpVec[0];
+    if (separationB > totalRadius){
+        return justTest ? false : 0;
+    }
+
+    var poly1;	// reference polygon
+    var poly2;	// incident polygon
+
+    var position1;
+    var position2;
+    var angle1;
+    var angle2;
+    var body1;
+    var body2;
+
+    var edge1;					// reference edge
+    var type;
+
+    if (separationB > separationA)
+    {
+        poly1 = polyB;
+        poly2 = polyA;
+        body1 = bodyB;
+        body2 = bodyA;
+        position1 = positionB;
+        angle1 = angleB;
+        position2 = positionA;
+        angle2 = angleA;
+        edge1 = edgeB;
+        type = 1; // faceB
+    }
+    else
+    {
+        poly1 = polyA;
+        poly2 = polyB;
+        body1 = bodyA;
+        body2 = bodyB;
+        position1 = positionA;
+        angle1 = angleA;
+        position2 = positionB;
+        angle2 = angleB;
+        edge1 = edgeA;
+        type = 0; // faceA
+    }
+
+    var incidentEdge = collidePolygons_incidentEdge;
+    findIncidentEdge(incidentEdge, poly1, position1, angle1, edge1, poly2, position2, angle2);
+
+    var count1 = poly1.vertices.length;
+    var vertices1 = poly1.vertices;
+
+    var iv1 = edge1;
+    var iv2 = edge1 + 1 < count1 ? edge1 + 1 : 0;
+
+    var v11 = collidePolygons_v11;
+    var v12 = collidePolygons_v12;
+    vec2.copy(v11, vertices1[iv1]);
+    vec2.copy(v12, vertices1[iv2]);
+
+    var localTangent = collidePolygons_localTangent;
+    vec2.subtract(localTangent, v12, v11);
+    vec2.normalize(localTangent, localTangent);
+
+    var localNormal = collidePolygons_localNormal;
+    vec2.crossVZ(localNormal, localTangent, 1.0);
+    var planePoint = collidePolygons_planePoint;
+    vec2.add(planePoint, v11, v12);
+    vec2.scale(planePoint, planePoint, 0.5);
+
+    var tangent = collidePolygons_tangent; // tangent in world space
+    vec2.rotate(tangent, localTangent, angle1);
+    var normal = collidePolygons_normal; // normal in world space
+    vec2.crossVZ(normal, tangent, 1.0);
+
+    vec2.toGlobalFrame(v11, v11, position1, angle1);
+    vec2.toGlobalFrame(v12, v12, position1, angle1);
+
+    // Face offset.
+    var frontOffset = vec2.dot(normal, v11);
+
+    // Side offsets, extended by polytope skin thickness.
+    var sideOffset1 = -vec2.dot(tangent, v11) + totalRadius;
+    var sideOffset2 = vec2.dot(tangent, v12) + totalRadius;
+
+    // Clip incident edge against extruded edge1 side edges.
+    var clipPoints1 = collidePolygons_clipPoints1;
+    var clipPoints2 = collidePolygons_clipPoints2;
+    var np = 0;
+
+    // Clip to box side 1
+    var negativeTangent = collidePolygons_negativeTangent;
+    vec2.scale(negativeTangent, tangent, -1);
+    np = clipSegmentToLine(clipPoints1, incidentEdge, negativeTangent, sideOffset1, iv1);
+
+    if (np < 2){
+        return justTest ? false : 0;
+    }
+
+    // Clip to negative box side 1
+    np = clipSegmentToLine(clipPoints2, clipPoints1,  tangent, sideOffset2, iv2);
+
+    if (np < 2){
+        return justTest ? false : 0;
+    }
+
+    var pointCount = 0;
+    for (var i = 0; i < maxManifoldPoints; ++i)
+    {
+        var separation = vec2.dot(normal, clipPoints2[i]) - frontOffset;
+
+        if (separation <= totalRadius)
+        {
+            if(justTest){
+                return true;
+            }
+
+            ++pointCount;
+
+            var c = this.createContactEquation(body1,body2,poly1,poly2);
+
+            vec2.copy(c.normalA, normal);
+            vec2.copy(c.contactPointB, clipPoints2[i]);
+            sub(c.contactPointB, c.contactPointB, body2.position);
+
+            vec2.scale(dist, normal, -separation);
+            vec2.add(c.contactPointA, clipPoints2[i], dist);
+            sub(c.contactPointA, c.contactPointA, body1.position);
+
+            this.contactEquations.push(c);
+
+            if(this.enableFriction){
+                this.frictionEquations.push(this.createFrictionFromContact(c));
+            }
+        }
+    }
+
+    return justTest ? !!pointCount : pointCount;
+}
+
+function clipSegmentToLine(vOut, vIn, normal, offset)
+{
+    // Start with no output points
+    var numOut = 0;
+
+    // Calculate the distance of end points to the line
+    var distance0 = vec2.dot(normal, vIn[0]) - offset;
+    var distance1 = vec2.dot(normal, vIn[1]) - offset;
+
+    // If the points are behind the plane
+    if (distance0 <= 0.0){
+        vec2.copy(vOut[numOut++], vIn[0]);
+    }
+    if (distance1 <= 0.0){
+        vec2.copy(vOut[numOut++], vIn[1]);
+    }
+
+    // If the points are on different sides of the plane
+    if (distance0 * distance1 < 0.0)
+    {
+        // Find intersection point of edge and plane
+        var interp = distance0 / (distance0 - distance1);
+        var v = vOut[numOut];
+        vec2.subtract(v, vIn[1], vIn[0]);
+        vec2.scale(v, v, interp);
+        vec2.add(v, v, vIn[0]);
+        ++numOut;
+    }
+
+    return numOut;
+}
+
 
 // .projectConvex is called by other functions, need local tmp vectors
 var pcoa_tmp1 = createVec2();
