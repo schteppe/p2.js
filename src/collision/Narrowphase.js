@@ -1993,8 +1993,6 @@ function findMaxSeparation(maxSeparationOut, poly1, position1, angle1, poly2, po
     return bestIndex;
 }
 
-var findIncidentEdge_tmpVec = vec2.create();
-var findIncidentEdge_tempVec = vec2.create();
 var findIncidentEdge_normal1 = vec2.create();
 function findIncidentEdge(clipVerticesOut, poly1, position1, angle1, edge1, poly2, position2, angle2)
 {
@@ -2082,22 +2080,14 @@ Narrowphase.prototype.convexConvex = function(
     angleB,
     justTest
 ){
-    var sepAxis = tmp1,
-        worldPoint = tmp2,
-        worldPoint0 = tmp3,
-        worldPoint1 = tmp4,
-        worldEdge = tmp5,
-        penetrationVec = tmp7,
-        dist = tmp8,
-        worldNormal = tmp9,
-        totalRadius = 0;
+    var totalRadius = 0;
     var dist = collidePolygons_dist;
 
     var tempVec = collidePolygons_tempVec;
     var tmpVec = collidePolygons_tmpVec;
 
     var edgeA = findMaxSeparation(tempVec, polyA, positionA, angleA, polyB, positionB, angleB);
-    separationA = tempVec[0];
+    var separationA = tempVec[0];
     if (separationA > totalRadius){
         return justTest ? false : 0;
     }
@@ -2240,7 +2230,7 @@ Narrowphase.prototype.convexConvex = function(
     }
 
     return justTest ? !!pointCount : pointCount;
-}
+};
 
 function clipSegmentToLine(vOut, vIn, normal, offset)
 {
