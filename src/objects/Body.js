@@ -929,10 +929,9 @@ Body.prototype.fromPolygon = function(path,options){
             sub(v,v,c.centerOfMass);
         }
 
-        vec2.scale(cm,c.centerOfMass,1);
-        c.updateTriangles();
-        c.updateCenterOfMass();
-        c.updateBoundingRadius();
+        vec2.copy(cm,c.centerOfMass);
+
+        c = new Convex({ vertices: c.vertices });
 
         // Add the shape
         this.addShape(c,cm);
