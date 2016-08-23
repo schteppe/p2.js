@@ -574,6 +574,25 @@ WebGLRenderer.prototype.drawConvex = function(g,verts,triangles,color,fillColor,
             g.lineTo(verts[0][0],verts[0][1]);
         }
     } else {
+
+        // triangles
+        // var centroid = p2.vec2.create();
+        // for(var i=0; i<triangles.length; i++){
+        //     var v0 = verts[triangles[i][0]],
+        //         v1 = verts[triangles[i][1]],
+        //         v2 = verts[triangles[i][2]];
+        //     g.lineStyle(lineWidth, 0x000000, 1);
+        //     g.moveTo(v0[0],v0[1]);
+        //     g.lineTo(v1[0],v1[1]);
+        //     g.lineTo(v2[0],v2[1]);
+        //     g.lineTo(v0[0],v0[1]);
+
+        //     // triangle centroid
+        //     p2.vec2.centroid(centroid,v0,v1,v2);
+        //     g.drawCircle(centroid[0],centroid[1],lineWidth*2);
+        // }
+
+        // convexes
         var colors = [0xff0000,0x00ff00,0x0000ff];
         for(var i=0; i!==verts.length+1; i++){
             var v0 = verts[i%verts.length],
@@ -588,7 +607,7 @@ WebGLRenderer.prototype.drawConvex = function(g,verts,triangles,color,fillColor,
             g.drawCircle(x0,y0,lineWidth*2);
         }
 
-        g.lineStyle(lineWidth, 0x000000, 1);
+        g.lineStyle(lineWidth, 0xff0000, 1);
         g.drawCircle(offset[0],offset[1],lineWidth*2);
     }
 };
@@ -869,7 +888,7 @@ WebGLRenderer.prototype.drawRenderable = function(obj, graphics, color, lineColo
                         p2.vec2.rotate(vrot, v, angle);
                         verts.push([(vrot[0]+offset[0]), (vrot[1]+offset[1])]);
                     }
-                    this.drawConvex(graphics, verts, child.triangles, lineColor, color, lw, this.debugPolygons,[offset[0],-offset[1]], isSleeping);
+                    this.drawConvex(graphics, verts, child.triangles, lineColor, color, lw, this.debugPolygons, offset, isSleeping);
 
                 } else if(child instanceof p2.Heightfield){
                     var path = [[0,-100]];

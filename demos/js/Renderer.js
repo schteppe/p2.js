@@ -703,7 +703,7 @@ Renderer.prototype.handleMouseUp = function(physicsPosition){
             // Create polygon
             b = new p2.Body({ mass : 1 });
             if(b.fromPolygon(this.drawPoints,{
-                removeCollinearPoints : 0.01,
+                removeCollinearPoints: 0.1
             })){
                 this.world.addBody(b);
             }
