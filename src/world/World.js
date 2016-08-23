@@ -738,7 +738,9 @@ World.prototype.internalStep = function(dt){
     // Step forward
     for(var i=0; i!==Nbodies; i++){
         var body = bodies[i];
-        body.integrate(dt);
+        if(body.type === Body.DYNAMIC || body.type === Body.KINEMATIC){
+            body.integrate(dt);
+        }
     }
 
     // Reset force
