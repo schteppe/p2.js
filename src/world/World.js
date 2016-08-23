@@ -219,6 +219,9 @@ function World(options){
      */
     this.sleepMode = World.NO_SLEEPING;
 
+    /**
+     * @property {UnionFind} unionFind
+     */
     this.unionFind = new UnionFind(1);
 
     // Id counters
