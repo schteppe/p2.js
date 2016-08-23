@@ -43,31 +43,6 @@ Solver.prototype.solve = function(/*dt,world*/){
     throw new Error("Solver.solve should be implemented by subclasses!");
 };
 
-var mockWorld = {bodies:[]};
-
-/**
- * Solves all constraints in an island.
- * @method solveIsland
- * @param  {Number} dt
- * @param  {Island} island
- */
-Solver.prototype.solveIsland = function(dt,island){
-
-    this.removeAllEquations();
-
-    if(island.equations.length){
-        // Add equations to solver
-        this.addEquations(island.equations);
-        mockWorld.bodies.length = 0;
-        island.getBodies(mockWorld.bodies);
-
-        // Solve
-        if(mockWorld.bodies.length){
-            this.solve(dt,mockWorld);
-        }
-    }
-};
-
 /**
  * Sort all equations using the .equationSortFunction. Should be called by subclasses before solving.
  * @method sortEquations
@@ -97,7 +72,6 @@ Solver.prototype.addEquation = function(eq){
  * @param {Array} eqs
  */
 Solver.prototype.addEquations = function(eqs){
-    //Utils.appendArray(this.equations,eqs);
     for(var i=0, N=eqs.length; i!==N; i++){
         var eq = eqs[i];
         if(eq.enabled){
@@ -128,5 +102,10 @@ Solver.prototype.removeAllEquations = function(){
     this.equations.length=0;
 };
 
+/**
+ * Gauss-Seidel solver.
+ * @property GS
+ * @type {Number}
+ * @static
+ */
 Solver.GS = 1;
-Solver.ISLAND = 2;

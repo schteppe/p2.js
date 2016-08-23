@@ -65,7 +65,7 @@
                 // Print the number of independent islands to console repeatedly.
                 // This will output 10 if the ropes don't touch.
                 interval = setInterval(function(){
-                    var numIslands = world.islandManager.islands.length;
+                    var numIslands = world.unionFind.count;
                     console.log("Number of islands:",numIslands);
                 },1000);
             },

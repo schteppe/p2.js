@@ -110,6 +110,7 @@ function Equation(bodyA, bodyB, minForce, maxForce){
 
     // Temp stuff
     this.lambda = this.B = this.invC = this.minForceDt = this.maxForceDt = 0;
+    this.index = -1;
 }
 
 /**

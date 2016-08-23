@@ -48,6 +48,8 @@ function WebGLRenderer(scenes, options){
     this.springSprites = [];
     this.debugPolygons = false;
 
+    this.islandColors = {}; // id -> int
+
     Renderer.call(this,scenes,options);
 
     for(var key in settings){
@@ -664,14 +666,15 @@ WebGLRenderer.prototype.render = function(){
         this.updateSpriteTransform(this.sprites[i],this.bodies[i]);
     }
 
-    // Update graphics if the body changed sleepState
+    // Update graphics if the body changed sleepState or island
     for(var i=0; i!==this.bodies.length; i++){
-        var isSleeping = (this.bodies[i].sleepState===p2.Body.SLEEPING);
-        var sprite = this.sprites[i];
         var body = this.bodies[i];
-        if(sprite.drawnSleeping !== isSleeping){
+        var isSleeping = (body.sleepState===p2.Body.SLEEPING);
+        var sprite = this.sprites[i];
+        var islandColor = this.getIslandColor(body);
+        if(sprite.drawnSleeping !== isSleeping || sprite.drawnColor !== islandColor){
             sprite.clear();
-            this.drawRenderable(body, sprite, sprite.drawnColor, sprite.drawnLineColor);
+            this.drawRenderable(body, sprite, islandColor, sprite.drawnLineColor);
         }
     }
 
@@ -890,26 +893,40 @@ WebGLRenderer.prototype.drawRenderable = function(obj, graphics, color, lineColo
     }
 };
 
+WebGLRenderer.prototype.getIslandColor = function(body){
+    var islandColors = this.islandColors;
+    if(body.islandId === -1){
+        color = 0xdddddd; // Gray for static objects
+    } else if(islandColors[body.islandId]){
+        color = islandColors[body.islandId];
+    } else {
+        color = islandColors[body.islandId] = parseInt(randomPastelHex(),16);
+    }
+    return color;
+};
+
 WebGLRenderer.prototype.addRenderable = function(obj){
     var lw = this.lineWidth;
 
     // Random color
-    var color = parseInt(randomPastelHex(),16),
-        lineColor = 0x000000;
+    var lineColor = 0x000000;
 
     var zero = [0,0];
 
     var sprite = new PIXI.Graphics();
     if(obj instanceof p2.Body && obj.shapes.length){
 
+        var color = this.getIslandColor(obj);
         this.drawRenderable(obj, sprite, color, lineColor);
         this.sprites.push(sprite);
         this.stage.addChild(sprite);
 
     } else if(obj instanceof p2.Spring){
+
         this.drawRenderable(obj, sprite, 0x000000, lineColor);
         this.springSprites.push(sprite);
         this.stage.addChild(sprite);
+
     }
 };
 

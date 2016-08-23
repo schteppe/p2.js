@@ -11,7 +11,7 @@ var  GSSolver = require('../solver/GSSolver')
 ,    Utils = require('../utils/Utils')
 ,    arrayRemove = Utils.arrayRemove
 ,    OverlapKeeper = require('../utils/OverlapKeeper')
-,    IslandManager = require('./IslandManager');
+,    UnionFind = require('./UnionFind');
 
 module.exports = World;
 
@@ -73,12 +73,6 @@ function World(options){
      * @type {Narrowphase}
      */
     this.narrowphase = new Narrowphase();
-
-    /**
-     * The island manager of this world.
-     * @property {IslandManager} islandManager
-     */
-    this.islandManager = new IslandManager();
 
     /**
      * Gravity in the world. This is applied on all bodies in the beginning of each step().
@@ -201,11 +195,11 @@ function World(options){
     this.stepping = false;
 
     /**
-     * Whether to enable island splitting. Island splitting can be an advantage for both precision and performance. See {{#crossLink "IslandManager"}}{{/crossLink}}.
+     * Whether to enable island splitting. Island splitting can be an advantage for both precision and performance.
      * @property {Boolean} islandSplit
      * @default false
      */
-    this.islandSplit = options.islandSplit !== undefined ? !!options.islandSplit : false;
+    this.islandSplit = options.islandSplit !== undefined ? !!options.islandSplit : true;
 
     /**
      * Set to true if you want to the world to emit the "impact" event. Turning this off could improve performance.
@@ -224,6 +218,8 @@ function World(options){
      * @default World.NO_SLEEPING
      */
     this.sleepMode = World.NO_SLEEPING;
+
+    this.unionFind = new UnionFind(1);
 
     // Id counters
     this._constraintIdCounter = 0;
@@ -553,8 +549,7 @@ World.prototype.internalStep = function(dt){
         np = this.narrowphase,
         constraints = this.constraints,
         mg = step_mg,
-        add = vec2.add,
-        islandManager = this.islandManager;
+        add = vec2.add;
 
     this.overlapKeeper.tick();
 
@@ -652,7 +647,7 @@ World.prototype.internalStep = function(dt){
                     xj = sj.position,
                     aj = sj.angle;
 
-                var contactMaterial;
+                var contactMaterial = null;
                 if(si.material && sj.material){
                     contactMaterial = this.getContactMaterial(si.material,sj.material);
                 }
@@ -699,39 +694,73 @@ World.prototype.internalStep = function(dt){
     }
 
     if(np.contactEquations.length || np.frictionEquations.length || Nconstraints){
-        if(this.islandSplit){
-            // Split into islands
-            islandManager.equations.length = 0;
-            Utils.appendArray(islandManager.equations, np.contactEquations);
-            Utils.appendArray(islandManager.equations, np.frictionEquations);
-            for(i=0; i!==Nconstraints; i++){
-                Utils.appendArray(islandManager.equations, constraints[i].equations);
-            }
-            islandManager.split(this);
 
-            for(var i=0; i!==islandManager.islands.length; i++){
-                var island = islandManager.islands[i];
-                if(island.equations.length){
-                    solver.solveIsland(dt,island);
+        // Get all equations
+        var equations = [];
+        Utils.appendArray(equations, np.contactEquations);
+        Utils.appendArray(equations, np.frictionEquations);
+        for(i=0; i!==Nconstraints; i++){
+            Utils.appendArray(equations, constraints[i].equations);
+        }
+
+        if(this.islandSplit){
+
+            // Initialize the UnionFind
+            var unionFind = this.unionFind;
+            unionFind.resize(this.bodies.length + 1);
+
+            // Update equation index
+            for(var i=0; i<equations.length; i++){
+                equations[i].index = i;
+            }
+
+            // Unite bodies if they are connected by an equation
+            for(var i=0; i<equations.length; i++){
+                var bodyA = equations[i].bodyA;
+                var bodyB = equations[i].bodyB;
+                if(bodyA.type === Body.DYNAMIC && bodyB.type === Body.DYNAMIC){
+                    unionFind.union(bodyA.index, bodyB.index);
+                }
+            }
+
+            // Find the body islands
+            for(var i=0; i<bodies.length; i++){
+                var body = bodies[i];
+                body.islandId = body.type === Body.DYNAMIC ? unionFind.find(body.index) : -1;
+            }
+
+            // Sort equations by island
+            equations = equations.sort(sortEquationsByIsland);
+
+            var equationIndex = 0;
+            while(equationIndex < equations.length){
+                var equation = equations[equationIndex++];
+                solver.addEquation(equation);
+
+                var currentIslandId = equation.bodyA.islandId > 0 ? equation.bodyA.islandId : equation.bodyB.islandId;
+                var nextIslandId = -1;
+                if(equations[equationIndex]){
+                    nextIslandId = equations[equationIndex].bodyA.islandId > 0 ? equations[equationIndex].bodyA.islandId : equations[equationIndex].bodyB.islandId;
+                }
+
+                if(nextIslandId !== currentIslandId || equationIndex === equations.length){
+                    // Solve this island
+                    if(this.solveConstraints){
+                        solver.solve(dt,this);
+                    }
+                    solver.removeAllEquations();
                 }
             }
 
         } else {
 
-            // Add contact equations to solver
-            solver.addEquations(np.contactEquations);
-            solver.addEquations(np.frictionEquations);
-
-            // Add user-defined constraint equations
-            for(i=0; i!==Nconstraints; i++){
-                solver.addEquations(constraints[i].equations);
-            }
-
+            // Solve all as one island
+            solver.addEquations(equations);
             if(this.solveConstraints){
                 solver.solve(dt,this);
             }
-
             solver.removeAllEquations();
+
         }
     }
 
@@ -766,9 +795,11 @@ World.prototype.internalStep = function(dt){
 
     // Sleeping update
     if(this.sleepMode === World.BODY_SLEEPING){
+
         for(i=0; i!==Nbodies; i++){
             bodies[i].sleepTick(this.time, false, dt);
         }
+
     } else if(this.sleepMode === World.ISLAND_SLEEPING && this.islandSplit){
 
         // Tell all bodies to sleep tick but dont sleep yet
@@ -777,10 +808,30 @@ World.prototype.internalStep = function(dt){
         }
 
         // Sleep islands
-        for(var i=0; i<this.islandManager.islands.length; i++){
-            var island = this.islandManager.islands[i];
-            if(island.wantsToSleep()){
-                island.sleep();
+        var bodiesSortedByIsland = bodies.sort(sortBodiesByIsland);
+        var islandEnd = 1;
+        for(var islandStart=0; islandStart < bodiesSortedByIsland.length; islandStart = islandEnd){
+            var islandId = bodiesSortedByIsland[islandStart].islandId;
+
+            // Get islandEnd index
+            for(islandEnd = islandStart+1; islandEnd < bodiesSortedByIsland.length && bodiesSortedByIsland[islandEnd].islandId === islandId; islandEnd++);
+
+            // Don't check static objects
+            if(islandId === -1){
+                continue;
+            }
+
+            var islandShouldSleep = true;
+            for(var i=islandStart; i<islandEnd; i++){
+                if(!bodiesSortedByIsland[i].wantsToSleep){
+                    islandShouldSleep = false;
+                    break;
+                }
+            }
+            if(islandShouldSleep){
+                for(var i=islandStart; i<islandEnd; i++){
+                    bodiesSortedByIsland[i].sleep();
+                }
             }
         }
     }
@@ -789,6 +840,23 @@ World.prototype.internalStep = function(dt){
 
     this.emit(postStepEvent);
 };
+
+function sortBodiesByIsland(a,b){
+    return a.islandId - b.islandId;
+}
+
+function sortEquationsByIsland(equationA, equationB){
+
+    var islandA = equationA.bodyA.islandId > 0 ? equationA.bodyA.islandId : equationA.bodyB.islandId;
+    var islandB = equationB.bodyA.islandId > 0 ? equationB.bodyA.islandId : equationB.bodyB.islandId;
+
+    if(islandA !== islandB){
+        return islandA - islandB;
+    } else {
+        // Sort by equation type if same island
+        return equationA.index - equationB.index;
+    }
+}
 
 function runNarrowphase(world, np, bi, si, xi, ai, bj, sj, xj, aj, cm, glen){
 
@@ -945,6 +1013,7 @@ World.prototype.addBody = function(body){
         throw new Error('Body is already added to a World.');
     }
 
+    body.index = this.bodies.length;
     this.bodies.push(body);
     body.world = this;
 
@@ -992,6 +1061,7 @@ World.prototype.removeBody = function(body){
 
     body.world = null;
     arrayRemove(this.bodies, body);
+    body.index = -1;
 
     // Emit removeBody event
     removeBodyEvent.body = body;
