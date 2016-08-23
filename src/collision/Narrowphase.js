@@ -2341,6 +2341,7 @@ Narrowphase.prototype.convexHeightfield = function( convexBody,convexShape,conve
         copy(tileConvex.vertices[3], tileConvex.vertices[0]);
         tileConvex.vertices[2][1] -= tileHeight;
         tileConvex.vertices[3][1] -= tileHeight;
+        tileConvex.updateNormals();
 
         // Do convex collision
         numContacts += this.convexConvex(   convexBody, convexShape, convexPos, convexAngle,
