@@ -1012,8 +1012,8 @@ Body.prototype.adjustCenterOfMass = function(){
  * @method setZeroForce
  */
 Body.prototype.setZeroForce = function(){
-    vec2.set(this.force,0,0);
-    this.angularForce = 0;
+    var f = this.force;
+    f[0] = f[1] = this.angularForce = 0;
 };
 
 Body.prototype.resetConstraintVelocity = function(){
