@@ -37,6 +37,6 @@
     "grunt-contrib-yuidoc": "^0.10.0"
   },
   "dependencies": {
-    "poly-decomp": "0.2.0"
+    "poly-decomp": "0.2.1"
   }
 }
