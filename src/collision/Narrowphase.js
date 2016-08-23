@@ -2041,10 +2041,14 @@ Narrowphase.prototype.convexConvex = function(
 
             this.contactEquations.push(c);
 
-            if(this.enableFriction){
+            if(this.enableFriction && !this.enableFrictionReduction){
                 this.frictionEquations.push(this.createFrictionFromContact(c));
             }
         }
+    }
+
+    if(pointCount && this.enableFrictionReduction && this.enableFriction){
+        this.frictionEquations.push(this.createFrictionFromAverage(pointCount));
     }
 
     return justTest ? !!pointCount : pointCount;
