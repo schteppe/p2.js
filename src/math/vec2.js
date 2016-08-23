@@ -185,7 +185,7 @@ vec2.vectorToGlobalFrame = vec2.rotate;
  * @param  {Array} a
  * @param  {Array} b
  * @param  {Array} c
- * @return  {Array} a new 2D vector
+ * @return  {Array} The "out" vector.
  */
 vec2.centroid = function(out, a, b, c){
     vec2.add(out, a, b);

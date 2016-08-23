@@ -263,7 +263,7 @@ Object.defineProperties(RevoluteConstraint.prototype, {
     },
 
     /**
-     * @property {boolean} motorSpeed
+     * @property {number} motorSpeed
      */
     motorSpeed: {
         get: function() {
@@ -275,7 +275,7 @@ Object.defineProperties(RevoluteConstraint.prototype, {
     },
 
     /**
-     * @property {boolean} motorMaxForce
+     * @property {number} motorMaxForce
      */
     motorMaxForce: {
         get: function() {
