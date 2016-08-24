@@ -202,52 +202,6 @@ exports.createFrictionFromContact = function(test){
     test.done();
 };
 
-exports.findSeparatingAxis = function(test){
-    var axis = vec2.create();
-    Narrowphase.findSeparatingAxis(convex,[0,0],0,convex,[0,1+eps],0,axis);
-
-    // Check length
-    var l = vec2.length(axis);
-    test.ok(l > 1-eps);
-    test.ok(l < 1+eps);
-
-    // Check direction - should be quite near up/down direction
-    var d = vec2.dot(axis, [0,1]);
-    test.ok(Math.abs(d) > 1-eps);
-
-
-
-    // Check what happens if there is overlap
-    Narrowphase.findSeparatingAxis(convex,[0,0],0,convex,[0,0.5],0,axis);
-
-    // Check direction - should still be quite near up/down direction
-    var d = vec2.dot(axis, [0,1]);
-    test.ok(Math.abs(d) > 1-eps);
-
-
-
-    // Check what happens if there is diagonal overlap
-    Narrowphase.findSeparatingAxis(convex,[0,0],0,convex,[0.5,0.5],0,axis);
-
-    // Check direction
-    var d = vec2.dot(axis, vec2.normalize([1,1],[1,1]));
-    test.ok(Math.abs(d) > 1-eps);
-
-    test.done();
-};
-
-exports.getClosestEdge = function(test){
-    var i = Narrowphase.getClosestEdge(convex, 0, [1,0]);
-
-    // Should be first or last edge
-    test.ok(i !== -1);
-
-    // Last edge is given by i == vs.length-2 since it is spanned by vs.length-2 to vs.length-1
-    test.ok(i===0 || i % (convex.vertices.length-2) === 0);
-
-    test.done();
-};
-
 exports.lineCapsule = function(test){
     var result = narrowphase.lineCapsule(bodyA, line, position, angle, bodyB, capsule, position, angle);
     test.equal(typeof result, 'number');
@@ -308,38 +262,6 @@ exports.planeLine = function(test){
     test.done();
 };
 
-exports.projectConvexOntoAxis = function(test){
-    var span = vec2.create();
-
-    // Moved along axis propendicular to the projection axis
-    Narrowphase.projectConvexOntoAxis(convex,[1,0],0,[0,1],span);
-
-    test.ok(span[0] > -1 - eps);
-    test.ok(span[0] < -1 + eps);
-    test.ok(span[1] > 1 - eps);
-    test.ok(span[1] < 1 + eps);
-
-    // Along the x axis
-    Narrowphase.projectConvexOntoAxis(convex,[0,1],0,[0,1],span);
-
-    test.ok(span[0] > 0 - eps);
-    test.ok(span[0] < 0 + eps);
-    test.ok(span[1] > 2 - eps);
-    test.ok(span[1] < 2 + eps);
-
-    // Along the x axis - rotated 180 degrees - should not do anything special
-    Narrowphase.projectConvexOntoAxis(convex,[0,1],Math.PI / 2,[0,1],span);
-
-    test.ok(span[0] > 0 - eps);
-    test.ok(span[0] < 0 + eps);
-    test.ok(span[1] > 2 - eps);
-    test.ok(span[1] < 2 + eps);
-
-    var span = vec2.create();
-    Narrowphase.projectConvexOntoAxis(rect,[1,0],0,[0,1],span);
-    test.done();
-};
-
 exports.reset = function(test){
     var contact = narrowphase.createContactEquation(bodyA, bodyB, plane, rect);
     narrowphase.contactEquations.push(contact);
@@ -348,7 +270,6 @@ exports.reset = function(test){
     test.equal(narrowphase.frictionEquations.length, 0);
     test.done();
 };
-
 
 exports.bodiesOverlap = {
     simple: function(test){
