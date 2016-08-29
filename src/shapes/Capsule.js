@@ -189,7 +189,7 @@ Capsule.prototype.raycast = function(result, ray, position, angle){
             vec2.lerp(hitPointWorld, from, to, delta);
 
             if(vec2.squaredDistance(hitPointWorld, position) > diagonalLengthSquared){
-                vec2.sub(normal, hitPointWorld, l0);
+                vec2.subtract(normal, hitPointWorld, l0);
                 vec2.normalize(normal,normal);
                 ray.reportIntersection(result, delta, normal, -1);
                 if(result.shouldStop(ray)){
@@ -206,7 +206,7 @@ Capsule.prototype.raycast = function(result, ray, position, angle){
             if(d1 >= 0 && d1 <= 1){
                 vec2.lerp(hitPointWorld, from, to, d1);
                 if(vec2.squaredDistance(hitPointWorld, position) > diagonalLengthSquared){
-                    vec2.sub(normal, hitPointWorld, l0);
+                    vec2.subtract(normal, hitPointWorld, l0);
                     vec2.normalize(normal,normal);
                     ray.reportIntersection(result, d1, normal, -1);
                     if(result.shouldStop(ray)){
@@ -218,7 +218,7 @@ Capsule.prototype.raycast = function(result, ray, position, angle){
             if(d2 >= 0 && d2 <= 1){
                 vec2.lerp(hitPointWorld, from, to, d2);
                 if(vec2.squaredDistance(hitPointWorld, position) > diagonalLengthSquared){
-                    vec2.sub(normal, hitPointWorld, l0);
+                    vec2.subtract(normal, hitPointWorld, l0);
                     vec2.normalize(normal,normal);
                     ray.reportIntersection(result, d2, normal, -1);
                     if(result.shouldStop(ray)){

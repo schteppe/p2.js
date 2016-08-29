@@ -105,9 +105,9 @@ Plane.prototype.raycast = function(result, ray, position, angle){
     vec2.set(normal, 0, 1);
     vec2.rotate(normal, normal, angle);
 
-    vec2.sub(len, from, position);
+    vec2.subtract(len, from, position);
     var planeToFrom = vec2.dot(len, normal);
-    vec2.sub(len, to, position);
+    vec2.subtract(len, to, position);
     var planeToTo = vec2.dot(len, normal);
 
     if(planeToFrom * planeToTo > 0){
@@ -121,7 +121,7 @@ Plane.prototype.raycast = function(result, ray, position, angle){
 
     var n_dot_dir = vec2.dot(normal, direction);
 
-    vec2.sub(planePointToFrom, from, position);
+    vec2.subtract(planePointToFrom, from, position);
     var t = -vec2.dot(normal, planePointToFrom) / n_dot_dir / ray.length;
 
     ray.reportIntersection(result, t, normal, -1);

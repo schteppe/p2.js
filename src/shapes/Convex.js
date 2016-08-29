@@ -79,7 +79,7 @@ function Convex(options){
             var worldPoint1 = this.vertices[(i+1) % this.vertices.length];
 
             var normal = vec2.create();
-            vec2.sub(normal, worldPoint1, worldPoint0);
+            vec2.subtract(normal, worldPoint1, worldPoint0);
 
             // Get normal - just rotate 90 degrees since vertices are given in CCW
             vec2.rotate90cw(normal, normal);
@@ -140,7 +140,7 @@ Convex.prototype.updateNormals = function(){
         var worldPoint1 = vertices[(i+1) % vertices.length];
 
         var normal = normals[i];
-        vec2.sub(normal, worldPoint1, worldPoint0);
+        vec2.subtract(normal, worldPoint1, worldPoint0);
 
         // Get normal - just rotate 90 degrees since vertices are given in CCW
         vec2.rotate90cw(normal, normal);
@@ -391,7 +391,7 @@ Convex.prototype.raycast = function(result, ray, position, angle){
         var delta = vec2.getLineSegmentsIntersectionFraction(rayStart, rayEnd, q1, q2);
 
         if(delta >= 0){
-            vec2.sub(normal, q2, q1);
+            vec2.subtract(normal, q2, q1);
             vec2.rotate(normal, normal, -Math.PI / 2 + angle);
             vec2.normalize(normal, normal);
             ray.reportIntersection(result, delta, normal, i);
@@ -412,8 +412,8 @@ Convex.prototype.pointTest = function(localPoint){
         var v0 = verts[i % numVerts],
             v1 = verts[(i + 1) % numVerts];
 
-        vec2.sub(r0, v0, localPoint);
-        vec2.sub(r1, v1, localPoint);
+        vec2.subtract(r0, v0, localPoint);
+        vec2.subtract(r1, v1, localPoint);
 
         var cross = vec2.crossLength(r0,r1);
 

@@ -105,7 +105,7 @@
                 world.on('postStep', postStepHandler = function(){
 
                     // turn the control body
-                    p2.vec2.sub(mouseDelta, app.mousePosition, characterBody.position);
+                    p2.vec2.subtract(mouseDelta, app.mousePosition, characterBody.position);
                     controlBody.angularVelocity = 10 * shortestArc(characterBody.angle, Math.atan2(mouseDelta[1], mouseDelta[0]));
 
                     // drive towards the mouse

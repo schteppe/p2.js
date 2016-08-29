@@ -144,26 +144,26 @@ LinearSpring.prototype.applyForce = function(){
     this.getWorldAnchorB(worldAnchorB);
 
     // Get offset points
-    vec2.sub(ri, worldAnchorA, bodyA.position);
-    vec2.sub(rj, worldAnchorB, bodyB.position);
+    vec2.subtract(ri, worldAnchorA, bodyA.position);
+    vec2.subtract(rj, worldAnchorB, bodyB.position);
 
     // Compute distance vector between world anchor points
-    vec2.sub(r, worldAnchorB, worldAnchorA);
+    vec2.subtract(r, worldAnchorB, worldAnchorA);
     var rlen = vec2.length(r);
     vec2.normalize(r_unit,r);
 
     // Compute relative velocity of the anchor points, u
-    vec2.sub(u, bodyB.velocity, bodyA.velocity);
+    vec2.subtract(u, bodyB.velocity, bodyA.velocity);
     vec2.crossZV(tmp, bodyB.angularVelocity, rj);
     vec2.add(u, u, tmp);
     vec2.crossZV(tmp, bodyA.angularVelocity, ri);
-    vec2.sub(u, u, tmp);
+    vec2.subtract(u, u, tmp);
 
     // F = - k * ( x - L ) - D * ( u )
     vec2.scale(f, r_unit, -k*(rlen-l) - d*vec2.dot(u,r_unit));
 
     // Add forces to bodies
-    vec2.sub( bodyA.force, bodyA.force, f);
+    vec2.subtract( bodyA.force, bodyA.force, f);
     vec2.add( bodyB.force, bodyB.force, f);
 
     // Angular force

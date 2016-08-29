@@ -296,13 +296,6 @@ vec2.subtract = function(out, a, b) {
 };
 
 /**
- * Alias for vec2.subtract
- * @static
- * @method sub
- */
-vec2.sub = vec2.subtract;
-
-/**
  * Multiplies two vec2's
  * @static
  * @method multiply
@@ -318,13 +311,6 @@ vec2.multiply = function(out, a, b) {
 };
 
 /**
- * Alias for vec2.multiply
- * @static
- * @method mul
- */
-vec2.mul = vec2.multiply;
-
-/**
  * Divides two vec2's
  * @static
  * @method divide
@@ -338,13 +324,6 @@ vec2.divide = function(out, a, b) {
     out[1] = a[1] / b[1];
     return out;
 };
-
-/**
- * Alias for vec2.divide
- * @static
- * @method div
- */
-vec2.div = vec2.divide;
 
 /**
  * Scales a vec2 by a scalar number

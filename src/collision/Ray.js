@@ -113,7 +113,7 @@ Ray.prototype.update = function(){
 
     // Update .direction and .length
     var d = this.direction;
-    vec2.sub(d, this.to, this.from);
+    vec2.subtract(d, this.to, this.from);
     this.length = vec2.length(d);
     vec2.normalize(d, d);
 
@@ -288,7 +288,7 @@ var v0 = vec2.create(),
 function distanceFromIntersectionSquared(from, direction, position) {
 
     // v0 is vector from from to position
-    vec2.sub(v0, position, from);
+    vec2.subtract(v0, position, from);
     var dot = vec2.dot(v0, direction);
 
     // intersect = direction * dot + from

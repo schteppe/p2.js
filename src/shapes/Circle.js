@@ -113,7 +113,7 @@ Circle.prototype.raycast = function(result, ray, position/*, angle*/){
         // single intersection point
         vec2.lerp(intersectionPoint, from, to, delta);
 
-        vec2.sub(normal, intersectionPoint, position);
+        vec2.subtract(normal, intersectionPoint, position);
         vec2.normalize(normal,normal);
 
         ray.reportIntersection(result, delta, normal, -1);
@@ -127,7 +127,7 @@ Circle.prototype.raycast = function(result, ray, position/*, angle*/){
         if(d1 >= 0 && d1 <= 1){
             vec2.lerp(intersectionPoint, from, to, d1);
 
-            vec2.sub(normal, intersectionPoint, position);
+            vec2.subtract(normal, intersectionPoint, position);
             vec2.normalize(normal,normal);
 
             ray.reportIntersection(result, d1, normal, -1);
@@ -140,7 +140,7 @@ Circle.prototype.raycast = function(result, ray, position/*, angle*/){
         if(d2 >= 0 && d2 <= 1){
             vec2.lerp(intersectionPoint, from, to, d2);
 
-            vec2.sub(normal, intersectionPoint, position);
+            vec2.subtract(normal, intersectionPoint, position);
             vec2.normalize(normal,normal);
 
             ray.reportIntersection(result, d2, normal, -1);

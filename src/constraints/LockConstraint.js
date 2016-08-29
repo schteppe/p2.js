@@ -61,14 +61,14 @@ function LockConstraint(bodyA, bodyB, options){
         that = this;
     x.computeGq = function(){
         vec2.rotate(l, that.localOffsetB, bodyA.angle);
-        vec2.sub(g, bodyB.position, bodyA.position);
-        vec2.sub(g, g, l);
+        vec2.subtract(g, bodyB.position, bodyA.position);
+        vec2.subtract(g, g, l);
         return g[0];
     };
     y.computeGq = function(){
         vec2.rotate(l, that.localOffsetB, bodyA.angle);
-        vec2.sub(g, bodyB.position, bodyA.position);
-        vec2.sub(g, g, l);
+        vec2.subtract(g, bodyB.position, bodyA.position);
+        vec2.subtract(g, g, l);
         return g[1];
     };
     var r = vec2.create(),
@@ -76,7 +76,7 @@ function LockConstraint(bodyA, bodyB, options){
     rot.computeGq = function(){
         vec2.rotate(r, that.localOffsetB, bodyB.angle - that.localAngleB);
         vec2.scale(r,r,-1);
-        vec2.sub(g,bodyA.position,bodyB.position);
+        vec2.subtract(g,bodyA.position,bodyB.position);
         vec2.add(g,g,r);
         vec2.rotate(t,r,-Math.PI/2);
         vec2.normalize(t,t);
@@ -92,7 +92,7 @@ function LockConstraint(bodyA, bodyB, options){
         vec2.copy(this.localOffsetB, options.localOffsetB);
     } else {
         // Construct from current positions
-        vec2.sub(this.localOffsetB, bodyB.position, bodyA.position);
+        vec2.subtract(this.localOffsetB, bodyB.position, bodyA.position);
         vec2.rotate(this.localOffsetB, this.localOffsetB, -bodyA.angle);
     }
 

@@ -78,8 +78,8 @@ function DistanceConstraint(bodyA,bodyB,options){
         vec2.rotate(worldAnchorB, localAnchorB, bodyB.angle);
 
         vec2.add(r, bodyB.position, worldAnchorB);
-        vec2.sub(r, r, worldAnchorA);
-        vec2.sub(r, r, bodyA.position);
+        vec2.subtract(r, r, worldAnchorA);
+        vec2.subtract(r, r, bodyA.position);
 
         this.distance = vec2.length(r);
     }
@@ -130,10 +130,10 @@ function DistanceConstraint(bodyA,bodyB,options){
         vec2.rotate(rj, localAnchorB, bodyB.angle);
 
         vec2.add(r, xj, rj);
-        vec2.sub(r, r, ri);
-        vec2.sub(r, r, xi);
+        vec2.subtract(r, r, ri);
+        vec2.subtract(r, r, xi);
 
-        //vec2.sub(r, bodyB.position, bodyA.position);
+        //vec2.subtract(r, bodyB.position, bodyA.position);
         return vec2.length(r) - that.distance;
     };
 
@@ -195,8 +195,8 @@ DistanceConstraint.prototype.update = function(){
 
     // Get world anchor points and normal
     vec2.add(n, xj, rj);
-    vec2.sub(n, n, ri);
-    vec2.sub(n, n, xi);
+    vec2.subtract(n, n, ri);
+    vec2.subtract(n, n, xi);
     this.position = vec2.length(n);
 
     var violating = false;

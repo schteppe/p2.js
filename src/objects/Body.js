@@ -1,6 +1,6 @@
 var vec2 = require('../math/vec2')
 ,   add = vec2.add
-,   sub = vec2.sub
+,   sub = vec2.subtract
 ,   vec2create = vec2.create
 ,   decomp = require('poly-decomp')
 ,   Convex = require('../shapes/Convex')

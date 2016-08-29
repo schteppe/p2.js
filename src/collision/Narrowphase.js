@@ -1,5 +1,5 @@
 var vec2 = require('../math/vec2')
-,   sub = vec2.sub
+,   sub = vec2.subtract
 ,   add = vec2.add
 ,   dot = vec2.dot
 ,   rotate = vec2.rotate
