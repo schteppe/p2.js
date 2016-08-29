@@ -448,9 +448,7 @@ World.prototype.removeConstraint = function(constraint){
     arrayRemove(this.constraints, constraint);
 };
 
-var step_mg = vec2.create(),
-    xiw = vec2.create(),
-    xjw = vec2.create();
+var step_mg = vec2.create();
 
 /**
  * Step the physics world forward in time.
@@ -532,6 +530,10 @@ World.prototype.step = function(dt,timeSinceLastCalled,maxSubSteps){
 };
 
 var endOverlaps = [];
+var shapePositionA = vec2.create();
+var shapeRotationA = vec2.create();
+var shapePositionB = vec2.create();
+var shapeRotationB = vec2.create();
 
 /**
  * Make a fixed step.
@@ -641,21 +643,27 @@ World.prototype.internalStep = function(dt){
         // Loop over all shapes of body i
         for(var k=0, Nshapesi=bi.shapes.length; k!==Nshapesi; k++){
             var si = bi.shapes[k],
-                xi = si.position,
-                ai = si.angle;
+                xi = si.position;
+
+            // Get world position & rotation of shapeA
+            vec2.setRotation(shapeRotationA, si.angle + bi.angle);
+            vec2.toGlobalFrame(shapePositionA, xi, bi.position, bi.angle);
 
             // All shapes of body j
             for(var l=0, Nshapesj=bj.shapes.length; l!==Nshapesj; l++){
                 var sj = bj.shapes[l],
-                    xj = sj.position,
-                    aj = sj.angle;
+                    xj = sj.position;
+
+                // Get world position & rotation of shapeB
+                vec2.setRotation(shapeRotationB, sj.angle + bj.angle);
+                vec2.toGlobalFrame(shapePositionB, xj, bj.position, bj.angle);
 
                 var contactMaterial = null;
                 if(si.material && sj.material){
                     contactMaterial = this.getContactMaterial(si.material,sj.material);
                 }
 
-                runNarrowphase(this,np,bi,si,xi,ai,bj,sj,xj,aj,contactMaterial || defaultContactMaterial, frictionGravity);
+                runNarrowphase(this,np,bi,si,shapePositionA,shapeRotationA,bj,sj,shapePositionB,shapeRotationB,contactMaterial || defaultContactMaterial, frictionGravity);
             }
         }
     }
@@ -863,23 +871,16 @@ function sortEquationsByIsland(equationA, equationB){
     }
 }
 
-function runNarrowphase(world, np, bi, si, xi, ai, bj, sj, xj, aj, cm, glen){
+function runNarrowphase(world, np, bi, si, xiw, aiw, bj, sj, xjw, ajw, cm, glen){
 
     // Check collision groups and masks
     if(!((si.collisionGroup & sj.collisionMask) !== 0 && (sj.collisionGroup & si.collisionMask) !== 0)){
         return;
     }
 
-    // Get world position and angle of each shape
-    vec2.toGlobalFrame(xiw, xi, bi.position, bi.angle);
-    vec2.toGlobalFrame(xjw, xj, bj.position, bj.angle);
-
     if(vec2.distance(xiw,xjw) > si.boundingRadius + sj.boundingRadius){
         return;
     }
-
-    var aiw = ai + bi.angle;
-    var ajw = aj + bj.angle;
 
     np.enableFriction = cm.friction > 0;
     var reducedMass;

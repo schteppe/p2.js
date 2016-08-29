@@ -24,8 +24,7 @@ var rect,
     bodyA,
     bodyB,
     position=[0,0],
-    angle=0,
-    eps = 0.01;
+    rotation=[0,1];
 
 exports.setUp = function(callback){
 
@@ -61,80 +60,80 @@ exports.construct = function(test){
 };
 
 exports.capsuleCapsule = function(test){
-    var result = narrowphase.capsuleCapsule(bodyA, capsule, position, angle, bodyB, capsule, position, angle);
+    var result = narrowphase.capsuleCapsule(bodyA, capsule, position, rotation, bodyB, capsule, position, rotation);
     test.equal(typeof result, 'number');
 
-    result = narrowphase.capsuleCapsule(bodyA, capsule, position, angle, bodyB, capsule, position, angle, true);
+    result = narrowphase.capsuleCapsule(bodyA, capsule, position, rotation, bodyB, capsule, position, rotation, true);
     test.equal(typeof result, 'number');
 
     test.done();
 };
 
 exports.planeCapsule = function(test){
-    var result = narrowphase.planeCapsule(bodyA, plane, position, angle, bodyB, capsule, position, angle);
+    var result = narrowphase.planeCapsule(bodyA, plane, position, rotation, bodyB, capsule, position, rotation);
     test.equal(typeof result, 'number');
 
-    result = narrowphase.planeCapsule(bodyA, plane, position, angle, bodyB, capsule, position, angle, true);
+    result = narrowphase.planeCapsule(bodyA, plane, position, rotation, bodyB, capsule, position, rotation, true);
     test.equal(typeof result, 'number');
 
     test.done();
 };
 
 exports.circleCapsule = function(test){
-    var result = narrowphase.circleCapsule(bodyA, circle, position, angle, bodyB, capsule, position, angle);
+    var result = narrowphase.circleCapsule(bodyA, circle, position, rotation, bodyB, capsule, position, rotation);
     test.equal(typeof result, 'number');
 
-    result = narrowphase.circleCapsule(bodyA, circle, position, angle, bodyB, capsule, position, angle, true);
+    result = narrowphase.circleCapsule(bodyA, circle, position, rotation, bodyB, capsule, position, rotation, true);
     test.equal(typeof result, 'number');
 
     test.done();
 };
 
 exports.circleCircle = function(test){
-    var result = narrowphase.circleCircle(bodyA, circle, position, angle, bodyB, circle, position, angle);
+    var result = narrowphase.circleCircle(bodyA, circle, position, rotation, bodyB, circle, position, rotation);
     test.equal(typeof result, 'number');
 
-    result = narrowphase.circleCircle(bodyA, circle, position, angle, bodyB, circle, position, angle, true);
+    result = narrowphase.circleCircle(bodyA, circle, position, rotation, bodyB, circle, position, rotation, true);
     test.equal(typeof result, 'number');
 
     test.done();
 };
 
 exports.circleConvex = function(test){
-    var result = narrowphase.circleConvex(bodyA, circle, position, angle, bodyB, convex, position, angle);
+    var result = narrowphase.circleConvex(bodyA, circle, position, rotation, bodyB, convex, position, rotation);
     test.equal(typeof result, 'number');
 
-    result = narrowphase.circleConvex(bodyA, circle, position, angle, bodyB, convex, position, angle, true);
+    result = narrowphase.circleConvex(bodyA, circle, position, rotation, bodyB, convex, position, rotation, true);
     test.equal(typeof result, 'number');
 
     test.done();
 };
 
 exports.circleLine = function(test){
-    var result = narrowphase.circleLine(bodyA, circle, position, angle, bodyB, line, position, angle);
+    var result = narrowphase.circleLine(bodyA, circle, position, rotation, bodyB, line, position, rotation);
     test.equal(typeof result, 'number');
 
-    var result = narrowphase.circleLine(bodyA, circle, position, angle, bodyB, line, position, angle, true);
+    var result = narrowphase.circleLine(bodyA, circle, position, rotation, bodyB, line, position, rotation, true);
     test.equal(typeof result, 'number');
 
     test.done();
 };
 
 exports.circleParticle = function(test){
-    var result = narrowphase.circleParticle(bodyA, circle, position, angle, bodyB, particle, position, angle);
+    var result = narrowphase.circleParticle(bodyA, circle, position, rotation, bodyB, particle, position, rotation);
     test.equal(typeof result, 'number');
 
-    result = narrowphase.circleParticle(bodyA, circle, position, angle, bodyB, particle, position, angle, true);
+    result = narrowphase.circleParticle(bodyA, circle, position, rotation, bodyB, particle, position, rotation, true);
     test.equal(typeof result, 'number');
 
     test.done();
 };
 
 exports.circlePlane = function(test){
-    var result = narrowphase.circlePlane(bodyA, circle, position, angle, bodyB, plane, position, angle);
+    var result = narrowphase.circlePlane(bodyA, circle, position, rotation, bodyB, plane, position, rotation);
     test.equal(typeof result, 'number');
 
-    result = narrowphase.circlePlane(bodyA, circle, position, angle, bodyB, plane, position, angle, true);
+    result = narrowphase.circlePlane(bodyA, circle, position, rotation, bodyB, plane, position, rotation, true);
     test.equal(typeof result, 'number');
 
     test.done();
@@ -146,40 +145,40 @@ exports.collidedLastStep = function(test){
 };
 
 exports.convexCapsule = function(test){
-    var result = narrowphase.convexCapsule(bodyA, convex, position, angle, bodyB, capsule, position, angle);
+    var result = narrowphase.convexCapsule(bodyA, convex, position, rotation, bodyB, capsule, position, rotation);
     test.equal(typeof result, 'number');
 
-    result = narrowphase.convexCapsule(bodyA, convex, position, angle, bodyB, capsule, position, angle, true);
+    result = narrowphase.convexCapsule(bodyA, convex, position, rotation, bodyB, capsule, position, rotation, true);
     test.equal(typeof result, 'number');
 
     test.done();
 };
 
 exports.convexConvex = function(test){
-    var result = narrowphase.convexConvex(bodyA, convex, position, angle, bodyB, convex, position, angle);
+    var result = narrowphase.convexConvex(bodyA, convex, position, rotation, bodyB, convex, position, rotation);
     test.equal(typeof result, 'number');
 
-    result = narrowphase.convexConvex(bodyA, convex, position, angle, bodyB, convex, position, angle, true);
+    result = narrowphase.convexConvex(bodyA, convex, position, rotation, bodyB, convex, position, rotation, true);
     test.equal(typeof result, 'number');
 
     test.done();
 };
 
 exports.convexLine = function(test){
-    var result = narrowphase.convexLine(bodyA, convex, position, angle, bodyB, line, position, angle);
+    var result = narrowphase.convexLine(bodyA, convex, position, rotation, bodyB, line, position, rotation);
     test.equal(typeof result, 'number');
 
-    result = narrowphase.convexLine(bodyA, convex, position, angle, bodyB, line, position, angle, true);
+    result = narrowphase.convexLine(bodyA, convex, position, rotation, bodyB, line, position, rotation, true);
     test.equal(typeof result, 'number');
 
     test.done();
 };
 
 exports.planeConvex = function(test){
-    var result = narrowphase.planeConvex(bodyA, plane, position, angle, bodyB, convex, position, angle);
+    var result = narrowphase.planeConvex(bodyA, plane, position, rotation, bodyB, convex, position, rotation);
     test.equal(typeof result, 'number');
 
-    result = narrowphase.planeConvex(bodyA, plane, position, angle, bodyB, convex, position, angle, true);
+    result = narrowphase.planeConvex(bodyA, plane, position, rotation, bodyB, convex, position, rotation, true);
     test.equal(typeof result, 'number');
 
     test.done();
@@ -203,60 +202,60 @@ exports.createFrictionFromContact = function(test){
 };
 
 exports.lineCapsule = function(test){
-    var result = narrowphase.lineCapsule(bodyA, line, position, angle, bodyB, capsule, position, angle);
+    var result = narrowphase.lineCapsule(bodyA, line, position, rotation, bodyB, capsule, position, rotation);
     test.equal(typeof result, 'number');
 
-    result = narrowphase.lineCapsule(bodyA, line, position, angle, bodyB, capsule, position, angle, true);
+    result = narrowphase.lineCapsule(bodyA, line, position, rotation, bodyB, capsule, position, rotation, true);
     test.equal(typeof result, 'number');
 
     test.done();
 };
 
 exports.lineLine = function(test){
-    var result = narrowphase.lineLine(bodyA, line, position, angle, bodyB, line, position, angle);
+    var result = narrowphase.lineLine(bodyA, line, position, rotation, bodyB, line, position, rotation);
     test.equal(typeof result, 'number');
 
-    result = narrowphase.lineLine(bodyA, line, position, angle, bodyB, line, position, angle, true);
+    result = narrowphase.lineLine(bodyA, line, position, rotation, bodyB, line, position, rotation, true);
     test.equal(typeof result, 'number');
 
     test.done();
 };
 
 exports.lineBox = function(test){
-    var result = narrowphase.lineBox(bodyA, line, position, angle, bodyB, rect, position, angle);
+    var result = narrowphase.lineBox(bodyA, line, position, rotation, bodyB, rect, position, rotation);
     test.equal(typeof result, 'number');
 
-    result = narrowphase.lineBox(bodyA, line, position, angle, bodyB, rect, position, angle, true);
+    result = narrowphase.lineBox(bodyA, line, position, rotation, bodyB, rect, position, rotation, true);
     test.equal(typeof result, 'number');
 
     test.done();
 };
 
 exports.particleConvex = function(test){
-    var result = narrowphase.particleConvex(bodyA, particle, position, angle, bodyB, convex, position, angle);
+    var result = narrowphase.particleConvex(bodyA, particle, position, rotation, bodyB, convex, position, rotation);
     test.equal(typeof result, 'number');
 
-    result = narrowphase.particleConvex(bodyA, particle, position, angle, bodyB, convex, position, angle, true);
+    result = narrowphase.particleConvex(bodyA, particle, position, rotation, bodyB, convex, position, rotation, true);
     test.equal(typeof result, 'number');
 
     test.done();
 };
 
 exports.particlePlane = function(test){
-    var result = narrowphase.particlePlane(bodyA, particle, position, angle, bodyB, plane, position, angle);
+    var result = narrowphase.particlePlane(bodyA, particle, position, rotation, bodyB, plane, position, rotation);
     test.equal(typeof result, 'number');
 
-    result = narrowphase.particlePlane(bodyA, particle, position, angle, bodyB, plane, position, angle, true);
+    result = narrowphase.particlePlane(bodyA, particle, position, rotation, bodyB, plane, position, rotation, true);
     test.equal(typeof result, 'number');
 
     test.done();
 };
 
 exports.planeLine = function(test){
-    var result = narrowphase.planeLine(bodyA, plane, position, angle, bodyB, line, position, angle);
+    var result = narrowphase.planeLine(bodyA, plane, position, rotation, bodyB, line, position, rotation);
     test.equal(typeof result, 'number');
 
-    result = narrowphase.planeLine(bodyA, plane, position, angle, bodyB, line, position, angle, true);
+    result = narrowphase.planeLine(bodyA, plane, position, rotation, bodyB, line, position, rotation, true);
     test.equal(typeof result, 'number');
 
     test.done();

@@ -529,3 +529,175 @@ vec2.getLineSegmentsIntersectionFraction = function(p0, p1, p2, p3) {
     }
     return -1; // No collision
 };
+
+/**
+ * @static
+ * @method setRotation
+ * @param  {Array} out
+ * @param  {number} angle
+ * @return {Array}
+ */
+vec2.setRotation = function(out, angle){
+    out[0] = Math.sin(angle);
+    out[1] = Math.cos(angle);
+    return out;
+};
+
+/**
+ * @static
+ * @method setIdentityRotation
+ * @param  {Array} out
+ * @return {Array}
+ */
+vec2.setIdentityRotation = function(out){
+    out[0] = 0;
+    out[1] = 1;
+    return out;
+};
+
+/**
+ * @static
+ * @method getRotationAngle
+ * @param  {Array} rotation
+ * @return {number}
+ */
+vec2.getRotationAngle = function(rotation){
+    return Math.atan2(rotation[0], rotation[1]);
+};
+
+/**
+ * @static
+ * @method multiplyRotations
+ * @param  {Array} out
+ * @param  {Array} q
+ * @param  {Array} r
+ * @return {Array}
+ */
+vec2.multiplyRotations = function(out, q, r){
+    var qs = q[0];
+    var qc = q[1];
+    var rs = r[0];
+    var rc = r[1];
+	out[0] = qs * rc + qc * rs;
+	out[1] = qc * rc - qs * rs;
+    return out;
+};
+
+/**
+ * @static
+ * @method transposeMultiplyRotations
+ * @param  {Array} out
+ * @param  {Array} q
+ * @param  {Array} r
+ * @return {Array}
+ */
+vec2.transposeMultiplyRotations = function(out, q, r){
+    var qs = q[0];
+    var qc = q[1];
+    var rs = r[0];
+    var rc = r[1];
+	out[0] = qc * rs - qs * rc;
+	out[1] = qc * rc + qs * rs;
+	return out;
+};
+
+/**
+ * @static
+ * @method rotateVector
+ * @param  {Array} out
+ * @param  {Array} vector
+ * @param  {Array} rotation
+ * @return {Array}
+ */
+vec2.rotateVector = function(out, vector, rotation){
+    var x = vector[0];
+    var y = vector[1];
+    var s = rotation[0];
+    var c = rotation[1];
+    out[0] = c * x - s * y;
+    out[1] = s * x + c * y;
+    return out;
+};
+
+/**
+ * @static
+ * @method inverseRotateVector
+ * @param  {Array} out
+ * @param  {Array} vector
+ * @param  {Array} rotation
+ * @return {Array}
+ */
+vec2.inverseRotateVector = function(out, vector, rotation){
+    var x = vector[0];
+    var y = vector[1];
+    var s = rotation[0];
+    var c = rotation[1];
+    out[0] =   c * x + s * y;
+    out[1] = - s * x + c * y;
+    return out;
+};
+
+/**
+ * Transform a vector to global frame.
+ * @method vectorToGlobalFrame2
+ * @param  {Array} out
+ * @param  {Array} localVector
+ * @param  {Array} frameRotation
+ */
+vec2.vectorToGlobalFrame2 = vec2.rotateVector;
+
+/**
+ * Transform a vector to local frame using a rotation
+ * @method vectorToLocalFrame2
+ * @param  {Array} out
+ * @param  {Array} worldVector
+ * @param  {Array} frameRotation
+ * @return {Array}
+ */
+vec2.vectorToLocalFrame2 = function(out, worldVector, frameRotation){
+    var s = frameRotation[0],
+        c = frameRotation[1],
+        x = worldVector[0],
+        y = worldVector[1];
+    out[0] =  c * x + s * y;
+    out[1] = -s * x + c * y;
+    return out;
+};
+
+/**
+ * Transform a point position to local frame using a rotation.
+ * @method toLocalFrame2
+ * @param  {Array} out
+ * @param  {Array} worldPoint
+ * @param  {Array} framePosition
+ * @param  {Array} frameRotation
+ * @return {Array}
+ */
+vec2.toLocalFrame2 = function(out, worldPoint, framePosition, frameRotation){
+    var s = frameRotation[0],
+        c = frameRotation[1],
+        x = worldPoint[0] - framePosition[0],
+        y = worldPoint[1] - framePosition[1];
+    out[0] =   c * x + s * y;
+    out[1] = - s * x + c * y;
+    return out;
+};
+
+/**
+ * Transform a point position to global frame using a rotation.
+ * @method toGlobalFrame2
+ * @param  {Array} out
+ * @param  {Array} localPoint
+ * @param  {Array} framePosition
+ * @param  {Array} frameRotation
+ */
+vec2.toGlobalFrame2 = function(out, localPoint, framePosition, frameRotation){
+    var s = frameRotation[0],
+        c = frameRotation[1],
+        x = localPoint[0],
+        y = localPoint[1],
+        addX = framePosition[0],
+        addY = framePosition[1];
+    out[0] = c * x - s * y + addX;
+    out[1] = s * x + c * y + addY;
+};

@@ -3,6 +3,7 @@ var vec2 = require('../math/vec2')
 ,   add = vec2.add
 ,   dot = vec2.dot
 ,   rotate = vec2.rotate
+,   rotateVector = vec2.rotateVector
 ,   normalize = vec2.normalize
 ,   copy = vec2.copy
 ,   scale = vec2.scale
@@ -123,6 +124,12 @@ function Narrowphase(){
 
 var bodiesOverlap_shapePositionA = createVec2();
 var bodiesOverlap_shapePositionB = createVec2();
+var bodiesOverlap_shapeRotationA = createVec2();
+var bodiesOverlap_shapeRotationB = createVec2();
+var bodiesOverlap_localShapeRotationA = createVec2();
+var bodiesOverlap_localShapeRotationB = createVec2();
+var bodiesOverlap_bodyRotationA = createVec2();
+var bodiesOverlap_bodyRotationB = createVec2();
 
 /**
  * @method bodiesOverlap
@@ -134,10 +141,22 @@ var bodiesOverlap_shapePositionB = createVec2();
 Narrowphase.prototype.bodiesOverlap = function(bodyA, bodyB, checkCollisionMasks){
     var shapePositionA = bodiesOverlap_shapePositionA;
     var shapePositionB = bodiesOverlap_shapePositionB;
+    var shapeRotationA = bodiesOverlap_shapeRotationA;
+    var shapeRotationB = bodiesOverlap_shapeRotationB;
+    var bodyRotationA = bodiesOverlap_bodyRotationA;
+    var bodyRotationB = bodiesOverlap_bodyRotationB;
+    var localShapeRotationA = bodiesOverlap_localShapeRotationA;
+    var localShapeRotationB = bodiesOverlap_localShapeRotationB;
+    vec2.setRotation(bodyRotationA, bodyA.angle);
+    vec2.setRotation(bodyRotationB, bodyB.angle);
 
     // Loop over all shapes of bodyA
     for(var k=0, Nshapesi=bodyA.shapes.length; k!==Nshapesi; k++){
         var shapeA = bodyA.shapes[k];
+
+        // shapeA.angle + bodyA.angle
+        vec2.setRotation(localShapeRotationA, shapeA.angle);
+        vec2.multiplyRotations(shapeRotationA, localShapeRotationA, bodyRotationA);
 
         // All shapes of body j
         for(var l=0, Nshapesj=bodyB.shapes.length; l!==Nshapesj; l++){
@@ -151,17 +170,21 @@ Narrowphase.prototype.bodiesOverlap = function(bodyA, bodyB, checkCollisionMasks
             bodyA.toWorldFrame(shapePositionA, shapeA.position);
             bodyB.toWorldFrame(shapePositionB, shapeB.position);
 
+            // shapeB.angle + bodyB.angle
+            vec2.setRotation(localShapeRotationB, shapeB.angle);
+            vec2.multiplyRotations(shapeRotationB, localShapeRotationB, bodyRotationB);
+
             if(shapeA.type <= shapeB.type)
             {
                 if(this[shapeA.type | shapeB.type](
                     bodyA,
                     shapeA,
                     shapePositionA,
-                    shapeA.angle + bodyA.angle,
+                    shapeRotationA,
                     bodyB,
                     shapeB,
                     shapePositionB,
-                    shapeB.angle + bodyB.angle,
+                    shapeRotationB,
                     true
                 )){
                     return true;
@@ -173,11 +196,11 @@ Narrowphase.prototype.bodiesOverlap = function(bodyA, bodyB, checkCollisionMasks
                     bodyB,
                     shapeB,
                     shapePositionB,
-                    shapeB.angle + bodyB.angle,
+                    shapeRotationB,
                     bodyA,
                     shapeA,
                     shapePositionA,
-                    shapeA.angle + bodyA.angle,
+                    shapeRotationA,
                     true
                 )){
                     return true;
@@ -336,11 +359,11 @@ Narrowphase.prototype.createFrictionFromAverage = function(numContacts){
  * @param  {Body}       convexBody
  * @param  {Convex}     convexShape
  * @param  {Array}      convexOffset
- * @param  {Number}     convexAngle
+ * @param  {Array}      convexRotation
  * @param  {Body}       lineBody
  * @param  {Line}       lineShape
  * @param  {Array}      lineOffset
- * @param  {Number}     lineAngle
+ * @param  {Array}      lineRotation
  * @param {boolean}     justTest
  * @return {number}
  * @todo Implement me!
@@ -351,11 +374,11 @@ Narrowphase.prototype.convexLine = function(
     convexBody,
     convexShape,
     convexOffset,
-    convexAngle,
+    convexRotation,
     lineBody,
     lineShape,
     lineOffset,
-    lineAngle,
+    lineRotation,
     justTest
     */
 ){
@@ -369,11 +392,11 @@ Narrowphase.prototype.convexLine = function(
  * @param  {Body}       lineBody
  * @param  {Line}       lineShape
  * @param  {Array}      lineOffset
- * @param  {Number}     lineAngle
+ * @param  {Array}      lineRotation
  * @param  {Body}       boxBody
- * @param  {Box}  boxShape
+ * @param  {Box}        boxShape
  * @param  {Array}      boxOffset
- * @param  {Number}     boxAngle
+ * @param  {Array}      boxRotation
  * @param  {Boolean}    justTest
  * @return {number}
  * @todo Implement me!
@@ -384,11 +407,11 @@ Narrowphase.prototype.lineBox = function(
     lineBody,
     lineShape,
     lineOffset,
-    lineAngle,
+    lineRotation,
     boxBody,
     boxShape,
     boxOffset,
-    boxAngle,
+    boxRotation,
     justTest
     */
 ){
@@ -415,11 +438,11 @@ var convexCapsule_tempRect = new Box({ width: 1, height: 1 }),
  * @param  {Body}       convexBody
  * @param  {Convex}     convexShape
  * @param  {Array}      convexPosition
- * @param  {Number}     convexAngle
+ * @param  {Array}      convexRotation
  * @param  {Body}       capsuleBody
  * @param  {Capsule}    capsuleShape
  * @param  {Array}      capsulePosition
- * @param  {Number}     capsuleAngle
+ * @param  {Array}      capsuleRotation
  * @return {number}
  */
 Narrowphase.prototype[Shape.CONVEX | Shape.CAPSULE] =
@@ -428,11 +451,11 @@ Narrowphase.prototype.convexCapsule = function(
     convexBody,
     convexShape,
     convexPosition,
-    convexAngle,
+    convexRotation,
     capsuleBody,
     capsuleShape,
     capsulePosition,
-    capsuleAngle,
+    capsuleRotation,
     justTest
 ){
 
@@ -441,12 +464,12 @@ Narrowphase.prototype.convexCapsule = function(
     var circlePos = convexCapsule_tempVec;
     var halfLength = capsuleShape.length / 2;
     vec2.set(circlePos, halfLength, 0);
-    vec2.toGlobalFrame(circlePos, circlePos, capsulePosition, capsuleAngle);
-    var result1 = this.circleConvex(capsuleBody,capsuleShape,circlePos,capsuleAngle, convexBody,convexShape,convexPosition,convexAngle, justTest, capsuleShape.radius);
+    vec2.toGlobalFrame2(circlePos, circlePos, capsulePosition, capsuleRotation);
+    var result1 = this.circleConvex(capsuleBody,capsuleShape,circlePos,capsuleRotation, convexBody,convexShape,convexPosition,convexRotation, justTest, capsuleShape.radius);
 
     vec2.set(circlePos,-halfLength, 0);
-    vec2.toGlobalFrame(circlePos, circlePos, capsulePosition, capsuleAngle);
-    var result2 = this.circleConvex(capsuleBody,capsuleShape,circlePos,capsuleAngle, convexBody,convexShape,convexPosition,convexAngle, justTest, capsuleShape.radius);
+    vec2.toGlobalFrame2(circlePos, circlePos, capsulePosition, capsuleRotation);
+    var result2 = this.circleConvex(capsuleBody,capsuleShape,circlePos,capsuleRotation, convexBody,convexShape,convexPosition,convexRotation, justTest, capsuleShape.radius);
 
     if(justTest && (result1 + result2) !== 0){
         return 1;
@@ -455,7 +478,7 @@ Narrowphase.prototype.convexCapsule = function(
     // Check center rect
     var r = convexCapsule_tempRect;
     setConvexToCapsuleShapeMiddle(r,capsuleShape);
-    var result = this.convexConvex(convexBody,convexShape,convexPosition,convexAngle, capsuleBody,r,capsulePosition,capsuleAngle, justTest);
+    var result = this.convexConvex(convexBody,convexShape,convexPosition,convexRotation, capsuleBody,r,capsulePosition,capsuleRotation, justTest);
 
     return result + result1 + result2;
 };
@@ -466,11 +489,11 @@ Narrowphase.prototype.convexCapsule = function(
  * @param  {Body}       lineBody
  * @param  {Line}       lineShape
  * @param  {Array}      linePosition
- * @param  {Number}     lineAngle
+ * @param  {Array}      lineRotation
  * @param  {Body}       capsuleBody
  * @param  {Capsule}    capsuleShape
  * @param  {Array}      capsulePosition
- * @param  {Number}     capsuleAngle
+ * @param  {Array}      capsuleRotation
  * @return {number}
  * @todo Implement me!
  */
@@ -480,11 +503,11 @@ Narrowphase.prototype.lineCapsule = function(
     lineBody,
     lineShape,
     linePosition,
-    lineAngle,
+    lineRotation,
     capsuleBody,
     capsuleShape,
     capsulePosition,
-    capsuleAngle,
+    capsuleRotation,
     justTest
     */
 ){
@@ -502,11 +525,11 @@ var capsuleCapsule_tempRect1 = new Box({ width: 1, height: 1 });
  * @param  {Body}       bi
  * @param  {Capsule}    si
  * @param  {Array}      xi
- * @param  {Number}     ai
+ * @param  {Array}      ai
  * @param  {Body}       bj
  * @param  {Capsule}    sj
  * @param  {Array}      xj
- * @param  {Number}     aj
+ * @param  {Array}      aj
  */
 Narrowphase.prototype[Shape.CAPSULE] =
 Narrowphase.prototype.capsuleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTest){
@@ -524,12 +547,12 @@ Narrowphase.prototype.capsuleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTe
     for(var i=0; i<2; i++){
 
         vec2.set(circlePosi,(i===0?-1:1)*si.length/2,0);
-        vec2.toGlobalFrame(circlePosi, circlePosi, xi, ai);
+        vec2.toGlobalFrame2(circlePosi, circlePosi, xi, ai);
 
         for(var j=0; j<2; j++){
 
             vec2.set(circlePosj,(j===0?-1:1)*sj.length/2, 0);
-            vec2.toGlobalFrame(circlePosj, circlePosj, xj, aj);
+            vec2.toGlobalFrame2(circlePosj, circlePosj, xj, aj);
 
             // Temporarily turn off friction
             if(this.enableFrictionReduction){
@@ -604,11 +627,11 @@ Narrowphase.prototype.capsuleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTe
  * @param  {Body}       bodyA
  * @param  {Line}       shapeA
  * @param  {Array}      positionA
- * @param  {Number}     angleA
+ * @param  {Array}      rotationA
  * @param  {Body}       bodyB
  * @param  {Line}       shapeB
  * @param  {Array}      positionB
- * @param  {Number}     angleB
+ * @param  {Array}      rotationB
  * @return {number}
  * @todo Implement me!
  */
@@ -617,11 +640,11 @@ Narrowphase.prototype.lineLine = function(
    /* bodyA,
     shapeA,
     positionA,
-    angleA,
+    rotationA,
     bodyB,
     shapeB,
     positionB,
-    angleB,
+    rotationB,
     justTest*/
 ){
     // TODO
@@ -634,15 +657,15 @@ Narrowphase.prototype.lineLine = function(
  * @param  {Body}   planeBody
  * @param  {Plane}  planeShape
  * @param  {Array}  planeOffset
- * @param  {Number} planeAngle
+ * @param  {Array}  planeRotation
  * @param  {Body}   lineBody
  * @param  {Line}   lineShape
  * @param  {Array}  lineOffset
- * @param  {Number} lineAngle
+ * @param  {Array}  lineRotation
  */
 Narrowphase.prototype[Shape.PLANE | Shape.LINE] =
-Narrowphase.prototype.planeLine = function(planeBody, planeShape, planeOffset, planeAngle,
-                                           lineBody,  lineShape,  lineOffset,  lineAngle, justTest){
+Narrowphase.prototype.planeLine = function(planeBody, planeShape, planeOffset, planeRotation,
+                                           lineBody,  lineShape,  lineOffset,  lineRotation, justTest){
     var worldVertex0 = tmp1,
         worldVertex1 = tmp2,
         worldVertex01 = tmp3,
@@ -660,8 +683,8 @@ Narrowphase.prototype.planeLine = function(planeBody, planeShape, planeOffset, p
     vec2.set(worldVertex1,  lineShape.length/2, 0);
 
     // Not sure why we have to use worldVertex*1 here, but it won't work otherwise. Tired.
-    vec2.toGlobalFrame(worldVertex01, worldVertex0, lineOffset, lineAngle);
-    vec2.toGlobalFrame(worldVertex11, worldVertex1, lineOffset, lineAngle);
+    vec2.toGlobalFrame2(worldVertex01, worldVertex0, lineOffset, lineRotation);
+    vec2.toGlobalFrame2(worldVertex11, worldVertex1, lineOffset, lineRotation);
 
     copy(worldVertex0,worldVertex01);
     copy(worldVertex1,worldVertex11);
@@ -673,7 +696,7 @@ Narrowphase.prototype.planeLine = function(planeBody, planeShape, planeOffset, p
     // Get tangent to the edge.
     vec2.rotate90cw(worldTangent, worldEdgeUnit);
 
-    rotate(worldNormal, yAxis, planeAngle);
+    vec2.rotateVector(worldNormal, yAxis, planeRotation);
 
     // Check line ends
     verts[0] = worldVertex0;
@@ -737,14 +760,14 @@ Narrowphase.prototype.particleCapsule = function(
     particleBody,
     particleShape,
     particlePosition,
-    particleAngle,
+    particleRotation,
     capsuleBody,
     capsuleShape,
     capsulePosition,
-    capsuleAngle,
+    capsuleRotation,
     justTest
 ){
-    return this.circleLine(particleBody,particleShape,particlePosition,particleAngle, capsuleBody,capsuleShape,capsulePosition,capsuleAngle, justTest, capsuleShape.radius, 0);
+    return this.circleLine(particleBody,particleShape,particlePosition,particleRotation, capsuleBody,capsuleShape,capsulePosition,capsuleRotation, justTest, capsuleShape.radius, 0);
 };
 
 /**
@@ -753,11 +776,11 @@ Narrowphase.prototype.particleCapsule = function(
  * @param  {Body} circleBody
  * @param  {Circle} circleShape
  * @param  {Array} circleOffset
- * @param  {Number} circleAngle
+ * @param  {Array} circleRotation
  * @param  {Body} lineBody
  * @param  {Line} lineShape
  * @param  {Array} lineOffset
- * @param  {Number} lineAngle
+ * @param  {Array} lineRotation
  * @param {Boolean} justTest If set to true, this function will return the result (intersection or not) without adding equations.
  * @param {Number} lineRadius Radius to add to the line. Can be used to test Capsules.
  * @param {Number} circleRadius If set, this value overrides the circle shape radius.
@@ -768,11 +791,11 @@ Narrowphase.prototype.circleLine = function(
     circleBody,
     circleShape,
     circleOffset,
-    circleAngle,
+    circleRotation,
     lineBody,
     lineShape,
     lineOffset,
-    lineAngle,
+    lineRotation,
     justTest,
     lineRadius,
     circleRadius
@@ -804,8 +827,8 @@ Narrowphase.prototype.circleLine = function(
     vec2.set(worldVertex1,  halfLineLength, 0);
 
     // Not sure why we have to use worldVertex*1 here, but it won't work otherwise. Tired.
-    vec2.toGlobalFrame(worldVertex01, worldVertex0, lineOffset, lineAngle);
-    vec2.toGlobalFrame(worldVertex11, worldVertex1, lineOffset, lineAngle);
+    vec2.toGlobalFrame2(worldVertex01, worldVertex0, lineOffset, lineRotation);
+    vec2.toGlobalFrame2(worldVertex11, worldVertex1, lineOffset, lineRotation);
 
     copy(worldVertex0,worldVertex01);
     copy(worldVertex1,worldVertex11);
@@ -923,11 +946,11 @@ Narrowphase.prototype.circleLine = function(
  * @param  {Body}   bi
  * @param  {Circle} si
  * @param  {Array}  xi
- * @param  {Number} ai
+ * @param  {Array}  ai
  * @param  {Body}   bj
  * @param  {Line}   sj
  * @param  {Array}  xj
- * @param  {Number} aj
+ * @param  {Array}  aj
  */
 Narrowphase.prototype[Shape.CIRCLE | Shape.CAPSULE] =
 Narrowphase.prototype.circleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTest){
@@ -940,11 +963,11 @@ Narrowphase.prototype.circleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTes
  * @param  {Body} circleBody
  * @param  {Circle} circleShape
  * @param  {Array} circleOffset
- * @param  {Number} circleAngle
+ * @param  {Array} circleRotation
  * @param  {Body} convexBody
  * @param  {Convex} convexShape
  * @param  {Array} convexOffset
- * @param  {Number} convexAngle
+ * @param  {Array} convexRotation
  * @param  {Boolean} justTest
  * @param  {Number} circleRadius
  * @return {number}
@@ -956,11 +979,11 @@ Narrowphase.prototype.circleConvex = function(
     circleBody,
     circleShape,
     circleOffset,
-    circleAngle,
+    circleRotation,
     convexBody,
     convexShape,
     convexOffset,
-    convexAngle,
+    convexRotation,
     justTest,
     circleRadius
 ){
@@ -990,7 +1013,7 @@ Narrowphase.prototype.circleConvex = function(
     // 2. 1. Get point on circle that is closest to the edge (scale normal with -radius)
     // 2. 2. Check if point is inside.
 
-    vec2.toLocalFrame(localCirclePosition, circleOffset, convexOffset, convexAngle);
+    vec2.toLocalFrame2(localCirclePosition, circleOffset, convexOffset, convexRotation);
 
     var vertices = convexShape.vertices;
     var normals = convexShape.normals;
@@ -1046,8 +1069,8 @@ Narrowphase.prototype.circleConvex = function(
         var v0 = vertices[found % numVertices],
             v1 = vertices[(found+1) % numVertices];
 
-        vec2.toGlobalFrame(worldVertex0, v0, convexOffset, convexAngle);
-        vec2.toGlobalFrame(worldVertex1, v1, convexOffset, convexAngle);
+        vec2.toGlobalFrame2(worldVertex0, v0, convexOffset, convexRotation);
+        vec2.toGlobalFrame2(worldVertex1, v1, convexOffset, convexRotation);
 
         sub(edge, worldVertex1, worldVertex0);
 
@@ -1097,7 +1120,7 @@ Narrowphase.prototype.circleConvex = function(
                     return 1;
                 }
 
-                vec2.toGlobalFrame(worldVertex, localVertex, convexOffset, convexAngle);
+                vec2.toGlobalFrame2(worldVertex, localVertex, convexOffset, convexRotation);
                 sub(dist, worldVertex, circleOffset);
 
                 var c = this.createContactEquation(circleBody,convexBody,circleShape,convexShape);
@@ -1135,14 +1158,14 @@ var pic_localPoint = createVec2(),
 /*
  * Check if a point is in a polygon
  */
-function pointInConvex(worldPoint,convexShape,convexOffset,convexAngle){
+function pointInConvex(worldPoint,convexShape,convexOffset,convexRotation){
     var localPoint = pic_localPoint,
         r0 = pic_r0,
         r1 = pic_r1,
         verts = convexShape.vertices,
         lastCross = null;
 
-    vec2.toLocalFrame(localPoint, worldPoint, convexOffset, convexAngle);
+    vec2.toLocalFrame2(localPoint, worldPoint, convexOffset, convexRotation);
 
     for(var i=0, numVerts=verts.length; i!==numVerts+1; i++){
         var v0 = verts[i % numVerts],
@@ -1204,11 +1227,11 @@ function pointInConvexLocal(localPoint,convexShape){
  * @param  {Body} particleBody
  * @param  {Particle} particleShape
  * @param  {Array} particleOffset
- * @param  {Number} particleAngle
+ * @param  {Array} particleRotation
  * @param  {Body} convexBody
  * @param  {Convex} convexShape
  * @param  {Array} convexOffset
- * @param  {Number} convexAngle
+ * @param  {Array} convexRotation
  * @param {Boolean} justTest
  * @return {number}
  * @todo use pointInConvex and code more similar to circleConvex
@@ -1220,11 +1243,11 @@ Narrowphase.prototype.particleConvex = function(
     particleBody,
     particleShape,
     particleOffset,
-    particleAngle,
+    particleRotation,
     convexBody,
     convexShape,
     convexOffset,
-    convexAngle,
+    convexRotation,
     justTest
 ){
     var worldVertex0 = tmp1,
@@ -1242,7 +1265,7 @@ Narrowphase.prototype.particleConvex = function(
         verts = convexShape.vertices;
 
     // Check if the particle is in the polygon at all
-    if(!pointInConvex(particleOffset,convexShape,convexOffset,convexAngle)){
+    if(!pointInConvex(particleOffset,convexShape,convexOffset,convexRotation)){
         return 0;
     }
 
@@ -1257,8 +1280,8 @@ Narrowphase.prototype.particleConvex = function(
 
         // Transform vertices to world
         // @todo transform point to local space instead
-        rotate(worldVertex0, v0, convexAngle);
-        rotate(worldVertex1, v1, convexAngle);
+        vec2.rotateVector(worldVertex0, v0, convexRotation);
+        vec2.rotateVector(worldVertex1, v1, convexRotation);
         add(worldVertex0, worldVertex0, convexOffset);
         add(worldVertex1, worldVertex1, convexOffset);
 
@@ -1323,11 +1346,11 @@ Narrowphase.prototype.particleConvex = function(
  * @param  {Body} bodyA
  * @param  {Circle} shapeA
  * @param  {Array} offsetA
- * @param  {Number} angleA
+ * @param  {Array} rotationA
  * @param  {Body} bodyB
  * @param  {Circle} shapeB
  * @param  {Array} offsetB
- * @param  {Number} angleB
+ * @param  {Array} rotationB
  * @param {Boolean} justTest
  * @param {Number} [radiusA] Optional radius to use for shapeA
  * @param {Number} [radiusB] Optional radius to use for shapeB
@@ -1338,11 +1361,11 @@ Narrowphase.prototype.circleCircle = function(
     bodyA,
     shapeA,
     offsetA,
-    angleA,
+    rotationA,
     bodyB,
     shapeB,
     offsetB,
-    angleB,
+    rotationB,
     justTest,
     radiusA,
     radiusB
@@ -1395,11 +1418,11 @@ function addSub(out, a, b, c){
  * @param  {Body} planeBody
  * @param  {Plane} planeShape
  * @param  {Array} planeOffset
- * @param  {Number} planeAngle
+ * @param  {Array} planeRotation
  * @param  {Body} convexBody
  * @param  {Convex} convexShape
  * @param  {Array} convexOffset
- * @param  {Number} convexAngle
+ * @param  {Array} convexRotation
  * @param {Boolean} justTest
  * @return {number}
  * @todo only use the deepest contact point + the contact point furthest away from it
@@ -1410,11 +1433,11 @@ Narrowphase.prototype.planeConvex = function(
     planeBody,
     planeShape,
     planeOffset,
-    planeAngle,
+    planeRotation,
     convexBody,
     convexShape,
     convexOffset,
-    convexAngle,
+    convexRotation,
     justTest
 ){
     var worldVertex = tmp1,
@@ -1425,11 +1448,11 @@ Narrowphase.prototype.planeConvex = function(
         localDist = tmp6;
 
     var numReported = 0;
-    rotate(worldNormal, yAxis, planeAngle);
+    vec2.rotateVector(worldNormal, yAxis, planeRotation);
 
     // Get convex-local plane offset and normal
-    vec2.vectorToLocalFrame(localPlaneNormal, worldNormal, convexAngle);
-    vec2.toLocalFrame(localPlaneOffset, planeOffset, convexOffset, convexAngle);
+    vec2.vectorToLocalFrame2(localPlaneNormal, worldNormal, convexRotation);
+    vec2.toLocalFrame2(localPlaneOffset, planeOffset, convexOffset, convexRotation);
 
     var vertices = convexShape.vertices;
     for(var i=0, numVerts=vertices.length; i!==numVerts; i++){
@@ -1443,7 +1466,7 @@ Narrowphase.prototype.planeConvex = function(
                 return 1;
             }
 
-            vec2.toGlobalFrame(worldVertex, v, convexOffset, convexAngle);
+            vec2.toGlobalFrame2(worldVertex, v, convexOffset, convexRotation);
 
             sub(dist, worldVertex, planeOffset);
 
@@ -1491,11 +1514,11 @@ Narrowphase.prototype.planeConvex = function(
  * @param  {Body}       particleBody
  * @param  {Particle}   particleShape
  * @param  {Array}      particleOffset
- * @param  {Number}     particleAngle
+ * @param  {Array}      particleRotation
  * @param  {Body}       planeBody
  * @param  {Plane}      planeShape
  * @param  {Array}      planeOffset
- * @param  {Number}     planeAngle
+ * @param  {Array}      planeRotation
  * @param {Boolean}     justTest
  * @return {number}
  */
@@ -1504,20 +1527,18 @@ Narrowphase.prototype.particlePlane = function(
     particleBody,
     particleShape,
     particleOffset,
-    particleAngle,
+    particleRotation,
     planeBody,
     planeShape,
     planeOffset,
-    planeAngle,
+    planeRotation,
     justTest
 ){
     var dist = tmp1,
         worldNormal = tmp2;
 
-    planeAngle = planeAngle || 0;
-
     sub(dist, particleOffset, planeOffset);
-    rotate(worldNormal, yAxis, planeAngle);
+    vec2.rotateVector(worldNormal, yAxis, planeRotation);
 
     var d = dot(dist, worldNormal);
 
@@ -1555,11 +1576,11 @@ Narrowphase.prototype.particlePlane = function(
  * @param  {Body} circleBody
  * @param  {Circle} circleShape
  * @param  {Array} circleOffset
- * @param  {Number} circleAngle
+ * @param  {Array} circleRotation
  * @param  {Body} particleBody
  * @param  {Particle} particleShape
  * @param  {Array} particleOffset
- * @param  {Number} particleAngle
+ * @param  {Array} particleRotation
  * @param  {Boolean} justTest
  * @return {number}
  */
@@ -1568,11 +1589,11 @@ Narrowphase.prototype.circleParticle = function(
     circleBody,
     circleShape,
     circleOffset,
-    circleAngle,
+    circleRotation,
     particleBody,
     particleShape,
     particleOffset,
-    particleAngle,
+    particleRotation,
     justTest
 ){
     var dist = tmp1;
@@ -1620,11 +1641,11 @@ var planeCapsule_tmpCircle = new Circle({ radius: 1 }),
  * @param  {Body} planeBody
  * @param  {Circle} planeShape
  * @param  {Array} planeOffset
- * @param  {Number} planeAngle
+ * @param  {Array} planeRotation
  * @param  {Body} capsuleBody
  * @param  {Particle} capsuleShape
  * @param  {Array} capsuleOffset
- * @param  {Number} capsuleAngle
+ * @param  {Array} capsuleRotation
  * @param {Boolean} justTest
  * @return {number}
  */
@@ -1633,11 +1654,11 @@ Narrowphase.prototype.planeCapsule = function(
     planeBody,
     planeShape,
     planeOffset,
-    planeAngle,
+    planeRotation,
     capsuleBody,
     capsuleShape,
     capsuleOffset,
-    capsuleAngle,
+    capsuleRotation,
     justTest
 ){
     var end1 = planeCapsule_tmp1,
@@ -1648,8 +1669,8 @@ Narrowphase.prototype.planeCapsule = function(
     // Compute world end positions
     vec2.set(end1, -halfLength, 0);
     vec2.set(end2, halfLength, 0);
-    vec2.toGlobalFrame(end1, end1, capsuleOffset, capsuleAngle);
-    vec2.toGlobalFrame(end2, end2, capsuleOffset, capsuleAngle);
+    vec2.toGlobalFrame2(end1, end1, capsuleOffset, capsuleRotation);
+    vec2.toGlobalFrame2(end2, end2, capsuleOffset, capsuleRotation);
 
     circle.radius = capsuleShape.radius;
 
@@ -1662,8 +1683,8 @@ Narrowphase.prototype.planeCapsule = function(
     }
 
     // Do Narrowphase as two circles
-    var numContacts1 = this.circlePlane(capsuleBody,circle,end1,0, planeBody,planeShape,planeOffset,planeAngle, justTest),
-        numContacts2 = this.circlePlane(capsuleBody,circle,end2,0, planeBody,planeShape,planeOffset,planeAngle, justTest);
+    var numContacts1 = this.circlePlane(capsuleBody,circle,end1,0, planeBody,planeShape,planeOffset,planeRotation, justTest),
+        numContacts2 = this.circlePlane(capsuleBody,circle,end2,0, planeBody,planeShape,planeOffset,planeRotation, justTest);
 
     // Restore friction
     if(this.enableFrictionReduction){
@@ -1688,11 +1709,11 @@ Narrowphase.prototype.planeCapsule = function(
  * @param  {Body}    circleBody
  * @param  {Circle}  circleShape
  * @param  {Array}   circleOffset
- * @param  {Number}  circleAngle
+ * @param  {Array}   circleRotation
  * @param  {Body}    planeBody
  * @param  {Plane}   planeShape
  * @param  {Array}   planeOffset
- * @param  {Number}  planeAngle
+ * @param  {Array}   planeRotation
  * @param  {Boolean} justTest
  * @return {number}
  */
@@ -1701,11 +1722,11 @@ Narrowphase.prototype.circlePlane = function(
     circleBody,
     circleShape,
     circleOffset,
-    circleAngle,
+    circleRotation,
     planeBody,
     planeShape,
     planeOffset,
-    planeAngle,
+    planeRotation,
     justTest
 ){
     var circleRadius = circleShape.radius;
@@ -1718,7 +1739,7 @@ Narrowphase.prototype.circlePlane = function(
     sub(planeToCircle, circleOffset, planeOffset);
 
     // World plane normal
-    rotate(worldNormal, yAxis, planeAngle);
+    vec2.rotateVector(worldNormal, yAxis, planeRotation);
 
     // Normal direction distance
     var d = dot(worldNormal, planeToCircle);
@@ -1764,7 +1785,8 @@ var findMaxSeparation_n = vec2.create();
 var findMaxSeparation_v1 = vec2.create();
 var findMaxSeparation_tmp = vec2.create();
 var findMaxSeparation_tmp2 = vec2.create();
-function findMaxSeparation(maxSeparationOut, poly1, position1, angle1, poly2, position2, angle2)
+var findMaxSeparation_rotation = vec2.create();
+function findMaxSeparation(maxSeparationOut, poly1, position1, rotation1, poly2, position2, rotation2)
 {
     var count1 = poly1.vertices.length;
     var count2 = poly2.vertices.length;
@@ -1777,25 +1799,26 @@ function findMaxSeparation(maxSeparationOut, poly1, position1, angle1, poly2, po
     var tmp = findMaxSeparation_tmp;
     var tmp2 = findMaxSeparation_tmp2;
 
-    var angle = angle1 - angle2;
-
     var bestIndex = 0;
     var maxSeparation = -Number.MAX_VALUE;
+
+    vec2.transposeMultiplyRotations(findMaxSeparation_rotation, rotation2, rotation1);
+
     for (var i = 0; i < count1; ++i)
     {
         // Get poly1 normal in frame2.
-        vec2.rotate(n, n1s[i], angle);
+        rotateVector(n, n1s[i], findMaxSeparation_rotation);
 
         // Get poly1 vertex in frame2
-        vec2.toGlobalFrame(tmp2, v1s[i], position1, angle1);
-        vec2.toLocalFrame(v1, tmp2, position2, angle2);
+        vec2.toGlobalFrame2(tmp2, v1s[i], position1, rotation1);
+        vec2.toLocalFrame2(v1, tmp2, position2, rotation2);
 
         // Find deepest point for normal i.
         var si = Number.MAX_VALUE;
         for (var j = 0; j < count2; ++j)
         {
-            vec2.subtract(tmp, v2s[j], v1);
-            var sij = vec2.dot(n, tmp);
+            sub(tmp, v2s[j], v1);
+            var sij = dot(n, tmp);
             if (sij < si)
             {
                 si = sij;
@@ -1816,7 +1839,7 @@ function findMaxSeparation(maxSeparationOut, poly1, position1, angle1, poly2, po
 }
 
 var findIncidentEdge_normal1 = vec2.create();
-function findIncidentEdge(clipVerticesOut, poly1, position1, angle1, edge1, poly2, position2, angle2)
+function findIncidentEdge(clipVerticesOut, poly1, position1, rotation1, edge1, poly2, position2, rotation2)
 {
     var normals1 = poly1.normals;
     var count2 = poly2.vertices.length;
@@ -1825,7 +1848,8 @@ function findIncidentEdge(clipVerticesOut, poly1, position1, angle1, edge1, poly
 
     // Get the normal of the reference edge in poly2's frame.
     var normal1 = findIncidentEdge_normal1;
-    vec2.rotate(normal1, normals1[edge1], angle1 - angle2);
+    vec2.rotateVector(normal1, normals1[edge1], rotation1);
+    vec2.inverseRotateVector(normal1, normal1, rotation2); // TODO: compute net rotation and then rotate the vector
 
     // Find the incident edge on poly2.
     var index = 0;
@@ -1844,8 +1868,8 @@ function findIncidentEdge(clipVerticesOut, poly1, position1, angle1, edge1, poly
     var i1 = index;
     var i2 = i1 + 1 < count2 ? i1 + 1 : 0;
 
-    vec2.toGlobalFrame(clipVerticesOut[0], vertices2[i1], position2, angle2);
-    vec2.toGlobalFrame(clipVerticesOut[1], vertices2[i2], position2, angle2);
+    vec2.toGlobalFrame2(clipVerticesOut[0], vertices2[i1], position2, rotation2);
+    vec2.toGlobalFrame2(clipVerticesOut[1], vertices2[i2], position2, rotation2);
 }
 
 // Find edge normal of max separation on A - return if separating axis is found
@@ -1882,11 +1906,11 @@ var maxManifoldPoints = 2;
  * @param  {Body} bi
  * @param  {Convex} si
  * @param  {Array} xi
- * @param  {Number} ai
+ * @param  {Array} ai
  * @param  {Body} bj
  * @param  {Convex} sj
  * @param  {Array} xj
- * @param  {Number} aj
+ * @param  {Array} aj
  * @param  {Boolean} justTest
  * @return {number}
  */
@@ -1897,11 +1921,11 @@ Narrowphase.prototype.convexConvex = function(
     bodyA,
     polyA,
     positionA,
-    angleA,
+    rotationA,
     bodyB,
     polyB,
     positionB,
-    angleB,
+    rotationB,
     justTest
 ){
     var totalRadius = 0;
@@ -1910,13 +1934,13 @@ Narrowphase.prototype.convexConvex = function(
     var tempVec = collidePolygons_tempVec;
     var tmpVec = collidePolygons_tmpVec;
 
-    var edgeA = findMaxSeparation(tempVec, polyA, positionA, angleA, polyB, positionB, angleB);
+    var edgeA = findMaxSeparation(tempVec, polyA, positionA, rotationA, polyB, positionB, rotationB);
     var separationA = tempVec[0];
     if (separationA > totalRadius){
         return 0;
     }
 
-    var edgeB = findMaxSeparation(tmpVec, polyB, positionB, angleB, polyA, positionA, angleA);
+    var edgeB = findMaxSeparation(tmpVec, polyB, positionB, rotationB, polyA, positionA, rotationA);
     var separationB = tmpVec[0];
     if (separationB > totalRadius){
         return 0;
@@ -1927,8 +1951,8 @@ Narrowphase.prototype.convexConvex = function(
 
     var position1;
     var position2;
-    var angle1;
-    var angle2;
+    var rotation1;
+    var rotation2;
     var body1;
     var body2;
 
@@ -1942,9 +1966,9 @@ Narrowphase.prototype.convexConvex = function(
         body1 = bodyB;
         body2 = bodyA;
         position1 = positionB;
-        angle1 = angleB;
+        rotation1 = rotationB;
         position2 = positionA;
-        angle2 = angleA;
+        rotation2 = rotationA;
         edge1 = edgeB;
         type = 1; // faceB
     }
@@ -1955,15 +1979,15 @@ Narrowphase.prototype.convexConvex = function(
         body1 = bodyA;
         body2 = bodyB;
         position1 = positionA;
-        angle1 = angleA;
+        rotation1 = rotationA;
         position2 = positionB;
-        angle2 = angleB;
+        rotation2 = rotationB;
         edge1 = edgeA;
         type = 0; // faceA
     }
 
     var incidentEdge = collidePolygons_incidentEdge;
-    findIncidentEdge(incidentEdge, poly1, position1, angle1, edge1, poly2, position2, angle2);
+    findIncidentEdge(incidentEdge, poly1, position1, rotation1, edge1, poly2, position2, rotation2);
 
     var count1 = poly1.vertices.length;
     var vertices1 = poly1.vertices;
@@ -1987,12 +2011,12 @@ Narrowphase.prototype.convexConvex = function(
     vec2.scale(planePoint, planePoint, 0.5);
 
     var tangent = collidePolygons_tangent; // tangent in world space
-    vec2.rotate(tangent, localTangent, angle1);
+    vec2.rotateVector(tangent, localTangent, rotation1);
     var normal = collidePolygons_normal; // normal in world space
     vec2.crossVZ(normal, tangent, 1.0);
 
-    vec2.toGlobalFrame(v11, v11, position1, angle1);
-    vec2.toGlobalFrame(v12, v12, position1, angle1);
+    vec2.toGlobalFrame2(v11, v11, position1, rotation1);
+    vec2.toGlobalFrame2(v12, v12, position1, rotation1);
 
     // Face offset.
     var frontOffset = vec2.dot(normal, v11);
@@ -2105,14 +2129,15 @@ var circleHeightfield_candidate = createVec2(),
  * @param  {Body}           bi
  * @param  {Circle}         si
  * @param  {Array}          xi
+ * @param  {Array}          ai
  * @param  {Body}           bj
  * @param  {Heightfield}    sj
  * @param  {Array}          xj
- * @param  {Number}         aj
+ * @param  {Array}          aj
  */
 Narrowphase.prototype[Shape.CIRCLE | Shape.HEIGHTFIELD] =
-Narrowphase.prototype.circleHeightfield = function( circleBody,circleShape,circlePos,circleAngle,
-                                                    hfBody,hfShape,hfPos,hfAngle, justTest, radius ){
+Narrowphase.prototype.circleHeightfield = function( circleBody,circleShape,circlePos,circleRotation,
+                                                    hfBody,hfShape,hfPos,hfRotation, justTest, radius ){
     var data = hfShape.heights,
         radius = radius || circleShape.radius,
         w = hfShape.elementWidth,
@@ -2284,15 +2309,18 @@ var convexHeightfield_v0 = createVec2(),
  * @param  {Body}           bi
  * @param  {Circle}         si
  * @param  {Array}          xi
+ * @param  {Array}          ai
  * @param  {Body}           bj
  * @param  {Heightfield}    sj
  * @param  {Array}          xj
- * @param  {Number}         aj
+ * @param  {Array}          aj
+ * @param  {boolean}        justTest
+ * @return {number}
  */
 Narrowphase.prototype[Shape.BOX | Shape.HEIGHTFIELD] =
 Narrowphase.prototype[Shape.CONVEX | Shape.HEIGHTFIELD] =
-Narrowphase.prototype.convexHeightfield = function( convexBody,convexShape,convexPos,convexAngle,
-                                                    hfBody,hfShape,hfPos,hfAngle, justTest ){
+Narrowphase.prototype.convexHeightfield = function( convexBody,convexShape,convexPos,convexRotation,
+                                                    hfBody,hfShape,hfPos,hfRotation, justTest ){
     var data = hfShape.heights,
         w = hfShape.elementWidth,
         v0 = convexHeightfield_v0,
@@ -2354,7 +2382,7 @@ Narrowphase.prototype.convexHeightfield = function( convexBody,convexShape,conve
         tileConvex.updateNormals();
 
         // Do convex collision
-        numContacts += this.convexConvex(   convexBody, convexShape, convexPos, convexAngle,
+        numContacts += this.convexConvex(   convexBody, convexShape, convexPos, convexRotation,
                                             hfBody, tileConvex, tilePos, 0, justTest);
     }
 
