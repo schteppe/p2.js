@@ -945,7 +945,7 @@ function runNarrowphase(world, np, bi, si, xi, ai, bj, sj, xj, aj, cm, glen){
                 // Reset contact equations
                 e.contactEquations.length = 0;
 
-                if(typeof(numContacts)==="number"){
+                if(!sensor){
                     for(var i=np.contactEquations.length-numContacts; i<np.contactEquations.length; i++){
                         e.contactEquations.push(np.contactEquations[i]);
                     }
@@ -955,7 +955,7 @@ function runNarrowphase(world, np, bi, si, xi, ai, bj, sj, xj, aj, cm, glen){
             }
 
             // divide the max friction force by the number of contacts
-            if(typeof(numContacts)==="number" && numFrictionEquations > 1){ // Why divide by 1?
+            if(!sensor && numFrictionEquations > 1){ // Why divide by 1?
                 for(var i=np.frictionEquations.length-numFrictionEquations; i<np.frictionEquations.length; i++){
                     var f = np.frictionEquations[i];
                     f.setSlipForce(f.getSlipForce() / numFrictionEquations);
