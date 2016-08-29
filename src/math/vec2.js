@@ -545,28 +545,6 @@ vec2.setRotation = function(out, angle){
 
 /**
  * @static
- * @method setIdentityRotation
- * @param  {Array} out
- * @return {Array}
- */
-vec2.setIdentityRotation = function(out){
-    out[0] = 0;
-    out[1] = 1;
-    return out;
-};
-
-/**
- * @static
- * @method getRotationAngle
- * @param  {Array} rotation
- * @return {number}
- */
-vec2.getRotationAngle = function(rotation){
-    return Math.atan2(rotation[0], rotation[1]);
-};
-
-/**
- * @static
  * @method multiplyRotations
  * @param  {Array} out
  * @param  {Array} q

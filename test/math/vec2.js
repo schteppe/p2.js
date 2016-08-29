@@ -53,40 +53,13 @@ exports.setRotation = function(test){
     test.done();
 };
 
-exports.setIdentityRotation = function(test){
-    var a = [0,0];
-    vec2.setIdentityRotation(a);
-    test.deepEqual(a,[0,1]);
-    test.done();
-};
-
-exports.getRotationAngle = function(test){
-    var a = [0,0];
-    var angleA = 0;
-    var angleB = 0;
-
-    vec2.setRotation(a, angleA);
-    angleB = vec2.getRotationAngle(a);
-    test.equal(angleA, angleB);
-
-    angleA = Math.PI;
-
-    vec2.setRotation(a, angleA);
-    angleB = vec2.getRotationAngle(a);
-    test.equal(angleA, angleB);
-
-    test.done();
-};
-
 exports.multiplyRotations = function(test){
-    var a = [0,0];
-    var b = [0,0];
+    var a = [0,1];
+    var b = [0,1];
     var c = [0,0];
     var out = [0,0];
 
     // 0 + 0
-    vec2.setIdentityRotation(a);
-    vec2.setIdentityRotation(b);
     vec2.multiplyRotations(out,a,b);
     test.deepEqual(out, [0,1]);
 
