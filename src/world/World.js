@@ -817,7 +817,9 @@ World.prototype.internalStep = function(dt){
             var islandId = bodiesSortedByIsland[islandStart].islandId;
 
             // Get islandEnd index
-            for(islandEnd = islandStart+1; islandEnd < bodiesSortedByIsland.length && bodiesSortedByIsland[islandEnd].islandId === islandId; islandEnd++);
+            /* jshint ignore:start */
+            for(islandEnd = islandStart+1; islandEnd < bodiesSortedByIsland.length && bodiesSortedByIsland[islandEnd].islandId === islandId; islandEnd++){}
+            /* jshint ignore:end */
 
             // Don't check static objects
             if(islandId === -1){

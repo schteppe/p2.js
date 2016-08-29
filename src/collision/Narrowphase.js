@@ -342,10 +342,12 @@ Narrowphase.prototype.createFrictionFromAverage = function(numContacts){
  * @param  {Array}      lineOffset
  * @param  {Number}     lineAngle
  * @param {boolean}     justTest
+ * @return {number}
  * @todo Implement me!
  */
 Narrowphase.prototype[Shape.CONVEX | Shape.LINE] =
 Narrowphase.prototype.convexLine = function(
+    /*
     convexBody,
     convexShape,
     convexOffset,
@@ -355,13 +357,10 @@ Narrowphase.prototype.convexLine = function(
     lineOffset,
     lineAngle,
     justTest
+    */
 ){
     // TODO
-    if(justTest){
-        return false;
-    } else {
-        return 0;
-    }
+    return 0;
 };
 
 /**
@@ -376,10 +375,12 @@ Narrowphase.prototype.convexLine = function(
  * @param  {Array}      boxOffset
  * @param  {Number}     boxAngle
  * @param  {Boolean}    justTest
+ * @return {number}
  * @todo Implement me!
  */
 Narrowphase.prototype[Shape.LINE | Shape.BOX] =
 Narrowphase.prototype.lineBox = function(
+    /*
     lineBody,
     lineShape,
     lineOffset,
@@ -389,13 +390,10 @@ Narrowphase.prototype.lineBox = function(
     boxOffset,
     boxAngle,
     justTest
+    */
 ){
     // TODO
-    if(justTest){
-        return false;
-    } else {
-        return 0;
-    }
+    return 0;
 };
 
 function setConvexToCapsuleShapeMiddle(convexShape, capsuleShape){
@@ -422,6 +420,7 @@ var convexCapsule_tempRect = new Box({ width: 1, height: 1 }),
  * @param  {Capsule}    capsuleShape
  * @param  {Array}      capsulePosition
  * @param  {Number}     capsuleAngle
+ * @return {number}
  */
 Narrowphase.prototype[Shape.CONVEX | Shape.CAPSULE] =
 Narrowphase.prototype[Shape.BOX | Shape.CAPSULE] =
@@ -449,8 +448,8 @@ Narrowphase.prototype.convexCapsule = function(
     vec2.toGlobalFrame(circlePos, circlePos, capsulePosition, capsuleAngle);
     var result2 = this.circleConvex(capsuleBody,capsuleShape,circlePos,capsuleAngle, convexBody,convexShape,convexPosition,convexAngle, justTest, capsuleShape.radius);
 
-    if(justTest && (result1 || result2)){
-        return true;
+    if(justTest && (result1 + result2) !== 0){
+        return 1;
     }
 
     // Check center rect
@@ -472,10 +471,12 @@ Narrowphase.prototype.convexCapsule = function(
  * @param  {Capsule}    capsuleShape
  * @param  {Array}      capsulePosition
  * @param  {Number}     capsuleAngle
+ * @return {number}
  * @todo Implement me!
  */
 Narrowphase.prototype[Shape.LINE | Shape.CAPSULE] =
 Narrowphase.prototype.lineCapsule = function(
+    /*
     lineBody,
     lineShape,
     linePosition,
@@ -485,13 +486,10 @@ Narrowphase.prototype.lineCapsule = function(
     capsulePosition,
     capsuleAngle,
     justTest
+    */
 ){
     // TODO
-    if(justTest){
-        return false;
-    } else {
-        return 0;
-    }
+    return 0;
 };
 
 var capsuleCapsule_tempVec1 = createVec2();
@@ -545,8 +543,8 @@ Narrowphase.prototype.capsuleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTe
                 this.enableFriction = enableFrictionBefore;
             }
 
-            if(justTest && result){
-                return true;
+            if(justTest && result !== 0){
+                return 1;
             }
 
             numContacts += result;
@@ -568,8 +566,8 @@ Narrowphase.prototype.capsuleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTe
         this.enableFriction = enableFrictionBefore;
     }
 
-    if(justTest && result1){
-        return true;
+    if(justTest && result1 !== 0){
+        return 1;
     }
     numContacts += result1;
 
@@ -586,8 +584,8 @@ Narrowphase.prototype.capsuleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTe
         this.enableFriction = enableFrictionBefore;
     }
 
-    if(justTest && result2){
-        return true;
+    if(justTest && result2 !== 0){
+        return 1;
     }
     numContacts += result2;
 
@@ -611,11 +609,12 @@ Narrowphase.prototype.capsuleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTe
  * @param  {Line}       shapeB
  * @param  {Array}      positionB
  * @param  {Number}     angleB
+ * @return {number}
  * @todo Implement me!
  */
 Narrowphase.prototype[Shape.LINE] =
 Narrowphase.prototype.lineLine = function(
-    bodyA,
+   /* bodyA,
     shapeA,
     positionA,
     angleA,
@@ -623,14 +622,10 @@ Narrowphase.prototype.lineLine = function(
     shapeB,
     positionB,
     angleB,
-    justTest
+    justTest*/
 ){
     // TODO
-    if(justTest){
-        return false;
-    } else {
-        return 0;
-    }
+    return 0;
 };
 
 /**
@@ -693,7 +688,7 @@ Narrowphase.prototype.planeLine = function(planeBody, planeShape, planeOffset, p
         if(d < 0){
 
             if(justTest){
-                return true;
+                return 1;
             }
 
             var c = this.createContactEquation(planeBody,lineBody,planeShape,lineShape);
@@ -725,7 +720,7 @@ Narrowphase.prototype.planeLine = function(planeBody, planeShape, planeOffset, p
     }
 
     if(justTest){
-        return false;
+        return 0;
     }
 
     if(!this.enableFrictionReduction){
@@ -766,6 +761,7 @@ Narrowphase.prototype.particleCapsule = function(
  * @param {Boolean} justTest If set to true, this function will return the result (intersection or not) without adding equations.
  * @param {Number} lineRadius Radius to add to the line. Can be used to test Capsules.
  * @param {Number} circleRadius If set, this value overrides the circle shape radius.
+ * @return {number}
  */
 Narrowphase.prototype[Shape.CIRCLE | Shape.LINE] =
 Narrowphase.prototype.circleLine = function(
@@ -851,7 +847,7 @@ Narrowphase.prototype.circleLine = function(
             // We got contact!
 
             if(justTest){
-                return true;
+                return 1;
             }
 
             var c = this.createContactEquation(circleBody,lineBody,circleShape,lineShape);
@@ -889,7 +885,7 @@ Narrowphase.prototype.circleLine = function(
         if(squaredLength(dist) < Math.pow(radiusSum, 2)){
 
             if(justTest){
-                return true;
+                return 1;
             }
 
             var c = this.createContactEquation(circleBody,lineBody,circleShape,lineShape);
@@ -951,6 +947,7 @@ Narrowphase.prototype.circleCapsule = function(bi,si,xi,ai, bj,sj,xj,aj, justTes
  * @param  {Number} convexAngle
  * @param  {Boolean} justTest
  * @param  {Number} circleRadius
+ * @return {number}
  * @todo Should probably do a separating axis test like https://github.com/erincatto/Box2D/blob/master/Box2D/Box2D/Collision/b2CollideCircle.cpp#L62
  */
 Narrowphase.prototype[Shape.CIRCLE | Shape.CONVEX] =
@@ -1010,7 +1007,7 @@ Narrowphase.prototype.circleConvex = function(
 
         if (s > radius){
             // Early out.
-            return justTest ? false : 0;
+            return 0;
         }
 
         if (s > separation){
@@ -1043,7 +1040,7 @@ Narrowphase.prototype.circleConvex = function(
     if(found !== -1){
 
         if(justTest){
-            return true;
+            return 1;
         }
 
         var v0 = vertices[found % numVertices],
@@ -1097,7 +1094,7 @@ Narrowphase.prototype.circleConvex = function(
             if(squaredLength(dist) < circleRadius * circleRadius){
 
                 if(justTest){
-                    return true;
+                    return 1;
                 }
 
                 vec2.toGlobalFrame(worldVertex, localVertex, convexOffset, convexAngle);
@@ -1213,6 +1210,7 @@ function pointInConvexLocal(localPoint,convexShape){
  * @param  {Array} convexOffset
  * @param  {Number} convexAngle
  * @param {Boolean} justTest
+ * @return {number}
  * @todo use pointInConvex and code more similar to circleConvex
  * @todo don't transform each vertex, but transform the particle position to convex-local instead
  */
@@ -1245,11 +1243,11 @@ Narrowphase.prototype.particleConvex = function(
 
     // Check if the particle is in the polygon at all
     if(!pointInConvex(particleOffset,convexShape,convexOffset,convexAngle)){
-        return justTest ? false : 0;
+        return 0;
     }
 
     if(justTest){
-        return true;
+        return 1;
     }
 
     // Check edges first
@@ -1333,6 +1331,7 @@ Narrowphase.prototype.particleConvex = function(
  * @param {Boolean} justTest
  * @param {Number} [radiusA] Optional radius to use for shapeA
  * @param {Number} [radiusB] Optional radius to use for shapeB
+ * @return {number}
  */
 Narrowphase.prototype[Shape.CIRCLE] =
 Narrowphase.prototype.circleCircle = function(
@@ -1360,7 +1359,7 @@ Narrowphase.prototype.circleCircle = function(
     }
 
     if(justTest){
-        return true;
+        return 1;
     }
 
     var c = this.createContactEquation(bodyA,bodyB,shapeA,shapeB);
@@ -1402,6 +1401,7 @@ function addSub(out, a, b, c){
  * @param  {Array} convexOffset
  * @param  {Number} convexAngle
  * @param {Boolean} justTest
+ * @return {number}
  * @todo only use the deepest contact point + the contact point furthest away from it
  */
 Narrowphase.prototype[Shape.PLANE | Shape.CONVEX] =
@@ -1440,7 +1440,7 @@ Narrowphase.prototype.planeConvex = function(
         if(dot(localDist,localPlaneNormal) <= 0){
 
             if(justTest){
-                return true;
+                return 1;
             }
 
             vec2.toGlobalFrame(worldVertex, v, convexOffset, convexAngle);
@@ -1497,6 +1497,7 @@ Narrowphase.prototype.planeConvex = function(
  * @param  {Array}      planeOffset
  * @param  {Number}     planeAngle
  * @param {Boolean}     justTest
+ * @return {number}
  */
 Narrowphase.prototype[Shape.PARTICLE | Shape.PLANE] =
 Narrowphase.prototype.particlePlane = function(
@@ -1524,7 +1525,7 @@ Narrowphase.prototype.particlePlane = function(
         return 0;
     }
     if(justTest){
-        return true;
+        return 1;
     }
 
     var c = this.createContactEquation(planeBody,particleBody,planeShape,particleShape);
@@ -1560,6 +1561,7 @@ Narrowphase.prototype.particlePlane = function(
  * @param  {Array} particleOffset
  * @param  {Number} particleAngle
  * @param  {Boolean} justTest
+ * @return {number}
  */
 Narrowphase.prototype[Shape.CIRCLE | Shape.PARTICLE] =
 Narrowphase.prototype.circleParticle = function(
@@ -1578,10 +1580,10 @@ Narrowphase.prototype.circleParticle = function(
 
     sub(dist, particleOffset, circleOffset);
     if(squaredLength(dist) > circleRadius*circleRadius){
-        return justTest ? false : 0;
+        return 0;
     }
     if(justTest){
-        return true;
+        return 1;
     }
 
     var c = this.createContactEquation(circleBody,particleBody,circleShape,particleShape);
@@ -1624,6 +1626,7 @@ var planeCapsule_tmpCircle = new Circle({ radius: 1 }),
  * @param  {Array} capsuleOffset
  * @param  {Number} capsuleAngle
  * @param {Boolean} justTest
+ * @return {number}
  */
 Narrowphase.prototype[Shape.PLANE | Shape.CAPSULE] =
 Narrowphase.prototype.planeCapsule = function(
@@ -1668,7 +1671,7 @@ Narrowphase.prototype.planeCapsule = function(
     }
 
     if(justTest){
-        return numContacts1 || numContacts2;
+        return numContacts1 + numContacts2;
     } else {
         var numTotal = numContacts1 + numContacts2;
         if(this.enableFrictionReduction){
@@ -1691,6 +1694,7 @@ Narrowphase.prototype.planeCapsule = function(
  * @param  {Array}   planeOffset
  * @param  {Number}  planeAngle
  * @param  {Boolean} justTest
+ * @return {number}
  */
 Narrowphase.prototype[Shape.CIRCLE | Shape.PLANE] =
 Narrowphase.prototype.circlePlane = function(
@@ -1724,7 +1728,7 @@ Narrowphase.prototype.circlePlane = function(
     }
 
     if(justTest){
-        return true;
+        return 1;
     }
 
     // Create contact
@@ -1883,6 +1887,8 @@ var maxManifoldPoints = 2;
  * @param  {Convex} sj
  * @param  {Array} xj
  * @param  {Number} aj
+ * @param  {Boolean} justTest
+ * @return {number}
  */
 Narrowphase.prototype[Shape.CONVEX] =
 Narrowphase.prototype[Shape.CONVEX | Shape.BOX] =
@@ -1907,13 +1913,13 @@ Narrowphase.prototype.convexConvex = function(
     var edgeA = findMaxSeparation(tempVec, polyA, positionA, angleA, polyB, positionB, angleB);
     var separationA = tempVec[0];
     if (separationA > totalRadius){
-        return justTest ? false : 0;
+        return 0;
     }
 
     var edgeB = findMaxSeparation(tmpVec, polyB, positionB, angleB, polyA, positionA, angleA);
     var separationB = tmpVec[0];
     if (separationB > totalRadius){
-        return justTest ? false : 0;
+        return 0;
     }
 
     var poly1;	// reference polygon
@@ -2006,14 +2012,14 @@ Narrowphase.prototype.convexConvex = function(
     np = clipSegmentToLine(clipPoints1, incidentEdge, negativeTangent, sideOffset1, iv1);
 
     if (np < 2){
-        return justTest ? false : 0;
+        return 0;
     }
 
     // Clip to negative box side 1
     np = clipSegmentToLine(clipPoints2, clipPoints1,  tangent, sideOffset2, iv2);
 
     if (np < 2){
-        return justTest ? false : 0;
+        return 0;
     }
 
     var pointCount = 0;
@@ -2024,7 +2030,7 @@ Narrowphase.prototype.convexConvex = function(
         if (separation <= totalRadius)
         {
             if(justTest){
-                return true;
+                return 1;
             }
 
             ++pointCount;
@@ -2051,7 +2057,7 @@ Narrowphase.prototype.convexConvex = function(
         this.frictionEquations.push(this.createFrictionFromAverage(pointCount));
     }
 
-    return justTest ? !!pointCount : pointCount;
+    return pointCount;
 };
 
 function clipSegmentToLine(vOut, vIn, normal, offset)
@@ -2145,7 +2151,7 @@ Narrowphase.prototype.circleHeightfield = function( circleBody,circleShape,circl
     }
 
     if(circlePos[1]-radius > max){
-        return justTest ? false : 0;
+        return 0;
     }
 
     /*
@@ -2188,7 +2194,7 @@ Narrowphase.prototype.circleHeightfield = function( circleBody,circleShape,circl
         if(candidate[0] >= v0[0] && candidate[0] < v1[0] && d <= 0){
 
             if(justTest){
-                return true;
+                return 1;
             }
 
             found = true;
@@ -2233,7 +2239,7 @@ Narrowphase.prototype.circleHeightfield = function( circleBody,circleShape,circl
             if(squaredLength(dist) < Math.pow(radius, 2)){
 
                 if(justTest){
-                    return true;
+                    return 1;
                 }
 
                 found = true;
@@ -2318,7 +2324,7 @@ Narrowphase.prototype.convexHeightfield = function( convexBody,convexShape,conve
     }
 
     if(convexBody.aabb.lowerBound[1] > max){
-        return justTest ? false : 0;
+        return 0;
     }
 
     var numContacts = 0;

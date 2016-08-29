@@ -65,7 +65,7 @@ exports.capsuleCapsule = function(test){
     test.equal(typeof result, 'number');
 
     result = narrowphase.capsuleCapsule(bodyA, capsule, position, angle, bodyB, capsule, position, angle, true);
-    test.equal(typeof result, 'boolean');
+    test.equal(typeof result, 'number');
 
     test.done();
 };
@@ -75,7 +75,7 @@ exports.planeCapsule = function(test){
     test.equal(typeof result, 'number');
 
     result = narrowphase.planeCapsule(bodyA, plane, position, angle, bodyB, capsule, position, angle, true);
-    test.equal(typeof result, 'boolean');
+    test.equal(typeof result, 'number');
 
     test.done();
 };
@@ -85,7 +85,7 @@ exports.circleCapsule = function(test){
     test.equal(typeof result, 'number');
 
     result = narrowphase.circleCapsule(bodyA, circle, position, angle, bodyB, capsule, position, angle, true);
-    test.equal(typeof result, 'boolean');
+    test.equal(typeof result, 'number');
 
     test.done();
 };
@@ -95,7 +95,7 @@ exports.circleCircle = function(test){
     test.equal(typeof result, 'number');
 
     result = narrowphase.circleCircle(bodyA, circle, position, angle, bodyB, circle, position, angle, true);
-    test.equal(typeof result, 'boolean');
+    test.equal(typeof result, 'number');
 
     test.done();
 };
@@ -105,7 +105,7 @@ exports.circleConvex = function(test){
     test.equal(typeof result, 'number');
 
     result = narrowphase.circleConvex(bodyA, circle, position, angle, bodyB, convex, position, angle, true);
-    test.equal(typeof result, 'boolean');
+    test.equal(typeof result, 'number');
 
     test.done();
 };
@@ -115,7 +115,7 @@ exports.circleLine = function(test){
     test.equal(typeof result, 'number');
 
     var result = narrowphase.circleLine(bodyA, circle, position, angle, bodyB, line, position, angle, true);
-    test.equal(typeof result, 'boolean');
+    test.equal(typeof result, 'number');
 
     test.done();
 };
@@ -125,7 +125,7 @@ exports.circleParticle = function(test){
     test.equal(typeof result, 'number');
 
     result = narrowphase.circleParticle(bodyA, circle, position, angle, bodyB, particle, position, angle, true);
-    test.equal(typeof result, 'boolean');
+    test.equal(typeof result, 'number');
 
     test.done();
 };
@@ -135,7 +135,7 @@ exports.circlePlane = function(test){
     test.equal(typeof result, 'number');
 
     result = narrowphase.circlePlane(bodyA, circle, position, angle, bodyB, plane, position, angle, true);
-    test.equal(typeof result, 'boolean');
+    test.equal(typeof result, 'number');
 
     test.done();
 };
@@ -150,7 +150,7 @@ exports.convexCapsule = function(test){
     test.equal(typeof result, 'number');
 
     result = narrowphase.convexCapsule(bodyA, convex, position, angle, bodyB, capsule, position, angle, true);
-    test.equal(typeof result, 'boolean');
+    test.equal(typeof result, 'number');
 
     test.done();
 };
@@ -160,7 +160,7 @@ exports.convexConvex = function(test){
     test.equal(typeof result, 'number');
 
     result = narrowphase.convexConvex(bodyA, convex, position, angle, bodyB, convex, position, angle, true);
-    test.equal(typeof result, 'boolean');
+    test.equal(typeof result, 'number');
 
     test.done();
 };
@@ -170,7 +170,7 @@ exports.convexLine = function(test){
     test.equal(typeof result, 'number');
 
     result = narrowphase.convexLine(bodyA, convex, position, angle, bodyB, line, position, angle, true);
-    test.equal(typeof result, 'boolean');
+    test.equal(typeof result, 'number');
 
     test.done();
 };
@@ -180,7 +180,7 @@ exports.planeConvex = function(test){
     test.equal(typeof result, 'number');
 
     result = narrowphase.planeConvex(bodyA, plane, position, angle, bodyB, convex, position, angle, true);
-    test.equal(typeof result, 'boolean');
+    test.equal(typeof result, 'number');
 
     test.done();
 };
@@ -207,7 +207,7 @@ exports.lineCapsule = function(test){
     test.equal(typeof result, 'number');
 
     result = narrowphase.lineCapsule(bodyA, line, position, angle, bodyB, capsule, position, angle, true);
-    test.equal(typeof result, 'boolean');
+    test.equal(typeof result, 'number');
 
     test.done();
 };
@@ -217,7 +217,7 @@ exports.lineLine = function(test){
     test.equal(typeof result, 'number');
 
     result = narrowphase.lineLine(bodyA, line, position, angle, bodyB, line, position, angle, true);
-    test.equal(typeof result, 'boolean');
+    test.equal(typeof result, 'number');
 
     test.done();
 };
@@ -227,7 +227,7 @@ exports.lineBox = function(test){
     test.equal(typeof result, 'number');
 
     result = narrowphase.lineBox(bodyA, line, position, angle, bodyB, rect, position, angle, true);
-    test.equal(typeof result, 'boolean');
+    test.equal(typeof result, 'number');
 
     test.done();
 };
@@ -237,7 +237,7 @@ exports.particleConvex = function(test){
     test.equal(typeof result, 'number');
 
     result = narrowphase.particleConvex(bodyA, particle, position, angle, bodyB, convex, position, angle, true);
-    test.equal(typeof result, 'boolean');
+    test.equal(typeof result, 'number');
 
     test.done();
 };
@@ -247,7 +247,7 @@ exports.particlePlane = function(test){
     test.equal(typeof result, 'number');
 
     result = narrowphase.particlePlane(bodyA, particle, position, angle, bodyB, plane, position, angle, true);
-    test.equal(typeof result, 'boolean');
+    test.equal(typeof result, 'number');
 
     test.done();
 };
@@ -257,7 +257,7 @@ exports.planeLine = function(test){
     test.equal(typeof result, 'number');
 
     result = narrowphase.planeLine(bodyA, plane, position, angle, bodyB, line, position, angle, true);
-    test.equal(typeof result, 'boolean');
+    test.equal(typeof result, 'number');
 
     test.done();
 };
