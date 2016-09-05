@@ -13,7 +13,6 @@ module.exports = Convex;
  * @extends Shape
  * @param {object} [options] (Note that this options object will be passed on to the {{#crossLink "Shape"}}{{/crossLink}} constructor.)
  * @param {Array} [options.vertices] An array of vertices that span this shape. Vertices are given in counter-clockwise (CCW) direction.
- * @param {Array} [options.axes] An array of unit length vectors, representing the symmetry axes in the convex.
  * @example
  *     var body = new Body({ mass: 1 });
  *     var vertices = [[-1,-1], [1,-1], [1,1], [-1,1]];
@@ -25,8 +24,7 @@ module.exports = Convex;
 function Convex(options){
     if(Array.isArray(arguments[0])){
         options = {
-            vertices: arguments[0],
-            axes: arguments[1]
+            vertices: arguments[0]
         };
         console.warn('The Convex constructor signature has changed. Please use the following format: new Convex({ vertices: [...], ... })');
     }
@@ -55,40 +53,6 @@ function Convex(options){
         normals.push(vec2.create());
     }
     this.updateNormals();
-
-    /**
-     * Axes defined in the local frame.
-     * @property axes
-     * @type {Array}
-     */
-    this.axes = [];
-
-    if(options.axes){
-
-        // Copy the axes given
-        for(var i=0; i < options.axes.length; i++){
-            this.axes.push(vec2.clone(options.axes[i]));
-        }
-
-    } else {
-
-        // Construct axes from the vertex data
-        for(var i = 0; i < this.vertices.length; i++){
-            // Get the world edge
-            var worldPoint0 = this.vertices[i];
-            var worldPoint1 = this.vertices[(i+1) % this.vertices.length];
-
-            var normal = vec2.create();
-            vec2.subtract(normal, worldPoint1, worldPoint0);
-
-            // Get normal - just rotate 90 degrees since vertices are given in CCW
-            vec2.rotate90cw(normal, normal);
-            vec2.normalize(normal, normal);
-
-            this.axes.push(normal);
-        }
-
-    }
 
     /**
      * The center of mass of the Convex

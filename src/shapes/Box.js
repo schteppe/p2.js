@@ -51,14 +51,9 @@ function Box(options){
         vec2.fromValues( width/2,  height/2),
         vec2.fromValues(-width/2,  height/2)
     ];
-    var axes = [
-        vec2.fromValues(1, 0),
-        vec2.fromValues(0, 1)
-    ];
 
     var convexOptions = shallowClone(options);
     convexOptions.vertices = verts;
-    convexOptions.axes = axes;
     convexOptions.type = Shape.BOX;
     Convex.call(this, convexOptions);
 }
