@@ -480,15 +480,20 @@ var step_mg = vec2.create(),
  *
  * @example
  *     // Fixed timestepping with interpolation
+ *     var fixedTimeStep = 1 / 60;
  *     var maxSubSteps = 10;
+ *     var timeSeconds;
  *     var lastTimeSeconds;
+ *     var startTimeSeconds = performance.now() / 1000;
+ *     var deltaTime;
  *
  *     function animate(t){
  *         requestAnimationFrame(animate);
+ * 
  *         timeSeconds = t / 1000;
- *         lastTimeSeconds = lastTimeSeconds || timeSeconds;
- *
- *         deltaTime = timeSeconds - lastTimeSeconds;
+ *         deltaTime = timeSeconds - (lastTimeSeconds || startTimeSeconds);
+ *         lastTimeSeconds = timeSeconds;
+ * 
  *         world.step(fixedTimeStep, deltaTime, maxSubSteps);
  *
  *         renderBody(body.interpolatedPosition, body.interpolatedAngle);
