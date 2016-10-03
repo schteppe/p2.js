@@ -540,6 +540,11 @@ Renderer.prototype.startRenderingLoop = function(){
                 demo.resetCallTime = false;
             }
             lastCallTime = now;
+
+            // Cap if we have a really large deltatime.
+            // The requestAnimationFrame deltatime is usually below 0.0333s (30Hz) and on desktops it should be below 0.0166s.
+            timeSinceLastCall = Math.min(timeSinceLastCall, 0.5);
+
             demo.world.step(demo.timeStep, timeSinceLastCall, demo.settings.maxSubSteps);
         }
         demo.render();
