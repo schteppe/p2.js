@@ -20,12 +20,6 @@ module.exports = Circle;
  *     body.addShape(circleShape);
  */
 function Circle(options){
-    if(typeof(arguments[0]) === 'number'){
-        options = {
-            radius: arguments[0]
-        };
-        console.warn('The Circle constructor signature has changed. Please use the following format: new Circle({ radius: 1 })');
-    }
     options = options ? shallowClone(options) : {};
 
     /**

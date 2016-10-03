@@ -181,13 +181,6 @@ Shape.LINE =        16;
  */
 Shape.BOX =   32;
 
-Object.defineProperty(Shape, 'RECTANGLE', {
-    get: function() {
-        console.warn('Shape.RECTANGLE is deprecated, use Shape.BOX instead.');
-        return Shape.BOX;
-    }
-});
-
 /**
  * @static
  * @property {Number} CAPSULE

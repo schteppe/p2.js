@@ -22,12 +22,6 @@ module.exports = Convex;
  *     body.addShape(convexShape);
  */
 function Convex(options){
-    if(Array.isArray(arguments[0])){
-        options = {
-            vertices: arguments[0]
-        };
-        console.warn('The Convex constructor signature has changed. Please use the following format: new Convex({ vertices: [...], ... })');
-    }
     options = options ? shallowClone(options) : {};
 
     /**

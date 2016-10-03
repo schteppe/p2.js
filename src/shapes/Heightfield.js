@@ -35,19 +35,6 @@ module.exports = Heightfield;
  * @todo Should use a scale property with X and Y direction instead of just elementWidth
  */
 function Heightfield(options){
-    if(Array.isArray(arguments[0])){
-        options = {
-            heights: arguments[0]
-        };
-
-        if(typeof(arguments[1]) === 'object'){
-            for(var key in arguments[1]){
-                options[key] = arguments[1][key];
-            }
-        }
-
-        console.warn('The Heightfield constructor signature has changed. Please use the following format: new Heightfield({ heights: [...], ... })');
-    }
     options = options ? shallowClone(options) : {};
 
     /**

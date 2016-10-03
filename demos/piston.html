@@ -47,8 +47,8 @@
                 worldPivot: [0, 0],
                 collideConnected: false
             });
-            c.enableMotor();
-            c.setMotorSpeed(5);
+            c.motorEnabled = true;
+            c.motorSpeed = 5;
             world.addConstraint(c);
 
             // Create arm

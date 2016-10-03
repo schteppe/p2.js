@@ -78,8 +78,8 @@
             world.addConstraint(revoluteFront);
 
             // Enable the constraint motor for the back wheel
-            revoluteBack.enableMotor();
-            revoluteBack.setMotorSpeed(10); // Rotational speed in radians per second
+            revoluteBack.motorEnabled = true;
+            revoluteBack.motorSpeed = 10; // Rotational speed in radians per second
 
             this.frame(0, 0, 8, 6);
         });

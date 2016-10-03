@@ -248,7 +248,6 @@ var postStepEvent = {
  * Fired when a body is added to the world.
  * @event addBody
  * @param {Body} body
- * @deprecated
  */
 var addBodyEvent = {
     type : "addBody",
@@ -259,7 +258,6 @@ var addBodyEvent = {
  * Fired when a body is removed from the world.
  * @event removeBody
  * @param {Body} body
- * @deprecated
  */
 var removeBodyEvent = {
     type : "removeBody",
@@ -270,7 +268,6 @@ var removeBodyEvent = {
  * Fired when a spring is added to the world.
  * @event addSpring
  * @param {Spring} spring
- * @deprecated
  */
 var addSpringEvent = {
     type : "addSpring",

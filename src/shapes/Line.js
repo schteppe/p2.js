@@ -19,12 +19,6 @@ module.exports = Line;
  *     body.addShape(lineShape);
  */
 function Line(options){
-    if(typeof(arguments[0]) === 'number'){
-        options = {
-            length: arguments[0]
-        };
-        console.warn('The Line constructor signature has changed. Please use the following format: new Line({ length: 1, ... })');
-    }
     options = options ? shallowClone(options) : {};
 
     /**

@@ -22,13 +22,6 @@ module.exports = Box;
  *     body.addShape(boxShape);
  */
 function Box(options){
-    if(typeof(arguments[0]) === 'number' && typeof(arguments[1]) === 'number'){
-        options = {
-            width: arguments[0],
-            height: arguments[1]
-        };
-        console.warn('The Rectangle has been renamed to Box and its constructor signature has changed. Please use the following format: new Box({ width: 1, height: 1, ... })');
-    }
     options = options || {};
 
     /**

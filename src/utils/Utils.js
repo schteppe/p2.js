@@ -110,6 +110,7 @@ Utils.shallowClone = function(obj){
  * @return {object} The modified options object.
  */
 Utils.defaults = function(options, defaults){
+    console.warn('Utils.defaults is deprecated.');
     options = options || {};
     for(var key in defaults){
         if(!(key in options)){

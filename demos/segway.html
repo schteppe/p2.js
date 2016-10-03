@@ -65,7 +65,7 @@
                 collideConnected: false
             });
             world.addConstraint(wheelJoint);
-            wheelJoint.enableMotor();
+            wheelJoint.motorEnabled = true;
             var m = 40;
             wheelJoint.motorEquation.maxForce = m;
             wheelJoint.motorEquation.minForce = -m;
@@ -106,7 +106,7 @@
 
                 // this is the only output
                 var targetAngularVelocity = -targetSpeed / (2 * Math.PI * wheelBody.shapes[0].radius); // wheel circumference = 2*pi*r
-                wheelJoint.setMotorSpeed(targetAngularVelocity);
+                wheelJoint.motorSpeed = targetAngularVelocity;
             });
 
             app.frame(3,5,16,16);
