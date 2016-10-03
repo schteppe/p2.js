@@ -170,3 +170,26 @@ exports.raycast = function(test){
 
     test.done();
 };
+
+exports.updateNormals = function(test){
+    var w = 1,
+        h = 1;
+    var convex = new Convex({
+        vertices: [
+            [-w/2,-h/2],
+            [ w/2,-h/2],
+            [ w/2, h/2],
+            [-w/2, h/2],
+        ]
+    });
+    test.deepEqual(convex.normals[0], [0, -1]);
+    convex.vertices[0][1] = -h;
+
+    test.deepEqual(convex.normals[0], [0, -1]);
+
+    convex.updateNormals();
+
+    test.notDeepEqual(convex.normals[0], [0, -1]);
+
+    test.done();
+};

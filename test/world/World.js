@@ -1,5 +1,6 @@
 var World = require(__dirname + '/../../src/world/World')
 ,   Body = require(__dirname + '/../../src/objects/Body')
+,   LinearSpring = require(__dirname + '/../../src/objects/LinearSpring')
 ,   DistanceConstraint = require(__dirname + '/../../src/constraints/DistanceConstraint')
 ,   Circle = require(__dirname + '/../../src/shapes/Circle')
 ,   Plane = require(__dirname + '/../../src/shapes/Plane')
@@ -121,7 +122,26 @@ exports.addSpring = {
 };
 
 exports.clear = function(test){
-    // STUB
+    var world = new World();
+
+    var bodyA = new Body();
+    var bodyB = new Body();
+    world.addBody(bodyA);
+    world.addBody(bodyB);
+
+    var spring = new LinearSpring(bodyA, bodyB);
+    world.addSpring(spring);
+
+    var constraint = new DistanceConstraint(bodyA, bodyB);
+    world.addConstraint(constraint);
+
+    world.clear();
+
+    test.deepEqual(world.bodies, []);
+    test.deepEqual(world.springs, []);
+    test.deepEqual(world.constraints, []);
+    test.deepEqual(world.contactMaterials, []);
+
     test.done();
 };
 
@@ -269,6 +289,7 @@ exports.setGlobalStiffness = function(test){
     var world = new World();
     world.setGlobalStiffness(123);
     test.equal(world.defaultContactMaterial.stiffness, 123);
+    // TODO: check constraints etc
     test.done();
 };
 
@@ -276,6 +297,7 @@ exports.setGlobalRelaxation = function(test){
     var world = new World();
     world.setGlobalRelaxation(123);
     test.equal(world.defaultContactMaterial.relaxation, 123);
+    // TODO: check constraints etc
     test.done();
 };
 
