@@ -465,5 +465,27 @@ module.exports = {
         test.ok(!world.narrowphase.contactEquations[0].enabled);
 
         test.done();
+    },
+
+    index: function(test){
+        var bodyA = new Body();
+        var bodyB = new Body();
+
+        test.equal(bodyA.index, -1);
+        test.equal(bodyB.index, -1);
+
+        var world = new World();
+        world.addBody(bodyA);
+        world.addBody(bodyB);
+
+        test.equal(bodyA.index, 0);
+        test.equal(bodyB.index, 1);
+
+        world.removeBody(bodyA);
+
+        test.equal(bodyA.index, -1);
+        test.equal(bodyB.index, 0);
+
+        test.done();
     }
 };

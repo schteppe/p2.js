@@ -1068,8 +1068,13 @@ World.prototype.removeBody = function(body){
     }
 
     body.world = null;
-    arrayRemove(this.bodies, body);
+    var bodies = this.bodies;
+    arrayRemove(bodies, body);
     body.index = -1;
+    var l = bodies.length;
+    while (l--) {
+        bodies[l].index = l;
+    }
 
     // Emit removeBody event
     removeBodyEvent.body = body;
