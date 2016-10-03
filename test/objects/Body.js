@@ -4,8 +4,7 @@ var Box = require(__dirname + '/../../src/shapes/Box');
 var World = require(__dirname + '/../../src/world/World');
 var AABB = require(__dirname + '/../../src/collision/AABB');
 var vec2 = require(__dirname + '/../../src/math/vec2');
-var Shape = require(__dirname + '/../../src/shapes/Shape');
-
+var Plane = require(__dirname + '/../../src/shapes/Plane');
 
 module.exports = {
     construct: function(test){
@@ -375,11 +374,53 @@ module.exports = {
         test.done();
     },
 
-    integrate: function(test){
-        var b = new Body({ velocity: [1,0], mass: 1 });
-        b.integrate(1);
-        test.deepEqual(b.position, vec2.fromValues(1,0));
-        test.done();
+    integrate: {
+        withoutCCD: function(test){
+            var body = new Body({
+                velocity: [1,0],
+                mass: 1
+            });
+            var world = new World();
+            world.addBody(body);
+            body.integrate(1);
+            test.deepEqual(body.position, vec2.fromValues(1,0));
+            test.done();
+        },
+        withCCD: function(test){
+            var body = new Body({
+                velocity: [2,0],
+                position: [-1,0],
+                mass: 1,
+                ccdSpeedThreshold: 0,
+                shape: new Circle({ radius: 0.01 })
+            });
+            var world = new World();
+            world.addBody(body);
+            body.integrate(1);
+            test.deepEqual(body.position, vec2.fromValues(1,0));
+            test.done();
+        },
+        withCCDAndObstacle: function(test){
+            var world = new World({ gravity: [0,0] });
+            var body = new Body({
+                velocity: [2,0],
+                position: [-1,0],
+                mass: 1,
+                ccdSpeedThreshold: 0,
+                ccdIterations: 10,
+            });
+            body.addShape(new Circle({ radius: 0.01 }));
+            world.addBody(body);
+            var planeBody = new Body({
+                mass: 0,
+                angle: Math.PI / 2
+            });
+            planeBody.addShape(new Plane());
+            world.addBody(planeBody);
+            world.step(1); // Need to use world.step() instead of body.integrate()
+            test.ok(vec2.distance(body.position, [0,0]) < 0.1);
+            test.done();
+        }
     },
 
     getVelocityAtPoint: function(test){
