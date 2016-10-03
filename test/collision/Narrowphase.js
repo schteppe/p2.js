@@ -272,6 +272,7 @@ exports.reset = function(test){
 };
 
 exports.bodiesOverlap = {
+
     simple: function(test){
         bodyA.addShape(new Circle({ radius: 1 }));
         bodyB.addShape(new Circle({ radius: 1 }));
@@ -280,6 +281,7 @@ exports.bodiesOverlap = {
         test.ok(!narrowphase.bodiesOverlap(bodyA, bodyB));
         test.done();
     },
+
     withMask: function(test){
         bodyA.addShape(new Circle({ radius: 1, collisionGroup: 1, collisionMask: 1 }));
         bodyB.addShape(new Circle({ radius: 1, collisionGroup: 2, collisionMask: 2 }));
@@ -289,6 +291,17 @@ exports.bodiesOverlap = {
         test.ok(narrowphase.bodiesOverlap(bodyA, bodyB, true));
 
         test.done();
+    },
+
+    differentOrder: function(test){
+        bodyA.addShape(new Box({ width: 1, height: 1 }));
+        bodyB.addShape(new Circle({ radius: 1 }));
+
+        test.ok(narrowphase.bodiesOverlap(bodyA, bodyB, true));
+        test.ok(narrowphase.bodiesOverlap(bodyB, bodyA, true));
+
+        test.done();
     }
+
 };
 
