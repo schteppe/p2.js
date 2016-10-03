@@ -483,13 +483,16 @@ var step_mg = vec2.create(),
  *     var maxSubSteps = 10;
  *     var lastTimeSeconds;
  *
- *     function animate(t){
+ *     function animate(time){
  *         requestAnimationFrame(animate);
- *         timeSeconds = t / 1000;
- *         lastTimeSeconds = lastTimeSeconds || timeSeconds;
+ *         timeSeconds = time / 1000;
  *
- *         deltaTime = timeSeconds - lastTimeSeconds;
- *         world.step(fixedTimeStep, deltaTime, maxSubSteps);
+ *         if(lastTimeSeconds){
+ *             deltaTime = timeSeconds - lastTimeSeconds;
+ *             world.step(fixedTimeStep, deltaTime, maxSubSteps);
+ *         }
+ *
+ *         lastTimeSeconds = timeSeconds;
  *
  *         renderBody(body.interpolatedPosition, body.interpolatedAngle);
  *     }
