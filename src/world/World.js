@@ -485,10 +485,10 @@ var step_mg = vec2.create(),
  *
  *     function animate(time){
  *         requestAnimationFrame(animate);
- *         timeSeconds = time / 1000;
+ *         var timeSeconds = time / 1000;
  *
  *         if(lastTimeSeconds){
- *             deltaTime = timeSeconds - lastTimeSeconds;
+ *             var deltaTime = timeSeconds - lastTimeSeconds;
  *             world.step(fixedTimeStep, deltaTime, maxSubSteps);
  *         }
  *
