@@ -60,7 +60,8 @@
           mass: 0,
           position:[0,3],
           fixedRotation: true,
-          damping: 0
+          damping: 0,
+          type: p2.Body.KINEMATIC
         });
         characterBody.addShape(characterShape);
         world.addBody(characterBody);
