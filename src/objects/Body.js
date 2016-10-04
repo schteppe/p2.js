@@ -44,18 +44,42 @@ module.exports = Body;
  *
  *     // Create a typical dynamic body
  *     var body = new Body({
- *         mass: 1,
- *         position: [0, 0],
+ *         mass: 1, // non-zero mass will set type to Body.DYNAMIC
+ *         position: [0, 5],
  *         angle: 0,
  *         velocity: [0, 0],
  *         angularVelocity: 0
  *     });
  *
  *     // Add a circular shape to the body
- *     body.addShape(new Circle({ radius: 1 }));
+ *     var circleShape = new Circle({ radius: 0.5 });
+ *     body.addShape(circleShape);
  *
  *     // Add the body to the world
  *     world.addBody(body);
+ *
+ * @example
+ *
+ *     // Create a static plane body
+ *     var planeBody = new Body({
+ *         mass: 0, // zero mass will set type to Body.STATIC
+ *         position: [0, 0]
+ *     });
+ *     var planeShape = new Plane();
+ *     planeBody.addShape(planeShape);
+ *     world.addBody(planeBody);
+ *
+ * @example
+ *
+ *     // Create a moving kinematic box body
+ *     var platformBody = new Body({
+ *         type: Body.KINEMATIC,
+ *         position: [0, 3],
+ *         velocity: [1, 0]
+ *     });
+ *     var boxShape = new Box({ width: 2, height: 0.5 });
+ *     platformBody.addShape(boxShape);
+ *     world.addBody(platformBody);
  */
 function Body(options){
     options = options || {};

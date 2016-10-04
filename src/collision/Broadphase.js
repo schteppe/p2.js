@@ -4,7 +4,7 @@ var Body = require('../objects/Body');
 module.exports = Broadphase;
 
 /**
- * Base class for broadphase implementations.
+ * Base class for broadphase implementations. Don't use this class directly.
  * @class Broadphase
  * @constructor
  */
