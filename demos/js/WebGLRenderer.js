@@ -84,7 +84,7 @@ function WebGLRenderer(scenes, options){
     });
 
     // Update draw circle
-    this.on("drawRectangleChange",function(e){
+    this.on("drawRectangleChange",function(/*e*/){
         var g = that.drawShapeGraphics;
         g.clear();
         var start = that.drawRectStart;
@@ -115,10 +115,12 @@ WebGLRenderer.prototype.init = function(){
 
     var that = this;
 
-    var renderer =  this.renderer =     PIXI.autoDetectRenderer(s.width, s.height, { backgroundColor: 0xFFFFFF });
+    this.renderer =     PIXI.autoDetectRenderer(s.width, s.height, { backgroundColor: 0xFFFFFF });
     var stage =     this.stage =        new PIXI.Container();
     var container = this.container =    new PIXI.Container();
-    container.interactive = true;
+    container.interactive = stage.interactive = true;
+
+    container.hitArea = new PIXI.Rectangle(0,0,1e7,1e7);
 
     var el = this.element = this.renderer.view;
     el.tabIndex = 1;
@@ -131,7 +133,7 @@ WebGLRenderer.prototype.init = function(){
     div.appendChild(el);
     document.body.appendChild(div);
     el.focus();
-    el.oncontextmenu = function(e){
+    el.oncontextmenu = function(){
         return false;
     };
 
@@ -188,8 +190,8 @@ WebGLRenderer.prototype.init = function(){
 
             initPinchLength = p2.vec2.distance(physicsPosA, physicsPosB);
 
-            var initScaleX = stage.scale.x;
-            var initScaleY = stage.scale.y;
+            initScaleX = stage.scale.x;
+            initScaleY = stage.scale.y;
 
             return;
         }
