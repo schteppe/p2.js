@@ -34,7 +34,8 @@
     "grunt-contrib-nodeunit": "^0.4.1",
     "grunt-contrib-uglify": "~0.4.0",
     "grunt-contrib-watch": "~0.5.0",
-    "grunt-contrib-yuidoc": "^0.10.0"
+    "grunt-contrib-yuidoc": "^0.10.0",
+    "pixi.js": "^4.0.3"
   },
   "dependencies": {
     "poly-decomp": "0.2.1"

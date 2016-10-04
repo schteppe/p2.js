@@ -115,9 +115,10 @@ WebGLRenderer.prototype.init = function(){
 
     var that = this;
 
-    var renderer =  this.renderer =     PIXI.autoDetectRenderer(s.width, s.height, null, null, true);
-    var stage =     this.stage =        new PIXI.DisplayObjectContainer();
-    var container = this.container =    new PIXI.Stage(0xFFFFFF,true);
+    var renderer =  this.renderer =     PIXI.autoDetectRenderer(s.width, s.height, { backgroundColor: 0xFFFFFF });
+    var stage =     this.stage =        new PIXI.Container();
+    var container = this.container =    new PIXI.Container();
+    container.interactive = true;
 
     var el = this.element = this.renderer.view;
     el.tabIndex = 1;
@@ -165,14 +166,14 @@ WebGLRenderer.prototype.init = function(){
     var initScaleY = 1;
     var lastNumTouches = 0;
     container.mousedown = container.touchstart = function(e){
-        lastMoveX = e.global.x;
-        lastMoveY = e.global.y;
+        lastMoveX = e.data.global.x;
+        lastMoveY = e.data.global.y;
 
-        if(e.originalEvent.touches){
-            lastNumTouches = e.originalEvent.touches.length;
+        if(e.data.originalEvent.touches){
+            lastNumTouches = e.data.originalEvent.touches.length;
         }
 
-        if(e.originalEvent.touches && e.originalEvent.touches.length === 2){
+        if(e.data.originalEvent.touches && e.data.originalEvent.touches.length === 2){
 
             var touchA = that.container.interactionManager.touchs[0];
             var touchB = that.container.interactionManager.touchs[1];
@@ -192,35 +193,35 @@ WebGLRenderer.prototype.init = function(){
 
             return;
         }
-        lastX = e.global.x;
-        lastY = e.global.y;
+        lastX = e.data.global.x;
+        lastY = e.data.global.y;
         startX = stage.position.x;
         startY = stage.position.y;
         down = true;
 
-        that.lastMousePos = e.global;
+        that.lastMousePos = e.data.global;
 
-        var pos = e.getLocalPosition(stage);
+        var pos = e.data.getLocalPosition(stage);
         p2.vec2.set(init_stagePosition, pos.x, pos.y);
         that.stagePositionToPhysics(init_physicsPosition, init_stagePosition);
         that.handleMouseDown(init_physicsPosition);
     };
     container.mousemove = container.touchmove = function(e){
-        if(e.originalEvent.touches){
-            if(lastNumTouches !== e.originalEvent.touches.length){
-                lastX = e.global.x;
-                lastY = e.global.y;
+        if(e.data.originalEvent.touches){
+            if(lastNumTouches !== e.data.originalEvent.touches.length){
+                lastX = e.data.global.x;
+                lastY = e.data.global.y;
                 startX = stage.position.x;
                 startY = stage.position.y;
             }
 
-            lastNumTouches = e.originalEvent.touches.length;
+            lastNumTouches = e.data.originalEvent.touches.length;
         }
 
-        lastMoveX = e.global.x;
-        lastMoveY = e.global.y;
+        lastMoveX = e.data.global.x;
+        lastMoveY = e.data.global.y;
 
-        if(e.originalEvent.touches && e.originalEvent.touches.length === 2){
+        if(e.data.originalEvent.touches && e.data.originalEvent.touches.length === 2){
             var touchA = that.container.interactionManager.touchs[0];
             var touchB = that.container.interactionManager.touchs[1];
 
@@ -238,8 +239,8 @@ WebGLRenderer.prototype.init = function(){
             p2.vec2.add(physicsPosA, physicsPosA, physicsPosB);
             p2.vec2.scale(physicsPosA, physicsPosA, 0.5);
             that.zoom(
-                (touchA.global.x + touchB.global.x) * 0.5,
-                (touchA.global.y + touchB.global.y) * 0.5,
+                (touchA.data.global.x + touchB.data.global.x) * 0.5,
+                (touchA.data.global.y + touchB.data.global.y) * 0.5,
                 null,
                 pinchLength / initPinchLength * initScaleX, // zoom relative to the initial scale
                 pinchLength / initPinchLength * initScaleY
@@ -249,29 +250,29 @@ WebGLRenderer.prototype.init = function(){
         }
 
         if(down && that.state === Renderer.PANNING){
-            stage.position.x = e.global.x - lastX + startX;
-            stage.position.y = e.global.y - lastY + startY;
+            stage.position.x = e.data.global.x - lastX + startX;
+            stage.position.y = e.data.global.y - lastY + startY;
         }
 
-        that.lastMousePos = e.global;
+        that.lastMousePos = e.data.global;
 
-        var pos = e.getLocalPosition(stage);
+        var pos = e.data.getLocalPosition(stage);
         p2.vec2.set(init_stagePosition, pos.x, pos.y);
         that.stagePositionToPhysics(init_physicsPosition, init_stagePosition);
         that.handleMouseMove(init_physicsPosition);
     };
     container.mouseup = container.touchend = function(e){
-        if(e.originalEvent.touches){
-            lastNumTouches = e.originalEvent.touches.length;
+        if(e.data.originalEvent.touches){
+            lastNumTouches = e.data.originalEvent.touches.length;
         }
 
         down = false;
-        lastMoveX = e.global.x;
-        lastMoveY = e.global.y;
+        lastMoveX = e.data.global.x;
+        lastMoveY = e.data.global.y;
 
-        that.lastMousePos = e.global;
+        that.lastMousePos = e.data.global;
 
-        var pos = e.getLocalPosition(stage);
+        var pos = e.data.getLocalPosition(stage);
         p2.vec2.set(init_stagePosition, pos.x, pos.y);
         that.stagePositionToPhysics(init_physicsPosition, init_stagePosition);
         that.handleMouseUp(init_physicsPosition);

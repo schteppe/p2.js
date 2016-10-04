@@ -56,7 +56,7 @@ module.exports = function(grunt) {
 
         concat: {
             renderer: {
-                src: ['demos/js/pixi.js', 'demos/js/dat.gui.js', 'demos/js/Renderer.js', 'demos/js/WebGLRenderer.js'],
+                src: ['node_modules/pixi.js/bin/pixi.js', 'demos/js/dat.gui.js', 'demos/js/Renderer.js', 'demos/js/WebGLRenderer.js'],
                 dest: 'build/p2.renderer.js',
             }
         },
