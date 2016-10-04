@@ -43,14 +43,16 @@ function Shape(options){
     /**
      * The type of the shape. One of:
      *
-     * * {{#crossLink "Shape/CIRCLE:property"}}Shape.CIRCLE{{/crossLink}}
-     * * {{#crossLink "Shape/PARTICLE:property"}}Shape.PARTICLE{{/crossLink}}
-     * * {{#crossLink "Shape/PLANE:property"}}Shape.PLANE{{/crossLink}}
-     * * {{#crossLink "Shape/CONVEX:property"}}Shape.CONVEX{{/crossLink}}
-     * * {{#crossLink "Shape/LINE:property"}}Shape.LINE{{/crossLink}}
-     * * {{#crossLink "Shape/BOX:property"}}Shape.BOX{{/crossLink}}
-     * * {{#crossLink "Shape/CAPSULE:property"}}Shape.CAPSULE{{/crossLink}}
-     * * {{#crossLink "Shape/HEIGHTFIELD:property"}}Shape.HEIGHTFIELD{{/crossLink}}
+     * <ul>
+     * <li><a href="Shape.html#property_CIRCLE">Shape.CIRCLE</a></li>
+     * <li><a href="Shape.html#property_PARTICLE">Shape.PARTICLE</a></li>
+     * <li><a href="Shape.html#property_PLANE">Shape.PLANE</a></li>
+     * <li><a href="Shape.html#property_CONVEX">Shape.CONVEX</a></li>
+     * <li><a href="Shape.html#property_LINE">Shape.LINE</a></li>
+     * <li><a href="Shape.html#property_BOX">Shape.BOX</a></li>
+     * <li><a href="Shape.html#property_CAPSULE">Shape.CAPSULE</a></li>
+     * <li><a href="Shape.html#property_HEIGHTFIELD">Shape.HEIGHTFIELD</a></li>
+     * </ul>
      *
      * @property {number} type
      */
