@@ -95,7 +95,7 @@
 
                     // Compute lift force
                     p2.vec2.subtract(liftForce, planePosition, centerOfBouyancy);
-                    p2.vec2.scale(liftForce, liftForce, areaUnderWater * k);
+                    p2.vec2.scale(liftForce, liftForce, areaUnderWater * k / body.shapes.length);
                     liftForce[0] = 0;
 
                     // Make center of bouycancy relative to the body
@@ -103,7 +103,7 @@
 
                     // Viscous force
                     body.getVelocityAtPoint(v, centerOfBouyancy);
-                    p2.vec2.scale(viscousForce, v, -c);
+                    p2.vec2.scale(viscousForce, v, -c / body.shapes.length);
 
                     // Apply forces
                     body.applyForce(viscousForce,centerOfBouyancy);
