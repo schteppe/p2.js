@@ -370,6 +370,15 @@ WebGLRenderer.prototype.frame = function(centerX, centerY, width, height){
     this.centerCamera(centerX, centerY);
 };
 
+function pixiDrawCircleOnGraphics(g, x, y, radius, numSegments){
+    var circlePath = [];
+    for(var i=0; i<numSegments+1; i++){
+        var a = Math.PI * 2 / numSegments * i;
+        circlePath.push(new PIXI.Point(x + radius * Math.cos(a), y + radius * Math.sin(a)));
+    }
+    g.drawPolygon(circlePath);
+}
+
 /**
  * Draw a circle onto a graphics object
  * @method drawCircle
@@ -386,7 +395,7 @@ WebGLRenderer.prototype.drawCircle = function(g,x,y,angle,radius,color,lineWidth
     color = typeof(color)==="number" ? color : 0xffffff;
     g.lineStyle(lineWidth, 0x000000, 1);
     g.beginFill(color, isSleeping ? this.sleepOpacity : 1.0);
-    g.drawCircle(x, y, radius);
+    pixiDrawCircleOnGraphics(g, x, y, radius, 20);
     g.endFill();
 
     // line from center to edge
@@ -491,8 +500,8 @@ WebGLRenderer.prototype.drawCapsule = function(g, x, y, angle, len, radius, colo
     vec2.rotate(p1, p1, angle);
     vec2.add(p0, p0, localPos);
     vec2.add(p1, p1, localPos);
-    g.drawCircle(p0[0], p0[1], radius);
-    g.drawCircle(p1[0], p1[1], radius);
+    pixiDrawCircleOnGraphics(g, p0[0], p0[1], radius, 20);
+    pixiDrawCircleOnGraphics(g, p1[0], p1[1], radius, 20);
     g.endFill();
 
     // Draw rectangle
@@ -609,11 +618,11 @@ WebGLRenderer.prototype.drawConvex = function(g,verts,triangles,color,fillColor,
             g.lineStyle(lineWidth, colors[i%colors.length], 1);
             g.moveTo(x0,y0);
             g.lineTo(x1,y1);
-            g.drawCircle(x0,y0,lineWidth*2);
+            pixiDrawCircleOnGraphics(g, x0,y0,lineWidth*2, 20);
         }
 
         g.lineStyle(lineWidth, 0xff0000, 1);
-        g.drawCircle(offset[0],offset[1],lineWidth*2);
+        pixiDrawCircleOnGraphics(g, offset[0],offset[1],lineWidth*2, 20);
     }
 };
 
@@ -624,14 +633,19 @@ WebGLRenderer.prototype.drawPath = function(g,path,color,fillColor,lineWidth,isS
     if(typeof(fillColor)==="number"){
         g.beginFill(fillColor, isSleeping ? this.sleepOpacity : 1.0);
     }
+    /*
     var lastx = null,
         lasty = null;
-    for(var i=0; i<path.length; i++){
+        */
+    g.drawPolygon(path.map(function(p){ return new PIXI.Point(p[0], p[1])}).reverse());
+
+    /*var i=path.length;
+    while(i--){ // for(var i=0; i<path.length; i++){
         var v = path[i],
             x = v[0],
             y = v[1];
         if(x !== lastx || y !== lasty){
-            if(i===0){
+            if(i === path.length - 1){
                 g.moveTo(x,y);
             } else {
                 // Check if the lines are parallel
@@ -650,6 +664,7 @@ WebGLRenderer.prototype.drawPath = function(g,path,color,fillColor,lineWidth,isS
             lasty = y;
         }
     }
+    */
     if(typeof(fillColor)==="number"){
         g.endFill();
     }
