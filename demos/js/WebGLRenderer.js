@@ -633,19 +633,26 @@ WebGLRenderer.prototype.drawPath = function(g,path,color,fillColor,lineWidth,isS
     if(typeof(fillColor)==="number"){
         g.beginFill(fillColor, isSleeping ? this.sleepOpacity : 1.0);
     }
+
     /*
     var lastx = null,
         lasty = null;
-        */
-    g.drawPolygon(path.map(function(p){ return new PIXI.Point(p[0], p[1])}).reverse());
+    */
+
+    var poly = [];
+    for(var i=0; i<path.length+1; i++){ // length+1 because there's no way to close the path :(
+        var p = path[i % path.length];
+        poly.push(new PIXI.Point(p[0], p[1]));
+    }
+    g.drawPolygon(poly);
 
     /*var i=path.length;
-    while(i--){ // for(var i=0; i<path.length; i++){
+    for(var i=0; i<path.length; i++){
         var v = path[i],
             x = v[0],
             y = v[1];
         if(x !== lastx || y !== lasty){
-            if(i === path.length - 1){
+            if(i === 0){
                 g.moveTo(x,y);
             } else {
                 // Check if the lines are parallel
@@ -663,8 +670,8 @@ WebGLRenderer.prototype.drawPath = function(g,path,color,fillColor,lineWidth,isS
             lastx = x;
             lasty = y;
         }
-    }
-    */
+    }*/
+
     if(typeof(fillColor)==="number"){
         g.endFill();
     }
