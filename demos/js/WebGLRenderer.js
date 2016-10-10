@@ -50,6 +50,9 @@ function WebGLRenderer(scenes, options){
 
     this.islandColors = {}; // id -> int
 
+    this.startMouseDelta = p2.vec2.create();
+    this.startCamPos = p2.vec2.create();
+
     Renderer.call(this,scenes,options);
 
     for(var key in settings){
@@ -159,8 +162,8 @@ WebGLRenderer.prototype.init = function(){
     this.pickGraphics = new PIXI.Graphics();
     stage.addChild(this.pickGraphics);
 
-    stage.scale.x = 200; // Flip Y direction.
-    stage.scale.y = -200;
+    stage.scale.x = this.zoom;
+    stage.scale.y = -this.zoom; // Flip Y direction since pixi has down as Y axis
 
     var lastX, lastY, lastMoveX, lastMoveY, startX, startY, down=false;
 
@@ -171,6 +174,10 @@ WebGLRenderer.prototype.init = function(){
     var initScaleX = 1;
     var initScaleY = 1;
     var lastNumTouches = 0;
+
+    var touchState = {}; // identifier => isdown
+    var touchPositions = {}; // identifier => PIXI.Point in global space
+
     container.mousedown = container.touchstart = function(e){
         lastMoveX = e.data.global.x;
         lastMoveY = e.data.global.y;
@@ -179,16 +186,22 @@ WebGLRenderer.prototype.init = function(){
             lastNumTouches = e.data.originalEvent.touches.length;
         }
 
+        // store touch state
+        if(e.data.identifier !== undefined){
+            touchState[e.data.identifier] = true;
+            touchPositions[e.data.identifier]= e.data.getLocalPosition(stage);
+        }
+
+        var pos = new PIXI.Point();
         if(e.data.originalEvent.touches && e.data.originalEvent.touches.length === 2){
+            var touchA = e.data.originalEvent.touches[0];
+            var touchB = e.data.originalEvent.touches[1];
 
-            var touchA = that.container.interactionManager.touchs[0];
-            var touchB = that.container.interactionManager.touchs[1];
-
-            var pos = touchA.getLocalPosition(stage);
+            e.data.getLocalPosition(stage, pos, new PIXI.Point(touchA.clientX, touchA.clientY));
             p2.vec2.set(stagePos, pos.x, pos.y);
             that.stagePositionToPhysics(physicsPosA, stagePos);
 
-            var pos = touchB.getLocalPosition(stage);
+            e.data.getLocalPosition(stage, pos, new PIXI.Point(touchB.clientX, touchB.clientY));
             p2.vec2.set(stagePos, pos.x, pos.y);
             that.stagePositionToPhysics(physicsPosB, stagePos);
 
@@ -211,7 +224,11 @@ WebGLRenderer.prototype.init = function(){
         p2.vec2.set(init_stagePosition, pos.x, pos.y);
         that.stagePositionToPhysics(init_physicsPosition, init_stagePosition);
         that.handleMouseDown(init_physicsPosition);
+
+        p2.vec2.set(that.startMouseDelta, e.data.global.x, e.data.global.y);
+        p2.vec2.copy(that.startCamPos, that.cameraPosition);
     };
+
     container.mousemove = container.touchmove = function(e){
         if(e.data.originalEvent.touches){
             if(lastNumTouches !== e.data.originalEvent.touches.length){
@@ -224,40 +241,65 @@ WebGLRenderer.prototype.init = function(){
             lastNumTouches = e.data.originalEvent.touches.length;
         }
 
+        // store touch state
+        if(e.data.identifier !== undefined){
+            touchPositions[e.data.identifier]= e.data.getLocalPosition(stage);
+        }
+
         lastMoveX = e.data.global.x;
         lastMoveY = e.data.global.y;
 
-        if(e.data.originalEvent.touches && e.data.originalEvent.touches.length === 2){
-            var touchA = that.container.interactionManager.touchs[0];
-            var touchB = that.container.interactionManager.touchs[1];
+        var touchIdentifiers = Object.keys(touchState);
+        var numTouchesDown = 0;
+        for(var i=0; i<touchIdentifiers.length; i++){
+            touchIdentifiers[i] = parseInt(touchIdentifiers[i], 10);
+            if(touchState[touchIdentifiers[i]]){
+                numTouchesDown++;
+            }
+        }
+        if(numTouchesDown === 2){
+            if(true/* touchIdentifiers[1] === e.data.identifier */){
+                var stagePosA = touchPositions[touchIdentifiers[0]];
+                var stagePosB = touchPositions[touchIdentifiers[1]];
 
-            var pos = touchA.getLocalPosition(stage);
-            p2.vec2.set(stagePos, pos.x, pos.y);
-            that.stagePositionToPhysics(physicsPosA, stagePos);
+                p2.vec2.set(stagePos, stagePosA.x,stagePosA.y);
+                that.stagePositionToPhysics(physicsPosA, stagePos);
 
-            var pos = touchB.getLocalPosition(stage);
-            p2.vec2.set(stagePos, pos.x, pos.y);
-            that.stagePositionToPhysics(physicsPosB, stagePos);
+                p2.vec2.set(stagePos, stagePosB.x, stagePosB.y);
+                that.stagePositionToPhysics(physicsPosB, stagePos);
 
-            var pinchLength = p2.vec2.distance(physicsPosA, physicsPosB);
+                var pinchLength = p2.vec2.distance(physicsPosA, physicsPosB);
 
-            // Get center
-            p2.vec2.add(physicsPosA, physicsPosA, physicsPosB);
-            p2.vec2.scale(physicsPosA, physicsPosA, 0.5);
-            that.zoom(
-                (touchA.data.global.x + touchB.data.global.x) * 0.5,
-                (touchA.data.global.y + touchB.data.global.y) * 0.5,
-                null,
-                pinchLength / initPinchLength * initScaleX, // zoom relative to the initial scale
-                pinchLength / initPinchLength * initScaleY
-            );
+                // Get center
+                p2.vec2.add(physicsPosA, physicsPosA, physicsPosB);
+                p2.vec2.scale(physicsPosA, physicsPosA, 0.5);
+                that.zoom(
+                    (stagePosA.x + stagePosB.x) * 0.5,
+                    (stagePosA.y + stagePosB.y) * 0.5,
+                    null,
+                    pinchLength / initPinchLength, // zoom relative to the initial scale
+                    pinchLength / initPinchLength
+                );
+            }
 
             return;
         }
 
         if(down && that.state === Renderer.PANNING){
-            stage.position.x = e.data.global.x - lastX + startX;
-            stage.position.y = e.data.global.y - lastY + startY;
+            var delta = p2.vec2.create();
+            var currentMousePosition = p2.vec2.create();
+            p2.vec2.set(currentMousePosition, e.data.global.x, e.data.global.y);
+            p2.vec2.subtract(delta, currentMousePosition, that.startMouseDelta);
+            that.domVectorToPhysics(delta, delta);
+
+            // When we move mouse up, camera should go down
+            p2.vec2.scale(delta, delta, -1);
+
+            // Add delta to the camera position where the panning started
+            p2.vec2.add(delta, delta, that.startCamPos);
+
+            // Set new camera position
+            that.setCameraCenter(delta);
         }
 
         that.lastMousePos = e.data.global;
@@ -282,6 +324,8 @@ WebGLRenderer.prototype.init = function(){
         p2.vec2.set(init_stagePosition, pos.x, pos.y);
         that.stagePositionToPhysics(init_physicsPosition, init_stagePosition);
         that.handleMouseUp(init_physicsPosition);
+
+        touchState[e.data.identifier] = false;
     };
 
     // http://stackoverflow.com/questions/7691551/touchend-event-in-ios-webkit-not-firing
@@ -306,9 +350,9 @@ WebGLRenderer.prototype.init = function(){
         // Delta *should* not be greater than 2...
         var delta = Math.min(Math.max(d / 2, -1), 1);
 
-        var out = delta >= 0;
         if(typeof lastMoveX !== 'undefined'){
-            that.zoom(lastMoveX, lastMoveY, out, undefined, undefined, delta);
+            var point = that.domToPhysics([e.clientX, e.clientY]);
+            that.zoomAroundPoint(point, delta > 0 ? 0.05 : -0.05);
         }
     }
 
@@ -319,9 +363,20 @@ WebGLRenderer.prototype.init = function(){
         el.attachEvent("onmousewheel", MouseWheelHandler); // IE 6/7/8
     }
 
-    this.centerCamera(0, 0);
+    this.setCameraCenter([0, 0]);
 };
 
+WebGLRenderer.prototype.domToPhysics = function(point){
+    var result = this.stage.toLocal(new PIXI.Point(point[0], point[1]));
+    return [result.x, result.y];
+};
+
+WebGLRenderer.prototype.domVectorToPhysics = function(vector, result){
+    result[0] = vector[0] / this.zoom;
+    result[1] = -vector[1] / this.zoom;
+};
+
+/*
 WebGLRenderer.prototype.zoom = function(x, y, zoomOut, actualScaleX, actualScaleY, multiplier){
     var scrollFactor = this.scrollFactor,
         stage = this.stage;
@@ -336,22 +391,31 @@ WebGLRenderer.prototype.zoom = function(x, y, zoomOut, actualScaleX, actualScale
 
         stage.scale.x *= (1 + scrollFactor);
         stage.scale.y *= (1 + scrollFactor);
-        stage.position.x += (scrollFactor) * (stage.position.x - x);
-        stage.position.y += (scrollFactor) * (stage.position.y - y);
+        stage.position.x += scrollFactor * (stage.position.x - x);
+        stage.position.y += scrollFactor * (stage.position.y - y);
     } else {
         stage.scale.x *= actualScaleX;
         stage.scale.y *= actualScaleY;
-        stage.position.x += (actualScaleX - 1) * (stage.position.x - x);
-        stage.position.y += (actualScaleY - 1) * (stage.position.y - y);
+        var delta = actualScaleX - 1;
+        stage.position.x += delta * (stage.position.x - x);
+        stage.position.y += delta * (stage.position.y - y);
     }
 
     stage.updateTransform();
 };
+*/
 
-WebGLRenderer.prototype.centerCamera = function(x, y){
-    this.stage.position.x = this.renderer.width / 2 - this.stage.scale.x * x;
-    this.stage.position.y = this.renderer.height / 2 - this.stage.scale.y * y;
+WebGLRenderer.prototype.onCameraPositionChanged = function(){
+    // TODO: can this be simplified by adding another PIXI.Container?
+    this.stage.position.set(
+        this.renderer.width / 2 - this.stage.scale.x * this.cameraPosition[0],
+        this.renderer.height / 2 - this.stage.scale.y * this.cameraPosition[1]
+    );
+    this.stage.updateTransform();
+};
 
+WebGLRenderer.prototype.onZoomChanged = function(){
+    this.stage.scale.set(this.zoom, -this.zoom);
     this.stage.updateTransform();
 };
 
@@ -371,7 +435,7 @@ WebGLRenderer.prototype.frame = function(centerX, centerY, width, height){
         this.stage.scale.y = -this.renderer.height / height;
         this.stage.scale.x = -this.stage.scale.y;
     }
-    this.centerCamera(centerX, centerY);
+    this.setCameraCenter([centerX, centerY]);
 };
 
 function pixiDrawCircleOnGraphics(g, x, y, radius){
@@ -689,10 +753,7 @@ var X = p2.vec2.fromValues(1,0),
     worldAnchorA = p2.vec2.fromValues(0,0),
     worldAnchorB = p2.vec2.fromValues(0,0);
 WebGLRenderer.prototype.render = function(){
-    var w = this.renderer.width,
-        h = this.renderer.height,
-        springSprites = this.springSprites,
-        sprites = this.sprites;
+    var springSprites = this.springSprites;
 
     // Update body transforms
     for(var i=0; i!==this.bodies.length; i++){
@@ -823,7 +884,7 @@ WebGLRenderer.prototype.render = function(){
     }
 
     if(this.followBody){
-        app.centerCamera(this.followBody.interpolatedPosition[0], this.followBody.interpolatedPosition[1]);
+        this.setCameraCenter(this.followBody.interpolatedPosition);
     }
 
     this.renderer.render(this.container);
@@ -855,7 +916,6 @@ function randomPastelHex(){
 WebGLRenderer.prototype.drawRenderable = function(obj, graphics, color, lineColor){
     var lw = this.lineWidth;
 
-    var zero = [0,0];
     graphics.drawnSleeping = false;
     graphics.drawnColor = color;
     graphics.drawnLineColor = lineColor;
@@ -928,6 +988,7 @@ WebGLRenderer.prototype.drawRenderable = function(obj, graphics, color, lineColo
 
 WebGLRenderer.prototype.getIslandColor = function(body){
     var islandColors = this.islandColors;
+    var color = 0xdddddd;
     if(body.islandId === -1){
         color = 0xdddddd; // Gray for static objects
     } else if(islandColors[body.islandId]){
@@ -939,12 +1000,9 @@ WebGLRenderer.prototype.getIslandColor = function(body){
 };
 
 WebGLRenderer.prototype.addRenderable = function(obj){
-    var lw = this.lineWidth;
 
     // Random color
     var lineColor = 0x000000;
-
-    var zero = [0,0];
 
     var sprite = new PIXI.Graphics();
     if(obj instanceof p2.Body && obj.shapes.length){
@@ -980,10 +1038,7 @@ WebGLRenderer.prototype.removeRenderable = function(obj){
 };
 
 WebGLRenderer.prototype.resize = function(w,h){
-    var renderer = this.renderer;
-    var view = renderer.view;
-    var ratio = w / h;
-    renderer.resize(w, h);
+    this.renderer.resize(w, h);
 };
 
 })(p2);

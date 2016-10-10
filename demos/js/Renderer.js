@@ -56,6 +56,10 @@ function Renderer(scenes, options){
 
     this.state = Renderer.DEFAULT;
 
+    this.zoom = 200; // pixels per unit
+
+    this.cameraPosition = p2.vec2.create();
+
     // Bodies to draw
     this.bodies=[];
     this.springs=[];
@@ -129,7 +133,8 @@ function Renderer(scenes, options){
     this.render();
     this.createStats();
     this.addLogo();
-    this.centerCamera(0, 0);
+
+    this.setCameraCenter([0, 0]);
 
     window.onresize = function(){
         that.resizeToFit();
@@ -636,7 +641,7 @@ Renderer.prototype.handleMouseDown = function(physicsPosition){
 };
 
 /**
- * Should be called by subclasses whenever there's a mousedown event
+ * Should be called by subclasses whenever there's a mousemove event
  */
 Renderer.prototype.handleMouseMove = function(physicsPosition){
     p2.vec2.copy(this.mousePosition, physicsPosition);
@@ -886,16 +891,41 @@ Renderer.prototype.addLogo = function(){
     !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');
 };
 
-Renderer.zoomInEvent = {
-    type:"zoomin"
-};
-Renderer.zoomOutEvent = {
-    type:"zoomout"
-};
-
 Renderer.prototype.setEquationParameters = function(){
     this.world.setGlobalStiffness(this.settings.stiffness);
     this.world.setGlobalRelaxation(this.settings.relaxation);
 };
+
+// Set camera position in physics space
+Renderer.prototype.setCameraCenter = function(position){
+    p2.vec2.set(this.cameraPosition, position[0], position[1]);
+    this.onCameraPositionChanged();
+};
+
+// Set camera zoom level
+Renderer.prototype.setZoom = function(zoom){
+    this.zoom = zoom;
+    this.onZoomChanged();
+};
+
+// Zoom around a point
+Renderer.prototype.zoomAroundPoint = function(point, deltaZoom){
+    this.zoom *= 1 + deltaZoom;
+
+    // Move the camera closer to the zoom point, if the delta is positive
+    // If delta is infinity, the camera position should go toward the point
+    // If delta is close to zero, the camera position should be almost unchanged
+    // p = (point + p * delta) / (1 + delta)
+    p2.vec2.set(
+        this.cameraPosition,
+        (this.cameraPosition[0] + point[0] * deltaZoom) / (1 + deltaZoom),
+        (this.cameraPosition[1] + point[1] * deltaZoom) / (1 + deltaZoom)
+    );
+    this.onZoomChanged();
+    this.onCameraPositionChanged();
+};
+
+Renderer.prototype.onCameraPositionChanged = function(){};
+Renderer.prototype.onZoomChanged = function(){};
 
 })(p2);
