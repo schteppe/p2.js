@@ -1,5 +1,4 @@
-var vec2 = require('../math/vec2')
-,   Utils = require('../utils/Utils');
+var vec2 = require('../math/vec2');
 
 module.exports = AABB;
 
@@ -10,28 +9,28 @@ module.exports = AABB;
  * @param {Object}  [options]
  * @param {Array}   [options.upperBound]
  * @param {Array}   [options.lowerBound]
+ * @example
+ *     var aabb = new AABB({
+ *         upperBound: [1, 1],
+ *         lowerBound: [-1, -1]
+ *     });
  */
 function AABB(options){
+    options = options || {};
 
     /**
      * The lower bound of the bounding box.
      * @property lowerBound
      * @type {Array}
      */
-    this.lowerBound = vec2.create();
-    if(options && options.lowerBound){
-        vec2.copy(this.lowerBound, options.lowerBound);
-    }
+    this.lowerBound = options.lowerBound ? vec2.clone(options.lowerBound) : vec2.create();
 
     /**
      * The upper bound of the bounding box.
      * @property upperBound
      * @type {Array}
      */
-    this.upperBound = vec2.create();
-    if(options && options.upperBound){
-        vec2.copy(this.upperBound, options.upperBound);
-    }
+    this.upperBound = options.upperBound ? vec2.clone(options.upperBound) : vec2.create();
 }
 
 var tmp = vec2.create();
@@ -41,16 +40,14 @@ var tmp = vec2.create();
  * @method setFromPoints
  * @param {Array} points An array of vec2's.
  * @param {Array} position
- * @param {number} angle
- * @param {number} skinSize Some margin to be added to the AABB.
+ * @param {number} [angle=0]
+ * @param {number} [skinSize=0] Some margin to be added to the AABB.
  */
 AABB.prototype.setFromPoints = function(points, position, angle, skinSize){
     var l = this.lowerBound,
         u = this.upperBound;
 
-    if(typeof(angle) !== "number"){
-        angle = 0;
-    }
+    angle = angle || 0;
 
     // Set to the first point
     if(angle !== 0){
@@ -86,15 +83,15 @@ AABB.prototype.setFromPoints = function(points, position, angle, skinSize){
 
     // Add offset
     if(position){
-        vec2.add(this.lowerBound, this.lowerBound, position);
-        vec2.add(this.upperBound, this.upperBound, position);
+        vec2.add(l, l, position);
+        vec2.add(u, u, position);
     }
 
     if(skinSize){
-        this.lowerBound[0] -= skinSize;
-        this.lowerBound[1] -= skinSize;
-        this.upperBound[0] += skinSize;
-        this.upperBound[1] += skinSize;
+        l[0] -= skinSize;
+        l[1] -= skinSize;
+        u[0] += skinSize;
+        u[1] += skinSize;
     }
 };
 
@@ -114,19 +111,22 @@ AABB.prototype.copy = function(aabb){
  * @param  {AABB} aabb
  */
 AABB.prototype.extend = function(aabb){
+    var lower = this.lowerBound,
+        upper = this.upperBound;
+
     // Loop over x and y
     var i = 2;
     while(i--){
         // Extend lower bound
         var l = aabb.lowerBound[i];
-        if(this.lowerBound[i] > l){
-            this.lowerBound[i] = l;
+        if(lower[i] > l){
+            lower[i] = l;
         }
 
         // Upper
         var u = aabb.upperBound[i];
-        if(this.upperBound[i] < u){
-            this.upperBound[i] = u;
+        if(upper[i] < u){
+            upper[i] = u;
         }
     }
 };
@@ -167,20 +167,32 @@ AABB.prototype.containsPoint = function(point){
  * Check if the AABB is hit by a ray.
  * @method overlapsRay
  * @param  {Ray} ray
- * @return {number} -1 if no hit, a number between 0 and 1 if hit.
+ * @return {number} -1 if no hit, a number between 0 and 1 if hit, indicating the position between the "from" and "to" points.
+ * @example
+ *     var aabb = new AABB({
+ *         upperBound: [1, 1],
+ *         lowerBound: [-1, -1]
+ *     });
+ *     var ray = new Ray({
+ *         from: [-2, 0],
+ *         to: [0, 0]
+ *     });
+ *     var fraction = aabb.overlapsRay(ray); // fraction == 0.5
  */
 AABB.prototype.overlapsRay = function(ray){
-    var t = 0;
 
     // ray.direction is unit direction vector of ray
     var dirFracX = 1 / ray.direction[0];
     var dirFracY = 1 / ray.direction[1];
 
     // this.lowerBound is the corner of AABB with minimal coordinates - left bottom, rt is maximal corner
-    var t1 = (this.lowerBound[0] - ray.from[0]) * dirFracX;
-    var t2 = (this.upperBound[0] - ray.from[0]) * dirFracX;
-    var t3 = (this.lowerBound[1] - ray.from[1]) * dirFracY;
-    var t4 = (this.upperBound[1] - ray.from[1]) * dirFracY;
+    var from = ray.from;
+    var lowerBound = this.lowerBound;
+    var upperBound = this.upperBound;
+    var t1 = (lowerBound[0] - from[0]) * dirFracX;
+    var t2 = (upperBound[0] - from[0]) * dirFracX;
+    var t3 = (lowerBound[1] - from[1]) * dirFracY;
+    var t4 = (upperBound[1] - from[1]) * dirFracY;
 
     var tmin = Math.max(Math.max(Math.min(t1, t2), Math.min(t3, t4)));
     var tmax = Math.min(Math.min(Math.max(t1, t2), Math.max(t3, t4)));
@@ -197,5 +209,5 @@ AABB.prototype.overlapsRay = function(ray){
         return -1;
     }
 
-    return tmin;
+    return tmin / ray.length;
 };

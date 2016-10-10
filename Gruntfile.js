@@ -44,30 +44,34 @@ module.exports = function(grunt) {
             options: {
                 nospawn: false
             },
-            source: {
-                files: 'src/**/*',
-                tasks: [
-                    'default'
-                ]
-            },
-            renderer: {
-                files: 'demos/js/*Renderer.js',
-                tasks: [
-                    'concat:renderer'
-                ]
-            },
-            test: {
-                files: ['src/**/*', 'test/**/*'],
-                tasks: [
-                    'test'
-                ]
-            },
+            files: [
+                'src/**/*',
+                'demos/js/*Renderer.js',
+                'test/**/*'
+            ],
+            tasks: [
+                'dev'
+            ]
         },
 
         concat: {
             renderer: {
                 src: ['demos/js/pixi.js', 'demos/js/dat.gui.js', 'demos/js/Renderer.js', 'demos/js/WebGLRenderer.js'],
                 dest: 'build/p2.renderer.js',
+            }
+        },
+
+        yuidoc: {
+            compile: {
+                name: 'p2.js',
+                description: '<%= pkg.description %>',
+                version: '<%= pkg.version %>',
+                url: '<%= pkg.homepage %>',
+                options: {
+                    outdir : "docs",
+                    paths : ["./src/"],
+                    exclude: ".DS_Store,.svn,CVS,.git,build_rollup_tmp,build_tmp,gl-matrix"
+                }
             }
         }
     });
@@ -78,8 +82,10 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-nodeunit');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-concat');
+    grunt.loadNpmTasks('grunt-contrib-yuidoc');
 
     grunt.registerTask('default', ['test','jshint','browserify','concat','uglify','addLicense','requireJsFix']);
+    grunt.registerTask('dev', ['test','jshint','browserify','concat']);
     grunt.registerTask('test', ['nodeunit']);
 
     // Not sure what flag Browserify needs to do this. Fixing it manually for now.

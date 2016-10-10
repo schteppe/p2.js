@@ -19,6 +19,20 @@ exports.computeMomentOfInertia = function(test){
     test.done();
 };
 
+exports.pointTest = function(test){
+    var shape = new Capsule({
+        radius: 1,
+        length: 2
+    });
+    test.equal(shape.pointTest([0, 0]), true);
+    test.equal(shape.pointTest([2, 0]), true);
+    test.equal(shape.pointTest([0, 1]), true);
+    test.equal(shape.pointTest([0, 2]), false);
+    test.equal(shape.pointTest([2, 1]), false);
+    test.equal(shape.pointTest([3, 0]), false);
+    test.done();
+};
+
 exports.raycast = function(test){
     var ray = new Ray({
         mode: Ray.CLOSEST,

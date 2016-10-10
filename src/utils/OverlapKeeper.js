@@ -1,7 +1,5 @@
 var TupleDictionary = require('./TupleDictionary');
-var OverlapKeeperRecord = require('./OverlapKeeperRecord');
 var OverlapKeeperRecordPool = require('./OverlapKeeperRecordPool');
-var Utils = require('./Utils');
 
 module.exports = OverlapKeeper;
 
@@ -31,7 +29,6 @@ OverlapKeeper.prototype.tick = function() {
     while(l--){
         var key = last.keys[l];
         var lastObject = last.getByKey(key);
-        var currentObject = current.getByKey(key);
         if(lastObject){
             // The record is only used in the "last" dict, and will be removed. We might as well pool it.
             this.recordPool.release(lastObject);
@@ -56,7 +53,6 @@ OverlapKeeper.prototype.tick = function() {
  * @param {Body} shapeB
  */
 OverlapKeeper.prototype.setOverlapping = function(bodyA, shapeA, bodyB, shapeB) {
-    var last = this.overlappingShapesLastState;
     var current = this.overlappingShapesCurrentState;
 
     // Store current contact state

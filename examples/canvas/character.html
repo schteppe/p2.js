@@ -17,13 +17,13 @@
           world, characterBody, planeBody, platforms=[], boxes=[];
 
       var buttons = {
-        space : false,
-        left :  false,
-        right : false,
-      }
+        space: 0,
+        left: 0,
+        right: 0
+      };
 
       init();
-      animate();
+      requestAnimationFrame(animate);
 
       function init(){
 
@@ -46,25 +46,29 @@
             boxMaterial = new p2.Material();
 
         // Add a character body
-        characterShape = new p2.Box({ width: 0.5, height: 1 });
+        characterShape = new p2.Box({
+          width: 0.5,
+          height: 1,
+          material: characterMaterial
+        });
         characterBody = new p2.Body({
           mass: 1,
           position:[0,3],
           fixedRotation: true,
+          damping: 0.5
         });
         characterBody.addShape(characterShape);
         world.addBody(characterBody);
-        characterShape.material = characterMaterial;
-        characterBody.damping = 0.5;
 
         // Add a ground plane
-        planeShape = new p2.Plane();
+        planeShape = new p2.Plane({
+          material: groundMaterial
+        });
         planeBody = new p2.Body({
           position:[0,-1]
         });
         planeBody.addShape(planeShape);
         world.addBody(planeBody);
-        planeShape.material = groundMaterial;
 
         // Add platforms
         var platformPositions = [[2,0],[0,1],[-2,2]];
@@ -72,10 +76,13 @@
           var platformBody = new p2.Body({
             mass: 0, // Static
             position:platformPositions[i],
+            type: p2.Body.KINEMATIC
           });
-          platformBody.type = p2.Body.KINEMATIC;
-          var platformShape = new p2.Box({ width: 1, height: 0.3 });
-          platformShape.material = groundMaterial;
+          var platformShape = new p2.Box({
+            width: 1,
+            height: 0.3,
+            material: groundMaterial
+          });
           platformBody.addShape(platformShape);
           world.addBody(platformBody);
           platforms.push(platformBody);
@@ -86,10 +93,13 @@
         for(var i=0; i<boxPositions.length; i++){
           var boxBody = new p2.Body({
             mass: 1,
-            position:boxPositions[i],
+            position:boxPositions[i]
           });
-          var boxShape = new p2.Box({ width: 0.8, height: 0.8 });
-          boxShape.material = boxMaterial;
+          var boxShape = new p2.Box({
+            width: 0.8,
+            height: 0.8,
+            material: boxMaterial
+          });
           boxBody.addShape(boxShape);
           world.addBody(boxBody);
           boxes.push(boxBody);
@@ -97,10 +107,10 @@
 
         // Init contactmaterials
         var groundCharacterCM = new p2.ContactMaterial(groundMaterial, characterMaterial,{
-          friction : 0.0, // No friction between character and ground
+          friction : 0, // No friction between character and ground
         });
         var boxCharacterCM = new p2.ContactMaterial(boxMaterial, characterMaterial,{
-          friction : 0.0, // No friction between character and boxes
+          friction : 0, // No friction between character and boxes
         });
         var boxGroundCM = new p2.ContactMaterial(boxMaterial, groundMaterial,{
           friction : 0.6, // Between boxes and ground
@@ -147,18 +157,18 @@
 
       function drawBox(body){
         ctx.beginPath();
-        var x = body.position[0],
-            y = body.position[1],
+        var x = body.interpolatedPosition[0],
+            y = body.interpolatedPosition[1],
             s = body.shapes[0];
         ctx.save();
         ctx.translate(x, y);     // Translate to the center of the box
-        ctx.rotate(body.angle);  // Rotate to the box body frame
+        ctx.rotate(body.interpolatedAngle);  // Rotate to the box body frame
         ctx.fillRect(-s.width/2, -s.height/2, s.width, s.height);
         ctx.restore();
       }
 
       function drawPlane(){
-        var y1 = planeBody.position[1],
+        var y1 = planeBody.interpolatedPosition[1],
             y0 = -h/zoom/2,
             x0 = -w/zoom/2,
             x1 = w/zoom/2;
@@ -199,23 +209,19 @@
         for(var i=0; i<platforms.length; i++){
           platforms[i].velocity[0] = 2*Math.sin(world.time);
         }
+
+        // Apply button response
+        characterBody.velocity[0] = walkSpeed * (buttons.right - buttons.left);
       });
 
       var lastTime;
 
       // Animation loop
-      function animate(t){
+      function animate(time){
         requestAnimationFrame(animate);
 
-        var dt = t !== undefined && lastTime !== undefined ? t / 1000 - lastTime : 0;
-
-        // Apply button response
-        if(buttons.right)
-          characterBody.velocity[0] =  walkSpeed;
-        else if(buttons.left)
-          characterBody.velocity[0] = -walkSpeed;
-        else
-          characterBody.velocity[0] = 0;
+        var dt = lastTime ? (time - lastTime) / 1000 : 0;
+        dt = Math.min(1 / 10, dt);
 
         // Move physics bodies forward in time
         world.step(timeStep, dt, maxSubSteps);
@@ -223,21 +229,19 @@
         // Render scene
         render();
 
-        lastTime = t / 1000;
+        lastTime = time;
       }
 
-      var yAxis = p2.vec2.fromValues(0,1);
       function checkIfCanJump(){
-        var result = false;
         for(var i=0; i<world.narrowphase.contactEquations.length; i++){
           var c = world.narrowphase.contactEquations[i];
           if(c.bodyA === characterBody || c.bodyB === characterBody){
-            var d = p2.vec2.dot(c.normalA, yAxis); // Normal dot Y-axis
+            var d = c.normalA[1];
             if(c.bodyA === characterBody) d *= -1;
-            if(d > 0.5) result = true;
+            if(d > 0.5) return true;
           }
         }
-        return result;
+        return false;
       }
 
       window.onkeydown = function(event){
@@ -249,27 +253,17 @@
               buttons.space = true;
             }
             break;
-          case 39: // right
-            buttons.right = true;
-            break;
-          case 37: // left
-            buttons.left = true;
-            break;
+          case 39: buttons.right = 1; break;
+          case 37: buttons.left = 1; break;
         }
       }
 
       window.onkeyup = function(event){
         switch(event.keyCode){
           case 38: // up
-          case 32: // space
-            buttons.space = false;
-            break;
-          case 39: // right
-            buttons.right = false;
-            break;
-          case 37: // left
-            buttons.left = false;
-            break;
+          case 32: buttons.space = 0; break;
+          case 39: buttons.right = 0; break;
+          case 37: buttons.left = 0; break;
         }
       }
 

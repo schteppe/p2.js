@@ -1,7 +1,6 @@
 var Constraint = require('./Constraint')
 ,   Equation = require('../equations/Equation')
-,   vec2 = require('../math/vec2')
-,   Utils = require('../utils/Utils');
+,   vec2 = require('../math/vec2');
 
 module.exports = DistanceConstraint;
 
@@ -38,10 +37,7 @@ module.exports = DistanceConstraint;
  *     world.addConstraint(constraint);
  */
 function DistanceConstraint(bodyA,bodyB,options){
-    options = Utils.defaults(options,{
-        localAnchorA:[0,0],
-        localAnchorB:[0,0]
-    });
+    options = options || {};
 
     Constraint.call(this,bodyA,bodyB,Constraint.DISTANCE,options);
 
@@ -50,14 +46,14 @@ function DistanceConstraint(bodyA,bodyB,options){
      * @property localAnchorA
      * @type {Array}
      */
-    this.localAnchorA = vec2.fromValues(options.localAnchorA[0], options.localAnchorA[1]);
+    this.localAnchorA = options.localAnchorA ? vec2.clone(options.localAnchorA) : vec2.create();
 
     /**
      * Local anchor in body B.
      * @property localAnchorB
      * @type {Array}
      */
-    this.localAnchorB = vec2.fromValues(options.localAnchorB[0], options.localAnchorB[1]);
+    this.localAnchorB = options.localAnchorB ? vec2.clone(options.localAnchorB) : vec2.create();
 
     var localAnchorA = this.localAnchorA;
     var localAnchorB = this.localAnchorB;
@@ -82,8 +78,8 @@ function DistanceConstraint(bodyA,bodyB,options){
         vec2.rotate(worldAnchorB, localAnchorB, bodyB.angle);
 
         vec2.add(r, bodyB.position, worldAnchorB);
-        vec2.sub(r, r, worldAnchorA);
-        vec2.sub(r, r, bodyA.position);
+        vec2.subtract(r, r, worldAnchorA);
+        vec2.subtract(r, r, bodyA.position);
 
         this.distance = vec2.length(r);
     }
@@ -134,10 +130,10 @@ function DistanceConstraint(bodyA,bodyB,options){
         vec2.rotate(rj, localAnchorB, bodyB.angle);
 
         vec2.add(r, xj, rj);
-        vec2.sub(r, r, ri);
-        vec2.sub(r, r, xi);
+        vec2.subtract(r, r, ri);
+        vec2.subtract(r, r, xi);
 
-        //vec2.sub(r, bodyB.position, bodyA.position);
+        //vec2.subtract(r, bodyB.position, bodyA.position);
         return vec2.length(r) - that.distance;
     };
 
@@ -188,7 +184,6 @@ DistanceConstraint.prototype.update = function(){
     var normal = this.equations[0],
         bodyA = this.bodyA,
         bodyB = this.bodyB,
-        distance = this.distance,
         xi = bodyA.position,
         xj = bodyB.position,
         normalEquation = this.equations[0],
@@ -200,8 +195,8 @@ DistanceConstraint.prototype.update = function(){
 
     // Get world anchor points and normal
     vec2.add(n, xj, rj);
-    vec2.sub(n, n, ri);
-    vec2.sub(n, n, xi);
+    vec2.subtract(n, n, ri);
+    vec2.subtract(n, n, xi);
     this.position = vec2.length(n);
 
     var violating = false;

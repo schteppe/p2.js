@@ -4,15 +4,14 @@ var Box = require(__dirname + '/../../src/shapes/Box');
 var World = require(__dirname + '/../../src/world/World');
 var AABB = require(__dirname + '/../../src/collision/AABB');
 var vec2 = require(__dirname + '/../../src/math/vec2');
-var Shape = require(__dirname + '/../../src/shapes/Shape');
-
+var Plane = require(__dirname + '/../../src/shapes/Plane');
 
 module.exports = {
     construct: function(test){
 
         // Static via mass=0
         var body = new Body({
-            mass : 0,
+            mass : 0
         });
         test.equal(body.invMass,0);
         test.equal(body.type,Body.STATIC);
@@ -27,31 +26,69 @@ module.exports = {
             angle:Math.PI/2
         };
         body = new Body(o);
-        test.equal(vec2.distance(body.position, o.position),0);
-        test.equal(vec2.distance(body.velocity, o.velocity),0);
-        test.equal(vec2.distance(body.force,    o.force   ),0);
-        test.equal(body.angle,                  o.angle);
-        test.equal(body.angularVelocity,        o.angularVelocity);
-        test.equal(body.angularForce,           o.angularForce);
+        test.deepEqual(body.position, o.position);
+        test.deepEqual(body.interpolatedPosition, o.position);
+        test.deepEqual(body.previousPosition, o.position);
+        test.deepEqual(body.velocity, o.velocity);
+        test.deepEqual(body.force, o.force);
+        test.equal(body.angle, o.angle);
+        test.equal(body.previousAngle, o.angle);
+        test.equal(body.interpolatedAngle, o.angle);
+        test.equal(body.angularVelocity, o.angularVelocity);
+        test.equal(body.angularForce, o.angularForce);
 
         // id tick
-        test.equal(new Body().id+1, new Body().id);
+        test.notEqual(new Body().id, new Body().id);
 
         test.done();
     },
 
-    addShape: function(test){
-        // STUB
-        test.done();
+    addShape: {
+        normal: function(test){
+            var body = new Body();
+            var shape = new Circle({ radius: 1 });
+            body.addShape(shape);
+            test.deepEqual(body.shapes, [shape]);
+            test.done();
+        },
+        duringStep: function(test){
+            var world = new World();
+            var body = new Body();
+            world.addBody(body);
+            world.on('postBroadphase', function(){
+                test.throws(function(){
+                    body.addShape(new Circle());
+                }, 'should throw on adding shapes during step');
+                test.done();
+            });
+            world.step(1);
+        }
     },
 
     adjustCenterOfMass: function(test){
-        // STUB
+        var body = new Body();
+        var shape = new Circle({ radius: 1 });
+        body.addShape(shape, [1, 0], 0);
+        body.adjustCenterOfMass();
+        test.deepEqual(body.position, vec2.fromValues(1,0));
+        test.deepEqual(body.shapes[0].position, vec2.fromValues(0,0));
         test.done();
     },
 
     applyDamping: function(test){
-        // STUB
+        var body = new Body({
+            mass: 1,
+            velocity: [1, 0],
+            angularVelocity: 1,
+            damping: 0.5,
+            angularDamping: 0.5
+        });
+
+        body.applyDamping(1);
+
+        test.deepEqual(body.velocity, [0.5, 0]);
+        test.deepEqual(body.angularVelocity, 0.5);
+
         test.done();
     },
 
@@ -186,13 +223,29 @@ module.exports = {
         test.done();
     },
 
-    removeShape: function(test){
-        var body = new Body();
-        body.addShape(new Circle({ radius: 1 }));
-        test.ok(body.removeShape(body.shapes[0]));
-        test.ok(!body.removeShape(new Circle({ radius: 1 })));
-        test.equal(body.shapes.length, 0);
-        test.done();
+    removeShape: {
+        canRemove: function(test){
+            var body = new Body();
+            body.addShape(new Circle({ radius: 1 }));
+            test.ok(body.removeShape(body.shapes[0]));
+            test.ok(!body.removeShape(new Circle({ radius: 1 })));
+            test.equal(body.shapes.length, 0);
+            test.done();
+        },
+        duringStep: function(test){
+            var world = new World();
+            var body = new Body();
+            var shape = new Circle();
+            world.addBody(body);
+            body.addShape(shape);
+            world.on('postBroadphase', function(){
+                test.throws(function(){
+                    body.removeShape(shape);
+                }, 'should throw on removing shapes during step');
+                test.done();
+            });
+            world.step(1);
+        }
     },
 
     getArea: function(test){
@@ -252,12 +305,18 @@ module.exports = {
     },
 
     vectorToLocalFrame: function(test){
-        // STUB
+        var b = new Body({ angle: Math.PI, position: [1,1] });
+        var v = [1, 0];
+        b.vectorToLocalFrame(v, v);
+        test.ok(vec2.distance(v, [-1,0]) < 0.01);
         test.done();
     },
 
     vectorToWorldFrame: function(test){
-        // STUB
+        var b = new Body({ angle: Math.PI, position: [1,1] });
+        var v = [1, 0];
+        b.vectorToWorldFrame(v, v);
+        test.ok(vec2.distance(v, [-1,0]) < 0.01);
         test.done();
     },
 
@@ -315,11 +374,53 @@ module.exports = {
         test.done();
     },
 
-    integrate: function(test){
-        var b = new Body({ velocity: [1,0], mass: 1 });
-        b.integrate(1);
-        test.deepEqual(b.position, vec2.fromValues(1,0));
-        test.done();
+    integrate: {
+        withoutCCD: function(test){
+            var body = new Body({
+                velocity: [1,0],
+                mass: 1
+            });
+            var world = new World();
+            world.addBody(body);
+            body.integrate(1);
+            test.deepEqual(body.position, vec2.fromValues(1,0));
+            test.done();
+        },
+        withCCD: function(test){
+            var body = new Body({
+                velocity: [2,0],
+                position: [-1,0],
+                mass: 1,
+                ccdSpeedThreshold: 0,
+                shape: new Circle({ radius: 0.01 })
+            });
+            var world = new World();
+            world.addBody(body);
+            body.integrate(1);
+            test.deepEqual(body.position, vec2.fromValues(1,0));
+            test.done();
+        },
+        withCCDAndObstacle: function(test){
+            var world = new World({ gravity: [0,0] });
+            var body = new Body({
+                velocity: [2,0],
+                position: [-1,0],
+                mass: 1,
+                ccdSpeedThreshold: 0,
+                ccdIterations: 10,
+            });
+            body.addShape(new Circle({ radius: 0.01 }));
+            world.addBody(body);
+            var planeBody = new Body({
+                mass: 0,
+                angle: Math.PI / 2
+            });
+            planeBody.addShape(new Plane());
+            world.addBody(planeBody);
+            world.step(1); // Need to use world.step() instead of body.integrate()
+            test.ok(vec2.distance(body.position, [0,0]) < 0.1);
+            test.done();
+        }
     },
 
     getVelocityAtPoint: function(test){
@@ -362,6 +463,28 @@ module.exports = {
         bodyA.shapes[0].collisionResponse = false;
         world.step(1 / 60);
         test.ok(!world.narrowphase.contactEquations[0].enabled);
+
+        test.done();
+    },
+
+    index: function(test){
+        var bodyA = new Body();
+        var bodyB = new Body();
+
+        test.equal(bodyA.index, -1);
+        test.equal(bodyB.index, -1);
+
+        var world = new World();
+        world.addBody(bodyA);
+        world.addBody(bodyB);
+
+        test.equal(bodyA.index, 0);
+        test.equal(bodyB.index, 1);
+
+        world.removeBody(bodyA);
+
+        test.equal(bodyA.index, -1);
+        test.equal(bodyB.index, 0);
 
         test.done();
     }

@@ -1,4 +1,3 @@
-var vec2 = require('../math/vec2');
 var Spring = require('./Spring');
 
 module.exports = RotationalSpring;
@@ -17,6 +16,13 @@ module.exports = RotationalSpring;
  * @param {number} [options.restAngle] The relative angle of bodies at which the spring is at rest. If not given, it's set to the current relative angle between the bodies.
  * @param {number} [options.stiffness=100] Spring constant (see Hookes Law). A number >= 0.
  * @param {number} [options.damping=1] A number >= 0.
+ *
+ * @example
+ *     var spring = new RotationalSpring(bodyA, bodyB, {
+ *         stiffness: 100,
+ *         damping: 1
+ *     });
+ *     world.addSpring(spring);
  */
 function RotationalSpring(bodyA, bodyB, options){
     options = options || {};
@@ -28,7 +34,7 @@ function RotationalSpring(bodyA, bodyB, options){
      * @property restAngle
      * @type {number}
      */
-    this.restAngle = typeof(options.restAngle) === "number" ? options.restAngle : bodyB.angle - bodyA.angle;
+    this.restAngle = options.restAngle !== undefined ? options.restAngle : bodyB.angle - bodyA.angle;
 }
 RotationalSpring.prototype = new Spring();
 RotationalSpring.prototype.constructor = RotationalSpring;

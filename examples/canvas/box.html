@@ -15,7 +15,7 @@
           world, boxBody, planeBody;
 
       init();
-      animate();
+      requestAnimationFrame(animate);
 
       function init(){
 
@@ -31,8 +31,15 @@
         world = new p2.World();
 
         // Add a box
-        boxShape = new p2.Box({ width: 2, height: 1 });
-        boxBody = new p2.Body({ mass:1, position:[0,3],angularVelocity:1 });
+        boxShape = new p2.Box({
+          width: 2,
+          height: 1
+        });
+        boxBody = new p2.Body({
+          mass: 1,
+          position: [0,3],
+          angularVelocity: 1
+        });
         boxBody.addShape(boxShape);
         world.addBody(boxBody);
 
@@ -45,8 +52,8 @@
 
       function drawbox(){
         ctx.beginPath();
-        var x = boxBody.position[0],
-            y = boxBody.position[1];
+        var x = boxBody.interpolatedPosition[0],
+            y = boxBody.interpolatedPosition[1];
         ctx.save();
         ctx.translate(x, y);        // Translate to the center of the box
         ctx.rotate(boxBody.angle);  // Rotate to the box body frame
@@ -56,7 +63,7 @@
       }
 
       function drawPlane(){
-        var y = planeBody.position[1];
+        var y = planeBody.interpolatedPosition[1];
         ctx.moveTo(-w, y);
         ctx.lineTo( w, y);
         ctx.stroke();
@@ -82,11 +89,21 @@
       }
 
       // Animation loop
-      function animate(){
+      var lastTime;
+      var maxSubSteps = 5; // Max physics ticks per render frame
+      var fixedDeltaTime = 1 / 60; // Physics "tick" delta time
+      function animate(time){
         requestAnimationFrame(animate);
 
+        // Get the elapsed time since last frame, in seconds
+        var deltaTime = lastTime ? (time - lastTime) / 1000 : 0;
+        lastTime = time;
+
+        // Make sure the time delta is not too big (can happen if user switches browser tab)
+        deltaTime = Math.min(1 / 10, deltaTime);
+
         // Move physics bodies forward in time
-        world.step(1/60);
+        world.step(fixedDeltaTime, deltaTime, maxSubSteps);
 
         // Render scene
         render();

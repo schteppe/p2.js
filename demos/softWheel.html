@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Soft wheel demo - p2.js physics engine</title>
+    <script src="../build/p2.js"></script>
+    <script src="../build/p2.renderer.js"></script>
+    <link href="css/demo.css" rel="stylesheet"/>
+    <meta name="description" content="Soft wheel demo.">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+</head>
+<body>
+    <script>
+
+        var N = 15, // Number of capsules in a wheel
+            r = 1, // Radius of the wheel
+            thickness = 0.18, // Thickness of the wheel capsules
+            GROUND = Math.pow(2, 1),
+            CHASSIS = Math.pow(2, 2),
+            WHEELS = Math.pow(2, 3);
+
+        var app = new p2.WebGLRenderer(function(){
+
+            // Create the world
+            var world = new p2.World({
+                gravity : [0,-5]
+            });
+            this.setWorld(world);
+
+            // Create a contact material between ground and wheels
+            // We need to do this to add some extra friction
+            var groundMaterial = new p2.Material();
+            var wheelMaterial = new p2.Material();
+            var groundWheelContactMaterial = new p2.ContactMaterial(groundMaterial, wheelMaterial, {
+                friction: 30
+            });
+            world.addContactMaterial(groundWheelContactMaterial);
+
+            // Create wheels
+            var wheelBodyA = createWheel(world, [-2.2 * r, 0], wheelMaterial);
+            var wheelBodyB = createWheel(world, [2.2 * r, 0], wheelMaterial);
+
+            // Create chassis
+            var chassisBody = new p2.Body({ mass : 1, position:[-0.3 * r, 2.2 * r] });
+            chassisBody.addShape(new p2.Capsule({ // Capsule below the chassis
+                length: 1.8 * r,
+                radius: r * 0.6,
+                collisionGroup: CHASSIS,
+                collisionMask: GROUND
+            }), [r * 0.5,-r * 0.4], -0.1);
+            chassisBody.addShape(new p2.Capsule({ // First capsule above the trunk
+                length: 1.8 * r,
+                radius: r * 0.1,
+                collisionGroup: CHASSIS,
+                collisionMask: GROUND
+            }), [-r*0.4,r*0.6], Math.PI/2);
+            chassisBody.addShape(new p2.Capsule({ // Second capsule above the trunk
+                length: 1.8 * r,
+                radius: r * 0.1,
+                collisionGroup: CHASSIS,
+                collisionMask: GROUND
+            }), [-r*0.2,r*0.6], Math.PI/2);
+            chassisBody.addShape(new p2.Capsule({ // Inclined capsule above the trunk
+                length: 1.8 * r,
+                radius: r * 0.1,
+                collisionGroup: CHASSIS,
+                collisionMask: GROUND
+            }), [-r*1.4,r*1], Math.PI/7);
+            chassisBody.addShape(new p2.Convex({ // Main chassis shape
+                vertices: [
+                    [3.5*r, -0.6*r],
+                    [3.7*r, -0.4*r],
+                    [3.6*r, 0.5*r],
+                    [3.3*r, 0.6*r],
+                    [-3.5*r, 0.6*r],
+                    [-3.55*r, -0.1*r],
+                    [-3.4*r, -0.6*r]
+                ],
+                width: 3.5*r*2,
+                height: 0.6 * r * 2,
+                collisionGroup: CHASSIS,
+                collisionMask: GROUND
+            }));
+            chassisBody.addShape(new p2.Convex({ // Top "window"
+                vertices: [
+                    [r, -0.5 * r],
+                    [0.3 * r, 0.5 * r],
+                    [-r, 0.5 * r],
+                    [-r * 1.1, -0.5 * r]
+                ],
+                collisionGroup: CHASSIS,
+                collisionMask: GROUND
+            }), [r,0.55 * r * 2], 0);
+            world.addBody(chassisBody);
+
+            // Constrain wheels to chassis: let them move vertically and rotate using a prismatic
+            var c1 = new p2.PrismaticConstraint(chassisBody,wheelBodyA,{
+                localAnchorA : [
+                    wheelBodyA.position[0] - chassisBody.position[0],
+                    wheelBodyA.position[1] - chassisBody.position[1]
+                ],
+                localAnchorB : [0,0],
+                localAxisA : [0,1],
+                disableRotationalLock : true
+            });
+            var c2 = new p2.PrismaticConstraint(chassisBody,wheelBodyB,{
+                localAnchorA : [
+                    wheelBodyB.position[0] - chassisBody.position[0],
+                    wheelBodyB.position[1] - chassisBody.position[1]
+                ],
+                localAnchorB : [0,0],
+                localAxisA : [0,1],
+                disableRotationalLock : true
+            });
+            c1.setLimits(-0.5, 0.4); // Don't let the wheels move too much
+            c2.setLimits(-0.5, 0.4);
+            world.addConstraint(c1);
+            world.addConstraint(c2);
+
+            // Suspension: create "springs" that let the wheels move up and down a bit
+            world.addConstraint(new p2.DistanceConstraint(wheelBodyA, chassisBody, {
+                maxForce: 6
+            }));
+            world.addConstraint(new p2.DistanceConstraint(wheelBodyB, chassisBody, {
+                maxForce: 6
+            }));
+
+            // Create ground plane
+            groundBody = new p2.Body({
+                position: [0, -r * 2]
+            });
+            groundBody.addShape(new p2.Plane({
+                material: groundMaterial,
+                collisionGroup: GROUND,
+                collisionMask: WHEELS | CHASSIS | GROUND
+            }));
+            world.addBody(groundBody);
+
+            // Add circle bumps along the ground
+            for(var i=0; i<10; i++){
+                circleBody = new p2.Body({
+                    position:[6+6*i + Math.random()*3, -2] // Set initial position
+                });
+                circleBody.addShape(new p2.Circle({
+                    radius: 5*Math.random(),
+                    material: groundMaterial,
+                    collisionGroup: GROUND,
+                    collisionMask: WHEELS | GROUND | CHASSIS
+                }));
+                world.addBody(circleBody);
+            }
+
+            // Apply current engine torque after each step
+            var left=0, right=0;
+            world.on("postStep",function(evt){
+                wheelBodyA.angularForce += (left - right) * 30;
+                wheelBodyB.angularForce += (left - right) * 30;
+            });
+            this.on("keydown",function(evt){
+                switch(evt.keyCode){
+                    case 39:
+                        right = 1;
+                        break;
+                    case 37:
+                        left = 1;
+                        break;
+                }
+            }).on("keyup",function(evt){
+                switch(evt.keyCode){
+                    case 39:
+                        right = 0;
+                        break;
+                    case 37:
+                        left = 0;
+                        break;
+                }
+            });
+
+            app.followBody = chassisBody; // Make camera follow
+
+            this.frame(0, 0, 10, 10);
+        });
+
+        // Creates a soft wheel in the given world at the given position.
+        // Returns the center body.
+        function createWheel(world, position, material){
+
+            // Create the center circle body
+            var wheelBody = new p2.Body({
+                mass: 1,
+                position: position
+            });
+            wheelBody.addShape(new p2.Circle({
+                radius: r/2,
+                collisionGroup: GROUND,
+                collisionMask: GROUND | WHEELS | CHASSIS
+            }));
+            world.addBody(wheelBody);
+
+            // Create a chain of capsules around the center.
+            var lastBody, firstBody;
+            var linkLength = Math.sqrt(r*r + r*r - 2*r*r*Math.cos(2 * Math.PI / N));
+            for(var i=0; i<N; i++){
+
+                // Create a capsule body
+                var angle = i / N * Math.PI * 2;
+                var x = r * Math.cos(angle) + position[0];
+                var y = r * Math.sin(angle) + position[1];
+                var body = new p2.Body({
+                    mass: 0.1,
+                    position: [x,y],
+                    angle: angle + Math.PI / 2
+                });
+                body.addShape(new p2.Capsule({
+                    radius: thickness/2,
+                    length: linkLength,
+                    material: material,
+                    collisionGroup: WHEELS,
+                    collisionMask: GROUND
+                }));
+                world.addBody(body);
+
+                // Constrain the capsule body to the center body.
+                // A prismatic constraint lets it move radially from the center body along one axis
+                var prismatic = new p2.PrismaticConstraint(wheelBody, body, {
+                    localAnchorA :  [0, 0],
+                    localAnchorB :  [0, 0],
+                    localAxisA :    [Math.cos(angle), Math.sin(angle)],
+                    disableRotationalLock: true, // Let the capsule rotate around its own axis
+                    collideConnected: true
+                });
+                world.addConstraint(prismatic);
+
+                // Make a "spring" that keeps the body from the center body at a given distance with some flexing
+                world.addConstraint(new p2.DistanceConstraint(wheelBody, body, {
+                    maxForce: 4, // Allow flexing
+                    collideConnected: true
+                }));
+
+                if(lastBody){
+                    // Constrain the capsule to the previous one.
+                    var c = new p2.RevoluteConstraint(body, lastBody, {
+                        localPivotA: [-linkLength/2, 0],
+                        localPivotB: [linkLength/2, 0],
+                        collideConnected: false
+                    });
+                    world.addConstraint(c);
+                } else {
+                    firstBody = body;
+                }
+
+                lastBody = body;
+            }
+
+            // Close the capsule circle
+            world.addConstraint(new p2.RevoluteConstraint(firstBody, lastBody, {
+                localPivotA: [-linkLength/2, 0],
+                localPivotB: [linkLength/2, 0],
+                collideConnected: false
+            }));
+
+            return wheelBody;
+        }
+
+    </script>
+</body>
+</html>

@@ -1,4 +1,5 @@
 var AABB = require(__dirname + '/../../src/collision/AABB');
+var Ray = require(__dirname + '/../../src/collision/Ray');
 var vec2 = require(__dirname + '/../../src/math/vec2');
 
 exports.construct = function(test){
@@ -81,6 +82,16 @@ exports.containsPoint = function(test){
 };
 
 exports.overlapsRay = function(test){
+    var aabb = new AABB({
+        upperBound: [1, 1],
+        lowerBound: [-1, -1]
+    });
+    var ray = new Ray({
+        from: [-2, 0],
+        to: [0, 0]
+    });
+    var result = aabb.overlapsRay(ray);
+    test.equal(result, 0.5);
     test.done();
 };
 

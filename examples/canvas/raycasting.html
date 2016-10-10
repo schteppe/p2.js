@@ -36,8 +36,9 @@
         mode: p2.Ray.ANY
       });
       var raycastOptions = {};
+
       init();
-      animate();
+      requestAnimationFrame(animate);
 
       function init(){
 
@@ -117,11 +118,11 @@
 
       function drawbox(){
         ctx.beginPath();
-        var x = boxBody.position[0],
-            y = boxBody.position[1];
+        var x = boxBody.interpolatedPosition[0],
+            y = boxBody.interpolatedPosition[1];
         ctx.save();
         ctx.translate(x, y);        // Translate to the center of the box
-        ctx.rotate(boxBody.angle);  // Rotate to the box body frame
+        ctx.rotate(boxBody.interpolatedAngle);  // Rotate to the box body frame
         ctx.rect(-boxShape.width/2, -boxShape.height/2, boxShape.width, boxShape.height);
         ctx.stroke();
         ctx.restore();
@@ -129,11 +130,11 @@
 
       function drawPlane(){
         ctx.beginPath();
-        var x = planeBody.position[0],
-            y = planeBody.position[1];
+        var x = planeBody.interpolatedPosition[0],
+            y = planeBody.interpolatedPosition[1];
         ctx.save();
         ctx.translate(x, y);
-        ctx.rotate(planeBody.angle);
+        ctx.rotate(planeBody.interpolatedAngle);
         ctx.moveTo(-100, 0);
         ctx.lineTo(100, 0);
         ctx.stroke();
@@ -142,11 +143,11 @@
 
       function drawCircle(){
         ctx.beginPath();
-        var x = circleBody.position[0],
-            y = circleBody.position[1];
+        var x = circleBody.interpolatedPosition[0],
+            y = circleBody.interpolatedPosition[1];
         ctx.save();
         ctx.translate(x, y);
-        ctx.rotate(circleBody.angle);
+        ctx.rotate(circleBody.interpolatedAngle);
         ctx.arc(0,0,circleShape.radius,0,2*Math.PI);
         ctx.stroke();
         ctx.restore();
@@ -154,11 +155,11 @@
 
       function drawConvex(){
         ctx.beginPath();
-        var x = convexBody.position[0],
-            y = convexBody.position[1];
+        var x = convexBody.interpolatedPosition[0],
+            y = convexBody.interpolatedPosition[1];
         ctx.save();
         ctx.translate(x, y);
-        ctx.rotate(convexBody.angle);
+        ctx.rotate(convexBody.interpolatedAngle);
         ctx.moveTo(convexShape.vertices[0][0], convexShape.vertices[0][1]);
         for (var i = 1; i < convexShape.vertices.length+1; i++) {
           ctx.lineTo(convexShape.vertices[i%convexShape.vertices.length][0], convexShape.vertices[i%convexShape.vertices.length][1]);
@@ -168,21 +169,18 @@
       }
 
       function drawCapsule(){
-        var x = capsuleBody.position[0],
-            y = capsuleBody.position[1];
+        var x = capsuleBody.interpolatedPosition[0],
+            y = capsuleBody.interpolatedPosition[1];
         ctx.save();
         ctx.translate(x, y);
-        ctx.rotate(capsuleBody.angle);
+        ctx.rotate(capsuleBody.interpolatedAngle);
         var radius = capsuleShape.radius;
         var len = capsuleShape.length;
-        //ctx.arc(0,0,capsuleShape.radius, 0, 2*Math.PI);
 
         // Draw circles at ends
         ctx.beginPath();
-        var c = Math.cos(capsuleBody.angle);
-        var s = Math.sin(capsuleBody.angle);
-        // ctx.drawCircle(-len/2*c + x, -len/2*s + y, radius);
-        // ctx.drawCircle( len/2*c + x,  len/2*s + y, radius);
+        var c = Math.cos(capsuleBody.interpolatedAngle);
+        var s = Math.sin(capsuleBody.interpolatedAngle);
         ctx.arc(-len/2, 0, capsuleShape.radius, 0, 2*Math.PI);
         ctx.arc( len/2, 0, capsuleShape.radius, -Math.PI, Math.PI);
         ctx.fill();
@@ -239,12 +237,12 @@
         ctx.stroke();
       }
 
-      function drawRays(){
+      function drawRays(time){
 
         start[0] = -3;
-        start[1] = Math.sin(world.time) * 4;
+        start[1] = Math.sin(time / 1000) * 4;
         end[0] = 5;
-        end[1] = Math.sin(world.time);
+        end[1] = Math.sin(time / 1000);
 
         // Closest
         p2.vec2.copy(rayClosest.from, start);
@@ -284,7 +282,7 @@
         ctx.strokeStyle = 'black';
       }
 
-      function render(){
+      function render(time){
         // Clear the canvas
         ctx.clearRect(0,0,w,h);
 
@@ -299,21 +297,27 @@
         drawCircle();
         drawCapsule();
         drawConvex();
-        drawRays();
+        drawRays(time);
 
         // Restore transform
         ctx.restore();
       }
 
+      var lastTime, timeStep = 1 / 60, maxSubSteps = 5;
+
       // Animation loop
-      function animate(){
+      function animate(time){
         requestAnimationFrame(animate);
 
+        var dt = lastTime ? (time - lastTime) / 1000 : 0;
+        dt = Math.min(1 / 10, dt);
+        lastTime = time;
+
         // Move physics bodies forward in time
-        world.step(1/60);
+        world.step(timeStep, dt, maxSubSteps);
 
         // Render scene
-        render();
+        render(time);
       }
 
    </script>

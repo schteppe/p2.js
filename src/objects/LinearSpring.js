@@ -1,6 +1,5 @@
 var vec2 = require('../math/vec2');
 var Spring = require('./Spring');
-var Utils = require('../utils/Utils');
 
 module.exports = LinearSpring;
 
@@ -22,6 +21,15 @@ module.exports = LinearSpring;
  * @param {Array}  [options.worldAnchorB]
  * @param {Array}  [options.localAnchorA]   Where to hook the spring to body A, in local body coordinates. Defaults to the body center.
  * @param {Array}  [options.localAnchorB]
+ *
+ * @example
+ *     var spring = new LinearSpring(bodyA, bodyB, {
+ *         stiffness: 100,
+ *         damping: 1,
+ *         localAnchorA: [0,0], // center of bodyA
+ *         localAnchorB: [0,0] // center of bodyB
+ *     });
+ *     world.addSpring(spring);
  */
 function LinearSpring(bodyA,bodyB,options){
     options = options || {};
@@ -33,14 +41,14 @@ function LinearSpring(bodyA,bodyB,options){
      * @property localAnchorA
      * @type {Array}
      */
-    this.localAnchorA = vec2.fromValues(0,0);
+    this.localAnchorA = vec2.create();
 
     /**
      * Anchor for bodyB in local bodyB coordinates.
      * @property localAnchorB
      * @type {Array}
      */
-    this.localAnchorB = vec2.fromValues(0,0);
+    this.localAnchorB = vec2.create();
 
     if(options.localAnchorA){ vec2.copy(this.localAnchorA, options.localAnchorA); }
     if(options.localAnchorB){ vec2.copy(this.localAnchorB, options.localAnchorB); }
@@ -54,11 +62,11 @@ function LinearSpring(bodyA,bodyB,options){
     var worldDistance = vec2.distance(worldAnchorA, worldAnchorB);
 
     /**
-     * Rest length of the spring.
+     * Rest length of the spring. Can be set dynamically.
      * @property restLength
      * @type {number}
      */
-    this.restLength = typeof(options.restLength) === "number" ? options.restLength : worldDistance;
+    this.restLength = options.restLength !== undefined ? options.restLength : worldDistance;
 }
 LinearSpring.prototype = new Spring();
 LinearSpring.prototype.constructor = LinearSpring;
@@ -111,6 +119,7 @@ var applyForce_r =              vec2.create(),
 
 /**
  * Apply the spring force to the connected bodies.
+ * @private
  * @method applyForce
  */
 LinearSpring.prototype.applyForce = function(){
@@ -135,29 +144,26 @@ LinearSpring.prototype.applyForce = function(){
     this.getWorldAnchorB(worldAnchorB);
 
     // Get offset points
-    vec2.sub(ri, worldAnchorA, bodyA.position);
-    vec2.sub(rj, worldAnchorB, bodyB.position);
+    vec2.subtract(ri, worldAnchorA, bodyA.position);
+    vec2.subtract(rj, worldAnchorB, bodyB.position);
 
     // Compute distance vector between world anchor points
-    vec2.sub(r, worldAnchorB, worldAnchorA);
-    var rlen = vec2.len(r);
+    vec2.subtract(r, worldAnchorB, worldAnchorA);
+    var rlen = vec2.length(r);
     vec2.normalize(r_unit,r);
 
-    //console.log(rlen)
-    //console.log("A",vec2.str(worldAnchorA),"B",vec2.str(worldAnchorB))
-
     // Compute relative velocity of the anchor points, u
-    vec2.sub(u, bodyB.velocity, bodyA.velocity);
+    vec2.subtract(u, bodyB.velocity, bodyA.velocity);
     vec2.crossZV(tmp, bodyB.angularVelocity, rj);
     vec2.add(u, u, tmp);
     vec2.crossZV(tmp, bodyA.angularVelocity, ri);
-    vec2.sub(u, u, tmp);
+    vec2.subtract(u, u, tmp);
 
     // F = - k * ( x - L ) - D * ( u )
     vec2.scale(f, r_unit, -k*(rlen-l) - d*vec2.dot(u,r_unit));
 
     // Add forces to bodies
-    vec2.sub( bodyA.force, bodyA.force, f);
+    vec2.subtract( bodyA.force, bodyA.force, f);
     vec2.add( bodyB.force, bodyB.force, f);
 
     // Angular force

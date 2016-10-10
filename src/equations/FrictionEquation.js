@@ -1,6 +1,5 @@
 var vec2 = require('../math/vec2')
-,   Equation = require('./Equation')
-,   Utils = require('../utils/Utils');
+,   Equation = require('./Equation');
 
 module.exports = FrictionEquation;
 
@@ -92,9 +91,7 @@ FrictionEquation.prototype.getSlipForce = function(){
 };
 
 FrictionEquation.prototype.computeB = function(a,b,h){
-    var bi = this.bodyA,
-        bj = this.bodyB,
-        ri = this.contactPointA,
+    var ri = this.contactPointA,
         rj = this.contactPointB,
         t = this.t,
         G = this.G;

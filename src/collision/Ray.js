@@ -1,9 +1,6 @@
 module.exports = Ray;
 
 var vec2 = require('../math/vec2');
-var RaycastResult = require('../collision/RaycastResult');
-var Shape = require('../shapes/Shape');
-var AABB = require('../collision/AABB');
 
 /**
  * A line with a start and end point that is used to intersect shapes. For an example, see {{#crossLink "World/raycast:method"}}World.raycast{{/crossLink}}
@@ -17,7 +14,7 @@ var AABB = require('../collision/AABB');
  * @param {number} [options.collisionMask=-1]
  * @param {number} [options.collisionGroup=-1]
  * @param {number} [options.mode=Ray.ANY]
- * @param {number} [options.callback]
+ * @param {Function} [options.callback]
  */
 function Ray(options){
     options = options || {};
@@ -26,13 +23,13 @@ function Ray(options){
      * Ray start point.
      * @property {array} from
      */
-    this.from = options.from ? vec2.fromValues(options.from[0], options.from[1]) : vec2.create();
+    this.from = options.from ? vec2.clone(options.from) : vec2.create();
 
     /**
      * Ray end point
      * @property {array} to
      */
-    this.to = options.to ? vec2.fromValues(options.to[0], options.to[1]) : vec2.create();
+    this.to = options.to ? vec2.clone(options.to) : vec2.create();
 
     /**
      * Set to true if you want the Ray to take .collisionResponse flags into account on bodies and shapes.
@@ -68,7 +65,7 @@ function Ray(options){
      * Current, user-provided result callback. Will be used if mode is Ray.ALL.
      * @property {Function} callback
      */
-    this.callback = options.callback || function(result){};
+    this.callback = options.callback || function(/*result*/){};
 
     /**
      * @readOnly
@@ -116,7 +113,7 @@ Ray.prototype.update = function(){
 
     // Update .direction and .length
     var d = this.direction;
-    vec2.sub(d, this.to, this.from);
+    vec2.subtract(d, this.to, this.from);
     this.length = vec2.length(d);
     vec2.normalize(d, d);
 
@@ -228,8 +225,6 @@ Ray.prototype.getAABB = function(result){
     );
 };
 
-var hitPointWorld = vec2.create();
-
 /**
  * @method reportIntersection
  * @private
@@ -239,8 +234,6 @@ var hitPointWorld = vec2.create();
  * @return {boolean} True if the intersections should continue
  */
 Ray.prototype.reportIntersection = function(result, fraction, normal, faceIndex){
-    var from = this.from;
-    var to = this.to;
     var shape = this._currentShape;
     var body = this._currentBody;
 
@@ -295,7 +288,7 @@ var v0 = vec2.create(),
 function distanceFromIntersectionSquared(from, direction, position) {
 
     // v0 is vector from from to position
-    vec2.sub(v0, position, from);
+    vec2.subtract(v0, position, from);
     var dot = vec2.dot(v0, direction);
 
     // intersect = direction * dot + from

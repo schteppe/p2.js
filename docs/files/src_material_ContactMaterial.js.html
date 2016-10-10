@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="p2.js" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.7.0</em>
+            <em>API Docs for: 0.7.1</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -178,52 +178,55 @@ function ContactMaterial(materialA, materialB, options){
     this.materialB = materialB;
 
     /**
-     * Friction to use in the contact of these two materials
+     * Friction coefficient to use in the contact of these two materials. Friction = 0 will make the involved objects super slippery, and friction = 1 will make it much less slippery. A friction coefficient larger than 1 will allow for very large friction forces, which can be convenient for preventing car tires not slip on the ground.
      * @property friction
      * @type {Number}
+     * @default 0.3
      */
-    this.friction    =  typeof(options.friction)    !== &quot;undefined&quot; ?   Number(options.friction)    : 0.3;
+    this.friction = typeof(options.friction) !== &quot;undefined&quot; ? Number(options.friction) : 0.3;
 
     /**
-     * Restitution to use in the contact of these two materials
+     * Restitution, or &quot;bounciness&quot; to use in the contact of these two materials. A restitution of 0 will make no bounce, while restitution=1 will approximately bounce back with the same velocity the object came with.
      * @property restitution
      * @type {Number}
+     * @default 0
      */
-    this.restitution =  typeof(options.restitution) !== &quot;undefined&quot; ?   Number(options.restitution) : 0.0;
+    this.restitution = typeof(options.restitution) !== &quot;undefined&quot; ? Number(options.restitution) : 0;
 
     /**
-     * Stiffness of the resulting ContactEquation that this ContactMaterial generate
+     * Hardness of the contact. Less stiffness will make the objects penetrate more, and will make the contact act more like a spring than a contact force. Default value is {{#crossLink &quot;Equation/DEFAULT_STIFFNESS:property&quot;}}Equation.DEFAULT_STIFFNESS{{/crossLink}}.
      * @property stiffness
      * @type {Number}
      */
-    this.stiffness =            typeof(options.stiffness)           !== &quot;undefined&quot; ?   Number(options.stiffness)   : Equation.DEFAULT_STIFFNESS;
+    this.stiffness = typeof(options.stiffness) !== &quot;undefined&quot; ? Number(options.stiffness) : Equation.DEFAULT_STIFFNESS;
 
     /**
-     * Relaxation of the resulting ContactEquation that this ContactMaterial generate
+     * Relaxation of the resulting ContactEquation that this ContactMaterial generate. Default value is {{#crossLink &quot;Equation/DEFAULT_RELAXATION:property&quot;}}Equation.DEFAULT_RELAXATION{{/crossLink}}.
      * @property relaxation
      * @type {Number}
      */
-    this.relaxation =           typeof(options.relaxation)          !== &quot;undefined&quot; ?   Number(options.relaxation)  : Equation.DEFAULT_RELAXATION;
+    this.relaxation = typeof(options.relaxation) !== &quot;undefined&quot; ? Number(options.relaxation) : Equation.DEFAULT_RELAXATION;
 
     /**
-     * Stiffness of the resulting FrictionEquation that this ContactMaterial generate
+     * Stiffness of the resulting friction force. For most cases, the value of this property should be a large number. I cannot think of any case where you would want less frictionStiffness. Default value is {{#crossLink &quot;Equation/DEFAULT_STIFFNESS:property&quot;}}Equation.DEFAULT_STIFFNESS{{/crossLink}}.
      * @property frictionStiffness
      * @type {Number}
      */
-    this.frictionStiffness =    typeof(options.frictionStiffness)   !== &quot;undefined&quot; ?   Number(options.frictionStiffness)   : Equation.DEFAULT_STIFFNESS;
+    this.frictionStiffness = typeof(options.frictionStiffness) !== &quot;undefined&quot; ? Number(options.frictionStiffness) : Equation.DEFAULT_STIFFNESS;
 
     /**
-     * Relaxation of the resulting FrictionEquation that this ContactMaterial generate
+     * Relaxation of the resulting friction force. The default value should be good for most simulations. Default value is {{#crossLink &quot;Equation/DEFAULT_RELAXATION:property&quot;}}Equation.DEFAULT_RELAXATION{{/crossLink}}.
      * @property frictionRelaxation
      * @type {Number}
      */
-    this.frictionRelaxation =   typeof(options.frictionRelaxation)  !== &quot;undefined&quot; ?   Number(options.frictionRelaxation)  : Equation.DEFAULT_RELAXATION;
+    this.frictionRelaxation = typeof(options.frictionRelaxation) !== &quot;undefined&quot; ? Number(options.frictionRelaxation)  : Equation.DEFAULT_RELAXATION;
 
     /**
      * Will add surface velocity to this material. If bodyA rests on top if bodyB, and the surface velocity is positive, bodyA will slide to the right.
      * @property {Number} surfaceVelocity
+     * @default 0
      */
-    this.surfaceVelocity = typeof(options.surfaceVelocity)    !== &quot;undefined&quot; ?   Number(options.surfaceVelocity)    : 0;
+    this.surfaceVelocity = typeof(options.surfaceVelocity) !== &quot;undefined&quot; ? Number(options.surfaceVelocity) : 0;
 
     /**
      * Offset to be set on ContactEquations. A positive value will make the bodies penetrate more into each other. Can be useful in scenes where contacts need to be more persistent, for example when stacking. Aka &quot;cure for nervous contacts&quot;.

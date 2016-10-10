@@ -1,5 +1,4 @@
-var Equation = require("./Equation"),
-    vec2 = require('../math/vec2');
+var Equation = require("./Equation");
 
 module.exports = AngleLockEquation;
 
@@ -23,10 +22,10 @@ function AngleLockEquation(bodyA, bodyB, options){
     /**
      * The gear ratio.
      * @property {Number} ratio
-     * @private
+     * @readonly
      * @see setRatio
      */
-    this.ratio = typeof(options.ratio)==="number" ? options.ratio : 1;
+    this.ratio = options.ratio !== undefined ? options.ratio : 1;
 
     this.setRatio(this.ratio);
 }

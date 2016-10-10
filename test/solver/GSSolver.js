@@ -13,16 +13,19 @@ exports.solve = function(test){
     var bodyA = new Body({
         mass: 1
     });
+    world.addBody(bodyA);
     var bodyB = new Body({
         mass: 1,
         position:[0,1.001]
     });
+    world.addBody(bodyB);
     var constraint = new DistanceConstraint(bodyA, bodyB, {
-        distance:1
+        distance: 1
     });
     world.addConstraint(constraint);
     var solver = new GSSolver({
-        iterations: 10
+        iterations: 10,
+        tolerance: 0
     });
     solver.addEquations(constraint.equations);
     solver.solve(1/60, world);

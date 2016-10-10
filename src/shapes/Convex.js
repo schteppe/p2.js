@@ -1,7 +1,8 @@
 var Shape = require('./Shape')
 ,   vec2 = require('../math/vec2')
+,   dot = vec2.dot
 ,   polyk = require('../math/polyk')
-,   decomp = require('poly-decomp');
+,   shallowClone = require('../utils/Utils').shallowClone;
 
 module.exports = Convex;
 
@@ -12,22 +13,16 @@ module.exports = Convex;
  * @extends Shape
  * @param {object} [options] (Note that this options object will be passed on to the {{#crossLink "Shape"}}{{/crossLink}} constructor.)
  * @param {Array} [options.vertices] An array of vertices that span this shape. Vertices are given in counter-clockwise (CCW) direction.
- * @param {Array} [options.axes] An array of unit length vectors, representing the symmetry axes in the convex.
  * @example
- *     // Create a box
+ *     var body = new Body({ mass: 1 });
  *     var vertices = [[-1,-1], [1,-1], [1,1], [-1,1]];
- *     var convexShape = new Convex({ vertices: vertices });
+ *     var convexShape = new Convex({
+ *         vertices: vertices
+ *     });
  *     body.addShape(convexShape);
  */
 function Convex(options){
-    if(Array.isArray(arguments[0])){
-        options = {
-            vertices: arguments[0],
-            axes: arguments[1]
-        };
-        console.warn('The Convex constructor signature has changed. Please use the following format: new Convex({ vertices: [...], ... })');
-    }
-    options = options || {};
+    options = options ? shallowClone(options) : {};
 
     /**
      * Vertices defined in the local frame.
@@ -39,53 +34,26 @@ function Convex(options){
     // Copy the verts
     var vertices = options.vertices !== undefined ? options.vertices : [];
     for(var i=0; i < vertices.length; i++){
-        var v = vec2.create();
-        vec2.copy(v, vertices[i]);
-        this.vertices.push(v);
+        this.vertices.push(vec2.clone(vertices[i]));
     }
 
     /**
-     * Axes defined in the local frame.
-     * @property axes
+     * Edge normals defined in the local frame, pointing out of the shape.
+     * @property normals
      * @type {Array}
      */
-    this.axes = [];
-
-    if(options.axes){
-
-        // Copy the axes
-        for(var i=0; i < options.axes.length; i++){
-            var axis = vec2.create();
-            vec2.copy(axis, options.axes[i]);
-            this.axes.push(axis);
-        }
-
-    } else {
-
-        // Construct axes from the vertex data
-        for(var i = 0; i < this.vertices.length; i++){
-            // Get the world edge
-            var worldPoint0 = this.vertices[i];
-            var worldPoint1 = this.vertices[(i+1) % this.vertices.length];
-
-            var normal = vec2.create();
-            vec2.sub(normal, worldPoint1, worldPoint0);
-
-            // Get normal - just rotate 90 degrees since vertices are given in CCW
-            vec2.rotate90cw(normal, normal);
-            vec2.normalize(normal, normal);
-
-            this.axes.push(normal);
-        }
-
+    var normals = this.normals = [];
+    for(var i=0; i < vertices.length; i++){
+        normals.push(vec2.create());
     }
+    this.updateNormals();
 
     /**
      * The center of mass of the Convex
      * @property centerOfMass
      * @type {Array}
      */
-    this.centerOfMass = vec2.fromValues(0,0);
+    this.centerOfMass = vec2.create();
 
     /**
      * Triangulated version of this convex. The structure is Array of 3-Arrays, and each subarray contains 3 integers, referencing the vertices.
@@ -106,13 +74,13 @@ function Convex(options){
      */
     this.boundingRadius = 0;
 
-    options.type = Shape.CONVEX;
+    options.type = options.type || Shape.CONVEX;
     Shape.call(this, options);
 
     this.updateBoundingRadius();
     this.updateArea();
     if(this.area < 0){
-        throw new Error("Convex vertices must be given in conter-clockwise winding.");
+        throw new Error("Convex vertices must be given in counter-clockwise winding.");
     }
 }
 Convex.prototype = new Shape();
@@ -120,6 +88,23 @@ Convex.prototype.constructor = Convex;
 
 var tmpVec1 = vec2.create();
 var tmpVec2 = vec2.create();
+
+Convex.prototype.updateNormals = function(){
+    var vertices = this.vertices;
+    var normals = this.normals;
+
+    for(var i = 0; i < vertices.length; i++){
+        var worldPoint0 = vertices[i];
+        var worldPoint1 = vertices[(i+1) % vertices.length];
+
+        var normal = normals[i];
+        vec2.subtract(normal, worldPoint1, worldPoint0);
+
+        // Get normal - just rotate 90 degrees since vertices are given in CCW
+        vec2.rotate90cw(normal, normal);
+        vec2.normalize(normal, normal);
+    }
+};
 
 /**
  * Project a Convex onto a world-oriented axis
@@ -139,7 +124,7 @@ Convex.prototype.projectOntoLocalAxis = function(localAxis, result){
     // Get projected position of all vertices
     for(var i=0; i<this.vertices.length; i++){
         v = this.vertices[i];
-        value = vec2.dot(v, localAxis);
+        value = dot(v, localAxis);
         if(max === null || value > max){
             max = value;
         }
@@ -168,7 +153,7 @@ Convex.prototype.projectOntoWorldAxis = function(localAxis, shapeOffset, shapeAn
     } else {
         worldAxis = localAxis;
     }
-    var offset = vec2.dot(shapeOffset, worldAxis);
+    var offset = dot(shapeOffset, worldAxis);
 
     vec2.set(result, result[0] + offset, result[1] + offset);
 };
@@ -207,11 +192,7 @@ var updateCenterOfMass_centroid = vec2.create(),
     updateCenterOfMass_centroid_times_mass = vec2.create(),
     updateCenterOfMass_a = vec2.create(),
     updateCenterOfMass_b = vec2.create(),
-    updateCenterOfMass_c = vec2.create(),
-    updateCenterOfMass_ac = vec2.create(),
-    updateCenterOfMass_ca = vec2.create(),
-    updateCenterOfMass_cb = vec2.create(),
-    updateCenterOfMass_n = vec2.create();
+    updateCenterOfMass_c = vec2.create();
 
 /**
  * Update the .centerOfMass property.
@@ -222,13 +203,9 @@ Convex.prototype.updateCenterOfMass = function(){
         verts = this.vertices,
         cm = this.centerOfMass,
         centroid = updateCenterOfMass_centroid,
-        n = updateCenterOfMass_n,
         a = updateCenterOfMass_a,
         b = updateCenterOfMass_b,
         c = updateCenterOfMass_c,
-        ac = updateCenterOfMass_ac,
-        ca = updateCenterOfMass_ca,
-        cb = updateCenterOfMass_cb,
         centroid_times_mass = updateCenterOfMass_centroid_times_mass;
 
     vec2.set(cm,0,0);
@@ -244,7 +221,7 @@ Convex.prototype.updateCenterOfMass = function(){
 
         // Get mass for the triangle (density=1 in this case)
         // http://math.stackexchange.com/questions/80198/area-of-triangle-via-vectors
-        var m = Convex.triangleArea(a,b,c);
+        var m = triangleArea(a,b,c);
         totalArea += m;
 
         // Add to center of mass
@@ -256,13 +233,12 @@ Convex.prototype.updateCenterOfMass = function(){
 };
 
 /**
- * Compute the mass moment of inertia of the Convex.
+ * Compute the moment of inertia of the Convex.
  * @method computeMomentOfInertia
- * @param  {Number} mass
  * @return {Number}
  * @see http://www.gamedev.net/topic/342822-moment-of-inertia-of-a-polygon-2d/
  */
-Convex.prototype.computeMomentOfInertia = function(mass){
+Convex.prototype.computeMomentOfInertia = function(){
     var denom = 0.0,
         numer = 0.0,
         N = this.vertices.length;
@@ -270,11 +246,11 @@ Convex.prototype.computeMomentOfInertia = function(mass){
         var p0 = this.vertices[j];
         var p1 = this.vertices[i];
         var a = Math.abs(vec2.crossLength(p0,p1));
-        var b = vec2.dot(p1,p1) + vec2.dot(p1,p0) + vec2.dot(p0,p0);
+        var b = dot(p1,p1) + dot(p1,p0) + dot(p0,p0);
         denom += a * b;
         numer += a;
     }
-    return (mass / 6.0) * (denom / numer);
+    return (1.0 / 6.0) * (denom / numer);
 };
 
 /**
@@ -303,10 +279,13 @@ Convex.prototype.updateBoundingRadius = function(){
  * @param {Array} b
  * @param {Array} c
  * @return {Number}
+ * @deprecated
  */
-Convex.triangleArea = function(a,b,c){
+Convex.triangleArea = triangleArea;
+
+function triangleArea(a,b,c){
     return (((b[0] - a[0])*(c[1] - a[1]))-((c[0] - a[0])*(b[1] - a[1]))) * 0.5;
-};
+}
 
 /**
  * Update the .area
@@ -325,7 +304,7 @@ Convex.prototype.updateArea = function(){
             c = verts[t[2]];
 
         // Get mass for the triangle (density=1 in this case)
-        var m = Convex.triangleArea(a,b,c);
+        var m = triangleArea(a,b,c);
         this.area += m;
     }
 };
@@ -335,6 +314,7 @@ Convex.prototype.updateArea = function(){
  * @param  {AABB}   out
  * @param  {Array}  position
  * @param  {Number} angle
+ * @todo: approximate with a local AABB?
  */
 Convex.prototype.computeAABB = function(out, position, angle){
     out.setFromPoints(this.vertices, position, angle, 0);
@@ -369,10 +349,41 @@ Convex.prototype.raycast = function(result, ray, position, angle){
         var delta = vec2.getLineSegmentsIntersectionFraction(rayStart, rayEnd, q1, q2);
 
         if(delta >= 0){
-            vec2.sub(normal, q2, q1);
+            vec2.subtract(normal, q2, q1);
             vec2.rotate(normal, normal, -Math.PI / 2 + angle);
             vec2.normalize(normal, normal);
             ray.reportIntersection(result, delta, normal, i);
         }
     }
+};
+
+var pic_r0 = vec2.create();
+var pic_r1 = vec2.create();
+Convex.prototype.pointTest = function(localPoint){
+    var r0 = pic_r0,
+        r1 = pic_r1,
+        verts = this.vertices,
+        lastCross = null,
+        numVerts = verts.length;
+
+    for(var i=0; i < numVerts + 1; i++){
+        var v0 = verts[i % numVerts],
+            v1 = verts[(i + 1) % numVerts];
+
+        vec2.subtract(r0, v0, localPoint);
+        vec2.subtract(r1, v1, localPoint);
+
+        var cross = vec2.crossLength(r0,r1);
+
+        if(lastCross === null){
+            lastCross = cross;
+        }
+
+        // If we got a different sign of the distance vector, the point is out of the polygon
+        if(cross * lastCross < 0){
+            return false;
+        }
+        lastCross = cross;
+    }
+    return true;
 };
