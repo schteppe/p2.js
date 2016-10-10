@@ -65,6 +65,10 @@ function WebGLRenderer(scenes, options){
 
         g.clear();
 
+        if(!path.length){
+            return;
+        }
+
         var path2 = [];
         for(var j=0; j<path.length; j++){
             var v = path[j];
@@ -370,12 +374,28 @@ WebGLRenderer.prototype.frame = function(centerX, centerY, width, height){
     this.centerCamera(centerX, centerY);
 };
 
-function pixiDrawCircleOnGraphics(g, x, y, radius, numSegments){
+function pixiDrawCircleOnGraphics(g, x, y, radius){
+    var maxSegments = 32;
+    var minSegments = 12;
+
+    var alpha = (radius - 0.1) / 1;
+    alpha = Math.max(Math.min(alpha, 1), 0);
+
+    var numSegments = Math.round(
+        maxSegments * alpha + minSegments * (1-alpha)
+    );
+
     var circlePath = [];
     for(var i=0; i<numSegments+1; i++){
         var a = Math.PI * 2 / numSegments * i;
-        circlePath.push(new PIXI.Point(x + radius * Math.cos(a), y + radius * Math.sin(a)));
+        circlePath.push(
+            new PIXI.Point(
+                x + radius * Math.cos(a),
+                y + radius * Math.sin(a)
+            )
+        );
     }
+
     g.drawPolygon(circlePath);
 }
 
@@ -634,43 +654,12 @@ WebGLRenderer.prototype.drawPath = function(g,path,color,fillColor,lineWidth,isS
         g.beginFill(fillColor, isSleeping ? this.sleepOpacity : 1.0);
     }
 
-    /*
-    var lastx = null,
-        lasty = null;
-    */
-
     var poly = [];
-    for(var i=0; i<path.length+1; i++){ // length+1 because there's no way to close the path :(
-        var p = path[i % path.length];
+    for(var i=0; i<path.length; i++){
+        var p = path[i];
         poly.push(new PIXI.Point(p[0], p[1]));
     }
     g.drawPolygon(poly);
-
-    /*var i=path.length;
-    for(var i=0; i<path.length; i++){
-        var v = path[i],
-            x = v[0],
-            y = v[1];
-        if(x !== lastx || y !== lasty){
-            if(i === 0){
-                g.moveTo(x,y);
-            } else {
-                // Check if the lines are parallel
-                var p1x = lastx,
-                    p1y = lasty,
-                    p2x = x,
-                    p2y = y,
-                    p3x = path[(i+1)%path.length][0],
-                    p3y = path[(i+1)%path.length][1];
-                var area = ((p2x - p1x)*(p3y - p1y))-((p3x - p1x)*(p2y - p1y));
-                if(area !== 0){
-                    g.lineTo(x,y);
-                }
-            }
-            lastx = x;
-            lasty = y;
-        }
-    }*/
 
     if(typeof(fillColor)==="number"){
         g.endFill();
