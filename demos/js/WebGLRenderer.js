@@ -64,7 +64,7 @@ function WebGLRenderer(scenes, options){
     this.pickPrecision = 0.1;
 
     // Update "ghost draw line"
-    this.on("drawPointsChange",function(e){
+    this.on("drawPointsChange",function(/*e*/){
         var g = that.drawShapeGraphics;
         var path = that.drawPoints;
 
@@ -80,11 +80,11 @@ function WebGLRenderer(scenes, options){
             path2.push([v[0], v[1]]);
         }
 
-        that.drawPath(g,path2,0xff0000,false,that.lineWidth,false);
+        that.drawPath(g, path2, that.lineWidth, 0xff0000, 0x000000, 0);
     });
 
     // Update draw circle
-    this.on("drawCircleChange",function(e){
+    this.on("drawCircleChange",function(/*e*/){
         var g = that.drawShapeGraphics;
         g.clear();
         var tmpCircle = new p2.Circle({
@@ -115,18 +115,10 @@ function WebGLRenderer(scenes, options){
 }
 WebGLRenderer.prototype = Object.create(Renderer.prototype);
 
-WebGLRenderer.prototype.stagePositionToPhysics = function(out,stagePosition){
-    var x = stagePosition[0],
-        y = stagePosition[1];
-    vec2.set(out, x, y);
-    return out;
-};
-
 /**
  * Initialize the renderer and stage
  */
-var init_stagePosition = vec2.create(),
-    init_physicsPosition = vec2.create();
+var init_physicsPosition = vec2.create();
 WebGLRenderer.prototype.init = function(){
     var w = this.w,
         h = this.h,
@@ -209,12 +201,10 @@ WebGLRenderer.prototype.init = function(){
             var touchB = e.data.originalEvent.touches[1];
 
             e.data.getLocalPosition(stage, pos, new PIXI.Point(touchA.clientX, touchA.clientY));
-            vec2.set(stagePos, pos.x, pos.y);
-            that.stagePositionToPhysics(physicsPosA, stagePos);
+            vec2.set(physicsPosA, pos.x, pos.y);
 
             e.data.getLocalPosition(stage, pos, new PIXI.Point(touchB.clientX, touchB.clientY));
-            vec2.set(stagePos, pos.x, pos.y);
-            that.stagePositionToPhysics(physicsPosB, stagePos);
+            vec2.set(physicsPosB, pos.x, pos.y);
 
             initPinchLength = vec2.distance(physicsPosA, physicsPosB);
 
@@ -232,8 +222,7 @@ WebGLRenderer.prototype.init = function(){
         that.lastMousePos = e.data.global;
 
         var pos = e.data.getLocalPosition(stage);
-        vec2.set(init_stagePosition, pos.x, pos.y);
-        that.stagePositionToPhysics(init_physicsPosition, init_stagePosition);
+        vec2.set(init_physicsPosition, pos.x, pos.y);
         that.handleMouseDown(init_physicsPosition);
 
         vec2.set(that.startMouseDelta, e.data.global.x, e.data.global.y);
@@ -273,11 +262,8 @@ WebGLRenderer.prototype.init = function(){
                 var stagePosA = touchPositions[touchIdentifiers[0]];
                 var stagePosB = touchPositions[touchIdentifiers[1]];
 
-                vec2.set(stagePos, stagePosA.x,stagePosA.y);
-                that.stagePositionToPhysics(physicsPosA, stagePos);
-
-                vec2.set(stagePos, stagePosB.x, stagePosB.y);
-                that.stagePositionToPhysics(physicsPosB, stagePos);
+                vec2.set(physicsPosA, stagePosA.x,stagePosA.y);
+                vec2.set(physicsPosB, stagePosB.x, stagePosB.y);
 
                 var pinchLength = vec2.distance(physicsPosA, physicsPosB);
 
@@ -316,8 +302,7 @@ WebGLRenderer.prototype.init = function(){
         that.lastMousePos = e.data.global;
 
         var pos = e.data.getLocalPosition(stage);
-        vec2.set(init_stagePosition, pos.x, pos.y);
-        that.stagePositionToPhysics(init_physicsPosition, init_stagePosition);
+        vec2.set(init_physicsPosition, pos.x, pos.y);
         that.handleMouseMove(init_physicsPosition);
     };
     container.mouseup = container.touchend = function(e){
@@ -332,8 +317,7 @@ WebGLRenderer.prototype.init = function(){
         that.lastMousePos = e.data.global;
 
         var pos = e.data.getLocalPosition(stage);
-        vec2.set(init_stagePosition, pos.x, pos.y);
-        that.stagePositionToPhysics(init_physicsPosition, init_stagePosition);
+        vec2.set(init_physicsPosition, pos.x, pos.y);
         that.handleMouseUp(init_physicsPosition);
 
         touchState[e.data.identifier] = false;
