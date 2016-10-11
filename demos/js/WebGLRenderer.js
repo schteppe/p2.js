@@ -100,9 +100,17 @@ function WebGLRenderer(scenes, options){
         g.clear();
         var start = that.drawRectStart;
         var end = that.drawRectEnd;
-        var width = start[0] - end[0];
-        var height = start[1] - end[1];
-        that.drawRectangle(g, start[0] - width/2, start[1] - height/2, 0, width, height, false, false, that.lineWidth, false);
+        var w = start[0] - end[0];
+        var h = start[1] - end[1];
+        var tmpBox = new p2.Box({
+            width: Math.abs(w),
+            height: Math.abs(h),
+            position: [
+                start[0] - w/2,
+                start[1] - h/2
+            ]
+        });
+        that.drawRectangle(g, tmpBox, 0, 0, that.lineWidth);
     });
 }
 WebGLRenderer.prototype = Object.create(Renderer.prototype);
@@ -166,8 +174,7 @@ WebGLRenderer.prototype.init = function(){
     this.pickGraphics = new PIXI.Graphics();
     stage.addChild(this.pickGraphics);
 
-    stage.scale.x = this.zoom;
-    stage.scale.y = -this.zoom; // Flip Y direction since pixi has down as Y axis
+    stage.scale.set(this.zoom, -this.zoom); // Flip Y direction since pixi has down as Y axis
 
     var lastX, lastY, lastMoveX, lastMoveY, startX, startY, down=false;
 
@@ -735,6 +742,7 @@ var X = vec2.fromValues(1,0),
     worldAnchorA = vec2.fromValues(0,0),
     worldAnchorB = vec2.fromValues(0,0);
 WebGLRenderer.prototype.render = function(){
+    var stage = this.stage;
     var springSprites = this.springSprites;
 
     // Update body transforms
@@ -802,8 +810,8 @@ WebGLRenderer.prototype.render = function(){
     // Clear contacts
     if(this.drawContacts){
         this.contactGraphics.clear();
-        this.stage.removeChild(this.contactGraphics);
-        this.stage.addChild(this.contactGraphics);
+        stage.removeChild(this.contactGraphics);
+        stage.addChild(this.contactGraphics);
 
         var g = this.contactGraphics;
         g.lineStyle(this.lineWidth,0x000000,1);
@@ -834,8 +842,8 @@ WebGLRenderer.prototype.render = function(){
     // Draw AABBs
     if(this.drawAABBs){
         this.aabbGraphics.clear();
-        this.stage.removeChild(this.aabbGraphics);
-        this.stage.addChild(this.aabbGraphics);
+        stage.removeChild(this.aabbGraphics);
+        stage.addChild(this.aabbGraphics);
         var g = this.aabbGraphics;
         g.lineStyle(this.lineWidth,0x000000,1);
 
@@ -853,8 +861,8 @@ WebGLRenderer.prototype.render = function(){
     if(this.mouseConstraint){
         var g = this.pickGraphics;
         g.clear();
-        this.stage.removeChild(g);
-        this.stage.addChild(g);
+        stage.removeChild(g);
+        stage.addChild(g);
         g.lineStyle(this.lineWidth,0x000000,1);
         var c = this.mouseConstraint;
         var worldPivotB = vec2.create();
