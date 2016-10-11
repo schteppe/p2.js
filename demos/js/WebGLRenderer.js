@@ -68,9 +68,14 @@ function WebGLRenderer(scenes, options){
         var g = that.drawShapeGraphics;
         var path = that.drawPoints;
 
+        if(!g.parent){
+            that.stage.addChild(g);
+        }
+
         g.clear();
 
         if(!path.length){
+            that.stage.removeChild(g);
             return;
         }
 
@@ -86,6 +91,9 @@ function WebGLRenderer(scenes, options){
     // Update draw circle
     this.on("drawCircleChange",function(/*e*/){
         var g = that.drawShapeGraphics;
+        if(!g.parent){
+            that.stage.addChild(g);
+        }
         g.clear();
         var tmpCircle = new p2.Circle({
             radius: vec2.distance(that.drawCircleCenter, that.drawCirclePoint),
@@ -97,6 +105,9 @@ function WebGLRenderer(scenes, options){
     // Update draw circle
     this.on("drawRectangleChange",function(/*e*/){
         var g = that.drawShapeGraphics;
+        if(!g.parent){
+            that.stage.addChild(g);
+        }
         g.clear();
         var start = that.drawRectStart;
         var end = that.drawRectEnd;
@@ -120,9 +131,7 @@ WebGLRenderer.prototype = Object.create(Renderer.prototype);
  */
 var init_physicsPosition = vec2.create();
 WebGLRenderer.prototype.init = function(){
-    var w = this.w,
-        h = this.h,
-        s = this.settings;
+    var s = this.settings;
 
     var that = this;
 
@@ -152,46 +161,34 @@ WebGLRenderer.prototype.init = function(){
 
     // Graphics object for drawing shapes
     this.drawShapeGraphics = new PIXI.Graphics();
-    stage.addChild(this.drawShapeGraphics);
 
     // Graphics object for contacts
     this.contactGraphics = new PIXI.Graphics();
-    stage.addChild(this.contactGraphics);
 
     // Graphics object for AABBs
     this.aabbGraphics = new PIXI.Graphics();
-    stage.addChild(this.aabbGraphics);
 
     // Graphics object for pick
     this.pickGraphics = new PIXI.Graphics();
-    stage.addChild(this.pickGraphics);
 
     stage.scale.set(this.zoom, -this.zoom); // Flip Y direction since pixi has down as Y axis
 
-    var lastX, lastY, lastMoveX, lastMoveY, startX, startY, down=false;
+    var startX, startY, down=false;
 
     var physicsPosA = vec2.create();
     var physicsPosB = vec2.create();
-    var stagePos = vec2.create();
     var initPinchLength = 0;
-    var initScaleX = 1;
-    var initScaleY = 1;
     var lastNumTouches = 0;
 
-    var touchState = {}; // identifier => isdown
     var touchPositions = {}; // identifier => PIXI.Point in global space
 
     container.mousedown = container.touchstart = function(e){
-        lastMoveX = e.data.global.x;
-        lastMoveY = e.data.global.y;
-
         if(e.data.originalEvent.touches){
             lastNumTouches = e.data.originalEvent.touches.length;
         }
 
         // store touch state
         if(e.data.identifier !== undefined){
-            touchState[e.data.identifier] = true;
             touchPositions[e.data.identifier]= e.data.getLocalPosition(stage);
         }
 
@@ -208,18 +205,11 @@ WebGLRenderer.prototype.init = function(){
 
             initPinchLength = vec2.distance(physicsPosA, physicsPosB);
 
-            initScaleX = stage.scale.x;
-            initScaleY = stage.scale.y;
-
             return;
         }
-        lastX = e.data.global.x;
-        lastY = e.data.global.y;
         startX = stage.position.x;
         startY = stage.position.y;
         down = true;
-
-        that.lastMousePos = e.data.global;
 
         var pos = e.data.getLocalPosition(stage);
         vec2.set(init_physicsPosition, pos.x, pos.y);
@@ -232,8 +222,6 @@ WebGLRenderer.prototype.init = function(){
     container.mousemove = container.touchmove = function(e){
         if(e.data.originalEvent.touches){
             if(lastNumTouches !== e.data.originalEvent.touches.length){
-                lastX = e.data.global.x;
-                lastY = e.data.global.y;
                 startX = stage.position.x;
                 startY = stage.position.y;
             }
@@ -243,17 +231,14 @@ WebGLRenderer.prototype.init = function(){
 
         // store touch state
         if(e.data.identifier !== undefined){
-            touchPositions[e.data.identifier]= e.data.getLocalPosition(stage);
+            touchPositions[e.data.identifier] = e.data.getLocalPosition(stage);
         }
 
-        lastMoveX = e.data.global.x;
-        lastMoveY = e.data.global.y;
-
-        var touchIdentifiers = Object.keys(touchState);
+        var touchIdentifiers = Object.keys(touchPositions);
         var numTouchesDown = 0;
         for(var i=0; i<touchIdentifiers.length; i++){
             touchIdentifiers[i] = parseInt(touchIdentifiers[i], 10);
-            if(touchState[touchIdentifiers[i]]){
+            if(touchPositions[touchIdentifiers[i]]){
                 numTouchesDown++;
             }
         }
@@ -299,8 +284,6 @@ WebGLRenderer.prototype.init = function(){
             that.setCameraCenter(delta);
         }
 
-        that.lastMousePos = e.data.global;
-
         var pos = e.data.getLocalPosition(stage);
         vec2.set(init_physicsPosition, pos.x, pos.y);
         that.handleMouseMove(init_physicsPosition);
@@ -311,16 +294,12 @@ WebGLRenderer.prototype.init = function(){
         }
 
         down = false;
-        lastMoveX = e.data.global.x;
-        lastMoveY = e.data.global.y;
-
-        that.lastMousePos = e.data.global;
 
         var pos = e.data.getLocalPosition(stage);
         vec2.set(init_physicsPosition, pos.x, pos.y);
         that.handleMouseUp(init_physicsPosition);
 
-        touchState[e.data.identifier] = false;
+        delete touchPositions[e.data.identifier];
     };
 
     // http://stackoverflow.com/questions/7691551/touchend-event-in-ios-webkit-not-firing
@@ -331,7 +310,6 @@ WebGLRenderer.prototype.init = function(){
     function MouseWheelHandler(e) {
         // cross-browser wheel delta
         e = window.event || e; // old IE support
-        //var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
 
         var o = e,
             d = o.detail, w = o.wheelDelta,
@@ -345,7 +323,7 @@ WebGLRenderer.prototype.init = function(){
         // Delta *should* not be greater than 2...
         var delta = Math.min(Math.max(d / 2, -1), 1);
 
-        if(typeof lastMoveX !== 'undefined'){
+        if(delta){
             var point = that.domToPhysics([e.clientX, e.clientY]);
             that.zoomAroundPoint(point, delta > 0 ? 0.05 : -0.05);
         }
@@ -371,35 +349,6 @@ WebGLRenderer.prototype.domVectorToPhysics = function(vector, result){
     result[1] = -vector[1] / this.zoom;
 };
 
-/*
-WebGLRenderer.prototype.zoom = function(x, y, zoomOut, actualScaleX, actualScaleY, multiplier){
-    var scrollFactor = this.scrollFactor,
-        stage = this.stage;
-
-    if(typeof actualScaleX === 'undefined'){
-
-        if(!zoomOut){
-            scrollFactor *= -1;
-        }
-
-        scrollFactor *= Math.abs(multiplier);
-
-        stage.scale.x *= (1 + scrollFactor);
-        stage.scale.y *= (1 + scrollFactor);
-        stage.position.x += scrollFactor * (stage.position.x - x);
-        stage.position.y += scrollFactor * (stage.position.y - y);
-    } else {
-        stage.scale.x *= actualScaleX;
-        stage.scale.y *= actualScaleY;
-        var delta = actualScaleX - 1;
-        stage.position.x += delta * (stage.position.x - x);
-        stage.position.y += delta * (stage.position.y - y);
-    }
-
-    stage.updateTransform();
-};
-*/
-
 WebGLRenderer.prototype.onCameraPositionChanged = function(){
     // TODO: can this be simplified by adding another PIXI.Container?
     this.stage.position.set(
@@ -422,14 +371,15 @@ WebGLRenderer.prototype.onZoomChanged = function(){
  * @param  {number} height
  */
 WebGLRenderer.prototype.frame = function(centerX, centerY, width, height){
+    var renderer = this.renderer;
     this.setCameraCenter([centerX, centerY]);
-    var ratio = this.renderer.width / this.renderer.height;
+    var ratio = renderer.width / renderer.height;
 
     var zoom;
     if(ratio < width / height){
-        zoom = this.renderer.width / width;
+        zoom = renderer.width / width;
     } else {
-        zoom = this.renderer.height / height;
+        zoom = renderer.height / height;
     }
     this.setZoom(zoom);
 };
@@ -479,8 +429,6 @@ WebGLRenderer.prototype.drawCircle = function(g, circleShape, color, alpha, line
 };
 
 WebGLRenderer.prototype.drawSpring = function(g,restLength,color,lineWidth){
-    lineWidth = typeof(lineWidth)==="number" ? lineWidth : 1;
-    color = typeof(color)==="undefined" ? 0xffffff : color;
     g.lineStyle(lineWidth, color, 1);
     if(restLength < lineWidth*10){
         restLength = lineWidth*10;
@@ -711,12 +659,10 @@ WebGLRenderer.prototype.drawPath = function(g, path, lineWidth, lineColor, fillC
 
 WebGLRenderer.prototype.updateSpriteTransform = function(sprite,body){
     if(this.useInterpolatedPositions && !this.paused){
-        sprite.position.x = body.interpolatedPosition[0];
-        sprite.position.y = body.interpolatedPosition[1];
+        sprite.position.set(body.interpolatedPosition[0], body.interpolatedPosition[1]);
         sprite.rotation = body.interpolatedAngle;
     } else {
-        sprite.position.x = body.position[0];
-        sprite.position.y = body.position[1];
+        sprite.position.set(body.position[0], body.position[1]);
         sprite.rotation = body.angle;
     }
 };
@@ -794,11 +740,13 @@ WebGLRenderer.prototype.render = function(){
     // Clear contacts
     if(this.drawContacts){
         this.contactGraphics.clear();
+
+        // Keep it on top
         stage.removeChild(this.contactGraphics);
         stage.addChild(this.contactGraphics);
 
         var g = this.contactGraphics;
-        g.lineStyle(this.lineWidth,0x000000,1);
+        g.lineStyle(this.lineWidth, 0x000000, 1);
         for(var i=0; i!==this.world.narrowphase.contactEquations.length; i++){
             var eq = this.world.narrowphase.contactEquations[i],
                 bi = eq.bodyA,
