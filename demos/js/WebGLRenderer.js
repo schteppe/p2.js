@@ -173,7 +173,7 @@ WebGLRenderer.prototype.init = function(){
 
     stage.scale.set(this.zoom, -this.zoom); // Flip Y direction since pixi has down as Y axis
 
-    var startX, startY, down=false;
+    var down = false;
 
     var physicsPosA = vec2.create();
     var physicsPosB = vec2.create();
@@ -207,8 +207,6 @@ WebGLRenderer.prototype.init = function(){
 
             return;
         }
-        startX = stage.position.x;
-        startY = stage.position.y;
         down = true;
 
         var pos = e.data.getLocalPosition(stage);
@@ -220,15 +218,6 @@ WebGLRenderer.prototype.init = function(){
     };
 
     container.mousemove = container.touchmove = function(e){
-        if(e.data.originalEvent.touches){
-            if(lastNumTouches !== e.data.originalEvent.touches.length){
-                startX = stage.position.x;
-                startY = stage.position.y;
-            }
-
-            lastNumTouches = e.data.originalEvent.touches.length;
-        }
-
         // store touch state
         if(e.data.identifier !== undefined){
             touchPositions[e.data.identifier] = e.data.getLocalPosition(stage);
@@ -727,8 +716,7 @@ WebGLRenderer.prototype.render = function(){
         );
 
         // Compute distance vector between anchors, in screen coords
-        distVec[0] = sxA - sxB;
-        distVec[1] = syA - syB;
+        vec2.set(distVec, sxA - sxB, syA - syB);
 
         // Compute angle
         sprite.rotation = Math.acos( vec2.dot(X, distVec) / vec2.length(distVec) );

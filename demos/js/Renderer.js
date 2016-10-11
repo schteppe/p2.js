@@ -21,6 +21,7 @@ var disableSelectionCSS = [
 ];
 
 p2.Renderer = Renderer;
+var vec2 = p2.vec2;
 
 /**
  * Base class for rendering a p2 physics scene.
@@ -86,12 +87,12 @@ function Renderer(scenes, options){
     }
 
     this.scenes = scenes;
-
+    this.bodyPolygonPaths = {}; // body id -> array<vec2>
     this.state = Renderer.DEFAULT;
 
     this.zoom = 200; // pixels per unit
 
-    this.cameraPosition = p2.vec2.create();
+    this.cameraPosition = vec2.create();
 
     // Bodies to draw
     this.bodies=[];
@@ -108,16 +109,16 @@ function Renderer(scenes, options){
 
     this.drawPoints = [];
     this.drawPointsChangeEvent = { type : "drawPointsChange" };
-    this.drawCircleCenter = p2.vec2.create();
-    this.drawCirclePoint = p2.vec2.create();
+    this.drawCircleCenter = vec2.create();
+    this.drawCirclePoint = vec2.create();
     this.drawCircleChangeEvent = { type : "drawCircleChange" };
     this.drawRectangleChangeEvent = { type : "drawRectangleChange" };
-    this.drawRectStart = p2.vec2.create();
-    this.drawRectEnd = p2.vec2.create();
+    this.drawRectStart = vec2.create();
+    this.drawRectEnd = vec2.create();
 
     this.stateChangeEvent = { type : "stateChange", state:null };
 
-    this.mousePosition = p2.vec2.create();
+    this.mousePosition = vec2.create();
 
     // Default collision masks for new shapes
     this.newShapeCollisionMask = 1;
@@ -308,7 +309,7 @@ Renderer.prototype.setupGUI = function() {
 
     function changeGravity(){
         if(!isNaN(settings.gravityX) && !isNaN(settings.gravityY)){
-            p2.vec2.set(that.world.gravity, settings.gravityX, settings.gravityY);
+            vec2.set(that.world.gravity, settings.gravityX, settings.gravityY);
         }
     }
     worldFolder.add(settings, 'gravityX', -maxg, maxg).onChange(changeGravity);
@@ -396,6 +397,7 @@ Renderer.prototype.setWorld = function(world){
         that.addVisual(e.body);
     }).on("removeBody",function(e){
         that.removeVisual(e.body);
+        delete that.bodyPolygonPaths[e.body.id];
     }).on("addSpring",function(e){
         that.addVisual(e.spring);
     }).on("removeSpring",function(e){
@@ -423,7 +425,7 @@ Renderer.prototype.setScene = function(sceneDefinition){
     }
 
     for(var i=0; i<this.addedGlobals.length; i++){
-        delete window[this.addedGlobals];
+        delete window[this.addedGlobals[i]];
     }
 
     var preGlobalVars = Object.keys(window);
@@ -629,7 +631,7 @@ Renderer.prototype.handleMouseDown = function(physicsPosition){
             b.wakeUp();
             this.transitionTo(Renderer.DRAGGING);
             // Add mouse joint to the body
-            var localPoint = p2.vec2.create();
+            var localPoint = vec2.create();
             b.toLocalFrame(localPoint,physicsPosition);
             this.world.addBody(this.nullBody);
             this.mouseConstraint = new p2.RevoluteConstraint(this.nullBody, b, {
@@ -647,8 +649,8 @@ Renderer.prototype.handleMouseDown = function(physicsPosition){
         // Start drawing a polygon
         this.transitionTo(Renderer.DRAWINGPOLYGON);
         this.drawPoints = [];
-        var copy = p2.vec2.create();
-        p2.vec2.copy(copy,physicsPosition);
+        var copy = vec2.create();
+        vec2.copy(copy,physicsPosition);
         this.drawPoints.push(copy);
         this.emit(this.drawPointsChangeEvent);
         break;
@@ -656,16 +658,16 @@ Renderer.prototype.handleMouseDown = function(physicsPosition){
     case Renderer.DRAWCIRCLE:
         // Start drawing a circle
         this.transitionTo(Renderer.DRAWINGCIRCLE);
-        p2.vec2.copy(this.drawCircleCenter,physicsPosition);
-        p2.vec2.copy(this.drawCirclePoint, physicsPosition);
+        vec2.copy(this.drawCircleCenter,physicsPosition);
+        vec2.copy(this.drawCirclePoint, physicsPosition);
         this.emit(this.drawCircleChangeEvent);
         break;
 
     case Renderer.DRAWRECTANGLE:
         // Start drawing a circle
         this.transitionTo(Renderer.DRAWINGRECTANGLE);
-        p2.vec2.copy(this.drawRectStart,physicsPosition);
-        p2.vec2.copy(this.drawRectEnd, physicsPosition);
+        vec2.copy(this.drawRectStart,physicsPosition);
+        vec2.copy(this.drawRectEnd, physicsPosition);
         this.emit(this.drawRectangleChangeEvent);
         break;
     }
@@ -675,14 +677,14 @@ Renderer.prototype.handleMouseDown = function(physicsPosition){
  * Should be called by subclasses whenever there's a mousemove event
  */
 Renderer.prototype.handleMouseMove = function(physicsPosition){
-    p2.vec2.copy(this.mousePosition, physicsPosition);
+    vec2.copy(this.mousePosition, physicsPosition);
 
     var sampling = 0.4;
     switch(this.state){
     case Renderer.DEFAULT:
     case Renderer.DRAGGING:
         if(this.mouseConstraint){
-            p2.vec2.copy(this.mouseConstraint.pivotA, physicsPosition);
+            vec2.copy(this.mouseConstraint.pivotA, physicsPosition);
             this.mouseConstraint.bodyA.wakeUp();
             this.mouseConstraint.bodyB.wakeUp();
         }
@@ -690,10 +692,10 @@ Renderer.prototype.handleMouseMove = function(physicsPosition){
 
     case Renderer.DRAWINGPOLYGON:
         // drawing a polygon - add new point
-        var sqdist = p2.vec2.distance(physicsPosition,this.drawPoints[this.drawPoints.length-1]);
+        var sqdist = vec2.distance(physicsPosition,this.drawPoints[this.drawPoints.length-1]);
         if(sqdist > sampling*sampling){
             var copy = [0,0];
-            p2.vec2.copy(copy,physicsPosition);
+            vec2.copy(copy,physicsPosition);
             this.drawPoints.push(copy);
             this.emit(this.drawPointsChangeEvent);
         }
@@ -701,13 +703,13 @@ Renderer.prototype.handleMouseMove = function(physicsPosition){
 
     case Renderer.DRAWINGCIRCLE:
         // drawing a circle - change the circle radius point to current
-        p2.vec2.copy(this.drawCirclePoint, physicsPosition);
+        vec2.copy(this.drawCirclePoint, physicsPosition);
         this.emit(this.drawCircleChangeEvent);
         break;
 
     case Renderer.DRAWINGRECTANGLE:
         // drawing a rectangle - change the end point to current
-        p2.vec2.copy(this.drawRectEnd, physicsPosition);
+        vec2.copy(this.drawRectEnd, physicsPosition);
         this.emit(this.drawRectangleChangeEvent);
         break;
     }
@@ -716,7 +718,7 @@ Renderer.prototype.handleMouseMove = function(physicsPosition){
 /**
  * Should be called by subclasses whenever there's a mouseup event
  */
-Renderer.prototype.handleMouseUp = function(physicsPosition){
+Renderer.prototype.handleMouseUp = function(/*physicsPosition*/){
 
     var b;
 
@@ -743,20 +745,22 @@ Renderer.prototype.handleMouseUp = function(physicsPosition){
         if(this.drawPoints.length > 3){
             // Create polygon
             b = new p2.Body({ mass : 1 });
-            if(b.fromPolygon(this.drawPoints,{
-                removeCollinearPoints: 0.1
-            })){
+            if (b.fromPolygon(this.drawPoints, { removeCollinearPoints: 0.1 })) {
+                var bodyPath = this.bodyPolygonPaths[b.id] = [];
+                for(var i=0; i<this.drawPoints.length; i++){
+                    bodyPath.push(vec2.clone(this.drawPoints[i]));
+                }
                 this.world.addBody(b);
             }
         }
-        this.drawPoints = [];
+        this.drawPoints.length = 0;
         this.emit(this.drawPointsChangeEvent);
         break;
 
     case Renderer.DRAWINGCIRCLE:
         // End this drawing state
         this.transitionTo(Renderer.DRAWCIRCLE);
-        var R = p2.vec2.distance(this.drawCircleCenter,this.drawCirclePoint);
+        var R = vec2.distance(this.drawCircleCenter,this.drawCirclePoint);
         if(R > 0){
             // Create circle
             b = new p2.Body({ mass : 1, position : this.drawCircleCenter });
@@ -764,7 +768,7 @@ Renderer.prototype.handleMouseUp = function(physicsPosition){
             b.addShape(circle);
             this.world.addBody(b);
         }
-        p2.vec2.copy(this.drawCircleCenter,this.drawCirclePoint);
+        vec2.copy(this.drawCircleCenter,this.drawCirclePoint);
         this.emit(this.drawCircleChangeEvent);
         break;
 
@@ -793,7 +797,7 @@ Renderer.prototype.handleMouseUp = function(physicsPosition){
             b.addShape(rectangleShape);
             this.world.addBody(b);
         }
-        p2.vec2.copy(this.drawRectEnd,this.drawRectStart);
+        vec2.copy(this.drawRectEnd,this.drawRectStart);
         this.emit(this.drawRectangleChangeEvent);
         break;
     }
@@ -929,7 +933,7 @@ Renderer.prototype.setEquationParameters = function(){
 
 // Set camera position in physics space
 Renderer.prototype.setCameraCenter = function(position){
-    p2.vec2.set(this.cameraPosition, position[0], position[1]);
+    vec2.set(this.cameraPosition, position[0], position[1]);
     this.onCameraPositionChanged();
 };
 
@@ -947,7 +951,7 @@ Renderer.prototype.zoomAroundPoint = function(point, deltaZoom){
     // If delta is infinity, the camera position should go toward the point
     // If delta is close to zero, the camera position should be almost unchanged
     // p = (point + p * delta) / (1 + delta)
-    p2.vec2.set(
+    vec2.set(
         this.cameraPosition,
         (this.cameraPosition[0] + point[0] * deltaZoom) / (1 + deltaZoom),
         (this.cameraPosition[1] + point[1] * deltaZoom) / (1 + deltaZoom)
