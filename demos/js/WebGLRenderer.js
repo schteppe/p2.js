@@ -4,6 +4,7 @@
 
 p2.WebGLRenderer = WebGLRenderer;
 
+var vec2 = p2.vec2;
 var Renderer = p2.Renderer;
 
 /**
@@ -24,6 +25,7 @@ function WebGLRenderer(scenes, options){
     var that = this;
 
     var settings = {
+        lineColor: 0x000000,
         lineWidth : 0.01,
         scrollFactor : 0.1,
         width : 1280, // Pixi screen resolution
@@ -39,8 +41,8 @@ function WebGLRenderer(scenes, options){
         settings.height = window.innerHeight / window.innerWidth * settings.width;
     }
 
-    //this.settings = settings;
     this.lineWidth =            settings.lineWidth;
+    this.lineColor =            settings.lineColor;
     this.scrollFactor =         settings.scrollFactor;
     this.sleepOpacity =         settings.sleepOpacity;
 
@@ -50,8 +52,8 @@ function WebGLRenderer(scenes, options){
 
     this.islandColors = {}; // id -> int
 
-    this.startMouseDelta = p2.vec2.create();
-    this.startCamPos = p2.vec2.create();
+    this.startMouseDelta = vec2.create();
+    this.startCamPos = vec2.create();
 
     Renderer.call(this,scenes,options);
 
@@ -85,9 +87,11 @@ function WebGLRenderer(scenes, options){
     this.on("drawCircleChange",function(e){
         var g = that.drawShapeGraphics;
         g.clear();
-        var center = that.drawCircleCenter;
-        var R = p2.vec2.distance(center, that.drawCirclePoint);
-        that.drawCircle(g,center[0], center[1], 0, R,false, that.lineWidth);
+        var tmpCircle = new p2.Circle({
+            radius: vec2.distance(that.drawCircleCenter, that.drawCirclePoint),
+            position: that.drawCircleCenter
+        });
+        that.drawCircle(g, tmpCircle, 0, 0, that.lineWidth);
     });
 
     // Update draw circle
@@ -106,15 +110,15 @@ WebGLRenderer.prototype = Object.create(Renderer.prototype);
 WebGLRenderer.prototype.stagePositionToPhysics = function(out,stagePosition){
     var x = stagePosition[0],
         y = stagePosition[1];
-    p2.vec2.set(out, x, y);
+    vec2.set(out, x, y);
     return out;
 };
 
 /**
  * Initialize the renderer and stage
  */
-var init_stagePosition = p2.vec2.create(),
-    init_physicsPosition = p2.vec2.create();
+var init_stagePosition = vec2.create(),
+    init_physicsPosition = vec2.create();
 WebGLRenderer.prototype.init = function(){
     var w = this.w,
         h = this.h,
@@ -167,9 +171,9 @@ WebGLRenderer.prototype.init = function(){
 
     var lastX, lastY, lastMoveX, lastMoveY, startX, startY, down=false;
 
-    var physicsPosA = p2.vec2.create();
-    var physicsPosB = p2.vec2.create();
-    var stagePos = p2.vec2.create();
+    var physicsPosA = vec2.create();
+    var physicsPosB = vec2.create();
+    var stagePos = vec2.create();
     var initPinchLength = 0;
     var initScaleX = 1;
     var initScaleY = 1;
@@ -198,14 +202,14 @@ WebGLRenderer.prototype.init = function(){
             var touchB = e.data.originalEvent.touches[1];
 
             e.data.getLocalPosition(stage, pos, new PIXI.Point(touchA.clientX, touchA.clientY));
-            p2.vec2.set(stagePos, pos.x, pos.y);
+            vec2.set(stagePos, pos.x, pos.y);
             that.stagePositionToPhysics(physicsPosA, stagePos);
 
             e.data.getLocalPosition(stage, pos, new PIXI.Point(touchB.clientX, touchB.clientY));
-            p2.vec2.set(stagePos, pos.x, pos.y);
+            vec2.set(stagePos, pos.x, pos.y);
             that.stagePositionToPhysics(physicsPosB, stagePos);
 
-            initPinchLength = p2.vec2.distance(physicsPosA, physicsPosB);
+            initPinchLength = vec2.distance(physicsPosA, physicsPosB);
 
             initScaleX = stage.scale.x;
             initScaleY = stage.scale.y;
@@ -221,12 +225,12 @@ WebGLRenderer.prototype.init = function(){
         that.lastMousePos = e.data.global;
 
         var pos = e.data.getLocalPosition(stage);
-        p2.vec2.set(init_stagePosition, pos.x, pos.y);
+        vec2.set(init_stagePosition, pos.x, pos.y);
         that.stagePositionToPhysics(init_physicsPosition, init_stagePosition);
         that.handleMouseDown(init_physicsPosition);
 
-        p2.vec2.set(that.startMouseDelta, e.data.global.x, e.data.global.y);
-        p2.vec2.copy(that.startCamPos, that.cameraPosition);
+        vec2.set(that.startMouseDelta, e.data.global.x, e.data.global.y);
+        vec2.copy(that.startCamPos, that.cameraPosition);
     };
 
     container.mousemove = container.touchmove = function(e){
@@ -262,17 +266,17 @@ WebGLRenderer.prototype.init = function(){
                 var stagePosA = touchPositions[touchIdentifiers[0]];
                 var stagePosB = touchPositions[touchIdentifiers[1]];
 
-                p2.vec2.set(stagePos, stagePosA.x,stagePosA.y);
+                vec2.set(stagePos, stagePosA.x,stagePosA.y);
                 that.stagePositionToPhysics(physicsPosA, stagePos);
 
-                p2.vec2.set(stagePos, stagePosB.x, stagePosB.y);
+                vec2.set(stagePos, stagePosB.x, stagePosB.y);
                 that.stagePositionToPhysics(physicsPosB, stagePos);
 
-                var pinchLength = p2.vec2.distance(physicsPosA, physicsPosB);
+                var pinchLength = vec2.distance(physicsPosA, physicsPosB);
 
                 // Get center
-                p2.vec2.add(physicsPosA, physicsPosA, physicsPosB);
-                p2.vec2.scale(physicsPosA, physicsPosA, 0.5);
+                vec2.add(physicsPosA, physicsPosA, physicsPosB);
+                vec2.scale(physicsPosA, physicsPosA, 0.5);
                 that.zoom(
                     (stagePosA.x + stagePosB.x) * 0.5,
                     (stagePosA.y + stagePosB.y) * 0.5,
@@ -286,17 +290,17 @@ WebGLRenderer.prototype.init = function(){
         }
 
         if(down && that.state === Renderer.PANNING){
-            var delta = p2.vec2.create();
-            var currentMousePosition = p2.vec2.create();
-            p2.vec2.set(currentMousePosition, e.data.global.x, e.data.global.y);
-            p2.vec2.subtract(delta, currentMousePosition, that.startMouseDelta);
+            var delta = vec2.create();
+            var currentMousePosition = vec2.create();
+            vec2.set(currentMousePosition, e.data.global.x, e.data.global.y);
+            vec2.subtract(delta, currentMousePosition, that.startMouseDelta);
             that.domVectorToPhysics(delta, delta);
 
             // When we move mouse up, camera should go down
-            p2.vec2.scale(delta, delta, -1);
+            vec2.scale(delta, delta, -1);
 
             // Add delta to the camera position where the panning started
-            p2.vec2.add(delta, delta, that.startCamPos);
+            vec2.add(delta, delta, that.startCamPos);
 
             // Set new camera position
             that.setCameraCenter(delta);
@@ -305,7 +309,7 @@ WebGLRenderer.prototype.init = function(){
         that.lastMousePos = e.data.global;
 
         var pos = e.data.getLocalPosition(stage);
-        p2.vec2.set(init_stagePosition, pos.x, pos.y);
+        vec2.set(init_stagePosition, pos.x, pos.y);
         that.stagePositionToPhysics(init_physicsPosition, init_stagePosition);
         that.handleMouseMove(init_physicsPosition);
     };
@@ -321,7 +325,7 @@ WebGLRenderer.prototype.init = function(){
         that.lastMousePos = e.data.global;
 
         var pos = e.data.getLocalPosition(stage);
-        p2.vec2.set(init_stagePosition, pos.x, pos.y);
+        vec2.set(init_stagePosition, pos.x, pos.y);
         that.stagePositionToPhysics(init_physicsPosition, init_stagePosition);
         that.handleMouseUp(init_physicsPosition);
 
@@ -427,15 +431,16 @@ WebGLRenderer.prototype.onZoomChanged = function(){
  * @param  {number} height
  */
 WebGLRenderer.prototype.frame = function(centerX, centerY, width, height){
-    var ratio = this.renderer.width / this.renderer.height;
-    if(ratio < width / height){
-        this.stage.scale.x = this.renderer.width / width;
-        this.stage.scale.y = -this.stage.scale.x;
-    } else {
-        this.stage.scale.y = -this.renderer.height / height;
-        this.stage.scale.x = -this.stage.scale.y;
-    }
     this.setCameraCenter([centerX, centerY]);
+    var ratio = this.renderer.width / this.renderer.height;
+
+    var zoom;
+    if(ratio < width / height){
+        zoom = this.renderer.width / width;
+    } else {
+        zoom = this.renderer.height / height;
+    }
+    this.setZoom(zoom);
 };
 
 function pixiDrawCircleOnGraphics(g, x, y, radius){
@@ -463,32 +468,26 @@ function pixiDrawCircleOnGraphics(g, x, y, radius){
     g.drawPolygon(circlePath);
 }
 
-/**
- * Draw a circle onto a graphics object
- * @method drawCircle
- * @static
- * @param  {PIXI.Graphics} g
- * @param  {Number} x
- * @param  {Number} y
- * @param  {Number} radius
- * @param  {Number} color
- * @param  {Number} lineWidth
- */
-WebGLRenderer.prototype.drawCircle = function(g,x,y,angle,radius,color,lineWidth,isSleeping){
-    lineWidth = typeof(lineWidth)==="number" ? lineWidth : 1;
-    color = typeof(color)==="number" ? color : 0xffffff;
-    g.lineStyle(lineWidth, 0x000000, 1);
-    g.beginFill(color, isSleeping ? this.sleepOpacity : 1.0);
-    pixiDrawCircleOnGraphics(g, x, y, radius, 20);
+WebGLRenderer.prototype.drawParticle = function(graphics, particleShape, color, alpha, lineWidth){
+    this.drawCircle(graphics, particleShape, color, alpha, lineWidth);
+};
+
+WebGLRenderer.prototype.drawCircle = function(g, circleShape, color, alpha, lineWidth){
+    g.lineStyle(lineWidth, this.lineColor, 1);
+    g.beginFill(color, alpha);
+    var x = circleShape.position[0];
+    var y = circleShape.position[1];
+    var r = circleShape.radius;
+    pixiDrawCircleOnGraphics(g, x, y, r, 20);
     g.endFill();
 
     // line from center to edge
     g.moveTo(x,y);
-    g.lineTo(   x + radius*Math.cos(angle),
-                y + radius*Math.sin(angle) );
+    g.lineTo(   x + r * Math.cos(circleShape.angle),
+                y + r * Math.sin(circleShape.angle) );
 };
 
-WebGLRenderer.drawSpring = function(g,restLength,color,lineWidth){
+WebGLRenderer.prototype.drawSpring = function(g,restLength,color,lineWidth){
     lineWidth = typeof(lineWidth)==="number" ? lineWidth : 1;
     color = typeof(color)==="undefined" ? 0xffffff : color;
     g.lineStyle(lineWidth, color, 1);
@@ -525,15 +524,13 @@ WebGLRenderer.drawSpring = function(g,restLength,color,lineWidth){
  * @param  {Number} diagSize
  * @todo Should consider an angle
  */
-WebGLRenderer.drawPlane = function(g, x0, x1, color, lineColor, lineWidth, diagMargin, diagSize, maxLength){
-    lineWidth = typeof(lineWidth)==="number" ? lineWidth : 1;
-    color = typeof(color)==="undefined" ? 0xffffff : color;
-    g.lineStyle(lineWidth, lineColor, 1);
+WebGLRenderer.prototype.drawPlane = function(g, planeShape, color, alpha, lineWidth){
+    g.lineStyle(lineWidth, this.lineColor, 1);
 
     // Draw a fill color
     g.lineStyle(0,0,0);
     g.beginFill(color);
-    var max = maxLength;
+    var max = 100;
     g.moveTo(-max,0);
     g.lineTo(max,0);
     g.lineTo(max,-max);
@@ -541,42 +538,43 @@ WebGLRenderer.drawPlane = function(g, x0, x1, color, lineColor, lineWidth, diagM
     g.endFill();
 
     // Draw the actual plane
-    g.lineStyle(lineWidth,lineColor);
+    g.lineStyle(lineWidth, this.lineColor);
     g.moveTo(-max,0);
     g.lineTo(max,0);
 };
 
+WebGLRenderer.prototype.drawLine = function(g, shape, color, alpha, lineWidth){
+    var len = shape.length;
+    var angle = shape.angle;
+    var offset = shape.position;
 
-WebGLRenderer.drawLine = function(g, offset, angle, len, color, lineWidth){
-    lineWidth = typeof(lineWidth)==="number" ? lineWidth : 1;
-    color = typeof(color)==="undefined" ? 0x000000 : color;
     g.lineStyle(lineWidth, color, 1);
 
-    var startPoint = p2.vec2.fromValues(-len/2,0);
-    var endPoint = p2.vec2.fromValues(len/2,0);
+    var startPoint = vec2.fromValues(-len/2,0);
+    var endPoint = vec2.fromValues(len/2,0);
 
-    p2.vec2.rotate(startPoint, startPoint, angle);
-    p2.vec2.rotate(endPoint, endPoint, angle);
+    vec2.rotate(startPoint, startPoint, angle);
+    vec2.rotate(endPoint, endPoint, angle);
 
-    p2.vec2.add(startPoint, startPoint, offset);
-    p2.vec2.add(endPoint, endPoint, offset);
+    vec2.add(startPoint, startPoint, offset);
+    vec2.add(endPoint, endPoint, offset);
 
     g.moveTo(startPoint[0], startPoint[1]);
     g.lineTo(endPoint[0], endPoint[1]);
 };
 
-WebGLRenderer.prototype.drawCapsule = function(g, x, y, angle, len, radius, color, fillColor, lineWidth, isSleeping){
-    lineWidth = typeof(lineWidth)==="number" ? lineWidth : 1;
-    color = typeof(color)==="undefined" ? 0x000000 : color;
-    g.lineStyle(lineWidth, color, 1);
+WebGLRenderer.prototype.drawCapsule = function(g, shape, color, alpha, lineWidth){
+    var angle = shape.angle;
+    var radius = shape.radius;
+    var len = shape.length;
+    var x = shape.position[0];
+    var y = shape.position[1];
 
-    var vec2 = p2.vec2;
+    g.lineStyle(lineWidth, this.lineColor, 1);
 
     // Draw circles at ends
-    var c = Math.cos(angle);
-    var s = Math.sin(angle);
     var hl = len / 2;
-    g.beginFill(fillColor, isSleeping ? this.sleepOpacity : 1.0);
+    g.beginFill(color, alpha);
     var localPos = vec2.fromValues(x, y);
     var p0 = vec2.fromValues(-hl, 0);
     var p1 = vec2.fromValues(hl, 0);
@@ -606,19 +604,17 @@ WebGLRenderer.prototype.drawCapsule = function(g, x, y, angle, len, radius, colo
     vec2.add(pp2, pp2, localPos);
     vec2.add(p3, p3, localPos);
 
-    g.lineStyle(lineWidth, color, 0);
-    g.beginFill(fillColor, isSleeping ? this.sleepOpacity : 1.0);
+    g.lineStyle(lineWidth, this.lineColor, 0);
+    g.beginFill(color, alpha);
     g.moveTo(p0[0], p0[1]);
     g.lineTo(p1[0], p1[1]);
     g.lineTo(pp2[0], pp2[1]);
     g.lineTo(p3[0], p3[1]);
-    // g.lineTo( hl*c - radius*s + x,  hl*s - radius*c + y);
-    // g.lineTo(-hl*c - radius*s + x, -hl*s - radius*c + y);
     g.endFill();
 
     // Draw lines in between
     for(var i=0; i<2; i++){
-        g.lineStyle(lineWidth, color, 1);
+        g.lineStyle(lineWidth, this.lineColor, 1);
         var sign = (i===0?1:-1);
         vec2.set(p0, -hl, sign*radius);
         vec2.set(p1, hl, sign*radius);
@@ -632,90 +628,76 @@ WebGLRenderer.prototype.drawCapsule = function(g, x, y, angle, len, radius, colo
 
 };
 
-WebGLRenderer.prototype.drawRectangle = function(g,x,y,angle,w,h,color,fillColor,lineWidth,isSleeping){
+WebGLRenderer.prototype.drawRectangle = function(g, shape, color, alpha, lineWidth){
+    var w = shape.width;
+    var h = shape.height;
+    var x = shape.position[0];
+    var y = shape.position[1];
+
     var path = [
         [w / 2, h / 2],
         [-w / 2, h / 2],
         [-w / 2, -h / 2],
         [w / 2, -h / 2],
+        [w / 2, h / 2]
     ];
 
     // Rotate and add position
     for (var i = 0; i < path.length; i++) {
         var v = path[i];
-        p2.vec2.rotate(v, v, angle);
-        p2.vec2.add(v, v, [x, y]);
+        vec2.rotate(v, v, shape.angle);
+        vec2.add(v, v, [x, y]);
     }
 
-    this.drawPath(g,path,color,fillColor,lineWidth,isSleeping);
+    this.drawPath(g, path, lineWidth, this.lineColor, color, alpha);
 };
 
-WebGLRenderer.prototype.drawConvex = function(g,verts,triangles,color,fillColor,lineWidth,debug,offset,isSleeping){
-    lineWidth = typeof(lineWidth)==="number" ? lineWidth : 1;
-    color = typeof(color)==="undefined" ? 0x000000 : color;
-    if(!debug){
-        g.lineStyle(lineWidth, color, 1);
-        g.beginFill(fillColor, isSleeping ? this.sleepOpacity : 1.0);
-        for(var i=0; i!==verts.length; i++){
-            var v = verts[i],
-                x = v[0],
-                y = v[1];
-            if(i===0){
-                g.moveTo(x,y);
-            } else {
-                g.lineTo(x,y);
-            }
+WebGLRenderer.prototype.drawHeightfield = function(g, shape, color, alpha, lineWidth){
+    var path = [[0,-100]];
+    for(var j=0; j!==shape.heights.length; j++){
+        var v = shape.heights[j];
+        path.push([j*shape.elementWidth, v]);
+    }
+    path.push([shape.heights.length * shape.elementWidth, -100]);
+    this.drawPath(g, path, lineWidth, this.lineColor, color, alpha);
+};
+
+WebGLRenderer.prototype.drawConvex = function(g, shape, color, alpha, lineWidth){
+    var verts = [];
+    var vrot = vec2.create();
+    var offset = shape.position;
+
+    for(var j=0; j!==shape.vertices.length; j++){
+        var v = shape.vertices[j];
+        vec2.rotate(vrot, v, shape.angle);
+        verts.push([(vrot[0]+offset[0]), (vrot[1]+offset[1])]);
+    }
+
+    g.lineStyle(lineWidth, this.lineColor, 1);
+    g.beginFill(color, alpha);
+    for(var i=0; i!==verts.length; i++){
+        var v = verts[i],
+            x = v[0],
+            y = v[1];
+        if(i===0){
+            g.moveTo(x,y);
+        } else {
+            g.lineTo(x,y);
         }
-        g.endFill();
-        if(verts.length>2){
-            g.moveTo(verts[verts.length-1][0],verts[verts.length-1][1]);
-            g.lineTo(verts[0][0],verts[0][1]);
-        }
-    } else {
+    }
+    g.endFill();
 
-        // triangles
-        // var centroid = p2.vec2.create();
-        // for(var i=0; i<triangles.length; i++){
-        //     var v0 = verts[triangles[i][0]],
-        //         v1 = verts[triangles[i][1]],
-        //         v2 = verts[triangles[i][2]];
-        //     g.lineStyle(lineWidth, 0x000000, 1);
-        //     g.moveTo(v0[0],v0[1]);
-        //     g.lineTo(v1[0],v1[1]);
-        //     g.lineTo(v2[0],v2[1]);
-        //     g.lineTo(v0[0],v0[1]);
-
-        //     // triangle centroid
-        //     p2.vec2.centroid(centroid,v0,v1,v2);
-        //     g.drawCircle(centroid[0],centroid[1],lineWidth*2);
-        // }
-
-        // convexes
-        var colors = [0xff0000,0x00ff00,0x0000ff];
-        for(var i=0; i!==verts.length+1; i++){
-            var v0 = verts[i%verts.length],
-                v1 = verts[(i+1)%verts.length],
-                x0 = v0[0],
-                y0 = v0[1],
-                x1 = v1[0],
-                y1 = v1[1];
-            g.lineStyle(lineWidth, colors[i%colors.length], 1);
-            g.moveTo(x0,y0);
-            g.lineTo(x1,y1);
-            pixiDrawCircleOnGraphics(g, x0,y0,lineWidth*2, 20);
-        }
-
-        g.lineStyle(lineWidth, 0xff0000, 1);
-        pixiDrawCircleOnGraphics(g, offset[0],offset[1],lineWidth*2, 20);
+    if(verts.length>2){
+        g.moveTo(verts[verts.length-1][0],verts[verts.length-1][1]);
+        g.lineTo(verts[0][0],verts[0][1]);
     }
 };
 
-WebGLRenderer.prototype.drawPath = function(g,path,color,fillColor,lineWidth,isSleeping){
-    lineWidth = typeof(lineWidth)==="number" ? lineWidth : 1;
-    color = typeof(color)==="undefined" ? 0x000000 : color;
-    g.lineStyle(lineWidth, color, 1);
-    if(typeof(fillColor)==="number"){
-        g.beginFill(fillColor, isSleeping ? this.sleepOpacity : 1.0);
+WebGLRenderer.prototype.drawPath = function(g, path, lineWidth, lineColor, fillColor, fillAlpha){
+    g.lineStyle(lineWidth, lineColor, 1);
+
+    if(fillAlpha !== 0){
+        g.beginFill(fillColor, fillAlpha);
     }
 
     var poly = [];
@@ -725,13 +707,13 @@ WebGLRenderer.prototype.drawPath = function(g,path,color,fillColor,lineWidth,isS
     }
     g.drawPolygon(poly);
 
-    if(typeof(fillColor)==="number"){
+    if(fillAlpha !== 0){
         g.endFill();
     }
 
     // Close the path
-    if(path.length>2 && typeof(fillColor)==="number"){
-        g.moveTo(path[path.length-1][0],path[path.length-1][1]);
+    if(path.length>2 && fillAlpha !== 0){
+        g.moveTo(path[path.length-1][0], path[path.length-1][1]);
         g.lineTo(path[0][0],path[0][1]);
     }
 };
@@ -748,10 +730,10 @@ WebGLRenderer.prototype.updateSpriteTransform = function(sprite,body){
     }
 };
 
-var X = p2.vec2.fromValues(1,0),
-    distVec = p2.vec2.fromValues(0,0),
-    worldAnchorA = p2.vec2.fromValues(0,0),
-    worldAnchorB = p2.vec2.fromValues(0,0);
+var X = vec2.fromValues(1,0),
+    distVec = vec2.fromValues(0,0),
+    worldAnchorA = vec2.fromValues(0,0),
+    worldAnchorB = vec2.fromValues(0,0);
 WebGLRenderer.prototype.render = function(){
     var springSprites = this.springSprites;
 
@@ -780,8 +762,8 @@ WebGLRenderer.prototype.render = function(){
             bB = s.bodyB;
 
         if(this.useInterpolatedPositions && !this.paused){
-            p2.vec2.toGlobalFrame(worldAnchorA, s.localAnchorA, bA.interpolatedPosition, bA.interpolatedAngle);
-            p2.vec2.toGlobalFrame(worldAnchorB, s.localAnchorB, bB.interpolatedPosition, bB.interpolatedAngle);
+            vec2.toGlobalFrame(worldAnchorA, s.localAnchorA, bA.interpolatedPosition, bA.interpolatedAngle);
+            vec2.toGlobalFrame(worldAnchorB, s.localAnchorB, bB.interpolatedPosition, bB.interpolatedAngle);
         } else {
             s.getWorldAnchorA(worldAnchorA);
             s.getWorldAnchorB(worldAnchorB);
@@ -801,18 +783,20 @@ WebGLRenderer.prototype.render = function(){
             syB = worldAnchorB[1];
 
         // Spring position is the mean point between the anchors
-        sprite.position.x = ( sxA + sxB ) / 2;
-        sprite.position.y = ( syA + syB ) / 2;
+        sprite.position.set(
+            ( sxA + sxB ) / 2,
+            ( syA + syB ) / 2
+        );
 
         // Compute distance vector between anchors, in screen coords
         distVec[0] = sxA - sxB;
         distVec[1] = syA - syB;
 
         // Compute angle
-        sprite.rotation = Math.acos( p2.vec2.dot(X, distVec) / p2.vec2.length(distVec) );
+        sprite.rotation = Math.acos( vec2.dot(X, distVec) / vec2.length(distVec) );
 
         // And scale
-        sprite.scale.x = p2.vec2.length(distVec) / s.restLength;
+        sprite.scale.x = vec2.length(distVec) / s.restLength;
     }
 
     // Clear contacts
@@ -873,7 +857,7 @@ WebGLRenderer.prototype.render = function(){
         this.stage.addChild(g);
         g.lineStyle(this.lineWidth,0x000000,1);
         var c = this.mouseConstraint;
-        var worldPivotB = p2.vec2.create();
+        var worldPivotB = vec2.create();
         c.bodyB.toWorldFrame(worldPivotB, c.pivotB);
         g.moveTo(c.pivotA[0], c.pivotA[1]);
         g.lineTo(worldPivotB[0], worldPivotB[1]);
@@ -898,8 +882,9 @@ function componentToHex(c) {
 function rgbToHex(r, g, b) {
     return componentToHex(r) + componentToHex(g) + componentToHex(b);
 }
+
 //http://stackoverflow.com/questions/43044/algorithm-to-randomly-generate-an-aesthetically-pleasing-color-palette
-function randomPastelHex(){
+WebGLRenderer.randomColor = function(){
     var mix = [255,255,255];
     var red =   Math.floor(Math.random()*256);
     var green = Math.floor(Math.random()*256);
@@ -911,7 +896,7 @@ function randomPastelHex(){
     blue =  Math.floor((blue +  3*mix[2]) / 4);
 
     return rgbToHex(red,green,blue);
-}
+};
 
 WebGLRenderer.prototype.drawRenderable = function(obj, graphics, color, lineColor){
     var lw = this.lineWidth;
@@ -922,6 +907,8 @@ WebGLRenderer.prototype.drawRenderable = function(obj, graphics, color, lineColo
     if(obj instanceof p2.Body && obj.shapes.length){
 
         var isSleeping = (obj.sleepState === p2.Body.SLEEPING);
+        var alpha = isSleeping ? this.sleepOpacity : 1;
+
         graphics.drawnSleeping = isSleeping;
 
         if(obj.concavePath && !this.debugPolygons){
@@ -930,51 +917,44 @@ WebGLRenderer.prototype.drawRenderable = function(obj, graphics, color, lineColo
                 var v = obj.concavePath[j];
                 path.push([v[0], v[1]]);
             }
-            this.drawPath(graphics, path, lineColor, color, lw, isSleeping);
+            this.drawPath(graphics, path, lw, lineColor, color, alpha);
         } else {
             for(var i=0; i<obj.shapes.length; i++){
-                var child = obj.shapes[i],
-                    offset = child.position,
-                    angle = child.angle;
+                var child = obj.shapes[i];
 
-                if(child instanceof p2.Circle){
-                    this.drawCircle(graphics, offset[0], offset[1], angle, child.radius,color,lw,isSleeping);
+                switch(child.type){
 
-                } else if(child instanceof p2.Particle){
-                    this.drawCircle(graphics, offset[0], offset[1], angle, 2*lw, lineColor, 0);
+                case p2.Shape.CIRCLE:
+                    this.drawCircle(graphics, child, color, alpha, lw);
+                    break;
 
-                } else if(child instanceof p2.Plane){
-                    // TODO use shape angle
-                    WebGLRenderer.drawPlane(graphics, -10, 10, color, lineColor, lw, lw*10, lw*10, 100);
+                case p2.Shape.PARTICLE:
+                    this.drawParticle(graphics, child, color, alpha, lw);
+                    break;
 
-                } else if(child instanceof p2.Line){
-                    WebGLRenderer.drawLine(graphics, offset, angle, child.length, lineColor, lw);
+                case p2.Shape.PLANE:
+                    this.drawPlane(graphics, child, color, alpha, lw);
+                    break;
 
-                } else if(child instanceof p2.Box){
-                    this.drawRectangle(graphics, offset[0], offset[1], angle, child.width, child.height, lineColor, color, lw, isSleeping);
+                case p2.Shape.LINE:
+                    this.drawLine(graphics, child, color, alpha, lw);
+                    break;
 
-                } else if(child instanceof p2.Capsule){
-                    this.drawCapsule(graphics, offset[0], offset[1], angle, child.length, child.radius, lineColor, color, lw, isSleeping);
+                case p2.Shape.BOX:
+                    this.drawRectangle(graphics, child, color, alpha, lw);
+                    break;
 
-                } else if(child instanceof p2.Convex){
-                    // Scale verts
-                    var verts = [],
-                        vrot = p2.vec2.create();
-                    for(var j=0; j!==child.vertices.length; j++){
-                        var v = child.vertices[j];
-                        p2.vec2.rotate(vrot, v, angle);
-                        verts.push([(vrot[0]+offset[0]), (vrot[1]+offset[1])]);
-                    }
-                    this.drawConvex(graphics, verts, child.triangles, lineColor, color, lw, this.debugPolygons, offset, isSleeping);
+                case p2.Shape.CAPSULE:
+                    this.drawCapsule(graphics, child, color, alpha, lw);
+                    break;
 
-                } else if(child instanceof p2.Heightfield){
-                    var path = [[0,-100]];
-                    for(var j=0; j!==child.heights.length; j++){
-                        var v = child.heights[j];
-                        path.push([j*child.elementWidth, v]);
-                    }
-                    path.push([child.heights.length*child.elementWidth,-100]);
-                    this.drawPath(graphics, path, lineColor, color, lw, isSleeping);
+                case p2.Shape.CONVEX:
+                    this.drawConvex(graphics, child, color, alpha, lw);
+                    break;
+
+                case p2.Shape.HEIGHTFIELD:
+                    this.drawHeightfield(graphics, child, color, alpha, lw);
+                    break;
 
                 }
             }
@@ -982,7 +962,7 @@ WebGLRenderer.prototype.drawRenderable = function(obj, graphics, color, lineColo
 
     } else if(obj instanceof p2.Spring){
         var restLengthPixels = obj.restLength;
-        WebGLRenderer.drawSpring(graphics,restLengthPixels,0x000000,lw);
+        this.drawSpring(graphics, restLengthPixels, 0x000000, lw);
     }
 };
 
@@ -994,7 +974,7 @@ WebGLRenderer.prototype.getIslandColor = function(body){
     } else if(islandColors[body.islandId]){
         color = islandColors[body.islandId];
     } else {
-        color = islandColors[body.islandId] = parseInt(randomPastelHex(),16);
+        color = islandColors[body.islandId] = parseInt(WebGLRenderer.randomColor(),16);
     }
     return color;
 };

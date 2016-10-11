@@ -29,7 +29,41 @@ p2.Renderer = Renderer;
  * @param {object} scenes One or more scene definitions. See setScene.
  */
 function Renderer(scenes, options){
-    p2.EventEmitter.call(this);
+    p2.StateMachine.call(this, {
+        states: [
+            Renderer.DEFAULT,
+            Renderer.PANNING,
+            Renderer.DRAGGING,
+            Renderer.DRAWPOLYGON,
+            Renderer.DRAWINGPOLYGON,
+            Renderer.DRAWCIRCLE,
+            Renderer.DRAWINGCIRCLE,
+            Renderer.DRAWRECTANGLE,
+            Renderer.DRAWINGRECTANGLE
+        ],
+        transitions: [
+            [Renderer.DEFAULT, Renderer.PANNING],
+            [Renderer.PANNING, Renderer.DEFAULT],
+
+            [Renderer.DEFAULT, Renderer.DRAGGING],
+            [Renderer.DRAGGING, Renderer.DEFAULT],
+
+            [Renderer.DEFAULT, Renderer.DRAWPOLYGON],
+            [Renderer.DRAWPOLYGON, Renderer.DEFAULT],
+            [Renderer.DRAWPOLYGON, Renderer.DRAWINGPOLYGON],
+            [Renderer.DRAWINGPOLYGON, Renderer.DRAWPOLYGON],
+
+            [Renderer.DEFAULT, Renderer.DRAWCIRCLE],
+            [Renderer.DRAWCIRCLE, Renderer.DEFAULT],
+            [Renderer.DRAWCIRCLE, Renderer.DRAWINGCIRCLE],
+            [Renderer.DRAWINGCIRCLE, Renderer.DRAWCIRCLE],
+
+            [Renderer.DEFAULT, Renderer.DRAWRECTANGLE],
+            [Renderer.DRAWRECTANGLE, Renderer.DEFAULT],
+            [Renderer.DRAWRECTANGLE, Renderer.DRAWINGRECTANGLE],
+            [Renderer.DRAWINGRECTANGLE, Renderer.DRAWRECTANGLE]
+        ]
+    });
 
     options = options || {};
 
@@ -157,7 +191,7 @@ function Renderer(scenes, options){
     this.startRenderingLoop();
 
 }
-Renderer.prototype = Object.create(p2.EventEmitter.prototype);
+Renderer.prototype = Object.create(p2.StateMachine.prototype);
 
 // States
 Renderer.DEFAULT =            1;
@@ -255,7 +289,7 @@ Renderer.prototype.setupGUI = function() {
     var settings = this.settings;
 
     gui.add(settings, 'tool', Renderer.toolStateMap).onChange(function(state){
-        that.setState(parseInt(state));
+        that.transitionTo(Renderer.DEFAULT).transitionTo(parseInt(state));
     });
     gui.add(settings, 'fullscreen');
 
@@ -478,16 +512,19 @@ Renderer.prototype.setUpKeyboard = function() {
             that.drawAABBs = !that.drawAABBs;
             break;
         case "D": // toggle draw polygon mode
-            that.setState(s === Renderer.DRAWPOLYGON ? Renderer.DEFAULT : s = Renderer.DRAWPOLYGON);
+            that.transitionTo(Renderer.DEFAULT);
+            that.transitionTo(s === Renderer.DRAWPOLYGON ? Renderer.DEFAULT : s = Renderer.DRAWPOLYGON);
             break;
         case "A": // toggle draw circle mode
-            that.setState(s === Renderer.DRAWCIRCLE ? Renderer.DEFAULT : s = Renderer.DRAWCIRCLE);
+            that.transitionTo(Renderer.DEFAULT);
+            that.transitionTo(s === Renderer.DRAWCIRCLE ? Renderer.DEFAULT : s = Renderer.DRAWCIRCLE);
             break;
         case "F": // toggle draw rectangle mode
-            that.setState(s === Renderer.DRAWRECTANGLE ? Renderer.DEFAULT : s = Renderer.DRAWRECTANGLE);
+            that.transitionTo(Renderer.DEFAULT);
+            that.transitionTo(s === Renderer.DRAWRECTANGLE ? Renderer.DEFAULT : s = Renderer.DRAWRECTANGLE);
             break;
         case "Q": // set default
-            that.setState(Renderer.DEFAULT);
+            that.transitionTo(Renderer.DEFAULT);
             break;
         case "1":
         case "2":
@@ -559,10 +596,7 @@ Renderer.prototype.startRenderingLoop = function(){
  * Set the app state.
  * @param {number} state
  */
-Renderer.prototype.setState = function(state){
-    this.state = state;
-    this.stateChangeEvent.state = state;
-    this.emit(this.stateChangeEvent);
+Renderer.prototype.onStateChanged = function(state){
     if(Renderer.stateToolMap[state]){
         this.settings.tool = state;
         this.updateGUI();
@@ -593,7 +627,7 @@ Renderer.prototype.handleMouseDown = function(physicsPosition){
 
         if(b){
             b.wakeUp();
-            this.setState(Renderer.DRAGGING);
+            this.transitionTo(Renderer.DRAGGING);
             // Add mouse joint to the body
             var localPoint = p2.vec2.create();
             b.toLocalFrame(localPoint,physicsPosition);
@@ -605,13 +639,13 @@ Renderer.prototype.handleMouseDown = function(physicsPosition){
             });
             this.world.addConstraint(this.mouseConstraint);
         } else {
-            this.setState(Renderer.PANNING);
+            this.transitionTo(Renderer.PANNING);
         }
         break;
 
     case Renderer.DRAWPOLYGON:
         // Start drawing a polygon
-        this.setState(Renderer.DRAWINGPOLYGON);
+        this.transitionTo(Renderer.DRAWINGPOLYGON);
         this.drawPoints = [];
         var copy = p2.vec2.create();
         p2.vec2.copy(copy,physicsPosition);
@@ -621,7 +655,7 @@ Renderer.prototype.handleMouseDown = function(physicsPosition){
 
     case Renderer.DRAWCIRCLE:
         // Start drawing a circle
-        this.setState(Renderer.DRAWINGCIRCLE);
+        this.transitionTo(Renderer.DRAWINGCIRCLE);
         p2.vec2.copy(this.drawCircleCenter,physicsPosition);
         p2.vec2.copy(this.drawCirclePoint, physicsPosition);
         this.emit(this.drawCircleChangeEvent);
@@ -629,7 +663,7 @@ Renderer.prototype.handleMouseDown = function(physicsPosition){
 
     case Renderer.DRAWRECTANGLE:
         // Start drawing a circle
-        this.setState(Renderer.DRAWINGRECTANGLE);
+        this.transitionTo(Renderer.DRAWINGRECTANGLE);
         p2.vec2.copy(this.drawRectStart,physicsPosition);
         p2.vec2.copy(this.drawRectEnd, physicsPosition);
         this.emit(this.drawRectangleChangeEvent);
@@ -696,16 +730,16 @@ Renderer.prototype.handleMouseUp = function(physicsPosition){
         this.world.removeConstraint(this.mouseConstraint);
         this.mouseConstraint = null;
         this.world.removeBody(this.nullBody);
-        this.setState(Renderer.DEFAULT);
+        this.transitionTo(Renderer.DEFAULT);
         break;
 
     case Renderer.PANNING:
-        this.setState(Renderer.DEFAULT);
+        this.transitionTo(Renderer.DEFAULT);
         break;
 
     case Renderer.DRAWINGPOLYGON:
         // End this drawing state
-        this.setState(Renderer.DRAWPOLYGON);
+        this.transitionTo(Renderer.DRAWPOLYGON);
         if(this.drawPoints.length > 3){
             // Create polygon
             b = new p2.Body({ mass : 1 });
@@ -721,7 +755,7 @@ Renderer.prototype.handleMouseUp = function(physicsPosition){
 
     case Renderer.DRAWINGCIRCLE:
         // End this drawing state
-        this.setState(Renderer.DRAWCIRCLE);
+        this.transitionTo(Renderer.DRAWCIRCLE);
         var R = p2.vec2.distance(this.drawCircleCenter,this.drawCirclePoint);
         if(R > 0){
             // Create circle
@@ -736,7 +770,7 @@ Renderer.prototype.handleMouseUp = function(physicsPosition){
 
     case Renderer.DRAWINGRECTANGLE:
         // End this drawing state
-        this.setState(Renderer.DRAWRECTANGLE);
+        this.transitionTo(Renderer.DRAWRECTANGLE);
         // Make sure first point is upper left
         var start = this.drawRectStart;
         var end = this.drawRectEnd;
