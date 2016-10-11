@@ -22,7 +22,6 @@ var disableSelectionCSS = [
 
 p2.Renderer = Renderer;
 
-
 /**
  * Base class for rendering a p2 physics scene.
  * @class Renderer
@@ -158,8 +157,9 @@ function Renderer(scenes, options){
     this.startRenderingLoop();
 
 }
-Renderer.prototype = new p2.EventEmitter();
+Renderer.prototype = Object.create(p2.EventEmitter.prototype);
 
+// States
 Renderer.DEFAULT =            1;
 Renderer.PANNING =            2;
 Renderer.DRAGGING =           3;
@@ -181,46 +181,39 @@ for(var key in Renderer.toolStateMap){
     Renderer.stateToolMap[Renderer.toolStateMap[key]] = key;
 }
 
-Renderer.keydownEvent = {
-    type:"keydown",
-    originalEvent : null,
-    keyCode : 0,
-};
-Renderer.keyupEvent = {
-    type:"keyup",
-    originalEvent : null,
-    keyCode : 0,
-};
+Object.defineProperties(Renderer.prototype, {
 
-Object.defineProperty(Renderer.prototype, 'drawContacts', {
-    get: function() {
-        return this.settings['drawContacts [c]'];
+    drawContacts: {
+        get: function() {
+            return this.settings['drawContacts [c]'];
+        },
+        set: function(value) {
+            this.settings['drawContacts [c]'] = value;
+            this.updateGUI();
+        }
     },
-    set: function(value) {
-        this.settings['drawContacts [c]'] = value;
-        this.updateGUI();
-    }
-});
 
-Object.defineProperty(Renderer.prototype, 'drawAABBs', {
-    get: function() {
-        return this.settings['drawAABBs [t]'];
+    drawAABBs: {
+        get: function() {
+            return this.settings['drawAABBs [t]'];
+        },
+        set: function(value) {
+            this.settings['drawAABBs [t]'] = value;
+            this.updateGUI();
+        }
     },
-    set: function(value) {
-        this.settings['drawAABBs [t]'] = value;
-        this.updateGUI();
-    }
-});
 
-Object.defineProperty(Renderer.prototype, 'paused', {
-    get: function() {
-        return this.settings['paused [p]'];
-    },
-    set: function(value) {
-        this.resetCallTime = true;
-        this.settings['paused [p]'] = value;
-        this.updateGUI();
+    paused: {
+        get: function() {
+            return this.settings['paused [p]'];
+        },
+        set: function(value) {
+            this.resetCallTime = true;
+            this.settings['paused [p]'] = value;
+            this.updateGUI();
+        }
     }
+
 });
 
 Renderer.prototype.getDevicePixelRatio = function() {
@@ -508,9 +501,11 @@ Renderer.prototype.setUpKeyboard = function() {
             that.setSceneByIndex(parseInt(ch) - 1);
             break;
         default:
-            Renderer.keydownEvent.keyCode = e.keyCode;
-            Renderer.keydownEvent.originalEvent = e;
-            that.emit(Renderer.keydownEvent);
+            that.emit({
+                type: "keydown",
+                originalEvent: e,
+                keyCode: e.keyCode
+            });
             break;
         }
         that.updateGUI();
@@ -520,9 +515,11 @@ Renderer.prototype.setUpKeyboard = function() {
         if(e.keyCode){
             switch(String.fromCharCode(e.keyCode)){
             default:
-                Renderer.keyupEvent.keyCode = e.keyCode;
-                Renderer.keyupEvent.originalEvent = e;
-                that.emit(Renderer.keyupEvent);
+                that.emit({
+                    type: "keyup",
+                    originalEvent: e,
+                    keyCode: e.keyCode
+                });
                 break;
             }
         }
