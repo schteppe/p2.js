@@ -479,8 +479,6 @@ function Body(options){
      */
     this.islandId = -1;
 
-    this.concavePath = null;
-
     this._wakeUpAfterNarrowphase = false;
 
     this.updateMassProperties();
@@ -1020,11 +1018,6 @@ Body.prototype.adjustCenterOfMass = function(){
 
     // Move the body position too
     add(this.position,this.position,cm);
-
-    // And concave path
-    for(var i=0; this.concavePath && i<this.concavePath.length; i++){
-        sub(this.concavePath[i], this.concavePath[i], cm);
-    }
 
     this.updateMassProperties();
     this.updateBoundingRadius();
