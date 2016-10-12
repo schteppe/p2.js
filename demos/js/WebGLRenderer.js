@@ -839,13 +839,8 @@ WebGLRenderer.prototype.drawRenderable = function(obj, graphics, color, lineColo
 
         graphics.drawnSleeping = isSleeping;
 
-        if(obj.concavePath && !this.debugPolygons){
-            var path = [];
-            for(var j=0; j!==obj.concavePath.length; j++){
-                var v = obj.concavePath[j];
-                path.push([v[0], v[1]]);
-            }
-            this.drawPath(graphics, path, lw, lineColor, color, alpha);
+        if(this.bodyPolygonPaths[obj.id] && !this.debugPolygons){
+            this.drawPath(graphics, this.bodyPolygonPaths[obj.id], lw, lineColor, color, alpha);
         } else {
             for(var i=0; i<obj.shapes.length; i++){
                 var child = obj.shapes[i];

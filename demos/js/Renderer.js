@@ -391,7 +391,7 @@ Renderer.prototype.setWorld = function(world){
 
     var that = this;
 
-    world.on("postStep",function(e){
+    world.on("postStep",function(/*e*/){
         that.updateStats();
     }).on("addBody",function(e){
         that.addVisual(e.body);
@@ -744,11 +744,13 @@ Renderer.prototype.handleMouseUp = function(/*physicsPosition*/){
         this.transitionTo(Renderer.DRAWPOLYGON);
         if(this.drawPoints.length > 3){
             // Create polygon
-            b = new p2.Body({ mass : 1 });
+            b = new p2.Body({ mass: 1 });
             if (b.fromPolygon(this.drawPoints, { removeCollinearPoints: 0.1 })) {
                 var bodyPath = this.bodyPolygonPaths[b.id] = [];
                 for(var i=0; i<this.drawPoints.length; i++){
-                    bodyPath.push(vec2.clone(this.drawPoints[i]));
+                    var point = vec2.clone(this.drawPoints[i]);
+                    vec2.subtract(point, point, b.position); // .fromPolygon() will move the body to the center of mass. Compensate by doing this.
+                    bodyPath.push(point);
                 }
                 this.world.addBody(b);
             }
