@@ -572,7 +572,9 @@ Renderer.prototype.startRenderingLoop = function(){
     var demo = this,
         lastCallTime = Date.now() / 1000;
 
-    function update(){
+    var lastTime;
+
+    function update(time){
         if(!demo.paused){
             var now = Date.now() / 1000,
                 timeSinceLastCall = now - lastCallTime;
@@ -588,7 +590,11 @@ Renderer.prototype.startRenderingLoop = function(){
 
             demo.world.step(demo.timeStep, timeSinceLastCall, demo.settings.maxSubSteps);
         }
-        demo.render();
+
+        var deltaTime = lastTime ? (time - lastTime) / 1000 : 0;
+        lastTime = time;
+        demo.render(deltaTime);
+
         requestAnimFrame(update);
     }
     requestAnimFrame(update);
