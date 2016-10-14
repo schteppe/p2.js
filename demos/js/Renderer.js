@@ -103,7 +103,7 @@ function Renderer(scenes, options){
 
     this.mouseConstraint = null;
     this.nullBody = new p2.Body();
-    this.pickPrecision = 5;
+    this.pickPrecision = 0.1;
 
     this.useInterpolatedPositions = true;
 

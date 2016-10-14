@@ -83,6 +83,10 @@ function WebGLRenderer(scenes, options){
     this.scrollFactor =         settings.scrollFactor;
     this.sleepOpacity =         settings.sleepOpacity;
 
+    // Camera smoothing settings
+    this.smoothTime = 0.03;
+    this.maxSmoothVelocity = 1e7;
+
     this.sprites = [];
     this.springSprites = [];
     this.debugPolygons = false;
@@ -93,7 +97,6 @@ function WebGLRenderer(scenes, options){
     this.startMouseDelta = vec2.create();
     this.startCamPos = vec2.create();
 
-    this.pickPrecision = 0.1;
     this.touchPositions = {}; // identifier => vec2 in physics space
     this.mouseDown = false;
 
@@ -103,6 +106,7 @@ function WebGLRenderer(scenes, options){
 
     Renderer.call(this,scenes,options);
 
+    // Camera smoothing state
     this.currentZoom = this.zoom;
     this.currentStageX = 0;
     this.currentStageY = 0;
@@ -110,7 +114,6 @@ function WebGLRenderer(scenes, options){
     for(var key in settings){
         this.settings[key] = settings[key];
     }
-
 
     // Update "ghost draw line"
     this.on("drawPointsChange",function(/*e*/){
@@ -708,12 +711,31 @@ WebGLRenderer.prototype.drawPath = function(g, path, lineWidth, lineColor, fillC
         g.beginFill(fillColor, fillAlpha);
     }
 
-    var poly = [];
+    var lastx = null, lasty = null;
     for(var i=0; i<path.length; i++){
-        var p = path[i];
-        poly.push(new PIXI.Point(p[0], p[1]));
+        var v = path[i],
+        x = v[0],
+        y = v[1];
+        if(x !== lastx || y !== lasty){
+            if (i === 0) {
+                g.moveTo(x,y);
+            } else {
+                // Check if the lines are parallel
+                var p1x = lastx,
+                    p1y = lasty,
+                    p2x = x,
+                    p2y = y,
+                    p3x = path[(i+1)%path.length][0],
+                    p3y = path[(i+1)%path.length][1];
+                var area = ((p2x - p1x)*(p3y - p1y))-((p3x - p1x)*(p2y - p1y));
+                if(area !== 0){
+                    g.lineTo(x,y);
+                }
+            }
+            lastx = x;
+            lasty = y;
+        }
     }
-    g.drawPolygon(poly);
 
     if(fillAlpha !== 0){
         g.endFill();
@@ -745,15 +767,15 @@ WebGLRenderer.prototype.render = function(deltaTime){
     var springSprites = this.springSprites;
 
     // Damp position
-    this.currentStageX = smoothDamp(this.currentStageX, this.renderer.width / 2 - this.zoom * this.cameraPosition[0], this._cameraStoreX, deltaTime, 0.03, 1e7);
-    this.currentStageY = smoothDamp(this.currentStageY, this.renderer.height / 2 + this.zoom * this.cameraPosition[1], this._cameraStoreY, deltaTime, 0.03, 1e7);
+    this.currentStageX = smoothDamp(this.currentStageX, this.renderer.width / 2 - this.zoom * this.cameraPosition[0], this._cameraStoreX, deltaTime, this.smoothTime, this.maxSmoothVelocity);
+    this.currentStageY = smoothDamp(this.currentStageY, this.renderer.height / 2 + this.zoom * this.cameraPosition[1], this._cameraStoreY, deltaTime, this.smoothTime, this.maxSmoothVelocity);
     this.stage.position.set(
         this.currentStageX,
         this.currentStageY
     );
 
     // Damp zoom
-    this.currentZoom = smoothDamp(this.currentZoom, this.zoom, this._zoomStore, deltaTime, 0.03, 1e7);
+    this.currentZoom = smoothDamp(this.currentZoom, this.zoom, this._zoomStore, deltaTime, this.smoothTime, this.maxSmoothVelocity);
     this.stage.scale.set(this.currentZoom, -this.currentZoom);
 
     this.stage.updateTransform();
