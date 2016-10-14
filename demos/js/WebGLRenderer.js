@@ -496,9 +496,10 @@ WebGLRenderer.prototype.drawSpring = function(g,restLength,color,lineWidth){
 
 WebGLRenderer.prototype.shapeDrawFunctions = {};
 
+var tmpCircle = new p2.Circle({ radius: 0.02 });
 WebGLRenderer.prototype.shapeDrawFunctions[p2.Shape.PARTICLE] =
 WebGLRenderer.prototype.drawParticle = function(graphics, particleShape, color, alpha, lineWidth){
-    this.drawCircle(graphics, particleShape, color, alpha, lineWidth);
+    this.drawCircle(graphics, tmpCircle, this.lineColor, 1, 0);
 };
 
 WebGLRenderer.prototype.shapeDrawFunctions[p2.Shape.CIRCLE] =
@@ -647,8 +648,7 @@ WebGLRenderer.prototype.drawRectangle = function(g, shape, color, alpha, lineWid
         [w / 2, h / 2],
         [-w / 2, h / 2],
         [-w / 2, -h / 2],
-        [w / 2, -h / 2],
-        [w / 2, h / 2]
+        [w / 2, -h / 2]
     ];
 
     // Rotate and add position
@@ -712,10 +712,10 @@ WebGLRenderer.prototype.drawPath = function(g, path, lineWidth, lineColor, fillC
     }
 
     var lastx = null, lasty = null;
-    for(var i=0; i<path.length; i++){
-        var v = path[i],
-        x = v[0],
-        y = v[1];
+    for(var i=0; i<path.length+1; i++){
+        var v = path[i % path.length],
+            x = v[0],
+            y = v[1];
         if(x !== lastx || y !== lasty){
             if (i === 0) {
                 g.moveTo(x,y);
