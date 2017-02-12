@@ -220,10 +220,12 @@ Narrowphase.prototype.reset = function(){
 
     var ce = this.contactEquations,
         fe = this.frictionEquations;
-    for(var i=0; i<ce.length; i++){
+    var cel = ce.length;
+    for(var i=0; i<cel; i++){
         this.contactEquationPool.release(ce[i]);
     }
-    for(var i=0; i<fe.length; i++){
+    var fel = fe.length;
+    for(var i=0; i<fel; i++){
         this.frictionEquationPool.release(fe[i]);
     }
 
@@ -678,7 +680,8 @@ Narrowphase.prototype.planeLine = function(planeBody, planeShape, planeOffset, p
     // Check line ends
     verts[0] = worldVertex0;
     verts[1] = worldVertex1;
-    for(var i=0; i<verts.length; i++){
+    var l = verts.length;
+    for(var i=0; i<l; i++){
         var v = verts[i];
 
         sub(dist, v, planeOffset);
@@ -876,8 +879,8 @@ Narrowphase.prototype.circleLine = function(
     // Add corner
     verts[0] = worldVertex0;
     verts[1] = worldVertex1;
-
-    for(var i=0; i<verts.length; i++){
+    var l = verts.length;
+    for(var i=0; i<l; i++){
         var v = verts[i];
 
         sub(dist, v, circleOffset);

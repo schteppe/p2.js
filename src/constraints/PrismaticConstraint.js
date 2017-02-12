@@ -281,9 +281,11 @@ PrismaticConstraint.prototype.update = function(){
             eqs.push(upperLimitEquation);
         }
     } else {
-        var idx = eqs.indexOf(upperLimitEquation);
-        if(idx !== -1){
-            eqs.splice(idx,1);
+        var l = eqs.length;
+        for (var i = 0; i < l; i++) {
+            if (eqs[i] === upperLimitEquation) {
+                eqs.splice(i,1);
+            }
         }
     }
 
@@ -298,9 +300,11 @@ PrismaticConstraint.prototype.update = function(){
             eqs.push(lowerLimitEquation);
         }
     } else {
-        var idx = eqs.indexOf(lowerLimitEquation);
-        if(idx !== -1){
-            eqs.splice(idx,1);
+        var l = eqs.length;
+        for (var i = 0; i < l; i++) {
+            if (eqs[i] === lowerLimitEquation) {
+                eqs.splice(i,1);
+            }
         }
     }
 };
@@ -325,8 +329,13 @@ PrismaticConstraint.prototype.disableMotor = function(){
     if(!this.motorEnabled){
         return;
     }
-    var i = this.equations.indexOf(this.motorEquation);
-    this.equations.splice(i,1);
+    var l = this.equations.length;
+    var equations = this.equations;
+    for (var i = 0; i < l; i++) {
+        if (equations[i] === this.motorEquation) {
+            equations.splice(i,1);
+        }
+    }
     this.motorEnabled = false;
 };
 

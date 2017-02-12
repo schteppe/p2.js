@@ -20,8 +20,9 @@ Utils.appendArray = function(a,b){
     if (b.length < 150000) {
         a.push.apply(a, b);
     } else {
-        for (var i = 0, len = b.length; i !== len; ++i) {
-            a.push(b[i]);
+        var l = b.length;
+        while(l--){
+            a.push(b[l]);
         }
     }
 };
@@ -50,9 +51,12 @@ Utils.splice = function(array,index,howmany){
  * @param  {Number} element
  */
 Utils.arrayRemove = function(array, element){
-    var idx = array.indexOf(element);
-    if(idx!==-1){
-        Utils.splice(array, idx, 1);
+    var l = array.length;
+    for (var i = 0; i < l; i++) {
+        if (array[i] === element) {
+            Utils.splice(array, i, 1);
+            break;
+        }
     }
 };
 

@@ -676,16 +676,17 @@ Body.prototype.removeShape = function(shape){
         throw new Error('A shape cannot be removed during step.');
     }
 
-    var idx = this.shapes.indexOf(shape);
-
-    if(idx !== -1){
-        this.shapes.splice(idx,1);
-        this.aabbNeedsUpdate = true;
-        shape.body = null;
-        return true;
-    } else {
-        return false;
+    var l = this.shapes.length;
+    var shapes = this.shapes;
+    for (var i = 0; i < l; i++) {
+        if (shapes[i] === shape) {
+            shapes.splice(i,1);
+            this.aabbNeedsUpdate = true;
+            shape.body = null;
+            return true;
+        }
     }
+    return false;
 };
 
 /**
@@ -961,7 +962,8 @@ Body.prototype.fromPolygon = function(path,options){
         var c = new Convex({ vertices: convexes[i] });
 
         // Move all vertices so its center of mass is in the local center of the convex
-        for(var j=0; j!==c.vertices.length; j++){
+        var l = c.vertices.length;
+        for(var j=0; j!==l; j++){
             var v = c.vertices[j];
             sub(v,v,c.centerOfMass);
         }

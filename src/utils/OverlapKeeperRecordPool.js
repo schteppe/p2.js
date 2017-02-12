@@ -7,7 +7,7 @@ module.exports = OverlapKeeperRecordPool;
  * @class
  */
 function OverlapKeeperRecordPool() {
-	Pool.apply(this, arguments);
+    Pool.apply(this, arguments);
 }
 OverlapKeeperRecordPool.prototype = new Pool();
 OverlapKeeperRecordPool.prototype.constructor = OverlapKeeperRecordPool;
@@ -17,7 +17,7 @@ OverlapKeeperRecordPool.prototype.constructor = OverlapKeeperRecordPool;
  * @return {OverlapKeeperRecord}
  */
 OverlapKeeperRecordPool.prototype.create = function () {
-	return new OverlapKeeperRecord();
+    return new OverlapKeeperRecord();
 };
 
 /**
@@ -26,6 +26,6 @@ OverlapKeeperRecordPool.prototype.create = function () {
  * @return {OverlapKeeperRecordPool}
  */
 OverlapKeeperRecordPool.prototype.destroy = function (record) {
-	record.bodyA = record.bodyB = record.shapeA = record.shapeB = null;
-	return this;
+    record.bodyA = record.bodyB = record.shapeA = record.shapeB = null;
+    return this;
 };

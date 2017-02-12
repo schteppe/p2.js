@@ -54,7 +54,8 @@ NaiveBroadphase.prototype.aabbQuery = function(world, aabb, result){
     result = result || [];
 
     var bodies = world.bodies;
-    for(var i = 0; i < bodies.length; i++){
+    var l = bodies.length;
+    for(var i = 0; i < l; i++){
         var b = bodies[i];
 
         if(b.aabbNeedsUpdate){

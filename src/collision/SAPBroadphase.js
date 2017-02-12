@@ -34,9 +34,13 @@ function SAPBroadphase(){
 
     this._removeBodyHandler = function(e){
         // Remove from list
-        var idx = that.axisList.indexOf(e.body);
-        if(idx !== -1){
-            that.axisList.splice(idx,1);
+        var l = that.axisList.length;
+        var list = that.axisList;
+        for (var i = 0; i < l; i++) {
+            if (list[i] === e.body) {
+                that.axisList.splice(i,1);
+                break;
+            }
         }
     };
 }

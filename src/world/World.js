@@ -523,8 +523,10 @@ World.prototype.step = function(dt,timeSinceLastCalled,maxSubSteps){
         }
 
         var t = (this.accumulator % dt) / dt;
-        for(var j=0; j!==this.bodies.length; j++){
-            var b = this.bodies[j];
+        var bodies = this.bodies;
+        var l = bodies.length;
+        for(var j=0; j!==l; j++){
+            var b = bodies[j];
             vec2.lerp(b.interpolatedPosition, b.previousPosition, b.position, t);
             b.interpolatedAngle = b.previousAngle + t * (b.angle - b.previousAngle);
         }
@@ -710,15 +712,16 @@ World.prototype.internalStep = function(dt){
 
             // Initialize the UnionFind
             var unionFind = this.unionFind;
-            unionFind.resize(this.bodies.length + 1);
+            unionFind.resize(Nbodies + 1);
 
             // Update equation index
-            for(var i=0; i<equations.length; i++){
+            var nEquations = equations.length;
+            for(var i=0; i<nEquations; i++){
                 equations[i].index = i;
             }
 
             // Unite bodies if they are connected by an equation
-            for(var i=0; i<equations.length; i++){
+            for(var i=0; i<nEquations; i++){
                 var bodyA = equations[i].bodyA;
                 var bodyB = equations[i].bodyB;
                 if(bodyA.type === Body.DYNAMIC && bodyB.type === Body.DYNAMIC){
@@ -727,7 +730,7 @@ World.prototype.internalStep = function(dt){
             }
 
             // Find the body islands
-            for(var i=0; i<bodies.length; i++){
+            for(var i=0; i<Nbodies; i++){
                 var body = bodies[i];
                 body.islandId = body.type === Body.DYNAMIC ? unionFind.find(body.index) : -1;
             }
@@ -736,7 +739,7 @@ World.prototype.internalStep = function(dt){
             equations = equations.sort(sortEquationsByIsland);
 
             var equationIndex = 0;
-            while(equationIndex < equations.length){
+            while(equationIndex < nEquations){
                 var equation = equations[equationIndex++];
                 solver.addEquation(equation);
 
@@ -1099,7 +1102,8 @@ World.prototype.removeBody = function(body){
  */
 World.prototype.getBodyById = function(id){
     var bodies = this.bodies;
-    for(var i=0; i<bodies.length; i++){
+    var l = bodies.length;
+    for(var i=0; i<l; i++){
         var b = bodies[i];
         if(b.id === id){
             return b;
@@ -1265,10 +1269,12 @@ World.prototype.setGlobalRelaxation = function(relaxation){
 
 function setGlobalEquationParams(world, params){
     var constraints = world.constraints;
-    for(var i=0; i !== constraints.length; i++){
+    var l = constraints.length;
+    for(var i=0; i !== l; i++){
         var c = constraints[i];
         var eqs = c.equations;
-        for(var j=0; j !== eqs.length; j++){
+        var nEquations = eqs.length;
+        for(var j=0; j !== nEquations; j++){
             var eq = eqs[j];
             eq.relaxation = params.relaxation !== undefined ? params.relaxation : eq.relaxation;
             eq.stiffness = params.stiffness !== undefined ? params.stiffness : eq.stiffness;

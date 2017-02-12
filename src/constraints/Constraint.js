@@ -107,7 +107,8 @@ Constraint.REVOLUTE = 5;
  */
 Constraint.prototype.setStiffness = function(stiffness){
     var eqs = this.equations;
-    for(var i=0; i !== eqs.length; i++){
+    var l = eqs.length;
+    for(var i=0; i !== l; i++){
         var eq = eqs[i];
         eq.stiffness = stiffness;
         eq.needsUpdate = true;
@@ -121,7 +122,8 @@ Constraint.prototype.setStiffness = function(stiffness){
  */
 Constraint.prototype.setRelaxation = function(relaxation){
     var eqs = this.equations;
-    for(var i=0; i !== eqs.length; i++){
+    var l = eqs.length;
+    for(var i=0; i !== l; i++){
         var eq = eqs[i];
         eq.relaxation = relaxation;
         eq.needsUpdate = true;
@@ -134,7 +136,8 @@ Constraint.prototype.setRelaxation = function(relaxation){
  */
 Constraint.prototype.setMaxBias = function(maxBias){
     var eqs = this.equations;
-    for(var i=0; i !== eqs.length; i++){
+    var l = eqs.length;
+    for(var i=0; i !== l; i++){
         var eq = eqs[i];
         eq.maxBias = maxBias;
     }
