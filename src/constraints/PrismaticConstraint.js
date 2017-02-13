@@ -13,31 +13,26 @@ module.exports = PrismaticConstraint;
  * @constructor
  * @extends Constraint
  * @author schteppe
- * @param {Body} bodyA
- * @param {Body} bodyB
- * @param {Object} [options]
- * @param {Number} [options.maxForce] Max force to be applied by the constraint
- * @param {Array} [options.localAnchorA] Body A's anchor point, defined in its own local frame.
- * @param {Array} [options.localAnchorB] Body B's anchor point, defined in its own local frame.
- * @param {Array} [options.localAxisA] An axis, defined in body A frame, that body B's anchor point may slide along.
- * @param {Boolean} [options.disableRotationalLock] If set to true, bodyB will be free to rotate around its anchor point.
- * @param {Number} [options.upperLimit]
- * @param {Number} [options.lowerLimit]
+ * @param {Body}    bodyA
+ * @param {Body}    bodyB
+ * @param {Object}  [options]
+ * @param {Number}  [options.maxForce]                Max force to be applied by the constraint
+ * @param {Array}   [options.localAnchorA]            Body A's anchor point, defined in its own local frame.
+ * @param {Array}   [options.localAnchorB]            Body B's anchor point, defined in its own local frame.
+ * @param {Array}   [options.localAxisA]              An axis, defined in body A frame, that body B's anchor point may slide along.
+ * @param {Boolean} [options.disableRotationalLock]   If set to true, bodyB will be free to rotate around its anchor point.
+ * @param {Number}  [options.upperLimit]
+ * @param {Number}  [options.lowerLimit]
  * @todo Ability to create using only a point and a worldAxis
- * @example
- *     var constraint = new PrismaticConstraint(bodyA, bodyB, {
- *         localAxisA: [0, 1]
- *     });
- *     world.addConstraint(constraint);
  */
 function PrismaticConstraint(bodyA, bodyB, options){
     options = options || {};
     Constraint.call(this,bodyA,bodyB,Constraint.PRISMATIC,options);
 
     // Get anchors
-    var localAnchorA = vec2.create(),
+    var localAnchorA = vec2.fromValues(0,0),
         localAxisA = vec2.fromValues(1,0),
-        localAnchorB = vec2.create();
+        localAnchorB = vec2.fromValues(0,0);
     if(options.localAnchorA){ vec2.copy(localAnchorA, options.localAnchorA); }
     if(options.localAxisA){ vec2.copy(localAxisA,   options.localAxisA); }
     if(options.localAnchorB){ vec2.copy(localAnchorB, options.localAnchorB); }
@@ -78,7 +73,7 @@ function PrismaticConstraint(bodyA, bodyB, options){
 
      */
 
-    var maxForce = this.maxForce = options.maxForce !== undefined ? options.maxForce : Number.MAX_VALUE;
+    var maxForce = this.maxForce = typeof(options.maxForce)!=="undefined" ? options.maxForce : Number.MAX_VALUE;
 
     // Translational part
     var trans = new Equation(bodyA,bodyB,-maxForce,maxForce);
@@ -97,8 +92,8 @@ function PrismaticConstraint(bodyA, bodyB, options){
         vec2.rotate(ri,localAnchorA,bodyA.angle);
         vec2.rotate(rj,localAnchorB,bodyB.angle);
         vec2.add(gg,xj,rj);
-        vec2.subtract(gg,gg,xi);
-        vec2.subtract(gg,gg,ri);
+        vec2.sub(gg,gg,xi);
+        vec2.sub(gg,gg,ri);
         vec2.rotate(t,localAxisA,bodyA.angle+Math.PI/2);
 
         G[0] = -t[0];
@@ -131,28 +126,28 @@ function PrismaticConstraint(bodyA, bodyB, options){
      * @property lowerLimitEnabled
      * @type {Boolean}
      */
-    this.lowerLimitEnabled = options.lowerLimit !== undefined ? true : false;
+    this.lowerLimitEnabled = typeof(options.lowerLimit)!=="undefined" ? true : false;
 
     /**
      * Set to true to enable upper limit.
      * @property upperLimitEnabled
      * @type {Boolean}
      */
-    this.upperLimitEnabled = options.upperLimit !== undefined ? true : false;
+    this.upperLimitEnabled = typeof(options.upperLimit)!=="undefined" ? true : false;
 
     /**
      * Lower constraint limit. The constraint position is forced to be larger than this value.
      * @property lowerLimit
      * @type {Number}
      */
-    this.lowerLimit = options.lowerLimit !== undefined ? options.lowerLimit : 0;
+    this.lowerLimit = typeof(options.lowerLimit)!=="undefined" ? options.lowerLimit : 0;
 
     /**
      * Upper constraint limit. The constraint position is forced to be smaller than this value.
      * @property upperLimit
      * @type {Number}
      */
-    this.upperLimit = options.upperLimit !== undefined ? options.upperLimit : 1;
+    this.upperLimit = typeof(options.upperLimit)!=="undefined" ? options.upperLimit : 1;
 
     // Equations used for limits
     this.upperLimitEquation = new ContactEquation(bodyA,bodyB);
@@ -185,6 +180,7 @@ function PrismaticConstraint(bodyA, bodyB, options){
 
     var that = this;
     var motorEquation = this.motorEquation;
+    var old = motorEquation.computeGW;
     motorEquation.computeGq = function(){ return 0; };
     motorEquation.computeGW = function(){
         var G = this.G,
@@ -273,38 +269,34 @@ PrismaticConstraint.prototype.update = function(){
     if(this.upperLimitEnabled && relPosition > upperLimit){
         // Update contact constraint normal, etc
         vec2.scale(upperLimitEquation.normalA, worldAxisA, -1);
-        vec2.subtract(upperLimitEquation.contactPointA, worldAnchorA, bodyA.position);
-        vec2.subtract(upperLimitEquation.contactPointB, worldAnchorB, bodyB.position);
+        vec2.sub(upperLimitEquation.contactPointA, worldAnchorA, bodyA.position);
+        vec2.sub(upperLimitEquation.contactPointB, worldAnchorB, bodyB.position);
         vec2.scale(tmp,worldAxisA,upperLimit);
         vec2.add(upperLimitEquation.contactPointA,upperLimitEquation.contactPointA,tmp);
         if(eqs.indexOf(upperLimitEquation) === -1){
             eqs.push(upperLimitEquation);
         }
     } else {
-        var l = eqs.length;
-        for (var i = 0; i < l; i++) {
-            if (eqs[i] === upperLimitEquation) {
-                eqs.splice(i,1);
-            }
+        var idx = eqs.indexOf(upperLimitEquation);
+        if(idx !== -1){
+            eqs.splice(idx,1);
         }
     }
 
     if(this.lowerLimitEnabled && relPosition < lowerLimit){
         // Update contact constraint normal, etc
         vec2.scale(lowerLimitEquation.normalA, worldAxisA, 1);
-        vec2.subtract(lowerLimitEquation.contactPointA, worldAnchorA, bodyA.position);
-        vec2.subtract(lowerLimitEquation.contactPointB, worldAnchorB, bodyB.position);
+        vec2.sub(lowerLimitEquation.contactPointA, worldAnchorA, bodyA.position);
+        vec2.sub(lowerLimitEquation.contactPointB, worldAnchorB, bodyB.position);
         vec2.scale(tmp,worldAxisA,lowerLimit);
-        vec2.subtract(lowerLimitEquation.contactPointB,lowerLimitEquation.contactPointB,tmp);
+        vec2.sub(lowerLimitEquation.contactPointB,lowerLimitEquation.contactPointB,tmp);
         if(eqs.indexOf(lowerLimitEquation) === -1){
             eqs.push(lowerLimitEquation);
         }
     } else {
-        var l = eqs.length;
-        for (var i = 0; i < l; i++) {
-            if (eqs[i] === lowerLimitEquation) {
-                eqs.splice(i,1);
-            }
+        var idx = eqs.indexOf(lowerLimitEquation);
+        if(idx !== -1){
+            eqs.splice(idx,1);
         }
     }
 };
@@ -329,13 +321,8 @@ PrismaticConstraint.prototype.disableMotor = function(){
     if(!this.motorEnabled){
         return;
     }
-    var l = this.equations.length;
-    var equations = this.equations;
-    for (var i = 0; i < l; i++) {
-        if (equations[i] === this.motorEquation) {
-            equations.splice(i,1);
-        }
-    }
+    var i = this.equations.indexOf(this.motorEquation);
+    this.equations.splice(i,1);
     this.motorEnabled = false;
 };
 

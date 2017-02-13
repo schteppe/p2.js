@@ -1,4 +1,5 @@
-var Equation = require("./Equation");
+var Equation = require("./Equation"),
+    vec2 = require('../math/vec2');
 
 module.exports = RotationalVelocityEquation;
 

@@ -1,4 +1,9 @@
-var Broadphase = require('../collision/Broadphase');
+var Circle = require('../shapes/Circle'),
+    Plane = require('../shapes/Plane'),
+    Shape = require('../shapes/Shape'),
+    Particle = require('../shapes/Particle'),
+    Broadphase = require('../collision/Broadphase'),
+    vec2 = require('../math/vec2');
 
 module.exports = NaiveBroadphase;
 
@@ -54,8 +59,7 @@ NaiveBroadphase.prototype.aabbQuery = function(world, aabb, result){
     result = result || [];
 
     var bodies = world.bodies;
-    var l = bodies.length;
-    for(var i = 0; i < l; i++){
+    for(var i = 0; i < bodies.length; i++){
         var b = bodies[i];
 
         if(b.aabbNeedsUpdate){

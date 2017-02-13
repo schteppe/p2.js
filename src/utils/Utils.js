@@ -20,9 +20,8 @@ Utils.appendArray = function(a,b){
     if (b.length < 150000) {
         a.push.apply(a, b);
     } else {
-        var l = b.length;
-        while(l--){
-            a.push(b[l]);
+        for (var i = 0, len = b.length; i !== len; ++i) {
+            a.push(b[i]);
         }
     }
 };
@@ -41,23 +40,6 @@ Utils.splice = function(array,index,howmany){
         array[i] = array[i + howmany];
     }
     array.length = len;
-};
-
-/**
- * Remove an element from an array, if the array contains the element.
- * @method arrayRemove
- * @static
- * @param  {Array} array
- * @param  {Number} element
- */
-Utils.arrayRemove = function(array, element){
-    var l = array.length;
-    for (var i = 0; i < l; i++) {
-        if (array[i] === element) {
-            Utils.splice(array, i, 1);
-            break;
-        }
-    }
 };
 
 /**
@@ -93,20 +75,7 @@ Utils.extend = function(a,b){
 };
 
 /**
- * Shallow clone an object. Returns a new object instance with the same properties as the input instance.
- * @static
- * @method shallowClone
- * @param  {object} obj
- */
-Utils.shallowClone = function(obj){
-    var newObj = {};
-    Utils.extend(newObj, obj);
-    return newObj;
-};
-
-/**
  * Extend an options object with default values.
- * @deprecated Not used internally, will be removed.
  * @static
  * @method defaults
  * @param  {object} options The options object. May be falsy: in this case, a new object is created and returned.
@@ -114,7 +83,6 @@ Utils.shallowClone = function(obj){
  * @return {object} The modified options object.
  */
 Utils.defaults = function(options, defaults){
-    console.warn('Utils.defaults is deprecated.');
     options = options || {};
     for(var key in defaults){
         if(!(key in options)){

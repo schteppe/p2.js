@@ -17,13 +17,6 @@ exports.computeAABB = function(test){
     test.done();
 };
 
-exports.pointTest = function(test){
-    var shape = new Line();
-    test.equal(shape.pointTest([0, 0]), false);
-    test.equal(shape.pointTest([0, 1]), false);
-    test.done();
-};
-
 exports.raycast = function(test){
     var ray = new Ray({
 		mode: Ray.CLOSEST,

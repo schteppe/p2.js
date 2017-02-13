@@ -13,7 +13,7 @@
       var w, h, canvas, ctx, world, circleBody, sensorBody;
 
       init();
-      requestAnimationFrame(animate);
+      animate();
 
       function init(){
 
@@ -67,23 +67,14 @@
         ctx.restore();
       }
 
-      var lastTime, timeStep = 1 / 60, maxSubSteps = 5;
-
       // Animation loop
-      function animate(time){
+      function animate(){
         requestAnimationFrame(animate);
 
-        var dt = lastTime ? (time - lastTime) / 1000 : 0;
-        dt = Math.min(1 / 10, dt);
-        lastTime = time;
-
         circleBody.position[0] = 3*Math.sin(world.time);
+        world.step(1/60);
 
-        // Move physics bodies forward in time
-        world.step(timeStep, dt, maxSubSteps);
-
-        // Render scene
-        render(time);
+        render();
       }
 
     </script>

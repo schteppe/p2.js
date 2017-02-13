@@ -43,5 +43,12 @@ var p2 = module.exports = {
     Utils :                         require('./utils/Utils'),
     World :                         require('./world/World'),
     vec2 :                          require('./math/vec2'),
-    version :                       '0.7.1',
+    version :                       require('../package.json').version,
 };
+
+Object.defineProperty(p2, 'Rectangle', {
+    get: function() {
+        console.warn('The Rectangle class has been renamed to Box.');
+        return this.Box;
+    }
+});

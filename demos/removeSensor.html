@@ -12,7 +12,7 @@
 <body>
     <script>
 
-        var interval, removeBody;
+        var interval;
 
         // Create demo application
         var app = new p2.WebGLRenderer({
@@ -24,11 +24,12 @@
 
                 this.setWorld(world);
 
-                // Create circle
+                // Create circle sensor
                 var shape = new p2.Circle({ radius: 0.4 });
+                shape.sensor = true;
                 var body = new p2.Body({
                     mass: 1,
-                    position: [0,3]
+                    position: [0,3],
                 });
                 body.addShape(shape);
 
@@ -40,30 +41,31 @@
                 plane.addShape(planeShape);
                 world.addBody(plane);
 
-                // The beginContact event is fired whenever two shapes starts overlapping, including sensors.
+                // The beginContact event is fired whenever two shapes
+                // starts overlapping, including sensors.
                 world.on("beginContact",function(event){
-                    // We cannot remove the body here since the world is still stepping.
-                    // Instead, schedule the body to be removed after the step is done.
-                    removeBody = body;
-                });
 
-                // The postStep event is fired after a physics tick.
-                // Removal of bodies, shapes and constraints is safe here.
-                world.on("postStep",function(event){
-                    if(removeBody){
-                        // Remove the body from the world.
-                        world.removeBody(removeBody);
-                        removeBody = null;
+                    // Check if our sensor body is involved in this contact event.
+                    // This might be false if the user added more bodies via the
+                    // GUI, that collides.
+                    if(event.bodyA===body || event.bodyB===body){
+
+                        // Check if the body is added to the world. This should be
+                        // true, but better be safe.
+                        if(body.world){
+
+                            // Remove the body from the world.
+                            world.removeBody(body);
+                        }
                     }
                 });
 
                 function spawnBody(){
-                    if(!body.world){
-                        body.position[0] = 0;
-                        body.position[1] = 2;
-                        body.velocity[0] = body.velocity[1] = body.angularVelocity = 0;
-                        world.addBody(body);
-                    }
+                    body.position[0] = 0;
+                    body.position[1] = 2;
+                    body.velocity[0] = 0;
+                    body.velocity[1] = 0;
+                    world.addBody(body);
                 }
 
                 spawnBody();

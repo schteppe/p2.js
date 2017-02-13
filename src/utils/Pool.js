@@ -1,22 +1,20 @@
 module.exports = Pool;
 
 /**
- * Object pooling utility.
- * @class Pool
- * @constructor
+ * @class Object pooling utility.
  */
 function Pool(options) {
-    options = options || {};
+	options = options || {};
 
-    /**
-     * @property {Array} objects
-     * @type {Array}
-     */
-    this.objects = [];
+	/**
+	 * @property {Array} objects
+	 * @type {Array}
+	 */
+	this.objects = [];
 
-    if(options.size !== undefined){
-        this.resize(options.size);
-    }
+	if(options.size !== undefined){
+		this.resize(options.size);
+	}
 }
 
 /**
@@ -25,17 +23,17 @@ function Pool(options) {
  * @return {Pool} Self, for chaining
  */
 Pool.prototype.resize = function (size) {
-    var objects = this.objects;
+	var objects = this.objects;
 
-    while (objects.length > size) {
-        objects.pop();
-    }
+	while (objects.length > size) {
+		objects.pop();
+	}
 
-    while (objects.length < size) {
-        objects.push(this.create());
-    }
+	while (objects.length < size) {
+		objects.push(this.create());
+	}
 
-    return this;
+	return this;
 };
 
 /**
@@ -44,8 +42,8 @@ Pool.prototype.resize = function (size) {
  * @return {Object}
  */
 Pool.prototype.get = function () {
-    var objects = this.objects;
-    return objects.length ? objects.pop() : this.create();
+	var objects = this.objects;
+	return objects.length ? objects.pop() : this.create();
 };
 
 /**
@@ -55,7 +53,7 @@ Pool.prototype.get = function () {
  * @return {Pool} Self for chaining
  */
 Pool.prototype.release = function (object) {
-    this.destroy(object);
-    this.objects.push(object);
-    return this;
+	this.destroy(object);
+	this.objects.push(object);
+	return this;
 };

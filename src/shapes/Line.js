@@ -1,5 +1,4 @@
 var Shape = require('./Shape')
-,   shallowClone = require('../utils/Utils').shallowClone
 ,   vec2 = require('../math/vec2');
 
 module.exports = Line;
@@ -11,22 +10,22 @@ module.exports = Line;
  * @param {Number} [options.length=1] The total length of the line
  * @extends Shape
  * @constructor
- * @example
- *     var body = new Body();
- *     var lineShape = new Line({
- *         length: 1
- *     });
- *     body.addShape(lineShape);
  */
 function Line(options){
-    options = options ? shallowClone(options) : {};
+    if(typeof(arguments[0]) === 'number'){
+        options = {
+            length: arguments[0]
+        };
+        console.warn('The Line constructor signature has changed. Please use the following format: new Line({ length: 1, ... })');
+    }
+    options = options || {};
 
     /**
      * Length of this line
      * @property {Number} length
      * @default 1
      */
-    this.length = options.length !== undefined ? options.length : 1;
+    this.length = options.length || 1;
 
     options.type = Shape.LINE;
     Shape.call(this, options);
@@ -34,8 +33,8 @@ function Line(options){
 Line.prototype = new Shape();
 Line.prototype.constructor = Line;
 
-Line.prototype.computeMomentOfInertia = function(){
-    return Math.pow(this.length,2) / 12;
+Line.prototype.computeMomentOfInertia = function(mass){
+    return mass * Math.pow(this.length,2) / 12;
 };
 
 Line.prototype.updateBoundingRadius = function(){
@@ -57,6 +56,7 @@ Line.prototype.computeAABB = function(out, position, angle){
     out.setFromPoints(points,position,angle,0);
 };
 
+var raycast_hitPoint = vec2.create();
 var raycast_normal = vec2.create();
 var raycast_l0 = vec2.create();
 var raycast_l1 = vec2.create();

@@ -33,11 +33,8 @@
                     mass: 1,
                     position: [1,4]
                 }),
-                boxShape = new p2.Box({
-                    width: 0.5,
-                    height: 0.5,
-                    material: new p2.Material()
-                });
+                boxShape = new p2.Box({ width: 0.5, height: 0.5 });
+            boxShape.material = new p2.Material();
             boxBody.addShape(boxShape);
             world.addBody(boxBody);
 
@@ -46,26 +43,20 @@
                     mass: 0, // static
                     position: [-0.5,1]
                 }),
-                platformShape1 = new p2.Box({
-                    width: 3,
-                    height: 0.2,
-                    material: new p2.Material()
-                });
+                platformShape1 = new p2.Box({ width: 3, height: 0.2 });
             platformBody1.addShape(platformShape1);
             world.addBody(platformBody1);
+            platformShape1.material = new p2.Material();
 
             // Create static platform box
             var platformBody2 = new p2.Body({
                     mass: 0, // static
                     position: [0.5, 2]
                 }),
-                platformShape2 = new p2.Box({
-                    width: 3,
-                    height: 0.2,
-                    material: new p2.Material()
-                });
+                platformShape2 = new p2.Box({ width: 3, height: 0.2 });
             platformBody2.addShape(platformShape2);
             world.addBody(platformBody2);
+            platformShape2.material = new p2.Material();
 
             var contactMaterial1 = new p2.ContactMaterial(boxShape.material,platformShape1.material,{
                 surfaceVelocity:-0.5,

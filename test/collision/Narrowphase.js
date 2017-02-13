@@ -9,8 +9,6 @@ var Narrowphase = require(__dirname + '/../../src/collision/Narrowphase')
 ,   Line = require(__dirname + "/../../src/shapes/Line")
 ,   ContactEquation = require(__dirname + "/../../src/equations/ContactEquation")
 ,   FrictionEquation = require(__dirname + "/../../src/equations/FrictionEquation")
-,   ContactMaterial = require(__dirname + "/../../src/material/ContactMaterial")
-,   Material = require(__dirname + "/../../src/material/Material")
 ,   vec2 = require(__dirname + "/../../src/math/vec2");
 
 var rect,
@@ -47,7 +45,6 @@ exports.setUp = function(callback){
     line = new Line();
 
     narrowphase = new Narrowphase();
-    narrowphase.currentContactMaterial = new ContactMaterial(new Material(), new Material());
 
     bodyA = new Body();
     bodyB = new Body();
@@ -65,7 +62,7 @@ exports.capsuleCapsule = function(test){
     test.equal(typeof result, 'number');
 
     result = narrowphase.capsuleCapsule(bodyA, capsule, position, angle, bodyB, capsule, position, angle, true);
-    test.equal(typeof result, 'number');
+    test.equal(typeof result, 'boolean');
 
     test.done();
 };
@@ -75,7 +72,7 @@ exports.planeCapsule = function(test){
     test.equal(typeof result, 'number');
 
     result = narrowphase.planeCapsule(bodyA, plane, position, angle, bodyB, capsule, position, angle, true);
-    test.equal(typeof result, 'number');
+    test.equal(typeof result, 'boolean');
 
     test.done();
 };
@@ -85,7 +82,7 @@ exports.circleCapsule = function(test){
     test.equal(typeof result, 'number');
 
     result = narrowphase.circleCapsule(bodyA, circle, position, angle, bodyB, capsule, position, angle, true);
-    test.equal(typeof result, 'number');
+    test.equal(typeof result, 'boolean');
 
     test.done();
 };
@@ -95,7 +92,7 @@ exports.circleCircle = function(test){
     test.equal(typeof result, 'number');
 
     result = narrowphase.circleCircle(bodyA, circle, position, angle, bodyB, circle, position, angle, true);
-    test.equal(typeof result, 'number');
+    test.equal(typeof result, 'boolean');
 
     test.done();
 };
@@ -105,7 +102,7 @@ exports.circleConvex = function(test){
     test.equal(typeof result, 'number');
 
     result = narrowphase.circleConvex(bodyA, circle, position, angle, bodyB, convex, position, angle, true);
-    test.equal(typeof result, 'number');
+    test.equal(typeof result, 'boolean');
 
     test.done();
 };
@@ -115,7 +112,7 @@ exports.circleLine = function(test){
     test.equal(typeof result, 'number');
 
     var result = narrowphase.circleLine(bodyA, circle, position, angle, bodyB, line, position, angle, true);
-    test.equal(typeof result, 'number');
+    test.equal(typeof result, 'boolean');
 
     test.done();
 };
@@ -125,7 +122,7 @@ exports.circleParticle = function(test){
     test.equal(typeof result, 'number');
 
     result = narrowphase.circleParticle(bodyA, circle, position, angle, bodyB, particle, position, angle, true);
-    test.equal(typeof result, 'number');
+    test.equal(typeof result, 'boolean');
 
     test.done();
 };
@@ -135,7 +132,7 @@ exports.circlePlane = function(test){
     test.equal(typeof result, 'number');
 
     result = narrowphase.circlePlane(bodyA, circle, position, angle, bodyB, plane, position, angle, true);
-    test.equal(typeof result, 'number');
+    test.equal(typeof result, 'boolean');
 
     test.done();
 };
@@ -150,7 +147,7 @@ exports.convexCapsule = function(test){
     test.equal(typeof result, 'number');
 
     result = narrowphase.convexCapsule(bodyA, convex, position, angle, bodyB, capsule, position, angle, true);
-    test.equal(typeof result, 'number');
+    test.equal(typeof result, 'boolean');
 
     test.done();
 };
@@ -160,7 +157,7 @@ exports.convexConvex = function(test){
     test.equal(typeof result, 'number');
 
     result = narrowphase.convexConvex(bodyA, convex, position, angle, bodyB, convex, position, angle, true);
-    test.equal(typeof result, 'number');
+    test.equal(typeof result, 'boolean');
 
     test.done();
 };
@@ -170,7 +167,7 @@ exports.convexLine = function(test){
     test.equal(typeof result, 'number');
 
     result = narrowphase.convexLine(bodyA, convex, position, angle, bodyB, line, position, angle, true);
-    test.equal(typeof result, 'number');
+    test.equal(typeof result, 'boolean');
 
     test.done();
 };
@@ -180,7 +177,7 @@ exports.planeConvex = function(test){
     test.equal(typeof result, 'number');
 
     result = narrowphase.planeConvex(bodyA, plane, position, angle, bodyB, convex, position, angle, true);
-    test.equal(typeof result, 'number');
+    test.equal(typeof result, 'boolean');
 
     test.done();
 };
@@ -202,12 +199,58 @@ exports.createFrictionFromContact = function(test){
     test.done();
 };
 
+exports.findSeparatingAxis = function(test){
+    var axis = vec2.create();
+    Narrowphase.findSeparatingAxis(convex,[0,0],0,convex,[0,1+eps],0,axis);
+
+    // Check length
+    var l = vec2.length(axis);
+    test.ok(l > 1-eps);
+    test.ok(l < 1+eps);
+
+    // Check direction - should be quite near up/down direction
+    var d = vec2.dot(axis, [0,1]);
+    test.ok(Math.abs(d) > 1-eps);
+
+
+
+    // Check what happens if there is overlap
+    Narrowphase.findSeparatingAxis(convex,[0,0],0,convex,[0,0.5],0,axis);
+
+    // Check direction - should still be quite near up/down direction
+    var d = vec2.dot(axis, [0,1]);
+    test.ok(Math.abs(d) > 1-eps);
+
+
+
+    // Check what happens if there is diagonal overlap
+    Narrowphase.findSeparatingAxis(convex,[0,0],0,convex,[0.5,0.5],0,axis);
+
+    // Check direction
+    var d = vec2.dot(axis, vec2.normalize([1,1],[1,1]));
+    test.ok(Math.abs(d) > 1-eps);
+
+    test.done();
+};
+
+exports.getClosestEdge = function(test){
+    var i = Narrowphase.getClosestEdge(convex, 0, [1,0]);
+
+    // Should be first or last edge
+    test.ok(i !== -1);
+
+    // Last edge is given by i == vs.length-2 since it is spanned by vs.length-2 to vs.length-1
+    test.ok(i===0 || i % (convex.vertices.length-2) === 0);
+
+    test.done();
+};
+
 exports.lineCapsule = function(test){
     var result = narrowphase.lineCapsule(bodyA, line, position, angle, bodyB, capsule, position, angle);
     test.equal(typeof result, 'number');
 
     result = narrowphase.lineCapsule(bodyA, line, position, angle, bodyB, capsule, position, angle, true);
-    test.equal(typeof result, 'number');
+    test.equal(typeof result, 'boolean');
 
     test.done();
 };
@@ -217,7 +260,7 @@ exports.lineLine = function(test){
     test.equal(typeof result, 'number');
 
     result = narrowphase.lineLine(bodyA, line, position, angle, bodyB, line, position, angle, true);
-    test.equal(typeof result, 'number');
+    test.equal(typeof result, 'boolean');
 
     test.done();
 };
@@ -227,7 +270,7 @@ exports.lineBox = function(test){
     test.equal(typeof result, 'number');
 
     result = narrowphase.lineBox(bodyA, line, position, angle, bodyB, rect, position, angle, true);
-    test.equal(typeof result, 'number');
+    test.equal(typeof result, 'boolean');
 
     test.done();
 };
@@ -237,7 +280,7 @@ exports.particleConvex = function(test){
     test.equal(typeof result, 'number');
 
     result = narrowphase.particleConvex(bodyA, particle, position, angle, bodyB, convex, position, angle, true);
-    test.equal(typeof result, 'number');
+    test.equal(typeof result, 'boolean');
 
     test.done();
 };
@@ -247,7 +290,7 @@ exports.particlePlane = function(test){
     test.equal(typeof result, 'number');
 
     result = narrowphase.particlePlane(bodyA, particle, position, angle, bodyB, plane, position, angle, true);
-    test.equal(typeof result, 'number');
+    test.equal(typeof result, 'boolean');
 
     test.done();
 };
@@ -257,8 +300,40 @@ exports.planeLine = function(test){
     test.equal(typeof result, 'number');
 
     result = narrowphase.planeLine(bodyA, plane, position, angle, bodyB, line, position, angle, true);
-    test.equal(typeof result, 'number');
+    test.equal(typeof result, 'boolean');
 
+    test.done();
+};
+
+exports.projectConvexOntoAxis = function(test){
+    var span = vec2.create();
+
+    // Moved along axis propendicular to the projection axis
+    Narrowphase.projectConvexOntoAxis(convex,[1,0],0,[0,1],span);
+
+    test.ok(span[0] > -1 - eps);
+    test.ok(span[0] < -1 + eps);
+    test.ok(span[1] > 1 - eps);
+    test.ok(span[1] < 1 + eps);
+
+    // Along the x axis
+    Narrowphase.projectConvexOntoAxis(convex,[0,1],0,[0,1],span);
+
+    test.ok(span[0] > 0 - eps);
+    test.ok(span[0] < 0 + eps);
+    test.ok(span[1] > 2 - eps);
+    test.ok(span[1] < 2 + eps);
+
+    // Along the x axis - rotated 180 degrees - should not do anything special
+    Narrowphase.projectConvexOntoAxis(convex,[0,1],Math.PI / 2,[0,1],span);
+
+    test.ok(span[0] > 0 - eps);
+    test.ok(span[0] < 0 + eps);
+    test.ok(span[1] > 2 - eps);
+    test.ok(span[1] < 2 + eps);
+
+    var span = vec2.create();
+    Narrowphase.projectConvexOntoAxis(rect,[1,0],0,[0,1],span);
     test.done();
 };
 
@@ -271,37 +346,13 @@ exports.reset = function(test){
     test.done();
 };
 
-exports.bodiesOverlap = {
 
-    simple: function(test){
-        bodyA.addShape(new Circle({ radius: 1 }));
-        bodyB.addShape(new Circle({ radius: 1 }));
-        test.ok(narrowphase.bodiesOverlap(bodyA, bodyB));
-        bodyB.position[0] = 10;
-        test.ok(!narrowphase.bodiesOverlap(bodyA, bodyB));
-        test.done();
-    },
-
-    withMask: function(test){
-        bodyA.addShape(new Circle({ radius: 1, collisionGroup: 1, collisionMask: 1 }));
-        bodyB.addShape(new Circle({ radius: 1, collisionGroup: 2, collisionMask: 2 }));
-        test.ok(!narrowphase.bodiesOverlap(bodyA, bodyB, true));
-
-        bodyB.shapes[0].collisionGroup = bodyB.shapes[0].collisionMask = 1;
-        test.ok(narrowphase.bodiesOverlap(bodyA, bodyB, true));
-
-        test.done();
-    },
-
-    differentOrder: function(test){
-        bodyA.addShape(new Box({ width: 1, height: 1 }));
-        bodyB.addShape(new Circle({ radius: 1 }));
-
-        test.ok(narrowphase.bodiesOverlap(bodyA, bodyB, true));
-        test.ok(narrowphase.bodiesOverlap(bodyB, bodyA, true));
-
-        test.done();
-    }
-
+exports.bodiesOverlap = function(test){
+    bodyA.addShape(new Circle({ radius: 1 }));
+    bodyB.addShape(new Circle({ radius: 1 }));
+    test.ok(narrowphase.bodiesOverlap(bodyA, bodyB));
+    bodyB.position[0] = 10;
+    test.ok(!narrowphase.bodiesOverlap(bodyA, bodyB));
+    test.done();
 };
 

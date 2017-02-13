@@ -1,4 +1,5 @@
 var vec2 = require('../math/vec2');
+var Utils = require('../utils/Utils');
 var Constraint = require('../constraints/Constraint');
 var FrictionEquation = require('../equations/FrictionEquation');
 var Body = require('../objects/Body');
@@ -8,9 +9,6 @@ module.exports = TopDownVehicle;
 /**
  * @class TopDownVehicle
  * @constructor
- *
- * @deprecated This class will be moved out of the core library in future versions.
- *
  * @param {Body} chassisBody A dynamic body, already added to the world.
  * @param {Object} [options]
  *
@@ -162,12 +160,12 @@ function WheelConstraint(vehicle, options){
     /**
      * @property {Array} localPosition
      */
-    this.localPosition = vec2.create();
+    this.localPosition = vec2.fromValues(0, 0);
     if(options.localPosition){
         vec2.copy(this.localPosition, options.localPosition);
     }
 
-    Constraint.call(this, vehicle.chassisBody, vehicle.groundBody);
+    Constraint.apply(this, vehicle.chassisBody, vehicle.groundBody);
 
     this.equations.push(
         this.forwardEquation,
@@ -179,7 +177,7 @@ function WheelConstraint(vehicle, options){
 WheelConstraint.prototype = new Constraint();
 
 /**
- * @method setBrakeForce
+ * @method setForwardFriction
  */
 WheelConstraint.prototype.setBrakeForce = function(force){
     this.forwardEquation.setSlipForce(force);
@@ -199,9 +197,8 @@ var relativePoint = vec2.create();
  * @method getSpeed
  */
 WheelConstraint.prototype.getSpeed = function(){
-    var body = this.vehicle.chassisBody;
-    body.vectorToWorldFrame(relativePoint, this.localForwardVector);
-    body.getVelocityAtPoint(worldVelocity, relativePoint);
+    this.vehicle.chassisBody.vectorToWorldFrame(relativePoint, this.localForwardVector);
+    this.vehicle.chassisBody.getVelocityAtPoint(worldVelocity, relativePoint);
     return vec2.dot(worldVelocity, relativePoint);
 };
 
@@ -211,29 +208,25 @@ var tmpVec = vec2.create();
  * @method update
  */
 WheelConstraint.prototype.update = function(){
-    var body = this.vehicle.chassisBody;
-    var forwardEquation = this.forwardEquation;
-    var sideEquation = this.sideEquation;
-    var steerValue = this.steerValue;
 
     // Directional
-    body.vectorToWorldFrame(forwardEquation.t, this.localForwardVector);
-    vec2.rotate(sideEquation.t, this.localForwardVector, Math.PI / 2);
-    body.vectorToWorldFrame(sideEquation.t, sideEquation.t);
+    this.vehicle.chassisBody.vectorToWorldFrame(this.forwardEquation.t, this.localForwardVector);
+    vec2.rotate(this.sideEquation.t, this.localForwardVector, Math.PI / 2);
+    this.vehicle.chassisBody.vectorToWorldFrame(this.sideEquation.t, this.sideEquation.t);
 
-    vec2.rotate(forwardEquation.t, forwardEquation.t, steerValue);
-    vec2.rotate(sideEquation.t, sideEquation.t, steerValue);
+    vec2.rotate(this.forwardEquation.t, this.forwardEquation.t, this.steerValue);
+    vec2.rotate(this.sideEquation.t, this.sideEquation.t, this.steerValue);
 
     // Attachment point
-    body.toWorldFrame(forwardEquation.contactPointB, this.localPosition);
-    vec2.copy(sideEquation.contactPointB, forwardEquation.contactPointB);
+    this.vehicle.chassisBody.toWorldFrame(this.forwardEquation.contactPointB, this.localPosition);
+    vec2.copy(this.sideEquation.contactPointB, this.forwardEquation.contactPointB);
 
-    body.vectorToWorldFrame(forwardEquation.contactPointA, this.localPosition);
-    vec2.copy(sideEquation.contactPointA, forwardEquation.contactPointA);
+    this.vehicle.chassisBody.vectorToWorldFrame(this.forwardEquation.contactPointA, this.localPosition);
+    vec2.copy(this.sideEquation.contactPointA, this.forwardEquation.contactPointA);
 
     // Add engine force
-    vec2.normalize(tmpVec, forwardEquation.t);
+    vec2.normalize(tmpVec, this.forwardEquation.t);
     vec2.scale(tmpVec, tmpVec, this.engineForce);
 
-    this.vehicle.chassisBody.applyForce(tmpVec, forwardEquation.contactPointA);
+    this.vehicle.chassisBody.applyForce(tmpVec, this.forwardEquation.contactPointA);
 };

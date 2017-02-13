@@ -1,19 +1,17 @@
 var Shape = require('./Shape')
-,   shallowClone = require('../utils/Utils').shallowClone
 ,   vec2 = require('../math/vec2');
 
 module.exports = Capsule;
 
 /**
- * Capsule shape.
+ * Capsule shape class.
  * @class Capsule
  * @constructor
  * @extends Shape
  * @param {object} [options] (Note that this options object will be passed on to the {{#crossLink "Shape"}}{{/crossLink}} constructor.)
- * @param {Number} [options.length=1] The distance between the end points, extends along the X axis.
- * @param {Number} [options.radius=1] Radius of the capsule.
+ * @param {Number} [options.length=1] The distance between the end points
+ * @param {Number} [options.radius=1] Radius of the capsule
  * @example
- *     var body = new Body({ mass: 1 });
  *     var capsuleShape = new Capsule({
  *         length: 1,
  *         radius: 2
@@ -21,19 +19,26 @@ module.exports = Capsule;
  *     body.addShape(capsuleShape);
  */
 function Capsule(options){
-    options = options ? shallowClone(options) : {};
+    if(typeof(arguments[0]) === 'number' && typeof(arguments[1]) === 'number'){
+        options = {
+            length: arguments[0],
+            radius: arguments[1]
+        };
+        console.warn('The Capsule constructor signature has changed. Please use the following format: new Capsule({ radius: 1, length: 1 })');
+    }
+    options = options || {};
 
     /**
      * The distance between the end points.
      * @property {Number} length
      */
-    this.length = options.length !== undefined ? options.length : 1;
+    this.length = options.length || 1;
 
     /**
      * The radius of the capsule.
      * @property {Number} radius
      */
-    this.radius = options.radius !== undefined ? options.radius : 1;
+    this.radius = options.radius || 1;
 
     options.type = Shape.CAPSULE;
     Shape.call(this, options);
@@ -44,36 +49,16 @@ Capsule.prototype.constructor = Capsule;
 /**
  * Compute the mass moment of inertia of the Capsule.
  * @method conputeMomentOfInertia
+ * @param  {Number} mass
  * @return {Number}
  * @todo
  */
-Capsule.prototype.computeMomentOfInertia = function(){
-    // http://www.efunda.com/math/areas/rectangle.cfm
-    function boxI(w, h) {
-        return w * h * (Math.pow(w, 2) + Math.pow(h, 2)) / 12;
-    }
-    function semiA(r) {
-        return Math.PI * Math.pow(r, 2) / 2;
-    }
-    // http://www.efunda.com/math/areas/CircleHalf.cfm
-    function semiI(r) {
-        return ((Math.PI / 4) - (8 / (9 * Math.PI))) * Math.pow(r, 4);
-    }
-    function semiC(r) {
-        return (4 * r) / (3 * Math.PI);
-    }
-    // https://en.wikipedia.org/wiki/Second_moment_of_area#Parallel_axis_theorem
-    function capsuleA(l, r) {
-        return l * 2 * r + Math.PI * Math.pow(r, 2);
-    }
-    function capsuleI(l, r) {
-        var d = l / 2 + semiC(r);
-        return boxI(l, 2 * r) + 2 * (semiI(r) + semiA(r) * Math.pow(d, 2));
-    }
+Capsule.prototype.computeMomentOfInertia = function(mass){
+    // Approximate with rectangle
     var r = this.radius,
-        l = this.length,
-        area = capsuleA(l, r);
-    return (area > 0) ? capsuleI(l, r) / area : 0;
+        w = this.length + r, // 2*r is too much, 0 is too little
+        h = r*2;
+    return mass * (h*h + w*w) / 12;
 };
 
 /**
@@ -134,6 +119,7 @@ var intersectCapsule_unit_y = vec2.fromValues(0,1);
 Capsule.prototype.raycast = function(result, ray, position, angle){
     var from = ray.from;
     var to = ray.to;
+    var direction = ray.direction;
 
     var hitPointWorld = intersectCapsule_hitPointWorld;
     var normal = intersectCapsule_normal;
@@ -182,7 +168,7 @@ Capsule.prototype.raycast = function(result, ray, position, angle){
             vec2.lerp(hitPointWorld, from, to, delta);
 
             if(vec2.squaredDistance(hitPointWorld, position) > diagonalLengthSquared){
-                vec2.subtract(normal, hitPointWorld, l0);
+                vec2.sub(normal, hitPointWorld, l0);
                 vec2.normalize(normal,normal);
                 ray.reportIntersection(result, delta, normal, -1);
                 if(result.shouldStop(ray)){
@@ -199,7 +185,7 @@ Capsule.prototype.raycast = function(result, ray, position, angle){
             if(d1 >= 0 && d1 <= 1){
                 vec2.lerp(hitPointWorld, from, to, d1);
                 if(vec2.squaredDistance(hitPointWorld, position) > diagonalLengthSquared){
-                    vec2.subtract(normal, hitPointWorld, l0);
+                    vec2.sub(normal, hitPointWorld, l0);
                     vec2.normalize(normal,normal);
                     ray.reportIntersection(result, d1, normal, -1);
                     if(result.shouldStop(ray)){
@@ -211,7 +197,7 @@ Capsule.prototype.raycast = function(result, ray, position, angle){
             if(d2 >= 0 && d2 <= 1){
                 vec2.lerp(hitPointWorld, from, to, d2);
                 if(vec2.squaredDistance(hitPointWorld, position) > diagonalLengthSquared){
-                    vec2.subtract(normal, hitPointWorld, l0);
+                    vec2.sub(normal, hitPointWorld, l0);
                     vec2.normalize(normal,normal);
                     ray.reportIntersection(result, d2, normal, -1);
                     if(result.shouldStop(ray)){
@@ -221,23 +207,4 @@ Capsule.prototype.raycast = function(result, ray, position, angle){
             }
         }
     }
-};
-
-Capsule.prototype.pointTest = function(localPoint){
-    var radius = this.radius;
-    var halfLength = this.length * 0.5;
-
-    if((Math.abs(localPoint[0]) <= halfLength && Math.abs(localPoint[1]) <= radius)){
-        return true;
-    }
-
-    if(Math.pow(localPoint[0] - halfLength, 2) + Math.pow(localPoint[1], 2) <= radius * radius){
-        return true;
-    }
-
-    if(Math.pow(localPoint[0] + halfLength, 2) + Math.pow(localPoint[1], 2) <= radius * radius){
-        return true;
-    }
-
-    return false;
 };

@@ -48,7 +48,7 @@ vec2.crossLength = function(a,b){
  * @param  {Array} out
  * @param  {Array} vec
  * @param  {Number} zcomp
- * @return {Array}
+ * @return {Number}
  */
 vec2.crossVZ = function(out, vec, zcomp){
     vec2.rotate(out,vec,-Math.PI/2);// Rotate according to the right hand rule
@@ -63,7 +63,7 @@ vec2.crossVZ = function(out, vec, zcomp){
  * @param  {Array} out
  * @param  {Number} zcomp
  * @param  {Array} vec
- * @return {Array}
+ * @return {Number}
  */
 vec2.crossZV = function(out, zcomp, vec){
     vec2.rotate(out,vec,Math.PI/2); // Rotate according to the right hand rule
@@ -78,7 +78,6 @@ vec2.crossZV = function(out, zcomp, vec){
  * @param  {Array} out
  * @param  {Array} a
  * @param  {Number} angle
- * @return {Array}
  */
 vec2.rotate = function(out,a,angle){
     if(angle !== 0){
@@ -92,7 +91,6 @@ vec2.rotate = function(out,a,angle){
         out[0] = a[0];
         out[1] = a[1];
     }
-    return out;
 };
 
 /**
@@ -102,14 +100,12 @@ vec2.rotate = function(out,a,angle){
  * @param  {Array} out
  * @param  {Array} a
  * @param  {Number} angle
- * @return {Array}
  */
 vec2.rotate90cw = function(out, a) {
     var x = a[0];
     var y = a[1];
     out[0] = y;
     out[1] = -x;
-    return out;
 };
 
 /**
@@ -119,16 +115,11 @@ vec2.rotate90cw = function(out, a) {
  * @param  {Array} worldPoint
  * @param  {Array} framePosition
  * @param  {Number} frameAngle
- * @return {Array}
  */
 vec2.toLocalFrame = function(out, worldPoint, framePosition, frameAngle){
-    var c = Math.cos(-frameAngle),
-        s = Math.sin(-frameAngle),
-        x = worldPoint[0] - framePosition[0],
-        y = worldPoint[1] - framePosition[1];
-    out[0] = c * x - s * y;
-    out[1] = s * x + c * y;
-    return out;
+    vec2.copy(out, worldPoint);
+    vec2.sub(out, out, framePosition);
+    vec2.rotate(out, out, -frameAngle);
 };
 
 /**
@@ -140,14 +131,9 @@ vec2.toLocalFrame = function(out, worldPoint, framePosition, frameAngle){
  * @param  {Number} frameAngle
  */
 vec2.toGlobalFrame = function(out, localPoint, framePosition, frameAngle){
-    var c = Math.cos(frameAngle),
-        s = Math.sin(frameAngle),
-        x = localPoint[0],
-        y = localPoint[1],
-        addX = framePosition[0],
-        addY = framePosition[1];
-    out[0] = c * x - s * y + addX;
-    out[1] = s * x + c * y + addY;
+    vec2.copy(out, localPoint);
+    vec2.rotate(out, out, frameAngle);
+    vec2.add(out, out, framePosition);
 };
 
 /**
@@ -156,26 +142,21 @@ vec2.toGlobalFrame = function(out, localPoint, framePosition, frameAngle){
  * @param  {Array} out
  * @param  {Array} worldVector
  * @param  {Number} frameAngle
- * @return {Array}
  */
 vec2.vectorToLocalFrame = function(out, worldVector, frameAngle){
-    var c = Math.cos(-frameAngle),
-        s = Math.sin(-frameAngle),
-        x = worldVector[0],
-        y = worldVector[1];
-    out[0] = c*x -s*y;
-    out[1] = s*x +c*y;
-    return out;
+    vec2.rotate(out, worldVector, -frameAngle);
 };
 
 /**
- * Transform a vector to global frame.
- * @method vectorToGlobalFrame
+ * Transform a point position to global frame.
+ * @method toGlobalFrame
  * @param  {Array} out
  * @param  {Array} localVector
  * @param  {Number} frameAngle
  */
-vec2.vectorToGlobalFrame = vec2.rotate;
+vec2.vectorToGlobalFrame = function(out, localVector, frameAngle){
+    vec2.rotate(out, localVector, frameAngle);
+};
 
 /**
  * Compute centroid of a triangle spanned by vectors a,b,c. See http://easycalculation.com/analytical/learn-centroid.php
@@ -185,7 +166,7 @@ vec2.vectorToGlobalFrame = vec2.rotate;
  * @param  {Array} a
  * @param  {Array} b
  * @param  {Array} c
- * @return  {Array} The "out" vector.
+ * @return  {Array} The out object
  */
 vec2.centroid = function(out, a, b, c){
     vec2.add(out, a, b);
@@ -296,6 +277,13 @@ vec2.subtract = function(out, a, b) {
 };
 
 /**
+ * Alias for vec2.subtract
+ * @static
+ * @method sub
+ */
+vec2.sub = vec2.subtract;
+
+/**
  * Multiplies two vec2's
  * @static
  * @method multiply
@@ -311,6 +299,13 @@ vec2.multiply = function(out, a, b) {
 };
 
 /**
+ * Alias for vec2.multiply
+ * @static
+ * @method mul
+ */
+vec2.mul = vec2.multiply;
+
+/**
  * Divides two vec2's
  * @static
  * @method divide
@@ -324,6 +319,13 @@ vec2.divide = function(out, a, b) {
     out[1] = a[1] / b[1];
     return out;
 };
+
+/**
+ * Alias for vec2.divide
+ * @static
+ * @method div
+ */
+vec2.div = vec2.divide;
 
 /**
  * Scales a vec2 by a scalar number
@@ -355,6 +357,13 @@ vec2.distance = function(a, b) {
 };
 
 /**
+ * Alias for vec2.distance
+ * @static
+ * @method dist
+ */
+vec2.dist = vec2.distance;
+
+/**
  * Calculates the squared euclidian distance between two vec2's
  * @static
  * @method squaredDistance
@@ -367,6 +376,13 @@ vec2.squaredDistance = function(a, b) {
         y = b[1] - a[1];
     return x*x + y*y;
 };
+
+/**
+ * Alias for vec2.squaredDistance
+ * @static
+ * @method sqrDist
+ */
+vec2.sqrDist = vec2.squaredDistance;
 
 /**
  * Calculates the length of a vec2
@@ -382,6 +398,13 @@ vec2.length = function (a) {
 };
 
 /**
+ * Alias for vec2.length
+ * @method len
+ * @static
+ */
+vec2.len = vec2.length;
+
+/**
  * Calculates the squared length of a vec2
  * @static
  * @method squaredLength
@@ -393,6 +416,13 @@ vec2.squaredLength = function (a) {
         y = a[1];
     return x*x + y*y;
 };
+
+/**
+ * Alias for vec2.squaredLength
+ * @static
+ * @method sqrLen
+ */
+vec2.sqrLen = vec2.squaredLength;
 
 /**
  * Negates the components of a vec2

@@ -15,7 +15,7 @@
       var scaleX = 50, scaleY = -50;
 
       init();
-      requestAnimationFrame(animate);
+      animate();
 
       function init(){
 
@@ -102,18 +102,18 @@
 
       function drawbox(){
         ctx.beginPath();
-        var x = boxBody.interpolatedPosition[0],
-            y = boxBody.interpolatedPosition[1];
+        var x = boxBody.position[0],
+            y = boxBody.position[1];
         ctx.save();
         ctx.translate(x, y);        // Translate to the center of the box
-        ctx.rotate(boxBody.interpolatedAngle);  // Rotate to the box body frame
+        ctx.rotate(boxBody.angle);  // Rotate to the box body frame
         ctx.rect(-boxShape.width/2, -boxShape.height/2, boxShape.width, boxShape.height);
         ctx.stroke();
         ctx.restore();
       }
 
       function drawPlane(){
-        var y = planeBody.interpolatedPosition[1];
+        var y = planeBody.position[1];
         ctx.moveTo(-w, y);
         ctx.lineTo( w, y);
         ctx.stroke();
@@ -136,18 +136,12 @@
         ctx.restore();
       }
 
-      var lastTime, timeStep = 1 / 60, maxSubSteps = 5;
-
       // Animation loop
-      function animate(time){
+      function animate(){
         requestAnimationFrame(animate);
 
-        var dt = lastTime ? (time - lastTime) / 1000 : 0;
-        dt = Math.min(1 / 10, dt);
-        lastTime = time;
-
         // Move physics bodies forward in time
-        world.step(timeStep, dt, maxSubSteps);
+        world.step(1/60);
 
         // Render scene
         render();

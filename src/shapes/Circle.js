@@ -1,6 +1,5 @@
 var Shape = require('./Shape')
-,    vec2 = require('../math/vec2')
-,    shallowClone = require('../utils/Utils').shallowClone;
+,    vec2 = require('../math/vec2');
 
 module.exports = Circle;
 
@@ -13,21 +12,24 @@ module.exports = Circle;
  * @param {number} [options.radius=1] The radius of this circle
  *
  * @example
- *     var body = new Body({ mass: 1 });
- *     var circleShape = new Circle({
- *         radius: 1
- *     });
+ *     var circleShape = new Circle({ radius: 1 });
  *     body.addShape(circleShape);
  */
 function Circle(options){
-    options = options ? shallowClone(options) : {};
+    if(typeof(arguments[0]) === 'number'){
+        options = {
+            radius: arguments[0]
+        };
+        console.warn('The Circle constructor signature has changed. Please use the following format: new Circle({ radius: 1 })');
+    }
+    options = options || {};
 
     /**
      * The radius of the circle.
      * @property radius
      * @type {number}
      */
-    this.radius = options.radius !== undefined ? options.radius : 1;
+    this.radius = options.radius || 1;
 
     options.type = Shape.CIRCLE;
     Shape.call(this, options);
@@ -37,11 +39,12 @@ Circle.prototype.constructor = Circle;
 
 /**
  * @method computeMomentOfInertia
+ * @param  {Number} mass
  * @return {Number}
  */
-Circle.prototype.computeMomentOfInertia = function(){
+Circle.prototype.computeMomentOfInertia = function(mass){
     var r = this.radius;
-    return r * r / 2;
+    return mass * r * r / 2;
 };
 
 /**
@@ -66,7 +69,7 @@ Circle.prototype.updateArea = function(){
  * @param  {Array}  position
  * @param  {Number} angle
  */
-Circle.prototype.computeAABB = function(out, position/*, angle*/){
+Circle.prototype.computeAABB = function(out, position, angle){
     var r = this.radius;
     vec2.set(out.upperBound,  r,  r);
     vec2.set(out.lowerBound, -r, -r);
@@ -86,7 +89,7 @@ var Ray_intersectSphere_normal = vec2.create();
  * @param  {array} position
  * @param  {number} angle
  */
-Circle.prototype.raycast = function(result, ray, position/*, angle*/){
+Circle.prototype.raycast = function(result, ray, position, angle){
     var from = ray.from,
         to = ray.to,
         r = this.radius;
@@ -107,7 +110,7 @@ Circle.prototype.raycast = function(result, ray, position/*, angle*/){
         // single intersection point
         vec2.lerp(intersectionPoint, from, to, delta);
 
-        vec2.subtract(normal, intersectionPoint, position);
+        vec2.sub(normal, intersectionPoint, position);
         vec2.normalize(normal,normal);
 
         ray.reportIntersection(result, delta, normal, -1);
@@ -121,7 +124,7 @@ Circle.prototype.raycast = function(result, ray, position/*, angle*/){
         if(d1 >= 0 && d1 <= 1){
             vec2.lerp(intersectionPoint, from, to, d1);
 
-            vec2.subtract(normal, intersectionPoint, position);
+            vec2.sub(normal, intersectionPoint, position);
             vec2.normalize(normal,normal);
 
             ray.reportIntersection(result, d1, normal, -1);
@@ -134,15 +137,10 @@ Circle.prototype.raycast = function(result, ray, position/*, angle*/){
         if(d2 >= 0 && d2 <= 1){
             vec2.lerp(intersectionPoint, from, to, d2);
 
-            vec2.subtract(normal, intersectionPoint, position);
+            vec2.sub(normal, intersectionPoint, position);
             vec2.normalize(normal,normal);
 
             ray.reportIntersection(result, d2, normal, -1);
         }
     }
-};
-
-Circle.prototype.pointTest = function(localPoint){
-    var radius = this.radius;
-    return vec2.squaredLength(localPoint) <= radius * radius;
 };
