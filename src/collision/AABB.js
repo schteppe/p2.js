@@ -86,15 +86,15 @@ AABB.prototype.setFromPoints = function(points, position, angle, skinSize){
 
     // Add offset
     if(position){
-        vec2.add(this.lowerBound, this.lowerBound, position);
-        vec2.add(this.upperBound, this.upperBound, position);
+        vec2.add(l, l, position);
+        vec2.add(u, u, position);
     }
 
     if(skinSize){
-        this.lowerBound[0] -= skinSize;
-        this.lowerBound[1] -= skinSize;
-        this.upperBound[0] += skinSize;
-        this.upperBound[1] += skinSize;
+        l[0] -= skinSize;
+        l[1] -= skinSize;
+        u[0] += skinSize;
+        u[1] += skinSize;
     }
 };
 
@@ -114,19 +114,21 @@ AABB.prototype.copy = function(aabb){
  * @param  {AABB} aabb
  */
 AABB.prototype.extend = function(aabb){
+    var lo = this.lowerBound;
+    var up = this.upperBound;
     // Loop over x and y
     var i = 2;
     while(i--){
         // Extend lower bound
         var l = aabb.lowerBound[i];
-        if(this.lowerBound[i] > l){
-            this.lowerBound[i] = l;
+        if(lo[i] > l){
+            lo[i] = l;
         }
 
         // Upper
         var u = aabb.upperBound[i];
-        if(this.upperBound[i] < u){
-            this.upperBound[i] = u;
+        if(up[i] < u){
+            up[i] = u;
         }
     }
 };

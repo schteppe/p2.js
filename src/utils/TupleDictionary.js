@@ -93,15 +93,8 @@ TupleDictionary.prototype.set = function(i, j, value) {
  * @method reset
  */
 TupleDictionary.prototype.reset = function() {
-    var data = this.data,
-        keys = this.keys;
-
-    var l = keys.length;
-    while(l--) {
-        delete data[keys[l]];
-    }
-
-    keys.length = 0;
+    this.data = {};
+    this.keys.length = 0;
 };
 
 /**
