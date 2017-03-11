@@ -140,7 +140,7 @@ exports.clear = function(test){
     test.deepEqual(world.bodies, []);
     test.deepEqual(world.springs, []);
     test.deepEqual(world.constraints, []);
-    test.deepEqual(world.contactMaterials, []);
+    test.deepEqual(world.contactMaterials, {});
 
     test.done();
 };

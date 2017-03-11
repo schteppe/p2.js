@@ -116,3 +116,20 @@ function ContactMaterial(materialA, materialB, options){
 }
 
 ContactMaterial.idCounter = 0;
+
+/**
+ * Returns unique hash that was generated based on material id's. Usage: World.contactMaterials[hash].
+ * @private
+ * @method getHash
+ */
+ContactMaterial.prototype.getHash = function(){
+    return ContactMaterial.createHash(this.materialA, this.materialB);
+};
+
+ContactMaterial.createHash = function(materialA, materialB){
+	if (materialA.id <= materialB.id) {
+		return materialA.id + '-' + materialB.id;
+	} else {
+		return materialB.id + '-' + materialA.id;
+	}
+};
