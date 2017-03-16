@@ -34,6 +34,12 @@ function TupleDictionary() {
 TupleDictionary.prototype.getKey = function(id1, id2) {
     if ( id1 === id2 ) return -1;
 
+    if ( id1 > id2 ) {
+        var tmp = id1;
+        id1 = id2;
+        id2 = tmp;
+    }
+    
     this.tempDataView.setUint32(0, id1);
     this.tempDataView.setUint32(4, id2);
 
