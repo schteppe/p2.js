@@ -121,18 +121,22 @@
 
 
         // Allow pass through platforms from below
-        var passThroughBody;
+        var passThroughBody, currentPlatform;
 
         world.on('beginContact', function (evt){
           if(evt.bodyA !== characterBody && evt.bodyB !== characterBody) return;
           var otherBody = evt.bodyA === characterBody ? evt.bodyB : evt.bodyA;
-          if(platforms.indexOf(otherBody) !== -1 && otherBody.position[1] > characterBody.position[1]){
+          var platformIndex = platforms.indexOf(otherBody);
+          if(platformIndex != -1 && otherBody.position[1] > characterBody.position[1]){
             passThroughBody = otherBody;
+          } else if(platformIndex != -1){
+            currentPlatform = platforms[platformIndex];
           }
         });
 
         // Disable any equations between the current passthrough body and the character
         world.on('preSolve', function (evt){
+          if(currentPlatform) characterBody.velocity[0] += currentPlatform.velocity[0];
           for(var i=0; i<evt.contactEquations.length; i++){
             var eq = evt.contactEquations[i];
             if((eq.bodyA === characterBody && eq.bodyB === passThroughBody) || eq.bodyB === characterBody && eq.bodyA === passThroughBody){
@@ -150,6 +154,12 @@
         world.on('endContact', function (evt){
           if((evt.bodyA === characterBody && evt.bodyB === passThroughBody) || evt.bodyB === characterBody && evt.bodyA === passThroughBody){
             passThroughBody = undefined;
+          }
+          if(evt.bodyA !== characterBody && evt.bodyB !== characterBody) return;
+          var otherBody = evt.bodyA === characterBody ? evt.bodyB : evt.bodyA;
+          var platformIndex = platforms.indexOf(otherBody);
+          if(otherBody == currentPlatform){
+            currentPlatform = null;
           }
         });
 
