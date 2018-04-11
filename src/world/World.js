@@ -174,11 +174,11 @@ function World(options){
     this.solveConstraints = true;
 
     /**
-     * The ContactMaterials added to the World.
+     * Hash object containing ContactMaterials added to the World.
      * @property contactMaterials
-     * @type {Array}
+     * @type {Object}
      */
-    this.contactMaterials = [];
+    this.contactMaterials = {};
 
     /**
      * World time.
@@ -400,7 +400,7 @@ World.prototype.addConstraint = function(constraint){
  * @param {ContactMaterial} contactMaterial
  */
 World.prototype.addContactMaterial = function(contactMaterial){
-    this.contactMaterials.push(contactMaterial);
+    this.contactMaterials[contactMaterial.getHash()] = contactMaterial;
 };
 
 /**
@@ -410,7 +410,7 @@ World.prototype.addContactMaterial = function(contactMaterial){
  * @param {ContactMaterial} cm
  */
 World.prototype.removeContactMaterial = function(cm){
-    arrayRemove(this.contactMaterials, cm);
+    delete this.contactMaterials[cm.getHash()];
 };
 
 /**
@@ -419,17 +419,9 @@ World.prototype.removeContactMaterial = function(cm){
  * @param {Material} materialA
  * @param {Material} materialB
  * @return {ContactMaterial} The matching ContactMaterial, or false on fail.
- * @todo Use faster hash map to lookup from material id's
  */
 World.prototype.getContactMaterial = function(materialA,materialB){
-    var cmats = this.contactMaterials;
-    for(var i=0, N=cmats.length; i!==N; i++){
-        var cm = cmats[i];
-        if((cm.materialA === materialA && cm.materialB === materialB) || (cm.materialA === materialB && cm.materialB === materialA)){
-            return cm;
-        }
-    }
-    return false;
+	return this.contactMaterials[ContactMaterial.createHash(materialA, materialB)] || false;
 };
 
 /**
@@ -1166,9 +1158,8 @@ World.prototype.clear = function(){
 
     // Remove all contact materials
     var cms = this.contactMaterials;
-    i = cms.length;
-    while(i--){
-        this.removeContactMaterial(cms[i]);
+    for (var hash in cms) {
+        delete cms[hash];
     }
 };
 
@@ -1234,8 +1225,8 @@ World.prototype.setGlobalStiffness = function(stiffness){
 
     // Set for all contact materials
     var contactMaterials = this.contactMaterials;
-    for(var i=0; i !== contactMaterials.length; i++){
-        var c = contactMaterials[i];
+    for(var hash in contactMaterials){
+        var c = contactMaterials[hash];
         c.stiffness = c.frictionStiffness = stiffness;
     }
 
@@ -1253,8 +1244,9 @@ World.prototype.setGlobalRelaxation = function(relaxation){
     setGlobalEquationParams(this, { relaxation: relaxation });
 
     // Set for all contact materials
-    for(var i=0; i !== this.contactMaterials.length; i++){
-        var c = this.contactMaterials[i];
+	var contactMaterials = this.contactMaterials;
+	for(var hash in contactMaterials){
+		var c = contactMaterials[hash];
         c.relaxation = c.frictionRelaxation = relaxation;
     }
 
