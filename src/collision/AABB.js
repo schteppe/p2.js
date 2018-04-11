@@ -60,7 +60,9 @@ AABB.prototype.setFromPoints = function(points, position, angle, skinSize){
     // Compute cosines and sines just once
     var cosAngle = Math.cos(angle),
         sinAngle = Math.sin(angle);
-    for(var i = 1; i<points.length; i++){
+    var len = points.length;
+    
+    for(var i = 1; i < len; i++){
         var p = points[i];
 
         if(angle !== 0){

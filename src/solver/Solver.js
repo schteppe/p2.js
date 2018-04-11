@@ -87,9 +87,12 @@ Solver.prototype.addEquations = function(eqs){
  * @param {Equation} eq
  */
 Solver.prototype.removeEquation = function(eq){
-    var i = this.equations.indexOf(eq);
-    if(i !== -1){
-        this.equations.splice(i,1);
+    var l = this.equations.length;
+    var equations = this.equations;
+    for (var i = 0; i < l; i++) {
+        if (equations[i] === eq) {
+            equations.splice(i,1);
+        }
     }
 };
 

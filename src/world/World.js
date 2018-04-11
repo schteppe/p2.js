@@ -232,6 +232,49 @@ function World(options){
      * @property {OverlapKeeper} overlapKeeper
      */
     this.overlapKeeper = new OverlapKeeper();
+    
+    /**
+     * The bodies that's going to be added to the World in the next step.
+     * @property bodiesToAdd
+     * @type {Array}
+     */
+    this.bodiesToAdd = [];
+    
+    /**
+     * The bodies that's going to be removed from the World in the next step.
+     * @property bodiesToRemove
+     * @type {Array}
+     */
+    this.bodiesToRemove = [];
+    
+    /**
+     * The constraints that's going to be added to the World in the next step.
+     * @property constraintsToAdd
+     * @type {Array}
+     */
+    this.constraintsToAdd = [];
+    
+    /**
+     * The constraints that's going to be removed from the World in the next step.
+     * @property constraintsToRemove
+     * @type {Array}
+     */
+    this.constraintsToRemove = [];
+    
+    /**
+     * The springs that's going to be added to the World in the next step.
+     * @property springsToAdd
+     * @type {Array}
+     */
+    this.springsToAdd = [];
+    
+    /**
+     * The springs that's going to be removed from the World in the next step.
+     * @property springsToRemove
+     * @type {Array}
+     */
+    this.springsToRemove = [];
+
 }
 World.prototype = new Object(EventEmitter.prototype);
 World.prototype.constructor = World;
@@ -380,7 +423,8 @@ World.ISLAND_SLEEPING = 4;
  */
 World.prototype.addConstraint = function(constraint){
     if(this.stepping){
-        throw new Error('Constraints cannot be added during step.');
+        this.constraintsToAdd.push(constraint);
+        return;
     }
 
     var bodies = this.bodies;
@@ -440,7 +484,8 @@ World.prototype.getContactMaterial = function(materialA,materialB){
  */
 World.prototype.removeConstraint = function(constraint){
     if(this.stepping){
-        throw new Error('Constraints cannot be removed during step.');
+        this.constraintsToRemove.push(constraint);
+        return;
     }
     arrayRemove(this.constraints, constraint);
 };
@@ -503,6 +548,9 @@ World.prototype.step = function(dt,timeSinceLastCalled,maxSubSteps){
     maxSubSteps = maxSubSteps || 10;
     timeSinceLastCalled = timeSinceLastCalled || 0;
 
+    //digest changes
+    this.digestChanges();
+    
     if(timeSinceLastCalled === 0){ // Fixed, simple stepping
 
         this.internalStep(dt);
@@ -523,8 +571,10 @@ World.prototype.step = function(dt,timeSinceLastCalled,maxSubSteps){
         }
 
         var t = (this.accumulator % dt) / dt;
-        for(var j=0; j!==this.bodies.length; j++){
-            var b = this.bodies[j];
+        var bodies = this.bodies;
+        var l = bodies.length;
+        for(var j=0; j!==l; j++){
+            var b = bodies[j];
             vec2.lerp(b.interpolatedPosition, b.previousPosition, b.position, t);
             b.interpolatedAngle = b.previousAngle + t * (b.angle - b.previousAngle);
         }
@@ -533,6 +583,42 @@ World.prototype.step = function(dt,timeSinceLastCalled,maxSubSteps){
 
 var endOverlaps = [];
 
+/**
+ * Digest changes that have been made while stepping
+ * @method digestChanges
+ * @private
+ */
+World.prototype.digestChanges = function(){
+    var bodiesToAdd = this.bodiesToAdd;
+    var nBodiesToAdd = bodiesToAdd.length;
+    for(var i = 0; i < nBodiesToAdd;i++) this.addBody(bodiesToAdd[i]);
+    bodiesToAdd.length = 0;
+    
+    var bodiesToRemove = this.bodiesToRemove;
+    var nBodiesToRemove = bodiesToRemove.length;
+    for(var i = 0; i < nBodiesToRemove;i++) this.removeBody(bodiesToRemove[i]);
+    bodiesToRemove.length = 0;
+    
+    var constraintsToAdd = this.constraintsToAdd;
+    var nConstraintsToAdd = constraintsToAdd.length;
+    for(var i = 0; i < nConstraintsToAdd;i++) this.addConstraint(constraintsToAdd[i]);
+    constraintsToAdd.length = 0;
+    
+    var constraintsToRemove = this.constraintsToRemove;
+    var nConstraintsToRemove = constraintsToRemove.length;
+    for(var i = 0; i < nConstraintsToRemove;i++) this.removeConstraint(constraintsToRemove[i]);
+    constraintsToRemove.length = 0;
+    
+    var springsToAdd = this.springsToAdd;
+    var nSpringsToAdd = springsToAdd.length;
+    for(var i = 0; i < nSpringsToAdd;i++) this.addSpring(springsToAdd[i]);
+    springsToAdd.length = 0;
+    
+    var springsToRemove = this.springsToRemove;
+    var nSpringsToRemove = springsToRemove.length;
+    for(var i = 0; i < nSpringsToRemove;i++) this.addSpring(springsToRemove[i]);
+    springsToRemove.length = 0;
+};
 /**
  * Make a fixed step.
  * @method internalStep
@@ -710,15 +796,16 @@ World.prototype.internalStep = function(dt){
 
             // Initialize the UnionFind
             var unionFind = this.unionFind;
-            unionFind.resize(this.bodies.length + 1);
+            unionFind.resize(Nbodies + 1);
 
             // Update equation index
-            for(var i=0; i<equations.length; i++){
+            var nEquations = equations.length;
+            for(var i=0; i<nEquations; i++){
                 equations[i].index = i;
             }
 
             // Unite bodies if they are connected by an equation
-            for(var i=0; i<equations.length; i++){
+            for(var i=0; i<nEquations; i++){
                 var bodyA = equations[i].bodyA;
                 var bodyB = equations[i].bodyB;
                 if(bodyA.type === Body.DYNAMIC && bodyB.type === Body.DYNAMIC){
@@ -727,7 +814,7 @@ World.prototype.internalStep = function(dt){
             }
 
             // Find the body islands
-            for(var i=0; i<bodies.length; i++){
+            for(var i=0; i<Nbodies; i++){
                 var body = bodies[i];
                 body.islandId = body.type === Body.DYNAMIC ? unionFind.find(body.index) : -1;
             }
@@ -736,7 +823,7 @@ World.prototype.internalStep = function(dt){
             equations = equations.sort(sortEquationsByIsland);
 
             var equationIndex = 0;
-            while(equationIndex < equations.length){
+            while(equationIndex < nEquations){
                 var equation = equations[equationIndex++];
                 solver.addEquation(equation);
 
@@ -975,7 +1062,8 @@ function runNarrowphase(world, np, bi, si, xi, ai, bj, sj, xj, aj, cm, glen){
  */
 World.prototype.addSpring = function(spring){
     if(this.stepping){
-        throw new Error('Springs cannot be added during step.');
+        this.springsToAdd.push(spring);
+        return;
     }
     this.springs.push(spring);
     addSpringEvent.spring = spring;
@@ -991,7 +1079,8 @@ World.prototype.addSpring = function(spring){
  */
 World.prototype.removeSpring = function(spring){
     if(this.stepping){
-        throw new Error('Springs cannot be removed during step.');
+        this.springsToRemove.push(spring);
+        return;
     }
     arrayRemove(this.springs, spring);
 };
@@ -1010,7 +1099,8 @@ World.prototype.removeSpring = function(spring){
  */
 World.prototype.addBody = function(body){
     if(this.stepping){
-        throw new Error('Bodies cannot be added during step.');
+        this.bodiesToAdd.push(body);
+        return;
     }
 
     // Already added?
@@ -1052,7 +1142,8 @@ World.prototype.addBody = function(body){
  */
 World.prototype.removeBody = function(body){
     if(this.stepping){
-        throw new Error('Bodies cannot be removed during step.');
+        this.bodiesToRemove.push(body);
+        return;
     }
 
     // TODO: would it be smart to have a .constraints array on the body?
@@ -1099,7 +1190,8 @@ World.prototype.removeBody = function(body){
  */
 World.prototype.getBodyById = function(id){
     var bodies = this.bodies;
-    for(var i=0; i<bodies.length; i++){
+    var l = bodies.length;
+    for(var i=0; i<l; i++){
         var b = bodies[i];
         if(b.id === id){
             return b;
@@ -1265,10 +1357,12 @@ World.prototype.setGlobalRelaxation = function(relaxation){
 
 function setGlobalEquationParams(world, params){
     var constraints = world.constraints;
-    for(var i=0; i !== constraints.length; i++){
+    var l = constraints.length;
+    for(var i=0; i !== l; i++){
         var c = constraints[i];
         var eqs = c.equations;
-        for(var j=0; j !== eqs.length; j++){
+        var nEquations = eqs.length;
+        for(var j=0; j !== nEquations; j++){
             var eq = eqs[j];
             eq.relaxation = params.relaxation !== undefined ? params.relaxation : eq.relaxation;
             eq.stiffness = params.stiffness !== undefined ? params.stiffness : eq.stiffness;

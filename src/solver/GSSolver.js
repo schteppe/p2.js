@@ -136,7 +136,8 @@ GSSolver.prototype.solve = function(h, world){
                 var eq = equations[j];
                 if(eq instanceof FrictionEquation){
                     var f = 0.0;
-                    for(var k=0; k!==eq.contactEquations.length; k++){
+                    var l = eq.contactEquations.length;
+                    for(var k=0; k!==l; k++){
                         f += eq.contactEquations[k].multiplier;
                     }
                     f *= eq.frictionCoefficient / eq.contactEquations.length;

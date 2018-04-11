@@ -121,7 +121,8 @@ LockConstraint.prototype.constructor = LockConstraint;
  */
 LockConstraint.prototype.setMaxForce = function(force){
     var eqs = this.equations;
-    for(var i=0; i<this.equations.length; i++){
+    var l = eqs.length;
+    for(var i=0; i<l; i++){
         eqs[i].maxForce =  force;
         eqs[i].minForce = -force;
     }
