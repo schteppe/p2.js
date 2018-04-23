@@ -9,7 +9,7 @@
   <body>
 
     <script>
-        var renderer, stage, container, graphics, zoom,
+        var app, container, graphics, zoom,
             world, boxShape, boxBody, planeBody, planeShape;
 
         init();
@@ -40,20 +40,15 @@
             zoom = 100;
 
             // Initialize the stage
-            renderer =  PIXI.autoDetectRenderer(600, 400),
-            stage = new PIXI.Stage(0xFFFFFF);
-
-            // We use a container inside the stage for all our content
-            // This enables us to zoom and translate the content
-            container =     new PIXI.DisplayObjectContainer(),
-            stage.addChild(container);
+            app =  new PIXI.Application(600, 400, {transparent: true}),
+            container = new PIXI.Container();
 
             // Add the canvas to the DOM
-            document.body.appendChild(renderer.view);
+            document.body.appendChild(app.view);
 
             // Add transform to the container
-            container.position.x =  renderer.width/2; // center at origin
-            container.position.y =  renderer.height/2;
+            container.position.x =  app.renderer.width/2; // center at origin
+            container.position.y =  app.renderer.height/2;
             container.scale.x =  zoom;  // zoom in
             container.scale.y = -zoom; // Note: we flip the y axis to make "up" the physics "up"
 
@@ -80,7 +75,7 @@
             graphics.rotation =   boxBody.angle;
 
             // Render scene
-            renderer.render(stage);
+            app.renderer.render(container);
         }
     </script>
 </body>
