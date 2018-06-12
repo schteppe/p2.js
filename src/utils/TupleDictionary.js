@@ -20,6 +20,8 @@ function TupleDictionary() {
      * @property {Array} keys
      */
     this.keys = [];
+    
+    this.tempDataView = new DataView(new ArrayBuffer(8)); //64bits
 }
 
 /**
@@ -30,18 +32,18 @@ function TupleDictionary() {
  * @return {string}
  */
 TupleDictionary.prototype.getKey = function(id1, id2) {
-    id1 = id1|0;
-    id2 = id2|0;
+    if ( id1 === id2 ) return -1;
 
-    if ( (id1|0) === (id2|0) ){
-        return -1;
+    if ( id1 > id2 ) {
+        var tmp = id1;
+        id1 = id2;
+        id2 = tmp;
     }
+    
+    this.tempDataView.setUint32(0, id1);
+    this.tempDataView.setUint32(4, id2);
 
-    // valid for values < 2^16
-    return ((id1|0) > (id2|0) ?
-        (id1 << 16) | (id2 & 0xFFFF) :
-        (id2 << 16) | (id1 & 0xFFFF))|0
-        ;
+    return this.tempDataView.getFloat64(0);
 };
 
 /**
@@ -50,8 +52,7 @@ TupleDictionary.prototype.getKey = function(id1, id2) {
  * @return {Object}
  */
 TupleDictionary.prototype.getByKey = function(key) {
-    key = key|0;
-    return this.data[key];
+    return this.data[key|0];
 };
 
 /**
