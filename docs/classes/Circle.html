@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="p2.js" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.7.1</em>
+            <em>API Docs for: 0.7.2</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -56,26 +56,23 @@
                                 <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
                                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
                                 <li><a href="../classes/Heightfield.html">Heightfield</a></li>
-                                <li><a href="../classes/Island.html">Island</a></li>
-                                <li><a href="../classes/IslandManager.html">IslandManager</a></li>
-                                <li><a href="../classes/IslandNode.html">IslandNode</a></li>
                                 <li><a href="../classes/Line.html">Line</a></li>
                                 <li><a href="../classes/LinearSpring.html">LinearSpring</a></li>
+                                <li><a href="../classes/.html"></a></li>
                                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
                                 <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
-                                <li><a href="../classes/Object pooling utility..html">Object pooling utility.</a></li>
                                 <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
                                 <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
                                 <li><a href="../classes/Particle.html">Particle</a></li>
                                 <li><a href="../classes/Plane.html">Plane</a></li>
+                                <li><a href="../classes/Pool.html">Pool</a></li>
                                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
                                 <li><a href="../classes/Ray.html">Ray</a></li>
                                 <li><a href="../classes/RaycastResult.html">RaycastResult</a></li>
                                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
                                 <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
-                                <li><a href="../classes/.html"></a></li>
                                 <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
                                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
                                 <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
@@ -84,11 +81,13 @@
                                 <li><a href="../classes/Spring.html">Spring</a></li>
                                 <li><a href="../classes/TopDownVehicle.html">TopDownVehicle</a></li>
                                 <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
+                                <li><a href="../classes/UnionFind.html">UnionFind</a></li>
                                 <li><a href="../classes/Utils.html">Utils</a></li>
                                 <li><a href="../classes/vec2.html">vec2</a></li>
                                 <li><a href="../classes/WheelConstraint.html">WheelConstraint</a></li>
                                 <li><a href="../classes/World.html">World</a></li>
                             </ul>
+                
                 
                             <ul id="api-modules" class="apis modules">
                             </ul>
@@ -132,7 +131,7 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_shapes_Circle.js.html#l6"><code>src&#x2F;shapes&#x2F;Circle.js:6</code></a>
+            Defined in: <a href="../files/src_shapes_Circle.js.html#l7"><code>src\shapes\Circle.js:7</code></a>
         </div>
 
 
@@ -146,82 +145,85 @@
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_Circle" class="method item">
-            <h3 class="name"><code>Circle</code></h3>
-        
-                <div class="args">
-                    <span class="paren">(</span><ul class="args-list inline commas">
-                        <li class="arg">
-                                <code class="optional">[options]</code>
-                        </li>
-                    </ul><span class="paren">)</span>
-                </div>
-        
-        
-        
-        
-        
-        
-        
-        
-            <div class="meta">
-                        <p>
-                        Defined in
-                <a href="../files/src_shapes_Circle.js.html#l6"><code>src&#x2F;shapes&#x2F;Circle.js:6</code></a>
-                </p>
-        
-        
-        
-            </div>
-        
-            <div class="description">
-                
-            </div>
-        
-                <div class="params">
-                    <h4>Parameters:</h4>
-        
-                    <ul class="params-list">
-                        <li class="param">
-                                <code class="param-name optional">[options]</code>
-                                <span class="type">Options</span>
-                                <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-        
-                            <div class="param-description">
-                                <p>(Note that this options object will be passed on to the <a href="../classes/Shape.html" class="crosslink">Shape</a> constructor.)</p>
-        
-                            </div>
-        
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name optional">[radius=1]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>The radius of this circle</p>
-        
-                                        </div>
-        
-                                    </li>
-                                </ul>
-                        </li>
-                    </ul>
-                </div>
-        
-        
-        
-                <div class="example">
-                    <h4>Example:</h4>
-        
-                    <div class="example-content">
-                        <pre class="code prettyprint"><code>var circleShape = new Circle({ radius: 1 });
-        body.addShape(circleShape);
-        </code></pre>
-                    </div>
-                </div>
+<div id="method_Circle" class="method item">
+    <h3 class="name"><code>Circle</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code class="optional">[options]</code>
+                </li>
+            </ul><span class="paren">)</span>
         </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_shapes_Circle.js.html#l7"><code>src\shapes\Circle.js:7</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name optional">[options]</code>
+                        <span class="type">Options</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                        <p>(Note that this options object will be passed on to the <a href="../classes/Shape.html" class="crosslink">Shape</a> constructor.)</p>
+
+                    </div>
+
+                        <ul class="params-list">
+                            <li class="param">
+                                    <code class="param-name optional">[radius=1]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>The radius of this circle</p>
+
+                                </div>
+
+                            </li>
+                        </ul>
+                </li>
+            </ul>
+        </div>
+
+
+
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre class="code prettyprint"><code>var body = new Body({ mass: 1 });
+var circleShape = new Circle({
+    radius: 1
+});
+body.addShape(circleShape);</code></pre>
+
+            </div>
+        </div>
+</div>
     </div>
 
 <div id="classdocs" class="tabview">
@@ -249,6 +251,10 @@
 
                             </li>
                             <li class="index-item method inherited">
+                                <a href="#method_pointTest">pointTest</a>
+
+                            </li>
+                            <li class="index-item method inherited">
                                 <a href="#method_raycast">raycast</a>
 
                             </li>
@@ -258,6 +264,10 @@
                             </li>
                             <li class="index-item method inherited">
                                 <a href="#method_updateBoundingRadius">updateBoundingRadius</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#method_worldPointToLocal">worldPointToLocal</a>
 
                             </li>
                     </ul>
@@ -358,7 +368,7 @@
                 Shape
             </a>
             but overwritten in
-        <a href="../files/src_shapes_Circle.js.html#l66"><code>src&#x2F;shapes&#x2F;Circle.js:66</code></a>
+        <a href="../files/src_shapes_Circle.js.html#l63"><code>src\shapes\Circle.js:63</code></a>
         </p>
 
 
@@ -413,13 +423,7 @@
 <div id="method_computeMomentOfInertia" class="method item">
     <h3 class="name"><code>computeMomentOfInertia</code></h3>
 
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>mass</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
+        <span class="paren">()</span>
 
         <span class="returns-inline">
             <span class="type">Number</span>
@@ -437,7 +441,7 @@
                 Shape
             </a>
             but overwritten in
-        <a href="../files/src_shapes_Circle.js.html#l40"><code>src&#x2F;shapes&#x2F;Circle.js:40</code></a>
+        <a href="../files/src_shapes_Circle.js.html#l38"><code>src\shapes\Circle.js:38</code></a>
         </p>
 
 
@@ -448,13 +452,59 @@
         
     </div>
 
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type">Number</span>:
+            </div>
+        </div>
+
+
+</div>
+<div id="method_pointTest" class="method item inherited">
+    <h3 class="name"><code>pointTest</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>localPoint</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type">Boolean</span>
+        </span>
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Shape.html#method_pointTest">Shape</a>:
+        <a href="../files/src_shapes_Shape.js.html#l243"><code>src\shapes\Shape.js:243</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        Test if a point is inside this shape.
+    </div>
+
         <div class="params">
             <h4>Parameters:</h4>
 
             <ul class="params-list">
                 <li class="param">
-                        <code class="param-name">mass</code>
-                        <span class="type">Number</span>
+                        <code class="param-name">localPoint</code>
+                        <span class="type">Array</span>
 
 
                     <div class="param-description">
@@ -469,7 +519,7 @@
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                        <span class="type">Number</span>:
+                        <span class="type">Boolean</span>:
             </div>
         </div>
 
@@ -508,7 +558,7 @@
                 Shape
             </a>
             but overwritten in
-        <a href="../files/src_shapes_Circle.js.html#l85"><code>src&#x2F;shapes&#x2F;Circle.js:85</code></a>
+        <a href="../files/src_shapes_Circle.js.html#l82"><code>src\shapes\Circle.js:82</code></a>
         </p>
 
 
@@ -590,7 +640,7 @@
                 Shape
             </a>
             but overwritten in
-        <a href="../files/src_shapes_Circle.js.html#l58"><code>src&#x2F;shapes&#x2F;Circle.js:58</code></a>
+        <a href="../files/src_shapes_Circle.js.html#l55"><code>src\shapes\Circle.js:55</code></a>
         </p>
 
 
@@ -633,7 +683,7 @@
                 Shape
             </a>
             but overwritten in
-        <a href="../files/src_shapes_Circle.js.html#l50"><code>src&#x2F;shapes&#x2F;Circle.js:50</code></a>
+        <a href="../files/src_shapes_Circle.js.html#l47"><code>src\shapes\Circle.js:47</code></a>
         </p>
 
 
@@ -655,374 +705,428 @@
 
 
 </div>
+<div id="method_worldPointToLocal" class="method item inherited">
+    <h3 class="name"><code>worldPointToLocal</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>out</code>
+                </li>
+                <li class="arg">
+                        <code>worldPoint</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Shape.html#method_worldPointToLocal">Shape</a>:
+        <a href="../files/src_shapes_Shape.js.html#l251"><code>src\shapes\Shape.js:251</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        Transform a world point to local shape space (assumed the shape is transformed by both itself and the body).
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">out</code>
+                        <span class="type">Array</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">worldPoint</code>
+                        <span class="type">Array</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
             </div>
 
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
-                    <div id="property_angle" class="property item inherited">
-                        <h3 class="name"><code>angle</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Shape.html#property_angle">Shape</a>:
-                            <a href="../files/src_shapes_Shape.js.html#l36"><code>src&#x2F;shapes&#x2F;Shape.js:36</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Body-local angle of the shape.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_area" class="property item inherited">
-                        <h3 class="name"><code>area</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Shape.html#property_area">Shape</a>:
-                            <a href="../files/src_shapes_Shape.js.html#l123"><code>src&#x2F;shapes&#x2F;Shape.js:123</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Area of this shape.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_body" class="property item inherited">
-                        <h3 class="name"><code>body</code></h3>
-                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Shape.html#property_body">Shape</a>:
-                            <a href="../files/src_shapes_Shape.js.html#l21"><code>src&#x2F;shapes&#x2F;Shape.js:21</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The body this shape is attached to. A shape can only be attached to a single body.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_boundingRadius" class="property item inherited">
-                        <h3 class="name"><code>boundingRadius</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Shape.html#property_boundingRadius">Shape</a>:
-                            <a href="../files/src_shapes_Shape.js.html#l65"><code>src&#x2F;shapes&#x2F;Shape.js:65</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Bounding circle radius of this shape</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_collisionGroup" class="property item inherited">
-                        <h3 class="name"><code>collisionGroup</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Shape.html#property_collisionGroup">Shape</a>:
-                            <a href="../files/src_shapes_Shape.js.html#l72"><code>src&#x2F;shapes&#x2F;Shape.js:72</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Collision group that this shape belongs to (bit mask). See <a href="http://www.aurelienribon.com/blog/2011/07/box2d-tutorial-collision-filtering/">this tutorial</a>.</p>
-                    
-                        </div>
-                    
-                    
-                            <div class="example">
-                                <h4>Example:</h4>
-                    
-                                <div class="example-content">
-                                    <pre class="code prettyprint"><code>// Setup bits for each available group
-                    var PLAYER = Math.pow(2,0),
-                        ENEMY =  Math.pow(2,1),
-                        GROUND = Math.pow(2,2)
-                    
-                    // Put shapes into their groups
-                    player1Shape.collisionGroup = PLAYER;
-                    player2Shape.collisionGroup = PLAYER;
-                    enemyShape  .collisionGroup = ENEMY;
-                    groundShape .collisionGroup = GROUND;
-                    
-                    // Assign groups that each shape collide with.
-                    // Note that the players can collide with ground and enemies, but not with other players.
-                    player1Shape.collisionMask = ENEMY | GROUND;
-                    player2Shape.collisionMask = ENEMY | GROUND;
-                    enemyShape  .collisionMask = PLAYER | GROUND;
-                    groundShape .collisionMask = PLAYER | ENEMY;
-                    </code></pre><pre class="code prettyprint"><code>// How collision check is done
-                    if(shapeA.collisionGroup &amp; shapeB.collisionMask)!=0 &amp;&amp; (shapeB.collisionGroup &amp; shapeA.collisionMask)!=0){
-                        // The shapes will collide
-                    }
-                    </code></pre>
-                                </div>
-                            </div>
-                    
-                    </div>
-                    <div id="property_collisionMask" class="property item inherited">
-                        <h3 class="name"><code>collisionMask</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Shape.html#property_collisionMask">Shape</a>:
-                            <a href="../files/src_shapes_Shape.js.html#l109"><code>src&#x2F;shapes&#x2F;Shape.js:109</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Collision mask of this shape. See .collisionGroup.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_collisionResponse" class="property item inherited">
-                        <h3 class="name"><code>collisionResponse</code></h3>
-                        <span class="type">Boolean</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Shape.html#property_collisionResponse">Shape</a>:
-                            <a href="../files/src_shapes_Shape.js.html#l103"><code>src&#x2F;shapes&#x2F;Shape.js:103</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Whether to produce contact forces when in contact with other bodies. Note that contacts will be generated, but they will be disabled. That means that this shape will move through other body shapes, but it will still trigger contact events, etc.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_id" class="property item inherited">
-                        <h3 class="name"><code>id</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Shape.html#property_id">Shape</a>:
-                            <a href="../files/src_shapes_Shape.js.html#l58"><code>src&#x2F;shapes&#x2F;Shape.js:58</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Shape object identifier.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_material" class="property item inherited">
-                        <h3 class="name"><code>material</code></h3>
-                        <span class="type"><a href="../classes/Material.html" class="crosslink">Material</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Shape.html#property_material">Shape</a>:
-                            <a href="../files/src_shapes_Shape.js.html#l116"><code>src&#x2F;shapes&#x2F;Shape.js:116</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Material to use in collisions for this Shape. If this is set to null, the world will use default material properties instead.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_position" class="property item inherited">
-                        <h3 class="name"><code>position</code></h3>
-                        <span class="type">Array</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Shape.html#property_position">Shape</a>:
-                            <a href="../files/src_shapes_Shape.js.html#l27"><code>src&#x2F;shapes&#x2F;Shape.js:27</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Body-local position of the shape.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_radius" class="property item">
-                        <h3 class="name"><code>radius</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_shapes_Circle.js.html#l27"><code>src&#x2F;shapes&#x2F;Circle.js:27</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The radius of the circle.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_sensor" class="property item inherited">
-                        <h3 class="name"><code>sensor</code></h3>
-                        <span class="type">Boolean</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Shape.html#property_sensor">Shape</a>:
-                            <a href="../files/src_shapes_Shape.js.html#l130"><code>src&#x2F;shapes&#x2F;Shape.js:130</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Set to true if you want this shape to be a sensor. A sensor does not generate contacts, but it still reports contact events. This is good if you want to know if a shape is overlapping another shape, without them generating contacts.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_type" class="property item inherited">
-                        <h3 class="name"><code>type</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Shape.html#property_type">Shape</a>:
-                            <a href="../files/src_shapes_Shape.js.html#l42"><code>src&#x2F;shapes&#x2F;Shape.js:42</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The type of the shape. One of:</p>
-                    <ul>
-                    <li><a href="../classes/Shape.html#property_CIRCLE" class="crosslink">Shape.CIRCLE</a></li>
-                    <li><a href="../classes/Shape.html#property_PARTICLE" class="crosslink">Shape.PARTICLE</a></li>
-                    <li><a href="../classes/Shape.html#property_PLANE" class="crosslink">Shape.PLANE</a></li>
-                    <li><a href="../classes/Shape.html#property_CONVEX" class="crosslink">Shape.CONVEX</a></li>
-                    <li><a href="../classes/Shape.html#property_LINE" class="crosslink">Shape.LINE</a></li>
-                    <li><a href="../classes/Shape.html#property_BOX" class="crosslink">Shape.BOX</a></li>
-                    <li><a href="../classes/Shape.html#property_CAPSULE" class="crosslink">Shape.CAPSULE</a></li>
-                    <li><a href="../classes/Shape.html#property_HEIGHTFIELD" class="crosslink">Shape.HEIGHTFIELD</a></li>
-                    </ul>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
+<div id="property_angle" class="property item inherited">
+    <h3 class="name"><code>angle</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Shape.html#property_angle">Shape</a>:
+        <a href="../files/src_shapes_Shape.js.html#l37"><code>src\shapes\Shape.js:37</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        Body-local angle of the shape.
+    </div>
+
+
+
+</div>
+<div id="property_area" class="property item inherited">
+    <h3 class="name"><code>area</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Shape.html#property_area">Shape</a>:
+        <a href="../files/src_shapes_Shape.js.html#l128"><code>src\shapes\Shape.js:128</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        Area of this shape.
+    </div>
+
+
+
+</div>
+<div id="property_body" class="property item inherited">
+    <h3 class="name"><code>body</code></h3>
+    <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Shape.html#property_body">Shape</a>:
+        <a href="../files/src_shapes_Shape.js.html#l22"><code>src\shapes\Shape.js:22</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        The body this shape is attached to. A shape can only be attached to a single body.
+    </div>
+
+
+
+</div>
+<div id="property_boundingRadius" class="property item inherited">
+    <h3 class="name"><code>boundingRadius</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Shape.html#property_boundingRadius">Shape</a>:
+        <a href="../files/src_shapes_Shape.js.html#l69"><code>src\shapes\Shape.js:69</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        Bounding circle radius of this shape
+    </div>
+
+
+
+</div>
+<div id="property_collisionGroup" class="property item inherited">
+    <h3 class="name"><code>collisionGroup</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Shape.html#property_collisionGroup">Shape</a>:
+        <a href="../files/src_shapes_Shape.js.html#l77"><code>src\shapes\Shape.js:77</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        Collision group that this shape belongs to (bit mask). See <a href="http://www.aurelienribon.com/blog/2011/07/box2d-tutorial-collision-filtering/">this tutorial</a>.
+    </div>
+
+
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre class="code prettyprint"><code>// Setup bits for each available group
+var PLAYER = Math.pow(2,0),
+    ENEMY =  Math.pow(2,1),
+    GROUND = Math.pow(2,2)
+
+// Put shapes into their groups
+player1Shape.collisionGroup = PLAYER;
+player2Shape.collisionGroup = PLAYER;
+enemyShape  .collisionGroup = ENEMY;
+groundShape .collisionGroup = GROUND;
+
+// Assign groups that each shape collide with.
+// Note that the players can collide with ground and enemies, but not with other players.
+player1Shape.collisionMask = ENEMY | GROUND;
+player2Shape.collisionMask = ENEMY | GROUND;
+enemyShape  .collisionMask = PLAYER | GROUND;
+groundShape .collisionMask = PLAYER | ENEMY;</code></pre>
+<pre class="code prettyprint"><code>// How collision check is done
+if(shapeA.collisionGroup &amp; shapeB.collisionMask)!=0 &amp;&amp; (shapeB.collisionGroup &amp; shapeA.collisionMask)!=0){
+    // The shapes will collide
+}</code></pre>
+
+            </div>
+        </div>
+
+</div>
+<div id="property_collisionMask" class="property item inherited">
+    <h3 class="name"><code>collisionMask</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Shape.html#property_collisionMask">Shape</a>:
+        <a href="../files/src_shapes_Shape.js.html#l114"><code>src\shapes\Shape.js:114</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        Collision mask of this shape. See .collisionGroup.
+    </div>
+
+
+
+</div>
+<div id="property_collisionResponse" class="property item inherited">
+    <h3 class="name"><code>collisionResponse</code></h3>
+    <span class="type">Boolean</span>
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Shape.html#property_collisionResponse">Shape</a>:
+        <a href="../files/src_shapes_Shape.js.html#l108"><code>src\shapes\Shape.js:108</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        Whether to produce contact forces when in contact with other bodies. Note that contacts will be generated, but they will be disabled. That means that this shape will move through other body shapes, but it will still trigger contact events, etc.
+    </div>
+
+
+
+</div>
+<div id="property_id" class="property item inherited">
+    <h3 class="name"><code>id</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Shape.html#property_id">Shape</a>:
+        <a href="../files/src_shapes_Shape.js.html#l61"><code>src\shapes\Shape.js:61</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        Shape object identifier. Read only.
+    </div>
+
+
+
+</div>
+<div id="property_material" class="property item inherited">
+    <h3 class="name"><code>material</code></h3>
+    <span class="type"><a href="../classes/Material.html" class="crosslink">Material</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Shape.html#property_material">Shape</a>:
+        <a href="../files/src_shapes_Shape.js.html#l121"><code>src\shapes\Shape.js:121</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        Material to use in collisions for this Shape. If this is set to null, the world will use default material properties instead.
+    </div>
+
+
+
+</div>
+<div id="property_position" class="property item inherited">
+    <h3 class="name"><code>position</code></h3>
+    <span class="type">Array</span>
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Shape.html#property_position">Shape</a>:
+        <a href="../files/src_shapes_Shape.js.html#l28"><code>src\shapes\Shape.js:28</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        Body-local position of the shape.
+    </div>
+
+
+
+</div>
+<div id="property_radius" class="property item">
+    <h3 class="name"><code>radius</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_shapes_Circle.js.html#l25"><code>src\shapes\Circle.js:25</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>The radius of the circle.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_sensor" class="property item inherited">
+    <h3 class="name"><code>sensor</code></h3>
+    <span class="type">Boolean</span>
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Shape.html#property_sensor">Shape</a>:
+        <a href="../files/src_shapes_Shape.js.html#l135"><code>src\shapes\Shape.js:135</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        Set to true if you want this shape to be a sensor. A sensor does not generate contacts, but it still reports contact events. This is good if you want to know if a shape is overlapping another shape, without them generating contacts.
+    </div>
+
+
+
+</div>
+<div id="property_type" class="property item inherited">
+    <h3 class="name"><code>type</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Shape.html#property_type">Shape</a>:
+        <a href="../files/src_shapes_Shape.js.html#l43"><code>src\shapes\Shape.js:43</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        The type of the shape. One of:
+
+<ul>
+<li><a href="Shape.html#property_CIRCLE">Shape.CIRCLE</a></li>
+<li><a href="Shape.html#property_PARTICLE">Shape.PARTICLE</a></li>
+<li><a href="Shape.html#property_PLANE">Shape.PLANE</a></li>
+<li><a href="Shape.html#property_CONVEX">Shape.CONVEX</a></li>
+<li><a href="Shape.html#property_LINE">Shape.LINE</a></li>
+<li><a href="Shape.html#property_BOX">Shape.BOX</a></li>
+<li><a href="Shape.html#property_CAPSULE">Shape.CAPSULE</a></li>
+<li><a href="Shape.html#property_HEIGHTFIELD">Shape.HEIGHTFIELD</a></li>
+</ul>
+    </div>
+
+
+
+</div>
             </div>
 
 

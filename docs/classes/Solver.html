@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="p2.js" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.7.1</em>
+            <em>API Docs for: 0.7.2</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -56,26 +56,23 @@
                                 <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
                                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
                                 <li><a href="../classes/Heightfield.html">Heightfield</a></li>
-                                <li><a href="../classes/Island.html">Island</a></li>
-                                <li><a href="../classes/IslandManager.html">IslandManager</a></li>
-                                <li><a href="../classes/IslandNode.html">IslandNode</a></li>
                                 <li><a href="../classes/Line.html">Line</a></li>
                                 <li><a href="../classes/LinearSpring.html">LinearSpring</a></li>
+                                <li><a href="../classes/.html"></a></li>
                                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
                                 <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
-                                <li><a href="../classes/Object pooling utility..html">Object pooling utility.</a></li>
                                 <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
                                 <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
                                 <li><a href="../classes/Particle.html">Particle</a></li>
                                 <li><a href="../classes/Plane.html">Plane</a></li>
+                                <li><a href="../classes/Pool.html">Pool</a></li>
                                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
                                 <li><a href="../classes/Ray.html">Ray</a></li>
                                 <li><a href="../classes/RaycastResult.html">RaycastResult</a></li>
                                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
                                 <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
-                                <li><a href="../classes/.html"></a></li>
                                 <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
                                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
                                 <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
@@ -84,11 +81,13 @@
                                 <li><a href="../classes/Spring.html">Spring</a></li>
                                 <li><a href="../classes/TopDownVehicle.html">TopDownVehicle</a></li>
                                 <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
+                                <li><a href="../classes/UnionFind.html">UnionFind</a></li>
                                 <li><a href="../classes/Utils.html">Utils</a></li>
                                 <li><a href="../classes/vec2.html">vec2</a></li>
                                 <li><a href="../classes/WheelConstraint.html">WheelConstraint</a></li>
                                 <li><a href="../classes/World.html">World</a></li>
                             </ul>
+                
                 
                             <ul id="api-modules" class="apis modules">
                             </ul>
@@ -132,7 +131,7 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_solver_Solver.js.html#l6"><code>src&#x2F;solver&#x2F;Solver.js:6</code></a>
+            Defined in: <a href="../files/src_solver_Solver.js.html#l5"><code>src\solver\Solver.js:5</code></a>
         </div>
 
 
@@ -146,36 +145,36 @@
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_Solver" class="method item">
-            <h3 class="name"><code>Solver</code></h3>
+<div id="method_Solver" class="method item">
+    <h3 class="name"><code>Solver</code></h3>
+
+        <span class="paren">()</span>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_solver_Solver.js.html#l5"><code>src\solver\Solver.js:5</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
         
-                <span class="paren">()</span>
-        
-        
-        
-        
-        
-        
-        
-        
-            <div class="meta">
-                        <p>
-                        Defined in
-                <a href="../files/src_solver_Solver.js.html#l6"><code>src&#x2F;solver&#x2F;Solver.js:6</code></a>
-                </p>
-        
-        
-        
-            </div>
-        
-            <div class="description">
-                
-            </div>
-        
-        
-        
-        
-        </div>
+    </div>
+
+
+
+
+</div>
     </div>
 
 <div id="classdocs" class="tabview">
@@ -231,10 +230,6 @@
 
                             </li>
                             <li class="index-item method">
-                                <a href="#method_solveIsland">solveIsland</a>
-
-                            </li>
-                            <li class="index-item method">
                                 <a href="#method_sortEquations">sortEquations</a>
 
                             </li>
@@ -252,6 +247,11 @@
                             <li class="index-item property">
                                 <a href="#property_equationSortFunction">equationSortFunction</a>
 
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_GS">GS</a>
+
+                                    <span class="flag static">static</span>
                             </li>
                     </ul>
                 </div>
@@ -283,7 +283,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_solver_Solver.js.html#l82"><code>src&#x2F;solver&#x2F;Solver.js:82</code></a>
+        <a href="../files/src_solver_Solver.js.html#l56"><code>src\solver\Solver.js:56</code></a>
         </p>
 
 
@@ -336,7 +336,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_solver_Solver.js.html#l94"><code>src&#x2F;solver&#x2F;Solver.js:94</code></a>
+        <a href="../files/src_solver_Solver.js.html#l68"><code>src\solver\Solver.js:68</code></a>
         </p>
 
 
@@ -392,7 +392,7 @@
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/EventEmitter.html#method_emit">EventEmitter</a>:
-        <a href="../files/src_events_EventEmitter.js.html#l79"><code>src&#x2F;events&#x2F;EventEmitter.js:79</code></a>
+        <a href="../files/src_events_EventEmitter.js.html#l97"><code>src\events\EventEmitter.js:97</code></a>
         </p>
 
 
@@ -414,7 +414,7 @@
 
 
                     <div class="param-description">
-                        
+                         
                     </div>
 
                         <ul class="params-list">
@@ -443,6 +443,17 @@
         </div>
 
 
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre class="code prettyprint"><code>emitter.emit({
+    type: 'myEvent',
+    customData: 123
+});</code></pre>
+
+            </div>
+        </div>
 </div>
 <div id="method_has" class="method item inherited">
     <h3 class="name"><code>has</code></h3>
@@ -471,7 +482,7 @@
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/EventEmitter.html#method_has">EventEmitter</a>:
-        <a href="../files/src_events_EventEmitter.js.html#l35"><code>src&#x2F;events&#x2F;EventEmitter.js:35</code></a>
+        <a href="../files/src_events_EventEmitter.js.html#l72"><code>src\events\EventEmitter.js:72</code></a>
         </p>
 
 
@@ -493,7 +504,7 @@
 
 
                     <div class="param-description">
-                        
+                         
                     </div>
 
                 </li>
@@ -503,7 +514,7 @@
 
 
                     <div class="param-description">
-                        
+                         
                     </div>
 
                 </li>
@@ -547,7 +558,7 @@
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/EventEmitter.html#method_off">EventEmitter</a>:
-        <a href="../files/src_events_EventEmitter.js.html#l60"><code>src&#x2F;events&#x2F;EventEmitter.js:60</code></a>
+        <a href="../files/src_events_EventEmitter.js.html#l50"><code>src\events\EventEmitter.js:50</code></a>
         </p>
 
 
@@ -569,7 +580,7 @@
 
 
                     <div class="param-description">
-                        
+                         
                     </div>
 
                 </li>
@@ -579,7 +590,7 @@
 
 
                     <div class="param-description">
-                        
+                         
                     </div>
 
                 </li>
@@ -597,6 +608,15 @@
         </div>
 
 
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre class="code prettyprint"><code>emitter.on('myEvent', handler); // Add handler
+emitter.off('myEvent', handler); // Remove handler</code></pre>
+
+            </div>
+        </div>
 </div>
 <div id="method_on" class="method item inherited">
     <h3 class="name"><code>on</code></h3>
@@ -625,7 +645,7 @@
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/EventEmitter.html#method_on">EventEmitter</a>:
-        <a href="../files/src_events_EventEmitter.js.html#l13"><code>src&#x2F;events&#x2F;EventEmitter.js:13</code></a>
+        <a href="../files/src_events_EventEmitter.js.html#l24"><code>src\events\EventEmitter.js:24</code></a>
         </p>
 
 
@@ -647,7 +667,7 @@
 
 
                     <div class="param-description">
-                        
+                         
                     </div>
 
                 </li>
@@ -657,7 +677,7 @@
 
 
                     <div class="param-description">
-                        
+                         
                     </div>
 
                 </li>
@@ -675,6 +695,16 @@
         </div>
 
 
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre class="code prettyprint"><code>emitter.on('myEvent', function(evt){
+    console.log('myEvt was triggered!');
+});</code></pre>
+
+            </div>
+        </div>
 </div>
 <div id="method_removeAllEquations" class="method item">
     <h3 class="name"><code>removeAllEquations</code></h3>
@@ -691,7 +721,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_solver_Solver.js.html#l123"><code>src&#x2F;solver&#x2F;Solver.js:123</code></a>
+        <a href="../files/src_solver_Solver.js.html#l96"><code>src\solver\Solver.js:96</code></a>
         </p>
 
 
@@ -728,7 +758,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_solver_Solver.js.html#l110"><code>src&#x2F;solver&#x2F;Solver.js:110</code></a>
+        <a href="../files/src_solver_Solver.js.html#l83"><code>src\solver\Solver.js:83</code></a>
         </p>
 
 
@@ -784,7 +814,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_solver_Solver.js.html#l37"><code>src&#x2F;solver&#x2F;Solver.js:37</code></a>
+        <a href="../files/src_solver_Solver.js.html#l36"><code>src\solver\Solver.js:36</code></a>
         </p>
 
 
@@ -826,72 +856,6 @@
 
 
 </div>
-<div id="method_solveIsland" class="method item">
-    <h3 class="name"><code>solveIsland</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>dt</code>
-                </li>
-                <li class="arg">
-                        <code>island</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_solver_Solver.js.html#l49"><code>src&#x2F;solver&#x2F;Solver.js:49</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Solves all constraints in an island.</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">dt</code>
-                        <span class="type">Number</span>
-
-
-                    <div class="param-description">
-                        
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">island</code>
-                        <span class="type"><a href="../classes/Island.html" class="crosslink">Island</a></span>
-
-
-                    <div class="param-description">
-                        
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
 <div id="method_sortEquations" class="method item">
     <h3 class="name"><code>sortEquations</code></h3>
 
@@ -907,7 +871,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_solver_Solver.js.html#l72"><code>src&#x2F;solver&#x2F;Solver.js:72</code></a>
+        <a href="../files/src_solver_Solver.js.html#l46"><code>src\solver\Solver.js:46</code></a>
         </p>
 
 
@@ -928,56 +892,82 @@
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
-                    <div id="property_equations" class="property item">
-                        <h3 class="name"><code>equations</code></h3>
-                        <span class="type">Array</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_solver_Solver.js.html#l19"><code>src&#x2F;solver&#x2F;Solver.js:19</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Current equations in the solver.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_equationSortFunction" class="property item">
-                        <h3 class="name"><code>equationSortFunction</code></h3>
-                        <span class="type">Function | Boolean</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_solver_Solver.js.html#l27"><code>src&#x2F;solver&#x2F;Solver.js:27</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Function that is used to sort all equations before each solve.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
+<div id="property_equations" class="property item">
+    <h3 class="name"><code>equations</code></h3>
+    <span class="type">Array</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_solver_Solver.js.html#l18"><code>src\solver\Solver.js:18</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Current equations in the solver.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_equationSortFunction" class="property item">
+    <h3 class="name"><code>equationSortFunction</code></h3>
+    <span class="type">Function | Boolean</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_solver_Solver.js.html#l26"><code>src\solver\Solver.js:26</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Function that is used to sort all equations before each solve.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_GS" class="property item">
+    <h3 class="name"><code>GS</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+        <span class="flag static">static</span>
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_solver_Solver.js.html#l105"><code>src\solver\Solver.js:105</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Gauss-Seidel solver.</p>
+
+    </div>
+
+
+
+</div>
             </div>
 
 

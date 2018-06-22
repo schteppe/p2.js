@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="p2.js" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.7.1</em>
+            <em>API Docs for: 0.7.2</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -56,26 +56,23 @@
                                 <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
                                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
                                 <li><a href="../classes/Heightfield.html">Heightfield</a></li>
-                                <li><a href="../classes/Island.html">Island</a></li>
-                                <li><a href="../classes/IslandManager.html">IslandManager</a></li>
-                                <li><a href="../classes/IslandNode.html">IslandNode</a></li>
                                 <li><a href="../classes/Line.html">Line</a></li>
                                 <li><a href="../classes/LinearSpring.html">LinearSpring</a></li>
+                                <li><a href="../classes/.html"></a></li>
                                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
                                 <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
-                                <li><a href="../classes/Object pooling utility..html">Object pooling utility.</a></li>
                                 <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
                                 <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
                                 <li><a href="../classes/Particle.html">Particle</a></li>
                                 <li><a href="../classes/Plane.html">Plane</a></li>
+                                <li><a href="../classes/Pool.html">Pool</a></li>
                                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
                                 <li><a href="../classes/Ray.html">Ray</a></li>
                                 <li><a href="../classes/RaycastResult.html">RaycastResult</a></li>
                                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
                                 <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
-                                <li><a href="../classes/.html"></a></li>
                                 <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
                                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
                                 <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
@@ -84,11 +81,13 @@
                                 <li><a href="../classes/Spring.html">Spring</a></li>
                                 <li><a href="../classes/TopDownVehicle.html">TopDownVehicle</a></li>
                                 <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
+                                <li><a href="../classes/UnionFind.html">UnionFind</a></li>
                                 <li><a href="../classes/Utils.html">Utils</a></li>
                                 <li><a href="../classes/vec2.html">vec2</a></li>
                                 <li><a href="../classes/WheelConstraint.html">WheelConstraint</a></li>
                                 <li><a href="../classes/World.html">World</a></li>
                             </ul>
+                
                 
                             <ul id="api-modules" class="apis modules">
                             </ul>
@@ -132,7 +131,7 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_constraints_PrismaticConstraint.js.html#l9"><code>src&#x2F;constraints&#x2F;PrismaticConstraint.js:9</code></a>
+            Defined in: <a href="../files/src_constraints_PrismaticConstraint.js.html#l9"><code>src\constraints\PrismaticConstraint.js:9</code></a>
         </div>
 
 
@@ -146,162 +145,173 @@
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_PrismaticConstraint" class="method item">
-            <h3 class="name"><code>PrismaticConstraint</code></h3>
-        
-                <div class="args">
-                    <span class="paren">(</span><ul class="args-list inline commas">
-                        <li class="arg">
-                                <code>bodyA</code>
-                        </li>
-                        <li class="arg">
-                                <code>bodyB</code>
-                        </li>
-                        <li class="arg">
-                                <code class="optional">[options]</code>
-                        </li>
-                    </ul><span class="paren">)</span>
-                </div>
-        
-        
-        
-        
-        
-        
-        
-        
-            <div class="meta">
-                        <p>
-                        Defined in
-                <a href="../files/src_constraints_PrismaticConstraint.js.html#l9"><code>src&#x2F;constraints&#x2F;PrismaticConstraint.js:9</code></a>
-                </p>
-        
-        
-        
-            </div>
-        
-            <div class="description">
-                
-            </div>
-        
-                <div class="params">
-                    <h4>Parameters:</h4>
-        
-                    <ul class="params-list">
-                        <li class="param">
-                                <code class="param-name">bodyA</code>
-                                <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
-        
-        
-                            <div class="param-description">
-                                 
-                            </div>
-        
-                        </li>
-                        <li class="param">
-                                <code class="param-name">bodyB</code>
-                                <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
-        
-        
-                            <div class="param-description">
-                                 
-                            </div>
-        
-                        </li>
-                        <li class="param">
-                                <code class="param-name optional">[options]</code>
-                                <span class="type">Object</span>
-                                <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-        
-                            <div class="param-description">
-                                 
-                            </div>
-        
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name optional">[maxForce]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>Max force to be applied by the constraint</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[localAnchorA]</code>
-                                            <span class="type">Array</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>Body A&#39;s anchor point, defined in its own local frame.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[localAnchorB]</code>
-                                            <span class="type">Array</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>Body B&#39;s anchor point, defined in its own local frame.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[localAxisA]</code>
-                                            <span class="type">Array</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>An axis, defined in body A frame, that body B&#39;s anchor point may slide along.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[disableRotationalLock]</code>
-                                            <span class="type">Boolean</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>If set to true, bodyB will be free to rotate around its anchor point.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[upperLimit]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[lowerLimit]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                </ul>
-                        </li>
-                    </ul>
-                </div>
-        
-        
-        
+<div id="method_PrismaticConstraint" class="method item">
+    <h3 class="name"><code>PrismaticConstraint</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>bodyA</code>
+                </li>
+                <li class="arg">
+                        <code>bodyB</code>
+                </li>
+                <li class="arg">
+                        <code class="optional">[options]</code>
+                </li>
+            </ul><span class="paren">)</span>
         </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_constraints_PrismaticConstraint.js.html#l9"><code>src\constraints\PrismaticConstraint.js:9</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">bodyA</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">bodyB</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name optional">[options]</code>
+                        <span class="type">Object</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                        <ul class="params-list">
+                            <li class="param">
+                                    <code class="param-name optional">[maxForce]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>Max force to be applied by the constraint</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[localAnchorA]</code>
+                                    <span class="type">Array</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>Body A's anchor point, defined in its own local frame.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[localAnchorB]</code>
+                                    <span class="type">Array</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>Body B's anchor point, defined in its own local frame.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[localAxisA]</code>
+                                    <span class="type">Array</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>An axis, defined in body A frame, that body B's anchor point may slide along.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[disableRotationalLock]</code>
+                                    <span class="type">Boolean</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>If set to true, bodyB will be free to rotate around its anchor point.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[upperLimit]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[lowerLimit]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                        </ul>
+                </li>
+            </ul>
+        </div>
+
+
+
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre class="code prettyprint"><code>var constraint = new PrismaticConstraint(bodyA, bodyB, {
+    localAxisA: [0, 1]
+});
+world.addConstraint(constraint);</code></pre>
+
+            </div>
+        </div>
+</div>
     </div>
 
 <div id="classdocs" class="tabview">
@@ -330,6 +340,10 @@
                             </li>
                             <li class="index-item method">
                                 <a href="#method_setLimits">setLimits</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#method_setMaxBias">setMaxBias</a>
 
                             </li>
                             <li class="index-item method inherited">
@@ -439,7 +453,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_constraints_PrismaticConstraint.js.html#l316"><code>src&#x2F;constraints&#x2F;PrismaticConstraint.js:316</code></a>
+        <a href="../files/src_constraints_PrismaticConstraint.js.html#l320"><code>src\constraints\PrismaticConstraint.js:320</code></a>
         </p>
 
 
@@ -470,7 +484,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_constraints_PrismaticConstraint.js.html#l304"><code>src&#x2F;constraints&#x2F;PrismaticConstraint.js:304</code></a>
+        <a href="../files/src_constraints_PrismaticConstraint.js.html#l308"><code>src\constraints\PrismaticConstraint.js:308</code></a>
         </p>
 
 
@@ -510,7 +524,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_constraints_PrismaticConstraint.js.html#l329"><code>src&#x2F;constraints&#x2F;PrismaticConstraint.js:329</code></a>
+        <a href="../files/src_constraints_PrismaticConstraint.js.html#l333"><code>src\constraints\PrismaticConstraint.js:333</code></a>
         </p>
 
 
@@ -554,6 +568,58 @@
 
 
 </div>
+<div id="method_setMaxBias" class="method item inherited">
+    <h3 class="name"><code>setMaxBias</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>maxBias</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Constraint.html#method_setMaxBias">Constraint</a>:
+        <a href="../files/src_constraints_Constraint.js.html#l131"><code>src\constraints\Constraint.js:131</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">maxBias</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
 <div id="method_setRelaxation" class="method item inherited">
     <h3 class="name"><code>setRelaxation</code></h3>
 
@@ -575,7 +641,7 @@
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Constraint.html#method_setRelaxation">Constraint</a>:
-        <a href="../files/src_constraints_Constraint.js.html#l123"><code>src&#x2F;constraints&#x2F;Constraint.js:123</code></a>
+        <a href="../files/src_constraints_Constraint.js.html#l117"><code>src\constraints\Constraint.js:117</code></a>
         </p>
 
 
@@ -628,7 +694,7 @@
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Constraint.html#method_setStiffness">Constraint</a>:
-        <a href="../files/src_constraints_Constraint.js.html#l109"><code>src&#x2F;constraints&#x2F;Constraint.js:109</code></a>
+        <a href="../files/src_constraints_Constraint.js.html#l103"><code>src\constraints\Constraint.js:103</code></a>
         </p>
 
 
@@ -678,7 +744,7 @@
                 Constraint
             </a>
             but overwritten in
-        <a href="../files/src_constraints_PrismaticConstraint.js.html#l207"><code>src&#x2F;constraints&#x2F;PrismaticConstraint.js:207</code></a>
+        <a href="../files/src_constraints_PrismaticConstraint.js.html#l211"><code>src\constraints\PrismaticConstraint.js:211</code></a>
         </p>
 
 
@@ -699,404 +765,404 @@
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
-                    <div id="property_bodyA" class="property item inherited">
-                        <h3 class="name"><code>bodyA</code></h3>
-                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Constraint.html#property_bodyA">Constraint</a>:
-                            <a href="../files/src_constraints_Constraint.js.html#l38"><code>src&#x2F;constraints&#x2F;Constraint.js:38</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>First body participating in the constraint.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_bodyB" class="property item inherited">
-                        <h3 class="name"><code>bodyB</code></h3>
-                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Constraint.html#property_bodyB">Constraint</a>:
-                            <a href="../files/src_constraints_Constraint.js.html#l45"><code>src&#x2F;constraints&#x2F;Constraint.js:45</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Second body participating in the constraint.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_collideConnected" class="property item inherited">
-                        <h3 class="name"><code>collideConnected</code></h3>
-                        <span class="type">Boolean</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Constraint.html#property_collideConnected">Constraint</a>:
-                            <a href="../files/src_constraints_Constraint.js.html#l52"><code>src&#x2F;constraints&#x2F;Constraint.js:52</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Set to true if you want the connected bodies to collide.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> true</p>
-                    
-                    
-                    </div>
-                    <div id="property_equations" class="property item inherited">
-                        <h3 class="name"><code>equations</code></h3>
-                        <span class="type">Array</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Constraint.html#property_equations">Constraint</a>:
-                            <a href="../files/src_constraints_Constraint.js.html#l30"><code>src&#x2F;constraints&#x2F;Constraint.js:30</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Equations to be solved in this constraint</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_localAnchorA" class="property item">
-                        <h3 class="name"><code>localAnchorA</code></h3>
-                        <span class="type">Array</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_constraints_PrismaticConstraint.js.html#l40"><code>src&#x2F;constraints&#x2F;PrismaticConstraint.js:40</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_localAnchorB" class="property item">
-                        <h3 class="name"><code>localAnchorB</code></h3>
-                        <span class="type">Array</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_constraints_PrismaticConstraint.js.html#l46"><code>src&#x2F;constraints&#x2F;PrismaticConstraint.js:46</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_localAxisA" class="property item">
-                        <h3 class="name"><code>localAxisA</code></h3>
-                        <span class="type">Array</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_constraints_PrismaticConstraint.js.html#l52"><code>src&#x2F;constraints&#x2F;PrismaticConstraint.js:52</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_lowerLimit" class="property item">
-                        <h3 class="name"><code>lowerLimit</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_constraints_PrismaticConstraint.js.html#l138"><code>src&#x2F;constraints&#x2F;PrismaticConstraint.js:138</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Lower constraint limit. The constraint position is forced to be larger than this value.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_lowerLimitEnabled" class="property item">
-                        <h3 class="name"><code>lowerLimitEnabled</code></h3>
-                        <span class="type">Boolean</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_constraints_PrismaticConstraint.js.html#l124"><code>src&#x2F;constraints&#x2F;PrismaticConstraint.js:124</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Set to true to enable lower limit.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_motorEnabled" class="property item">
-                        <h3 class="name"><code>motorEnabled</code></h3>
-                        <span class="type">Boolean</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_constraints_PrismaticConstraint.js.html#l167"><code>src&#x2F;constraints&#x2F;PrismaticConstraint.js:167</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The current motor state. Enable or disable the motor using .enableMotor</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_motorEquation" class="property item">
-                        <h3 class="name"><code>motorEquation</code></h3>
-                        <span class="type"><a href="../classes/Equation.html" class="crosslink">Equation</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_constraints_PrismaticConstraint.js.html#l160"><code>src&#x2F;constraints&#x2F;PrismaticConstraint.js:160</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Equation used for the motor.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_motorSpeed" class="property item">
-                        <h3 class="name"><code>motorSpeed</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_constraints_PrismaticConstraint.js.html#l174"><code>src&#x2F;constraints&#x2F;PrismaticConstraint.js:174</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Set the target speed for the motor.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_position" class="property item">
-                        <h3 class="name"><code>position</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_constraints_PrismaticConstraint.js.html#l114"><code>src&#x2F;constraints&#x2F;PrismaticConstraint.js:114</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The position of anchor A relative to anchor B, along the constraint axis.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_type" class="property item inherited">
-                        <h3 class="name"><code>type</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Constraint.html#property_type">Constraint</a>:
-                            <a href="../files/src_constraints_Constraint.js.html#l19"><code>src&#x2F;constraints&#x2F;Constraint.js:19</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The type of constraint. May be one of Constraint.DISTANCE, Constraint.GEAR, Constraint.LOCK, Constraint.PRISMATIC or Constraint.REVOLUTE.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_upperLimit" class="property item">
-                        <h3 class="name"><code>upperLimit</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_constraints_PrismaticConstraint.js.html#l145"><code>src&#x2F;constraints&#x2F;PrismaticConstraint.js:145</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Upper constraint limit. The constraint position is forced to be smaller than this value.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_upperLimitEnabled" class="property item">
-                        <h3 class="name"><code>upperLimitEnabled</code></h3>
-                        <span class="type">Boolean</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_constraints_PrismaticConstraint.js.html#l131"><code>src&#x2F;constraints&#x2F;PrismaticConstraint.js:131</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Set to true to enable upper limit.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
+<div id="property_bodyA" class="property item inherited">
+    <h3 class="name"><code>bodyA</code></h3>
+    <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Constraint.html#property_bodyA">Constraint</a>:
+        <a href="../files/src_constraints_Constraint.js.html#l32"><code>src\constraints\Constraint.js:32</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>First body participating in the constraint.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_bodyB" class="property item inherited">
+    <h3 class="name"><code>bodyB</code></h3>
+    <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Constraint.html#property_bodyB">Constraint</a>:
+        <a href="../files/src_constraints_Constraint.js.html#l39"><code>src\constraints\Constraint.js:39</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Second body participating in the constraint.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_collideConnected" class="property item inherited">
+    <h3 class="name"><code>collideConnected</code></h3>
+    <span class="type">Boolean</span>
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Constraint.html#property_collideConnected">Constraint</a>:
+        <a href="../files/src_constraints_Constraint.js.html#l46"><code>src\constraints\Constraint.js:46</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Set to true if you want the connected bodies to collide.</p>
+
+    </div>
+
+        <p><strong>Default:</strong> true</p>
+
+
+</div>
+<div id="property_equations" class="property item inherited">
+    <h3 class="name"><code>equations</code></h3>
+    <span class="type">Array</span>
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Constraint.html#property_equations">Constraint</a>:
+        <a href="../files/src_constraints_Constraint.js.html#l24"><code>src\constraints\Constraint.js:24</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Equations to be solved in this constraint</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_localAnchorA" class="property item">
+    <h3 class="name"><code>localAnchorA</code></h3>
+    <span class="type">Array</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_constraints_PrismaticConstraint.js.html#l45"><code>src\constraints\PrismaticConstraint.js:45</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_localAnchorB" class="property item">
+    <h3 class="name"><code>localAnchorB</code></h3>
+    <span class="type">Array</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_constraints_PrismaticConstraint.js.html#l51"><code>src\constraints\PrismaticConstraint.js:51</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_localAxisA" class="property item">
+    <h3 class="name"><code>localAxisA</code></h3>
+    <span class="type">Array</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_constraints_PrismaticConstraint.js.html#l57"><code>src\constraints\PrismaticConstraint.js:57</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_lowerLimit" class="property item">
+    <h3 class="name"><code>lowerLimit</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_constraints_PrismaticConstraint.js.html#l143"><code>src\constraints\PrismaticConstraint.js:143</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Lower constraint limit. The constraint position is forced to be larger than this value.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_lowerLimitEnabled" class="property item">
+    <h3 class="name"><code>lowerLimitEnabled</code></h3>
+    <span class="type">Boolean</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_constraints_PrismaticConstraint.js.html#l129"><code>src\constraints\PrismaticConstraint.js:129</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Set to true to enable lower limit.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_motorEnabled" class="property item">
+    <h3 class="name"><code>motorEnabled</code></h3>
+    <span class="type">Boolean</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_constraints_PrismaticConstraint.js.html#l172"><code>src\constraints\PrismaticConstraint.js:172</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>The current motor state. Enable or disable the motor using .enableMotor</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_motorEquation" class="property item">
+    <h3 class="name"><code>motorEquation</code></h3>
+    <span class="type"><a href="../classes/Equation.html" class="crosslink">Equation</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_constraints_PrismaticConstraint.js.html#l165"><code>src\constraints\PrismaticConstraint.js:165</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Equation used for the motor.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_motorSpeed" class="property item">
+    <h3 class="name"><code>motorSpeed</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_constraints_PrismaticConstraint.js.html#l179"><code>src\constraints\PrismaticConstraint.js:179</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Set the target speed for the motor.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_position" class="property item">
+    <h3 class="name"><code>position</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_constraints_PrismaticConstraint.js.html#l119"><code>src\constraints\PrismaticConstraint.js:119</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>The position of anchor A relative to anchor B, along the constraint axis.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_type" class="property item inherited">
+    <h3 class="name"><code>type</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Constraint.html#property_type">Constraint</a>:
+        <a href="../files/src_constraints_Constraint.js.html#l18"><code>src\constraints\Constraint.js:18</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>The type of constraint. May be one of Constraint.DISTANCE, Constraint.GEAR, Constraint.LOCK, Constraint.PRISMATIC or Constraint.REVOLUTE.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_upperLimit" class="property item">
+    <h3 class="name"><code>upperLimit</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_constraints_PrismaticConstraint.js.html#l150"><code>src\constraints\PrismaticConstraint.js:150</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Upper constraint limit. The constraint position is forced to be smaller than this value.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_upperLimitEnabled" class="property item">
+    <h3 class="name"><code>upperLimitEnabled</code></h3>
+    <span class="type">Boolean</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_constraints_PrismaticConstraint.js.html#l136"><code>src\constraints\PrismaticConstraint.js:136</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Set to true to enable upper limit.</p>
+
+    </div>
+
+
+
+</div>
             </div>
 
 

@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="p2.js" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.7.1</em>
+            <em>API Docs for: 0.7.2</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -56,26 +56,23 @@
                                 <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
                                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
                                 <li><a href="../classes/Heightfield.html">Heightfield</a></li>
-                                <li><a href="../classes/Island.html">Island</a></li>
-                                <li><a href="../classes/IslandManager.html">IslandManager</a></li>
-                                <li><a href="../classes/IslandNode.html">IslandNode</a></li>
                                 <li><a href="../classes/Line.html">Line</a></li>
                                 <li><a href="../classes/LinearSpring.html">LinearSpring</a></li>
+                                <li><a href="../classes/.html"></a></li>
                                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
                                 <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
-                                <li><a href="../classes/Object pooling utility..html">Object pooling utility.</a></li>
                                 <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
                                 <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
                                 <li><a href="../classes/Particle.html">Particle</a></li>
                                 <li><a href="../classes/Plane.html">Plane</a></li>
+                                <li><a href="../classes/Pool.html">Pool</a></li>
                                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
                                 <li><a href="../classes/Ray.html">Ray</a></li>
                                 <li><a href="../classes/RaycastResult.html">RaycastResult</a></li>
                                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
                                 <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
-                                <li><a href="../classes/.html"></a></li>
                                 <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
                                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
                                 <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
@@ -84,11 +81,13 @@
                                 <li><a href="../classes/Spring.html">Spring</a></li>
                                 <li><a href="../classes/TopDownVehicle.html">TopDownVehicle</a></li>
                                 <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
+                                <li><a href="../classes/UnionFind.html">UnionFind</a></li>
                                 <li><a href="../classes/Utils.html">Utils</a></li>
                                 <li><a href="../classes/vec2.html">vec2</a></li>
                                 <li><a href="../classes/WheelConstraint.html">WheelConstraint</a></li>
                                 <li><a href="../classes/World.html">World</a></li>
                             </ul>
+                
                 
                             <ul id="api-modules" class="apis modules">
                             </ul>
@@ -132,7 +131,7 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_objects_LinearSpring.js.html#l7"><code>src&#x2F;objects&#x2F;LinearSpring.js:7</code></a>
+            Defined in: <a href="../files/src_objects_LinearSpring.js.html#l6"><code>src\objects\LinearSpring.js:6</code></a>
         </div>
 
 
@@ -147,162 +146,176 @@
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_LinearSpring" class="method item">
-            <h3 class="name"><code>LinearSpring</code></h3>
-        
-                <div class="args">
-                    <span class="paren">(</span><ul class="args-list inline commas">
-                        <li class="arg">
-                                <code>bodyA</code>
-                        </li>
-                        <li class="arg">
-                                <code>bodyB</code>
-                        </li>
-                        <li class="arg">
-                                <code class="optional">[options]</code>
-                        </li>
-                    </ul><span class="paren">)</span>
-                </div>
-        
-        
-        
-        
-        
-        
-        
-        
-            <div class="meta">
-                        <p>
-                        Defined in
-                <a href="../files/src_objects_LinearSpring.js.html#l7"><code>src&#x2F;objects&#x2F;LinearSpring.js:7</code></a>
-                </p>
-        
-        
-        
-            </div>
-        
-            <div class="description">
-                
-            </div>
-        
-                <div class="params">
-                    <h4>Parameters:</h4>
-        
-                    <ul class="params-list">
-                        <li class="param">
-                                <code class="param-name">bodyA</code>
-                                <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
-        
-        
-                            <div class="param-description">
-                                 
-                            </div>
-        
-                        </li>
-                        <li class="param">
-                                <code class="param-name">bodyB</code>
-                                <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
-        
-        
-                            <div class="param-description">
-                                 
-                            </div>
-        
-                        </li>
-                        <li class="param">
-                                <code class="param-name optional">[options]</code>
-                                <span class="type">Object</span>
-                                <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-        
-                            <div class="param-description">
-                                 
-                            </div>
-        
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name optional">[restLength]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>A number &gt; 0. Default is the current distance between the world anchor points.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[stiffness=100]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>Spring constant (see Hookes Law). A number &gt;= 0.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[damping=1]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>A number &gt;= 0. Default: 1</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[worldAnchorA]</code>
-                                            <span class="type">Array</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>Where to hook the spring to body A, in world coordinates. Overrides the option &quot;localAnchorA&quot; if given.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[worldAnchorB]</code>
-                                            <span class="type">Array</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[localAnchorA]</code>
-                                            <span class="type">Array</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>Where to hook the spring to body A, in local body coordinates. Defaults to the body center.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[localAnchorB]</code>
-                                            <span class="type">Array</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                </ul>
-                        </li>
-                    </ul>
-                </div>
-        
-        
-        
+<div id="method_LinearSpring" class="method item">
+    <h3 class="name"><code>LinearSpring</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>bodyA</code>
+                </li>
+                <li class="arg">
+                        <code>bodyB</code>
+                </li>
+                <li class="arg">
+                        <code class="optional">[options]</code>
+                </li>
+            </ul><span class="paren">)</span>
         </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_LinearSpring.js.html#l6"><code>src\objects\LinearSpring.js:6</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">bodyA</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">bodyB</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name optional">[options]</code>
+                        <span class="type">Object</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                        <ul class="params-list">
+                            <li class="param">
+                                    <code class="param-name optional">[restLength]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>A number &gt; 0. Default is the current distance between the world anchor points.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[stiffness=100]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>Spring constant (see Hookes Law). A number &gt;= 0.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[damping=1]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>A number &gt;= 0. Default: 1</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[worldAnchorA]</code>
+                                    <span class="type">Array</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>Where to hook the spring to body A, in world coordinates. Overrides the option &quot;localAnchorA&quot; if given.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[worldAnchorB]</code>
+                                    <span class="type">Array</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[localAnchorA]</code>
+                                    <span class="type">Array</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>Where to hook the spring to body A, in local body coordinates. Defaults to the body center.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[localAnchorB]</code>
+                                    <span class="type">Array</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                        </ul>
+                </li>
+            </ul>
+        </div>
+
+
+
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre class="code prettyprint"><code>var spring = new LinearSpring(bodyA, bodyB, {
+    stiffness: 100,
+    damping: 1,
+    localAnchorA: [0,0], // center of bodyA
+    localAnchorB: [0,0] // center of bodyB
+});
+world.addSpring(spring);</code></pre>
+
+            </div>
+        </div>
+</div>
     </div>
 
 <div id="classdocs" class="tabview">
@@ -321,7 +334,7 @@
                     <h3>Methods</h3>
 
                     <ul class="index-list methods extends">
-                            <li class="index-item method inherited">
+                            <li class="index-item method private inherited">
                                 <a href="#method_applyForce">applyForce</a>
 
                             </li>
@@ -385,13 +398,14 @@
             <div id="methods" class="api-class-tabpanel">
                 <h2 class="off-left">Methods</h2>
 
-<div id="method_applyForce" class="method item">
+<div id="method_applyForce" class="method item private">
     <h3 class="name"><code>applyForce</code></h3>
 
         <span class="paren">()</span>
 
 
 
+        <span class="flag private">private</span>
 
 
 
@@ -403,7 +417,7 @@
                 Spring
             </a>
             but overwritten in
-        <a href="../files/src_objects_LinearSpring.js.html#l112"><code>src&#x2F;objects&#x2F;LinearSpring.js:112</code></a>
+        <a href="../files/src_objects_LinearSpring.js.html#l120"><code>src\objects\LinearSpring.js:120</code></a>
         </p>
 
 
@@ -440,7 +454,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_LinearSpring.js.html#l84"><code>src&#x2F;objects&#x2F;LinearSpring.js:84</code></a>
+        <a href="../files/src_objects_LinearSpring.js.html#l92"><code>src\objects\LinearSpring.js:92</code></a>
         </p>
 
 
@@ -494,7 +508,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_LinearSpring.js.html#l93"><code>src&#x2F;objects&#x2F;LinearSpring.js:93</code></a>
+        <a href="../files/src_objects_LinearSpring.js.html#l101"><code>src\objects\LinearSpring.js:101</code></a>
         </p>
 
 
@@ -548,7 +562,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_LinearSpring.js.html#l66"><code>src&#x2F;objects&#x2F;LinearSpring.js:66</code></a>
+        <a href="../files/src_objects_LinearSpring.js.html#l74"><code>src\objects\LinearSpring.js:74</code></a>
         </p>
 
 
@@ -601,7 +615,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_LinearSpring.js.html#l75"><code>src&#x2F;objects&#x2F;LinearSpring.js:75</code></a>
+        <a href="../files/src_objects_LinearSpring.js.html#l83"><code>src\objects\LinearSpring.js:83</code></a>
         </p>
 
 
@@ -638,181 +652,177 @@
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
-                    <div id="property_bodyA" class="property item inherited">
-                        <h3 class="name"><code>bodyA</code></h3>
-                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Spring.html#property_bodyA">Spring</a>:
-                            <a href="../files/src_objects_Spring.js.html#l41"><code>src&#x2F;objects&#x2F;Spring.js:41</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>First connected body.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_bodyB" class="property item inherited">
-                        <h3 class="name"><code>bodyB</code></h3>
-                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Spring.html#property_bodyB">Spring</a>:
-                            <a href="../files/src_objects_Spring.js.html#l48"><code>src&#x2F;objects&#x2F;Spring.js:48</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Second connected body.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_damping" class="property item inherited">
-                        <h3 class="name"><code>damping</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Spring.html#property_damping">Spring</a>:
-                            <a href="../files/src_objects_Spring.js.html#l34"><code>src&#x2F;objects&#x2F;Spring.js:34</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Damping of the spring.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_localAnchorA" class="property item">
-                        <h3 class="name"><code>localAnchorA</code></h3>
-                        <span class="type">Array</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_LinearSpring.js.html#l31"><code>src&#x2F;objects&#x2F;LinearSpring.js:31</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Anchor for bodyA in local bodyA coordinates.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_localAnchorB" class="property item">
-                        <h3 class="name"><code>localAnchorB</code></h3>
-                        <span class="type">Array</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_LinearSpring.js.html#l38"><code>src&#x2F;objects&#x2F;LinearSpring.js:38</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Anchor for bodyB in local bodyB coordinates.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_restLength" class="property item">
-                        <h3 class="name"><code>restLength</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_LinearSpring.js.html#l56"><code>src&#x2F;objects&#x2F;LinearSpring.js:56</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Rest length of the spring.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_stiffness" class="property item inherited">
-                        <h3 class="name"><code>stiffness</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Spring.html#property_stiffness">Spring</a>:
-                            <a href="../files/src_objects_Spring.js.html#l27"><code>src&#x2F;objects&#x2F;Spring.js:27</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Stiffness of the spring.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
+<div id="property_bodyA" class="property item inherited">
+    <h3 class="name"><code>bodyA</code></h3>
+    <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Spring.html#property_bodyA">Spring</a>:
+        <a href="../files/src_objects_Spring.js.html#l35"><code>src\objects\Spring.js:35</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        First connected body.
+    </div>
+
+
+
+</div>
+<div id="property_bodyB" class="property item inherited">
+    <h3 class="name"><code>bodyB</code></h3>
+    <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Spring.html#property_bodyB">Spring</a>:
+        <a href="../files/src_objects_Spring.js.html#l42"><code>src\objects\Spring.js:42</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        Second connected body.
+    </div>
+
+
+
+</div>
+<div id="property_damping" class="property item inherited">
+    <h3 class="name"><code>damping</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Spring.html#property_damping">Spring</a>:
+        <a href="../files/src_objects_Spring.js.html#l28"><code>src\objects\Spring.js:28</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        Damping of the spring.
+    </div>
+
+
+
+</div>
+<div id="property_localAnchorA" class="property item">
+    <h3 class="name"><code>localAnchorA</code></h3>
+    <span class="type">Array</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_LinearSpring.js.html#l39"><code>src\objects\LinearSpring.js:39</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Anchor for bodyA in local bodyA coordinates.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_localAnchorB" class="property item">
+    <h3 class="name"><code>localAnchorB</code></h3>
+    <span class="type">Array</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_LinearSpring.js.html#l46"><code>src\objects\LinearSpring.js:46</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Anchor for bodyB in local bodyB coordinates.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_restLength" class="property item">
+    <h3 class="name"><code>restLength</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_LinearSpring.js.html#l64"><code>src\objects\LinearSpring.js:64</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Rest length of the spring. Can be set dynamically.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_stiffness" class="property item inherited">
+    <h3 class="name"><code>stiffness</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Spring.html#property_stiffness">Spring</a>:
+        <a href="../files/src_objects_Spring.js.html#l21"><code>src\objects\Spring.js:21</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        Stiffness of the spring.
+    </div>
+
+
+
+</div>
             </div>
 
 

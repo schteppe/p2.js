@@ -1,6 +1,6 @@
 {
   "name": "p2",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "description": "A JavaScript 2D physics engine.",
   "author": "Stefan Hedman <schteppe@gmail.com> (http://steffe.se)",
   "keywords": [
@@ -11,6 +11,10 @@
     "2d"
   ],
   "main": "./src/p2.js",
+  "scripts": {
+    "build": "grunt",
+    "build-docs": "grunt yuidoc"
+  },
   "engines": {
     "node": "*"
   },

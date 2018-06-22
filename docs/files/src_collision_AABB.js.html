@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/collision/AABB.js - p2.js</title>
+    <title>src\collision\AABB.js - p2.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="p2.js" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.7.1</em>
+            <em>API Docs for: 0.7.2</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -56,26 +56,23 @@
                                 <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
                                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
                                 <li><a href="../classes/Heightfield.html">Heightfield</a></li>
-                                <li><a href="../classes/Island.html">Island</a></li>
-                                <li><a href="../classes/IslandManager.html">IslandManager</a></li>
-                                <li><a href="../classes/IslandNode.html">IslandNode</a></li>
                                 <li><a href="../classes/Line.html">Line</a></li>
                                 <li><a href="../classes/LinearSpring.html">LinearSpring</a></li>
+                                <li><a href="../classes/.html"></a></li>
                                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
                                 <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
-                                <li><a href="../classes/Object pooling utility..html">Object pooling utility.</a></li>
                                 <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
                                 <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
                                 <li><a href="../classes/Particle.html">Particle</a></li>
                                 <li><a href="../classes/Plane.html">Plane</a></li>
+                                <li><a href="../classes/Pool.html">Pool</a></li>
                                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
                                 <li><a href="../classes/Ray.html">Ray</a></li>
                                 <li><a href="../classes/RaycastResult.html">RaycastResult</a></li>
                                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
                                 <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
-                                <li><a href="../classes/.html"></a></li>
                                 <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
                                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
                                 <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
@@ -84,11 +81,13 @@
                                 <li><a href="../classes/Spring.html">Spring</a></li>
                                 <li><a href="../classes/TopDownVehicle.html">TopDownVehicle</a></li>
                                 <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
+                                <li><a href="../classes/UnionFind.html">UnionFind</a></li>
                                 <li><a href="../classes/Utils.html">Utils</a></li>
                                 <li><a href="../classes/vec2.html">vec2</a></li>
                                 <li><a href="../classes/WheelConstraint.html">WheelConstraint</a></li>
                                 <li><a href="../classes/World.html">World</a></li>
                             </ul>
+                
                 
                             <ul id="api-modules" class="apis modules">
                             </ul>
@@ -124,12 +123,11 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1 class="file-heading">File: src/collision/AABB.js</h1>
+<h1 class="file-heading">File: src\collision\AABB.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
-var vec2 = require(&#x27;../math/vec2&#x27;)
-,   Utils = require(&#x27;../utils/Utils&#x27;);
+var vec2 = require(&#x27;../math/vec2&#x27;);
 
 module.exports = AABB;
 
@@ -140,28 +138,28 @@ module.exports = AABB;
  * @param {Object}  [options]
  * @param {Array}   [options.upperBound]
  * @param {Array}   [options.lowerBound]
+ * @example
+ *     var aabb = new AABB({
+ *         upperBound: [1, 1],
+ *         lowerBound: [-1, -1]
+ *     });
  */
 function AABB(options){
+    options = options || {};
 
     /**
      * The lower bound of the bounding box.
      * @property lowerBound
      * @type {Array}
      */
-    this.lowerBound = vec2.create();
-    if(options &amp;&amp; options.lowerBound){
-        vec2.copy(this.lowerBound, options.lowerBound);
-    }
+    this.lowerBound = options.lowerBound ? vec2.clone(options.lowerBound) : vec2.create();
 
     /**
      * The upper bound of the bounding box.
      * @property upperBound
      * @type {Array}
      */
-    this.upperBound = vec2.create();
-    if(options &amp;&amp; options.upperBound){
-        vec2.copy(this.upperBound, options.upperBound);
-    }
+    this.upperBound = options.upperBound ? vec2.clone(options.upperBound) : vec2.create();
 }
 
 var tmp = vec2.create();
@@ -171,16 +169,14 @@ var tmp = vec2.create();
  * @method setFromPoints
  * @param {Array} points An array of vec2&#x27;s.
  * @param {Array} position
- * @param {number} angle
- * @param {number} skinSize Some margin to be added to the AABB.
+ * @param {number} [angle=0]
+ * @param {number} [skinSize=0] Some margin to be added to the AABB.
  */
 AABB.prototype.setFromPoints = function(points, position, angle, skinSize){
     var l = this.lowerBound,
         u = this.upperBound;
 
-    if(typeof(angle) !== &quot;number&quot;){
-        angle = 0;
-    }
+    angle = angle || 0;
 
     // Set to the first point
     if(angle !== 0){
@@ -216,15 +212,15 @@ AABB.prototype.setFromPoints = function(points, position, angle, skinSize){
 
     // Add offset
     if(position){
-        vec2.add(this.lowerBound, this.lowerBound, position);
-        vec2.add(this.upperBound, this.upperBound, position);
+        vec2.add(l, l, position);
+        vec2.add(u, u, position);
     }
 
     if(skinSize){
-        this.lowerBound[0] -= skinSize;
-        this.lowerBound[1] -= skinSize;
-        this.upperBound[0] += skinSize;
-        this.upperBound[1] += skinSize;
+        l[0] -= skinSize;
+        l[1] -= skinSize;
+        u[0] += skinSize;
+        u[1] += skinSize;
     }
 };
 
@@ -244,19 +240,22 @@ AABB.prototype.copy = function(aabb){
  * @param  {AABB} aabb
  */
 AABB.prototype.extend = function(aabb){
+    var lower = this.lowerBound,
+        upper = this.upperBound;
+
     // Loop over x and y
     var i = 2;
     while(i--){
         // Extend lower bound
         var l = aabb.lowerBound[i];
-        if(this.lowerBound[i] &gt; l){
-            this.lowerBound[i] = l;
+        if(lower[i] &gt; l){
+            lower[i] = l;
         }
 
         // Upper
         var u = aabb.upperBound[i];
-        if(this.upperBound[i] &lt; u){
-            this.upperBound[i] = u;
+        if(upper[i] &lt; u){
+            upper[i] = u;
         }
     }
 };
@@ -297,20 +296,32 @@ AABB.prototype.containsPoint = function(point){
  * Check if the AABB is hit by a ray.
  * @method overlapsRay
  * @param  {Ray} ray
- * @return {number} -1 if no hit, a number between 0 and 1 if hit.
+ * @return {number} -1 if no hit, a number between 0 and 1 if hit, indicating the position between the &quot;from&quot; and &quot;to&quot; points.
+ * @example
+ *     var aabb = new AABB({
+ *         upperBound: [1, 1],
+ *         lowerBound: [-1, -1]
+ *     });
+ *     var ray = new Ray({
+ *         from: [-2, 0],
+ *         to: [0, 0]
+ *     });
+ *     var fraction = aabb.overlapsRay(ray); // fraction == 0.5
  */
 AABB.prototype.overlapsRay = function(ray){
-    var t = 0;
 
     // ray.direction is unit direction vector of ray
     var dirFracX = 1 / ray.direction[0];
     var dirFracY = 1 / ray.direction[1];
 
     // this.lowerBound is the corner of AABB with minimal coordinates - left bottom, rt is maximal corner
-    var t1 = (this.lowerBound[0] - ray.from[0]) * dirFracX;
-    var t2 = (this.upperBound[0] - ray.from[0]) * dirFracX;
-    var t3 = (this.lowerBound[1] - ray.from[1]) * dirFracY;
-    var t4 = (this.upperBound[1] - ray.from[1]) * dirFracY;
+    var from = ray.from;
+    var lowerBound = this.lowerBound;
+    var upperBound = this.upperBound;
+    var t1 = (lowerBound[0] - from[0]) * dirFracX;
+    var t2 = (upperBound[0] - from[0]) * dirFracX;
+    var t3 = (lowerBound[1] - from[1]) * dirFracY;
+    var t4 = (upperBound[1] - from[1]) * dirFracY;
 
     var tmin = Math.max(Math.max(Math.min(t1, t2), Math.min(t3, t4)));
     var tmax = Math.min(Math.min(Math.max(t1, t2), Math.max(t3, t4)));
@@ -327,7 +338,7 @@ AABB.prototype.overlapsRay = function(ray){
         return -1;
     }
 
-    return tmin;
+    return tmin / ray.length;
 };
     </pre>
 </div>

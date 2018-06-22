@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="p2.js" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.7.1</em>
+            <em>API Docs for: 0.7.2</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -56,26 +56,23 @@
                                 <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
                                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
                                 <li><a href="../classes/Heightfield.html">Heightfield</a></li>
-                                <li><a href="../classes/Island.html">Island</a></li>
-                                <li><a href="../classes/IslandManager.html">IslandManager</a></li>
-                                <li><a href="../classes/IslandNode.html">IslandNode</a></li>
                                 <li><a href="../classes/Line.html">Line</a></li>
                                 <li><a href="../classes/LinearSpring.html">LinearSpring</a></li>
+                                <li><a href="../classes/.html"></a></li>
                                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
                                 <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
-                                <li><a href="../classes/Object pooling utility..html">Object pooling utility.</a></li>
                                 <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
                                 <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
                                 <li><a href="../classes/Particle.html">Particle</a></li>
                                 <li><a href="../classes/Plane.html">Plane</a></li>
+                                <li><a href="../classes/Pool.html">Pool</a></li>
                                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
                                 <li><a href="../classes/Ray.html">Ray</a></li>
                                 <li><a href="../classes/RaycastResult.html">RaycastResult</a></li>
                                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
                                 <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
-                                <li><a href="../classes/.html"></a></li>
                                 <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
                                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
                                 <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
@@ -84,11 +81,13 @@
                                 <li><a href="../classes/Spring.html">Spring</a></li>
                                 <li><a href="../classes/TopDownVehicle.html">TopDownVehicle</a></li>
                                 <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
+                                <li><a href="../classes/UnionFind.html">UnionFind</a></li>
                                 <li><a href="../classes/Utils.html">Utils</a></li>
                                 <li><a href="../classes/vec2.html">vec2</a></li>
                                 <li><a href="../classes/WheelConstraint.html">WheelConstraint</a></li>
                                 <li><a href="../classes/World.html">World</a></li>
                             </ul>
+                
                 
                             <ul id="api-modules" class="apis modules">
                             </ul>
@@ -129,7 +128,7 @@
 
 
         <div class="foundat">
-            Defined in: <a href="../files/src_utils_Utils.js.html#l5"><code>src&#x2F;utils&#x2F;Utils.js:5</code></a>
+            Defined in: <a href="../files/src_utils_Utils.js.html#l5"><code>src\utils\Utils.js:5</code></a>
         </div>
 
 
@@ -143,36 +142,36 @@
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_Utils" class="method item">
-            <h3 class="name"><code>Utils</code></h3>
+<div id="method_Utils" class="method item">
+    <h3 class="name"><code>Utils</code></h3>
+
+        <span class="paren">()</span>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_utils_Utils.js.html#l5"><code>src\utils\Utils.js:5</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
         
-                <span class="paren">()</span>
-        
-        
-        
-        
-        
-        
-        
-        
-            <div class="meta">
-                        <p>
-                        Defined in
-                <a href="../files/src_utils_Utils.js.html#l5"><code>src&#x2F;utils&#x2F;Utils.js:5</code></a>
-                </p>
-        
-        
-        
-            </div>
-        
-            <div class="description">
-                
-            </div>
-        
-        
-        
-        
-        </div>
+    </div>
+
+
+
+
+</div>
     </div>
 
 <div id="classdocs" class="tabview">
@@ -197,12 +196,23 @@
                                     <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
+                                <a href="#method_arrayRemove">arrayRemove</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item method deprecated">
                                 <a href="#method_defaults">defaults</a>
+
+                                    <span class="flag static">static</span>
+                                    <span class="flag deprecated">deprecated</span>
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_extend">extend</a>
 
                                     <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
-                                <a href="#method_extend">extend</a>
+                                <a href="#method_shallowClone">shallowClone</a>
 
                                     <span class="flag static">static</span>
                             </li>
@@ -257,7 +267,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_utils_Utils.js.html#l12"><code>src&#x2F;utils&#x2F;Utils.js:12</code></a>
+        <a href="../files/src_utils_Utils.js.html#l12"><code>src\utils\Utils.js:12</code></a>
         </p>
 
 
@@ -299,7 +309,74 @@
 
 
 </div>
-<div id="method_defaults" class="method item">
+<div id="method_arrayRemove" class="method item">
+    <h3 class="name"><code>arrayRemove</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>array</code>
+                </li>
+                <li class="arg">
+                        <code>element</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+        <span class="flag static">static</span>
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_utils_Utils.js.html#l45"><code>src\utils\Utils.js:45</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Remove an element from an array, if the array contains the element.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">array</code>
+                        <span class="type">Array</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">element</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_defaults" class="method item deprecated">
     <h3 class="name"><code>defaults</code></h3>
 
         <div class="args">
@@ -317,6 +394,7 @@
             <span class="type">Object</span>
         </span>
 
+        <span class="flag deprecated" title="Not used internally, will be removed.">deprecated</span>
 
 
 
@@ -327,10 +405,11 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_utils_Utils.js.html#l77"><code>src&#x2F;utils&#x2F;Utils.js:77</code></a>
+        <a href="../files/src_utils_Utils.js.html#l103"><code>src\utils\Utils.js:103</code></a>
         </p>
 
 
+            <p>Deprecated: Not used internally, will be removed.</p>
 
     </div>
 
@@ -405,7 +484,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_utils_Utils.js.html#l64"><code>src&#x2F;utils&#x2F;Utils.js:64</code></a>
+        <a href="../files/src_utils_Utils.js.html#l78"><code>src\utils\Utils.js:78</code></a>
         </p>
 
 
@@ -433,6 +512,60 @@
                 </li>
                 <li class="param">
                         <code class="param-name">b</code>
+                        <span class="type">Object</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_shallowClone" class="method item">
+    <h3 class="name"><code>shallowClone</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>obj</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+        <span class="flag static">static</span>
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_utils_Utils.js.html#l91"><code>src\utils\Utils.js:91</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Shallow clone an object. Returns a new object instance with the same properties as the input instance.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">obj</code>
                         <span class="type">Object</span>
 
 
@@ -475,7 +608,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_utils_Utils.js.html#l29"><code>src&#x2F;utils&#x2F;Utils.js:29</code></a>
+        <a href="../files/src_utils_Utils.js.html#l29"><code>src\utils\Utils.js:29</code></a>
         </p>
 
 
@@ -532,44 +665,44 @@
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
-                    <div id="property_ARRAY_TYPE" class="property item">
-                        <h3 class="name"><code>ARRAY_TYPE</code></h3>
-                        <span class="type">Function</span>
-                    
-                    
-                    
-                    
-                            <span class="flag static">static</span>
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_utils_Utils.js.html#l45"><code>src&#x2F;utils&#x2F;Utils.js:45</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The array type to use for internal numeric computations throughout the library. Float32Array is used if it is available, but falls back on Array. If you want to set array type manually, inject it via the global variable P2_ARRAY_TYPE. See example below.</p>
-                    
-                        </div>
-                    
-                    
-                            <div class="example">
-                                <h4>Example:</h4>
-                    
-                                <div class="example-content">
-                                    <pre class="code prettyprint"><code>&lt;script&gt;
-                        &lt;!-- Inject your preferred array type before loading p2.js --&gt;
-                        P2_ARRAY_TYPE = Array;
-                    &lt;/script&gt;
-                    &lt;script src=&quot;p2.js&quot;&gt;&lt;/script&gt;
-                    </code></pre>
-                                </div>
-                            </div>
-                    
-                    </div>
+<div id="property_ARRAY_TYPE" class="property item">
+    <h3 class="name"><code>ARRAY_TYPE</code></h3>
+    <span class="type">Function</span>
+
+
+
+
+        <span class="flag static">static</span>
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_utils_Utils.js.html#l59"><code>src\utils\Utils.js:59</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>The array type to use for internal numeric computations throughout the library. Float32Array is used if it is available, but falls back on Array. If you want to set array type manually, inject it via the global variable P2_ARRAY_TYPE. See example below.</p>
+
+    </div>
+
+
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre class="code prettyprint"><code>&lt;script&gt;
+    &lt;!-- Inject your preferred array type before loading p2.js --&gt;
+    P2_ARRAY_TYPE = Array;
+&lt;/script&gt;
+&lt;script src=&quot;p2.js&quot;&gt;&lt;/script&gt;</code></pre>
+
+            </div>
+        </div>
+
+</div>
             </div>
 
 

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>IslandNode - p2.js</title>
+    <title>UnionFind - p2.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="p2.js" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.7.1</em>
+            <em>API Docs for: 0.7.2</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -56,26 +56,23 @@
                                 <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
                                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
                                 <li><a href="../classes/Heightfield.html">Heightfield</a></li>
-                                <li><a href="../classes/Island.html">Island</a></li>
-                                <li><a href="../classes/IslandManager.html">IslandManager</a></li>
-                                <li><a href="../classes/IslandNode.html">IslandNode</a></li>
                                 <li><a href="../classes/Line.html">Line</a></li>
                                 <li><a href="../classes/LinearSpring.html">LinearSpring</a></li>
+                                <li><a href="../classes/.html"></a></li>
                                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
                                 <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
-                                <li><a href="../classes/Object pooling utility..html">Object pooling utility.</a></li>
                                 <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
                                 <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
                                 <li><a href="../classes/Particle.html">Particle</a></li>
                                 <li><a href="../classes/Plane.html">Plane</a></li>
+                                <li><a href="../classes/Pool.html">Pool</a></li>
                                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
                                 <li><a href="../classes/Ray.html">Ray</a></li>
                                 <li><a href="../classes/RaycastResult.html">RaycastResult</a></li>
                                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
                                 <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
-                                <li><a href="../classes/.html"></a></li>
                                 <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
                                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
                                 <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
@@ -84,11 +81,13 @@
                                 <li><a href="../classes/Spring.html">Spring</a></li>
                                 <li><a href="../classes/TopDownVehicle.html">TopDownVehicle</a></li>
                                 <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
+                                <li><a href="../classes/UnionFind.html">UnionFind</a></li>
                                 <li><a href="../classes/Utils.html">Utils</a></li>
                                 <li><a href="../classes/vec2.html">vec2</a></li>
                                 <li><a href="../classes/WheelConstraint.html">WheelConstraint</a></li>
                                 <li><a href="../classes/World.html">World</a></li>
                             </ul>
+                
                 
                             <ul id="api-modules" class="apis modules">
                             </ul>
@@ -124,12 +123,12 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1>IslandNode Class</h1>
+<h1>UnionFind Class</h1>
 <div class="box meta">
 
 
         <div class="foundat">
-            Defined in: <a href="../files/src_world_IslandNode.js.html#l3"><code>src&#x2F;world&#x2F;IslandNode.js:3</code></a>
+            Defined in: <a href="../files/src_world_UnionFind.js.html#l3"><code>src\world\UnionFind.js:3</code></a>
         </div>
 
 
@@ -137,64 +136,64 @@
 
 
 <div class="box intro">
-    <p>Holds a body and keeps track of some additional properties needed for graph traversal.</p>
+    <p>Weighted Quick Union-Find with Path Compression. Based on <a href="https://github.com/juzerali/unionfind">https://github.com/juzerali/unionfind</a>, but optimized for performance.</p>
 
 </div>
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_IslandNode" class="method item">
-            <h3 class="name"><code>IslandNode</code></h3>
-        
-                <div class="args">
-                    <span class="paren">(</span><ul class="args-list inline commas">
-                        <li class="arg">
-                                <code>body</code>
-                        </li>
-                    </ul><span class="paren">)</span>
-                </div>
-        
-        
-        
-        
-        
-        
-        
-        
-            <div class="meta">
-                        <p>
-                        Defined in
-                <a href="../files/src_world_IslandNode.js.html#l3"><code>src&#x2F;world&#x2F;IslandNode.js:3</code></a>
-                </p>
-        
-        
-        
-            </div>
-        
-            <div class="description">
-                
-            </div>
-        
-                <div class="params">
-                    <h4>Parameters:</h4>
-        
-                    <ul class="params-list">
-                        <li class="param">
-                                <code class="param-name">body</code>
-                                <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
-        
-        
-                            <div class="param-description">
-                                 
-                            </div>
-        
-                        </li>
-                    </ul>
-                </div>
-        
-        
-        
+<div id="method_UnionFind" class="method item">
+    <h3 class="name"><code>UnionFind</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>size</code>
+                </li>
+            </ul><span class="paren">)</span>
         </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_world_UnionFind.js.html#l3"><code>src\world\UnionFind.js:3</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">size</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
     </div>
 
 <div id="classdocs" class="tabview">
@@ -214,7 +213,15 @@
 
                     <ul class="index-list methods">
                             <li class="index-item method">
-                                <a href="#method_reset">reset</a>
+                                <a href="#method_find">find</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_resize">resize</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_union">union</a>
 
                             </li>
                     </ul>
@@ -225,19 +232,11 @@
 
                     <ul class="index-list properties">
                             <li class="index-item property">
-                                <a href="#property_body">body</a>
+                                <a href="#property_count">count</a>
 
                             </li>
                             <li class="index-item property">
-                                <a href="#property_equations">equations</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_neighbors">neighbors</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_visited">visited</a>
+                                <a href="#property_size">size</a>
 
                             </li>
                     </ul>
@@ -249,10 +248,16 @@
             <div id="methods" class="api-class-tabpanel">
                 <h2 class="off-left">Methods</h2>
 
-<div id="method_reset" class="method item">
-    <h3 class="name"><code>reset</code></h3>
+<div id="method_find" class="method item">
+    <h3 class="name"><code>find</code></h3>
 
-        <span class="paren">()</span>
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>p</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
 
 
 
@@ -264,7 +269,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_world_IslandNode.js.html#l37"><code>src&#x2F;world&#x2F;IslandNode.js:37</code></a>
+        <a href="../files/src_world_UnionFind.js.html#l45"><code>src\world\UnionFind.js:45</code></a>
         </p>
 
 
@@ -272,10 +277,145 @@
     </div>
 
     <div class="description">
-        <p>Clean this node from bodies and equations.</p>
+        <p>Return the root (value) of the group in which p is.</p>
 
     </div>
 
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">p</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_resize" class="method item">
+    <h3 class="name"><code>resize</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>size</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_world_UnionFind.js.html#l30"><code>src\world\UnionFind.js:30</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Initialize the UnionFind data structure with number of distinct groups to begin with. Each group will be referred to as index of the array of size size starting at 0.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">size</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_union" class="method item">
+    <h3 class="name"><code>union</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>p</code>
+                </li>
+                <li class="arg">
+                        <code>q</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_world_UnionFind.js.html#l59"><code>src\world\UnionFind.js:59</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Combine elements in groups p and q into a single group. In other words connect the two groups.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">p</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">q</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+            </ul>
+        </div>
 
 
 
@@ -285,106 +425,56 @@
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
-                    <div id="property_body" class="property item">
-                        <h3 class="name"><code>body</code></h3>
-                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_world_IslandNode.js.html#l11"><code>src&#x2F;world&#x2F;IslandNode.js:11</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The body that is contained in this node.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_equations" class="property item">
-                        <h3 class="name"><code>equations</code></h3>
-                        <span class="type">Array</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_world_IslandNode.js.html#l23"><code>src&#x2F;world&#x2F;IslandNode.js:23</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Equations connected to this node.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_neighbors" class="property item">
-                        <h3 class="name"><code>neighbors</code></h3>
-                        <span class="type">Array</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_world_IslandNode.js.html#l17"><code>src&#x2F;world&#x2F;IslandNode.js:17</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Neighboring IslandNodes</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_visited" class="property item">
-                        <h3 class="name"><code>visited</code></h3>
-                        <span class="type">Boolean</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_world_IslandNode.js.html#l29"><code>src&#x2F;world&#x2F;IslandNode.js:29</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>If this node was visiting during the graph traversal.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
+<div id="property_count" class="property item">
+    <h3 class="name"><code>count</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_world_UnionFind.js.html#l19"><code>src\world\UnionFind.js:19</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>The number of distinct groups.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_size" class="property item">
+    <h3 class="name"><code>size</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_world_UnionFind.js.html#l13"><code>src\world\UnionFind.js:13</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>The number of elements.</p>
+
+    </div>
+
+
+
+</div>
             </div>
 
 

@@ -43,5 +43,5 @@ var p2 = module.exports = {
     Utils :                         require('./utils/Utils'),
     World :                         require('./world/World'),
     vec2 :                          require('./math/vec2'),
-    version :                       '0.7.1',
+    version :                       '0.7.2',
 };

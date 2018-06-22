@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/constraints/DistanceConstraint.js - p2.js</title>
+    <title>src\constraints\DistanceConstraint.js - p2.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="p2.js" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.7.1</em>
+            <em>API Docs for: 0.7.2</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -56,26 +56,23 @@
                                 <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
                                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
                                 <li><a href="../classes/Heightfield.html">Heightfield</a></li>
-                                <li><a href="../classes/Island.html">Island</a></li>
-                                <li><a href="../classes/IslandManager.html">IslandManager</a></li>
-                                <li><a href="../classes/IslandNode.html">IslandNode</a></li>
                                 <li><a href="../classes/Line.html">Line</a></li>
                                 <li><a href="../classes/LinearSpring.html">LinearSpring</a></li>
+                                <li><a href="../classes/.html"></a></li>
                                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
                                 <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
-                                <li><a href="../classes/Object pooling utility..html">Object pooling utility.</a></li>
                                 <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
                                 <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
                                 <li><a href="../classes/Particle.html">Particle</a></li>
                                 <li><a href="../classes/Plane.html">Plane</a></li>
+                                <li><a href="../classes/Pool.html">Pool</a></li>
                                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
                                 <li><a href="../classes/Ray.html">Ray</a></li>
                                 <li><a href="../classes/RaycastResult.html">RaycastResult</a></li>
                                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
                                 <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
-                                <li><a href="../classes/.html"></a></li>
                                 <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
                                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
                                 <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
@@ -84,11 +81,13 @@
                                 <li><a href="../classes/Spring.html">Spring</a></li>
                                 <li><a href="../classes/TopDownVehicle.html">TopDownVehicle</a></li>
                                 <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
+                                <li><a href="../classes/UnionFind.html">UnionFind</a></li>
                                 <li><a href="../classes/Utils.html">Utils</a></li>
                                 <li><a href="../classes/vec2.html">vec2</a></li>
                                 <li><a href="../classes/WheelConstraint.html">WheelConstraint</a></li>
                                 <li><a href="../classes/World.html">World</a></li>
                             </ul>
+                
                 
                             <ul id="api-modules" class="apis modules">
                             </ul>
@@ -124,14 +123,13 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1 class="file-heading">File: src/constraints/DistanceConstraint.js</h1>
+<h1 class="file-heading">File: src\constraints\DistanceConstraint.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
 var Constraint = require(&#x27;./Constraint&#x27;)
 ,   Equation = require(&#x27;../equations/Equation&#x27;)
-,   vec2 = require(&#x27;../math/vec2&#x27;)
-,   Utils = require(&#x27;../utils/Utils&#x27;);
+,   vec2 = require(&#x27;../math/vec2&#x27;);
 
 module.exports = DistanceConstraint;
 
@@ -168,10 +166,7 @@ module.exports = DistanceConstraint;
  *     world.addConstraint(constraint);
  */
 function DistanceConstraint(bodyA,bodyB,options){
-    options = Utils.defaults(options,{
-        localAnchorA:[0,0],
-        localAnchorB:[0,0]
-    });
+    options = options || {};
 
     Constraint.call(this,bodyA,bodyB,Constraint.DISTANCE,options);
 
@@ -180,14 +175,14 @@ function DistanceConstraint(bodyA,bodyB,options){
      * @property localAnchorA
      * @type {Array}
      */
-    this.localAnchorA = vec2.fromValues(options.localAnchorA[0], options.localAnchorA[1]);
+    this.localAnchorA = options.localAnchorA ? vec2.clone(options.localAnchorA) : vec2.create();
 
     /**
      * Local anchor in body B.
      * @property localAnchorB
      * @type {Array}
      */
-    this.localAnchorB = vec2.fromValues(options.localAnchorB[0], options.localAnchorB[1]);
+    this.localAnchorB = options.localAnchorB ? vec2.clone(options.localAnchorB) : vec2.create();
 
     var localAnchorA = this.localAnchorA;
     var localAnchorB = this.localAnchorB;
@@ -212,8 +207,8 @@ function DistanceConstraint(bodyA,bodyB,options){
         vec2.rotate(worldAnchorB, localAnchorB, bodyB.angle);
 
         vec2.add(r, bodyB.position, worldAnchorB);
-        vec2.sub(r, r, worldAnchorA);
-        vec2.sub(r, r, bodyA.position);
+        vec2.subtract(r, r, worldAnchorA);
+        vec2.subtract(r, r, bodyA.position);
 
         this.distance = vec2.length(r);
     }
@@ -264,10 +259,10 @@ function DistanceConstraint(bodyA,bodyB,options){
         vec2.rotate(rj, localAnchorB, bodyB.angle);
 
         vec2.add(r, xj, rj);
-        vec2.sub(r, r, ri);
-        vec2.sub(r, r, xi);
+        vec2.subtract(r, r, ri);
+        vec2.subtract(r, r, xi);
 
-        //vec2.sub(r, bodyB.position, bodyA.position);
+        //vec2.subtract(r, bodyB.position, bodyA.position);
         return vec2.length(r) - that.distance;
     };
 
@@ -318,7 +313,6 @@ DistanceConstraint.prototype.update = function(){
     var normal = this.equations[0],
         bodyA = this.bodyA,
         bodyB = this.bodyB,
-        distance = this.distance,
         xi = bodyA.position,
         xj = bodyB.position,
         normalEquation = this.equations[0],
@@ -330,8 +324,8 @@ DistanceConstraint.prototype.update = function(){
 
     // Get world anchor points and normal
     vec2.add(n, xj, rj);
-    vec2.sub(n, n, ri);
-    vec2.sub(n, n, xi);
+    vec2.subtract(n, n, ri);
+    vec2.subtract(n, n, xi);
     this.position = vec2.length(n);
 
     var violating = false;
