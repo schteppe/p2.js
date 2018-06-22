@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="p2.js" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.7.1</em>
+            <em>API Docs for: 0.7.2</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -56,26 +56,23 @@
                                 <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
                                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
                                 <li><a href="../classes/Heightfield.html">Heightfield</a></li>
-                                <li><a href="../classes/Island.html">Island</a></li>
-                                <li><a href="../classes/IslandManager.html">IslandManager</a></li>
-                                <li><a href="../classes/IslandNode.html">IslandNode</a></li>
                                 <li><a href="../classes/Line.html">Line</a></li>
                                 <li><a href="../classes/LinearSpring.html">LinearSpring</a></li>
+                                <li><a href="../classes/.html"></a></li>
                                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
                                 <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
-                                <li><a href="../classes/Object pooling utility..html">Object pooling utility.</a></li>
                                 <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
                                 <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
                                 <li><a href="../classes/Particle.html">Particle</a></li>
                                 <li><a href="../classes/Plane.html">Plane</a></li>
+                                <li><a href="../classes/Pool.html">Pool</a></li>
                                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
                                 <li><a href="../classes/Ray.html">Ray</a></li>
                                 <li><a href="../classes/RaycastResult.html">RaycastResult</a></li>
                                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
                                 <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
-                                <li><a href="../classes/.html"></a></li>
                                 <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
                                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
                                 <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
@@ -84,11 +81,13 @@
                                 <li><a href="../classes/Spring.html">Spring</a></li>
                                 <li><a href="../classes/TopDownVehicle.html">TopDownVehicle</a></li>
                                 <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
+                                <li><a href="../classes/UnionFind.html">UnionFind</a></li>
                                 <li><a href="../classes/Utils.html">Utils</a></li>
                                 <li><a href="../classes/vec2.html">vec2</a></li>
                                 <li><a href="../classes/WheelConstraint.html">WheelConstraint</a></li>
                                 <li><a href="../classes/World.html">World</a></li>
                             </ul>
+                
                 
                             <ul id="api-modules" class="apis modules">
                             </ul>
@@ -132,7 +131,7 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_solver_GSSolver.js.html#l8"><code>src&#x2F;solver&#x2F;GSSolver.js:8</code></a>
+            Defined in: <a href="../files/src_solver_GSSolver.js.html#l6"><code>src\solver\GSSolver.js:6</code></a>
         </div>
 
 
@@ -146,81 +145,81 @@
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_GSSolver" class="method item">
-            <h3 class="name"><code>GSSolver</code></h3>
-        
-                <div class="args">
-                    <span class="paren">(</span><ul class="args-list inline commas">
-                        <li class="arg">
-                                <code class="optional">[options]</code>
-                        </li>
-                    </ul><span class="paren">)</span>
-                </div>
-        
-        
-        
-        
-        
-        
-        
-        
-            <div class="meta">
-                        <p>
-                        Defined in
-                <a href="../files/src_solver_GSSolver.js.html#l8"><code>src&#x2F;solver&#x2F;GSSolver.js:8</code></a>
-                </p>
-        
-        
-        
-            </div>
-        
-            <div class="description">
-                
-            </div>
-        
-                <div class="params">
-                    <h4>Parameters:</h4>
-        
-                    <ul class="params-list">
-                        <li class="param">
-                                <code class="param-name optional">[options]</code>
-                                <span class="type">Object</span>
-                                <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-        
-                            <div class="param-description">
-                                 
-                            </div>
-        
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name optional">[iterations=10]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[tolerance=0]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                </ul>
-                        </li>
-                    </ul>
-                </div>
-        
-        
-        
+<div id="method_GSSolver" class="method item">
+    <h3 class="name"><code>GSSolver</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code class="optional">[options]</code>
+                </li>
+            </ul><span class="paren">)</span>
         </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_solver_GSSolver.js.html#l6"><code>src\solver\GSSolver.js:6</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name optional">[options]</code>
+                        <span class="type">Object</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                        <ul class="params-list">
+                            <li class="param">
+                                    <code class="param-name optional">[iterations=10]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[tolerance=0]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                        </ul>
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
     </div>
 
 <div id="classdocs" class="tabview">
@@ -276,10 +275,6 @@
 
                             </li>
                             <li class="index-item method inherited">
-                                <a href="#method_solveIsland">solveIsland</a>
-
-                            </li>
-                            <li class="index-item method inherited">
                                 <a href="#method_sortEquations">sortEquations</a>
 
                             </li>
@@ -314,10 +309,6 @@
                                 <a href="#property_usedIterations">usedIterations</a>
 
                             </li>
-                            <li class="index-item property">
-                                <a href="#property_useZeroRHS">useZeroRHS</a>
-
-                            </li>
                     </ul>
                 </div>
 
@@ -348,7 +339,7 @@
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Solver.html#method_addEquation">Solver</a>:
-        <a href="../files/src_solver_Solver.js.html#l82"><code>src&#x2F;solver&#x2F;Solver.js:82</code></a>
+        <a href="../files/src_solver_Solver.js.html#l56"><code>src\solver\Solver.js:56</code></a>
         </p>
 
 
@@ -356,8 +347,7 @@
     </div>
 
     <div class="description">
-        <p>Add an equation to be solved.</p>
-
+        Add an equation to be solved.
     </div>
 
         <div class="params">
@@ -401,7 +391,7 @@
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Solver.html#method_addEquations">Solver</a>:
-        <a href="../files/src_solver_Solver.js.html#l94"><code>src&#x2F;solver&#x2F;Solver.js:94</code></a>
+        <a href="../files/src_solver_Solver.js.html#l68"><code>src\solver\Solver.js:68</code></a>
         </p>
 
 
@@ -409,8 +399,7 @@
     </div>
 
     <div class="description">
-        <p>Add equations. Same as .addEquation, but this time the argument is an array of Equations</p>
-
+        Add equations. Same as .addEquation, but this time the argument is an array of Equations
     </div>
 
         <div class="params">
@@ -457,7 +446,7 @@
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/EventEmitter.html#method_emit">EventEmitter</a>:
-        <a href="../files/src_events_EventEmitter.js.html#l79"><code>src&#x2F;events&#x2F;EventEmitter.js:79</code></a>
+        <a href="../files/src_events_EventEmitter.js.html#l97"><code>src\events\EventEmitter.js:97</code></a>
         </p>
 
 
@@ -508,6 +497,17 @@
         </div>
 
 
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre class="code prettyprint"><code>emitter.emit({
+    type: 'myEvent',
+    customData: 123
+});</code></pre>
+
+            </div>
+        </div>
 </div>
 <div id="method_has" class="method item inherited">
     <h3 class="name"><code>has</code></h3>
@@ -536,7 +536,7 @@
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/EventEmitter.html#method_has">EventEmitter</a>:
-        <a href="../files/src_events_EventEmitter.js.html#l35"><code>src&#x2F;events&#x2F;EventEmitter.js:35</code></a>
+        <a href="../files/src_events_EventEmitter.js.html#l72"><code>src\events\EventEmitter.js:72</code></a>
         </p>
 
 
@@ -612,7 +612,7 @@
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/EventEmitter.html#method_off">EventEmitter</a>:
-        <a href="../files/src_events_EventEmitter.js.html#l60"><code>src&#x2F;events&#x2F;EventEmitter.js:60</code></a>
+        <a href="../files/src_events_EventEmitter.js.html#l50"><code>src\events\EventEmitter.js:50</code></a>
         </p>
 
 
@@ -662,6 +662,15 @@
         </div>
 
 
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre class="code prettyprint"><code>emitter.on('myEvent', handler); // Add handler
+emitter.off('myEvent', handler); // Remove handler</code></pre>
+
+            </div>
+        </div>
 </div>
 <div id="method_on" class="method item inherited">
     <h3 class="name"><code>on</code></h3>
@@ -690,7 +699,7 @@
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/EventEmitter.html#method_on">EventEmitter</a>:
-        <a href="../files/src_events_EventEmitter.js.html#l13"><code>src&#x2F;events&#x2F;EventEmitter.js:13</code></a>
+        <a href="../files/src_events_EventEmitter.js.html#l24"><code>src\events\EventEmitter.js:24</code></a>
         </p>
 
 
@@ -740,6 +749,16 @@
         </div>
 
 
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre class="code prettyprint"><code>emitter.on('myEvent', function(evt){
+    console.log('myEvt was triggered!');
+});</code></pre>
+
+            </div>
+        </div>
 </div>
 <div id="method_removeAllEquations" class="method item inherited">
     <h3 class="name"><code>removeAllEquations</code></h3>
@@ -756,7 +775,7 @@
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Solver.html#method_removeAllEquations">Solver</a>:
-        <a href="../files/src_solver_Solver.js.html#l123"><code>src&#x2F;solver&#x2F;Solver.js:123</code></a>
+        <a href="../files/src_solver_Solver.js.html#l96"><code>src\solver\Solver.js:96</code></a>
         </p>
 
 
@@ -764,8 +783,7 @@
     </div>
 
     <div class="description">
-        <p>Remove all currently added equations.</p>
-
+        Remove all currently added equations.
     </div>
 
 
@@ -793,7 +811,7 @@
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Solver.html#method_removeEquation">Solver</a>:
-        <a href="../files/src_solver_Solver.js.html#l110"><code>src&#x2F;solver&#x2F;Solver.js:110</code></a>
+        <a href="../files/src_solver_Solver.js.html#l83"><code>src\solver\Solver.js:83</code></a>
         </p>
 
 
@@ -801,8 +819,7 @@
     </div>
 
     <div class="description">
-        <p>Remove an equation.</p>
-
+        Remove an equation.
     </div>
 
         <div class="params">
@@ -852,7 +869,7 @@
                 Solver
             </a>
             but overwritten in
-        <a href="../files/src_solver_GSSolver.js.html#l77"><code>src&#x2F;solver&#x2F;GSSolver.js:77</code></a>
+        <a href="../files/src_solver_GSSolver.js.html#l55"><code>src\solver\GSSolver.js:55</code></a>
         </p>
 
 
@@ -896,72 +913,6 @@
 
 
 </div>
-<div id="method_solveIsland" class="method item inherited">
-    <h3 class="name"><code>solveIsland</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>dt</code>
-                </li>
-                <li class="arg">
-                        <code>island</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>Inherited from
-                <a href="../classes/Solver.html#method_solveIsland">Solver</a>:
-        <a href="../files/src_solver_Solver.js.html#l49"><code>src&#x2F;solver&#x2F;Solver.js:49</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Solves all constraints in an island.</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">dt</code>
-                        <span class="type">Number</span>
-
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">island</code>
-                        <span class="type"><a href="../classes/Island.html" class="crosslink">Island</a></span>
-
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
 <div id="method_sortEquations" class="method item inherited">
     <h3 class="name"><code>sortEquations</code></h3>
 
@@ -977,7 +928,7 @@
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Solver.html#method_sortEquations">Solver</a>:
-        <a href="../files/src_solver_Solver.js.html#l72"><code>src&#x2F;solver&#x2F;Solver.js:72</code></a>
+        <a href="../files/src_solver_Solver.js.html#l46"><code>src\solver\Solver.js:46</code></a>
         </p>
 
 
@@ -985,8 +936,7 @@
     </div>
 
     <div class="description">
-        <p>Sort all equations using the .equationSortFunction. Should be called by subclasses before solving.</p>
-
+        Sort all equations using the .equationSortFunction. Should be called by subclasses before solving.
     </div>
 
 
@@ -998,184 +948,157 @@
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
-                    <div id="property_equations" class="property item inherited">
-                        <h3 class="name"><code>equations</code></h3>
-                        <span class="type">Array</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Solver.html#property_equations">Solver</a>:
-                            <a href="../files/src_solver_Solver.js.html#l19"><code>src&#x2F;solver&#x2F;Solver.js:19</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Current equations in the solver.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_equationSortFunction" class="property item inherited">
-                        <h3 class="name"><code>equationSortFunction</code></h3>
-                        <span class="type">Function | Boolean</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Solver.html#property_equationSortFunction">Solver</a>:
-                            <a href="../files/src_solver_Solver.js.html#l27"><code>src&#x2F;solver&#x2F;Solver.js:27</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Function that is used to sort all equations before each solve.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_frictionIterations" class="property item">
-                        <h3 class="name"><code>frictionIterations</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_solver_GSSolver.js.html#l50"><code>src&#x2F;solver&#x2F;GSSolver.js:50</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Number of solver iterations that are used to approximate normal forces used for friction (F_friction = mu * F_normal). These friction forces will override any other friction forces that are set. If you set frictionIterations = 0, then this feature will be disabled.</p>
-                    <p>Use only frictionIterations &gt; 0 if the approximated normal force (F_normal = mass * gravity) is not good enough. Examples of where it can happen is in space games where gravity is zero, or in tall stacks where the normal force is large at bottom but small at top.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> 0</p>
-                    
-                    
-                    </div>
-                    <div id="property_iterations" class="property item">
-                        <h3 class="name"><code>iterations</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_solver_GSSolver.js.html#l22"><code>src&#x2F;solver&#x2F;GSSolver.js:22</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The max number of iterations to do when solving. More gives better results, but is more expensive.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_tolerance" class="property item">
-                        <h3 class="name"><code>tolerance</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_solver_GSSolver.js.html#l29"><code>src&#x2F;solver&#x2F;GSSolver.js:29</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The error tolerance, per constraint. If the total error is below this limit, the solver will stop iterating. Set to zero for as good solution as possible, but to something larger than zero to make computations faster.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> 1e-7</p>
-                    
-                    
-                    </div>
-                    <div id="property_usedIterations" class="property item">
-                        <h3 class="name"><code>usedIterations</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_solver_GSSolver.js.html#l61"><code>src&#x2F;solver&#x2F;GSSolver.js:61</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The number of iterations that were made during the last solve. If .tolerance is zero, this value will always be equal to .iterations, but if .tolerance is larger than zero, and the solver can quit early, then this number will be somewhere between 1 and .iterations.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_useZeroRHS" class="property item">
-                        <h3 class="name"><code>useZeroRHS</code></h3>
-                        <span class="type">Boolean</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_solver_GSSolver.js.html#l42"><code>src&#x2F;solver&#x2F;GSSolver.js:42</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Set to true to set all right hand side terms to zero when solving. Can be handy for a few applications.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
+<div id="property_equations" class="property item inherited">
+    <h3 class="name"><code>equations</code></h3>
+    <span class="type">Array</span>
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Solver.html#property_equations">Solver</a>:
+        <a href="../files/src_solver_Solver.js.html#l18"><code>src\solver\Solver.js:18</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        Current equations in the solver.
+    </div>
+
+
+
+</div>
+<div id="property_equationSortFunction" class="property item inherited">
+    <h3 class="name"><code>equationSortFunction</code></h3>
+    <span class="type">Function | Boolean</span>
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Solver.html#property_equationSortFunction">Solver</a>:
+        <a href="../files/src_solver_Solver.js.html#l26"><code>src\solver\Solver.js:26</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        Function that is used to sort all equations before each solve.
+    </div>
+
+
+
+</div>
+<div id="property_frictionIterations" class="property item">
+    <h3 class="name"><code>frictionIterations</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_solver_GSSolver.js.html#l35"><code>src\solver\GSSolver.js:35</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Number of solver iterations that are used to approximate normal forces used for friction (F_friction = mu * F_normal). These friction forces will override any other friction forces that are set. If you set frictionIterations = 0, then this feature will be disabled.</p>
+<p>Use only frictionIterations &gt; 0 if the approximated normal force (F_normal = mass * gravity) is not good enough. Examples of where it can happen is in space games where gravity is zero, or in tall stacks where the normal force is large at bottom but small at top.</p>
+
+    </div>
+
+        <p><strong>Default:</strong> 0</p>
+
+
+</div>
+<div id="property_iterations" class="property item">
+    <h3 class="name"><code>iterations</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_solver_GSSolver.js.html#l20"><code>src\solver\GSSolver.js:20</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>The max number of iterations to do when solving. More gives better results, but is more expensive.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_tolerance" class="property item">
+    <h3 class="name"><code>tolerance</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_solver_GSSolver.js.html#l27"><code>src\solver\GSSolver.js:27</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>The error tolerance, per constraint. If the total error is below this limit, the solver will stop iterating. Set to zero for as good solution as possible, but to something larger than zero to make computations faster.</p>
+
+    </div>
+
+        <p><strong>Default:</strong> 1e-7</p>
+
+
+</div>
+<div id="property_usedIterations" class="property item">
+    <h3 class="name"><code>usedIterations</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_solver_GSSolver.js.html#l46"><code>src\solver\GSSolver.js:46</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>The number of iterations that were made during the last solve. If .tolerance is zero, this value will always be equal to .iterations, but if .tolerance is larger than zero, and the solver can quit early, then this number will be somewhere between 1 and .iterations.</p>
+
+    </div>
+
+
+
+</div>
             </div>
 
 

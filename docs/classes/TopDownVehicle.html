@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="p2.js" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.7.1</em>
+            <em>API Docs for: 0.7.2</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -56,26 +56,23 @@
                                 <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
                                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
                                 <li><a href="../classes/Heightfield.html">Heightfield</a></li>
-                                <li><a href="../classes/Island.html">Island</a></li>
-                                <li><a href="../classes/IslandManager.html">IslandManager</a></li>
-                                <li><a href="../classes/IslandNode.html">IslandNode</a></li>
                                 <li><a href="../classes/Line.html">Line</a></li>
                                 <li><a href="../classes/LinearSpring.html">LinearSpring</a></li>
+                                <li><a href="../classes/.html"></a></li>
                                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
                                 <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
-                                <li><a href="../classes/Object pooling utility..html">Object pooling utility.</a></li>
                                 <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
                                 <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
                                 <li><a href="../classes/Particle.html">Particle</a></li>
                                 <li><a href="../classes/Plane.html">Plane</a></li>
+                                <li><a href="../classes/Pool.html">Pool</a></li>
                                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
                                 <li><a href="../classes/Ray.html">Ray</a></li>
                                 <li><a href="../classes/RaycastResult.html">RaycastResult</a></li>
                                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
                                 <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
-                                <li><a href="../classes/.html"></a></li>
                                 <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
                                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
                                 <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
@@ -84,11 +81,13 @@
                                 <li><a href="../classes/Spring.html">Spring</a></li>
                                 <li><a href="../classes/TopDownVehicle.html">TopDownVehicle</a></li>
                                 <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
+                                <li><a href="../classes/UnionFind.html">UnionFind</a></li>
                                 <li><a href="../classes/Utils.html">Utils</a></li>
                                 <li><a href="../classes/vec2.html">vec2</a></li>
                                 <li><a href="../classes/WheelConstraint.html">WheelConstraint</a></li>
                                 <li><a href="../classes/World.html">World</a></li>
                             </ul>
+                
                 
                             <ul id="api-modules" class="apis modules">
                             </ul>
@@ -129,12 +128,17 @@
 
 
         <div class="foundat">
-            Defined in: <a href="../files/src_objects_TopDownVehicle.js.html#l9"><code>src&#x2F;objects&#x2F;TopDownVehicle.js:9</code></a>
+            Defined in: <a href="../files/src_objects_TopDownVehicle.js.html#l8"><code>src\objects\TopDownVehicle.js:8</code></a>
         </div>
 
 
 </div>
 
+    <div class="box deprecated">
+        <p>
+            <strong>Deprecated:</strong> This class will be moved out of the core library in future versions.
+        </p>
+    </div>
 
 <div class="box intro">
     
@@ -142,110 +146,112 @@
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_TopDownVehicle" class="method item">
-            <h3 class="name"><code>TopDownVehicle</code></h3>
-        
-                <div class="args">
-                    <span class="paren">(</span><ul class="args-list inline commas">
-                        <li class="arg">
-                                <code>chassisBody</code>
-                        </li>
-                        <li class="arg">
-                                <code class="optional">[options]</code>
-                        </li>
-                    </ul><span class="paren">)</span>
-                </div>
-        
-        
-        
-        
-        
-        
-        
-        
-            <div class="meta">
-                        <p>
-                        Defined in
-                <a href="../files/src_objects_TopDownVehicle.js.html#l9"><code>src&#x2F;objects&#x2F;TopDownVehicle.js:9</code></a>
-                </p>
-        
-        
-        
-            </div>
-        
-            <div class="description">
-                
-            </div>
-        
-                <div class="params">
-                    <h4>Parameters:</h4>
-        
-                    <ul class="params-list">
-                        <li class="param">
-                                <code class="param-name">chassisBody</code>
-                                <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
-        
-        
-                            <div class="param-description">
-                                <p>A dynamic body, already added to the world.</p>
-        
-                            </div>
-        
-                        </li>
-                        <li class="param">
-                                <code class="param-name optional">[options]</code>
-                                <span class="type">Object</span>
-                                <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-        
-                            <div class="param-description">
-                                 
-                            </div>
-        
-                        </li>
-                    </ul>
-                </div>
-        
-        
-        
-                <div class="example">
-                    <h4>Example:</h4>
-        
-                    <div class="example-content">
-                        <pre class="code prettyprint"><code>// Create a dynamic body for the chassis
-        var chassisBody = new Body({
-            mass: 1
-        });
-        var boxShape = new Box({ width: 0.5, height: 1 });
-        chassisBody.addShape(boxShape);
-        world.addBody(chassisBody);
-        
-        // Create the vehicle
-        var vehicle = new TopDownVehicle(chassisBody);
-        
-        // Add one front wheel and one back wheel - we don&#39;t actually need four :)
-        var frontWheel = vehicle.addWheel({
-            localPosition: [0, 0.5] // front
-        });
-        frontWheel.setSideFriction(4);
-        
-        // Back wheel
-        var backWheel = vehicle.addWheel({
-            localPosition: [0, -0.5] // back
-        });
-        backWheel.setSideFriction(3); // Less side friction on back wheel makes it easier to drift
-        vehicle.addToWorld(world);
-        
-        // Steer value zero means straight forward. Positive is left and negative right.
-        frontWheel.steerValue = Math.PI / 16;
-        
-        // Engine force forward
-        backWheel.engineForce = 10;
-        backWheel.setBrakeForce(0);
-        </code></pre>
-                    </div>
-                </div>
+<div id="method_TopDownVehicle" class="method item deprecated">
+    <h3 class="name"><code>TopDownVehicle</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>chassisBody</code>
+                </li>
+                <li class="arg">
+                        <code class="optional">[options]</code>
+                </li>
+            </ul><span class="paren">)</span>
         </div>
+
+
+        <span class="flag deprecated" title="This class will be moved out of the core library in future versions.">deprecated</span>
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_TopDownVehicle.js.html#l8"><code>src\objects\TopDownVehicle.js:8</code></a>
+        </p>
+
+
+            <p>Deprecated: This class will be moved out of the core library in future versions.</p>
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">chassisBody</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+
+
+                    <div class="param-description">
+                        <p>A dynamic body, already added to the world.</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name optional">[options]</code>
+                        <span class="type">Object</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre class="code prettyprint"><code>// Create a dynamic body for the chassis
+var chassisBody = new Body({
+    mass: 1
+});
+var boxShape = new Box({ width: 0.5, height: 1 });
+chassisBody.addShape(boxShape);
+world.addBody(chassisBody);
+
+// Create the vehicle
+var vehicle = new TopDownVehicle(chassisBody);
+
+// Add one front wheel and one back wheel - we don't actually need four :)
+var frontWheel = vehicle.addWheel({
+    localPosition: [0, 0.5] // front
+});
+frontWheel.setSideFriction(4);
+
+// Back wheel
+var backWheel = vehicle.addWheel({
+    localPosition: [0, -0.5] // back
+});
+backWheel.setSideFriction(3); // Less side friction on back wheel makes it easier to drift
+vehicle.addToWorld(world);
+
+// Steer value zero means straight forward. Positive is left and negative right.
+frontWheel.steerValue = Math.PI / 16;
+
+// Engine force forward
+backWheel.engineForce = 10;
+backWheel.setBrakeForce(0);</code></pre>
+
+            </div>
+        </div>
+</div>
     </div>
 
 <div id="classdocs" class="tabview">
@@ -325,7 +331,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_TopDownVehicle.js.html#l72"><code>src&#x2F;objects&#x2F;TopDownVehicle.js:72</code></a>
+        <a href="../files/src_objects_TopDownVehicle.js.html#l74"><code>src\objects\TopDownVehicle.js:74</code></a>
         </p>
 
 
@@ -380,7 +386,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_TopDownVehicle.js.html#l101"><code>src&#x2F;objects&#x2F;TopDownVehicle.js:101</code></a>
+        <a href="../files/src_objects_TopDownVehicle.js.html#l103"><code>src\objects\TopDownVehicle.js:103</code></a>
         </p>
 
 
@@ -440,7 +446,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_TopDownVehicle.js.html#l86"><code>src&#x2F;objects&#x2F;TopDownVehicle.js:86</code></a>
+        <a href="../files/src_objects_TopDownVehicle.js.html#l88"><code>src\objects\TopDownVehicle.js:88</code></a>
         </p>
 
 
@@ -486,7 +492,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_TopDownVehicle.js.html#l112"><code>src&#x2F;objects&#x2F;TopDownVehicle.js:112</code></a>
+        <a href="../files/src_objects_TopDownVehicle.js.html#l114"><code>src\objects\TopDownVehicle.js:114</code></a>
         </p>
 
 
@@ -506,54 +512,54 @@
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
-                    <div id="property_chassisBody" class="property item">
-                        <h3 class="name"><code>chassisBody</code></h3>
-                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_TopDownVehicle.js.html#l51"><code>src&#x2F;objects&#x2F;TopDownVehicle.js:51</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_wheels" class="property item">
-                        <h3 class="name"><code>wheels</code></h3>
-                        <span class="type">Array</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_TopDownVehicle.js.html#l56"><code>src&#x2F;objects&#x2F;TopDownVehicle.js:56</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
+<div id="property_chassisBody" class="property item">
+    <h3 class="name"><code>chassisBody</code></h3>
+    <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_TopDownVehicle.js.html#l53"><code>src\objects\TopDownVehicle.js:53</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_wheels" class="property item">
+    <h3 class="name"><code>wheels</code></h3>
+    <span class="type">Array</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_TopDownVehicle.js.html#l58"><code>src\objects\TopDownVehicle.js:58</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
             </div>
 
 

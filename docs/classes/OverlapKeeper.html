@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="p2.js" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.7.1</em>
+            <em>API Docs for: 0.7.2</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -56,26 +56,23 @@
                                 <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
                                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
                                 <li><a href="../classes/Heightfield.html">Heightfield</a></li>
-                                <li><a href="../classes/Island.html">Island</a></li>
-                                <li><a href="../classes/IslandManager.html">IslandManager</a></li>
-                                <li><a href="../classes/IslandNode.html">IslandNode</a></li>
                                 <li><a href="../classes/Line.html">Line</a></li>
                                 <li><a href="../classes/LinearSpring.html">LinearSpring</a></li>
+                                <li><a href="../classes/.html"></a></li>
                                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
                                 <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
-                                <li><a href="../classes/Object pooling utility..html">Object pooling utility.</a></li>
                                 <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
                                 <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
                                 <li><a href="../classes/Particle.html">Particle</a></li>
                                 <li><a href="../classes/Plane.html">Plane</a></li>
+                                <li><a href="../classes/Pool.html">Pool</a></li>
                                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
                                 <li><a href="../classes/Ray.html">Ray</a></li>
                                 <li><a href="../classes/RaycastResult.html">RaycastResult</a></li>
                                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
                                 <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
-                                <li><a href="../classes/.html"></a></li>
                                 <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
                                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
                                 <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
@@ -84,11 +81,13 @@
                                 <li><a href="../classes/Spring.html">Spring</a></li>
                                 <li><a href="../classes/TopDownVehicle.html">TopDownVehicle</a></li>
                                 <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
+                                <li><a href="../classes/UnionFind.html">UnionFind</a></li>
                                 <li><a href="../classes/Utils.html">Utils</a></li>
                                 <li><a href="../classes/vec2.html">vec2</a></li>
                                 <li><a href="../classes/WheelConstraint.html">WheelConstraint</a></li>
                                 <li><a href="../classes/World.html">World</a></li>
                             </ul>
+                
                 
                             <ul id="api-modules" class="apis modules">
                             </ul>
@@ -129,7 +128,7 @@
 
 
         <div class="foundat">
-            Defined in: <a href="../files/src_utils_OverlapKeeper.js.html#l8"><code>src&#x2F;utils&#x2F;OverlapKeeper.js:8</code></a>
+            Defined in: <a href="../files/src_utils_OverlapKeeper.js.html#l6"><code>src\utils\OverlapKeeper.js:6</code></a>
         </div>
 
 
@@ -143,36 +142,36 @@
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_OverlapKeeper" class="method item">
-            <h3 class="name"><code>OverlapKeeper</code></h3>
+<div id="method_OverlapKeeper" class="method item">
+    <h3 class="name"><code>OverlapKeeper</code></h3>
+
+        <span class="paren">()</span>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_utils_OverlapKeeper.js.html#l6"><code>src\utils\OverlapKeeper.js:6</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
         
-                <span class="paren">()</span>
-        
-        
-        
-        
-        
-        
-        
-        
-            <div class="meta">
-                        <p>
-                        Defined in
-                <a href="../files/src_utils_OverlapKeeper.js.html#l8"><code>src&#x2F;utils&#x2F;OverlapKeeper.js:8</code></a>
-                </p>
-        
-        
-        
-            </div>
-        
-            <div class="description">
-                
-            </div>
-        
-        
-        
-        
-        </div>
+    </div>
+
+
+
+
+</div>
     </div>
 
 <div id="classdocs" class="tabview">
@@ -200,22 +199,6 @@
                             </li>
                             <li class="index-item method">
                                 <a href="#method_create">create</a>
-
-                            </li>
-                            <li class="index-item method">
-                                <a href="#method_create">create</a>
-
-                            </li>
-                            <li class="index-item method">
-                                <a href="#method_create">create</a>
-
-                            </li>
-                            <li class="index-item method">
-                                <a href="#method_destroy">destroy</a>
-
-                            </li>
-                            <li class="index-item method">
-                                <a href="#method_destroy">destroy</a>
 
                             </li>
                             <li class="index-item method">
@@ -271,7 +254,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_utils_OverlapKeeper.js.html#l78"><code>src&#x2F;utils&#x2F;OverlapKeeper.js:78</code></a>
+        <a href="../files/src_utils_OverlapKeeper.js.html#l74"><code>src\utils\OverlapKeeper.js:74</code></a>
         </p>
 
 
@@ -338,7 +321,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_utils_ContactEquationPool.js.html#l15"><code>src&#x2F;utils&#x2F;ContactEquationPool.js:15</code></a>
+        <a href="../files/src_utils_ContactEquationPool.js.html#l15"><code>src\utils\ContactEquationPool.js:15</code></a>
         </p>
 
 
@@ -378,7 +361,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_utils_FrictionEquationPool.js.html#l15"><code>src&#x2F;utils&#x2F;FrictionEquationPool.js:15</code></a>
+        <a href="../files/src_utils_FrictionEquationPool.js.html#l15"><code>src\utils\FrictionEquationPool.js:15</code></a>
         </p>
 
 
@@ -395,86 +378,6 @@
 
             <div class="returns-description">
                         <span class="type"><a href="../classes/FrictionEquation.html" class="crosslink">FrictionEquation</a></span>:
-            </div>
-        </div>
-
-
-</div>
-<div id="method_create" class="method item">
-    <h3 class="name"><code>create</code></h3>
-
-        <span class="paren">()</span>
-
-        <span class="returns-inline">
-            <span class="type"><a href="../classes/Island.html" class="crosslink">Island</a></span>
-        </span>
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_utils_IslandPool.js.html#l15"><code>src&#x2F;utils&#x2F;IslandPool.js:15</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        
-    </div>
-
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                        <span class="type"><a href="../classes/Island.html" class="crosslink">Island</a></span>:
-            </div>
-        </div>
-
-
-</div>
-<div id="method_create" class="method item">
-    <h3 class="name"><code>create</code></h3>
-
-        <span class="paren">()</span>
-
-        <span class="returns-inline">
-            <span class="type"><a href="../classes/IslandNode.html" class="crosslink">IslandNode</a></span>
-        </span>
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_utils_IslandNodePool.js.html#l15"><code>src&#x2F;utils&#x2F;IslandNodePool.js:15</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        
-    </div>
-
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                        <span class="type"><a href="../classes/IslandNode.html" class="crosslink">IslandNode</a></span>:
             </div>
         </div>
 
@@ -504,7 +407,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_utils_ContactEquationPool.js.html#l23"><code>src&#x2F;utils&#x2F;ContactEquationPool.js:23</code></a>
+        <a href="../files/src_utils_ContactEquationPool.js.html#l23"><code>src\utils\ContactEquationPool.js:23</code></a>
         </p>
 
 
@@ -566,7 +469,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_utils_FrictionEquationPool.js.html#l23"><code>src&#x2F;utils&#x2F;FrictionEquationPool.js:23</code></a>
+        <a href="../files/src_utils_FrictionEquationPool.js.html#l23"><code>src\utils\FrictionEquationPool.js:23</code></a>
         </p>
 
 
@@ -604,130 +507,6 @@
 
 
 </div>
-<div id="method_destroy" class="method item">
-    <h3 class="name"><code>destroy</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>island</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-        <span class="returns-inline">
-            <span class="type">IslandPool</span>
-        </span>
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_utils_IslandPool.js.html#l23"><code>src&#x2F;utils&#x2F;IslandPool.js:23</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">island</code>
-                        <span class="type"><a href="../classes/Island.html" class="crosslink">Island</a></span>
-
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                        <span class="type">IslandPool</span>:
-            </div>
-        </div>
-
-
-</div>
-<div id="method_destroy" class="method item">
-    <h3 class="name"><code>destroy</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>node</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-        <span class="returns-inline">
-            <span class="type">IslandNodePool</span>
-        </span>
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_utils_IslandNodePool.js.html#l23"><code>src&#x2F;utils&#x2F;IslandNodePool.js:23</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">node</code>
-                        <span class="type"><a href="../classes/IslandNode.html" class="crosslink">IslandNode</a></span>
-
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                        <span class="type">IslandNodePool</span>:
-            </div>
-        </div>
-
-
-</div>
 <div id="method_setOverlapping" class="method item">
     <h3 class="name"><code>setOverlapping</code></h3>
 
@@ -758,7 +537,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_utils_OverlapKeeper.js.html#l51"><code>src&#x2F;utils&#x2F;OverlapKeeper.js:51</code></a>
+        <a href="../files/src_utils_OverlapKeeper.js.html#l48"><code>src\utils\OverlapKeeper.js:48</code></a>
         </p>
 
 
@@ -834,7 +613,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_utils_OverlapKeeper.js.html#l21"><code>src&#x2F;utils&#x2F;OverlapKeeper.js:21</code></a>
+        <a href="../files/src_utils_OverlapKeeper.js.html#l19"><code>src\utils\OverlapKeeper.js:19</code></a>
         </p>
 
 

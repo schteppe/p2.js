@@ -19,20 +19,17 @@ YUI.add("yuidoc-meta", function(Y) {
         "GSSolver",
         "GearConstraint",
         "Heightfield",
-        "Island",
-        "IslandManager",
-        "IslandNode",
         "Line",
         "LinearSpring",
         "LockConstraint",
         "Material",
         "NaiveBroadphase",
         "Narrowphase",
-        "Object pooling utility.",
         "OverlapKeeper",
         "OverlapKeeperRecord",
         "Particle",
         "Plane",
+        "Pool",
         "PrismaticConstraint",
         "Ray",
         "RaycastResult",
@@ -46,6 +43,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "Spring",
         "TopDownVehicle",
         "TupleDictionary",
+        "UnionFind",
         "Utils",
         "WheelConstraint",
         "World",
@@ -53,6 +51,7 @@ YUI.add("yuidoc-meta", function(Y) {
         null
     ],
     "modules": [],
-    "allModules": []
+    "allModules": [],
+    "elements": []
 } };
 });

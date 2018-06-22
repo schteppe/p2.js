@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/constraints/RevoluteConstraint.js - p2.js</title>
+    <title>src\constraints\RevoluteConstraint.js - p2.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="p2.js" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.7.1</em>
+            <em>API Docs for: 0.7.2</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -56,26 +56,23 @@
                                 <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
                                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
                                 <li><a href="../classes/Heightfield.html">Heightfield</a></li>
-                                <li><a href="../classes/Island.html">Island</a></li>
-                                <li><a href="../classes/IslandManager.html">IslandManager</a></li>
-                                <li><a href="../classes/IslandNode.html">IslandNode</a></li>
                                 <li><a href="../classes/Line.html">Line</a></li>
                                 <li><a href="../classes/LinearSpring.html">LinearSpring</a></li>
+                                <li><a href="../classes/.html"></a></li>
                                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
                                 <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
-                                <li><a href="../classes/Object pooling utility..html">Object pooling utility.</a></li>
                                 <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
                                 <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
                                 <li><a href="../classes/Particle.html">Particle</a></li>
                                 <li><a href="../classes/Plane.html">Plane</a></li>
+                                <li><a href="../classes/Pool.html">Pool</a></li>
                                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
                                 <li><a href="../classes/Ray.html">Ray</a></li>
                                 <li><a href="../classes/RaycastResult.html">RaycastResult</a></li>
                                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
                                 <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
-                                <li><a href="../classes/.html"></a></li>
                                 <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
                                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
                                 <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
@@ -84,11 +81,13 @@
                                 <li><a href="../classes/Spring.html">Spring</a></li>
                                 <li><a href="../classes/TopDownVehicle.html">TopDownVehicle</a></li>
                                 <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
+                                <li><a href="../classes/UnionFind.html">UnionFind</a></li>
                                 <li><a href="../classes/Utils.html">Utils</a></li>
                                 <li><a href="../classes/vec2.html">vec2</a></li>
                                 <li><a href="../classes/WheelConstraint.html">WheelConstraint</a></li>
                                 <li><a href="../classes/World.html">World</a></li>
                             </ul>
+                
                 
                             <ul id="api-modules" class="apis modules">
                             </ul>
@@ -124,7 +123,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1 class="file-heading">File: src/constraints/RevoluteConstraint.js</h1>
+<h1 class="file-heading">File: src\constraints\RevoluteConstraint.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
@@ -132,7 +131,13 @@ var Constraint = require(&#x27;./Constraint&#x27;)
 ,   Equation = require(&#x27;../equations/Equation&#x27;)
 ,   RotationalVelocityEquation = require(&#x27;../equations/RotationalVelocityEquation&#x27;)
 ,   RotationalLockEquation = require(&#x27;../equations/RotationalLockEquation&#x27;)
-,   vec2 = require(&#x27;../math/vec2&#x27;);
+,   vec2 = require(&#x27;../math/vec2&#x27;)
+,   sub = vec2.subtract
+,   add = vec2.add
+,   rotate = vec2.rotate
+,   dot = vec2.dot
+,   copy = vec2.copy
+,   crossLength = vec2.crossLength;
 
 module.exports = RevoluteConstraint;
 
@@ -159,7 +164,11 @@ var worldPivotA = vec2.create(),
  * @example
  *     // This will create a revolute constraint between two bodies with pivot point in between them.
  *     var bodyA = new Body({ mass: 1, position: [-1, 0] });
+ *     world.addBody(bodyA);
+ *
  *     var bodyB = new Body({ mass: 1, position: [1, 0] });
+ *     world.addBody(bodyB);
+ *
  *     var constraint = new RevoluteConstraint(bodyA, bodyB, {
  *         worldPivot: [0, 0]
  *     });
@@ -175,70 +184,87 @@ function RevoluteConstraint(bodyA, bodyB, options){
     options = options || {};
     Constraint.call(this,bodyA,bodyB,Constraint.REVOLUTE,options);
 
-    var maxForce = this.maxForce = typeof(options.maxForce) !== &quot;undefined&quot; ? options.maxForce : Number.MAX_VALUE;
+    var maxForce = this.maxForce = options.maxForce !== undefined ? options.maxForce : Number.MAX_VALUE;
 
     /**
      * @property {Array} pivotA
      */
-    this.pivotA = vec2.create();
+    var pivotA = this.pivotA = vec2.create();
 
     /**
      * @property {Array} pivotB
      */
-    this.pivotB = vec2.create();
+    var pivotB = this.pivotB = vec2.create();
 
     if(options.worldPivot){
         // Compute pivotA and pivotB
-        vec2.sub(this.pivotA, options.worldPivot, bodyA.position);
-        vec2.sub(this.pivotB, options.worldPivot, bodyB.position);
+        sub(pivotA, options.worldPivot, bodyA.position);
+        sub(pivotB, options.worldPivot, bodyB.position);
         // Rotate to local coordinate system
-        vec2.rotate(this.pivotA, this.pivotA, -bodyA.angle);
-        vec2.rotate(this.pivotB, this.pivotB, -bodyB.angle);
+        rotate(pivotA, pivotA, -bodyA.angle);
+        rotate(pivotB, pivotB, -bodyB.angle);
     } else {
         // Get pivotA and pivotB
-        vec2.copy(this.pivotA, options.localPivotA);
-        vec2.copy(this.pivotB, options.localPivotB);
+        if(options.localPivotA){
+            copy(pivotA, options.localPivotA);
+        }
+        if(options.localPivotB){
+            copy(pivotB, options.localPivotB);
+        }
     }
+
+    var motorEquation = this.motorEquation = new RotationalVelocityEquation(bodyA,bodyB);
+    motorEquation.enabled = false;
+
+    var upperLimitEquation = this.upperLimitEquation = new RotationalLockEquation(bodyA,bodyB);
+    var lowerLimitEquation = this.lowerLimitEquation = new RotationalLockEquation(bodyA,bodyB);
+    upperLimitEquation.minForce = lowerLimitEquation.maxForce = 0;
 
     // Equations to be fed to the solver
     var eqs = this.equations = [
         new Equation(bodyA,bodyB,-maxForce,maxForce),
         new Equation(bodyA,bodyB,-maxForce,maxForce),
+        motorEquation,
+        upperLimitEquation,
+        lowerLimitEquation
     ];
 
     var x = eqs[0];
     var y = eqs[1];
-    var that = this;
 
     x.computeGq = function(){
-        vec2.rotate(worldPivotA, that.pivotA, bodyA.angle);
-        vec2.rotate(worldPivotB, that.pivotB, bodyB.angle);
-        vec2.add(g, bodyB.position, worldPivotB);
-        vec2.sub(g, g, bodyA.position);
-        vec2.sub(g, g, worldPivotA);
-        return vec2.dot(g,xAxis);
+        rotate(worldPivotA, pivotA, bodyA.angle);
+        rotate(worldPivotB, pivotB, bodyB.angle);
+        add(g, bodyB.position, worldPivotB);
+        sub(g, g, bodyA.position);
+        sub(g, g, worldPivotA);
+        return dot(g,xAxis);
     };
 
     y.computeGq = function(){
-        vec2.rotate(worldPivotA, that.pivotA, bodyA.angle);
-        vec2.rotate(worldPivotB, that.pivotB, bodyB.angle);
-        vec2.add(g, bodyB.position, worldPivotB);
-        vec2.sub(g, g, bodyA.position);
-        vec2.sub(g, g, worldPivotA);
-        return vec2.dot(g,yAxis);
+        rotate(worldPivotA, pivotA, bodyA.angle);
+        rotate(worldPivotB, pivotB, bodyB.angle);
+        add(g, bodyB.position, worldPivotB);
+        sub(g, g, bodyA.position);
+        sub(g, g, worldPivotA);
+        return dot(g,yAxis);
     };
 
     y.minForce = x.minForce = -maxForce;
     y.maxForce = x.maxForce =  maxForce;
 
-    this.motorEquation = new RotationalVelocityEquation(bodyA,bodyB);
+    // These never change but the angular parts do
+    x.G[0] = -1;
+    x.G[1] =  0;
 
-    /**
-     * Indicates whether the motor is enabled. Use .enableMotor() to enable the constraint motor.
-     * @property {Boolean} motorEnabled
-     * @readOnly
-     */
-    this.motorEnabled = false;
+    x.G[3] =  1;
+    x.G[4] =  0;
+
+    y.G[0] =  0;
+    y.G[1] = -1;
+
+    y.G[3] =  0;
+    y.G[4] =  1;
 
     /**
      * The constraint position.
@@ -275,37 +301,20 @@ function RevoluteConstraint(bodyA, bodyB, options){
      * @type {Boolean}
      */
     this.upperLimit = 0;
-
-    this.upperLimitEquation = new RotationalLockEquation(bodyA,bodyB);
-    this.lowerLimitEquation = new RotationalLockEquation(bodyA,bodyB);
-    this.upperLimitEquation.minForce = 0;
-    this.lowerLimitEquation.maxForce = 0;
 }
 RevoluteConstraint.prototype = new Constraint();
 RevoluteConstraint.prototype.constructor = RevoluteConstraint;
 
 /**
- * Set the constraint angle limits.
+ * Set the constraint angle limits, and enable them.
  * @method setLimits
  * @param {number} lower Lower angle limit.
  * @param {number} upper Upper angle limit.
  */
 RevoluteConstraint.prototype.setLimits = function (lower, upper) {
-    if(typeof(lower) === &#x27;number&#x27;){
-        this.lowerLimit = lower;
-        this.lowerLimitEnabled = true;
-    } else {
-        this.lowerLimit = lower;
-        this.lowerLimitEnabled = false;
-    }
-
-    if(typeof(upper) === &#x27;number&#x27;){
-        this.upperLimit = upper;
-        this.upperLimitEnabled = true;
-    } else {
-        this.upperLimit = upper;
-        this.upperLimitEnabled = false;
-    }
+    this.lowerLimit = lower;
+    this.upperLimit = upper;
+    this.lowerLimitEnabled = this.upperLimitEnabled = true;
 };
 
 RevoluteConstraint.prototype.update = function(){
@@ -314,8 +323,6 @@ RevoluteConstraint.prototype.update = function(){
         pivotA = this.pivotA,
         pivotB = this.pivotB,
         eqs =    this.equations,
-        normal = eqs[0],
-        tangent= eqs[1],
         x = eqs[0],
         y = eqs[1],
         upperLimit = this.upperLimit,
@@ -325,29 +332,11 @@ RevoluteConstraint.prototype.update = function(){
 
     var relAngle = this.angle = bodyB.angle - bodyA.angle;
 
-    if(this.upperLimitEnabled &amp;&amp; relAngle &gt; upperLimit){
-        upperLimitEquation.angle = upperLimit;
-        if(eqs.indexOf(upperLimitEquation) === -1){
-            eqs.push(upperLimitEquation);
-        }
-    } else {
-        var idx = eqs.indexOf(upperLimitEquation);
-        if(idx !== -1){
-            eqs.splice(idx,1);
-        }
-    }
+    upperLimitEquation.angle = upperLimit;
+    upperLimitEquation.enabled = this.upperLimitEnabled &amp;&amp; relAngle &gt; upperLimit;
 
-    if(this.lowerLimitEnabled &amp;&amp; relAngle &lt; lowerLimit){
-        lowerLimitEquation.angle = lowerLimit;
-        if(eqs.indexOf(lowerLimitEquation) === -1){
-            eqs.push(lowerLimitEquation);
-        }
-    } else {
-        var idx = eqs.indexOf(lowerLimitEquation);
-        if(idx !== -1){
-            eqs.splice(idx,1);
-        }
-    }
+    lowerLimitEquation.angle = lowerLimit;
+    lowerLimitEquation.enabled = this.lowerLimitEnabled &amp;&amp; relAngle &lt; lowerLimit;
 
     /*
 
@@ -372,86 +361,118 @@ RevoluteConstraint.prototype.update = function(){
         Gx = [ x   (rj x x)   -x   -(ri x x)]
         Gy = [ y   (rj x y)   -y   -(ri x y)]
 
+    So for example, in the X direction we would get in 2 dimensions
+
+        G = [ [1   0   (rj x [1,0])   -1   0   -(ri x [1,0])]
+              [0   1   (rj x [0,1])    0  -1   -(ri x [0,1])]
      */
 
-    vec2.rotate(worldPivotA, pivotA, bodyA.angle);
-    vec2.rotate(worldPivotB, pivotB, bodyB.angle);
+    rotate(worldPivotA, pivotA, bodyA.angle);
+    rotate(worldPivotB, pivotB, bodyB.angle);
 
-    // todo: these are a bit sparse. We could save some computations on making custom eq.computeGW functions, etc
+    // @todo: these are a bit sparse. We could save some computations on making custom eq.computeGW functions, etc
 
-    x.G[0] = -1;
-    x.G[1] =  0;
-    x.G[2] = -vec2.crossLength(worldPivotA,xAxis);
-    x.G[3] =  1;
-    x.G[4] =  0;
-    x.G[5] =  vec2.crossLength(worldPivotB,xAxis);
+    var xG = x.G;
+    xG[2] = -crossLength(worldPivotA,xAxis);
+    xG[5] =  crossLength(worldPivotB,xAxis);
 
-    y.G[0] =  0;
-    y.G[1] = -1;
-    y.G[2] = -vec2.crossLength(worldPivotA,yAxis);
-    y.G[3] =  0;
-    y.G[4] =  1;
-    y.G[5] =  vec2.crossLength(worldPivotB,yAxis);
+    var yG = y.G;
+    yG[2] = -crossLength(worldPivotA,yAxis);
+    yG[5] =  crossLength(worldPivotB,yAxis);
 };
+
+Object.defineProperties(RevoluteConstraint.prototype, {
+
+    /**
+     * @property {boolean} motorEnabled
+     */
+    motorEnabled: {
+        get: function() {
+            return this.motorEquation.enabled;
+        },
+        set: function(value){
+            this.motorEquation.enabled = value;
+        }
+    },
+
+    /**
+     * @property {number} motorSpeed
+     */
+    motorSpeed: {
+        get: function() {
+            return this.motorEquation.relativeVelocity;
+        },
+        set: function(value){
+            this.motorEquation.relativeVelocity = value;
+        }
+    },
+
+    /**
+     * @property {number} motorMaxForce
+     */
+    motorMaxForce: {
+        get: function() {
+            return this.motorEquation.maxForce;
+        },
+        set: function(value){
+            var eq = this.motorEquation;
+            eq.maxForce = value;
+            eq.minForce = -value;
+        }
+    }
+});
 
 /**
  * Enable the rotational motor
+ * @deprecated Use motorEnabled instead
  * @method enableMotor
  */
 RevoluteConstraint.prototype.enableMotor = function(){
-    if(this.motorEnabled){
-        return;
-    }
-    this.equations.push(this.motorEquation);
+    console.warn(&quot;revolute.enableMotor() is deprecated, do revolute.motorEnabled = true; instead.&quot;);
     this.motorEnabled = true;
 };
 
 /**
  * Disable the rotational motor
+ * @deprecated Use motorEnabled instead
  * @method disableMotor
  */
 RevoluteConstraint.prototype.disableMotor = function(){
-    if(!this.motorEnabled){
-        return;
-    }
-    var i = this.equations.indexOf(this.motorEquation);
-    this.equations.splice(i,1);
+    console.warn(&quot;revolute.disableMotor() is deprecated, do revolute.motorEnabled = false; instead.&quot;);
     this.motorEnabled = false;
 };
 
 /**
  * Check if the motor is enabled.
  * @method motorIsEnabled
- * @deprecated use property motorEnabled instead.
+ * @deprecated Use motorEnabled instead
  * @return {Boolean}
  */
 RevoluteConstraint.prototype.motorIsEnabled = function(){
-    return !!this.motorEnabled;
+    console.warn(&quot;revolute.motorIsEnabled() is deprecated, use revolute.motorEnabled instead.&quot;);
+    return this.motorEnabled;
 };
 
 /**
  * Set the speed of the rotational constraint motor
  * @method setMotorSpeed
- * @param  {Number} speed
+ * @deprecated Use .motorSpeed instead
+ * @param {Number} speed
  */
 RevoluteConstraint.prototype.setMotorSpeed = function(speed){
-    if(!this.motorEnabled){
-        return;
-    }
-    var i = this.equations.indexOf(this.motorEquation);
-    this.equations[i].relativeVelocity = speed;
+    console.warn(&quot;revolute.setMotorSpeed(speed) is deprecated, do revolute.motorSpeed = speed; instead.&quot;);
+    this.motorSpeed = speed;
 };
 
 /**
  * Get the speed of the rotational constraint motor
+ * @deprecated Use .motorSpeed instead
  * @method getMotorSpeed
- * @return {Number} The current speed, or false if the motor is not enabled.
+ * @return {Number}
  */
 RevoluteConstraint.prototype.getMotorSpeed = function(){
-    if(!this.motorEnabled){
-        return false;
-    }
-    return this.motorEquation.relativeVelocity;
+    console.warn(&quot;revolute.getMotorSpeed() is deprecated, use revolute.motorSpeed instead.&quot;);
+    return this.motorSpeed;
 };
 
     </pre>

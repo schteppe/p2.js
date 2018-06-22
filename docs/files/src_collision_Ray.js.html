@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/collision/Ray.js - p2.js</title>
+    <title>src\collision\Ray.js - p2.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="p2.js" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.7.1</em>
+            <em>API Docs for: 0.7.2</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -56,26 +56,23 @@
                                 <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
                                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
                                 <li><a href="../classes/Heightfield.html">Heightfield</a></li>
-                                <li><a href="../classes/Island.html">Island</a></li>
-                                <li><a href="../classes/IslandManager.html">IslandManager</a></li>
-                                <li><a href="../classes/IslandNode.html">IslandNode</a></li>
                                 <li><a href="../classes/Line.html">Line</a></li>
                                 <li><a href="../classes/LinearSpring.html">LinearSpring</a></li>
+                                <li><a href="../classes/.html"></a></li>
                                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
                                 <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
-                                <li><a href="../classes/Object pooling utility..html">Object pooling utility.</a></li>
                                 <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
                                 <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
                                 <li><a href="../classes/Particle.html">Particle</a></li>
                                 <li><a href="../classes/Plane.html">Plane</a></li>
+                                <li><a href="../classes/Pool.html">Pool</a></li>
                                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
                                 <li><a href="../classes/Ray.html">Ray</a></li>
                                 <li><a href="../classes/RaycastResult.html">RaycastResult</a></li>
                                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
                                 <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
-                                <li><a href="../classes/.html"></a></li>
                                 <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
                                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
                                 <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
@@ -84,11 +81,13 @@
                                 <li><a href="../classes/Spring.html">Spring</a></li>
                                 <li><a href="../classes/TopDownVehicle.html">TopDownVehicle</a></li>
                                 <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
+                                <li><a href="../classes/UnionFind.html">UnionFind</a></li>
                                 <li><a href="../classes/Utils.html">Utils</a></li>
                                 <li><a href="../classes/vec2.html">vec2</a></li>
                                 <li><a href="../classes/WheelConstraint.html">WheelConstraint</a></li>
                                 <li><a href="../classes/World.html">World</a></li>
                             </ul>
+                
                 
                             <ul id="api-modules" class="apis modules">
                             </ul>
@@ -124,16 +123,13 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1 class="file-heading">File: src/collision/Ray.js</h1>
+<h1 class="file-heading">File: src\collision\Ray.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
 module.exports = Ray;
 
 var vec2 = require(&#x27;../math/vec2&#x27;);
-var RaycastResult = require(&#x27;../collision/RaycastResult&#x27;);
-var Shape = require(&#x27;../shapes/Shape&#x27;);
-var AABB = require(&#x27;../collision/AABB&#x27;);
 
 /**
  * A line with a start and end point that is used to intersect shapes. For an example, see {{#crossLink &quot;World/raycast:method&quot;}}World.raycast{{/crossLink}}
@@ -147,7 +143,7 @@ var AABB = require(&#x27;../collision/AABB&#x27;);
  * @param {number} [options.collisionMask=-1]
  * @param {number} [options.collisionGroup=-1]
  * @param {number} [options.mode=Ray.ANY]
- * @param {number} [options.callback]
+ * @param {Function} [options.callback]
  */
 function Ray(options){
     options = options || {};
@@ -156,13 +152,13 @@ function Ray(options){
      * Ray start point.
      * @property {array} from
      */
-    this.from = options.from ? vec2.fromValues(options.from[0], options.from[1]) : vec2.create();
+    this.from = options.from ? vec2.clone(options.from) : vec2.create();
 
     /**
      * Ray end point
      * @property {array} to
      */
-    this.to = options.to ? vec2.fromValues(options.to[0], options.to[1]) : vec2.create();
+    this.to = options.to ? vec2.clone(options.to) : vec2.create();
 
     /**
      * Set to true if you want the Ray to take .collisionResponse flags into account on bodies and shapes.
@@ -198,7 +194,7 @@ function Ray(options){
      * Current, user-provided result callback. Will be used if mode is Ray.ALL.
      * @property {Function} callback
      */
-    this.callback = options.callback || function(result){};
+    this.callback = options.callback || function(/*result*/){};
 
     /**
      * @readOnly
@@ -246,7 +242,7 @@ Ray.prototype.update = function(){
 
     // Update .direction and .length
     var d = this.direction;
-    vec2.sub(d, this.to, this.from);
+    vec2.subtract(d, this.to, this.from);
     this.length = vec2.length(d);
     vec2.normalize(d, d);
 
@@ -358,8 +354,6 @@ Ray.prototype.getAABB = function(result){
     );
 };
 
-var hitPointWorld = vec2.create();
-
 /**
  * @method reportIntersection
  * @private
@@ -369,8 +363,6 @@ var hitPointWorld = vec2.create();
  * @return {boolean} True if the intersections should continue
  */
 Ray.prototype.reportIntersection = function(result, fraction, normal, faceIndex){
-    var from = this.from;
-    var to = this.to;
     var shape = this._currentShape;
     var body = this._currentBody;
 
@@ -425,7 +417,7 @@ var v0 = vec2.create(),
 function distanceFromIntersectionSquared(from, direction, position) {
 
     // v0 is vector from from to position
-    vec2.sub(v0, position, from);
+    vec2.subtract(v0, position, from);
     var dot = vec2.dot(v0, direction);
 
     // intersect = direction * dot + from

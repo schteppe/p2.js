@@ -11,6 +11,10 @@
     "2d"
   ],
   "main": "./src/p2.js",
+  "scripts": {
+    "build": "grunt",
+    "build-docs": "grunt yuidoc"
+  },
   "engines": {
     "node": "*"
   },

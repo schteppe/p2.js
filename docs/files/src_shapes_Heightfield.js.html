@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/shapes/Heightfield.js - p2.js</title>
+    <title>src\shapes\Heightfield.js - p2.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="p2.js" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.7.1</em>
+            <em>API Docs for: 0.7.2</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -56,26 +56,23 @@
                                 <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
                                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
                                 <li><a href="../classes/Heightfield.html">Heightfield</a></li>
-                                <li><a href="../classes/Island.html">Island</a></li>
-                                <li><a href="../classes/IslandManager.html">IslandManager</a></li>
-                                <li><a href="../classes/IslandNode.html">IslandNode</a></li>
                                 <li><a href="../classes/Line.html">Line</a></li>
                                 <li><a href="../classes/LinearSpring.html">LinearSpring</a></li>
+                                <li><a href="../classes/.html"></a></li>
                                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
                                 <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
-                                <li><a href="../classes/Object pooling utility..html">Object pooling utility.</a></li>
                                 <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
                                 <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
                                 <li><a href="../classes/Particle.html">Particle</a></li>
                                 <li><a href="../classes/Plane.html">Plane</a></li>
+                                <li><a href="../classes/Pool.html">Pool</a></li>
                                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
                                 <li><a href="../classes/Ray.html">Ray</a></li>
                                 <li><a href="../classes/RaycastResult.html">RaycastResult</a></li>
                                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
                                 <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
-                                <li><a href="../classes/.html"></a></li>
                                 <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
                                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
                                 <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
@@ -84,11 +81,13 @@
                                 <li><a href="../classes/Spring.html">Spring</a></li>
                                 <li><a href="../classes/TopDownVehicle.html">TopDownVehicle</a></li>
                                 <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
+                                <li><a href="../classes/UnionFind.html">UnionFind</a></li>
                                 <li><a href="../classes/Utils.html">Utils</a></li>
                                 <li><a href="../classes/vec2.html">vec2</a></li>
                                 <li><a href="../classes/WheelConstraint.html">WheelConstraint</a></li>
                                 <li><a href="../classes/World.html">World</a></li>
                             </ul>
+                
                 
                             <ul id="api-modules" class="apis modules">
                             </ul>
@@ -124,13 +123,13 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1 class="file-heading">File: src/shapes/Heightfield.js</h1>
+<h1 class="file-heading">File: src\shapes\Heightfield.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
 var Shape = require(&#x27;./Shape&#x27;)
 ,    vec2 = require(&#x27;../math/vec2&#x27;)
-,    Utils = require(&#x27;../utils/Utils&#x27;);
+,    shallowClone = require(&#x27;../utils/Utils&#x27;).shallowClone;
 
 module.exports = Heightfield;
 
@@ -154,31 +153,18 @@ module.exports = Heightfield;
  *     }
  *
  *     // Create the heightfield shape
- *     var heightfieldShape = new Heightfield({
+ *     var shape = new Heightfield({
  *         heights: heights,
  *         elementWidth: 1 // Distance between the data points in X direction
  *     });
- *     var heightfieldBody = new Body();
- *     heightfieldBody.addShape(heightfieldShape);
- *     world.addBody(heightfieldBody);
+ *     var body = new Body();
+ *     body.addShape(shape);
+ *     world.addBody(body);
  *
  * @todo Should use a scale property with X and Y direction instead of just elementWidth
  */
 function Heightfield(options){
-    if(Array.isArray(arguments[0])){
-        options = {
-            heights: arguments[0]
-        };
-
-        if(typeof(arguments[1]) === &#x27;object&#x27;){
-            for(var key in arguments[1]){
-                options[key] = arguments[1][key];
-            }
-        }
-
-        console.warn(&#x27;The Heightfield constructor signature has changed. Please use the following format: new Heightfield({ heights: [...], ... })&#x27;);
-    }
-    options = options || {};
+    options = options ? shallowClone(options) : {};
 
     /**
      * An array of numbers, or height values, that are spread out along the x axis.
@@ -202,7 +188,7 @@ function Heightfield(options){
      * The width of each element
      * @property {number} elementWidth
      */
-    this.elementWidth = options.elementWidth || 0.1;
+    this.elementWidth = options.elementWidth !== undefined ? options.elementWidth : 0.1;
 
     if(options.maxValue === undefined || options.minValue === undefined){
         this.updateMaxMinValues();
@@ -237,10 +223,9 @@ Heightfield.prototype.updateMaxMinValues = function(){
 
 /**
  * @method computeMomentOfInertia
- * @param  {Number} mass
  * @return {Number}
  */
-Heightfield.prototype.computeMomentOfInertia = function(mass){
+Heightfield.prototype.computeMomentOfInertia = function(){
     return Number.MAX_VALUE;
 };
 
@@ -302,35 +287,11 @@ Heightfield.prototype.getClampedSegmentIndex = function(position){
     return i;
 };
 
-var intersectHeightfield_hitPointWorld = vec2.create();
 var intersectHeightfield_worldNormal = vec2.create();
 var intersectHeightfield_l0 = vec2.create();
 var intersectHeightfield_l1 = vec2.create();
 var intersectHeightfield_localFrom = vec2.create();
 var intersectHeightfield_localTo = vec2.create();
-var intersectHeightfield_unit_y = vec2.fromValues(0,1);
-
-// Returns 1 if the lines intersect, otherwise 0.
-function getLineSegmentsIntersection (out, p0, p1, p2, p3) {
-
-    var s1_x, s1_y, s2_x, s2_y;
-    s1_x = p1[0] - p0[0];
-    s1_y = p1[1] - p0[1];
-    s2_x = p3[0] - p2[0];
-    s2_y = p3[1] - p2[1];
-
-    var s, t;
-    s = (-s1_y * (p0[0] - p2[0]) + s1_x * (p0[1] - p2[1])) / (-s2_x * s1_y + s1_x * s2_y);
-    t = ( s2_x * (p0[1] - p2[1]) - s2_y * (p0[0] - p2[0])) / (-s2_x * s1_y + s1_x * s2_y);
-    if (s &gt;= 0 &amp;&amp; s &lt;= 1 &amp;&amp; t &gt;= 0 &amp;&amp; t &lt;= 1) { // Collision detected
-        var intX = p0[0] + (t * s1_x);
-        var intY = p0[1] + (t * s1_y);
-        out[0] = intX;
-        out[1] = intY;
-        return t;
-    }
-    return -1; // No collision
-}
 
 /**
  * @method raycast
@@ -342,9 +303,7 @@ function getLineSegmentsIntersection (out, p0, p1, p2, p3) {
 Heightfield.prototype.raycast = function(result, ray, position, angle){
     var from = ray.from;
     var to = ray.to;
-    var direction = ray.direction;
 
-    var hitPointWorld = intersectHeightfield_hitPointWorld;
     var worldNormal = intersectHeightfield_worldNormal;
     var l0 = intersectHeightfield_l0;
     var l1 = intersectHeightfield_l1;
@@ -369,7 +328,7 @@ Heightfield.prototype.raycast = function(result, ray, position, angle){
         this.getLineSegment(l0, l1, i);
         var t = vec2.getLineSegmentsIntersectionFraction(localFrom, localTo, l0, l1);
         if(t &gt;= 0){
-            vec2.sub(worldNormal, l1, l0);
+            vec2.subtract(worldNormal, l1, l0);
             vec2.rotate(worldNormal, worldNormal, angle + Math.PI / 2);
             vec2.normalize(worldNormal, worldNormal);
             ray.reportIntersection(result, t, worldNormal, -1);
@@ -379,6 +338,7 @@ Heightfield.prototype.raycast = function(result, ray, position, angle){
         }
     }
 };
+
     </pre>
 </div>
                     </div>

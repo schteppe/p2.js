@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="p2.js" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.7.1</em>
+            <em>API Docs for: 0.7.2</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -56,26 +56,23 @@
                                 <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
                                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
                                 <li><a href="../classes/Heightfield.html">Heightfield</a></li>
-                                <li><a href="../classes/Island.html">Island</a></li>
-                                <li><a href="../classes/IslandManager.html">IslandManager</a></li>
-                                <li><a href="../classes/IslandNode.html">IslandNode</a></li>
                                 <li><a href="../classes/Line.html">Line</a></li>
                                 <li><a href="../classes/LinearSpring.html">LinearSpring</a></li>
+                                <li><a href="../classes/.html"></a></li>
                                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
                                 <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
-                                <li><a href="../classes/Object pooling utility..html">Object pooling utility.</a></li>
                                 <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
                                 <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
                                 <li><a href="../classes/Particle.html">Particle</a></li>
                                 <li><a href="../classes/Plane.html">Plane</a></li>
+                                <li><a href="../classes/Pool.html">Pool</a></li>
                                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
                                 <li><a href="../classes/Ray.html">Ray</a></li>
                                 <li><a href="../classes/RaycastResult.html">RaycastResult</a></li>
                                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
                                 <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
-                                <li><a href="../classes/.html"></a></li>
                                 <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
                                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
                                 <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
@@ -84,11 +81,13 @@
                                 <li><a href="../classes/Spring.html">Spring</a></li>
                                 <li><a href="../classes/TopDownVehicle.html">TopDownVehicle</a></li>
                                 <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
+                                <li><a href="../classes/UnionFind.html">UnionFind</a></li>
                                 <li><a href="../classes/Utils.html">Utils</a></li>
                                 <li><a href="../classes/vec2.html">vec2</a></li>
                                 <li><a href="../classes/WheelConstraint.html">WheelConstraint</a></li>
                                 <li><a href="../classes/World.html">World</a></li>
                             </ul>
+                
                 
                             <ul id="api-modules" class="apis modules">
                             </ul>
@@ -129,7 +128,7 @@
 
 
         <div class="foundat">
-            Defined in: <a href="../files/src_events_EventEmitter.js.html#l1"><code>src&#x2F;events&#x2F;EventEmitter.js:1</code></a>
+            Defined in: <a href="../files/src_events_EventEmitter.js.html#l3"><code>src\events\EventEmitter.js:3</code></a>
         </div>
 
 
@@ -143,36 +142,51 @@
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_EventEmitter" class="method item">
-            <h3 class="name"><code>EventEmitter</code></h3>
+<div id="method_EventEmitter" class="method item">
+    <h3 class="name"><code>EventEmitter</code></h3>
+
+        <span class="paren">()</span>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_events_EventEmitter.js.html#l3"><code>src\events\EventEmitter.js:3</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
         
-                <span class="paren">()</span>
-        
-        
-        
-        
-        
-        
-        
-        
-            <div class="meta">
-                        <p>
-                        Defined in
-                <a href="../files/src_events_EventEmitter.js.html#l1"><code>src&#x2F;events&#x2F;EventEmitter.js:1</code></a>
-                </p>
-        
-        
-        
+    </div>
+
+
+
+
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre class="code prettyprint"><code>var emitter = new EventEmitter();
+emitter.on('myEvent', function(evt){
+    console.log(evt.message);
+});
+emitter.emit({
+    type: 'myEvent',
+    message: 'Hello world!'
+});</code></pre>
+
             </div>
-        
-            <div class="description">
-                
-            </div>
-        
-        
-        
-        
         </div>
+</div>
     </div>
 
 <div id="classdocs" class="tabview">
@@ -240,7 +254,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_events_EventEmitter.js.html#l79"><code>src&#x2F;events&#x2F;EventEmitter.js:79</code></a>
+        <a href="../files/src_events_EventEmitter.js.html#l97"><code>src\events\EventEmitter.js:97</code></a>
         </p>
 
 
@@ -291,6 +305,17 @@
         </div>
 
 
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre class="code prettyprint"><code>emitter.emit({
+    type: 'myEvent',
+    customData: 123
+});</code></pre>
+
+            </div>
+        </div>
 </div>
 <div id="method_has" class="method item">
     <h3 class="name"><code>has</code></h3>
@@ -319,7 +344,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_events_EventEmitter.js.html#l35"><code>src&#x2F;events&#x2F;EventEmitter.js:35</code></a>
+        <a href="../files/src_events_EventEmitter.js.html#l72"><code>src\events\EventEmitter.js:72</code></a>
         </p>
 
 
@@ -395,7 +420,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_events_EventEmitter.js.html#l60"><code>src&#x2F;events&#x2F;EventEmitter.js:60</code></a>
+        <a href="../files/src_events_EventEmitter.js.html#l50"><code>src\events\EventEmitter.js:50</code></a>
         </p>
 
 
@@ -445,6 +470,15 @@
         </div>
 
 
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre class="code prettyprint"><code>emitter.on('myEvent', handler); // Add handler
+emitter.off('myEvent', handler); // Remove handler</code></pre>
+
+            </div>
+        </div>
 </div>
 <div id="method_on" class="method item">
     <h3 class="name"><code>on</code></h3>
@@ -473,7 +507,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_events_EventEmitter.js.html#l13"><code>src&#x2F;events&#x2F;EventEmitter.js:13</code></a>
+        <a href="../files/src_events_EventEmitter.js.html#l24"><code>src\events\EventEmitter.js:24</code></a>
         </p>
 
 
@@ -523,6 +557,16 @@
         </div>
 
 
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre class="code prettyprint"><code>emitter.on('myEvent', function(evt){
+    console.log('myEvt was triggered!');
+});</code></pre>
+
+            </div>
+        </div>
 </div>
             </div>
 

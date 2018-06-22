@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/collision/Broadphase.js - p2.js</title>
+    <title>src\collision\Broadphase.js - p2.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="p2.js" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.7.1</em>
+            <em>API Docs for: 0.7.2</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -56,26 +56,23 @@
                                 <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
                                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
                                 <li><a href="../classes/Heightfield.html">Heightfield</a></li>
-                                <li><a href="../classes/Island.html">Island</a></li>
-                                <li><a href="../classes/IslandManager.html">IslandManager</a></li>
-                                <li><a href="../classes/IslandNode.html">IslandNode</a></li>
                                 <li><a href="../classes/Line.html">Line</a></li>
                                 <li><a href="../classes/LinearSpring.html">LinearSpring</a></li>
+                                <li><a href="../classes/.html"></a></li>
                                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
                                 <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
-                                <li><a href="../classes/Object pooling utility..html">Object pooling utility.</a></li>
                                 <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
                                 <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
                                 <li><a href="../classes/Particle.html">Particle</a></li>
                                 <li><a href="../classes/Plane.html">Plane</a></li>
+                                <li><a href="../classes/Pool.html">Pool</a></li>
                                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
                                 <li><a href="../classes/Ray.html">Ray</a></li>
                                 <li><a href="../classes/RaycastResult.html">RaycastResult</a></li>
                                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
                                 <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
-                                <li><a href="../classes/.html"></a></li>
                                 <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
                                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
                                 <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
@@ -84,11 +81,13 @@
                                 <li><a href="../classes/Spring.html">Spring</a></li>
                                 <li><a href="../classes/TopDownVehicle.html">TopDownVehicle</a></li>
                                 <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
+                                <li><a href="../classes/UnionFind.html">UnionFind</a></li>
                                 <li><a href="../classes/Utils.html">Utils</a></li>
                                 <li><a href="../classes/vec2.html">vec2</a></li>
                                 <li><a href="../classes/WheelConstraint.html">WheelConstraint</a></li>
                                 <li><a href="../classes/World.html">World</a></li>
                             </ul>
+                
                 
                             <ul id="api-modules" class="apis modules">
                             </ul>
@@ -124,7 +123,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1 class="file-heading">File: src/collision/Broadphase.js</h1>
+<h1 class="file-heading">File: src\collision\Broadphase.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
@@ -134,7 +133,7 @@ var Body = require(&#x27;../objects/Body&#x27;);
 module.exports = Broadphase;
 
 /**
- * Base class for broadphase implementations.
+ * Base class for broadphase implementations. Don&#x27;t use this class directly.
  * @class Broadphase
  * @constructor
  */
@@ -193,9 +192,7 @@ Broadphase.prototype.setWorld = function(world){
  * @param  {World} world The world to search in.
  * @return {Array} An array of the bodies, ordered in pairs. Example: A result of [a,b,c,d] means that the potential pairs are: (a,b), (c,d).
  */
-Broadphase.prototype.getCollisionPairs = function(world){};
-
-var dist = vec2.create();
+Broadphase.prototype.getCollisionPairs = function(/*world*/){};
 
 /**
  * Check whether the bounding radius of two bodies overlap.
@@ -205,15 +202,14 @@ var dist = vec2.create();
  * @return {Boolean}
  */
 Broadphase.boundingRadiusCheck = function(bodyA, bodyB){
-    vec2.sub(dist, bodyA.position, bodyB.position);
-    var d2 = vec2.squaredLength(dist),
+    var d2 = vec2.squaredDistance(bodyA.position, bodyB.position),
         r = bodyA.boundingRadius + bodyB.boundingRadius;
     return d2 &lt;= r*r;
 };
 
 /**
- * Check whether the bounding radius of two bodies overlap.
- * @method  boundingRadiusCheck
+ * Check whether the AABB of two bodies overlap.
+ * @method  aabbCheck
  * @param  {Body} bodyA
  * @param  {Body} bodyB
  * @return {Boolean}
@@ -223,8 +219,8 @@ Broadphase.aabbCheck = function(bodyA, bodyB){
 };
 
 /**
- * Check whether the bounding radius of two bodies overlap.
- * @method  boundingRadiusCheck
+ * Check whether the bounding volumes of two bodies overlap.
+ * @method  boundingVolumeCheck
  * @param  {Body} bodyA
  * @param  {Body} bodyB
  * @return {Boolean}
@@ -255,20 +251,22 @@ Broadphase.prototype.boundingVolumeCheck = function(bodyA, bodyB){
 Broadphase.canCollide = function(bodyA, bodyB){
     var KINEMATIC = Body.KINEMATIC;
     var STATIC = Body.STATIC;
+    var typeA = bodyA.type;
+    var typeB = bodyB.type;
 
     // Cannot collide static bodies
-    if(bodyA.type === STATIC &amp;&amp; bodyB.type === STATIC){
+    if(typeA === STATIC &amp;&amp; typeB === STATIC){
         return false;
     }
 
     // Cannot collide static vs kinematic bodies
-    if( (bodyA.type === KINEMATIC &amp;&amp; bodyB.type === STATIC) ||
-        (bodyA.type === STATIC    &amp;&amp; bodyB.type === KINEMATIC)){
+    if( (typeA === KINEMATIC &amp;&amp; typeB === STATIC) ||
+        (typeA === STATIC    &amp;&amp; typeB === KINEMATIC)){
         return false;
     }
 
     // Cannot collide kinematic vs kinematic
-    if(bodyA.type === KINEMATIC &amp;&amp; bodyB.type === KINEMATIC){
+    if(typeA === KINEMATIC &amp;&amp; typeB === KINEMATIC){
         return false;
     }
 
@@ -278,8 +276,8 @@ Broadphase.canCollide = function(bodyA, bodyB){
     }
 
     // Cannot collide if one is static and the other is sleeping
-    if( (bodyA.sleepState === Body.SLEEPING &amp;&amp; bodyB.type === STATIC) ||
-        (bodyB.sleepState === Body.SLEEPING &amp;&amp; bodyA.type === STATIC)){
+    if( (bodyA.sleepState === Body.SLEEPING &amp;&amp; typeB === STATIC) ||
+        (bodyB.sleepState === Body.SLEEPING &amp;&amp; typeA === STATIC)){
         return false;
     }
 
@@ -288,6 +286,18 @@ Broadphase.canCollide = function(bodyA, bodyB){
 
 Broadphase.NAIVE = 1;
 Broadphase.SAP = 2;
+
+/**
+ * Returns all the bodies within an AABB.
+ * @method aabbQuery
+ * @param  {World} world
+ * @param  {AABB} aabb
+ * @param {array} result An array to store resulting bodies in.
+ * @return {array}
+ */
+Broadphase.prototype.aabbQuery = function(/*world, aabb, result*/){
+    // To be implemented in subclasses
+};
 
     </pre>
 </div>

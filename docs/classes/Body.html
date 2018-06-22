@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="p2.js" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.7.1</em>
+            <em>API Docs for: 0.7.2</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -56,26 +56,23 @@
                                 <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
                                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
                                 <li><a href="../classes/Heightfield.html">Heightfield</a></li>
-                                <li><a href="../classes/Island.html">Island</a></li>
-                                <li><a href="../classes/IslandManager.html">IslandManager</a></li>
-                                <li><a href="../classes/IslandNode.html">IslandNode</a></li>
                                 <li><a href="../classes/Line.html">Line</a></li>
                                 <li><a href="../classes/LinearSpring.html">LinearSpring</a></li>
+                                <li><a href="../classes/.html"></a></li>
                                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
                                 <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
-                                <li><a href="../classes/Object pooling utility..html">Object pooling utility.</a></li>
                                 <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
                                 <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
                                 <li><a href="../classes/Particle.html">Particle</a></li>
                                 <li><a href="../classes/Plane.html">Plane</a></li>
+                                <li><a href="../classes/Pool.html">Pool</a></li>
                                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
                                 <li><a href="../classes/Ray.html">Ray</a></li>
                                 <li><a href="../classes/RaycastResult.html">RaycastResult</a></li>
                                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
                                 <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
-                                <li><a href="../classes/.html"></a></li>
                                 <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
                                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
                                 <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
@@ -84,11 +81,13 @@
                                 <li><a href="../classes/Spring.html">Spring</a></li>
                                 <li><a href="../classes/TopDownVehicle.html">TopDownVehicle</a></li>
                                 <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
+                                <li><a href="../classes/UnionFind.html">UnionFind</a></li>
                                 <li><a href="../classes/Utils.html">Utils</a></li>
                                 <li><a href="../classes/vec2.html">vec2</a></li>
                                 <li><a href="../classes/WheelConstraint.html">WheelConstraint</a></li>
                                 <li><a href="../classes/World.html">World</a></li>
                             </ul>
+                
                 
                             <ul id="api-modules" class="apis modules">
                             </ul>
@@ -132,7 +131,7 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_objects_Body.js.html#l11"><code>src&#x2F;objects&#x2F;Body.js:11</code></a>
+            Defined in: <a href="../files/src_objects_Body.js.html#l14"><code>src\objects\Body.js:14</code></a>
         </div>
 
 
@@ -147,243 +146,302 @@ shapes that are used for collisions.</p>
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_Body" class="method item">
-            <h3 class="name"><code>Body</code></h3>
-        
-                <div class="args">
-                    <span class="paren">(</span><ul class="args-list inline commas">
-                        <li class="arg">
-                                <code class="optional">[options]</code>
-                        </li>
-                    </ul><span class="paren">)</span>
-                </div>
-        
-        
-        
-        
-        
-        
-        
-        
-            <div class="meta">
-                        <p>
-                        Defined in
-                <a href="../files/src_objects_Body.js.html#l11"><code>src&#x2F;objects&#x2F;Body.js:11</code></a>
-                </p>
-        
-        
-        
-            </div>
-        
-            <div class="description">
-                
-            </div>
-        
-                <div class="params">
-                    <h4>Parameters:</h4>
-        
-                    <ul class="params-list">
-                        <li class="param">
-                                <code class="param-name optional">[options]</code>
-                                <span class="type">Object</span>
-                                <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-        
-                            <div class="param-description">
-                                 
-                            </div>
-        
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name optional">[force]</code>
-                                            <span class="type">Array</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[position]</code>
-                                            <span class="type">Array</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[velocity]</code>
-                                            <span class="type">Array</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[allowSleep]</code>
-                                            <span class="type">Boolean</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[collisionResponse]</code>
-                                            <span class="type">Boolean</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[angle=0]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[angularForce=0]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[angularVelocity=0]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[ccdIterations=10]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[ccdSpeedThreshold=-1]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[fixedRotation=false]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[gravityScale]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[id]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[mass=0]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>A number &gt;= 0. If zero, the .type will be set to Body.STATIC.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[sleepSpeedLimit]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[sleepTimeLimit]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                </ul>
-                        </li>
-                    </ul>
-                </div>
-        
-        
-        
-                <div class="example">
-                    <h4>Example:</h4>
-        
-                    <div class="example-content">
-                        <pre class="code prettyprint"><code>// Create a typical dynamic body
-        var body = new Body({
-            mass: 1,
-            position: [0, 0],
-            angle: 0,
-            velocity: [0, 0],
-            angularVelocity: 0
-        });
-        
-        // Add a circular shape to the body
-        body.addShape(new Circle({ radius: 1 }));
-        
-        // Add the body to the world
-        world.addBody(body);
-        </code></pre>
-                    </div>
-                </div>
+<div id="method_Body" class="method item">
+    <h3 class="name"><code>Body</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code class="optional">[options]</code>
+                </li>
+            </ul><span class="paren">)</span>
         </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l14"><code>src\objects\Body.js:14</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name optional">[options]</code>
+                        <span class="type">Object</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                        <ul class="params-list">
+                            <li class="param">
+                                    <code class="param-name optional">[allowSleep=true]</code>
+                                    <span class="type">Boolean</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[angle=0]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[angularDamping=0.1]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[angularForce=0]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[angularVelocity=0]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[ccdIterations=10]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[ccdSpeedThreshold=-1]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[collisionResponse]</code>
+                                    <span class="type">Boolean</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[damping=0.1]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[fixedRotation=false]</code>
+                                    <span class="type">Boolean</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[fixedX=false]</code>
+                                    <span class="type">Boolean</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[fixedY=false]</code>
+                                    <span class="type">Boolean</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[force]</code>
+                                    <span class="type">Array</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[gravityScale=1]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[mass=0]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>A number &gt;= 0. If zero, the .type will be set to Body.STATIC.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[position]</code>
+                                    <span class="type">Array</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[sleepSpeedLimit]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[sleepTimeLimit]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[type]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>See <a href="../classes/Body.html#property_type" class="crosslink">type</a></p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[velocity]</code>
+                                    <span class="type">Array</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                        </ul>
+                </li>
+            </ul>
+        </div>
+
+
+
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre class="code prettyprint"><code>// Create a typical dynamic body
+var body = new Body({
+    mass: 1, // non-zero mass will set type to Body.DYNAMIC
+    position: [0, 5],
+    angle: 0,
+    velocity: [0, 0],
+    angularVelocity: 0
+});
+
+// Add a circular shape to the body
+var circleShape = new Circle({ radius: 0.5 });
+body.addShape(circleShape);
+
+// Add the body to the world
+world.addBody(body);</code></pre>
+<pre class="code prettyprint"><code>// Create a static plane body
+var planeBody = new Body({
+    mass: 0, // zero mass will set type to Body.STATIC
+    position: [0, 0]
+});
+var planeShape = new Plane();
+planeBody.addShape(planeShape);
+world.addBody(planeBody);</code></pre>
+<pre class="code prettyprint"><code>// Create a moving kinematic box body
+var platformBody = new Body({
+    type: Body.KINEMATIC,
+    position: [0, 3],
+    velocity: [1, 0]
+});
+var boxShape = new Box({ width: 2, height: 0.5 });
+platformBody.addShape(boxShape);
+world.addBody(platformBody);</code></pre>
+
+            </div>
+        </div>
+</div>
     </div>
 
 <div id="classdocs" class="tabview">
@@ -621,6 +679,10 @@ shapes that are used for collisions.</p>
 
                             </li>
                             <li class="index-item property">
+                                <a href="#property_index">index</a>
+
+                            </li>
+                            <li class="index-item property">
                                 <a href="#property_inertia">inertia</a>
 
                             </li>
@@ -638,6 +700,10 @@ shapes that are used for collisions.</p>
                             </li>
                             <li class="index-item property">
                                 <a href="#property_invMass">invMass</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_islandId">islandId</a>
 
                             </li>
                             <li class="index-item property">
@@ -774,7 +840,7 @@ shapes that are used for collisions.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l529"><code>src&#x2F;objects&#x2F;Body.js:529</code></a>
+        <a href="../files/src_objects_Body.js.html#l618"><code>src\objects\Body.js:618</code></a>
         </p>
 
 
@@ -845,8 +911,8 @@ body.addShape(shape);
 body.addShape(shape,[1,0]);
 
 // Add another shape to the body, positioned 1 unit length from the body center of mass along the local y-axis, and rotated 90 degrees CCW.
-body.addShape(shape,[0,1],Math.PI/2);
-</code></pre>
+body.addShape(shape,[0,1],Math.PI/2);</code></pre>
+
             </div>
         </div>
 </div>
@@ -865,7 +931,7 @@ body.addShape(shape,[0,1],Math.PI/2);
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l858"><code>src&#x2F;objects&#x2F;Body.js:858</code></a>
+        <a href="../files/src_objects_Body.js.html#l988"><code>src\objects\Body.js:988</code></a>
         </p>
 
 
@@ -880,6 +946,19 @@ body.addShape(shape,[0,1],Math.PI/2);
 
 
 
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre class="code prettyprint"><code>var body = new Body({ position: [0, 0] });
+var shape = new Circle({ radius: 1 });
+body.addShape(shape, [1, 0], 0);
+body.adjustCenterOfMass();
+console.log(body.position); // [1, 0]
+console.log(shape.position); // [0, 0]</code></pre>
+
+            </div>
+        </div>
 </div>
 <div id="method_applyDamping" class="method item">
     <h3 class="name"><code>applyDamping</code></h3>
@@ -902,7 +981,7 @@ body.addShape(shape,[0,1],Math.PI/2);
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l919"><code>src&#x2F;objects&#x2F;Body.js:919</code></a>
+        <a href="../files/src_objects_Body.js.html#l1056"><code>src\objects\Body.js:1056</code></a>
         </p>
 
 
@@ -959,7 +1038,7 @@ body.addShape(shape,[0,1],Math.PI/2);
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l646"><code>src&#x2F;objects&#x2F;Body.js:646</code></a>
+        <a href="../files/src_objects_Body.js.html#l740"><code>src\objects\Body.js:740</code></a>
         </p>
 
 
@@ -967,7 +1046,7 @@ body.addShape(shape,[0,1],Math.PI/2);
     </div>
 
     <div class="description">
-        <p>Apply force to a point relative to the center of mass of the body. This could for example be a point on the RigidBody surface. Applying force this way will add to Body.force and Body.angularForce. If relativePoint is zero, the force will be applied directly on the center of mass, and the torque produced will be zero.</p>
+        <p>Apply force to a point relative to the center of mass of the body. This could for example be a point on the Body surface. Applying force this way will add to Body.force and Body.angularForce.</p>
 
     </div>
 
@@ -981,7 +1060,7 @@ body.addShape(shape,[0,1],Math.PI/2);
 
 
                     <div class="param-description">
-                        <p>The force to add.</p>
+                        <p>The force vector to add, oriented in world space.</p>
 
                     </div>
 
@@ -993,7 +1072,7 @@ body.addShape(shape,[0,1],Math.PI/2);
 
 
                     <div class="param-description">
-                        <p>A world point to apply the force on.</p>
+                        <p>A point relative to the body in world space. If not given, it is set to zero and all of the force will be exerted on the center of mass.</p>
 
                     </div>
 
@@ -1003,6 +1082,19 @@ body.addShape(shape,[0,1],Math.PI/2);
 
 
 
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre class="code prettyprint"><code>var body = new Body({ mass: 1 });
+var relativePoint = [1, 0]; // Will apply the force at [body.position[0] + 1, body.position[1]]
+var force = [0, 1]; // up
+body.applyForce(force, relativePoint);
+console.log(body.force); // [0, 1]
+console.log(body.angularForce); // 1</code></pre>
+
+            </div>
+        </div>
 </div>
 <div id="method_applyForceLocal" class="method item">
     <h3 class="name"><code>applyForceLocal</code></h3>
@@ -1028,7 +1120,7 @@ body.addShape(shape,[0,1],Math.PI/2);
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l667"><code>src&#x2F;objects&#x2F;Body.js:667</code></a>
+        <a href="../files/src_objects_Body.js.html#l768"><code>src\objects\Body.js:768</code></a>
         </p>
 
 
@@ -1036,7 +1128,7 @@ body.addShape(shape,[0,1],Math.PI/2);
     </div>
 
     <div class="description">
-        <p>Apply force to a body-local point.</p>
+        <p>Apply force to a point relative to the center of mass of the body. This could for example be a point on the Body surface. Applying force this way will add to Body.force and Body.angularForce.</p>
 
     </div>
 
@@ -1062,7 +1154,7 @@ body.addShape(shape,[0,1],Math.PI/2);
 
 
                     <div class="param-description">
-                        <p>A point relative to the body in world space. If not given, it is set to zero and all of the impulse will be excerted on the center of mass.</p>
+                        <p>A point relative to the body in local body space. If not given, it is set to zero and all of the force will be exerted on the center of mass.</p>
 
                     </div>
 
@@ -1072,6 +1164,19 @@ body.addShape(shape,[0,1],Math.PI/2);
 
 
 
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre class="code prettyprint"><code>var body = new Body({ mass: 1 });
+var localPoint = [1, 0]; // x=1 locally in the body
+var localForce = [0, 1]; // up, locally in the body
+body.applyForceLocal(localForce, localPoint);
+console.log(body.force); // [0, 1]
+console.log(body.angularForce); // 1</code></pre>
+
+            </div>
+        </div>
 </div>
 <div id="method_applyImpulse" class="method item">
     <h3 class="name"><code>applyImpulse</code></h3>
@@ -1079,7 +1184,7 @@ body.addShape(shape,[0,1],Math.PI/2);
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
                 <li class="arg">
-                        <code>impulse</code>
+                        <code>impulseVector</code>
                 </li>
                 <li class="arg">
                         <code class="optional">[relativePoint]</code>
@@ -1097,7 +1202,7 @@ body.addShape(shape,[0,1],Math.PI/2);
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l685"><code>src&#x2F;objects&#x2F;Body.js:685</code></a>
+        <a href="../files/src_objects_Body.js.html#l793"><code>src\objects\Body.js:793</code></a>
         </p>
 
 
@@ -1114,7 +1219,7 @@ body.addShape(shape,[0,1],Math.PI/2);
 
             <ul class="params-list">
                 <li class="param">
-                        <code class="param-name">impulse</code>
+                        <code class="param-name">impulseVector</code>
                         <span class="type">Array</span>
 
 
@@ -1131,7 +1236,7 @@ body.addShape(shape,[0,1],Math.PI/2);
 
 
                     <div class="param-description">
-                        <p>A point relative to the body in world space. If not given, it is set to zero and all of the impulse will be excerted on the center of mass.</p>
+                        <p>A point relative to the body in world space. If not given, it is set to zero and all of the impulse will be exerted on the center of mass.</p>
 
                     </div>
 
@@ -1141,6 +1246,17 @@ body.addShape(shape,[0,1],Math.PI/2);
 
 
 
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre class="code prettyprint"><code>var body = new Body({ mass: 1 });
+var relativePoint = [0, 0]; // center of the body
+var impulseVector = [0, 1]; // world up
+body.applyImpulse(impulseVector, relativePoint);</code></pre>
+
+            </div>
+        </div>
 </div>
 <div id="method_applyImpulseLocal" class="method item">
     <h3 class="name"><code>applyImpulseLocal</code></h3>
@@ -1148,10 +1264,10 @@ body.addShape(shape,[0,1],Math.PI/2);
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
                 <li class="arg">
-                        <code>impulse</code>
+                        <code>localImpulse</code>
                 </li>
                 <li class="arg">
-                        <code class="optional">[relativePoint]</code>
+                        <code class="optional">[localPoint]</code>
                 </li>
             </ul><span class="paren">)</span>
         </div>
@@ -1166,7 +1282,7 @@ body.addShape(shape,[0,1],Math.PI/2);
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l715"><code>src&#x2F;objects&#x2F;Body.js:715</code></a>
+        <a href="../files/src_objects_Body.js.html#l828"><code>src\objects\Body.js:828</code></a>
         </p>
 
 
@@ -1183,24 +1299,24 @@ body.addShape(shape,[0,1],Math.PI/2);
 
             <ul class="params-list">
                 <li class="param">
-                        <code class="param-name">impulse</code>
+                        <code class="param-name">localImpulse</code>
                         <span class="type">Array</span>
 
 
                     <div class="param-description">
-                        <p>The impulse vector to add, oriented in world space.</p>
+                        <p>The impulse vector to add, oriented in local body space.</p>
 
                     </div>
 
                 </li>
                 <li class="param">
-                        <code class="param-name optional">[relativePoint]</code>
+                        <code class="param-name optional">[localPoint]</code>
                         <span class="type">Array</span>
                         <span class="flag optional" title="This parameter is optional.">optional</span>
 
 
                     <div class="param-description">
-                        <p>A point relative to the body in world space. If not given, it is set to zero and all of the impulse will be excerted on the center of mass.</p>
+                        <p>A point relative to the body in local body space. If not given, it is set to zero and all of the impulse will be exerted on the center of mass.</p>
 
                     </div>
 
@@ -1210,6 +1326,19 @@ body.addShape(shape,[0,1],Math.PI/2);
 
 
 
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre class="code prettyprint"><code>var body = new Body({ mass: 1 });
+var localPoint = [1, 0]; // x=1, locally in the body
+var localImpulse = [0, 1]; // up, locally in the body
+body.applyImpulseLocal(localImpulse, localPoint);
+console.log(body.velocity); // [1, 0]
+console.log(body.angularVelocity); // 1</code></pre>
+
+            </div>
+        </div>
 </div>
 <div id="method_emit" class="method item inherited">
     <h3 class="name"><code>emit</code></h3>
@@ -1235,7 +1364,7 @@ body.addShape(shape,[0,1],Math.PI/2);
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/EventEmitter.html#method_emit">EventEmitter</a>:
-        <a href="../files/src_events_EventEmitter.js.html#l79"><code>src&#x2F;events&#x2F;EventEmitter.js:79</code></a>
+        <a href="../files/src_events_EventEmitter.js.html#l97"><code>src\events\EventEmitter.js:97</code></a>
         </p>
 
 
@@ -1257,7 +1386,7 @@ body.addShape(shape,[0,1],Math.PI/2);
 
 
                     <div class="param-description">
-                        
+                         
                     </div>
 
                         <ul class="params-list">
@@ -1286,6 +1415,17 @@ body.addShape(shape,[0,1],Math.PI/2);
         </div>
 
 
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre class="code prettyprint"><code>emitter.emit({
+    type: 'myEvent',
+    customData: 123
+});</code></pre>
+
+            </div>
+        </div>
 </div>
 <div id="method_fromPolygon" class="method item">
     <h3 class="name"><code>fromPolygon</code></h3>
@@ -1314,7 +1454,7 @@ body.addShape(shape,[0,1],Math.PI/2);
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l773"><code>src&#x2F;objects&#x2F;Body.js:773</code></a>
+        <a href="../files/src_objects_Body.js.html#l893"><code>src\objects\Body.js:893</code></a>
         </p>
 
 
@@ -1401,6 +1541,23 @@ body.addShape(shape,[0,1],Math.PI/2);
         </div>
 
 
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre class="code prettyprint"><code>var body = new Body();
+var path = [
+    [-1, 1],
+    [-1, 0],
+    [1, 0],
+    [1, 1],
+    [0.5, 0.5]
+];
+body.fromPolygon(path);
+console.log(body.shapes); // [Convex, Convex, ...]</code></pre>
+
+            </div>
+        </div>
 </div>
 <div id="method_getAABB" class="method item">
     <h3 class="name"><code>getAABB</code></h3>
@@ -1420,7 +1577,7 @@ body.addShape(shape,[0,1],Math.PI/2);
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l462"><code>src&#x2F;objects&#x2F;Body.js:462</code></a>
+        <a href="../files/src_objects_Body.js.html#l552"><code>src\objects\Body.js:552</code></a>
         </p>
 
 
@@ -1438,7 +1595,7 @@ body.addShape(shape,[0,1],Math.PI/2);
 
             <div class="returns-description">
                         <span class="type"><a href="../classes/AABB.html" class="crosslink">AABB</a></span>:
-                    <p>The AABB instance (this.aabb)</p>
+                    <p>The AABB instance from the body.</p>
 
             </div>
         </div>
@@ -1463,7 +1620,7 @@ body.addShape(shape,[0,1],Math.PI/2);
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l449"><code>src&#x2F;objects&#x2F;Body.js:449</code></a>
+        <a href="../files/src_objects_Body.js.html#l539"><code>src\objects\Body.js:539</code></a>
         </p>
 
 
@@ -1513,7 +1670,7 @@ body.addShape(shape,[0,1],Math.PI/2);
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l1138"><code>src&#x2F;objects&#x2F;Body.js:1138</code></a>
+        <a href="../files/src_objects_Body.js.html#l1298"><code>src\objects\Body.js:1298</code></a>
         </p>
 
 
@@ -1565,6 +1722,22 @@ body.addShape(shape,[0,1],Math.PI/2);
         </div>
 
 
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre class="code prettyprint"><code>var body = new Body({
+    mass: 1,
+    velocity: [1, 0],
+    angularVelocity: 1
+});
+var result = [];
+var point = [1, 0];
+body.getVelocityAtPoint(result, point);
+console.log(result); // [1, 1]</code></pre>
+
+            </div>
+        </div>
 </div>
 <div id="method_has" class="method item inherited">
     <h3 class="name"><code>has</code></h3>
@@ -1593,7 +1766,7 @@ body.addShape(shape,[0,1],Math.PI/2);
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/EventEmitter.html#method_has">EventEmitter</a>:
-        <a href="../files/src_events_EventEmitter.js.html#l35"><code>src&#x2F;events&#x2F;EventEmitter.js:35</code></a>
+        <a href="../files/src_events_EventEmitter.js.html#l72"><code>src\events\EventEmitter.js:72</code></a>
         </p>
 
 
@@ -1615,7 +1788,7 @@ body.addShape(shape,[0,1],Math.PI/2);
 
 
                     <div class="param-description">
-                        
+                         
                     </div>
 
                 </li>
@@ -1625,7 +1798,7 @@ body.addShape(shape,[0,1],Math.PI/2);
 
 
                     <div class="param-description">
-                        
+                         
                     </div>
 
                 </li>
@@ -1663,7 +1836,7 @@ body.addShape(shape,[0,1],Math.PI/2);
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l1007"><code>src&#x2F;objects&#x2F;Body.js:1007</code></a>
+        <a href="../files/src_objects_Body.js.html#l1146"><code>src\objects\Body.js:1146</code></a>
         </p>
 
 
@@ -1722,7 +1895,7 @@ body.addShape(shape,[0,1],Math.PI/2);
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/EventEmitter.html#method_off">EventEmitter</a>:
-        <a href="../files/src_events_EventEmitter.js.html#l60"><code>src&#x2F;events&#x2F;EventEmitter.js:60</code></a>
+        <a href="../files/src_events_EventEmitter.js.html#l50"><code>src\events\EventEmitter.js:50</code></a>
         </p>
 
 
@@ -1744,7 +1917,7 @@ body.addShape(shape,[0,1],Math.PI/2);
 
 
                     <div class="param-description">
-                        
+                         
                     </div>
 
                 </li>
@@ -1754,7 +1927,7 @@ body.addShape(shape,[0,1],Math.PI/2);
 
 
                     <div class="param-description">
-                        
+                         
                     </div>
 
                 </li>
@@ -1772,6 +1945,15 @@ body.addShape(shape,[0,1],Math.PI/2);
         </div>
 
 
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre class="code prettyprint"><code>emitter.on('myEvent', handler); // Add handler
+emitter.off('myEvent', handler); // Remove handler</code></pre>
+
+            </div>
+        </div>
 </div>
 <div id="method_on" class="method item inherited">
     <h3 class="name"><code>on</code></h3>
@@ -1800,7 +1982,7 @@ body.addShape(shape,[0,1],Math.PI/2);
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/EventEmitter.html#method_on">EventEmitter</a>:
-        <a href="../files/src_events_EventEmitter.js.html#l13"><code>src&#x2F;events&#x2F;EventEmitter.js:13</code></a>
+        <a href="../files/src_events_EventEmitter.js.html#l24"><code>src\events\EventEmitter.js:24</code></a>
         </p>
 
 
@@ -1822,7 +2004,7 @@ body.addShape(shape,[0,1],Math.PI/2);
 
 
                     <div class="param-description">
-                        
+                         
                     </div>
 
                 </li>
@@ -1832,7 +2014,7 @@ body.addShape(shape,[0,1],Math.PI/2);
 
 
                     <div class="param-description">
-                        
+                         
                     </div>
 
                 </li>
@@ -1850,6 +2032,16 @@ body.addShape(shape,[0,1],Math.PI/2);
         </div>
 
 
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre class="code prettyprint"><code>emitter.on('myEvent', function(evt){
+    console.log('myEvt was triggered!');
+});</code></pre>
+
+            </div>
+        </div>
 </div>
 <div id="method_overlaps" class="method item">
     <h3 class="name"><code>overlaps</code></h3>
@@ -1875,7 +2067,7 @@ body.addShape(shape,[0,1],Math.PI/2);
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l994"><code>src&#x2F;objects&#x2F;Body.js:994</code></a>
+        <a href="../files/src_objects_Body.js.html#l1133"><code>src\objects\Body.js:1133</code></a>
         </p>
 
 
@@ -1938,7 +2130,7 @@ body.addShape(shape,[0,1],Math.PI/2);
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l574"><code>src&#x2F;objects&#x2F;Body.js:574</code></a>
+        <a href="../files/src_objects_Body.js.html#l667"><code>src\objects\Body.js:667</code></a>
         </p>
 
 
@@ -1946,7 +2138,7 @@ body.addShape(shape,[0,1],Math.PI/2);
     </div>
 
     <div class="description">
-        <p>Remove a shape</p>
+        <p>Remove a shape.</p>
 
     </div>
 
@@ -2000,7 +2192,7 @@ body.addShape(shape,[0,1],Math.PI/2);
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l438"><code>src&#x2F;objects&#x2F;Body.js:438</code></a>
+        <a href="../files/src_objects_Body.js.html#l528"><code>src\objects\Body.js:528</code></a>
         </p>
 
 
@@ -2047,7 +2239,7 @@ body.addShape(shape,[0,1],Math.PI/2);
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l896"><code>src&#x2F;objects&#x2F;Body.js:896</code></a>
+        <a href="../files/src_objects_Body.js.html#l1033"><code>src\objects\Body.js:1033</code></a>
         </p>
 
 
@@ -2078,7 +2270,7 @@ body.addShape(shape,[0,1],Math.PI/2);
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l946"><code>src&#x2F;objects&#x2F;Body.js:946</code></a>
+        <a href="../files/src_objects_Body.js.html#l1083"><code>src\objects\Body.js:1083</code></a>
         </p>
 
 
@@ -2121,7 +2313,7 @@ body.addShape(shape,[0,1],Math.PI/2);
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l959"><code>src&#x2F;objects&#x2F;Body.js:959</code></a>
+        <a href="../files/src_objects_Body.js.html#l1095"><code>src\objects\Body.js:1095</code></a>
         </p>
 
 
@@ -2198,7 +2390,7 @@ body.addShape(shape,[0,1],Math.PI/2);
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l733"><code>src&#x2F;objects&#x2F;Body.js:733</code></a>
+        <a href="../files/src_objects_Body.js.html#l853"><code>src\objects\Body.js:853</code></a>
         </p>
 
 
@@ -2220,7 +2412,7 @@ body.addShape(shape,[0,1],Math.PI/2);
 
 
                     <div class="param-description">
-                        <p>The vector to store the result in</p>
+                        <p>The point to store the result in</p>
 
                     </div>
 
@@ -2266,7 +2458,7 @@ body.addShape(shape,[0,1],Math.PI/2);
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l743"><code>src&#x2F;objects&#x2F;Body.js:743</code></a>
+        <a href="../files/src_objects_Body.js.html#l863"><code>src\objects\Body.js:863</code></a>
         </p>
 
 
@@ -2288,7 +2480,7 @@ body.addShape(shape,[0,1],Math.PI/2);
 
 
                     <div class="param-description">
-                        <p>The vector to store the result in</p>
+                        <p>The point to store the result in</p>
 
                     </div>
 
@@ -2325,7 +2517,7 @@ body.addShape(shape,[0,1],Math.PI/2);
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l477"><code>src&#x2F;objects&#x2F;Body.js:477</code></a>
+        <a href="../files/src_objects_Body.js.html#l567"><code>src\objects\Body.js:567</code></a>
         </p>
 
 
@@ -2356,7 +2548,7 @@ body.addShape(shape,[0,1],Math.PI/2);
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l508"><code>src&#x2F;objects&#x2F;Body.js:508</code></a>
+        <a href="../files/src_objects_Body.js.html#l597"><code>src\objects\Body.js:597</code></a>
         </p>
 
 
@@ -2387,7 +2579,7 @@ body.addShape(shape,[0,1],Math.PI/2);
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l593"><code>src&#x2F;objects&#x2F;Body.js:593</code></a>
+        <a href="../files/src_objects_Body.js.html#l691"><code>src\objects\Body.js:691</code></a>
         </p>
 
 
@@ -2395,8 +2587,7 @@ body.addShape(shape,[0,1],Math.PI/2);
     </div>
 
     <div class="description">
-        <p>Updates .inertia, .invMass, .invInertia for this Body. Should be called when
-changing the structure or mass of the Body.</p>
+        <p>Updates .inertia, .invMass, .invInertia for this Body. Should be called when changing the structure or mass of the Body.</p>
 
     </div>
 
@@ -2408,8 +2599,8 @@ changing the structure or mass of the Body.</p>
 
             <div class="example-content">
                 <pre class="code prettyprint"><code>body.mass += 1;
-body.updateMassProperties();
-</code></pre>
+body.updateMassProperties();</code></pre>
+
             </div>
         </div>
 </div>
@@ -2429,7 +2620,7 @@ body.updateMassProperties();
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l424"><code>src&#x2F;objects&#x2F;Body.js:424</code></a>
+        <a href="../files/src_objects_Body.js.html#l514"><code>src\objects\Body.js:514</code></a>
         </p>
 
 
@@ -2468,7 +2659,7 @@ body.updateMassProperties();
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l753"><code>src&#x2F;objects&#x2F;Body.js:753</code></a>
+        <a href="../files/src_objects_Body.js.html#l873"><code>src\objects\Body.js:873</code></a>
         </p>
 
 
@@ -2476,7 +2667,7 @@ body.updateMassProperties();
     </div>
 
     <div class="description">
-        <p>Transform a world point to local body frame.</p>
+        <p>Transform a world vector to local body frame.</p>
 
     </div>
 
@@ -2536,7 +2727,7 @@ body.updateMassProperties();
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l763"><code>src&#x2F;objects&#x2F;Body.js:763</code></a>
+        <a href="../files/src_objects_Body.js.html#l883"><code>src\objects\Body.js:883</code></a>
         </p>
 
 
@@ -2544,7 +2735,7 @@ body.updateMassProperties();
     </div>
 
     <div class="description">
-        <p>Transform a local point to world frame.</p>
+        <p>Transform a local vector to world frame.</p>
 
     </div>
 
@@ -2595,7 +2786,7 @@ body.updateMassProperties();
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l932"><code>src&#x2F;objects&#x2F;Body.js:932</code></a>
+        <a href="../files/src_objects_Body.js.html#l1069"><code>src\objects\Body.js:1069</code></a>
         </p>
 
 
@@ -2604,7 +2795,7 @@ body.updateMassProperties();
 
     <div class="description">
         <p>Wake the body up. Normally you should not need this, as the body is automatically awoken at events such as collisions.
-Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="crosslink">Body.AWAKE</a> and emits the wakeUp event if the body wasn&#39;t awake before.</p>
+Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="crosslink">Body.AWAKE</a> and emits the wakeUp event if the body wasn't awake before.</p>
 
     </div>
 
@@ -2617,1214 +2808,1294 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
-                    <div id="property_aabb" class="property item">
-                        <h3 class="name"><code>aabb</code></h3>
-                        <span class="type"><a href="../classes/AABB.html" class="crosslink">AABB</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l315"><code>src&#x2F;objects&#x2F;Body.js:315</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Bounding box of this body.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_aabbNeedsUpdate" class="property item">
-                        <h3 class="name"><code>aabbNeedsUpdate</code></h3>
-                        <span class="type">Boolean</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l322"><code>src&#x2F;objects&#x2F;Body.js:322</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Indicates if the AABB needs update. Update it with <a href="../classes/Body.html#method_updateAABB" class="crosslink">.updateAABB()</a>.</p>
-                    
-                        </div>
-                    
-                    
-                            <div class="example">
-                                <h4>Example:</h4>
-                    
-                                <div class="example-content">
-                                    <pre class="code prettyprint"><code>// Force update the AABB
-                    body.aabbNeedsUpdate = true;
-                    body.updateAABB();
-                    console.log(body.aabbNeedsUpdate); // false
-                    </code></pre>
-                                </div>
-                            </div>
-                    
-                    </div>
-                    <div id="property_allowSleep" class="property item">
-                        <h3 class="name"><code>allowSleep</code></h3>
-                        <span class="type">Boolean</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l336"><code>src&#x2F;objects&#x2F;Body.js:336</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>If true, the body will automatically fall to sleep. Note that you need to enable sleeping in the <a href="../classes/World.html" class="crosslink">World</a> before anything will happen.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> true</p>
-                    
-                    
-                    </div>
-                    <div id="property_angle" class="property item">
-                        <h3 class="name"><code>angle</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l198"><code>src&#x2F;objects&#x2F;Body.js:198</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The angle of the body, in radians.</p>
-                    
-                        </div>
-                    
-                    
-                            <div class="example">
-                                <h4>Example:</h4>
-                    
-                                <div class="example-content">
-                                    <pre class="code prettyprint"><code>// The angle property is not normalized to the interval 0 to 2*pi, it can be any value.
-                    // If you need a value between 0 and 2*pi, use the following function to normalize it.
-                    function normalizeAngle(angle){
-                        angle = angle % (2*Math.PI);
-                        if(angle &lt; 0){
-                            angle += (2*Math.PI);
-                        }
-                        return angle;
-                    }
-                    </code></pre>
-                                </div>
-                            </div>
-                    
-                    </div>
-                    <div id="property_angularDamping" class="property item">
-                        <h3 class="name"><code>angularDamping</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l261"><code>src&#x2F;objects&#x2F;Body.js:261</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The angular force acting on the body. Should be a value between 0 and 1.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> 0.1</p>
-                    
-                    
-                    </div>
-                    <div id="property_angularForce" class="property item">
-                        <h3 class="name"><code>angularForce</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l246"><code>src&#x2F;objects&#x2F;Body.js:246</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The angular force acting on the body. See <a href="../classes/Body.html#property_force" class="crosslink">force</a>.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_angularVelocity" class="property item">
-                        <h3 class="name"><code>angularVelocity</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l215"><code>src&#x2F;objects&#x2F;Body.js:215</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The angular velocity of the body, in radians per second.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_AWAKE" class="property item">
-                        <h3 class="name"><code>AWAKE</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                            <span class="flag static">static</span>
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l1196"><code>src&#x2F;objects&#x2F;Body.js:1196</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_boundingRadius" class="property item">
-                        <h3 class="name"><code>boundingRadius</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l308"><code>src&#x2F;objects&#x2F;Body.js:308</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Bounding circle radius.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_ccdIterations" class="property item">
-                        <h3 class="name"><code>ccdIterations</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l406"><code>src&#x2F;objects&#x2F;Body.js:406</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The number of iterations that should be used when searching for the time of impact during CCD. A larger number will assure that there&#39;s a small penetration on CCD collision, but a small number will give more performance.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> 10</p>
-                    
-                    
-                    </div>
-                    <div id="property_ccdSpeedThreshold" class="property item">
-                        <h3 class="name"><code>ccdSpeedThreshold</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l399"><code>src&#x2F;objects&#x2F;Body.js:399</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>If the body speed exceeds this threshold, CCD (continuous collision detection) will be enabled. Set it to a negative number to disable CCD completely for this body.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> -1</p>
-                    
-                    
-                    </div>
-                    <div id="property_collisionResponse" class="property item">
-                        <h3 class="name"><code>collisionResponse</code></h3>
-                        <span class="type">Boolean</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l380"><code>src&#x2F;objects&#x2F;Body.js:380</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Whether to produce contact forces when in contact with other bodies. Note that contacts will be generated, but they will be disabled. That means that this body will move through other bodies, but it will still trigger contact events, etc.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_damping" class="property item">
-                        <h3 class="name"><code>damping</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l253"><code>src&#x2F;objects&#x2F;Body.js:253</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The linear damping acting on the body in the velocity direction. Should be a value between 0 and 1.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> 0.1</p>
-                    
-                    
-                    </div>
-                    <div id="property_DYNAMIC" class="property item">
-                        <h3 class="name"><code>DYNAMIC</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                            <span class="flag static">static</span>
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l1172"><code>src&#x2F;objects&#x2F;Body.js:1172</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Dynamic body.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_fixedRotation" class="property item">
-                        <h3 class="name"><code>fixedRotation</code></h3>
-                        <span class="type">Boolean</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l111"><code>src&#x2F;objects&#x2F;Body.js:111</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Set to true if you want to fix the rotation of the body.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_fixedX" class="property item">
-                        <h3 class="name"><code>fixedX</code></h3>
-                        <span class="type">Boolean</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l118"><code>src&#x2F;objects&#x2F;Body.js:118</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Set to true if you want to fix the body movement along the X axis. The body will still be able to move along Y.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_fixedY" class="property item">
-                        <h3 class="name"><code>fixedY</code></h3>
-                        <span class="type">Boolean</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l124"><code>src&#x2F;objects&#x2F;Body.js:124</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Set to true if you want to fix the body movement along the Y axis. The body will still be able to move along X.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_force" class="property item">
-                        <h3 class="name"><code>force</code></h3>
-                        <span class="type">Array</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l222"><code>src&#x2F;objects&#x2F;Body.js:222</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The force acting on the body. Since the body force (and <a href="../classes/Body.html#property_angularForce" class="crosslink">angularForce</a>) will be zeroed after each step, so you need to set the force before each step.</p>
-                    
-                        </div>
-                    
-                    
-                            <div class="example">
-                                <h4>Example:</h4>
-                    
-                                <div class="example-content">
-                                    <pre class="code prettyprint"><code>// This produces a forcefield of 1 Newton in the positive x direction.
-                    for(var i=0; i&lt;numSteps; i++){
-                        body.force[0] = 1;
-                        world.step(1/60);
-                    }
-                    </code></pre><pre class="code prettyprint"><code>// This will apply a rotational force on the body
-                    for(var i=0; i&lt;numSteps; i++){
-                        body.angularForce = -3;
-                        world.step(1/60);
-                    }
-                    </code></pre>
-                                </div>
-                            </div>
-                    
-                    </div>
-                    <div id="property_gravityScale" class="property item">
-                        <h3 class="name"><code>gravityScale</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l373"><code>src&#x2F;objects&#x2F;Body.js:373</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Gravity scaling factor. If you want the body to ignore gravity, set this to zero. If you want to reverse gravity, set it to -1.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> 1</p>
-                    
-                    
-                    </div>
-                    <div id="property_id" class="property item">
-                        <h3 class="name"><code>id</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l58"><code>src&#x2F;objects&#x2F;Body.js:58</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The body identifyer</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_idleTime" class="property item">
-                        <h3 class="name"><code>idleTime</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l386"><code>src&#x2F;objects&#x2F;Body.js:386</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>How long the body has been sleeping.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_inertia" class="property item">
-                        <h3 class="name"><code>inertia</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l94"><code>src&#x2F;objects&#x2F;Body.js:94</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The inertia of the body around the Z axis.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_interpolatedAngle" class="property item">
-                        <h3 class="name"><code>interpolatedAngle</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l153"><code>src&#x2F;objects&#x2F;Body.js:153</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The interpolated angle of the body. Use this for rendering.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_interpolatedPosition" class="property item">
-                        <h3 class="name"><code>interpolatedPosition</code></h3>
-                        <span class="type">Array</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l146"><code>src&#x2F;objects&#x2F;Body.js:146</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The interpolated position of the body. Use this for rendering.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_invInertia" class="property item">
-                        <h3 class="name"><code>invInertia</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l101"><code>src&#x2F;objects&#x2F;Body.js:101</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The inverse inertia of the body.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_invMass" class="property item">
-                        <h3 class="name"><code>invMass</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l87"><code>src&#x2F;objects&#x2F;Body.js:87</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The inverse mass of the body.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_KINEMATIC" class="property item">
-                        <h3 class="name"><code>KINEMATIC</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                            <span class="flag static">static</span>
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l1188"><code>src&#x2F;objects&#x2F;Body.js:1188</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Kinematic body.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_mass" class="property item">
-                        <h3 class="name"><code>mass</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l80"><code>src&#x2F;objects&#x2F;Body.js:80</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The mass of the body.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_massMultiplier" class="property item private">
-                        <h3 class="name"><code>massMultiplier</code></h3>
-                        <span class="type">Array</span>
-                    
-                    
-                            <span class="flag private">private</span>
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l130"><code>src&#x2F;objects&#x2F;Body.js:130</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_position" class="property item">
-                        <h3 class="name"><code>position</code></h3>
-                        <span class="type">Array</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l136"><code>src&#x2F;objects&#x2F;Body.js:136</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The position of the body</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_previousAngle" class="property item">
-                        <h3 class="name"><code>previousAngle</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l167"><code>src&#x2F;objects&#x2F;Body.js:167</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The previous angle of the body.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_previousPosition" class="property item">
-                        <h3 class="name"><code>previousPosition</code></h3>
-                        <span class="type">Array</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l160"><code>src&#x2F;objects&#x2F;Body.js:160</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The previous position of the body.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_shapes" class="property item">
-                        <h3 class="name"><code>shapes</code></h3>
-                        <span class="type">Array</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l72"><code>src&#x2F;objects&#x2F;Body.js:72</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The shapes of the body.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_SLEEPING" class="property item">
-                        <h3 class="name"><code>SLEEPING</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                            <span class="flag static">static</span>
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l1210"><code>src&#x2F;objects&#x2F;Body.js:1210</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_sleepSpeedLimit" class="property item">
-                        <h3 class="name"><code>sleepSpeedLimit</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l357"><code>src&#x2F;objects&#x2F;Body.js:357</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>If the speed (the norm of the velocity) is smaller than this value, the body is considered sleepy.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> 0.2</p>
-                    
-                    
-                    </div>
-                    <div id="property_sleepState" class="property item">
-                        <h3 class="name"><code>sleepState</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l346"><code>src&#x2F;objects&#x2F;Body.js:346</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>One of <a href="../classes/Body.html#property_AWAKE" class="crosslink">Body.AWAKE</a>, <a href="../classes/Body.html#property_SLEEPY" class="crosslink">Body.SLEEPY</a> and <a href="../classes/Body.html#property_SLEEPING" class="crosslink">Body.SLEEPING</a>.</p>
-                    <p>The body is initially Body.AWAKE. If its velocity norm is below .sleepSpeedLimit, the sleepState will become Body.SLEEPY. If the body continues to be Body.SLEEPY for .sleepTimeLimit seconds, it will fall asleep (Body.SLEEPY).</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> Body.AWAKE</p>
-                    
-                    
-                    </div>
-                    <div id="property_sleepTimeLimit" class="property item">
-                        <h3 class="name"><code>sleepTimeLimit</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l365"><code>src&#x2F;objects&#x2F;Body.js:365</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>If the body has been sleepy for this sleepTimeLimit seconds, it is considered sleeping.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> 1</p>
-                    
-                    
-                    </div>
-                    <div id="property_SLEEPY" class="property item">
-                        <h3 class="name"><code>SLEEPY</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                            <span class="flag static">static</span>
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l1203"><code>src&#x2F;objects&#x2F;Body.js:1203</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_STATIC" class="property item">
-                        <h3 class="name"><code>STATIC</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                            <span class="flag static">static</span>
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l1180"><code>src&#x2F;objects&#x2F;Body.js:1180</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Static body.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_timeLastSleepy" class="property item private">
-                        <h3 class="name"><code>timeLastSleepy</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                            <span class="flag private">private</span>
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l392"><code>src&#x2F;objects&#x2F;Body.js:392</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The last time when the body went to SLEEPY state.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_type" class="property item">
-                        <h3 class="name"><code>type</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l269"><code>src&#x2F;objects&#x2F;Body.js:269</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The type of motion this body has. Should be one of: <a href="../classes/Body.html#property_STATIC" class="crosslink">Body.STATIC</a>, <a href="../classes/Body.html#property_DYNAMIC" class="crosslink">Body.DYNAMIC</a> and <a href="../classes/Body.html#property_KINEMATIC" class="crosslink">Body.KINEMATIC</a>.</p>
-                    <ul>
-                    <li>Static bodies do not move, and they do not respond to forces or collision.</li>
-                    <li>Dynamic bodies body can move and respond to collisions and forces.</li>
-                    <li>Kinematic bodies only moves according to its .velocity, and does not respond to collisions or force.</li>
-                    </ul>
-                    
-                        </div>
-                    
-                    
-                            <div class="example">
-                                <h4>Example:</h4>
-                    
-                                <div class="example-content">
-                                    <pre class="code prettyprint"><code>// Bodies are static by default. Static bodies will never move.
-                    var body = new Body();
-                    console.log(body.type == Body.STATIC); // true
-                    </code></pre><pre class="code prettyprint"><code>// By setting the mass of a body to a nonzero number, the body
-                    // will become dynamic and will move and interact with other bodies.
-                    var dynamicBody = new Body({
-                        mass : 1
-                    });
-                    console.log(dynamicBody.type == Body.DYNAMIC); // true
-                    </code></pre><pre class="code prettyprint"><code>// Kinematic bodies will only move if you change their velocity.
-                    var kinematicBody = new Body({
-                        type: Body.KINEMATIC // Type can be set via the options object.
-                    });
-                    </code></pre>
-                                </div>
-                            </div>
-                    
-                    </div>
-                    <div id="property_velocity" class="property item">
-                        <h3 class="name"><code>velocity</code></h3>
-                        <span class="type">Array</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l174"><code>src&#x2F;objects&#x2F;Body.js:174</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The current velocity of the body.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_vlambda" class="property item">
-                        <h3 class="name"><code>vlambda</code></h3>
-                        <span class="type">Array</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l184"><code>src&#x2F;objects&#x2F;Body.js:184</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Constraint velocity that was added to the body during the last step.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_wlambda" class="property item">
-                        <h3 class="name"><code>wlambda</code></h3>
-                        <span class="type">Array</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l191"><code>src&#x2F;objects&#x2F;Body.js:191</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Angular constraint velocity that was added to the body during last step.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_world" class="property item">
-                        <h3 class="name"><code>world</code></h3>
-                        <span class="type"><a href="../classes/World.html" class="crosslink">World</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l65"><code>src&#x2F;objects&#x2F;Body.js:65</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The world that this body is added to. This property is set to NULL if the body is not added to any world.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
+<div id="property_aabb" class="property item">
+    <h3 class="name"><code>aabb</code></h3>
+    <span class="type"><a href="../classes/AABB.html" class="crosslink">AABB</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l377"><code>src\objects\Body.js:377</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Bounding box of this body. Update with <a href="../classes/Body.html#method_updateAABB" class="crosslink">updateAABB</a>.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_aabbNeedsUpdate" class="property item">
+    <h3 class="name"><code>aabbNeedsUpdate</code></h3>
+    <span class="type">Boolean</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l384"><code>src\objects\Body.js:384</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Indicates if the AABB needs update. Update it with <a href="../classes/Body.html#method_updateAABB" class="crosslink">updateAABB</a>.</p>
+
+    </div>
+
+
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre class="code prettyprint"><code>// Force update the AABB
+body.aabbNeedsUpdate = true;
+body.updateAABB();
+console.log(body.aabbNeedsUpdate); // false</code></pre>
+
+            </div>
+        </div>
+
+</div>
+<div id="property_allowSleep" class="property item">
+    <h3 class="name"><code>allowSleep</code></h3>
+    <span class="type">Boolean</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l398"><code>src\objects\Body.js:398</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>If true, the body will automatically fall to sleep. Note that you need to enable sleeping in the <a href="../classes/World.html" class="crosslink">World</a> before anything will happen.</p>
+
+    </div>
+
+        <p><strong>Default:</strong> true</p>
+
+
+</div>
+<div id="property_angle" class="property item">
+    <h3 class="name"><code>angle</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l246"><code>src\objects\Body.js:246</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>The angle of the body, in radians.</p>
+
+    </div>
+
+
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre class="code prettyprint"><code>// The angle property is not normalized to the interval 0 to 2*pi, it can be any value.
+// If you need a value between 0 and 2*pi, use the following function to normalize it.
+function normalizeAngle(angle){
+    angle = angle % (2*Math.PI);
+    if(angle &lt; 0){
+        angle += (2*Math.PI);
+    }
+    return angle;
+}</code></pre>
+
+            </div>
+        </div>
+
+</div>
+<div id="property_angularDamping" class="property item">
+    <h3 class="name"><code>angularDamping</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l322"><code>src\objects\Body.js:322</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>The angular force acting on the body. Should be a value between 0 and 1.</p>
+
+    </div>
+
+        <p><strong>Default:</strong> 0.1</p>
+
+
+</div>
+<div id="property_angularForce" class="property item">
+    <h3 class="name"><code>angularForce</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l307"><code>src\objects\Body.js:307</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>The angular force acting on the body. See <a href="../classes/Body.html#property_force" class="crosslink">force</a>.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_angularVelocity" class="property item">
+    <h3 class="name"><code>angularVelocity</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l279"><code>src\objects\Body.js:279</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>The angular velocity of the body, in radians per second.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_AWAKE" class="property item">
+    <h3 class="name"><code>AWAKE</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+        <span class="flag static">static</span>
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l1345"><code>src\objects\Body.js:1345</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_boundingRadius" class="property item">
+    <h3 class="name"><code>boundingRadius</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l369"><code>src\objects\Body.js:369</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Bounding circle radius. Update with <a href="../classes/Body.html#method_updateBoundingRadius" class="crosslink">updateBoundingRadius</a>.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_ccdIterations" class="property item">
+    <h3 class="name"><code>ccdIterations</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l470"><code>src\objects\Body.js:470</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>The number of iterations that should be used when searching for the time of impact during CCD. A larger number will assure that there's a small penetration on CCD collision, but a small number will give more performance.</p>
+
+    </div>
+
+        <p><strong>Default:</strong> 10</p>
+
+
+</div>
+<div id="property_ccdSpeedThreshold" class="property item">
+    <h3 class="name"><code>ccdSpeedThreshold</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l463"><code>src\objects\Body.js:463</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>If the body speed exceeds this threshold, CCD (continuous collision detection) will be enabled. Set it to a negative number to disable CCD completely for this body.</p>
+
+    </div>
+
+        <p><strong>Default:</strong> -1</p>
+
+
+</div>
+<div id="property_collisionResponse" class="property item">
+    <h3 class="name"><code>collisionResponse</code></h3>
+    <span class="type">Boolean</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l442"><code>src\objects\Body.js:442</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Whether to produce contact forces when in contact with other bodies. Note that contacts will be generated, but they will be disabled. That means that this body will move through other bodies, but it will still trigger contact events, etc.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_damping" class="property item">
+    <h3 class="name"><code>damping</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l314"><code>src\objects\Body.js:314</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>The linear damping acting on the body in the velocity direction. Should be a value between 0 and 1.</p>
+
+    </div>
+
+        <p><strong>Default:</strong> 0.1</p>
+
+
+</div>
+<div id="property_DYNAMIC" class="property item">
+    <h3 class="name"><code>DYNAMIC</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+        <span class="flag static">static</span>
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l1321"><code>src\objects\Body.js:1321</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Dynamic body.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_fixedRotation" class="property item">
+    <h3 class="name"><code>fixedRotation</code></h3>
+    <span class="type">Boolean</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l161"><code>src\objects\Body.js:161</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Set to true if you want to fix the rotation of the body.</p>
+
+    </div>
+
+
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre class="code prettyprint"><code>// Fix rotation during runtime
+body.fixedRotation = true;
+body.updateMassProperties();</code></pre>
+
+            </div>
+        </div>
+
+</div>
+<div id="property_fixedX" class="property item">
+    <h3 class="name"><code>fixedX</code></h3>
+    <span class="type">Boolean</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l174"><code>src\objects\Body.js:174</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Set to true if you want to fix the body movement along the X axis. The body will still be able to move along Y.</p>
+
+    </div>
+
+
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre class="code prettyprint"><code>// Fix X movement on body creation
+var body = new Body({ mass: 1, fixedX: true });</code></pre>
+<pre class="code prettyprint"><code>// Fix X movement during runtime
+body.fixedX = true;
+body.updateMassProperties();</code></pre>
+
+            </div>
+        </div>
+
+</div>
+<div id="property_fixedY" class="property item">
+    <h3 class="name"><code>fixedY</code></h3>
+    <span class="type">Boolean</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l189"><code>src\objects\Body.js:189</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Set to true if you want to fix the body movement along the Y axis. The body will still be able to move along X. See .fixedX</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_force" class="property item">
+    <h3 class="name"><code>force</code></h3>
+    <span class="type">Array</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l286"><code>src\objects\Body.js:286</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>The force acting on the body. Since the body force (and <a href="../classes/Body.html#property_angularForce" class="crosslink">angularForce</a>) will be zeroed after each step, so you need to set the force before each step.</p>
+
+    </div>
+
+
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre class="code prettyprint"><code>// This produces a forcefield of 1 Newton in the positive x direction.
+for(var i=0; i&lt;numSteps; i++){
+    body.force[0] = 1;
+    world.step(1/60);
+}</code></pre>
+<pre class="code prettyprint"><code>// This will apply a rotational force on the body
+for(var i=0; i&lt;numSteps; i++){
+    body.angularForce = -3;
+    world.step(1/60);
+}</code></pre>
+
+            </div>
+        </div>
+
+</div>
+<div id="property_gravityScale" class="property item">
+    <h3 class="name"><code>gravityScale</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l435"><code>src\objects\Body.js:435</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Gravity scaling factor. If you want the body to ignore gravity, set this to zero. If you want to reverse gravity, set it to -1.</p>
+
+    </div>
+
+        <p><strong>Default:</strong> 1</p>
+
+
+</div>
+<div id="property_id" class="property item">
+    <h3 class="name"><code>id</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l89"><code>src\objects\Body.js:89</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>The body identifier. Read only!</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_idleTime" class="property item">
+    <h3 class="name"><code>idleTime</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l448"><code>src\objects\Body.js:448</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>How long the body has been sleeping.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_index" class="property item">
+    <h3 class="name"><code>index</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l97"><code>src\objects\Body.js:97</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Index of the body in the World .bodies array. Is set to -1 if the body isn't added to a World.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_inertia" class="property item">
+    <h3 class="name"><code>inertia</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l142"><code>src\objects\Body.js:142</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>The inertia of the body around the Z axis.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_interpolatedAngle" class="property item">
+    <h3 class="name"><code>interpolatedAngle</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l271"><code>src\objects\Body.js:271</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>The interpolated angle of the body. Use this for rendering.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_interpolatedPosition" class="property item">
+    <h3 class="name"><code>interpolatedPosition</code></h3>
+    <span class="type">Array</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l208"><code>src\objects\Body.js:208</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>The interpolated position of the body. Use this for rendering.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_invInertia" class="property item">
+    <h3 class="name"><code>invInertia</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l150"><code>src\objects\Body.js:150</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>The inverse inertia of the body.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_invMass" class="property item">
+    <h3 class="name"><code>invMass</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l133"><code>src\objects\Body.js:133</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>The inverse mass of the body.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_islandId" class="property item">
+    <h3 class="name"><code>islandId</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l477"><code>src\objects\Body.js:477</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_KINEMATIC" class="property item">
+    <h3 class="name"><code>KINEMATIC</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+        <span class="flag static">static</span>
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l1337"><code>src\objects\Body.js:1337</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Kinematic body.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_mass" class="property item">
+    <h3 class="name"><code>mass</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l121"><code>src\objects\Body.js:121</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>The mass of the body. If you change this number, you should call <a href="../classes/Body.html#method_updateMassProperties" class="crosslink">updateMassProperties</a>.</p>
+
+    </div>
+
+
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre class="code prettyprint"><code>body.mass = 1;
+body.updateMassProperties();</code></pre>
+
+            </div>
+        </div>
+
+</div>
+<div id="property_massMultiplier" class="property item private">
+    <h3 class="name"><code>massMultiplier</code></h3>
+    <span class="type">Array</span>
+
+
+        <span class="flag private">private</span>
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l195"><code>src\objects\Body.js:195</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_position" class="property item">
+    <h3 class="name"><code>position</code></h3>
+    <span class="type">Array</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l201"><code>src\objects\Body.js:201</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>The position of the body in the world. Don't use this for rendering, instead use .interpolatedPosition</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_previousAngle" class="property item">
+    <h3 class="name"><code>previousAngle</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l263"><code>src\objects\Body.js:263</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>The previous angle of the body.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_previousPosition" class="property item">
+    <h3 class="name"><code>previousPosition</code></h3>
+    <span class="type">Array</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l216"><code>src\objects\Body.js:216</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>The previous position of the body.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_shapes" class="property item">
+    <h3 class="name"><code>shapes</code></h3>
+    <span class="type">Array</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l113"><code>src\objects\Body.js:113</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>The shapes of the body.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_SLEEPING" class="property item">
+    <h3 class="name"><code>SLEEPING</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+        <span class="flag static">static</span>
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l1359"><code>src\objects\Body.js:1359</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_sleepSpeedLimit" class="property item">
+    <h3 class="name"><code>sleepSpeedLimit</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l419"><code>src\objects\Body.js:419</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>If the speed (the norm of the velocity) is smaller than this value, the body is considered sleepy.</p>
+
+    </div>
+
+        <p><strong>Default:</strong> 0.2</p>
+
+
+</div>
+<div id="property_sleepState" class="property item">
+    <h3 class="name"><code>sleepState</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l408"><code>src\objects\Body.js:408</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>One of <a href="../classes/Body.html#property_AWAKE" class="crosslink">Body.AWAKE</a>, <a href="../classes/Body.html#property_SLEEPY" class="crosslink">Body.SLEEPY</a> and <a href="../classes/Body.html#property_SLEEPING" class="crosslink">Body.SLEEPING</a>.</p>
+<p>The body is initially Body.AWAKE. If its velocity norm is below .sleepSpeedLimit, the sleepState will become Body.SLEEPY. If the body continues to be Body.SLEEPY for .sleepTimeLimit seconds, it will fall asleep (Body.SLEEPY).</p>
+
+    </div>
+
+        <p><strong>Default:</strong> Body.AWAKE</p>
+
+
+</div>
+<div id="property_sleepTimeLimit" class="property item">
+    <h3 class="name"><code>sleepTimeLimit</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l427"><code>src\objects\Body.js:427</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>If the body has been sleepy for this sleepTimeLimit seconds, it is considered sleeping.</p>
+
+    </div>
+
+        <p><strong>Default:</strong> 1</p>
+
+
+</div>
+<div id="property_SLEEPY" class="property item">
+    <h3 class="name"><code>SLEEPY</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+        <span class="flag static">static</span>
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l1352"><code>src\objects\Body.js:1352</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_STATIC" class="property item">
+    <h3 class="name"><code>STATIC</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+        <span class="flag static">static</span>
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l1329"><code>src\objects\Body.js:1329</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Static body.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_timeLastSleepy" class="property item private">
+    <h3 class="name"><code>timeLastSleepy</code></h3>
+    <span class="type">Number</span>
+
+
+        <span class="flag private">private</span>
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l455"><code>src\objects\Body.js:455</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>The last time when the body went to SLEEPY state.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_type" class="property item">
+    <h3 class="name"><code>type</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l330"><code>src\objects\Body.js:330</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>The type of motion this body has. Should be one of: <a href="../classes/Body.html#property_STATIC" class="crosslink">Body.STATIC</a>, <a href="../classes/Body.html#property_DYNAMIC" class="crosslink">Body.DYNAMIC</a> and <a href="../classes/Body.html#property_KINEMATIC" class="crosslink">Body.KINEMATIC</a>.</p>
+<ul>
+<li>Static bodies do not move, and they do not respond to forces or collision.</li>
+<li>Dynamic bodies body can move and respond to collisions and forces.</li>
+<li>Kinematic bodies only moves according to its .velocity, and does not respond to collisions or force.</li>
+</ul>
+
+    </div>
+
+
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre class="code prettyprint"><code>// Bodies are static by default. Static bodies will never move.
+var body = new Body();
+console.log(body.type == Body.STATIC); // true</code></pre>
+<pre class="code prettyprint"><code>// By setting the mass of a body to a nonzero number, the body
+// will become dynamic and will move and interact with other bodies.
+var dynamicBody = new Body({
+    mass : 1
+});
+console.log(dynamicBody.type == Body.DYNAMIC); // true</code></pre>
+<pre class="code prettyprint"><code>// Kinematic bodies will only move if you change their velocity.
+var kinematicBody = new Body({
+    type: Body.KINEMATIC // Type can be set via the options object.
+});</code></pre>
+
+            </div>
+        </div>
+
+</div>
+<div id="property_velocity" class="property item">
+    <h3 class="name"><code>velocity</code></h3>
+    <span class="type">Array</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l223"><code>src\objects\Body.js:223</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>The current velocity of the body.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_vlambda" class="property item">
+    <h3 class="name"><code>vlambda</code></h3>
+    <span class="type">Array</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l230"><code>src\objects\Body.js:230</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Constraint velocity that was added to the body during the last step.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_wlambda" class="property item">
+    <h3 class="name"><code>wlambda</code></h3>
+    <span class="type">Array</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l238"><code>src\objects\Body.js:238</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Angular constraint velocity that was added to the body during last step.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_world" class="property item">
+    <h3 class="name"><code>world</code></h3>
+    <span class="type"><a href="../classes/World.html" class="crosslink">World</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l105"><code>src\objects\Body.js:105</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>The world that this body is added to (read only). This property is set to NULL if the body is not added to any world.</p>
+
+    </div>
+
+
+
+</div>
             </div>
 
 
@@ -3842,7 +4113,7 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_objects_Body.js.html#l1158"><code>src&#x2F;objects&#x2F;Body.js:1158</code></a>
+                            <a href="../files/src_objects_Body.js.html#l500"><code>src\objects\Body.js:500</code></a>
                             </p>
                     
                     
@@ -3866,7 +4137,7 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_objects_Body.js.html#l1151"><code>src&#x2F;objects&#x2F;Body.js:1151</code></a>
+                            <a href="../files/src_objects_Body.js.html#l493"><code>src\objects\Body.js:493</code></a>
                             </p>
                     
                     
@@ -3890,7 +4161,7 @@ Sets the sleepState to <a href="../classes/Body.html#property_AWAKE" class="cros
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_objects_Body.js.html#l1165"><code>src&#x2F;objects&#x2F;Body.js:1165</code></a>
+                            <a href="../files/src_objects_Body.js.html#l507"><code>src\objects\Body.js:507</code></a>
                             </p>
                     
                     

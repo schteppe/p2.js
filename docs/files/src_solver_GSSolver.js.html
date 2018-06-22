@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/solver/GSSolver.js - p2.js</title>
+    <title>src\solver\GSSolver.js - p2.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="p2.js" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.7.1</em>
+            <em>API Docs for: 0.7.2</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -56,26 +56,23 @@
                                 <li><a href="../classes/GearConstraint.html">GearConstraint</a></li>
                                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
                                 <li><a href="../classes/Heightfield.html">Heightfield</a></li>
-                                <li><a href="../classes/Island.html">Island</a></li>
-                                <li><a href="../classes/IslandManager.html">IslandManager</a></li>
-                                <li><a href="../classes/IslandNode.html">IslandNode</a></li>
                                 <li><a href="../classes/Line.html">Line</a></li>
                                 <li><a href="../classes/LinearSpring.html">LinearSpring</a></li>
+                                <li><a href="../classes/.html"></a></li>
                                 <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
                                 <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
-                                <li><a href="../classes/Object pooling utility..html">Object pooling utility.</a></li>
                                 <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
                                 <li><a href="../classes/OverlapKeeperRecord.html">OverlapKeeperRecord</a></li>
                                 <li><a href="../classes/Particle.html">Particle</a></li>
                                 <li><a href="../classes/Plane.html">Plane</a></li>
+                                <li><a href="../classes/Pool.html">Pool</a></li>
                                 <li><a href="../classes/PrismaticConstraint.html">PrismaticConstraint</a></li>
                                 <li><a href="../classes/Ray.html">Ray</a></li>
                                 <li><a href="../classes/RaycastResult.html">RaycastResult</a></li>
                                 <li><a href="../classes/RevoluteConstraint.html">RevoluteConstraint</a></li>
                                 <li><a href="../classes/RotationalLockEquation.html">RotationalLockEquation</a></li>
-                                <li><a href="../classes/.html"></a></li>
                                 <li><a href="../classes/RotationalSpring.html">RotationalSpring</a></li>
                                 <li><a href="../classes/RotationalVelocityEquation.html">RotationalVelocityEquation</a></li>
                                 <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
@@ -84,11 +81,13 @@
                                 <li><a href="../classes/Spring.html">Spring</a></li>
                                 <li><a href="../classes/TopDownVehicle.html">TopDownVehicle</a></li>
                                 <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
+                                <li><a href="../classes/UnionFind.html">UnionFind</a></li>
                                 <li><a href="../classes/Utils.html">Utils</a></li>
                                 <li><a href="../classes/vec2.html">vec2</a></li>
                                 <li><a href="../classes/WheelConstraint.html">WheelConstraint</a></li>
                                 <li><a href="../classes/World.html">World</a></li>
                             </ul>
+                
                 
                             <ul id="api-modules" class="apis modules">
                             </ul>
@@ -124,13 +123,11 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1 class="file-heading">File: src/solver/GSSolver.js</h1>
+<h1 class="file-heading">File: src\solver\GSSolver.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
-var vec2 = require(&#x27;../math/vec2&#x27;)
-,   Solver = require(&#x27;./Solver&#x27;)
-,   Utils = require(&#x27;../utils/Utils&#x27;)
+var Solver = require(&#x27;./Solver&#x27;)
 ,   FrictionEquation = require(&#x27;../equations/FrictionEquation&#x27;);
 
 module.exports = GSSolver;
@@ -162,20 +159,7 @@ function GSSolver(options){
      * @type {Number}
      * @default 1e-7
      */
-    this.tolerance = options.tolerance || 1e-7;
-
-    this.arrayStep = 30;
-    this.lambda = new Utils.ARRAY_TYPE(this.arrayStep);
-    this.Bs =     new Utils.ARRAY_TYPE(this.arrayStep);
-    this.invCs =  new Utils.ARRAY_TYPE(this.arrayStep);
-
-    /**
-     * Set to true to set all right hand side terms to zero when solving. Can be handy for a few applications.
-     * @property useZeroRHS
-     * @type {Boolean}
-     * @todo Remove, not used
-     */
-    this.useZeroRHS = false;
+    this.tolerance = options.tolerance !== undefined ? options.tolerance : 1e-7;
 
     /**
      * Number of solver iterations that are used to approximate normal forces used for friction (F_friction = mu * F_normal). These friction forces will override any other friction forces that are set. If you set frictionIterations = 0, then this feature will be disabled.
@@ -197,13 +181,6 @@ function GSSolver(options){
 GSSolver.prototype = new Solver();
 GSSolver.prototype.constructor = GSSolver;
 
-function setArrayZero(array){
-    var l = array.length;
-    while(l--){
-        array[l] = +0.0;
-    }
-}
-
 /**
  * Solve the system of equations
  * @method solve
@@ -219,13 +196,9 @@ GSSolver.prototype.solve = function(h, world){
         maxFrictionIter = this.frictionIterations,
         equations = this.equations,
         Neq = equations.length,
-        tolSquared = Math.pow(this.tolerance*Neq, 2),
+        tolSquared = Math.pow(this.tolerance * Neq, 2),
         bodies = world.bodies,
-        Nbodies = world.bodies.length,
-        add = vec2.add,
-        set = vec2.set,
-        useZeroRHS = this.useZeroRHS,
-        lambda = this.lambda;
+        Nbodies = bodies.length;
 
     this.usedIterations = 0;
 
@@ -238,28 +211,21 @@ GSSolver.prototype.solve = function(h, world){
         }
     }
 
-    // Things that does not change during iteration can be computed once
-    if(lambda.length &lt; Neq){
-        lambda = this.lambda =  new Utils.ARRAY_TYPE(Neq + this.arrayStep);
-        this.Bs =               new Utils.ARRAY_TYPE(Neq + this.arrayStep);
-        this.invCs =            new Utils.ARRAY_TYPE(Neq + this.arrayStep);
-    }
-    setArrayZero(lambda);
-    var invCs = this.invCs,
-        Bs = this.Bs,
-        lambda = this.lambda;
-
-    for(var i=0; i!==equations.length; i++){
+    for(var i=0; i!==Neq; i++){
         var c = equations[i];
+        c.lambda = 0;
         if(c.timeStep !== h || c.needsUpdate){
             c.timeStep = h;
             c.update();
         }
-        Bs[i] =     c.computeB(c.a,c.b,h);
-        invCs[i] =  c.computeInvC(c.epsilon);
+        c.B = c.computeB(c.a,c.b,h);
+        c.invC = c.computeInvC(c.epsilon);
+
+        c.maxForceDt = c.maxForce * h;
+        c.minForceDt = c.minForce * h;
     }
 
-    var q, B, c, deltalambdaTot,i,j;
+    var c, deltalambdaTot, i, j;
 
     if(Neq !== 0){
 
@@ -280,7 +246,7 @@ GSSolver.prototype.solve = function(h, world){
                 for(j=0; j!==Neq; j++){
                     c = equations[j];
 
-                    var deltalambda = GSSolver.iterateEquation(j,c,c.epsilon,Bs,invCs,lambda,useZeroRHS,h,iter);
+                    var deltalambda = iterateEquation(c,h);
                     deltalambdaTot += Math.abs(deltalambda);
                 }
 
@@ -292,7 +258,7 @@ GSSolver.prototype.solve = function(h, world){
                 }
             }
 
-            GSSolver.updateMultipliers(equations, lambda, 1/h);
+            updateMultipliers(equations, 1/h);
 
             // Set computed friction force
             for(j=0; j!==Neq; j++){
@@ -305,6 +271,9 @@ GSSolver.prototype.solve = function(h, world){
                     f *= eq.frictionCoefficient / eq.contactEquations.length;
                     eq.maxForce =  f;
                     eq.minForce = -f;
+
+                    eq.maxForceDt = f * h;
+                    eq.minForceDt = -f * h;
                 }
             }
         }
@@ -314,18 +283,17 @@ GSSolver.prototype.solve = function(h, world){
 
             // Accumulate the total error for each iteration.
             deltalambdaTot = 0.0;
-
             for(j=0; j!==Neq; j++){
                 c = equations[j];
 
-                var deltalambda = GSSolver.iterateEquation(j,c,c.epsilon,Bs,invCs,lambda,useZeroRHS,h,iter);
+                var deltalambda = iterateEquation(c,h);
                 deltalambdaTot += Math.abs(deltalambda);
             }
 
             this.usedIterations++;
 
             // If the total error is small enough - stop iterate
-            if(deltalambdaTot*deltalambdaTot &lt;= tolSquared){
+            if(deltalambdaTot*deltalambdaTot &lt; tolSquared){
                 break;
             }
         }
@@ -335,47 +303,43 @@ GSSolver.prototype.solve = function(h, world){
             bodies[i].addConstraintVelocity();
         }
 
-        GSSolver.updateMultipliers(equations, lambda, 1/h);
+        updateMultipliers(equations, 1/h);
     }
 };
 
 // Sets the .multiplier property of each equation
-GSSolver.updateMultipliers = function(equations, lambda, invDt){
-    // Set the .multiplier property of each equation
+function updateMultipliers(equations, invDt){
     var l = equations.length;
     while(l--){
-        equations[l].multiplier = lambda[l] * invDt;
+        var eq = equations[l];
+        eq.multiplier = eq.lambda * invDt;
     }
-};
+}
 
-GSSolver.iterateEquation = function(j,eq,eps,Bs,invCs,lambda,useZeroRHS,dt,iter){
+function iterateEquation(eq){
     // Compute iteration
-    var B = Bs[j],
-        invC = invCs[j],
-        lambdaj = lambda[j],
-        GWlambda = eq.computeGWlambda();
-
-    var maxForce = eq.maxForce,
-        minForce = eq.minForce;
-
-    if(useZeroRHS){
-        B = 0;
-    }
+    var B = eq.B,
+        eps = eq.epsilon,
+        invC = eq.invC,
+        lambdaj = eq.lambda,
+        GWlambda = eq.computeGWlambda(),
+        maxForce_dt = eq.maxForceDt,
+        minForce_dt = eq.minForceDt;
 
     var deltalambda = invC * ( B - GWlambda - eps * lambdaj );
 
     // Clamp if we are not within the min/max interval
     var lambdaj_plus_deltalambda = lambdaj + deltalambda;
-    if(lambdaj_plus_deltalambda &lt; minForce*dt){
-        deltalambda = minForce*dt - lambdaj;
-    } else if(lambdaj_plus_deltalambda &gt; maxForce*dt){
-        deltalambda = maxForce*dt - lambdaj;
+    if(lambdaj_plus_deltalambda &lt; minForce_dt){
+        deltalambda = minForce_dt - lambdaj;
+    } else if(lambdaj_plus_deltalambda &gt; maxForce_dt){
+        deltalambda = maxForce_dt - lambdaj;
     }
-    lambda[j] += deltalambda;
+    eq.lambda += deltalambda;
     eq.addToWlambda(deltalambda);
 
     return deltalambda;
-};
+}
 
     </pre>
 </div>
