@@ -86,7 +86,7 @@
                     } else if(aabb.lowerBound[1] < planePosition[1]){
                         // Partially submerged
                         var width = aabb.upperBound[0] - aabb.lowerBound[0];
-                        var height = 0 - aabb.lowerBound[1];
+                        var height = planePosition[1] - aabb.lowerBound[1];
                         areaUnderWater = width * height;
                         p2.vec2.set(centerOfBouyancy, aabb.lowerBound[0] + width / 2, aabb.lowerBound[1] + height / 2);
                     } else {
@@ -95,7 +95,7 @@
 
                     // Compute lift force
                     p2.vec2.subtract(liftForce, planePosition, centerOfBouyancy);
-                    p2.vec2.scale(liftForce, liftForce, areaUnderWater * k);
+                    p2.vec2.scale(liftForce, liftForce, areaUnderWater * k / body.shapes.length);
                     liftForce[0] = 0;
 
                     // Make center of bouycancy relative to the body
@@ -103,7 +103,7 @@
 
                     // Viscous force
                     body.getVelocityAtPoint(v, centerOfBouyancy);
-                    p2.vec2.scale(viscousForce, v, -c);
+                    p2.vec2.scale(viscousForce, v, -c / body.shapes.length);
 
                     // Apply forces
                     body.applyForce(viscousForce,centerOfBouyancy);
