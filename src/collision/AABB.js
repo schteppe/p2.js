@@ -197,7 +197,7 @@ AABB.prototype.overlapsRay = function(ray){
     var tmin = Math.max(Math.max(Math.min(t1, t2), Math.min(t3, t4)));
     var tmax = Math.min(Math.min(Math.max(t1, t2), Math.max(t3, t4)));
 
-    // if tmax < 0, ray (line) is intersecting AABB, but whole AABB is behing us
+    // if tmax < 0, ray (line) is intersecting AABB, but whole AABB is behind us
     if (tmax < 0){
         //t = tmax;
         return -1;
