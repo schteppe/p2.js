@@ -124,7 +124,7 @@ EventEmitter.prototype = {
                 var listener = tmpArray[ i ];
                 listener.call( listener.context, event );
             }
-            tmpArray.length = 0;
+            this.tmpArray.length = 0;
         }
         return this;
     }
