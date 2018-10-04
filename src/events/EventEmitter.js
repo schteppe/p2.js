@@ -15,7 +15,6 @@ module.exports = EventEmitter;
  *     });
  */
 function EventEmitter() {
-    this.tmpArray = [];
 }
 
 EventEmitter.prototype = {
@@ -116,7 +115,7 @@ EventEmitter.prototype = {
             event.target = this;
 
             // Need to copy the listener array, in case some listener was added/removed inside a listener
-            var tmpArray = this.tmpArray;
+            var tmpArray = [];
             for (var i = 0, l = listenerArray.length; i < l; i++) {
                 tmpArray[i] = listenerArray[i];
             }
@@ -124,7 +123,6 @@ EventEmitter.prototype = {
                 var listener = tmpArray[ i ];
                 listener.call( listener.context, event );
             }
-            this.tmpArray.length = 0;
         }
         return this;
     }
