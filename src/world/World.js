@@ -501,9 +501,8 @@ var step_mg = vec2.create(),
  */
 World.prototype.step = function(dt,timeSinceLastCalled,maxSubSteps){
     maxSubSteps = maxSubSteps || 10;
-    timeSinceLastCalled = timeSinceLastCalled || 0;
 
-    if(timeSinceLastCalled === 0){ // Fixed, simple stepping
+    if(timeSinceLastCalled === undefined){ // Fixed, simple stepping
 
         this.internalStep(dt);
 
