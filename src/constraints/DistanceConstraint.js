@@ -144,25 +144,49 @@ function DistanceConstraint(bodyA,bodyB,options){
      * If the upper limit is enabled or not.
      * @property {Boolean} upperLimitEnabled
      */
-    this.upperLimitEnabled = false;
+    var upperLimitEnabled;
+    if(typeof(options.upperLimitEnabled)==="undefined" ){
+        upperLimitEnabled = false;
+    } else {
+        upperLimitEnabled = options.upperLimitEnabled;
+    }
+    this.upperLimitEnabled = upperLimitEnabled;
 
     /**
      * The upper constraint limit.
      * @property {number} upperLimit
      */
-    this.upperLimit = 1;
+    var upperLimit;
+    if(typeof(options.upperLimit)==="undefined" ){
+        upperLimit = 1;
+    } else {
+        upperLimit = options.upperLimit;
+    }
+    this.upperLimit = upperLimit;
 
     /**
      * If the lower limit is enabled or not.
      * @property {Boolean} lowerLimitEnabled
      */
-    this.lowerLimitEnabled = false;
+    var lowerLimitEnabled;
+    if(typeof(options.lowerLimitEnabled)==="undefined" ){
+        lowerLimitEnabled = false;
+    } else {
+        lowerLimitEnabled = options.lowerLimitEnabled;
+    }
+    this.lowerLimitEnabled = lowerLimitEnabled;
 
     /**
      * The lower constraint limit.
      * @property {number} lowerLimit
      */
-    this.lowerLimit = 0;
+    var lowerLimit;
+    if(typeof(options.lowerLimit)==="undefined" ){
+        lowerLimit = 0;
+    } else {
+        lowerLimit = options.lowerLimit;
+    }
+    this.lowerLimit = lowerLimit;
 
     /**
      * Current constraint position. This is equal to the current distance between the world anchor points.
