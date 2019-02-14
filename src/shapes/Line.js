@@ -83,7 +83,7 @@ Line.prototype.raycast = function(result, ray, position, angle){
     vec2.toGlobalFrame(l0, l0, position, angle);
     vec2.toGlobalFrame(l1, l1, position, angle);
 
-    var fraction = vec2.getLineSegmentsIntersectionFraction(l0, l1, from, to);
+    var fraction = vec2.getLineSegmentsIntersectionFraction(from, to, l0, l1);
     if(fraction >= 0){
         var normal = raycast_normal;
         vec2.rotate(normal, raycast_unit_y, angle); // todo: this should depend on which side the ray comes from
