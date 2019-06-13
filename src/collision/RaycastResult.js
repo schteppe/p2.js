@@ -1,5 +1,4 @@
 var vec2 = require('../math/vec2');
-var Ray = require('../collision/Ray');
 
 module.exports = RaycastResult;
 
