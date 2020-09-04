@@ -1059,7 +1059,7 @@ World.prototype.removeBody = function(body){
     var constraints = this.constraints;
     var l = constraints.length;
     while (l--) {
-        if(constraints[l].bodyA === this || constraints[l].bodyB === this){
+        if(constraints[l].bodyA === body || constraints[l].bodyB === body){
             throw new Error('Cannot remove Body from World: it still has constraints connected to it.');
         }
     }
