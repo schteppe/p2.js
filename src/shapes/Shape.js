@@ -2,18 +2,20 @@ module.exports = Shape;
 
 var vec2 = require('../math/vec2');
 
+let PLAYER = Math.pow(2,0);
+let EVERYTHING_EXCEPT_PLAYER =  Math.pow(2,1);
+
 /**
- * Base class for shapes. Not to be used directly.
+ * Base class for shapes.
  * @class Shape
  * @constructor
  * @param {object} [options]
+ * @param {array} [options.position]
  * @param {number} [options.angle=0]
  * @param {number} [options.collisionGroup=1]
  * @param {number} [options.collisionMask=1]
- * @param {boolean} [options.collisionResponse=true]
- * @param {Material} [options.material=null]
- * @param {array} [options.position]
  * @param {boolean} [options.sensor=false]
+ * @param {boolean} [options.collisionResponse=true]
  * @param {object} [options.type=0]
  */
 function Shape(options){
@@ -29,7 +31,7 @@ function Shape(options){
      * Body-local position of the shape.
      * @property {Array} position
      */
-    this.position = vec2.create();
+    this.position = vec2.fromValues(0,0);
     if(options.position){
         vec2.copy(this.position, options.position);
     }
@@ -43,24 +45,21 @@ function Shape(options){
     /**
      * The type of the shape. One of:
      *
-     * <ul>
-     * <li><a href="Shape.html#property_CIRCLE">Shape.CIRCLE</a></li>
-     * <li><a href="Shape.html#property_PARTICLE">Shape.PARTICLE</a></li>
-     * <li><a href="Shape.html#property_PLANE">Shape.PLANE</a></li>
-     * <li><a href="Shape.html#property_CONVEX">Shape.CONVEX</a></li>
-     * <li><a href="Shape.html#property_LINE">Shape.LINE</a></li>
-     * <li><a href="Shape.html#property_BOX">Shape.BOX</a></li>
-     * <li><a href="Shape.html#property_CAPSULE">Shape.CAPSULE</a></li>
-     * <li><a href="Shape.html#property_HEIGHTFIELD">Shape.HEIGHTFIELD</a></li>
-     * </ul>
+     * * {{#crossLink "Shape/CIRCLE:property"}}Shape.CIRCLE{{/crossLink}}
+     * * {{#crossLink "Shape/PARTICLE:property"}}Shape.PARTICLE{{/crossLink}}
+     * * {{#crossLink "Shape/PLANE:property"}}Shape.PLANE{{/crossLink}}
+     * * {{#crossLink "Shape/CONVEX:property"}}Shape.CONVEX{{/crossLink}}
+     * * {{#crossLink "Shape/LINE:property"}}Shape.LINE{{/crossLink}}
+     * * {{#crossLink "Shape/BOX:property"}}Shape.BOX{{/crossLink}}
+     * * {{#crossLink "Shape/CAPSULE:property"}}Shape.CAPSULE{{/crossLink}}
+     * * {{#crossLink "Shape/HEIGHTFIELD:property"}}Shape.HEIGHTFIELD{{/crossLink}}
      *
      * @property {number} type
      */
     this.type = options.type || 0;
 
     /**
-     * Shape object identifier. Read only.
-     * @readonly
+     * Shape object identifier.
      * @type {Number}
      * @property id
      */
@@ -68,7 +67,6 @@ function Shape(options){
 
     /**
      * Bounding circle radius of this shape
-     * @readonly
      * @property boundingRadius
      * @type {Number}
      */
@@ -103,7 +101,7 @@ function Shape(options){
      *         // The shapes will collide
      *     }
      */
-    this.collisionGroup = options.collisionGroup !== undefined ? options.collisionGroup : 1;
+    this.collisionGroup = options.collisionGroup !== undefined ? options.collisionGroup : EVERYTHING_EXCEPT_PLAYER;
 
     /**
      * Whether to produce contact forces when in contact with other bodies. Note that contacts will be generated, but they will be disabled. That means that this shape will move through other body shapes, but it will still trigger contact events, etc.
@@ -116,8 +114,8 @@ function Shape(options){
      * @property collisionMask
      * @type {Number}
      */
-    this.collisionMask = options.collisionMask !== undefined ? options.collisionMask : 1;
-
+    this.collisionMask = options.collisionMask !== undefined ? options.collisionMask : EVERYTHING_EXCEPT_PLAYER | PLAYER;
+ 
     /**
      * Material to use in collisions for this Shape. If this is set to null, the world will use default material properties instead.
      * @property material
@@ -183,11 +181,18 @@ Shape.LINE =        16;
  */
 Shape.BOX =   32;
 
+Object.defineProperty(Shape, 'RECTANGLE', {
+    get: function() {
+        console.warn('Shape.RECTANGLE is deprecated, use Shape.BOX instead.');
+        return Shape.BOX;
+    }
+});
+
 /**
  * @static
  * @property {Number} CAPSULE
  */
-Shape.CAPSULE = 64;
+Shape.CAPSULE =     64;
 
 /**
  * @static
@@ -195,74 +200,48 @@ Shape.CAPSULE = 64;
  */
 Shape.HEIGHTFIELD = 128;
 
-Shape.prototype = {
+/**
+ * Should return the moment of inertia around the Z axis of the body given the total mass. See <a href="http://en.wikipedia.org/wiki/List_of_moments_of_inertia">Wikipedia's list of moments of inertia</a>.
+ * @method computeMomentOfInertia
+ * @param  {Number} mass
+ * @return {Number} If the inertia is infinity or if the object simply isn't possible to rotate, return 0.
+ */
+Shape.prototype.computeMomentOfInertia = function(mass){};
 
-    /**
-     * Should return the moment of inertia around the Z axis of the body. See <a href="http://en.wikipedia.org/wiki/List_of_moments_of_inertia">Wikipedia's list of moments of inertia</a>.
-     * @method computeMomentOfInertia
-     * @return {Number} If the inertia is infinity or if the object simply isn't possible to rotate, return 0.
-     */
-    computeMomentOfInertia: function(){},
+/**
+ * Returns the bounding circle radius of this shape.
+ * @method updateBoundingRadius
+ * @return {Number}
+ */
+Shape.prototype.updateBoundingRadius = function(){};
 
-    /**
-     * Returns the bounding circle radius of this shape.
-     * @method updateBoundingRadius
-     * @return {Number}
-     */
-    updateBoundingRadius: function(){},
+/**
+ * Update the .area property of the shape.
+ * @method updateArea
+ */
+Shape.prototype.updateArea = function(){
+    // To be implemented in all subclasses
+};
 
-    /**
-     * Update the .area property of the shape.
-     * @method updateArea
-     */
-    updateArea: function(){},
+/**
+ * Compute the world axis-aligned bounding box (AABB) of this shape.
+ * @method computeAABB
+ * @param  {AABB} out The resulting AABB.
+ * @param  {Array} position World position of the shape.
+ * @param  {Number} angle World angle of the shape.
+ */
+Shape.prototype.computeAABB = function(out, position, angle){
+    // To be implemented in each subclass
+};
 
-    /**
-     * Compute the world axis-aligned bounding box (AABB) of this shape.
-     * @method computeAABB
-     * @param  {AABB} out The resulting AABB.
-     * @param  {Array} position World position of the shape.
-     * @param  {Number} angle World angle of the shape.
-     */
-    computeAABB: function(/*out, position, angle*/){
-        // To be implemented in each subclass
-    },
-
-    /**
-     * Perform raycasting on this shape.
-     * @method raycast
-     * @param  {RayResult} result Where to store the resulting data.
-     * @param  {Ray} ray The Ray that you want to use for raycasting.
-     * @param  {array} position World position of the shape (the .position property will be ignored).
-     * @param  {number} angle World angle of the shape (the .angle property will be ignored).
-     */
-    raycast: function(/*result, ray, position, angle*/){
-        // To be implemented in each subclass
-    },
-
-    /**
-     * Test if a point is inside this shape.
-     * @method pointTest
-     * @param {array} localPoint
-     * @return {boolean}
-     */
-    pointTest: function(/*localPoint*/){ return false; },
-
-    /**
-     * Transform a world point to local shape space (assumed the shape is transformed by both itself and the body).
-     * @method worldPointToLocal
-     * @param {array} out
-     * @param {array} worldPoint
-     */
-    worldPointToLocal: (function () {
-        var shapeWorldPosition = vec2.create();
-        return function (out, worldPoint) {
-            var body = this.body;
-
-            vec2.rotate(shapeWorldPosition, this.position, body.angle);
-            vec2.add(shapeWorldPosition, shapeWorldPosition, body.position);
-
-            vec2.toLocalFrame(out, worldPoint, shapeWorldPosition, this.body.angle + this.angle);
-        };
-    })()
+/**
+ * Perform raycasting on this shape.
+ * @method raycast
+ * @param  {RayResult} result Where to store the resulting data.
+ * @param  {Ray} ray The Ray that you want to use for raycasting.
+ * @param  {array} position World position of the shape (the .position property will be ignored).
+ * @param  {number} angle World angle of the shape (the .angle property will be ignored).
+ */
+Shape.prototype.raycast = function(result, ray, position, angle){
+    // To be implemented in each subclass
 };

@@ -1,9 +1,7 @@
 module.exports = Pool;
 
 /**
- * Object pooling utility.
- * @class Pool
- * @constructor
+ * @class Object pooling utility.
  */
 function Pool(options) {
 	options = options || {};

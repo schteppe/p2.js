@@ -15,7 +15,7 @@
           world, circleBody, planeBody;
 
       init();
-      requestAnimationFrame(animate);
+      animate();
 
       function init(){
 
@@ -45,15 +45,15 @@
 
       function drawCircle(){
         ctx.beginPath();
-        var x = circleBody.interpolatedPosition[0],
-            y = circleBody.interpolatedPosition[1],
+        var x = circleBody.position[0],
+            y = circleBody.position[1],
             radius = circleShape.radius;
         ctx.arc(x,y,radius,0,2*Math.PI);
         ctx.stroke();
       }
 
       function drawPlane(){
-        var y = planeBody.interpolatedPosition[1];
+        var y = planeBody.position[1];
         ctx.moveTo(-w, y);
         ctx.lineTo( w, y);
         ctx.stroke();
@@ -78,23 +78,16 @@
         ctx.restore();
       }
 
-      var lastTime, timeStep = 1 / 60, maxSubSteps = 5;
-
       // Animation loop
-      function animate(time){
+      function animate(){
         requestAnimationFrame(animate);
 
-        var dt = lastTime ? (time - lastTime) / 1000 : 0;
-        dt = Math.min(1 / 10, dt);
-        lastTime = time;
-
         // Move physics bodies forward in time
-        world.step(timeStep, dt, maxSubSteps);
+        world.step(1/60);
 
         // Render scene
         render();
       }
-
     </script>
 
   </body>

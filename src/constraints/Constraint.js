@@ -1,5 +1,7 @@
 module.exports = Constraint;
 
+var Utils = require('../utils/Utils');
+
 /**
  * Base constraint class.
  *
@@ -13,13 +15,17 @@ module.exports = Constraint;
  * @param {Object} [options.collideConnected=true]
  */
 function Constraint(bodyA, bodyB, type, options){
-    options = options || {};
 
     /**
      * The type of constraint. May be one of Constraint.DISTANCE, Constraint.GEAR, Constraint.LOCK, Constraint.PRISMATIC or Constraint.REVOLUTE.
      * @property {number} type
      */
     this.type = type;
+
+    options = Utils.defaults(options,{
+        collideConnected : true,
+        wakeUpBodies : true,
+    });
 
     /**
      * Equations to be solved in this constraint
@@ -49,10 +55,10 @@ function Constraint(bodyA, bodyB, type, options){
      * @type {Boolean}
      * @default true
      */
-    this.collideConnected = options.collideConnected !== undefined ? options.collideConnected : true;
+    this.collideConnected = options.collideConnected;
 
     // Wake up bodies when connected
-    if(options.wakeUpBodies !== false){
+    if(options.wakeUpBodies){
         if(bodyA){
             bodyA.wakeUp();
         }
@@ -125,17 +131,5 @@ Constraint.prototype.setRelaxation = function(relaxation){
         var eq = eqs[i];
         eq.relaxation = relaxation;
         eq.needsUpdate = true;
-    }
-};
-
-/**
- * @method setMaxBias
- * @param {Number} maxBias
- */
-Constraint.prototype.setMaxBias = function(maxBias){
-    var eqs = this.equations;
-    for(var i=0; i !== eqs.length; i++){
-        var eq = eqs[i];
-        eq.maxBias = maxBias;
     }
 };

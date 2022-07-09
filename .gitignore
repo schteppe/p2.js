@@ -11,3 +11,4 @@ node_modules/*
 # Sublime Text
 *.sublime-project
 *.sublime-workspace
+/nbproject/private/

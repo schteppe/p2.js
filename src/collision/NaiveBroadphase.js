@@ -1,4 +1,9 @@
-var Broadphase = require('../collision/Broadphase');
+var Circle = require('../shapes/Circle'),
+    Plane = require('../shapes/Plane'),
+    Shape = require('../shapes/Shape'),
+    Particle = require('../shapes/Particle'),
+    Broadphase = require('../collision/Broadphase'),
+    vec2 = require('../math/vec2');
 
 module.exports = NaiveBroadphase;
 

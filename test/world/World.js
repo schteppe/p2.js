@@ -1,12 +1,9 @@
 var World = require(__dirname + '/../../src/world/World')
 ,   Body = require(__dirname + '/../../src/objects/Body')
-,   LinearSpring = require(__dirname + '/../../src/objects/LinearSpring')
-,   DistanceConstraint = require(__dirname + '/../../src/constraints/DistanceConstraint')
 ,   Circle = require(__dirname + '/../../src/shapes/Circle')
 ,   Plane = require(__dirname + '/../../src/shapes/Plane')
 ,   Ray = require(__dirname + '/../../src/collision/Ray')
 ,   RaycastResult = require(__dirname + '/../../src/collision/RaycastResult')
-,   LinearSpring = require(__dirname + '/../../src/objects/LinearSpring')
 ,   Convex = require(__dirname + '/../../src/shapes/Convex');
 
 exports.construct = function(test){
@@ -45,59 +42,14 @@ exports.raycast = function(test){
     test.done();
 };
 
-exports.addBody = {
-    duringStep: function(test){
-        var world = new World();
-        var body = new Body();
-        world.on('postBroadphase', function(){
-            test.throws(function(){
-                world.addBody(body);
-            }, 'should throw on removing bodies during step');
-            test.done();
-        });
-        world.step(1);
-    },
-    twice: function(test){
-        var world = new World();
-        var body = new Body();
-        world.addBody(body);
-        test.throws(function(){
-            world.addBody(body);
-        }, 'should throw on adding body twice');
-        test.done();
-    },
+exports.addBody = function(test){
+    // STUB
+    test.done();
 };
 
-exports.addConstraint = {
-    withoutAddedBodies: function(test){
-        var bodyA = new Body();
-        var bodyB = new Body();
-        var constraint = new DistanceConstraint(bodyA, bodyB);
-        var world = new World();
-        test.throws(function(){
-            world.addConstraint(constraint);
-        },'Should throw error if a constraint is added to the world but not its bodies.');
-
-        world.addBody(bodyA);
-        world.addBody(bodyB);
-        world.addConstraint(constraint);
-
-        test.done();
-    },
-
-    duringStep: function(test){
-        var bodyA = new Body();
-        var bodyB = new Body();
-        var constraint = new DistanceConstraint(bodyA, bodyB);
-        var world = new World();
-        world.on('postBroadphase', function(){
-            test.throws(function(){
-                world.addConstraint(constraint);
-            }, 'should throw on adding constraints during step');
-            test.done();
-        });
-        world.step(1);
-    }
+exports.addConstraint = function(test){
+    // STUB
+    test.done();
 };
 
 exports.addContactMaterial = function(test){
@@ -105,43 +57,13 @@ exports.addContactMaterial = function(test){
     test.done();
 };
 
-exports.addSpring = {
-    duringStep: function(test){
-        var bodyA = new Body();
-        var bodyB = new Body();
-        var spring = new LinearSpring(bodyA, bodyB);
-        var world = new World();
-        world.on('postBroadphase', function(){
-            test.throws(function(){
-                world.addSpring(spring);
-            }, 'should throw on adding springs during step');
-            test.done();
-        });
-        world.step(1);
-    }
+exports.addSpring = function(test){
+    // STUB
+    test.done();
 };
 
 exports.clear = function(test){
-    var world = new World();
-
-    var bodyA = new Body();
-    var bodyB = new Body();
-    world.addBody(bodyA);
-    world.addBody(bodyB);
-
-    var spring = new LinearSpring(bodyA, bodyB);
-    world.addSpring(spring);
-
-    var constraint = new DistanceConstraint(bodyA, bodyB);
-    world.addConstraint(constraint);
-
-    world.clear();
-
-    test.deepEqual(world.bodies, []);
-    test.deepEqual(world.springs, []);
-    test.deepEqual(world.constraints, []);
-    test.deepEqual(world.contactMaterials, []);
-
+    // STUB
     test.done();
 };
 
@@ -202,60 +124,14 @@ exports.integrateBody = function(test){
     test.done();
 };
 
-// TODO test other aspects of removeBody
-exports.removeBody = {
-    duringStep: function(test){
-        var world = new World();
-        var body = new Body();
-        world.addBody(body);
-        world.on('postBroadphase', function(){
-            test.throws(function(){
-                world.removeBody(body);
-            }, 'should throw on adding bodies during step');
-            test.done();
-        });
-        world.step(1);
-    },
-    "removes relevant pairs from disabledBodyCollisionPairs": function(test){
-        var body1 = new Body({id: 1}),
-            body2 = new Body({id: 2}),
-            body3 = new Body({id: 3}),
-            world = new World();
-        world.addBody(body1);
-        world.addBody(body2);
-        world.addBody(body3);
-        world.disableBodyCollision(body1, body2);
-        world.disableBodyCollision(body2, body1);
-        world.disableBodyCollision(body3, body3);
-
-        world.removeBody(body1);
-
-        test.equal(world.disabledBodyCollisionPairs.length, 2);
-        test.equal(world.disabledBodyCollisionPairs[0].id, body3.id);
-        test.equal(world.disabledBodyCollisionPairs[1].id, body3.id);
-        test.done();
-    }
+exports.removeBody = function(test){
+    // STUB
+    test.done();
 };
 
-exports.removeConstraint = {
-    duringStep: function(test){
-        var world = new World();
-        var bodyA = new Body();
-        world.addBody(bodyA);
-        var bodyB = new Body();
-        world.addBody(bodyB);
-
-        var constraint = new DistanceConstraint(bodyA, bodyB);
-        world.addConstraint(constraint);
-
-        world.on('postBroadphase', function(){
-            test.throws(function(){
-                world.removeConstraint(constraint);
-            }, 'should throw on removing constraints during step');
-            test.done();
-        });
-        world.step(1);
-    }
+exports.removeConstraint = function(test){
+    // STUB
+    test.done();
 };
 
 exports.removeContactMaterial = function(test){
@@ -263,21 +139,9 @@ exports.removeContactMaterial = function(test){
     test.done();
 };
 
-exports.removeSpring = {
-    duringStep: function(test){
-        var bodyA = new Body();
-        var bodyB = new Body();
-        var spring = new LinearSpring(bodyA, bodyB);
-        var world = new World();
-        world.addSpring(spring);
-        world.on('postBroadphase', function(){
-            test.throws(function(){
-                world.removeSpring(spring);
-            }, 'should throw on removing springs during step');
-            test.done();
-        });
-        world.step(1);
-    }
+exports.removeSpring = function(test){
+    // STUB
+    test.done();
 };
 
 exports.runNarrowphase = function(test){
@@ -289,7 +153,6 @@ exports.setGlobalStiffness = function(test){
     var world = new World();
     world.setGlobalStiffness(123);
     test.equal(world.defaultContactMaterial.stiffness, 123);
-    // TODO: check constraints etc
     test.done();
 };
 
@@ -297,7 +160,6 @@ exports.setGlobalRelaxation = function(test){
     var world = new World();
     world.setGlobalRelaxation(123);
     test.equal(world.defaultContactMaterial.relaxation, 123);
-    // TODO: check constraints etc
     test.done();
 };
 

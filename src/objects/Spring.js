@@ -1,7 +1,10 @@
+var vec2 = require('../math/vec2');
+var Utils = require('../utils/Utils');
+
 module.exports = Spring;
 
 /**
- * Base class for {{#crossLink "LinearSpring"}}{{/crossLink}} and {{#crossLink "RotationalSpring"}}{{/crossLink}}. Not supposed to be used directly.
+ * A spring, connecting two bodies. The Spring explicitly adds force and angularForce to the bodies and does therefore not put load on the constraint solver.
  *
  * @class Spring
  * @constructor
@@ -16,21 +19,24 @@ module.exports = Spring;
  * @param {Array}  [options.worldAnchorB]
  */
 function Spring(bodyA, bodyB, options){
-    options = options || {};
+    options = Utils.defaults(options,{
+        stiffness: 100,
+        damping: 1,
+    });
 
     /**
      * Stiffness of the spring.
      * @property stiffness
      * @type {number}
      */
-    this.stiffness = options.stiffness !== undefined ? options.stiffness : 100;
+    this.stiffness = options.stiffness;
 
     /**
      * Damping of the spring.
      * @property damping
      * @type {number}
      */
-    this.damping = options.damping !== undefined ? options.damping : 1;
+    this.damping = options.damping;
 
     /**
      * First connected body.
@@ -48,8 +54,7 @@ function Spring(bodyA, bodyB, options){
 }
 
 /**
- * Apply the spring force to the connected bodies. Called automatically by the World.
- * @private
+ * Apply the spring force to the connected bodies.
  * @method applyForce
  */
 Spring.prototype.applyForce = function(){

@@ -4,7 +4,7 @@ var Body = require('../objects/Body');
 module.exports = Broadphase;
 
 /**
- * Base class for broadphase implementations. Don't use this class directly.
+ * Base class for broadphase implementations.
  * @class Broadphase
  * @constructor
  */
@@ -63,7 +63,9 @@ Broadphase.prototype.setWorld = function(world){
  * @param  {World} world The world to search in.
  * @return {Array} An array of the bodies, ordered in pairs. Example: A result of [a,b,c,d] means that the potential pairs are: (a,b), (c,d).
  */
-Broadphase.prototype.getCollisionPairs = function(/*world*/){};
+Broadphase.prototype.getCollisionPairs = function(world){};
+
+var dist = vec2.create();
 
 /**
  * Check whether the bounding radius of two bodies overlap.
@@ -73,14 +75,15 @@ Broadphase.prototype.getCollisionPairs = function(/*world*/){};
  * @return {Boolean}
  */
 Broadphase.boundingRadiusCheck = function(bodyA, bodyB){
-    var d2 = vec2.squaredDistance(bodyA.position, bodyB.position),
+    vec2.sub(dist, bodyA.position, bodyB.position);
+    var d2 = vec2.squaredLength(dist),
         r = bodyA.boundingRadius + bodyB.boundingRadius;
     return d2 <= r*r;
 };
 
 /**
- * Check whether the AABB of two bodies overlap.
- * @method  aabbCheck
+ * Check whether the bounding radius of two bodies overlap.
+ * @method  boundingRadiusCheck
  * @param  {Body} bodyA
  * @param  {Body} bodyB
  * @return {Boolean}
@@ -90,8 +93,8 @@ Broadphase.aabbCheck = function(bodyA, bodyB){
 };
 
 /**
- * Check whether the bounding volumes of two bodies overlap.
- * @method  boundingVolumeCheck
+ * Check whether the bounding radius of two bodies overlap.
+ * @method  boundingRadiusCheck
  * @param  {Body} bodyA
  * @param  {Body} bodyB
  * @return {Boolean}
@@ -122,22 +125,20 @@ Broadphase.prototype.boundingVolumeCheck = function(bodyA, bodyB){
 Broadphase.canCollide = function(bodyA, bodyB){
     var KINEMATIC = Body.KINEMATIC;
     var STATIC = Body.STATIC;
-    var typeA = bodyA.type;
-    var typeB = bodyB.type;
 
     // Cannot collide static bodies
-    if(typeA === STATIC && typeB === STATIC){
+    if(bodyA.type === STATIC && bodyB.type === STATIC){
         return false;
     }
 
     // Cannot collide static vs kinematic bodies
-    if( (typeA === KINEMATIC && typeB === STATIC) ||
-        (typeA === STATIC    && typeB === KINEMATIC)){
+    if( (bodyA.type === KINEMATIC && bodyB.type === STATIC) ||
+        (bodyA.type === STATIC    && bodyB.type === KINEMATIC)){
         return false;
     }
 
     // Cannot collide kinematic vs kinematic
-    if(typeA === KINEMATIC && typeB === KINEMATIC){
+    if(bodyA.type === KINEMATIC && bodyB.type === KINEMATIC){
         return false;
     }
 
@@ -147,8 +148,8 @@ Broadphase.canCollide = function(bodyA, bodyB){
     }
 
     // Cannot collide if one is static and the other is sleeping
-    if( (bodyA.sleepState === Body.SLEEPING && typeB === STATIC) ||
-        (bodyB.sleepState === Body.SLEEPING && typeA === STATIC)){
+    if( (bodyA.sleepState === Body.SLEEPING && bodyB.type === STATIC) ||
+        (bodyB.sleepState === Body.SLEEPING && bodyA.type === STATIC)){
         return false;
     }
 
@@ -157,15 +158,3 @@ Broadphase.canCollide = function(bodyA, bodyB){
 
 Broadphase.NAIVE = 1;
 Broadphase.SAP = 2;
-
-/**
- * Returns all the bodies within an AABB.
- * @method aabbQuery
- * @param  {World} world
- * @param  {AABB} aabb
- * @param {array} result An array to store resulting bodies in.
- * @return {array}
- */
-Broadphase.prototype.aabbQuery = function(/*world, aabb, result*/){
-    // To be implemented in subclasses
-};

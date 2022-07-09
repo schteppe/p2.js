@@ -1,6 +1,5 @@
 var vec2 = require('../math/vec2')
 ,   Shape = require('./Shape')
-,   shallowClone = require('../utils/Utils').shallowClone
 ,   Convex = require('./Convex');
 
 module.exports = Box;
@@ -13,15 +12,15 @@ module.exports = Box;
  * @param {Number} [options.width=1] Total width of the box
  * @param {Number} [options.height=1] Total height of the box
  * @extends Convex
- * @example
- *     var body = new Body({ mass: 1 });
- *     var boxShape = new Box({
- *         width: 2,
- *         height: 1
- *     });
- *     body.addShape(boxShape);
  */
 function Box(options){
+    if(typeof(arguments[0]) === 'number' && typeof(arguments[1]) === 'number'){
+        options = {
+            width: arguments[0],
+            height: arguments[1]
+        };
+        console.warn('The Rectangle has been renamed to Box and its constructor signature has changed. Please use the following format: new Box({ width: 1, height: 1, ... })');
+    }
     options = options || {};
 
     /**
@@ -29,14 +28,14 @@ function Box(options){
      * @property width
      * @type {Number}
      */
-    var width = this.width = options.width !== undefined ? options.width : 1;
+    var width = this.width = options.width || 1;
 
     /**
      * Total height of the box
      * @property height
      * @type {Number}
      */
-    var height = this.height = options.height !== undefined ? options.height : 1;
+    var height = this.height = options.height || 1;
 
     var verts = [
         vec2.fromValues(-width/2, -height/2),
@@ -44,11 +43,15 @@ function Box(options){
         vec2.fromValues( width/2,  height/2),
         vec2.fromValues(-width/2,  height/2)
     ];
+    var axes = [
+        vec2.fromValues(1, 0),
+        vec2.fromValues(0, 1)
+    ];
 
-    var convexOptions = shallowClone(options);
-    convexOptions.vertices = verts;
-    convexOptions.type = Shape.BOX;
-    Convex.call(this, convexOptions);
+    options.vertices = verts;
+    options.axes = axes;
+    options.type = Shape.BOX;
+    Convex.call(this, options);
 }
 Box.prototype = new Convex();
 Box.prototype.constructor = Box;
@@ -56,12 +59,13 @@ Box.prototype.constructor = Box;
 /**
  * Compute moment of inertia
  * @method computeMomentOfInertia
+ * @param  {Number} mass
  * @return {Number}
  */
-Box.prototype.computeMomentOfInertia = function(){
+Box.prototype.computeMomentOfInertia = function(mass){
     var w = this.width,
         h = this.height;
-    return (h*h + w*w) / 12;
+    return mass * (h*h + w*w) / 12;
 };
 
 /**
@@ -74,6 +78,11 @@ Box.prototype.updateBoundingRadius = function(){
     this.boundingRadius = Math.sqrt(w*w + h*h) / 2;
 };
 
+var corner1 = vec2.create(),
+    corner2 = vec2.create(),
+    corner3 = vec2.create(),
+    corner4 = vec2.create();
+
 /**
  * @method computeAABB
  * @param  {AABB}   out      The resulting AABB.
@@ -81,28 +90,10 @@ Box.prototype.updateBoundingRadius = function(){
  * @param  {Number} angle
  */
 Box.prototype.computeAABB = function(out, position, angle){
-    var c = Math.abs(Math.cos(angle)),
-        s = Math.abs(Math.sin(angle)),
-        w = this.width,
-        h = this.height;
-
-    var height = (w * s + h * c) * 0.5;
-    var width = (h * s + w * c) * 0.5;
-
-    var l = out.lowerBound;
-    var u = out.upperBound;
-    var px = position[0];
-    var py = position[1];
-    l[0] = px - width;
-    l[1] = py - height;
-    u[0] = px + width;
-    u[1] = py + height;
+    out.setFromPoints(this.vertices,position,angle,0);
 };
 
 Box.prototype.updateArea = function(){
     this.area = this.width * this.height;
 };
 
-Box.prototype.pointTest = function(localPoint){
-    return Math.abs(localPoint[0]) <= this.width * 0.5 && Math.abs(localPoint[1]) <= this.height * 0.5;
-};
