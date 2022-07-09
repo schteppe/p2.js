@@ -94,7 +94,7 @@ TupleDictionary.prototype.set = function(i, j, value) {
  */
 TupleDictionary.prototype.reset = function() {
     this.data = {};
-    this.keys.length = 0;
+    this.keys = [];
 };
 
 /**
