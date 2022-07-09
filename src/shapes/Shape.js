@@ -2,6 +2,9 @@ module.exports = Shape;
 
 var vec2 = require('../math/vec2');
 
+let PLAYER = Math.pow(2,0);
+let EVERYTHING_EXCEPT_PLAYER =  Math.pow(2,1);
+
 /**
  * Base class for shapes.
  * @class Shape
@@ -98,7 +101,7 @@ function Shape(options){
      *         // The shapes will collide
      *     }
      */
-    this.collisionGroup = options.collisionGroup !== undefined ? options.collisionGroup : 1;
+    this.collisionGroup = options.collisionGroup !== undefined ? options.collisionGroup : EVERYTHING_EXCEPT_PLAYER;
 
     /**
      * Whether to produce contact forces when in contact with other bodies. Note that contacts will be generated, but they will be disabled. That means that this shape will move through other body shapes, but it will still trigger contact events, etc.
@@ -111,8 +114,8 @@ function Shape(options){
      * @property collisionMask
      * @type {Number}
      */
-    this.collisionMask = options.collisionMask !== undefined ? options.collisionMask : 1;
-
+    this.collisionMask = options.collisionMask !== undefined ? options.collisionMask : EVERYTHING_EXCEPT_PLAYER | PLAYER;
+ 
     /**
      * Material to use in collisions for this Shape. If this is set to null, the world will use default material properties instead.
      * @property material
