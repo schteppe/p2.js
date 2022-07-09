@@ -38,11 +38,8 @@ OverlapKeeper.prototype.tick = function() {
         }
     }
 
-    // Clear last object
-    last.reset();
-
-    // Transfer from new object to old
-    last.copy(current);
+    this.overlappingShapesLastState.keys = this.overlappingShapesCurrentState.keys;
+    this.overlappingShapesLastState.data = this.overlappingShapesCurrentState.data;
 
     // Clear current object
     current.reset();
